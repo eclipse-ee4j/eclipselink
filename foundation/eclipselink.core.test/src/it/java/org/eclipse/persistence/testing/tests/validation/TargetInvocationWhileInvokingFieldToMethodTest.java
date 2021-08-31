@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class TargetInvocationWhileInvokingFieldToMethodTest extends ExceptionTes
         setDescription("This tests Target Invocation While Invoking Field To Method(TL-ERROR 102)");
     }
 
+    @Override
     protected void setup() {
         expectedException = DescriptorException.targetInvocationWhileInvokingFieldToMethod("buildNormalHours", new TransformationMapping(), null);
         getAbstractSession().beginTransaction();
@@ -41,12 +42,14 @@ public class TargetInvocationWhileInvokingFieldToMethodTest extends ExceptionTes
         super.setup();
     }
 
+    @Override
     public void reset() {
         super.reset();
         getAbstractSession().rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test() {
         PersonWithValueHolder person = new PersonWithValueHolder();
         person.setName("Person");

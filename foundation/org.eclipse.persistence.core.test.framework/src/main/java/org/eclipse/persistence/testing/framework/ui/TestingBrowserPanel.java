@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -86,6 +86,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
     /**
      * Stop the selected test.
      */
+    @Override
     public void finishedTest() {
         getStopButton().setEnabled(false);
         getKillButton().setEnabled(false);
@@ -924,6 +925,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
      * Method to handle events for the ItemListener interface.
      * @param e event.ItemEvent
      */
+    @Override
     public void itemStateChanged(ItemEvent e) {
         try {
             if ((e.getSource() == getHandleErrorsCheckBox())) {
@@ -1056,6 +1058,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
      * Called whenever the part throws an exception.
      * @param exception Throwable
      */
+    @Override
     public void notifyException(Throwable exception) {
         try {
             getExecutor().getLog().write("--------- UNCAUGHT EXCEPTION ---------" +
@@ -1375,6 +1378,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
     /**
      * Increment the errors bar.
      */
+    @Override
     public void addError(junit.framework.Test test, Throwable error) {
         if (!getExecutor().shouldHandleErrors()) {
             throw new TestErrorException(error.getMessage(), error);
@@ -1389,6 +1393,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
     /**
      * Increment the errors bar.
      */
+    @Override
     public void addFailure(junit.framework.Test test, junit.framework.AssertionFailedError error) {
         if (!getExecutor().shouldHandleErrors()) {
             throw new TestErrorException(error.getMessage(), error);
@@ -1403,6 +1408,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
     /**
      * Move the progress bar.
      */
+    @Override
     public void endTest(junit.framework.Test test) {
         getRunModelProgressBar().setValue(getRunModelProgressBar().getValue() + 1);
         if (test instanceof TestEntity) {
@@ -1428,6 +1434,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
     /**
      * Move the progress bar.
      */
+    @Override
     public void startTest(junit.framework.Test test) {
         if (test instanceof junit.framework.TestSuite) {
             junit.framework.TestSuite suite = (junit.framework.TestSuite)test;
@@ -1451,6 +1458,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
     }
 
     class TestBrowserEventHandler implements ActionListener, ItemListener {
+        @Override
         public void actionPerformed(ActionEvent e) {
             try {
                 if (e.getSource() == TestingBrowserPanel.this.getRunTestButton()) {
@@ -1476,6 +1484,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
             }
         }
 
+        @Override
         public void itemStateChanged(ItemEvent e) {
             try {
                 if (e.getSource() == TestingBrowserPanel.this.getHandleErrorsCheckBox()) {

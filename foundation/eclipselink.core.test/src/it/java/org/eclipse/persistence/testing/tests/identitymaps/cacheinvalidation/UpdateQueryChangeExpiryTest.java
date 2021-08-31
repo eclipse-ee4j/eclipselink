@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ public class UpdateQueryChangeExpiryTest extends CacheExpiryTest {
         this.updateChangeFlag = updateChangeFlag;
     }
 
+    @Override
     public void setup() {
         super.setup();
         initialUpdateFlag =
@@ -41,6 +42,7 @@ public class UpdateQueryChangeExpiryTest extends CacheExpiryTest {
 
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         employee = (Employee)uow.readObject(Employee.class);
@@ -54,6 +56,7 @@ public class UpdateQueryChangeExpiryTest extends CacheExpiryTest {
         secondReadTime = getAbstractSession().getIdentityMapAccessorInstance().getCacheKeyForObject(employee).getReadTime();
     }
 
+    @Override
     public void verify() {
         if (updateChangeFlag && (originalReadTime >= secondReadTime)) {
             throw new TestErrorException("Unit of Work Update did not update the expiry time when it was supposed to.");
@@ -62,6 +65,7 @@ public class UpdateQueryChangeExpiryTest extends CacheExpiryTest {
         }
     }
 
+    @Override
     public void reset() {
         super.reset();
         getSession().getDescriptor(Employee.class).getCacheInvalidationPolicy().setShouldUpdateReadTimeOnUpdate(initialUpdateFlag);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ public class UpdateNullOneToManyValueTest2 extends SwitchableOptimisticLockingPo
         addClassToModify(GamesConsole.class);
     }
 
+    @Override
     public void setup() {
         super.setup();
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -50,6 +51,7 @@ public class UpdateNullOneToManyValueTest2 extends SwitchableOptimisticLockingPo
         uow.commit();
     }
 
+    @Override
     public void test() throws TestException {
         try {
             getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -93,6 +95,7 @@ public class UpdateNullOneToManyValueTest2 extends SwitchableOptimisticLockingPo
         uow.commit();
     }
 
+    @Override
     public void reset() {
         super.reset();
         this.original = null;

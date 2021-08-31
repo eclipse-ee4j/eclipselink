@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,6 +56,7 @@ public class ProjectClassGeneratorResultFileTest extends AutoVerifyTestCase {
     /**
      * test() will do a default generation of a project.
      */
+    @Override
     public void test() {
         try {
             ProjectClassGenerator generator = new ProjectClassGenerator(project);
@@ -70,6 +71,7 @@ public class ProjectClassGeneratorResultFileTest extends AutoVerifyTestCase {
      * verify ensures we have not generated any exception
      * and that the appropriate string exists in the project java source.
      */
+    @Override
     public void verify() {
         if (generationException != null) {
             throw new TestErrorException("Exception thrown while generating Java source. ", generationException);
@@ -85,6 +87,7 @@ public class ProjectClassGeneratorResultFileTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }

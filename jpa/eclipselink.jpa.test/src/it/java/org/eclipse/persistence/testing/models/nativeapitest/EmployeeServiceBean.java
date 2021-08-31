@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,12 +37,14 @@ import org.eclipse.persistence.testing.models.nativeapitest.Employee;
 @Remote(EmployeeService.class)
 public class EmployeeServiceBean implements EmployeeService {
 
+    @Override
     public List findAll() {
         ClientSession clientSession = getSession().acquireClientSession();
         List collection = clientSession.readAllObjects(Employee.class);
         return collection;
     }
 
+    @Override
     public Employee findById(int id) {
         ReadObjectQuery readObjectQuery = new ReadObjectQuery(Employee.class);
         ExpressionBuilder builder = new ExpressionBuilder();
@@ -52,6 +54,7 @@ public class EmployeeServiceBean implements EmployeeService {
         return employee;
     }
 
+    @Override
     public Employee fetchById(int id) {
         ReadObjectQuery readObjectQuery = new ReadObjectQuery(Employee.class);
         ExpressionBuilder builder = new ExpressionBuilder();
@@ -62,6 +65,7 @@ public class EmployeeServiceBean implements EmployeeService {
         return employee;
     }
 
+    @Override
     public List findByFirstName(String fname) {
         ReadAllQuery query = new ReadAllQuery(Employee.class);
         ExpressionBuilder builder = query.getExpressionBuilder();
@@ -71,12 +75,14 @@ public class EmployeeServiceBean implements EmployeeService {
         return result;
     }
 
+    @Override
     public void update(Employee employee) {
         ClientSession clientSession = getSession().acquireClientSession();
         UnitOfWork uow = clientSession.getActiveUnitOfWork();
         uow.deepMergeClone(employee);
     }
 
+    @Override
     public int insert(Employee employee) {
         ClientSession clientSession = getSession().acquireClientSession();
         UnitOfWork uow = clientSession.getActiveUnitOfWork();
@@ -86,6 +92,7 @@ public class EmployeeServiceBean implements EmployeeService {
         return emp.getId();
     }
 
+    @Override
     public void delete(Employee employee) {
         ClientSession clientSession = getSession().acquireClientSession();
         Employee employeeToDelete = (Employee) clientSession.readObject(employee);

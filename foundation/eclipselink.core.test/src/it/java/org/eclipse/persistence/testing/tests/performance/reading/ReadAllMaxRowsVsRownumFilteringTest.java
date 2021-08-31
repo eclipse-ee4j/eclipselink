@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ public class ReadAllMaxRowsVsRownumFilteringTest extends PerformanceComparisonTe
         addReadAllMaxRowsTest();
     }
 
+    @Override
     public void setup() throws Throwable {
         super.setup();
     }
@@ -39,6 +40,7 @@ public class ReadAllMaxRowsVsRownumFilteringTest extends PerformanceComparisonTe
     /**
      * Read all employees with cursored stream.
      */
+    @Override
     public void test() throws Exception {
         ReadAllQuery query = new ReadAllQuery(Employee.class);
         getSession().executeQuery(query);
@@ -49,6 +51,7 @@ public class ReadAllMaxRowsVsRownumFilteringTest extends PerformanceComparisonTe
      */
     public void addReadAllRownumMaxRowsTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 ReadAllQuery query = new ReadAllQuery(Employee.class);
                 query.setMaxRows(1);
@@ -63,11 +66,13 @@ public class ReadAllMaxRowsVsRownumFilteringTest extends PerformanceComparisonTe
 
     public void addReadAllMaxRowsTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 ReadAllQuery query = new ReadAllQuery(Employee.class);
                 query.setMaxRows(1);
                 getSession().executeQuery(query);
             }
+            @Override
             public void startTest() {
                 ((OraclePlatform)getSession().getPlatform()).setShouldUseRownumFiltering(false);
             }
@@ -75,6 +80,7 @@ public class ReadAllMaxRowsVsRownumFilteringTest extends PerformanceComparisonTe
             /**
              * Allows any test specific setup before starting the test run.
              */
+            @Override
             public void endTest() {
                 ((OraclePlatform)getSession().getPlatform()).setShouldUseRownumFiltering(true);
             }

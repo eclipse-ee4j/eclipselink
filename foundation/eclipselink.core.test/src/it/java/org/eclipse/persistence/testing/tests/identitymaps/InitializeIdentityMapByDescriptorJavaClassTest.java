@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ public class InitializeIdentityMapByDescriptorJavaClassTest extends TestCase {
         setDescription("Ensure that descriptors are accessed by their java class rather than the class they " + "are indexed by in the project in initializeIdentityMap.");
     }
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         // put an item in the employee identity map
@@ -43,6 +44,7 @@ public class InitializeIdentityMapByDescriptorJavaClassTest extends TestCase {
         getSession().getDescriptors().put(java.math.BigDecimal.class, descriptor);
     }
 
+    @Override
     public void test() {
         // initializing the identity map for the BigDecimal class should clean up
         // the employee identity map because of the way it was indexed in setup.
@@ -53,12 +55,14 @@ public class InitializeIdentityMapByDescriptorJavaClassTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (wrongMap) {
             throw new TestErrorException("InitializeIdentityMap does not access identity maps by it's descriptor's java class.");
         }
     }
 
+    @Override
     public void reset() {
         getSession().getDescriptors().remove(java.math.BigDecimal.class);
         getSession().getIdentityMapAccessor().initializeIdentityMaps();

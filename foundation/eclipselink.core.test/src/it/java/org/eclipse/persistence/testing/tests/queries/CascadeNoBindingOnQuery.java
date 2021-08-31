@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ public class CascadeNoBindingOnQuery extends AutoVerifyTestCase {
         setDescription("This tests verifies that setting binding off on a query will cascade through indirection");
     }
 
+    @Override
     public void setup() {
         this.shouldBindParameters = getSession().getLogin().shouldBindAllParameters();
         OneToManyMapping mapping = (OneToManyMapping)getSession().getDescriptor(Employee.class).getMappingForAttributeName("phoneNumbers");
@@ -38,12 +39,14 @@ public class CascadeNoBindingOnQuery extends AutoVerifyTestCase {
         getSession().getLogin().setShouldBindAllParameters(true);
     }
 
+    @Override
     public void reset() {
         getSession().getLogin().setShouldBindAllParameters(this.shouldBindParameters);
         OneToManyMapping mapping = (OneToManyMapping)getSession().getDescriptor(Employee.class).getMappingForAttributeName("phoneNumbers");
         mapping.setUsesBatchReading(this.usesBatchReading);
     }
 
+    @Override
     public void test() {
         Vector emps = getSession().readAllObjects(Employee.class, new ExpressionBuilder().get("firstName").like("%o%"));
         Vector pks = new Vector();
@@ -80,6 +83,7 @@ public class CascadeNoBindingOnQuery extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void verify() {
     }
 }

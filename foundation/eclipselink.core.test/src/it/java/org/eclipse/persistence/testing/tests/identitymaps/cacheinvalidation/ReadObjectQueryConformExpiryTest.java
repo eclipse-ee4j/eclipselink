@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@ public class ReadObjectQueryConformExpiryTest extends CacheExpiryTest {
         setDescription("Test to ensure expired objects are still returned when conform results is used.");
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
 
@@ -48,6 +49,7 @@ public class ReadObjectQueryConformExpiryTest extends CacheExpiryTest {
         uow.release();
     }
 
+    @Override
     public void verify() {
         if (!employee.getLastName().equals("Blah") || !employee.getAddress().getPostalCode().equals("000000")) {
             throw new TestErrorException("Expired objects were not returned when conform resutls is used.");

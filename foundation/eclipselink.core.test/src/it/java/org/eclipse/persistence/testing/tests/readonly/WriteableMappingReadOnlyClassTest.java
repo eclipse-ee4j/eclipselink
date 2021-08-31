@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,6 +50,7 @@ public class WriteableMappingReadOnlyClassTest extends TransactionalTestCase {
         super();
     }
 
+    @Override
     protected void setup() {
         super.setup();
         // These two lines are needed due to problems with ReadOnlyClassAccessingTestCase.
@@ -57,6 +58,7 @@ public class WriteableMappingReadOnlyClassTest extends TransactionalTestCase {
         getSession().getDescriptor(ReadOnlyHollywoodAgent.class).setShouldBeReadOnly(true);
     }
 
+    @Override
     protected void test() {
         Vector charities = getSession().readAllObjects(Charity.class);
         HollywoodAgent hollywoodAgent = (HollywoodAgent)getSession().readObject(HollywoodAgent.class);
@@ -84,6 +86,7 @@ public class WriteableMappingReadOnlyClassTest extends TransactionalTestCase {
         // global cache would have all their read only references replaced by nulls.
     }
 
+    @Override
     protected void verify() {
         try {
             uow = getSession().acquireUnitOfWork();
@@ -105,6 +108,7 @@ public class WriteableMappingReadOnlyClassTest extends TransactionalTestCase {
         }
     }
 
+    @Override
     public void reset() {
         super.reset();
     }

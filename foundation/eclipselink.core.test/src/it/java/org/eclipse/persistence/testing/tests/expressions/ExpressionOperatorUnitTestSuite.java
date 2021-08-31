@@ -84,6 +84,7 @@ public class ExpressionOperatorUnitTestSuite extends ExpressionTestSuite {
         }
     }
 
+    @Override
     public void addTests() {
         setManager(PopulationManager.getDefaultManager());
 

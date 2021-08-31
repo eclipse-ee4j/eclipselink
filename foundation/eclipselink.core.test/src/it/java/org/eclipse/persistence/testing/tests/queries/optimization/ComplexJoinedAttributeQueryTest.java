@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class ComplexJoinedAttributeQueryTest extends TestCase {
         setDescription("Complex Joined Attribute Query Test");
     }
 
+    @Override
     public void test() {
         ReadAllQuery query = new ReadAllQuery(Address.class);
         Expression zipCodeExpression = new ExpressionBuilder().get("zipCode").equal("28150");
@@ -55,6 +56,7 @@ public class ComplexJoinedAttributeQueryTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (queryResult == null) {
             throw new TestErrorException("Address not found.");

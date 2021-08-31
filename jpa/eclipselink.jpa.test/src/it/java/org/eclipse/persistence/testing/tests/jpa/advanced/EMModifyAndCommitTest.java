@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ public class EMModifyAndCommitTest extends EntityContainerTestBase  {
     public Integer[] empIDs = new Integer[3];
     public Integer[] projIDs = new Integer[2];
 
+    @Override
     public void setup (){
         super.setup();
         this.reset = true;
@@ -94,6 +95,7 @@ public class EMModifyAndCommitTest extends EntityContainerTestBase  {
 
     }
 
+    @Override
     public void reset (){
         if (reset){
             reset = false;
@@ -101,6 +103,7 @@ public class EMModifyAndCommitTest extends EntityContainerTestBase  {
         super.reset();
     }
 
+    @Override
     public void test(){
         try {
             beginTransaction();
@@ -199,6 +202,7 @@ public class EMModifyAndCommitTest extends EntityContainerTestBase  {
         }
     }
 
+    @Override
     public void verify(){
         Employee employee = getEntityManager().find(Employee.class, empIDs[0]);
         if ( (!employee.getFirstName().equals("Wilfred"))){
@@ -269,7 +273,7 @@ public class EMModifyAndCommitTest extends EntityContainerTestBase  {
         }
 
         employee = getEntityManager().find(Employee.class, empIDs[1]);
-        if ( ((List)employee.getProjects()).size() != 2) {
+        if ( employee.getProjects().size() != 2) {
             throw new TestErrorException("Employee ID :" + empIDs[1] + " Projects not Updated on Database");
         }
         if (!employee.getManager().getId().equals(empIDs[2])){

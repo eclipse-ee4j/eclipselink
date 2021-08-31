@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,6 +47,7 @@ public class ConcurrentReadFetchJoinTest extends AutoVerifyTestCase{
 
     protected boolean deadlockDetected = false;
 
+    @Override
     public void setup(){
         deadlockDetected = false;
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -66,6 +67,7 @@ public class ConcurrentReadFetchJoinTest extends AutoVerifyTestCase{
         personId = person.id;
     }
 
+    @Override
     public void test(){
         ConcurrentPerson.RUNNING_TEST = ConcurrentPerson.READ_FETCH_JOIN;
         Thread thread1 = new Thread(new PersonReader(getSession().acquireUnitOfWork(), personId));
@@ -88,12 +90,14 @@ public class ConcurrentReadFetchJoinTest extends AutoVerifyTestCase{
         }
     }
 
+    @Override
     public void verify(){
         if (deadlockDetected){
             throw new TestErrorException("Deadlock detected when reading a bidirectional relationship with a fetch join.");
         }
     }
 
+    @Override
     public void reset(){
         ConcurrentPerson.RUNNING_TEST = ConcurrentPerson.NONE;
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -112,6 +116,7 @@ public class ConcurrentReadFetchJoinTest extends AutoVerifyTestCase{
             this.id = id;
         }
 
+        @Override
         public void run(){
             uow.readObject(ConcurrentPerson.class, (new ExpressionBuilder()).get("id").equal(id));
         }
@@ -128,6 +133,7 @@ public class ConcurrentReadFetchJoinTest extends AutoVerifyTestCase{
             this.type = type;
         }
 
+        @Override
         public void run(){
             ReadObjectQuery query = new ReadObjectQuery(ConcurrentPhoneNumber.class);
             ExpressionBuilder phoneNumberBuilder = query.getExpressionBuilder();

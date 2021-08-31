@@ -68,6 +68,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
         setDescription("Performance tests that compare JPA performance.");
     }
 
+    @Override
     public void addTests() {
         addTest(getReadingTestSuite());
         addTest(getWritingTestSuite());
@@ -175,6 +176,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
     /**
      * Create/populate database.
      */
+    @Override
     public void setup() {
         /*
         // Setup DataSource for apples to apples comparison (otherwise we crush them).
@@ -255,7 +257,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
         String providerClass = "org.eclipse.persistence.jpa.PersistenceProvider";
         PersistenceProvider provider = null;
         try {
-            provider = (PersistenceProvider)Class.forName(providerClass).newInstance();
+            provider = (PersistenceProvider)Class.forName(providerClass).getConstructor().newInstance();
         } catch (Exception error) {
             throw new TestProblemException("Failed to create persistence provider.", error);
         }
@@ -302,6 +304,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
      */
     public TestCase buildChangeTrackingTest() {
         TestCase test = new TestCase() {
+            @Override
             public void test() throws Exception {
                 EntityManager manager = createEntityManager();
                 manager.getTransaction().begin();
@@ -332,6 +335,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
      */
     public TestCase buildFieldAccessChangeTrackingTest() {
         TestCase test = new TestCase() {
+            @Override
             public void test() throws Exception {
                 EntityManager manager = createEntityManager();
                 manager.getTransaction().begin();
@@ -360,6 +364,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
      */
     public TestCase buildEmployeeChangeTrackingTest() {
         TestCase test = new TestCase() {
+            @Override
             public void test() throws Exception {
                 EntityManager manager = createEntityManager();
                 manager.getTransaction().begin();
@@ -390,6 +395,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
      */
     public TestCase buildDateChangeTrackingTest() {
         TestCase test = new TestCase() {
+            @Override
             @SuppressWarnings("deprecation")
             public void test() throws Exception {
                 EntityManager manager = createEntityManager();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ public class GetObjectFromIdentityMapTest extends TestCase {
         setDescription("Test UnitOfWorkIdentityMapAccessor to ensure it goes to the parent session to get objects not in the UOW cache..");
     }
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         ExpressionBuilder employees = new ExpressionBuilder();
@@ -45,17 +46,20 @@ public class GetObjectFromIdentityMapTest extends TestCase {
         }
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         employee = (Employee)uow.getIdentityMapAccessor().getFromIdentityMap(employee);
     }
 
+    @Override
     public void verify() {
         if (employee == null) {
             throw new TestErrorException("UnitOfWork did not look in its parents cache for an object when calling getFromIdentityMap(Object)");
         }
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }

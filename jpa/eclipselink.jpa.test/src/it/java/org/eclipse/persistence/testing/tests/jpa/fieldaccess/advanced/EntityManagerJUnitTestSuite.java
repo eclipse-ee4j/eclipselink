@@ -125,7 +125,7 @@ import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Woman;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.WorldRank;
 import org.eclipse.persistence.tools.schemaframework.SequenceObjectDefinition;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -3568,7 +3568,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         } finally {
             Address initialAddress = em.find(Address.class, Integer.valueOf(addressId));
             employee.setAddress(null);
-            employee.setManager((Employee)null);
+            employee.setManager(null);
             em.remove(address);
             em.remove(employee);
             em.remove(initialAddress);
@@ -3629,7 +3629,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         } finally {
             Address initialAddress = em.find(Address.class, Integer.valueOf(addressId));
             employee.setAddress(null);
-            employee.setManager((Employee)null);
+            employee.setManager(null);
             em.remove(address);
             em.remove(employee);
             em.remove(initialAddress);
@@ -3692,7 +3692,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         } finally {
             Address initialAddress = em.find(Address.class, Integer.valueOf(addressId));
             employee.setAddress(null);
-            employee.setManager((Employee)null);
+            employee.setManager(null);
             em.remove(address);
             em.remove(employee);
             em.remove(initialAddress);
@@ -5357,7 +5357,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 if(object instanceof Employee) {
                     ((Employee)object).getManagedEmployees().clear();
                     ((Employee)object).setManager(null);
-                    ((Employee)object).setAddress((Address)null);
+                    ((Employee)object).setAddress(null);
                     ((Employee)object).getProjects().clear();
                     ((Employee)object).setDepartment(null);
                     objectsToRemove.add(object);

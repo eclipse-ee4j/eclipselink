@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,6 +43,7 @@ public class CursoredStreamReleaseConnectionsTest extends TestCase {
         }
     }
 
+    @Override
     public void setup() {
         org.eclipse.persistence.sessions.Project proj = new org.eclipse.persistence.testing.models.employee.relational.EmployeeProject();
         proj.setDatasourceLogin(getSession().getDatasourceLogin().clone());
@@ -51,6 +52,7 @@ public class CursoredStreamReleaseConnectionsTest extends TestCase {
         serverSession.login();
     }
 
+    @Override
     public void reset() {
         if (clientSession != null) {
             this.clientSession.release();
@@ -58,6 +60,7 @@ public class CursoredStreamReleaseConnectionsTest extends TestCase {
         this.serverSession.logout();
     }
 
+    @Override
     public void test() {
         CursoredStream stream = null;
 
@@ -84,6 +87,7 @@ public class CursoredStreamReleaseConnectionsTest extends TestCase {
     /**
      * Verify if number of query objects matches number of cursor objects
      */
+    @Override
     public void verify() {
         int total = serverSession.getReadConnectionPool().getTotalNumberOfConnections();
         int totalAvailable = serverSession.getReadConnectionPool().getConnectionsAvailable().size();

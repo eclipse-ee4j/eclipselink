@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ public class ClientServerReadingDeadlockTest extends org.eclipse.persistence.tes
         setDescription("The test simulates the deadlock situation when reading the bidirectional objects among multi-thread");
     }
 
+    @Override
     public void reset() {
         try {
             for (int index = 0; index < CLIENT_NUM; index++) {
@@ -50,6 +51,7 @@ public class ClientServerReadingDeadlockTest extends org.eclipse.persistence.tes
         }
     }
 
+    @Override
     public void setup() {
         try {
             this.login = (DatabaseLogin)getSession().getLogin().clone();
@@ -68,6 +70,7 @@ public class ClientServerReadingDeadlockTest extends org.eclipse.persistence.tes
         }
     }
 
+    @Override
     public void test() {
         try {
             for (int index = 0; index < CLIENT_NUM; index++) {
@@ -92,6 +95,7 @@ public class ClientServerReadingDeadlockTest extends org.eclipse.persistence.tes
         }
     }
 
+    @Override
     public void verify() {
         try {
             if (this.server.errorOccured) {

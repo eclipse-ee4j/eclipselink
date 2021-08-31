@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ public class ReadAllQueryConformExpiryTest extends CacheExpiryTest {
         setDescription("Test to ensure expired objects are still returned when conform results is used.");
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
 
@@ -52,6 +53,7 @@ public class ReadAllQueryConformExpiryTest extends CacheExpiryTest {
         uow.release();
     }
 
+    @Override
     public void verify() {
         if ((originalNumber + 1) != postInvalidationNumber) {
             throw new TestErrorException("Conforming with invalidated items did not return the correct number of objects.");

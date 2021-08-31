@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,20 +24,24 @@ public class OptomizeValueHolderTest extends AutoVerifyTestCase {
         setDescription("Tests to see that updates don't cause ValueHolders to instatiate");
     }
 
+    @Override
     public void setup() {
         beginTransaction();
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
     }
 
+    @Override
     public void test() {
         phone = (PhoneNumber)getSession().readObject(PhoneNumber.class);
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         getDatabaseSession().updateObject(phone);
     }
 
+    @Override
     public void verify() {
         if (phone.owner.isInstantiated()) {
             throw (new TestWarningException("The owner was instatiated."));

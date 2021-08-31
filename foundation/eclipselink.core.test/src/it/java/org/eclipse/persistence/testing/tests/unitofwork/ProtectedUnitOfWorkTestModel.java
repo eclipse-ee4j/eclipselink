@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,6 +22,7 @@ public class ProtectedUnitOfWorkTestModel extends UnitOfWorkClientSessionTestMod
 
     protected boolean hasIsolatedClasses = false;
 
+    @Override
     public void reset() {
         getSession().getProject().setHasIsolatedClasses(this.hasIsolatedClasses);
         ClassDescriptor descriptor = getSession().getDescriptor(Employee.class);
@@ -30,6 +31,7 @@ public class ProtectedUnitOfWorkTestModel extends UnitOfWorkClientSessionTestMod
         super.reset();
     }
 
+    @Override
     public void setup() {
         this.hasIsolatedClasses = getSession().getProject().hasIsolatedClasses();
         getSession().getProject().setHasIsolatedClasses(true);

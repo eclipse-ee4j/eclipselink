@@ -115,6 +115,7 @@ public class ConfigurableCacheSyncDistributedTest extends AutoVerifyTestCase {
      * Setup the test by saving to old cache synchronization types and replacing them
      * with the new cache synchronization types.
      */
+    @Override
     public void setup() {
         oldCacheSyncConfigValues = new Hashtable();
         Enumeration keys = cacheSyncConfigValues.keys();
@@ -137,6 +138,7 @@ public class ConfigurableCacheSyncDistributedTest extends AutoVerifyTestCase {
     /**
      * Reset the test by returning the cache synchronization types to their original values.
      */
+    @Override
     public void reset() {
         getAbstractSession().rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();

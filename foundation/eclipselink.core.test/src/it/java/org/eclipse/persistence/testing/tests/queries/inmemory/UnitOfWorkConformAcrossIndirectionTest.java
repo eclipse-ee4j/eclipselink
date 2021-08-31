@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,12 +41,14 @@ public class UnitOfWorkConformAcrossIndirectionTest extends TestCase {
         setDescription("Test that simple expressions can be conformed across indirection.");
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         uow.release();
     }
 
+    @Override
     protected void setup() {
         beginTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -72,11 +74,13 @@ public class UnitOfWorkConformAcrossIndirectionTest extends TestCase {
 
     }
 
+    @Override
     public void test() {
         this.result = (Vector)this.uow.executeQuery(this.query);
         this.readObjectResult = (Employee)this.uow.executeQuery(this.readObjectQuery);
     }
 
+    @Override
     protected void verify() {
         if (this.result.size() != this.expected) {
             throw new TestErrorException("Expecting: " + this.expected + " retrieved: " + this.result.size());

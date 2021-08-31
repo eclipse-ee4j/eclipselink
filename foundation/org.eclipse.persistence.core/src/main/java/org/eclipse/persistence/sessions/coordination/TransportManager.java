@@ -65,7 +65,7 @@ public abstract class TransportManager {
     protected boolean shouldRemoveConnectionOnError;
 
     /** Connections to other services */
-    protected Hashtable connectionsToExternalServices;
+    protected Hashtable<String, RemoteConnection> connectionsToExternalServices;
 
     /** Security util that is used to decrypt and encrypt password */
     protected SecurableObjectHolder securableObjectHolder;
@@ -357,7 +357,7 @@ public abstract class TransportManager {
      * Returns clone of the original map.
      */
     public Map<String, RemoteConnection> getConnectionsToExternalServicesForCommandPropagation() {
-        return (Map)connectionsToExternalServices.clone();
+        return (Map<String, RemoteConnection>) connectionsToExternalServices.clone();
     }
 
     /**

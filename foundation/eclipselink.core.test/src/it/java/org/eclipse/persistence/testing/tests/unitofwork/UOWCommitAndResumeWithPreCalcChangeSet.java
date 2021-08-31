@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ public class UOWCommitAndResumeWithPreCalcChangeSet extends TransactionalTestCas
         this.originalObject = originalObject;
     }
 
+    @Override
     protected void setup() {
         super.setup();
 
@@ -52,6 +53,7 @@ public class UOWCommitAndResumeWithPreCalcChangeSet extends TransactionalTestCas
         this.unitOfWorkWorkingCopy = (Employee)this.unitOfWork.registerObject(this.originalObject);
     }
 
+    @Override
     protected void test() {
         if (this.unitOfWork.isRemoteUnitOfWork()){
             //The tested API is not supported by a Remote UnitOfWork
@@ -83,6 +85,7 @@ public class UOWCommitAndResumeWithPreCalcChangeSet extends TransactionalTestCas
         this.unitOfWork.release();
     }
 
+    @Override
     protected void verify() {
         if (this.unitOfWork.isRemoteUnitOfWork()){
             //The tested API is not supported by a Remote UnitOfWork

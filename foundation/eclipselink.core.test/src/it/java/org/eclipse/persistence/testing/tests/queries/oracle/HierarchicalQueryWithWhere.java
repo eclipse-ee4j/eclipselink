@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@ public class HierarchicalQueryWithWhere extends HierarchicalQueryTest
     this.setName("HierarchicalQueryWithWhereClauseTest");
     this.setDescription("Tests the use of a Hierarchical Query with a Where Clause");
   }
+  @Override
   public Vector expectedResults() {
     if (expected == null) {
 
@@ -37,6 +38,7 @@ public class HierarchicalQueryWithWhere extends HierarchicalQueryTest
     }
     return expected;
   }
+  @Override
   public ReadAllQuery getQuery() {
   //Create a query which returns all employees under Dave Vadis in Hierarchical
   //Order, but excludes Dave Vadis from the list

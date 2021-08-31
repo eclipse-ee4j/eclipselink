@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,6 +39,7 @@ public class ValidationTestSuite extends JUnitTestCase {
         super(name);
     }
 
+    @Override
     public void setUp () {
         super.setUp();
         // Don't clear the cache here since it bring the default pu into play.
@@ -69,7 +70,7 @@ public class ValidationTestSuite extends JUnitTestCase {
 
         // Ensure this is done to avoid consecutive tests picking up our
         // very specific isolated persistence unit.
-        this.closeEntityManagerFactory("isolated1053");
+        closeEntityManagerFactory("isolated1053");
     }
 
     /**
@@ -85,7 +86,7 @@ public class ValidationTestSuite extends JUnitTestCase {
 
         // Ensure this is done to avoid consecutive tests picking up our
         // very specific isolated persistence unit.
-        this.closeEntityManagerFactory("isolated1053");
+        closeEntityManagerFactory("isolated1053");
     }
 
     /**
@@ -113,7 +114,7 @@ public class ValidationTestSuite extends JUnitTestCase {
             }
             // Ensure this is done to avoid consecutive tests picking up our
             // very specific isolated persistence unit.
-            this.closeEntityManagerFactory("ignore");
+            closeEntityManagerFactory("ignore");
         }
         assertTrue("JTA datasource was not set or accessed as expected through map of properties", pass);
     }
@@ -143,7 +144,7 @@ public class ValidationTestSuite extends JUnitTestCase {
             }
             // Ensure this is done to avoid consecutive tests picking up our
             // very specific isolated persistence unit.
-            this.closeEntityManagerFactory("ignore");
+            closeEntityManagerFactory("ignore");
         }
         assertTrue("Non JTA datasource was not set or accessed as expected through map of properties", pass);
     }
@@ -197,23 +198,32 @@ public class ValidationTestSuite extends JUnitTestCase {
         public tmpDataSourceImp(){
             super();
         }
+        @Override
         public Connection getConnection() throws SQLException{
             RuntimeException exception =
                     new RuntimeException("tmpDataSourceImp getConnection called");
             throw exception;
         }
+        @Override
         public Connection getConnection(String username, String password) throws SQLException{
             return getConnection();
         }
         //rest are ignored
+        @Override
         public java.io.PrintWriter getLogWriter() throws SQLException{
             return null;
         }
+        @Override
         public void setLogWriter(java.io.PrintWriter out) throws SQLException{}
+        @Override
         public void setLoginTimeout(int seconds) throws SQLException{}
+        @Override
         public int getLoginTimeout() throws SQLException{return 1;}
+        @Override
         public <T> T unwrap(Class<T> iface) throws SQLException { return null; }
+        @Override
         public boolean isWrapperFor(Class<?> iface) throws SQLException { return false; }
+        @Override
         public Logger getParentLogger(){return null;}
     }
 }

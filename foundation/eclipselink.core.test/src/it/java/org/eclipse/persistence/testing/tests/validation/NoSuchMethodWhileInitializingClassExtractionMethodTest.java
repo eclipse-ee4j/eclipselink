@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,10 +30,12 @@ public class NoSuchMethodWhileInitializingClassExtractionMethodTest extends Exce
         setDescription("This tests No Such Method While Initializing Class Extraction Method (TL-ERROR 61)");
     }
 
+    @Override
     protected void setup() {
         expectedException = DescriptorException.noSuchMethodWhileInitializingClassExtractionMethod("Dummy_Method", new RelationalDescriptor(), new Exception());
     }
 
+    @Override
     public void test() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
         descriptor.setJavaClass(NoSuchMethodWhileInitializingClassExtractionMethodTest.class);

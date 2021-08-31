@@ -38,6 +38,7 @@ public class NoIdentityMergeCloneTest extends TransactionalTestCase {
         setDescription("Test that the unit of work mergeClone still works when object identity is lost.");
     }
 
+    @Override
     public void reset() {
         if (getSession() instanceof org.eclipse.persistence.sessions.remote.RemoteSession) {
             return;
@@ -55,6 +56,7 @@ public class NoIdentityMergeCloneTest extends TransactionalTestCase {
         }
     }
 
+    @Override
     public void setup() {
         if (getSession() instanceof org.eclipse.persistence.sessions.remote.RemoteSession) {
             throw new TestWarningException("Not support in remote");
@@ -79,6 +81,7 @@ public class NoIdentityMergeCloneTest extends TransactionalTestCase {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test() {
         this.objectToBeWritten =
                 (PolicyHolder)(getSession().readAllObjects(org.eclipse.persistence.testing.models.insurance.PolicyHolder.class)).firstElement();
@@ -91,6 +94,7 @@ public class NoIdentityMergeCloneTest extends TransactionalTestCase {
         uow.commit();
     }
 
+    @Override
     public void verify() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         Object objectFromDatabase = getSession().readObject(this.objectToBeWritten);

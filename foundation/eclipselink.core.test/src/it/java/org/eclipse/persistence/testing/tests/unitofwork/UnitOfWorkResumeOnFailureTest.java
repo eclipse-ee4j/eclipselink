@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -75,6 +75,7 @@ public class UnitOfWorkResumeOnFailureTest extends WriteObjectTest {
         unitOfWorkWorkingCopy.setFirstName("Bojo");
     }
 
+    @Override
     public void reset() {
         super.reset();
         if(listener != null) {
@@ -83,6 +84,7 @@ public class UnitOfWorkResumeOnFailureTest extends WriteObjectTest {
         }
     }
 
+    @Override
     protected void setup() {
         if (getSession().isRemoteSession()) {
             throwWarning("Test not supported on remote.");
@@ -98,6 +100,7 @@ public class UnitOfWorkResumeOnFailureTest extends WriteObjectTest {
 
     }
 
+    @Override
     protected void test() {
         //First test to see if it works without registering any objects.
         //The motivation for this is a bug that was found.
@@ -140,6 +143,7 @@ public class UnitOfWorkResumeOnFailureTest extends WriteObjectTest {
      * to use the descriptors.  This will compare the objects and all of
      * their privately owned parts.
      */
+    @Override
     protected void verify() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         // Acquire first unit of work

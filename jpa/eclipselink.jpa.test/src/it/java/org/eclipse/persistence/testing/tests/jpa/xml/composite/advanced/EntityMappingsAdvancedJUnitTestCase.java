@@ -119,6 +119,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         m_persistenceUnit = persistenceUnit;
     }
 
+    @Override
     public String getPersistenceUnitName() {
         return m_persistenceUnit;
     }

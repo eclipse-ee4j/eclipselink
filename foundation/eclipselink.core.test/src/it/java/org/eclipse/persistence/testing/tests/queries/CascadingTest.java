@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -115,6 +115,7 @@ public abstract class CascadingTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         // Because the name of the employee was changed, clear the cache.
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
@@ -128,6 +129,7 @@ public abstract class CascadingTest extends TestCase {
 
     abstract void setTestConfiguration();
 
+    @Override
     protected void setup() {
         //Fix bug 2722927
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -141,6 +143,7 @@ public abstract class CascadingTest extends TestCase {
         employeeFromDatabase = (Employee)getSession().readObject(Employee.class, whatWeWant);
     }
 
+    @Override
     public void test() {
         m_szFirstName = employeeFromDatabase.getFirstName();
         m_szPhoneNumber = ((PhoneNumber)employeeFromDatabase.getPhoneNumbers().elementAt(0)).getType();
@@ -156,6 +159,7 @@ public abstract class CascadingTest extends TestCase {
         ((Employee)employeeFromDatabase.getManagedEmployees().elementAt(0)).setFirstName("MrFoobar");
     }
 
+    @Override
     protected void verify() {
         ReadObjectQuery query = new ReadObjectQuery();
         query.setSelectionObject(employeeFromDatabase);

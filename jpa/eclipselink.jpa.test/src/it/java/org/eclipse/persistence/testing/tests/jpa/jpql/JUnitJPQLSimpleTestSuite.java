@@ -29,7 +29,8 @@ import java.util.Set;
 import java.util.Vector;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
-import junit.framework.Assert;
+import junit.framework.TestCase;
+import org.junit.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.config.QueryHints;
@@ -376,7 +377,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         Vector expectedResult = (Vector)em.getUnitOfWork().executeQuery(reportQuery);
 
         if (!comparer.compareObjects(result, expectedResult)) {
-            this.fail("simpleJoinFetchTest Failed when using cache, collections do not match: " + result + " expected: " + expectedResult);
+            fail("simpleJoinFetchTest Failed when using cache, collections do not match: " + result + " expected: " + expectedResult);
         }
 
         //Bypass the cache
@@ -405,7 +406,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         expectedResult = (Vector)em.getUnitOfWork().executeQuery(reportQuery);
 
         if (!comparer.compareObjects(result, expectedResult)) {
-            this.fail("simpleJoinFetchTest Failed when not using cache, collections do not match: " + result + " expected: " + expectedResult);
+            fail("simpleJoinFetchTest Failed when not using cache, collections do not match: " + result + " expected: " + expectedResult);
         }
     }
 
@@ -1369,7 +1370,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         Vector expectedResult = (Vector)getServerSession().executeQuery(raq);
 
-        double salarySquareRoot = Math.sqrt((new Double(((Employee)expectedResult.firstElement()).getSalary()).doubleValue()));
+        double salarySquareRoot = Math.sqrt((Double.valueOf(((Employee)expectedResult.firstElement()).getSalary()).doubleValue()));
 
         clearCache();
 
@@ -1422,7 +1423,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         Vector expectedResult = (Vector)getServerSession().executeQuery(raq);
 
-        double salarySquareRoot = Math.sqrt((new Double(((Employee)expectedResult.firstElement()).getSalary()).doubleValue()));
+        double salarySquareRoot = Math.sqrt((Double.valueOf(((Employee)expectedResult.firstElement()).getSalary()).doubleValue()));
 
         clearCache();
 
@@ -1992,7 +1993,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
 
-        Employee emp = (Employee)expectedResult.get(0);
+        Employee emp = expectedResult.get(0);
         expectedResult.remove(0);
 
         boolean shouldCleanUp = false;
@@ -2056,7 +2057,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         PhoneNumber phone = null;
         for (Project project : allProjectsWithTeamLeader) {
             if (project.getTeamLeader().getPhoneNumbers().size() > 0) {
-                phone = (PhoneNumber)project.getTeamLeader().getPhoneNumbers().iterator().next();
+                phone = project.getTeamLeader().getPhoneNumbers().iterator().next();
                 break;
             }
         }

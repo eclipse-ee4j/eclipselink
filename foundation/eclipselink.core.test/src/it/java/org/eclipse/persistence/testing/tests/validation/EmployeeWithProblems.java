@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -59,11 +59,11 @@ public class EmployeeWithProblems extends org.eclipse.persistence.testing.models
     }
 
     public String getIllegalAccess() throws java.lang.IllegalAccessException {
-        throw new java.lang.IllegalAccessException();
+        throw new IllegalAccessException();
     }
 
     public void setIllegalAccess(String input) throws java.lang.IllegalAccessException {
-        throw new java.lang.IllegalAccessException();
+        throw new IllegalAccessException();
     }
 
     public EmployeeWithProblems() {

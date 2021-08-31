@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class NativeUpdateObjectInvalidationTest extends ConfigurableCacheSyncDis
         setDescription("Update the employee with raw SQL, and use invalidation API to invalidate.");
     }
 
+    @Override
     public void setup() {
         super.setup();
 
@@ -57,6 +58,7 @@ public class NativeUpdateObjectInvalidationTest extends ConfigurableCacheSyncDis
         assertNotNull(result);
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         DataModifyQuery query = new DataModifyQuery("update EMPLOYEE set F_NAME = 'Beta' where L_NAME = 'Alpha'");
@@ -75,6 +77,7 @@ public class NativeUpdateObjectInvalidationTest extends ConfigurableCacheSyncDis
         }
     }
 
+    @Override
     public void verify() {
         // The employee should exist in the distributed cache, and it should be invalidated
         if (isObjectValidOnDistributedServer(employee) == true) {

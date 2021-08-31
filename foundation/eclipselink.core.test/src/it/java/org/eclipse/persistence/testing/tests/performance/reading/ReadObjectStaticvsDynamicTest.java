@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ public class ReadObjectStaticvsDynamicTest extends PerformanceComparisonTestCase
     /**
      * Find any employee.
      */
+    @Override
     public void setup() {
         Expression expression = new ExpressionBuilder().get("firstName").equal("Bob");
         employee = (Employee)getSession().readObject(Employee.class, expression);
@@ -46,6 +47,7 @@ public class ReadObjectStaticvsDynamicTest extends PerformanceComparisonTestCase
      * Read employee and clear the cache.
      * Clear the static read-object query first (use to be default).
      */
+    @Override
     public void test() throws Exception {
         ReadObjectQuery query = getSession().getDescriptor(Employee.class).getQueryManager().getReadObjectQuery();
         getSession().getDescriptor(Employee.class).getQueryManager().setReadObjectQuery(null);
@@ -65,6 +67,7 @@ public class ReadObjectStaticvsDynamicTest extends PerformanceComparisonTestCase
      */
     public void addStaticReadObjectTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 for (int index = 0; index < ITERATIONS; index++) {
                     getSession().getIdentityMapAccessor().initializeIdentityMaps();
@@ -83,6 +86,7 @@ public class ReadObjectStaticvsDynamicTest extends PerformanceComparisonTestCase
      */
     public void addParameterizedDynamicReadObjectTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 ReadObjectQuery readQuery = getSession().getDescriptor(Employee.class).getQueryManager().getReadObjectQuery();
                 getSession().getDescriptor(Employee.class).getQueryManager().setReadObjectQuery(null);
@@ -108,6 +112,7 @@ public class ReadObjectStaticvsDynamicTest extends PerformanceComparisonTestCase
      */
     public void addParameterizedReadObjectTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 ReadObjectQuery readQuery = getSession().getDescriptor(Employee.class).getQueryManager().getReadObjectQuery();
                 //readQuery.bindAllParameters();

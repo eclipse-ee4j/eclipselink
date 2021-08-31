@@ -54,7 +54,7 @@ public class ConcurrencyTest extends AutoVerifyTestCase {
             thread2.start();
             thread1.start();
             try {
-                Thread.currentThread().sleep(8000);
+                Thread.sleep(8000);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

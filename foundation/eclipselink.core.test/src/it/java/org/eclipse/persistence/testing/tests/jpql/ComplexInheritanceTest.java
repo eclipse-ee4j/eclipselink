@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,6 +44,7 @@ public class ComplexInheritanceTest extends org.eclipse.persistence.testing.test
         setDescription("Test that EJBQL finder works across inheritance hierarchy");
     }
 
+    @Override
     public void setup() {
         //
         // Set up query, using query framework, to return a Project object which will be compared
@@ -84,6 +85,7 @@ public class ComplexInheritanceTest extends org.eclipse.persistence.testing.test
         this.setReferenceClass(LargeProject.class);
     }
 
+    @Override
     public void reset() {
         // Null out instance variables that were set in this test
         getAbstractSession().getAliasDescriptors().remove("ProjectBaseClass");

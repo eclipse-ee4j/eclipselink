@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -72,26 +72,31 @@ public class AddressDescriptorEventListener implements DescriptorEventListener {
         return false;
     }
 
+    @Override
     public void aboutToInsert(DescriptorEvent event) {
         checkRowEvent(event);
         aboutToInsertExecuted = true;
     }
 
+    @Override
     public void aboutToUpdate(DescriptorEvent event) {
         checkRowEvent(event);
         aboutToUpdateExecuted = true;
     }
 
+    @Override
     public void aboutToDelete(DescriptorEvent event) {
         checkRowEvent(event);
         aboutToDeleteExecuted = true;
     }
 
+    @Override
     public void postBuild(DescriptorEvent event) {
         checkRowEvent(event);
         postBuildExecuted = true;
     }
 
+    @Override
     public void postClone(DescriptorEvent event) {
         checkEvent(event);
         if (event.getOriginalObject() == null) {
@@ -100,16 +105,19 @@ public class AddressDescriptorEventListener implements DescriptorEventListener {
         postCloneExecuted = true;
     }
 
+    @Override
     public void postDelete(DescriptorEvent event) {
         checkQueryEvent(event);
         postDeleteExecuted = true;
     }
 
+    @Override
     public void postInsert(DescriptorEvent event) {
         checkQueryEvent(event);
         postInsertExecuted = true;
     }
 
+    @Override
     public void postMerge(DescriptorEvent event) {
         checkEvent(event);
         if (event.getOriginalObject() == null) {
@@ -118,16 +126,19 @@ public class AddressDescriptorEventListener implements DescriptorEventListener {
         postMergeExecuted = true;
     }
 
+    @Override
     public void postRefresh(DescriptorEvent event) {
         checkRowEvent(event);
         postRefreshExecuted = true;
     }
 
+    @Override
     public void postUpdate(DescriptorEvent event) {
         checkQueryEvent(event);
         postUpdateExecuted = true;
     }
 
+    @Override
     public void postWrite(DescriptorEvent event) {
         checkQueryEvent(event);
         postWriteExecuted = true;
@@ -136,33 +147,40 @@ public class AddressDescriptorEventListener implements DescriptorEventListener {
     public void preCreate(DescriptorEvent event) {
     }
 
+    @Override
     public void preDelete(DescriptorEvent event) {
         checkQueryEvent(event);
         preDeleteExecuted = true;
     }
 
+    @Override
     public void preInsert(DescriptorEvent event) {
         checkQueryEvent(event);
         preInsertExecuted = true;
     }
 
+    @Override
     public void preRemove(DescriptorEvent event) {
     }
 
+    @Override
     public void preUpdate(DescriptorEvent event) {
         checkQueryEvent(event);
         Address.preUpdateCount++;
         preUpdateExecuted = true;
     }
 
+    @Override
     public void preWrite(DescriptorEvent event) {
         checkQueryEvent(event);
         preWriteExecuted = true;
     }
 
+    @Override
     public void prePersist(DescriptorEvent event) {
     }
 
+    @Override
     public void preUpdateWithChanges(DescriptorEvent event) {
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,9 +28,11 @@ public class EmptyTransactionTest extends AutoVerifyTestCase {
     // The following is an anonymous class which is used for event listening
     // it simply calls the commitOccurred() method.
     private SessionEventAdapter eventAdapter = new SessionEventAdapter() {
+        @Override
         public void preBeginTransaction(SessionEvent event) {
             transactionOccurred(event);
         }
+        @Override
         public void postBeginTransaction(SessionEvent event) {
             transactionOccurred(event);
         }
@@ -43,22 +45,26 @@ public class EmptyTransactionTest extends AutoVerifyTestCase {
         transactionOccurred = true;
     }
 
+    @Override
     public void setup() {
         getSession().getEventManager().addListener(eventAdapter);
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         uow.commit();
     }
 
+    @Override
     public void verify() {
         if (transactionOccurred) {
             throw new TestErrorException("A transaction was started in the UnitOfWork even though" + " there were no changes.");
         }
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         getSession().getEventManager().removeListener(eventAdapter);

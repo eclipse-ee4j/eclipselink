@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,16 +32,19 @@ public class NestedBatchReadingNPETest extends TestCase {
         setName(getName() + batchType);
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
         if ((batchType == BatchFetchType.IN) && !getSession().getPlatform().isOracle()) {
             throwWarning("Nested arrays not supported on this database");
         }
     }
 
+    @Override
     public void test() {
         ReadAllQuery query = new ReadAllQuery();
         query.setBatchFetchType(batchType);
@@ -53,6 +56,7 @@ public class NestedBatchReadingNPETest extends TestCase {
         result = (Vector)getSession().executeQuery(query);
     }
 
+    @Override
     public void verify() {
         // Nothing to verify, will test to verify NPE during executeQuery() above.
     }

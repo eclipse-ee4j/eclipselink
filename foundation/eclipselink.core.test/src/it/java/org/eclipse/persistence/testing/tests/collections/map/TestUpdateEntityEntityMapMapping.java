@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,6 +50,7 @@ public class TestUpdateEntityEntityMapMapping extends TestCase {
         setName("TestUpdateEntityEntityMapMapping privateOwned=" + usePrivateOwned);
     }
 
+    @Override
     public void setup(){
         mapping = (ManyToManyMapping)getSession().getProject().getDescriptor(EntityEntityMapHolder.class).getMappingForAttributeName("entityToEntityMap");
         oldPrivateOwnedValue = mapping.isPrivateOwned();
@@ -81,6 +82,7 @@ public class TestUpdateEntityEntityMapMapping extends TestCase {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         changedHolder = (EntityEntityMapHolder)uow.readObject(holder);
@@ -101,6 +103,7 @@ public class TestUpdateEntityEntityMapMapping extends TestCase {
         }
     }
 
+    @Override
     public void verify(){
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         holder = (EntityEntityMapHolder)getSession().readObject(holder);
@@ -146,6 +149,7 @@ public class TestUpdateEntityEntityMapMapping extends TestCase {
         }
     }
 
+    @Override
     public void reset(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Iterator j = holder.getEntityToEntityMap().keySet().iterator();

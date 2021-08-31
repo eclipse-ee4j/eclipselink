@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -107,6 +107,12 @@ public class CanonicalModelProcessor extends AbstractProcessor {
         add(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML);
         add("verbose"); //shortcut to enable FINER logging
     }});
+
+    /**
+     * Default constructor.
+     */
+    public CanonicalModelProcessor() {
+    }
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
@@ -278,8 +284,8 @@ public class CanonicalModelProcessor extends AbstractProcessor {
 
             // Go through the accessor list, ignoring any transient accessors
             // to build our attributes and import list.
-            ArrayList<String> attributes = new ArrayList<String>();
-            HashMap<String, String> imports = new HashMap<String, String>();
+            ArrayList<String> attributes = new ArrayList<>();
+            HashMap<String, String> imports = new HashMap<>();
 
             if (generateGenerated) {
                 if (isNewJava) {
@@ -532,7 +538,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
         String parentCanonicalName = null;
 
         // Get the import list ready to be sorted.
-        ArrayList<String> imps = new ArrayList<String>();
+        ArrayList<String> imps = new ArrayList<>();
         imps.addAll(typeImports.values());
 
         // Add the standard canonical model generator imports.

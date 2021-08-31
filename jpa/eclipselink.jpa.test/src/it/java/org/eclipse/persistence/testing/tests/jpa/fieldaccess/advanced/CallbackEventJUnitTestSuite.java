@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +18,7 @@ import java.util.Vector;
 
 import jakarta.persistence.EntityManager;
 
+import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.framework.Test;
 
@@ -65,6 +66,7 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
         clearCache("fieldaccess");
     }
 
+    @Override
     public void setUp () {
         m_reset = true;
         super.setUp();
@@ -120,8 +122,8 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
             fail("Employee was inserted.");
         }
         closeEntityManager(em);
-        this.assertTrue("The prePersist callback method was not called.", m_beforePrePersistEvent != m_afterPrePersistEvent);
-        this.assertTrue("The preRemove callback method was not called.", m_beforeEvent != m_afterEvent);
+        assertTrue("The prePersist callback method was not called.", m_beforePrePersistEvent != m_afterPrePersistEvent);
+        assertTrue("The preRemove callback method was not called.", m_beforeEvent != m_afterEvent);
     }
 
 
@@ -147,7 +149,7 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
         m_afterEvent = EmployeeListener.PRE_REMOVE_COUNT;
         closeEntityManager(em);
 
-        this.assertTrue("The preRemove callback method was called, remove should have been ignored.", m_beforeEvent == m_afterEvent);
+        assertTrue("The preRemove callback method was called, remove should have been ignored.", m_beforeEvent == m_afterEvent);
         //Employee emp = (Employee)em.find(Employee.class, new_emp.getId());
 
         //this.assertTrue("The remove should have been ignored.", m_beforeEvent == m_afterEvent);
@@ -176,7 +178,7 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
         }
 
 
-        this.assertTrue("Calling persist on a managed object should be ignored", m_beforeEvent==m_afterEvent);
+        assertTrue("Calling persist on a managed object should be ignored", m_beforeEvent==m_afterEvent);
     }
 
     public void testPreUpdateEvent_UpdateAltered() {

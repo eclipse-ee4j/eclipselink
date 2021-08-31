@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,10 +55,12 @@ public class CacheIdentityMapTestModel extends TestModel {
         setDescription("This suite thoroughly tests the functionality of the cache identity maps.");
     }
 
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new org.eclipse.persistence.testing.models.bigbad.BigBadSystem());
     }
 
+    @Override
     public void addTests() {
         CacheIdentityMap cache = new CacheIdentityMap(10, null, getAbstractSession(), false);
 

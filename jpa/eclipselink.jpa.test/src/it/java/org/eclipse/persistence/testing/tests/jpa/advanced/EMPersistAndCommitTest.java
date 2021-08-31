@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,11 +27,13 @@ public class EMPersistAndCommitTest extends EntityContainerTestBase  {
     //reset gets called twice on error
     protected boolean reset = false;
 
+    @Override
     public void setup (){
         super.setup();
         this.reset = true;
     }
 
+    @Override
     public void reset (){
         if (reset){
             reset = false;
@@ -43,6 +45,7 @@ public class EMPersistAndCommitTest extends EntityContainerTestBase  {
     public Integer[] projIDs = new Integer[3];
     public Integer[] addrIDs = new Integer[1];
 
+    @Override
     public void test(){
 
         Employee employee  = new Employee();
@@ -126,6 +129,7 @@ public class EMPersistAndCommitTest extends EntityContainerTestBase  {
         }
     }
 
+    @Override
     public void verify(){
         //lets check the cache for the objects
         Employee emp = getEntityManager().find(Employee.class, empIDs[0]);

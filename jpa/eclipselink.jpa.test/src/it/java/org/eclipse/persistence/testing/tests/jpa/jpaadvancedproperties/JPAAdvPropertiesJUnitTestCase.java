@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -149,7 +149,7 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
         Expression exp = new ExpressionBuilder().get("name1").equal("George W.");
         try {
             Object result = session.readObject(Customer.class, exp);
-            if(!((String)result).equals("return from CustomizedExceptionHandler")){
+            if(!result.equals("return from CustomizedExceptionHandler")){
                 fail("The exception handler specified by the property eclipselink.exception-handler in persistence.xml not be processed.");
             }
         } finally {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class CommitUnitOfWorkForcingSQLExceptionTest extends UnitOfWorkEventTest
     /** The field length for the firstname */
     public static final int MAX_FIRST_NAME_FIELD_LENGTH = 255;
 
+    @Override
     public void setup() {
         super.setup();
         setDescription("Test force of SQLException to exercise the rollback exception handling code");
@@ -41,6 +42,7 @@ public class CommitUnitOfWorkForcingSQLExceptionTest extends UnitOfWorkEventTest
         }
     }
 
+    @Override
     public void test() {
         boolean exceptionThrown = false;
         // Set an immutable properties Map on the UOW session to test addition of properties to this map in the roll-back exception handler

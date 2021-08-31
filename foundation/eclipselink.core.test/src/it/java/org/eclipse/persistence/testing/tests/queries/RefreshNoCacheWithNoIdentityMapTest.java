@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class RefreshNoCacheWithNoIdentityMapTest extends org.eclipse.persistence
         setDescription("Tests if Refresh with no cache works with" + " No Identity Map");
     }
 
+    @Override
     public void test() {
         // read one object
         firstField = (TestClass1)getSession().readObject(TestClass1.class);
@@ -55,6 +56,7 @@ public class RefreshNoCacheWithNoIdentityMapTest extends org.eclipse.persistence
     }
 
     // compare both objects to ensure they are equal.
+    @Override
     protected void verify() {
         if (!compareObjects(test1, firstField)) {
             throw new TestException(" Refresh with no identity and no cache does not work");

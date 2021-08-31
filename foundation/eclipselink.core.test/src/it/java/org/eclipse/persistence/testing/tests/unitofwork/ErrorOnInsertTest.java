@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,11 +43,13 @@ public class ErrorOnInsertTest extends AutoVerifyTestCase {
     public ErrorOnInsertTest() {
     }
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
     }
 
+    @Override
     protected void test() {
         if (getSession().isClientSession() || getSession().isDistributedSession()) {
             throw new TestWarningException("Unable to trigger error in ClientSession or Remote UnitOfWork");
@@ -82,6 +84,7 @@ public class ErrorOnInsertTest extends AutoVerifyTestCase {
         uow.commit();
     }
 
+    @Override
     public void reset() {
         try {
             getDatabaseSession().deleteObject(this.mary);
@@ -104,6 +107,7 @@ public class ErrorOnInsertTest extends AutoVerifyTestCase {
             this.lobWriter = accessor.getLOBWriter();
         }
 
+        @Override
         public void basicCommitTransaction(AbstractSession session) throws DatabaseException {
             throw DatabaseException.databaseAccessorNotConnected();
         }

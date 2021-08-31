@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,11 +35,13 @@ public class MemoryQueryReturnNotConformedOnIndirection extends TestCase {
         super();
     }
 
+    @Override
     public void reset() {
         //clear the cache.
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         allEmployees = new Vector();
@@ -58,6 +60,7 @@ public class MemoryQueryReturnNotConformedOnIndirection extends TestCase {
         }
     }
 
+    @Override
     public void test() {
         //all the employees with cities that come after Montreal should be
         //in the cache right now.
@@ -71,6 +74,7 @@ public class MemoryQueryReturnNotConformedOnIndirection extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (exceptionThrown) {
             throw new TestErrorException("In Memory Query did not return appropraite results because of indirection");

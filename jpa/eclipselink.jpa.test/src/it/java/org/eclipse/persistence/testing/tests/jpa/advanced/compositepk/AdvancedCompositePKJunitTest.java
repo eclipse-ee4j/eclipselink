@@ -313,7 +313,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
             DepartmentAdminRolePK depAdminPk= new DepartmentAdminRolePK(depName, depRole, location, adminEmp.getEmployee().getId());
 
             DepartmentAdminRole cacheObject = em.find(DepartmentAdminRole.class, depAdminPk);
-            this.assertTrue("Find did not return the DepartmentAdminRole", cacheObject!=null);
+            assertTrue("Find did not return the DepartmentAdminRole", cacheObject!=null);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -1045,8 +1045,8 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
 
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        b = (Book) em.merge(b);
-        a = (Author) em.merge(a);
+        b = em.merge(b);
+        a = em.merge(a);
 
         assertTrue("The PK value for "+ b.getClass() +" (" + b.getId().getNumberId().getValue() + ") is not sequence generated", (b.getId().getNumberId().getValue() >= Long.valueOf(1000)));
         assertTrue("The PK value for "+ a.getClass() +" (" + a.getId().getNumberId().getValue() + ") is not sequence generated", (a.getId().getNumberId().getValue() >= Long.valueOf(1000)));

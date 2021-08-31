@@ -42,6 +42,7 @@ public class ConcurrentReadBigBadObjectTest extends AutoVerifyTestCase {
     protected int OrigDirectMapWeight;
 
 
+    @Override
     public void setup() throws Exception {
 
         DatabaseLogin login;
@@ -72,10 +73,12 @@ public class ConcurrentReadBigBadObjectTest extends AutoVerifyTestCase {
         server.serverSession.setLog(getSession().getLog());
     }
 
+    @Override
     public void reset() throws Exception {
         server.logout();
     }
 
+    @Override
     public void test() {
         failed = false;
 
@@ -131,6 +134,7 @@ public class ConcurrentReadBigBadObjectTest extends AutoVerifyTestCase {
             counter = 0;
         }
 
+        @Override
         public void run() {
             try {
                 counter = 0;

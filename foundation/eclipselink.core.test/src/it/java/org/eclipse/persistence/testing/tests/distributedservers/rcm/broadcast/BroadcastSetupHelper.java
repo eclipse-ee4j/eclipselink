@@ -108,12 +108,14 @@ public abstract class BroadcastSetupHelper {
             return eventLock;
         }
 
+        @Override
         protected void test() throws Throwable {
             this.eventLock.initialize();
             super.test();
             this.eventLock.waitUntilUnlocked(this.timeToWaitBeforeVerify);
         }
 
+        @Override
         protected void verify() throws Throwable {
             try {
                 super.verify();

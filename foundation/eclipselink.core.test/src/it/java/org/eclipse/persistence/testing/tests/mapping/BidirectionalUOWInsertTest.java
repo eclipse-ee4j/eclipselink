@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,15 +27,18 @@ public class BidirectionalUOWInsertTest extends AutoVerifyTestCase {
         setDescription("Test bidirectional insert in a unit of work.");
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     protected void setup() {
         beginTransaction();
     }
 
+    @Override
     protected void test() {
         unitOfWork = getSession().acquireUnitOfWork();
 
@@ -51,6 +54,7 @@ public class BidirectionalUOWInsertTest extends AutoVerifyTestCase {
         unitOfWork.commit();
     }
 
+    @Override
     protected void verify() {
         int size = ((UnitOfWorkImpl) unitOfWork).getCloneMapping().size();
         if (size != 2) {

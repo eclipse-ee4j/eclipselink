@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -84,6 +84,7 @@ public class DeepNestedUnitOfWorkTest extends WriteObjectTest {
         employee.setManager((Employee)this.unitOfWork[2].readObject(Employee.class, (new ExpressionBuilder()).get("id").notEqual(employee.getId())));
     }
 
+    @Override
     protected void setup() {
         super.setup();
 
@@ -114,6 +115,7 @@ public class DeepNestedUnitOfWorkTest extends WriteObjectTest {
         }
     }
 
+    @Override
     protected void test() {
         this.unitOfWork[2].commit();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,26 +34,32 @@ public class CustomizedSessionEventListener extends SessionEventAdapter {
     }
 
 
+    @Override
     public void postCommitTransaction(SessionEvent event) {
         postCommitTransaction=true;
     }
 
+    @Override
     public void preCommitTransaction(SessionEvent event) {
         preCommitTransaction=true;
     }
 
+    @Override
     public void preLogin(SessionEvent event) {
         preLogin=true;
     }
 
+    @Override
     public void postLogin(SessionEvent event) {
         postLogin=true;
     }
 
+    @Override
     public void preBeginTransaction(SessionEvent event) {
         preBeginTransaction=true;
     }
 
+    @Override
     public void postBeginTransaction(SessionEvent event){
         postBeginTransaction=true;
     }

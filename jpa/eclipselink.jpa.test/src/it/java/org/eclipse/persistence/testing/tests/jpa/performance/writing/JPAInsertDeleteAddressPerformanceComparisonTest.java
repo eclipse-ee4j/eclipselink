@@ -30,6 +30,7 @@ public class JPAInsertDeleteAddressPerformanceComparisonTest extends Performance
     /**
      * Read an existing address for emulated database run.
      */
+    @Override
     public void setup() {
         EntityManager manager = createEntityManager();
         Address any = (Address)manager.createQuery("Select a from Address a").getResultList().get(0);
@@ -47,6 +48,7 @@ public class JPAInsertDeleteAddressPerformanceComparisonTest extends Performance
     /**
      * Insert and delete address.
      */
+    @Override
     public void test() throws Exception {
         EntityManager manager = createEntityManager();
         manager.getTransaction().begin();

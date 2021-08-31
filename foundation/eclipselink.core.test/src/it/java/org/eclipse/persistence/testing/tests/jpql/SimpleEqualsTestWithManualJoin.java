@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +20,7 @@ import org.eclipse.persistence.testing.models.employee.domain.*;
 
 //Test id comparison without 1:1, that must force a join
 public class SimpleEqualsTestWithManualJoin extends JPQLTestCase {
+    @Override
     public void setup() {
         setReferenceClass(Employee.class);
 
@@ -47,6 +48,7 @@ public class SimpleEqualsTestWithManualJoin extends JPQLTestCase {
         super.setup();
     }
 
+    @Override
     public void reset() {
         //        getSession().getDescriptor(Employee.class).removeMappingForAttributeName("addressId");
     }

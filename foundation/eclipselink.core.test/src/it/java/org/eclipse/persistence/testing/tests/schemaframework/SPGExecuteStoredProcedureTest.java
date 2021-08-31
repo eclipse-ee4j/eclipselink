@@ -63,6 +63,7 @@ public class SPGExecuteStoredProcedureTest extends TestCase {
     public SPGExecuteStoredProcedureTest() {
     }
 
+    @Override
     public void setup() {
         shouldUseNamedArguments = !getSession().getDatasourcePlatform().isMySQL();
         if(shouldUseNamedArguments) {
@@ -135,6 +136,7 @@ public class SPGExecuteStoredProcedureTest extends TestCase {
         }
     }
 
+    @Override
     public void test() {
         {
         StoredProcedureCall call = new StoredProcedureCall();
@@ -199,6 +201,7 @@ public class SPGExecuteStoredProcedureTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         {
         StoredProcedureCall call = new StoredProcedureCall();
@@ -262,6 +265,7 @@ public class SPGExecuteStoredProcedureTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         if(insertSuccess * updateSuccess * deleteSuccess == 0 ) {
           throw new TestErrorException("Failed to call stored procedures.") ;

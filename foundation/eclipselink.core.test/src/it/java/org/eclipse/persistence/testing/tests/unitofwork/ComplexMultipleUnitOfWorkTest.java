@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -274,6 +274,7 @@ public class ComplexMultipleUnitOfWorkTest extends AutoVerifyTestCase {
         this.thirdUnitOfWork.commit();
     }
 
+    @Override
     public void reset() {
         if(getAbstractSession().isInTransaction()) {
             getAbstractSession().rollbackTransaction();
@@ -285,6 +286,7 @@ public class ComplexMultipleUnitOfWorkTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void setup() {
         if (getSession().isClientSession()) {
             listener = checkTransactionIsolation();
@@ -303,12 +305,14 @@ public class ComplexMultipleUnitOfWorkTest extends AutoVerifyTestCase {
         return smallProject;
     }
 
+    @Override
     public void test() throws Exception {
         processFirstUnitOfWork();
         processSecondUnitOfWork();
         processThirdUnitOfWork();
     }
 
+    @Override
     public void verify() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         Session sessionToVerifyDelete;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,6 +45,7 @@ public class EmployeeServiceBean implements EmployeeService {
     @PersistenceContext(name="performance")
     protected EntityManager entityManager;
 
+    @Override
     public List findAll() {
         Query query = this.entityManager.createQuery("Select e from Employee e");
         return query.getResultList();
@@ -54,6 +55,7 @@ public class EmployeeServiceBean implements EmployeeService {
      * Batch find used to off load driver machine.
      * Simulates n find requests.
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public void batchFind(long ids[]) {
         for (long id : ids) {
@@ -66,6 +68,7 @@ public class EmployeeServiceBean implements EmployeeService {
      * Batch find used to off load driver machine.
      * Simulates n find requests.
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public int batchUpdate(long ids[], int retry) {
         int errors = 0;
@@ -100,6 +103,7 @@ public class EmployeeServiceBean implements EmployeeService {
         return errors;
     }
 
+    @Override
     public Employee findById(long id) {
         Employee employee = this.entityManager.find(Employee.class, id);
         employee.getAddress();
@@ -111,6 +115,7 @@ public class EmployeeServiceBean implements EmployeeService {
         return employee;
     }
 
+    @Override
     public Employee fetchById(long id) {
         Employee employee = this.entityManager.find(Employee.class, id);
         employee.getAddress();
@@ -118,22 +123,26 @@ public class EmployeeServiceBean implements EmployeeService {
         return employee;
     }
 
+    @Override
     public void update(Employee employee) {
         this.entityManager.merge(employee);
     }
 
+    @Override
     public long insert(Employee employee) {
         this.entityManager.persist(employee);
         this.entityManager.flush();
         return employee.getId();
     }
 
+    @Override
     public void createTables() {
         new EmployeeTableCreator().replaceTables(((JpaEntityManager)this.entityManager.getDelegate()).getServerSession());
         //((JpaEntityManager)this.entityManager.getDelegate()).getServerSession().logout();
         //((JpaEntityManager)this.entityManager.getDelegate()).getServerSession().login();
     }
 
+    @Override
     public void populate() {
         // Populate database.
         for (int j = 0; j < 1000; j++) { //1000

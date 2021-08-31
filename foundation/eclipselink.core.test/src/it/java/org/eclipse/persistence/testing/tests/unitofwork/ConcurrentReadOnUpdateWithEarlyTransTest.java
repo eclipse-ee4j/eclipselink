@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ public class ConcurrentReadOnUpdateWithEarlyTransTest extends TestCase {
     public ConcurrentReadOnUpdateWithEarlyTransTest() {
     }
 
+    @Override
     public void setup() {
         // The purpose of this test is to test multi-threaded server execution,
         // remote is for a single client, so this test is not relevant.
@@ -57,6 +58,7 @@ public class ConcurrentReadOnUpdateWithEarlyTransTest extends TestCase {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         ConcurrentPerson person = (ConcurrentPerson)uow.readObject(ConcurrentPerson.class);
@@ -83,6 +85,7 @@ public class ConcurrentReadOnUpdateWithEarlyTransTest extends TestCase {
 
     public Runnable runnable() {
         return new Runnable() {
+                @Override
                 public void run() {
                     threadId.set("Reader");
                     synchronized (ConcurrentReadOnUpdateWithEarlyTransTest.readAddress) {
@@ -102,6 +105,7 @@ public class ConcurrentReadOnUpdateWithEarlyTransTest extends TestCase {
             };
     }
 
+    @Override
     public void verify() {
         ConcurrentPerson person = (ConcurrentPerson)getSession().readObject(ConcurrentPerson.class);
         if (person.getAddress() != readObject) {
@@ -109,6 +113,7 @@ public class ConcurrentReadOnUpdateWithEarlyTransTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         ConcurrentAddress.RUNNING_TEST = ConcurrentAddress.NONE;
         try {

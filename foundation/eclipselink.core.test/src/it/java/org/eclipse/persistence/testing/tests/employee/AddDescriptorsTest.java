@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ public class AddDescriptorsTest extends AutoVerifyTestCase {
         setDescription("Tests DatabaseSession.addDescriptors() method");
     }
 
+    @Override
     public void reset() {
         if (newProjectDescriptor == oldProjectDescriptor) {
             // The test has failed - at least one "old" descriptor is referenced by a new descriptor.
@@ -48,6 +49,7 @@ public class AddDescriptorsTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void setup() {
         oldProjectDescriptor = getSession().getClassDescriptor(Project.class);
         if (oldProjectDescriptor == null) {
@@ -55,10 +57,12 @@ public class AddDescriptorsTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void test() {
         getDatabaseSession().addDescriptors(new EmployeeProject());
     }
 
+    @Override
     public void verify() {
         newProjectDescriptor = getSession().getDescriptor(SmallProject.class).getInheritancePolicy().getParentDescriptor();
         if (newProjectDescriptor == oldProjectDescriptor) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ public class ReconnectFlushStatementCacheTest extends AutoVerifyTestCase {
         setDescription("Ensure the statement cache gets flushed on a reconnect.");
     }
 
+    @Override
     public void setup() {
         // Disconnected the current session and log-on a temporary one
         ((org.eclipse.persistence.sessions.DatabaseSession)getSession()).logout();
@@ -50,6 +51,7 @@ public class ReconnectFlushStatementCacheTest extends AutoVerifyTestCase {
         session.login();
     }
 
+    @Override
     public void test() {
         // Set binding and caching to ensure we encouter the error
         session.getLogin().bindAllParameters();
@@ -89,6 +91,7 @@ public class ReconnectFlushStatementCacheTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (reestablishErrorException != null) {
             throw new TestErrorException("The statement cache was not properly flushed when a connection was reestablished.");
@@ -98,6 +101,7 @@ public class ReconnectFlushStatementCacheTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void reset() {
         session.logout();
         // Must reconnect the previous session.

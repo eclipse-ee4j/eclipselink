@@ -45,6 +45,7 @@ public class TestUpdateDirectEntityMapMapping extends TestCase {
         setName("TestUpdateDirectEntityMapMapping privateOwned=" + usePrivateOwned);
     }
 
+    @Override
     public void setup(){
         mapping = (ManyToManyMapping)getSession().getProject().getDescriptor(DirectEntityMapHolder.class).getMappingForAttributeName("directToEntityMap");
         oldPrivateOwnedValue = mapping.isPrivateOwned();
@@ -71,6 +72,7 @@ public class TestUpdateDirectEntityMapMapping extends TestCase {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         changedHolder = (DirectEntityMapHolder)uow.readObject(holder);
@@ -86,6 +88,7 @@ public class TestUpdateDirectEntityMapMapping extends TestCase {
         }
     }
 
+    @Override
     public void verify(){
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         holder = (DirectEntityMapHolder)getSession().readObject(holder);
@@ -115,6 +118,7 @@ public class TestUpdateDirectEntityMapMapping extends TestCase {
         }
     }
 
+    @Override
     public void reset(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Iterator j = holder.getDirectToEntityMap().keySet().iterator();

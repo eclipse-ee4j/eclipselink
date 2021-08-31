@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class WriteNewPessimisticLockedObjectTest extends TestCase {
         setDescription("The test ensures that new pessimistically locked objects are not  put in the session cache");
     }
 
+    @Override
     protected void setup() {
         PessimisticLockingPolicy policy = new PessimisticLockingPolicy();
         policy.setLockingMode(ObjectLevelReadQuery.LOCK_NOWAIT);
@@ -54,6 +55,7 @@ public class WriteNewPessimisticLockedObjectTest extends TestCase {
         getAbstractSession().beginTransaction();
     }
 
+    @Override
     protected void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
 
@@ -67,6 +69,7 @@ public class WriteNewPessimisticLockedObjectTest extends TestCase {
         uow.commit();
     }
 
+    @Override
     protected void verify() {
         //ensure changes were merged into the session cache
         IdentityMap im = ((AbstractSession)getSession()).getIdentityMapAccessorInstance().getIdentityMap(Employee.class);
@@ -75,6 +78,7 @@ public class WriteNewPessimisticLockedObjectTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() throws Exception {
         getAbstractSession().rollbackTransaction();
         getSession().getDescriptor(Employee.class).setCMPPolicy(oldCMPPolicy);

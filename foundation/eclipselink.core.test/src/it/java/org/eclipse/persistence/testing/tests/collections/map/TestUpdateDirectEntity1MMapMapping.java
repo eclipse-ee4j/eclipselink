@@ -40,6 +40,7 @@ public class TestUpdateDirectEntity1MMapMapping extends TestReadDirectEntity1MMa
         setName("TestUpdateDirectEntity1MMapMapping privateOwned=" + usePrivateOwned);
     }
 
+    @Override
     public void setup(){
         mapping = (OneToManyMapping)getSession().getProject().getDescriptor(DirectEntity1MMapHolder.class).getMappingForAttributeName("directToEntityMap");
         oldPrivateOwnedValue = mapping.isPrivateOwned();
@@ -48,6 +49,7 @@ public class TestUpdateDirectEntity1MMapMapping extends TestReadDirectEntity1MMa
         super.setup();
     }
 
+    @Override
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holders = uow.readAllObjects(DirectEntity1MMapHolder.class, holderExp);
@@ -61,6 +63,7 @@ public class TestUpdateDirectEntity1MMapMapping extends TestReadDirectEntity1MMa
         uow.commit();
     }
 
+    @Override
     public void verify(){
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         holders = getSession().readAllObjects(DirectEntity1MMapHolder.class, holderExp);
@@ -87,6 +90,7 @@ public class TestUpdateDirectEntity1MMapMapping extends TestReadDirectEntity1MMa
         }
     }
 
+    @Override
     public void reset(){
         super.reset();
         mapping.setIsPrivateOwned(oldPrivateOwnedValue);

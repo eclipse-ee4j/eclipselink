@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,6 +45,7 @@ public class ReturningPolicyTestModel extends TestModel {
         setDescription("ReturningPolicy Test Model.");
     }
 
+    @Override
     public void addTests() {
         addTest(getDescriptorExceptionTestSuite());
         // SubstituteSequencingWithReturningPolicyAdapter works with Oracle only.
@@ -147,6 +148,7 @@ public class ReturningPolicyTestModel extends TestModel {
         */
     }
 
+    @Override
     public void setup() {
         if (getSession().getPlatform().isSybase() || getSession().getPlatform().isSQLAnywhere()) {
             supportsAutoCommitOriginal = getSession().getPlatform().supportsAutoCommit();
@@ -155,6 +157,7 @@ public class ReturningPolicyTestModel extends TestModel {
         super.setup();
     }
 
+    @Override
     public void reset() {
         super.reset();
         if (getSession().getPlatform().isSybase()  || getSession().getPlatform().isSQLAnywhere()) {

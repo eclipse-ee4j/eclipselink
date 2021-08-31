@@ -70,6 +70,7 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.spi.LoadState;
 import jakarta.persistence.spi.ProviderUtil;
 
+import junit.framework.TestCase;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.CacheUsageIndirectionPolicy;
 import org.eclipse.persistence.config.CascadePolicy;
@@ -183,7 +184,7 @@ import org.eclipse.persistence.testing.models.jpa.composite.advanced.member_3.Su
 import org.eclipse.persistence.tools.schemaframework.SequenceObjectDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableCreator;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -2443,14 +2444,14 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     EntityManager em1= createEntityManager();
                     // bring object into cache if required
                     if(isObjCached) {
-                        broker.log(SessionLog.FINEST, SessionLog.QUERY, "testPESSIMISTIC_ExtendedScope: bring object into cache", (Object[]) null, null, false);
+                        broker.log(SessionLog.FINEST, SessionLog.QUERY, "testPESSIMISTIC_ExtendedScope: bring object into cache", null, null, false);
                         em1.find(Employee.class, id);
                     }
                     Employee emp1;
                     try {
                         beginTransaction(em1);
 
-                        broker.log(SessionLog.FINEST, SessionLog.QUERY, "testPESSIMISTIC_ExtendedScope: testMode1 = " + testMode1, (Object[]) null, null, false);
+                        broker.log(SessionLog.FINEST, SessionLog.QUERY, "testPESSIMISTIC_ExtendedScope: testMode1 = " + testMode1, null, null, false);
 
                         if(testMode1.equals("query")) {
                             Query query1 = em1.createQuery("SELECT emp FROM Employee emp WHERE emp.id = "+id).setLockMode(lockMode).
@@ -2479,7 +2480,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                         try {
                             beginTransaction(em2);
 
-                            broker.log(SessionLog.FINEST, SessionLog.QUERY, "testPESSIMISTIC_ExtendedScope: testMode2 = " + testMode2, (Object[]) null, null, false);
+                            broker.log(SessionLog.FINEST, SessionLog.QUERY, "testPESSIMISTIC_ExtendedScope: testMode2 = " + testMode2, null, null, false);
 
                             if(shouldSpawnThread) {
                                 // after waiting TransactionKiller rollback em1 transaction unlocking way for em2 to proceed.
@@ -2540,7 +2541,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                             // transaction killed by TransactionKiller is treated as PessimisticLockException
                             if(isExceptionExpected && !hasKilledTransaction) {
                                 String localErrorMsg = testMode1 + (isObjCached ? " cached " : " ") + testMode2 + ": Exception was expected.";
-                                broker.log(SessionLog.FINEST, SessionLog.QUERY, localErrorMsg, (Object[]) null, null, false);
+                                broker.log(SessionLog.FINEST, SessionLog.QUERY, localErrorMsg, null, null, false);
                                 errorMsg += '\n' + localErrorMsg;
                             }
                         } catch (Exception ex) {
@@ -2554,7 +2555,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                             }
                             if(!isExceptionExpected) {
                                 String localErrorMsg = testMode1 + (isObjCached ? " cached " : " ") + testMode2 + ": Unexpected exception: " + ex.getMessage();
-                                broker.log(SessionLog.FINEST, SessionLog.QUERY, localErrorMsg, (Object[]) null, null, false);
+                                broker.log(SessionLog.FINEST, SessionLog.QUERY, localErrorMsg, null, null, false);
                                 errorMsg += '\n' + localErrorMsg;
                             }
                         } finally {
@@ -6035,8 +6036,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         try{
             beginTransaction(em);
             Employee managedEmp = em.merge(emp);
-            this.assertNotNull("merged Employee doesn't have its ID generated", managedEmp.getId());
-            this.assertNotNull("merged Employee cannot be found using find", em.find(Employee.class, managedEmp.getId()));
+            assertNotNull("merged Employee doesn't have its ID generated", managedEmp.getId());
+            assertNotNull("merged Employee cannot be found using find", em.find(Employee.class, managedEmp.getId()));
             //this won't work till bug:6193761 is fixed
             //this.assertTrue("referenced Address doesn't have its ID generated", managedEmp.getAddress().getId()!=0);
         }finally {
@@ -6058,8 +6059,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             beginTransaction(em);
             Equipment managedEquip = em.merge(equip);
 
-            this.assertTrue("merged Equipment doesn't have its ID generated", managedEquip.getId()!=0);
-            this.assertNotNull("merged Equipment cannot be found using find", em.find(Equipment.class, managedEquip.getId()));
+            assertTrue("merged Equipment doesn't have its ID generated", managedEquip.getId()!=0);
+            assertNotNull("merged Equipment cannot be found using find", em.find(Equipment.class, managedEquip.getId()));
         }finally {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -6685,7 +6686,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         Address initialAddress = em.find(Address.class, Integer.valueOf(addressId));
         Employee initialManager = em.find(Employee.class, Integer.valueOf(managerId));
         employee.setAddress((Address)null);
-        employee.setManager((Employee)null);
+        employee.setManager(null);
         em.remove(address);
         em.remove(employee);
         em.remove(manager);
@@ -6761,7 +6762,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         Address initialAddress = em.find(Address.class, Integer.valueOf(addressId));
         Employee initialManager = em.find(Employee.class, Integer.valueOf(managerId));
         employee.setAddress((Address)null);
-        employee.setManager((Employee)null);
+        employee.setManager(null);
         em.remove(address);
         em.remove(employee);
         em.remove(manager);
@@ -6839,7 +6840,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         Employee initialManager = em.find(Employee.class, Integer.valueOf(managerId));
 
         employee.setAddress((Address)null);
-        employee.setManager((Employee)null);
+        employee.setManager(null);
         em.remove(address);
         em.remove(employee);
         em.remove(manager);
@@ -8482,10 +8483,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             Session session = event.getSession();
             if(session.isServerSession()) {
                 acquiredReadConnections.add(accessor);
-                ((ServerSession)session).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireReleaseListener.acquireReadConnection: " + nAcquredReadConnections(), (Object[])null, accessor, false);
+                ((ServerSession)session).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireReleaseListener.acquireReadConnection: " + nAcquredReadConnections(), null, accessor, false);
             } else {
                 acquiredWriteConnections.add(accessor);
-                ((ClientSession)session).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireReleaseListener.acquireWriteConnection: " + nAcquredWriteConnections(), (Object[])null, accessor, false);
+                ((ClientSession)session).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireReleaseListener.acquireWriteConnection: " + nAcquredWriteConnections(), null, accessor, false);
             }
         }
         @Override
@@ -8494,10 +8495,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             Session session = event.getSession();
             if(session.isServerSession()) {
                 acquiredReadConnections.remove(accessor);
-                ((ServerSession)session).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireReleaseListener.releaseReadConnection: " + nAcquredReadConnections(), (Object[])null, accessor, false);
+                ((ServerSession)session).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireReleaseListener.releaseReadConnection: " + nAcquredReadConnections(), null, accessor, false);
             } else {
                 acquiredWriteConnections.remove(accessor);
-                ((ClientSession)session).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireReleaseListener.releaseWriteConnection: " + nAcquredWriteConnections(), (Object[])null, accessor, false);
+                ((ClientSession)session).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireReleaseListener.releaseWriteConnection: " + nAcquredWriteConnections(), null, accessor, false);
             }
         }
         int nAcquredReadConnections() {
@@ -8600,7 +8601,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 for(int j=0; j<2; j++) {
                     // either using or not using sequencing
                     boolean useSequencing = (j==0);
-                    broker.log(SessionLog.FINEST, SessionLog.CONNECTION, "testEMCloseAndOpen: " + (useSequencing ? "sequencing" : "no sequencing"), (Object[])null, null, false);
+                    broker.log(SessionLog.FINEST, SessionLog.CONNECTION, "testEMCloseAndOpen: " + (useSequencing ? "sequencing" : "no sequencing"), null, null, false);
                     HashMap emProperties = new HashMap(1);
                     HashMap mapOfProperties = new HashMap(1);
                     emProperties.put(PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES, mapOfProperties);
@@ -8617,7 +8618,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
                         // imitate disconnecting from network:
                         // driver's connect method and any method on any connection will throw SQLException
-                        broker.log(SessionLog.FINEST, SessionLog.CONNECTION, "testEMCloseAndOpen: DriverWrapper.breakDriver(); DriverWrapper.breakOldConnections();", (Object[])null, null, false);
+                        broker.log(SessionLog.FINEST, SessionLog.CONNECTION, "testEMCloseAndOpen: DriverWrapper.breakDriver(); DriverWrapper.breakOldConnections();", null, null, false);
                         DriverWrapper.breakDriver();
                         DriverWrapper.breakOldConnections();
 
@@ -8657,7 +8658,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     // driver's connect method will now work, all newly acquired connections will work, too;
                     // however the old connections cached in the connection pools are still invalid.
                     DriverWrapper.repairDriver();
-                    broker.log(SessionLog.FINEST, SessionLog.CONNECTION, "testEMCloseAndOpen: DriverWrapper.repairDriver();", (Object[])null, null, false);
+                    broker.log(SessionLog.FINEST, SessionLog.CONNECTION, "testEMCloseAndOpen: DriverWrapper.repairDriver();", null, null, false);
 
                     boolean failed = true;
                     try {
@@ -8682,7 +8683,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                             closeEntityManager(em);
 
                             if(errorMsg.length() > 0) {
-                                broker.log(SessionLog.FINEST, SessionLog.CONNECTION, "testEMCloseAndOpen: errorMsg: " + "\n" + errorMsg, (Object[])null, null, false);
+                                broker.log(SessionLog.FINEST, SessionLog.CONNECTION, "testEMCloseAndOpen: errorMsg: " + "\n" + errorMsg, null, null, false);
                             }
                         }
                     }
@@ -8820,24 +8821,24 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         public void postAcquireConnection(SessionEvent event) {
             Accessor accessor = (Accessor)event.getResult();
             if(acquiredConnections.contains(accessor)) {
-                ((AbstractSession)event.getSession()).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireRepair_ReleaseBreak_Listener.postAcquireConnection: risen two or more times in a row;", (Object[])null, accessor, false);
+                ((AbstractSession)event.getSession()).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireRepair_ReleaseBreak_Listener.postAcquireConnection: risen two or more times in a row;", null, accessor, false);
                 throw new RuntimeException("AcquireRepair_ReleaseBreak_Listener.postAcquireConnection: risen two or more times in a row");
             } else {
                 acquiredConnections.add(accessor);
             }
-            ((AbstractSession)event.getSession()).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireRepair_ReleaseBreak_Listener.postAcquireConnection: repairConnection;", (Object[])null, accessor, false);
+            ((AbstractSession)event.getSession()).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireRepair_ReleaseBreak_Listener.postAcquireConnection: repairConnection;", null, accessor, false);
             ((ConnectionWrapper)accessor.getConnection()).repairConnection();
         }
         @Override
         public void preReleaseConnection(SessionEvent event) {
             Accessor accessor = (Accessor)event.getResult();
             if(!acquiredConnections.contains(accessor)) {
-                ((AbstractSession)event.getSession()).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireRepair_ReleaseBreak_Listener.preReleaseConnection: postAcquireConnection has not been risen;", (Object[])null, accessor, false);
+                ((AbstractSession)event.getSession()).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireRepair_ReleaseBreak_Listener.preReleaseConnection: postAcquireConnection has not been risen;", null, accessor, false);
                 throw new RuntimeException("AcquireRepair_ReleaseBreak_Listener.preReleaseConnection: postAcquireConnection has not been risen");
             } else {
                 acquiredConnections.remove(accessor);
             }
-            ((AbstractSession)event.getSession()).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireRepair_ReleaseBreak_Listener.preReleaseConnection: breakConnection;", (Object[])null, accessor, false);
+            ((AbstractSession)event.getSession()).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireRepair_ReleaseBreak_Listener.preReleaseConnection: breakConnection;", null, accessor, false);
             ((ConnectionWrapper)accessor.getConnection()).breakConnection();
         }
         public boolean hasAcquiredConnections() {
@@ -8924,7 +8925,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
         // Driver's connect method will still work, however any method called on any acquired connection will throw SQLException.
         // On postAcquireConnection connection will be repaired; on preReleaseConnection - broken again.
-        broker.log(SessionLog.FINEST, SessionLog.CONNECTION, "testPostAcquirePreReleaseEvents: DriverWrapper.breakOldConnections(); DriverWrapper.breakNewConnections();", (Object[])null, null, false);
+        broker.log(SessionLog.FINEST, SessionLog.CONNECTION, "testPostAcquirePreReleaseEvents: DriverWrapper.breakOldConnections(); DriverWrapper.breakNewConnections();", null, null, false);
         DriverWrapper.breakOldConnections();
         DriverWrapper.breakNewConnections();
 
@@ -8961,7 +8962,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                         boolean shouldBeginEarlyTransaction = (j==2);
                         boolean shouldReadBeforeTransaction = (j==1);
                         mode = pooled + exclusiveConnectionMode + (shouldBeginEarlyTransaction ? "; beginEarlyTransaction" : "") + (shouldReadBeforeTransaction ? "; readBeforeTransaction" : "");
-                        broker.log(SessionLog.FINEST, SessionLog.CONNECTION, "testPostAcquirePreReleaseEvents: " + mode, (Object[])null, null, false);
+                        broker.log(SessionLog.FINEST, SessionLog.CONNECTION, "testPostAcquirePreReleaseEvents: " + mode, null, null, false);
                         memberProperties.put(EntityManagerProperties.EXCLUSIVE_CONNECTION_MODE, exclusiveConnectionMode);
                         EntityManager em = createEntityManager(emProperties);
 
@@ -9978,7 +9979,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // any query on ExclusiveIsolated session triggers the exclusive connection to be acquired.
         em.createQuery("SELECT e FROM Employee e").getResultList();
         // the exclusive connection
-        Accessor accessor = ((SessionBroker)em.unwrap(UnitOfWork.class).getParent()).getSessionForName(memberPuName).getAccessor();
+        Accessor accessor = em.unwrap(UnitOfWork.class).getParent().getSessionForName(memberPuName).getAccessor();
         // connection is still held because it's an ExclusiveIsolatedSession
         if(isSpring) {
             em.getTransaction().commit();
@@ -10707,7 +10708,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         for(DatabaseMapping mapping : descriptor.getMappings()) {
             if(mapping.isAggregateObjectMapping()) {
                 String pathWithMapping = path + "." + mapping.getAttributeName();
-                ClassDescriptor referenceDescriptor = ((AggregateObjectMapping)mapping).getReferenceDescriptor();
+                ClassDescriptor referenceDescriptor = mapping.getReferenceDescriptor();
                 if(referenceDescriptor.getMappings().isEmpty()) {
                     // should never happen - add to errors
                     errors.add(pathWithMapping);

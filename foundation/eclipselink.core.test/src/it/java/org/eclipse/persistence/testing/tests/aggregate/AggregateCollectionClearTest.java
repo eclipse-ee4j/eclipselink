@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@ public class AggregateCollectionClearTest extends TransactionalTestCase {
         setDescription("Verifies that when aggregate collections get cleared that the changes are merged.  CR 3013");
     }
 
+    @Override
     public void setup() {
         super.setup();
         java.util.Vector objects = getSession().readAllObjects(cls);
@@ -37,6 +38,7 @@ public class AggregateCollectionClearTest extends TransactionalTestCase {
         }
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Object objectClone = uow.readObject(object);
@@ -44,6 +46,7 @@ public class AggregateCollectionClearTest extends TransactionalTestCase {
         uow.commit();
     }
 
+    @Override
     public void verify() {
         Object object1 = getSession().readObject(object);
         if (!AgentBuilderHelper.getCustomers(object1).isEmpty()) {
@@ -51,6 +54,7 @@ public class AggregateCollectionClearTest extends TransactionalTestCase {
         }
     }
 
+    @Override
     public void reset() {
         super.reset();
     }

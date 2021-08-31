@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,12 +30,14 @@ public class CreateCacheKeyWeakIdentityMapTest extends TestCase {
     public CreateCacheKeyWeakIdentityMapTest() {
     }
 
+    @Override
     public void reset() {
         getSession().getDescriptor(Employee.class).setIdentityMapClass(originalIdentityMapClass);
         getSession().getDescriptor(Employee.class).setIdentityMapSize(originalIdentityMapSize);
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     public void setup() {
         originalIdentityMapClass = getSession().getDescriptor(Employee.class).getIdentityMapClass();
         originalIdentityMapSize = getSession().getDescriptor(Employee.class).getIdentityMapSize();
@@ -44,6 +46,7 @@ public class CreateCacheKeyWeakIdentityMapTest extends TestCase {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     public void test() {
         Vector primaryKeys = new Vector();
         primaryKeys.add(new java.math.BigDecimal(4));

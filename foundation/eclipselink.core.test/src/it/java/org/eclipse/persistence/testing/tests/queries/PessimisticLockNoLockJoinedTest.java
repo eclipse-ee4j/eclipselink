@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public PessimisticLockNoLockJoinedTest() {
     this.lockMode = ObjectLevelReadQuery.LOCK_NOWAIT;
     setDescription("For bug 3431017 tests when a NO_LOCK query joins an attribute which should be locked.");
 }
+@Override
 public void test () throws Exception
 {
     if (!(getSession().getPlatform().isOracle() || getSession().getPlatform().isSQLServer())) {

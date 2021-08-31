@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -77,6 +77,7 @@ public class NestedDefaultFetchGroupTests extends BaseFetchGroupTests {
      * @see EmployeeCustomizer
      * @see PhoneCustomizer
      */
+    @Override
     public void setUp() {
         super.setUp();
 
@@ -164,10 +165,10 @@ public class NestedDefaultFetchGroupTests extends BaseFetchGroupTests {
             }
             assertEquals(nExpected, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
-            boolean addressInstantiated = ((ValueHolderInterface)((ForeignReferenceMapping)employeeDescriptor.getMappingForAttributeName("address")).getAttributeValueFromObject(emp)).isInstantiated();
+            boolean addressInstantiated = ((ValueHolderInterface) employeeDescriptor.getMappingForAttributeName("address").getAttributeValueFromObject(emp)).isInstantiated();
             assertTrue(loadAddress == addressInstantiated);
 
-            boolean phonesInstantiated = ((IndirectCollection)((ForeignReferenceMapping)employeeDescriptor.getMappingForAttributeName("phoneNumbers")).getAttributeValueFromObject(emp)).isInstantiated();
+            boolean phonesInstantiated = ((IndirectCollection) employeeDescriptor.getMappingForAttributeName("phoneNumbers").getAttributeValueFromObject(emp)).isInstantiated();
             assertTrue(loadPhones == phonesInstantiated);
 
             emp.getAddress();
@@ -317,6 +318,7 @@ public class NestedDefaultFetchGroupTests extends BaseFetchGroupTests {
 
     public static class EmployeeCustomizer implements DescriptorCustomizer {
 
+        @Override
         public void customize(ClassDescriptor descriptor) throws Exception {
             defaultEmployeeFG = new FetchGroup("Employee.default");
             defaultEmployeeFG.addAttribute("firstName");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ public class ReadAllHugeCacheAddressTest extends PerformanceTest {
         setDescription("This tests the performance of huge read-all queries.");
     }
 
+    @Override
     public void setup() {
         super.setup();
         // Add 10000 address.
@@ -54,11 +55,13 @@ public class ReadAllHugeCacheAddressTest extends PerformanceTest {
     /**
      * Read employee and clear the cache, test database read.
      */
+    @Override
     public void test() throws Exception {
         super.test();
         getSession().readAllObjects(Address.class);
     }
 
+    @Override
     public void reset() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         uow.executeNonSelectingCall(new SQLCall("Delete from ADDRESS where CITY = 'NewCity'"));

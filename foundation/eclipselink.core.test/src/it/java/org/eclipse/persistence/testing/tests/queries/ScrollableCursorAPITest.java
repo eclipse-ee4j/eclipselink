@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ public class ScrollableCursorAPITest extends TestCase {
         setDescription("Test the scrollable cursor APIs like hasNext(), hasPrevious() when no result will be returned from the query");
     }
 
+    @Override
     protected void setup() {
         if (getSession().getPlatform().isDB2() || getSession().getPlatform().isAccess() ||
             getSession().getPlatform().isTimesTen() || getSession().getPlatform().isHANA()) {
@@ -54,6 +55,7 @@ public class ScrollableCursorAPITest extends TestCase {
         }
     }
 
+    @Override
     public void test() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Employee.class);
@@ -79,6 +81,7 @@ public class ScrollableCursorAPITest extends TestCase {
     /**
      * Verify if the scrollable cursor APIs are functioning properly
      */
+    @Override
     protected void verify() {
         if (employeeStream.hasNext() || employeeStream.hasPrevious() || employeeStream.isLast() ||
             employeeStream.isFirst()) {

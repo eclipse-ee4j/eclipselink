@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,12 +40,14 @@ public class ReadOnlyClassManyToManyTestCase extends AutoVerifyTestCase {
         super();
     }
 
+    @Override
     public void reset() {
         originalPhone.areaCode = origAreaCode;
         rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     protected void setup() {
         beginTransaction();
         originalEmployee = (Employee)getSession().readObject(Employee.class);
@@ -60,10 +62,12 @@ public class ReadOnlyClassManyToManyTestCase extends AutoVerifyTestCase {
         ((Phone)cloneEmp.getPhoneNumbers().firstElement()).setAreaCode("000");
     }
 
+    @Override
     protected void test() {
         uow.commit();
     }
 
+    @Override
     protected void verify() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         // Get the version from the database and compare to the original.

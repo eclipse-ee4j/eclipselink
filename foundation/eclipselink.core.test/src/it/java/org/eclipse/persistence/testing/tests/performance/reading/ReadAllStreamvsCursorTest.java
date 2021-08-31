@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ public class ReadAllStreamvsCursorTest extends PerformanceComparisonTestCase {
     /**
      * Read all employees with cursored stream.
      */
+    @Override
     public void test() throws Exception {
         ReadAllQuery query = new ReadAllQuery(Employee.class);
         query.useCursoredStream(1, 1);
@@ -47,6 +48,7 @@ public class ReadAllStreamvsCursorTest extends PerformanceComparisonTestCase {
      */
     public void addReadAllScrollableCursorTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 ReadAllQuery query = new ReadAllQuery(Employee.class);
                 query.useScrollableCursor();

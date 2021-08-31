@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,6 +38,7 @@ public class JUnitTestCase extends AutoVerifyTestCase {
     /**
      * Run the JUnit "setUp" method.
      */
+    @Override
     public void setup() throws Throwable {
         try {
             Method setUp = testCase.getClass().getMethod("setUp", new Class[0]);
@@ -53,6 +54,7 @@ public class JUnitTestCase extends AutoVerifyTestCase {
     /**
      * Run the JUnit "tearDown" method.
      */
+    @Override
     public void reset() throws Throwable {
         try {
             Method tearDown = testCase.getClass().getMethod("tearDown", new Class[0]);
@@ -68,6 +70,7 @@ public class JUnitTestCase extends AutoVerifyTestCase {
     /**
      * Run the JUnit "runTest" method.
      */
+    @Override
     public void test() throws Throwable {
         try {
             Method runTest = null;

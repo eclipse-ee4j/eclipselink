@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,11 +19,13 @@ import org.eclipse.persistence.testing.framework.*;
 
 public class EntityContainerTestBase extends AutoVerifyTestCase {
 
+    @Override
     public void setup() {
         CMP3TestModel.createEntityManager();
         CMP3TestModel.getServerSession().setSessionLog(getSession().getSessionLog());
     }
 
+    @Override
     public void reset() {
         if(getEntityManager().getTransaction().isActive()) {
             try {
@@ -37,6 +39,7 @@ public class EntityContainerTestBase extends AutoVerifyTestCase {
     /**
      * Start a new JTS transaction.
      */
+    @Override
     public void beginTransaction() {
         getTransaction().begin();
     }
@@ -44,6 +47,7 @@ public class EntityContainerTestBase extends AutoVerifyTestCase {
     /**
      * Commit the existing JTS transaction.
      */
+    @Override
     public void commitTransaction() {
         getTransaction().commit();
     }
@@ -51,6 +55,7 @@ public class EntityContainerTestBase extends AutoVerifyTestCase {
     /**
      * Roll back the existing JTS transaction.
      */
+    @Override
     public void rollbackTransaction() {
         if (getTransaction().isActive()){
             getTransaction().rollback();

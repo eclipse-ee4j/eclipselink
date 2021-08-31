@@ -22,6 +22,7 @@ public class TranslatedKeyInheritanceTestCase extends org.eclipse.persistence.te
     /**
      * This method was created in VisualAge.
      */
+    @Override
     public void reset() {
         getAbstractSession().rollbackTransaction();
     }
@@ -29,6 +30,7 @@ public class TranslatedKeyInheritanceTestCase extends org.eclipse.persistence.te
     /**
      * This method was created in VisualAge.
      */
+    @Override
     protected void setup() {
         getAbstractSession().beginTransaction();
 
@@ -46,6 +48,7 @@ public class TranslatedKeyInheritanceTestCase extends org.eclipse.persistence.te
     /**
      * This method was created in VisualAge.
      */
+    @Override
     public void test() {
         // READ A GRASSHOPPER
         GrassHopper grassHopper = (GrassHopper)getSession().readObject(GrassHopper.class);
@@ -61,6 +64,7 @@ public class TranslatedKeyInheritanceTestCase extends org.eclipse.persistence.te
     /**
      * This method was created in VisualAge.
      */
+    @Override
     public void verify() {
     }
 }

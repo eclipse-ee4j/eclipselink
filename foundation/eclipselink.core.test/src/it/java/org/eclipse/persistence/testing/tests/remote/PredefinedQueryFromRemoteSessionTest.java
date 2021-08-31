@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,17 +43,20 @@ public class PredefinedQueryFromRemoteSessionTest extends TestCase {
         setDescription("Tests that named queries defined in ServerSession work in RemoteSession.");
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         serverSession.removeQuery(QUERY_NAME);
     }
 
+    @Override
     protected void setup() {
         // get the server session from the RemoteModel - it is strange that getServerSession() returns a client session
         serverSession = ((ClientSession)org.eclipse.persistence.testing.tests.remote.RemoteModel.getServerSession()).getParent();
 
     }
 
+    @Override
     protected void test() {
 
         Vector employees = new Vector();
@@ -78,6 +81,7 @@ public class PredefinedQueryFromRemoteSessionTest extends TestCase {
         }
     }
 
+    @Override
     protected void verify() throws Exception {
         // If any errors, throw them here
         if (storedException != null) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ public class QueryTimeoutConnectionReleasedTest extends TestCase {
         setDescription("Test the ServerSession releases pooled connections with a query returning a cursor and query timeout set");
     }
 
+    @Override
     public void setup() {
         preConnectionsAvailable = 0;
         postConnectionsAvailable = 0;
@@ -47,6 +48,7 @@ public class QueryTimeoutConnectionReleasedTest extends TestCase {
         serverSession.login();
     }
 
+    @Override
     public void test() {
         if (getSession().getPlatform().isSymfoware()) {
             throwWarning("Test QueryTimeoutConnectionReleasedTest skipped for this platform, "
@@ -77,6 +79,7 @@ public class QueryTimeoutConnectionReleasedTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         // It is expected that the query timeout was exceeded, and also the number of connections available after the exception is the same as before
         if (queryTimeoutExceeded) {
@@ -88,6 +91,7 @@ public class QueryTimeoutConnectionReleasedTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         if (this.serverSession != null) {
             serverSession.logout();

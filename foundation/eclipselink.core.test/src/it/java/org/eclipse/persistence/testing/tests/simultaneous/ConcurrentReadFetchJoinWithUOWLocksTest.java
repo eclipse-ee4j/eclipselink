@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,6 +43,7 @@ public class ConcurrentReadFetchJoinWithUOWLocksTest extends AutoVerifyTestCase 
 
     protected boolean deadlockDetected = false;
 
+    @Override
     public void setup(){
         deadlockDetected = false;
         this.getExecutor().swapServerSession();
@@ -61,6 +62,7 @@ public class ConcurrentReadFetchJoinWithUOWLocksTest extends AutoVerifyTestCase 
         uow.release();
     }
 
+    @Override
     public void test(){
         Server server = this.getServerSession();
         UnitOfWork uow = server.acquireUnitOfWork();
@@ -102,12 +104,14 @@ public class ConcurrentReadFetchJoinWithUOWLocksTest extends AutoVerifyTestCase 
         }
     }
 
+    @Override
     public void verify(){
         if (deadlockDetected){
             throw new TestErrorException("Deadlock detected in UnitOfWork when reading a joined 1-1.");
         }
     }
 
+    @Override
     public void reset(){
         ConcurrentProject.RUNNING_TEST = ConcurrentProject.NONE;
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -131,6 +135,7 @@ public class ConcurrentReadFetchJoinWithUOWLocksTest extends AutoVerifyTestCase 
             this.idToUse = id;
         }
 
+        @Override
         public void run(){
             org.eclipse.persistence.queries.ReadAllQuery query = new org.eclipse.persistence.queries.ReadAllQuery(ConcurrentLargeProject.class);
             query.setSelectionCriteria(query.getExpressionBuilder().get("id").equal(idToUse));
@@ -147,6 +152,7 @@ public class ConcurrentReadFetchJoinWithUOWLocksTest extends AutoVerifyTestCase 
             this.uow = uow;
         }
 
+        @Override
         public void run(){
             uow.commit();
         }

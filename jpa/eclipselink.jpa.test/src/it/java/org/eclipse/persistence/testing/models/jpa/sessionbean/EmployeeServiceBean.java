@@ -34,11 +34,13 @@ public class EmployeeServiceBean implements EmployeeService {
     @PersistenceContext(unitName="sessionbean")
     protected EntityManager entityManager;
 
+    @Override
     public List findAll() {
         Query query = entityManager.createQuery("Select e from Employee e");
         return query.getResultList();
     }
 
+    @Override
     public Employee findById(int id) {
         Employee employee = entityManager.find(Employee.class, Integer.valueOf(id));
         if (employee != null) {
@@ -47,12 +49,14 @@ public class EmployeeServiceBean implements EmployeeService {
         return employee;
     }
 
+    @Override
     public List findByFirstName(String fname) {
         //NamedQuery("findAllFieldAccessEmployeesByFirstName")
         Query query = entityManager.createQuery("SELECT e FROM Employee e where e.firstName = :fname").setParameter("fname", fname);
     query.setHint("eclipselink.cache-usage", "CheckCacheOnly");
         return query.getResultList();
     }
+    @Override
     public Employee fetchById(int id) {
         Employee employee = entityManager.find(Employee.class, Integer.valueOf(id));
         employee.getAddress();
@@ -60,10 +64,12 @@ public class EmployeeServiceBean implements EmployeeService {
         return employee;
     }
 
+    @Override
     public void update(Employee employee) {
         entityManager.merge(employee);
     }
 
+    @Override
     public int insert(Employee employee) {
         entityManager.persist(employee);
         if (employee.getDepartment() != null) {
@@ -73,6 +79,7 @@ public class EmployeeServiceBean implements EmployeeService {
         return employee.getId();
     }
 
+   @Override
    public void delete(Employee employee) {
          Employee emp = entityManager.find(Employee.class, employee.getId());
         entityManager.remove(emp);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,6 +56,7 @@ public class QueryCacheTest extends TestCase {
         }
     }
 
+    @Override
     public void test() {
         Vector results = (Vector)getSession().executeQuery(QueryCacheMultithreadedTest.CACHING_QUERY_NAME, args);
         results1 = results.size();
@@ -68,6 +69,7 @@ public class QueryCacheTest extends TestCase {
         results3 = results.size();
     }
 
+    @Override
     public void verify() {
         if (results1 != expectedResults) {
             throw new TestErrorException("Initial Query did not yield the expected number of results: " + results1);

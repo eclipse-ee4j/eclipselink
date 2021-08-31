@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ public class ServerSessionReadPoolTypeTest extends AutoVerifyTestCase {
         setDescription("This test validates the type of ServerSession's readConnectionPool");
     }
 
+    @Override
     public void setup() {
         DatabaseLogin login = (DatabaseLogin)getSession().getLogin().clone();
         serverSession = new ServerSession(login, 1, 1);
@@ -38,6 +39,7 @@ public class ServerSessionReadPoolTypeTest extends AutoVerifyTestCase {
         serverSession.login();
     }
 
+    @Override
     public void verify() {
         Class readPoolClass = serverSession.getReadConnectionPool().getClass();
         String readPoolClassName = Helper.getShortClassName(readPoolClass);
@@ -52,6 +54,7 @@ public class ServerSessionReadPoolTypeTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void reset() {
         if (serverSession != null) {
             serverSession.logout();

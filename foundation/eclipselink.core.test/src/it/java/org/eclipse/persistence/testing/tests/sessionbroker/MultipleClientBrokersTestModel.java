@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class MultipleClientBrokersTestModel extends org.eclipse.persistence.test
 
     }
 
+    @Override
     public void addTests() {
         addTest(getClientBrokerTestSuite());
     }
@@ -97,6 +98,7 @@ public class MultipleClientBrokersTestModel extends org.eclipse.persistence.test
     /**
      * Because this changes the database it must put it back to a valid state.
      */
+    @Override
     public
 
     void reset() {
@@ -107,6 +109,7 @@ public class MultipleClientBrokersTestModel extends org.eclipse.persistence.test
     /**
      * This method was created in VisualAge.
      */
+    @Override
     public void setup() {
         createTables();
     }

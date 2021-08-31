@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class QueryAndDescriptorCacheHitTest extends CacheHitTest {
         originalObject = PopulationManager.getDefaultManager().getObject(Employee.class, "0001");
     }
 
+    @Override
     protected void setup() {
         super.setup();
         descriptor = getSession().getClassDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
@@ -42,11 +43,13 @@ public class QueryAndDescriptorCacheHitTest extends CacheHitTest {
         firstName = emp.getFirstName();
     }
 
+    @Override
     public void reset() {
         super.reset();
         descriptor.setShouldDisableCacheHits(orgDisableCacheHits);
     }
 
+    @Override
     protected Object readObject() {
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression exp = (builder.get("id").equal(((Employee)objectToRead).getId()));

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,12 +35,14 @@ public class TransparentIndirectionAddRemoveTest extends TransactionalTestCase {
         setDescription("Test the add/remove optimization of indirect collections with change tracking.");
     }
 
+    @Override
     public void setup(){
         CollectionMapping mapping = (CollectionMapping)getSession().getClassDescriptor(FieldOffice.class).getMappingForAttributeName("salespeople");
         lazyInstantiationForSalesPeople = mapping.shouldUseLazyInstantiationForIndirectCollection();
         mapping.setUseLazyInstantiationForIndirectCollection(true);
     }
 
+    @Override
     public void test() {
         testAddRemove();
         testSetUnset();
@@ -138,6 +140,7 @@ public class TransparentIndirectionAddRemoveTest extends TransactionalTestCase {
         }
     }
 
+    @Override
     public void reset(){
         CollectionMapping mapping = (CollectionMapping)getSession().getClassDescriptor(FieldOffice.class).getMappingForAttributeName("salespeople");
         mapping.setUseLazyInstantiationForIndirectCollection(lazyInstantiationForSalesPeople);

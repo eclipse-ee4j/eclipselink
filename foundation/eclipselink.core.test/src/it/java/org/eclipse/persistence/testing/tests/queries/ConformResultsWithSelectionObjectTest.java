@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,12 +21,14 @@ import org.eclipse.persistence.testing.models.legacy.*;
 public class ConformResultsWithSelectionObjectTest extends ConformResultsInUnitOfWorkTest {
     Object selectionObject;
 
+    @Override
     public void buildConformQuery() {
         conformedQuery = new ReadObjectQuery();
         ((ReadObjectQuery)conformedQuery).setSelectionObject(selectionObject);
         conformedQuery.conformResultsInUnitOfWork();
     }
 
+    @Override
     public void prepareTest() {
         selectionObject = new Employee();
         ((Employee)selectionObject).firstName = "Bobert";
@@ -34,6 +36,7 @@ public class ConformResultsWithSelectionObjectTest extends ConformResultsInUnitO
         unitOfWork.registerObject(selectionObject);
     }
 
+    @Override
     public void verify() {
         if (result == null) {
             throw new TestErrorException("object existed in unit of work but not returned in query");

@@ -382,7 +382,7 @@ public class PersistenceUnit {
      * INTERNAL:
      */
     public void initPersistenceUnitProperties() {
-        persistenceUnitProperties = new HashMap<String, Object>();
+        persistenceUnitProperties = new HashMap<>();
 
         // Determine how much validation we want to do. For now, last one
         // in wins (in the case of multiple settings) and we ignore null
@@ -407,7 +407,7 @@ public class PersistenceUnit {
      * INTERNAL:
      */
     protected void initXMLEntityMappings() {
-        xmlEntityMappings = new ArrayList<XMLEntityMappings>();
+        xmlEntityMappings = new ArrayList<>();
 
         // Load the orm.xml if it exists.
         addXMLEntityMappings(MetadataHelper.JPA_ORM_FILE);
@@ -445,8 +445,8 @@ public class PersistenceUnit {
         // 2 - Iterate through the classes that are defined in the <mapping>
         // files and add them to the map. This will merge the accessors where
         // necessary.
-        HashMap<String, EntityAccessor> entities = new HashMap<String, EntityAccessor>();
-        HashMap<String, EmbeddableAccessor> embeddables = new HashMap<String, EmbeddableAccessor>();
+        HashMap<String, EntityAccessor> entities = new HashMap<>();
+        HashMap<String, EmbeddableAccessor> embeddables = new HashMap<>();
 
         for (XMLEntityMappings entityMappings : xmlEntityMappings) {
             entityMappings.initPersistenceUnitClasses(entities, embeddables);

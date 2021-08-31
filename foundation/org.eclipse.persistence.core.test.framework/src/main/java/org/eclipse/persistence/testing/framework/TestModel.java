@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -137,6 +137,7 @@ public class TestModel extends TestCollection {
      * The subclasses must overwrite this method. To add tests to the model.
      * It could be collection of test suites or test models themselves.
      */
+    @Override
     public void addTests() {
     }
 
@@ -144,6 +145,7 @@ public class TestModel extends TestCollection {
      * The subclasses must overwrite this method. To add tests to the model.
      * It could be collection of test suites or test models themselves.
      */
+    @Override
     public void addSRGTests() {
     }
 
@@ -197,6 +199,7 @@ public class TestModel extends TestCollection {
     /**
      * Executes all the test entities in the collection.
      */
+    @Override
     public void execute(TestExecutor executor) throws Throwable {
         setSummary(new TestResultsSummary(this));
         setExecutor(executor);
@@ -255,6 +258,7 @@ public class TestModel extends TestCollection {
     /**
      * Format the test output on the print stream.
      */
+    @Override
     protected void logFootNote(Writer log) {
         try {
             log.write(org.eclipse.persistence.internal.helper.Helper.cr() + getIndentationString() + "RESULTS OF TEST MODEL: " + getName() + org.eclipse.persistence.internal.helper.Helper.cr());
@@ -266,6 +270,7 @@ public class TestModel extends TestCollection {
      * Format the test output on the print stream.
      * This method is added to migrate tests to Ora*Tst
      */
+    @Override
     protected void logRegressionHeadNote(Writer log) {
         try {
             log.write(org.eclipse.persistence.internal.helper.Helper.cr() + getIndentationString() + "TEST MODEL NAME: " + getName() + org.eclipse.persistence.internal.helper.Helper.cr());
@@ -277,6 +282,7 @@ public class TestModel extends TestCollection {
     /**
      * Format the test output on the print stream.
      */
+    @Override
     protected void logHeadNote(Writer log) {
         try {
             log.write(org.eclipse.persistence.internal.helper.Helper.cr() + getIndentationString() + "VERSION: " + org.eclipse.persistence.sessions.DatabaseLogin.getVersion());
@@ -297,6 +303,7 @@ public class TestModel extends TestCollection {
     /**
      * If setupEntity has been called then this must be called to reset the model again.
      */
+    @Override
     public void resetEntity() {
         if (isSetup()) {
             setTests(getOriginalTests());
@@ -401,6 +408,7 @@ public class TestModel extends TestCollection {
     /**
      * To set up the model also look at resetEntity
      */
+    @Override
     public void setupEntity() throws Throwable {
         if (isSetup()) {
             return;
@@ -454,6 +462,7 @@ public class TestModel extends TestCollection {
      * Returns the number of tests in this suite.
      * If not setup, return the finished tests.
      */
+    @Override
     public int testCount() {
         if (isSetup() || (!getTests().isEmpty())) {
             return super.testCount();
@@ -465,6 +474,7 @@ public class TestModel extends TestCollection {
      * Returns the tests as an enumeration.
      * If not setup, return the finished tests.
      */
+    @Override
     public Enumeration tests() {
         if (isSetup() || (!getTests().isEmpty())) {
             return super.tests();
@@ -476,6 +486,7 @@ public class TestModel extends TestCollection {
      * Returns the test at the given index.
      * If not setup, return the finished tests.
      */
+    @Override
     public junit.framework.Test testAt(int index) {
         if (isSetup() || (!getTests().isEmpty())) {
             return super.testAt(index);

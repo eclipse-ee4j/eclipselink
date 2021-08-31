@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,13 +31,16 @@ public class MultipleTableSystem extends TestSystem {
         project = new MultipleTableProject();
     }
 
+    @Override
     public void addDescriptors(DatabaseSession session) {
         session.addDescriptors(project);
     }
 
+    @Override
     public void createTables(DatabaseSession session) {
         new MultipleTableTableCreator().replaceTables(session);
     }
+    @Override
     public void populate(DatabaseSession session) {
         PopulationManager manager = PopulationManager.getDefaultManager();
         UnitOfWork uow = session.acquireUnitOfWork();

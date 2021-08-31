@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ public class BatchReadValueholderTest extends TestCase {
         setName(getName() + batchType);
     }
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
 
@@ -56,12 +57,14 @@ public class BatchReadValueholderTest extends TestCase {
         }
     }
 
+    @Override
     public void test() {
         ReadAllQuery query = new ReadAllQuery(Employee.class);
         query.addBatchReadAttribute("manager");
         employees = (Vector)getSession().executeQuery(query);
     }
 
+    @Override
     public void verify() {
         Iterator i = employees.iterator();
         while (i.hasNext()) {
@@ -74,6 +77,7 @@ public class BatchReadValueholderTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }

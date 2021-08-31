@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,10 +48,12 @@ public class SelectSimpleNullTest extends org.eclipse.persistence.testing.tests.
         return theTest;
     }
 
+    @Override
     public Expression getOriginalObjectExpression() {
         return originalObjectExpression;
     }
 
+    @Override
     public void setOriginalObjectExpression(Expression theExpression) {
         originalObjectExpression = theExpression;
     }
@@ -67,6 +69,7 @@ public class SelectSimpleNullTest extends org.eclipse.persistence.testing.tests.
         return nullTestEmployee;
     }
 
+    @Override
     public void setup() {
         //Set comparer here. ET
         NullDomainObjectComparer comparer = new NullDomainObjectComparer();
@@ -85,6 +88,7 @@ public class SelectSimpleNullTest extends org.eclipse.persistence.testing.tests.
         super.setup();
     }
 
+    @Override
     public void reset() {
         getDatabaseSession().deleteObject(getNullTestEmployee());
         super.reset();

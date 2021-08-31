@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -69,6 +69,7 @@ public class IndirectContainerTestDatabaseRemote extends IndirectContainerTestDa
         return unitOfWork;
     }
 
+    @Override
     protected AbstractOrder readOrder(AbstractOrder key) {
         return (AbstractOrder)this.getUnitOfWork().readObject(key);
     }
@@ -84,6 +85,7 @@ public class IndirectContainerTestDatabaseRemote extends IndirectContainerTestDa
      * set up test fixtures:
      *   swap out database session
      */
+    @Override
     protected void setUp() {
         if (!getSession().isRemoteSession()) {
             throw new TestProblemException("session should be a remote session");
@@ -91,6 +93,7 @@ public class IndirectContainerTestDatabaseRemote extends IndirectContainerTestDa
         super.setUp();
     }
 
+    @Override
     public void updateOrder(AbstractOrder order) {
         this.commitUnitOfWork();
     }
@@ -98,6 +101,7 @@ public class IndirectContainerTestDatabaseRemote extends IndirectContainerTestDa
     /**
      * write out the new order
      */
+    @Override
     protected void writeNewOrder(AbstractOrder order) {
         UnitOfWork uow = this.getSession().acquireUnitOfWork();
         this.registerNewOrderIn(order, uow);

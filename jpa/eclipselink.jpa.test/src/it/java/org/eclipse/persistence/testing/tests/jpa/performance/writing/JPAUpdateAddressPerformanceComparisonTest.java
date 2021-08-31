@@ -34,6 +34,7 @@ public class JPAUpdateAddressPerformanceComparisonTest extends PerformanceRegres
     /**
      * Get an address id.
      */
+    @Override
     public void setup() {
         EntityManager manager = createEntityManager();
         Address address = (Address)manager.createQuery("Select a from Address a").getResultList().get(0);
@@ -46,6 +47,7 @@ public class JPAUpdateAddressPerformanceComparisonTest extends PerformanceRegres
     /**
      * Update address.
      */
+    @Override
     public void test() throws Exception {
         EntityManager manager = createEntityManager();
         manager.getTransaction().begin();

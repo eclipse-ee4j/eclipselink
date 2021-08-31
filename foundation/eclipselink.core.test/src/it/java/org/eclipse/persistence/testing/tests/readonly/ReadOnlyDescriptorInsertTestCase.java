@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,10 +41,12 @@ public class ReadOnlyDescriptorInsertTestCase extends AutoVerifyTestCase {
         super();
     }
 
+    @Override
     protected void setup() {
         beginTransaction();
     }
 
+    @Override
     public void reset() {
         getSession().getProject().setDefaultReadOnlyClasses(new Vector());
         rollbackTransaction();
@@ -52,6 +54,7 @@ public class ReadOnlyDescriptorInsertTestCase extends AutoVerifyTestCase {
 
     }
 
+    @Override
     protected void test() {
         // Read the country object in outside the unit of work
         Country count = (Country)getSession().readObject(Country.class);
@@ -80,6 +83,7 @@ public class ReadOnlyDescriptorInsertTestCase extends AutoVerifyTestCase {
     /**
      * Check if the read only flag in the descriptor is recognized
      */
+    @Override
     protected void verify() {
         getSession().getIdentityMapAccessor().removeFromIdentityMap(address);
 

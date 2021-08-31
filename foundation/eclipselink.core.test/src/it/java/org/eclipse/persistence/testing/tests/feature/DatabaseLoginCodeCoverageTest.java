@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,15 +27,18 @@ public class DatabaseLoginCodeCoverageTest extends AutoVerifyTestCase {
     private DatabaseLogin login;
     private String testFailures;
 
+    @Override
     public void setup() {
         login = new DatabaseLogin();
         testFailures = "";
     }
 
+    @Override
     public void test() {
         runTests();
     }
 
+    @Override
     public void verify() {
         if (testFailures.length() > 0) {
             throw new TestErrorException("Tests failures from DatabaseLogin: " + testFailures);
@@ -613,6 +616,7 @@ class DatabaseLoginWrapper extends DatabaseLogin {
         setDriverClassName("oracle.jdbc.OracleDriver");
     }
 
+    @Override
     public boolean driverIs(String name) {
         return super.driverIs(name);
     }
@@ -622,6 +626,7 @@ class DatabaseLoginWrapper extends DatabaseLogin {
         return super.getDefaultConnector();
     }
 
+    @Override
     public boolean oracleDriverIs(String urlPrefix) {
         return super.oracleDriverIs(urlPrefix);
     }
@@ -635,18 +640,22 @@ class StupidConnector implements Connector {
         super();
     }
 
+    @Override
     public Object clone() {
         return null;
     }
 
+    @Override
     public Connection connect(Properties properties, Session session) {
         return null;
     }
 
+    @Override
     public String getConnectionDetails() {
         return "N/A";
     }
 
+    @Override
     public void toString(PrintWriter writer) {
         writer.println("StupidConnector");
     }

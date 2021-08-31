@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,6 +55,7 @@ public class QueryExecutionTimeSetOnBuildObjectTest extends TransactionalTestCas
         setDescription("Test that no duplicate sql is generated for nested join queries without indirection");
     }
 
+    @Override
     public void setup() {
         super.setup();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -151,6 +152,7 @@ public class QueryExecutionTimeSetOnBuildObjectTest extends TransactionalTestCas
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test() {
         // query from address -> policyHolder -> Policy to trigger nested joins (no indirection)
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -159,6 +161,7 @@ public class QueryExecutionTimeSetOnBuildObjectTest extends TransactionalTestCas
         uow.release();
     }
 
+    @Override
     public void verify() {
         // Insurance model expected SQL with configured adjustments in setup()
         // 1 x main select with joining from address -> policyholder
@@ -185,6 +188,7 @@ public class QueryExecutionTimeSetOnBuildObjectTest extends TransactionalTestCas
         }
     }
 
+    @Override
     public void reset() {
         super.reset();
 

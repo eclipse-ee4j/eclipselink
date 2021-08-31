@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,16 +39,20 @@ public class MultithreadTestCase extends AutoVerifyTestCase {
             state = INITIAL;
         }
 
+        @Override
         public void addError(junit.framework.Test test, Throwable error) {
         }
 
+        @Override
         public void addFailure(junit.framework.Test test, junit.framework.AssertionFailedError error) {
         }
 
+        @Override
         public void endTest(junit.framework.Test test) {
             state = FINISHED;
         }
 
+        @Override
         public void startTest(junit.framework.Test test) {
             state = STARTED;
         }
@@ -77,10 +81,12 @@ public class MultithreadTestCase extends AutoVerifyTestCase {
             state = INITIAL;
         }
 
+        @Override
         public void finishedTest() {
             state = FINISHED;
         }
 
+        @Override
         public void notifyException(Throwable exception) {
             this.exception = exception;
         }
@@ -155,6 +161,7 @@ public class MultithreadTestCase extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         setupSession();
@@ -250,6 +257,7 @@ public class MultithreadTestCase extends AutoVerifyTestCase {
 
     // Note that currently there is nothing done
     // to resolve possible deadlocks.
+    @Override
     protected void test() {
         //run test threads
         for (int i = 0; i < numberOfTests; i++) {
@@ -268,6 +276,7 @@ public class MultithreadTestCase extends AutoVerifyTestCase {
         } while (numberOfCompletedTests < numberOfTests);
     }
 
+    @Override
     protected void verify() {
         EclipseLinkException exception = null;
         for (int i = 0; (i < numberOfTests) && (exception == null); i++) {
@@ -290,6 +299,7 @@ public class MultithreadTestCase extends AutoVerifyTestCase {
     // in case reset is called more than once -
     // which may happen in case of test failure due to
     // the resent changes in AutoVerifyTestCase.
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         if (originalSession != null) {
@@ -323,6 +333,7 @@ public class MultithreadTestCase extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void logResult(Writer log) {
         super.logResult(log);
 

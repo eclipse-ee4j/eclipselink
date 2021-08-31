@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -143,6 +143,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
         return getTotalSQLCalls("DELETE");
     }
 
+    @Override
     public void preExecuteQuery(SessionEvent event) {
         //System.err.println("*** QuerySQLTracker.preExecuteQuery(" + event.getQuery() + ")");
         //Thread.dumpStack();
@@ -150,6 +151,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
         getQueries().add(result);
     }
 
+    @Override
     public void postExecuteQuery(SessionEvent event) {
         if (getCurrentResult().query == null) {
             getCurrentResult().setQuery(event.getQuery());
@@ -239,6 +241,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
             return this.tracker;
         }
 
+        @Override
         public synchronized void log(SessionLogEntry entry) {
 
             if (entry.getNameSpace() != null

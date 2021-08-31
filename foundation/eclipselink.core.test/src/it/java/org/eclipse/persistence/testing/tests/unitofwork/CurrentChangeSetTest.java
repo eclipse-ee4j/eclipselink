@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ public class CurrentChangeSetTest extends AutoVerifyTestCase {
     int countBeforeCommit;
     int countAfterCommit;
 
+    @Override
     public void reset() {
         if (getAbstractSession().isInTransaction()) {
             getAbstractSession().rollbackTransaction();
@@ -32,12 +33,14 @@ public class CurrentChangeSetTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void setup() {
         getAbstractSession().beginTransaction();
         countBeforeCommit = 0;
         countAfterCommit = 0;
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Employee emp = (Employee)uow.registerObject(new Employee());
@@ -46,6 +49,7 @@ public class CurrentChangeSetTest extends AutoVerifyTestCase {
         countAfterCommit = uow.getCurrentChanges().getAllChangeSets().size();
     }
 
+    @Override
     public void verify() {
         if (countBeforeCommit == 0) {
             throw new TestErrorException("Invalid number of change sets before commit [" + countBeforeCommit +

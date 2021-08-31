@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,7 @@ public class ReadOnlyTestModel extends TestModel {
         setDescription("This model contains tests that must be verified manually.");
     }
 
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new ReadOnlySystem());
         addRequiredSystem(new InheritanceSystem());
@@ -33,6 +34,7 @@ public class ReadOnlyTestModel extends TestModel {
         addRequiredSystem(new org.eclipse.persistence.testing.models.aggregate.AggregateSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(getReadTestSuite());
         addTest(getReadOnlyClassesTestSuite());

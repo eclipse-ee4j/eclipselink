@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceException;
 
 import junit.framework.Test;
+import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
@@ -49,10 +50,11 @@ public class DDLGenerationExtendTablesJUnitTestSuite extends
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
+    @Override
     public void testSetup() {
         // Create the EM.  This might unnecessarily drop and create the tables
         EntityManager em = createEntityManager(DDL_PU);
-        DatabaseSessionImpl session = this.getDatabaseSession(DDL_PU);
+        DatabaseSessionImpl session = getDatabaseSession(DDL_PU);
 
         TableCreator defaultTableCreator = new DefaultTableGenerator(session.getProject(), true).generateDefaultTableCreator();
         defaultTableCreator.setIgnoreDatabaseException(true);
@@ -69,7 +71,7 @@ public class DDLGenerationExtendTablesJUnitTestSuite extends
         } catch (PersistenceException e){
             exception = e;
         }
-        this.assertNotNull("setup failed because a query on a drop table did not throw an exception.", exception);
+        assertNotNull("setup failed because a query on a drop table did not throw an exception.", exception);
 
         //create some empty tables so that we can test they are altered correctly later.
         TableCreator tbCreator = new EmptyTableCreator();

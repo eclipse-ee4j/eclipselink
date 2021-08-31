@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ import org.eclipse.persistence.testing.models.interfaces.*;
 public class VariableOneToOneDeleteTest extends TransactionalTestCase {
     private Employee employee;
 
+    @Override
     public void setup() {
         super.setup();
 
@@ -37,6 +38,7 @@ public class VariableOneToOneDeleteTest extends TransactionalTestCase {
         uow.commit();
     }
 
+    @Override
     public void test() {
         employee = (Employee)getSession().readObject(Employee.class, new ExpressionBuilder().get("name").equal("Guy"));
 
@@ -51,6 +53,7 @@ public class VariableOneToOneDeleteTest extends TransactionalTestCase {
         uow.commit();
     }
 
+    @Override
     protected void verify() {
         if (!verifyDelete(employee)) {
             throw new TestErrorException("The object '" + employee + "' was not completely deleted from the database.");

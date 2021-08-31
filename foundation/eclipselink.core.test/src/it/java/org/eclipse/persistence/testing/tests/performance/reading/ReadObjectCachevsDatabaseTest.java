@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,6 +40,7 @@ public class ReadObjectCachevsDatabaseTest extends PerformanceComparisonTestCase
     /**
      * Find any employee.
      */
+    @Override
     public void setup() {
         Expression expression = new ExpressionBuilder().get("firstName").equal("Bob");
         employee = (Employee)getSession().readObject(Employee.class, expression);
@@ -64,6 +65,7 @@ public class ReadObjectCachevsDatabaseTest extends PerformanceComparisonTestCase
     /**
      * Read employee and clear the cache, test database read.
      */
+    @Override
     public void test() throws Exception {
         getSession().getIdentityMapAccessor().removeFromIdentityMap(employee);
         getSession().executeQuery(idQuery);
@@ -74,6 +76,7 @@ public class ReadObjectCachevsDatabaseTest extends PerformanceComparisonTestCase
      */
     public void addCachedReadObjectTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 getSession().executeQuery(idQuery);
             }
@@ -88,6 +91,7 @@ public class ReadObjectCachevsDatabaseTest extends PerformanceComparisonTestCase
      */
     public void addInMemoryReadObjectTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 getSession().executeQuery(cacheOnlyNameQuery);
             }
@@ -102,6 +106,7 @@ public class ReadObjectCachevsDatabaseTest extends PerformanceComparisonTestCase
      */
     public void addCacheThenDatabaseMissReadObjectTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 getSession().getIdentityMapAccessor().removeFromIdentityMap(employee);
                 getSession().executeQuery(cacheDatabaseNameQuery);

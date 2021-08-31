@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,10 +41,12 @@ public class EmployeeWithSpacesSystem extends TestSystem {
         project = new EmployeeWithSpacesProject();
     }
 
+    @Override
     public void addDescriptors(DatabaseSession session) {
         session.addDescriptors(project);
     }
 
+    @Override
     public void createTables(DatabaseSession session) {
         if (session.getPlatform().isSymfoware()) {
             return; // Symfoware does not allow spaces in tables or columns.");
@@ -57,6 +59,7 @@ public class EmployeeWithSpacesSystem extends TestSystem {
     /**
      * Return a connected session using the default login.
      */
+    @Override
     public DatabaseSession login() {
         DatabaseSession session;
 
@@ -93,6 +96,7 @@ public class EmployeeWithSpacesSystem extends TestSystem {
      * This method will instantiate all of the example instances and insert them into the database
      * using the given session.
      */
+    @Override
     public void populate(DatabaseSession session) {
         if (session.getPlatform().isSymfoware()) {
             throw new TestWarningException("Test system EmployeeWithSpacesSystem is not supported on Symfoware, "

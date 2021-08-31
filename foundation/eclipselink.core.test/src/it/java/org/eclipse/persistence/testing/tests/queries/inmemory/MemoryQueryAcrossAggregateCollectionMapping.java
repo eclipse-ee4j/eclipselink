@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,11 +40,13 @@ public class MemoryQueryAcrossAggregateCollectionMapping extends TestCase {
         setName(getName() + AgentBuilderHelper.getNameInBrackets(cls));
     }
 
+    @Override
     public void reset() {
         //clear the cache.
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
         customers = new Vector();
         queryAll = new ReadAllQuery();
@@ -60,6 +62,7 @@ public class MemoryQueryAcrossAggregateCollectionMapping extends TestCase {
         }
     }
 
+    @Override
     public void test() {
         //all the employees with project names greater than Amagedon should be
         //in the cache right now.

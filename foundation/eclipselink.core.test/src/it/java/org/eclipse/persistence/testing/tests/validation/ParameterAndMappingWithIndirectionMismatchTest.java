@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ public class ParameterAndMappingWithIndirectionMismatchTest extends ExceptionTes
         setDescription("This tests Parameter And Mapping With Indirection Mismatch (TL-ERROR 129)");
     }
 
+    @Override
     protected void setup() {
         expectedException = DescriptorException.parameterAndMappingWithIndirectionMismatch(new OneToOneMapping());
         orgIntegrityChecker = getSession().getIntegrityChecker();
@@ -44,12 +45,14 @@ public class ParameterAndMappingWithIndirectionMismatchTest extends ExceptionTes
         getSession().getIntegrityChecker().dontCatchExceptions();
     }
 
+    @Override
     public void reset() {
         if (orgIntegrityChecker != null) {
             getSession().setIntegrityChecker(orgIntegrityChecker);
         }
     }
 
+    @Override
     public void test() {
         ForeignReferenceMapping addressMapping = (ForeignReferenceMapping)descriptor().getMappingForAttributeName("address");
         try {

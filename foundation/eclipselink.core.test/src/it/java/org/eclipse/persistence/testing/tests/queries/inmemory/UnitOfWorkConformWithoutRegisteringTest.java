@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -90,11 +90,13 @@ public class UnitOfWorkConformWithoutRegisteringTest extends TestCase {
         setDescription("Test that the query conforms to changes but does not register objects.");
     }
 
+    @Override
     public void reset() {
         uow.release();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         uow = getSession().acquireUnitOfWork();
@@ -148,6 +150,7 @@ public class UnitOfWorkConformWithoutRegisteringTest extends TestCase {
         query.getInMemoryQueryIndirectionPolicy().triggerIndirection();
     }
 
+    @Override
     public void test() {
         this.result = (Vector)this.uow.executeQuery(this.query);
 
@@ -172,6 +175,7 @@ public class UnitOfWorkConformWithoutRegisteringTest extends TestCase {
         this.result3 = this.uow.executeQuery(emigrantQuery);
     }
 
+    @Override
     protected void verify() {
         // First check that reading through the unit of work properly conformed
         // to the changes made in the unit of work.

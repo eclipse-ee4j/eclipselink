@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
         setDescription("This suite tests all of the functionality of the query framework.");
     }
 
+    @Override
     public void addTests() {
         addSRGTests();
         addTest(new QueryTimeoutTest());
@@ -75,6 +76,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
     }
 
     //SRG test set is maintained by QA only, do NOT add any new test cases into it.
+    @Override
     public void addSRGTests() {
         ReadAllQuery raq2 = new ReadAllQuery();
         raq2.setReferenceClass(Employee.class);
@@ -307,6 +309,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
      */
     public TestCase buildReadOnlyQueryTest() {
         TestCase test = new TestCase() {
+            @Override
             public void test() {
                 UnitOfWork uow = getSession().acquireUnitOfWork();
                 // Test read alls.
@@ -403,6 +406,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
      */
     public TestCase buildArgumentValuesTest() {
         TestCase test = new TestCase() {
+            @Override
             public void test() {
                 // Test read alls.
                 ReadAllQuery query = new ReadAllQuery(Employee.class);
@@ -427,6 +431,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
      */
     public TestCase buildGetSQLTest() {
         TestCase test = new TestCase() {
+            @Override
             public void test() {
                 ReadAllQuery query = new ReadAllQuery(Employee.class);
                 ExpressionBuilder builder = query.getExpressionBuilder();
@@ -449,6 +454,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
      */
     public TestCase buildJoinSubclassesQueryTest() {
         TestCase test = new TestCase() {
+            @Override
             public void test() {
                 UnitOfWork uow = getSession().acquireUnitOfWork();
                 ReadAllQuery query = new ReadAllQuery(Project.class);
@@ -655,6 +661,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
         query.setName("findEmployeeByEmployee");
         query.addArgument("employee");
         query.setRedirector(new QueryRedirector() {
+                @Override
                 public Object invokeQuery(DatabaseQuery query, org.eclipse.persistence.sessions.Record arguments, org.eclipse.persistence.sessions.Session session) {
                     return arguments.get("employee");
                 }
@@ -675,6 +682,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
      */
     public TestCase buildRecordTest() {
         TestCase test = new TestCase() {
+            @Override
             public void test() {
                 ReadAllQuery query = new ReadAllQuery(Employee.class);
                 query.setShouldIncludeData(true);

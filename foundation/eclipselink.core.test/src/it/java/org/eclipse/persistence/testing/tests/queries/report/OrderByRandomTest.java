@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ public class OrderByRandomTest extends AutoVerifyTestCase {
         setDescription("Test order by with Random");
     }
 
+    @Override
     public void setup() {
         if(!getSession().getPlatform().isOracle()) {
             throw new TestWarningException("This test does not work on the this platform");
@@ -43,6 +44,7 @@ public class OrderByRandomTest extends AutoVerifyTestCase {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     public void test() {
         ExpressionBuilder eb = new ExpressionBuilder();
         ReportQuery rq = new ReportQuery(Employee.class, eb);
@@ -55,12 +57,14 @@ public class OrderByRandomTest extends AutoVerifyTestCase {
         results = (Vector)getSession().executeQuery(rq);
     }
 
+    @Override
     public void verify() {
         if (results.size() != 6) {
             throw new TestErrorException("The incorrect number of results was returned from a ReportQuery that included a random function.");
         }
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }

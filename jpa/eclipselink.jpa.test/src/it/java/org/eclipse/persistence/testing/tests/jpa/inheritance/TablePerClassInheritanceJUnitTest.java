@@ -65,6 +65,7 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() {
         super.setUp();
         clearCache();

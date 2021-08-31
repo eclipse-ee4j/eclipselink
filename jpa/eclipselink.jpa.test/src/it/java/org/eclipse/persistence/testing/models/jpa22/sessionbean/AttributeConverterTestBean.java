@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@ public class AttributeConverterTestBean implements InjectionTest {
     @PersistenceUnit(name="jpa22-sessionbean")
     private EntityManagerFactory emf;
 
+    @Override
     public boolean triggerInjection(){
         cleanup();
         EntityManager em = emf.createEntityManager();
@@ -38,6 +39,7 @@ public class AttributeConverterTestBean implements InjectionTest {
         return AttributeConverter.INJECTED_RETURN_VALUE && AttributeConverter.CONVERT_TO_DB_CALLS == 1 && AttributeConverter.CONVERT_TO_ENTITY_CALLS == 1;
     }
 
+    @Override
     public boolean triggerPreDestroy(){
         cleanup();
         emf.unwrap(JpaEntityManagerFactory.class).unwrap().close();

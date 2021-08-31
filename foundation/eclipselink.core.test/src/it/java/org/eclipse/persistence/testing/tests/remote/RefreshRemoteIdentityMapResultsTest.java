@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,15 +25,18 @@ public class RefreshRemoteIdentityMapResultsTest extends TestCase {
         setDescription("This test verifies if the refresh remote identity map feature works properly");
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     protected void setup() {
         originalObject =
                 (QueryOptionEmployee)getSession().executeQuery("refreshRemoteIdentityMapResultsQuery", QueryOptionEmployee.class);
     }
 
+    @Override
     public void test() {
         firstName = originalObject.getName();
         originalObject.setName("Godzilla");
@@ -42,6 +45,7 @@ public class RefreshRemoteIdentityMapResultsTest extends TestCase {
         getSession().executeQuery("refreshRemoteIdentityMapResultsQuery", QueryOptionEmployee.class);
     }
 
+    @Override
     protected void verify() {
         if (!(originalObject.getName().equals(firstName))) {
             throw new TestErrorException("The refresh remote identity map results test failed.");

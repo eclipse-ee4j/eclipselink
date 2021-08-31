@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,18 +38,22 @@ public class IndirectSetTestDatabase extends IndirectContainerTestDatabase {
         super(name);
     }
 
+    @Override
     protected AbstractOrder buildOrderShell() {
         return new SetOrder();
     }
 
+    @Override
     protected AbstractOrder buildTestOrderShell(String customerName) {
         return new SetOrder(customerName);
     }
 
+    @Override
     protected AbstractOrderLine newOrderLine(String item, int quanity) {
         return new SetOrderLine(item, quanity);
     }
 
+    @Override
     protected AbstractSalesRep newSalesRep(String name) {
         return new SetSalesRep(name);
     }

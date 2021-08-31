@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -110,7 +110,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
      * Convenience method. Default PU is DISABLE_SELETIVE
      */
     public void clearDSCache() {
-        super.clearCache("DISABLE_SELECTIVE");
+        clearCache("DISABLE_SELECTIVE");
     }
 
     /**
@@ -126,7 +126,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
      * Convenience method.
      */
     public EntityManager createDSEntityManager() {
-        return super.createEntityManager("DISABLE_SELECTIVE");
+        return createEntityManager("DISABLE_SELECTIVE");
     }
 
     /**
@@ -226,6 +226,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
         return JUnitTestCase.getServerSession(puName, properties);
     }
 
+    @Override
     public void setUp() {
         clearDSCache();
     }
@@ -362,7 +363,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             HashMap props = new HashMap();
             props.put(QueryHints.CACHE_RETRIEVE_MODE, CacheRetrieveMode.USE);
             props.put(QueryHints.CACHE_STORE_MODE, CacheStoreMode.BYPASS);
-            CacheableTrueEntity deletedEntity2 = (CacheableTrueEntity) em2.find(CacheableTrueEntity.class, entityToDeleteId, props);
+            CacheableTrueEntity deletedEntity2 = em2.find(CacheableTrueEntity.class, entityToDeleteId, props);
             assertTrue("The deleted entity was removed from the cache", deletedEntity2 == null);
 
             deletedEntity2 = em2.find(CacheableTrueEntity.class, entityToDeleteId);
@@ -516,7 +517,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             properties.put(QueryHints.CACHE_STORE_MODE, CacheStoreMode.REFRESH);
 
             // Re-issue the find on the original EM.
-            CacheableTrueEntity entity = (CacheableTrueEntity) em.find(CacheableTrueEntity.class, m_cacheableTrueEntity1Id, properties);
+            CacheableTrueEntity entity = em.find(CacheableTrueEntity.class, m_cacheableTrueEntity1Id, properties);
             assertTrue("CacheableTrueEntity should have been refreshed.", entity.getName().equals("testCacheRetrieveModeBypassOnFindThroughFindProperties"));
             assertTrue("CacheableTrueEntity from UOW should have been refreshed.", cachedEntity.getName().equals(entity.getName()));
             assertTrue("Entity returned should be the same instance from the UOW cache", cachedEntity == entity);
@@ -553,7 +554,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             properties.put("jakarta.persistence.cacheStoreMode", CacheStoreMode.REFRESH);
 
             // Re-issue the find on the original EM.
-            CacheableTrueEntity entity = (CacheableTrueEntity) em.find(CacheableTrueEntity.class, m_cacheableTrueEntity1Id, properties);
+            CacheableTrueEntity entity = em.find(CacheableTrueEntity.class, m_cacheableTrueEntity1Id, properties);
             assertTrue("CacheableTrueEntity should have been refreshed.", entity.getName().equals("testCacheRetrieveModeBypassOnFindThroughFindProperties"));
             assertTrue("CacheableTrueEntity from UOW should have been refreshed.", cachedEntity.getName().equals(entity.getName()));
             assertTrue("Entity returned should be the same instance from the UOW cache", cachedEntity == entity);
@@ -653,7 +654,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             // Issue a find using refresh on EM, should pick up the updated name.
             HashMap properties = new HashMap();
             properties.put(QueryHints.CACHE_STORE_MODE, CacheStoreMode.REFRESH);
-            CacheableTrueEntity entity1b = (CacheableTrueEntity) em.find(CacheableTrueEntity.class, m_cacheableTrueEntity1Id, properties);
+            CacheableTrueEntity entity1b = em.find(CacheableTrueEntity.class, m_cacheableTrueEntity1Id, properties);
             assertTrue("CacheableTrueEntity should of been refreshed.", entity1b.getName().equals(updatedName));
             closeEM(em);
 
@@ -693,7 +694,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             // Issue a find on EM1 using REFRESH.
             HashMap properties = new HashMap();
             properties.put(QueryHints.CACHE_STORE_MODE, CacheStoreMode.REFRESH);
-            CacheableTrueEntity entity1b = (CacheableTrueEntity) em.find(CacheableTrueEntity.class, m_cacheableTrueEntity1Id, properties);
+            CacheableTrueEntity entity1b = em.find(CacheableTrueEntity.class, m_cacheableTrueEntity1Id, properties);
             assertTrue("CacheableTrueEntity should be from the shared cache.", entity1b.getName().equals(updatedName));
 
             closeEM(em);
@@ -845,9 +846,9 @@ public class CacheableModelJunitTest extends JUnitTestCase {
         HashMap props = new HashMap();
         props.put(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheOnly);
 
-        CacheableTrueEntity cacheableEntity2 = (CacheableTrueEntity) em2.find(CacheableTrueEntity.class, cacheableEntity1.getId(), props);
-        CacheableTrueEntity nonCacheableEntity2a = (CacheableTrueEntity) em2.find(CacheableTrueEntity.class, nonCacheableEntity1.getId(), props);
-        ChildCacheableFalseEntity nonCacheableEntity2b = (ChildCacheableFalseEntity) em2.find(ChildCacheableFalseEntity.class, nonCacheableEntity1.getId(), props);
+        CacheableTrueEntity cacheableEntity2 = em2.find(CacheableTrueEntity.class, cacheableEntity1.getId(), props);
+        CacheableTrueEntity nonCacheableEntity2a = em2.find(CacheableTrueEntity.class, nonCacheableEntity1.getId(), props);
+        ChildCacheableFalseEntity nonCacheableEntity2b = em2.find(ChildCacheableFalseEntity.class, nonCacheableEntity1.getId(), props);
 
         assertFalse("CacheableTrueEntity was not in the cache", cacheableEntity2 == null);
         assertTrue("ChildCacheableFalseEntity was in the cache", nonCacheableEntity2a == null);

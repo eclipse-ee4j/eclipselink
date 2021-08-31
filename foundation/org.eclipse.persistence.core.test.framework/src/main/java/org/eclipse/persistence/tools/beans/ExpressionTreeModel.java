@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,9 +30,11 @@ public class ExpressionTreeModel implements TreeModel {
         this.root = expression;
     }
 
+    @Override
     public void addTreeModelListener(TreeModelListener listener) {
     }
 
+    @Override
     public Object getChild(Object parent, int index) {
         parent = ((ExpressionNode)parent).getExpression();
         if (parent instanceof CompoundExpression) {
@@ -50,6 +52,7 @@ public class ExpressionTreeModel implements TreeModel {
         return null;
     }
 
+    @Override
     public int getChildCount(Object parent) {
         parent = ((ExpressionNode)parent).getExpression();
         if (parent instanceof CompoundExpression) {
@@ -62,6 +65,7 @@ public class ExpressionTreeModel implements TreeModel {
         }
     }
 
+    @Override
     public int getIndexOfChild(Object parent, Object child) {
         parent = ((ExpressionNode)parent).getExpression();
         child = ((ExpressionNode)child).getExpression();
@@ -83,19 +87,23 @@ public class ExpressionTreeModel implements TreeModel {
     /**
      * getRoot method comment.
      */
+    @Override
     public Object getRoot() {
         return root;
     }
 
+    @Override
     public boolean isLeaf(Object node) {
         node = ((ExpressionNode)node).getExpression();
         return !((node instanceof CompoundExpression) ||
                  (node instanceof FunctionExpression));
     }
 
+    @Override
     public void removeTreeModelListener(TreeModelListener listner) {
     }
 
+    @Override
     public void valueForPathChanged(TreePath path, Object newValue) {
     }
 }

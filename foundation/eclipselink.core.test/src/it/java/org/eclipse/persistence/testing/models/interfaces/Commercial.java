@@ -22,18 +22,22 @@ public class Commercial implements Program, java.io.Serializable {
     public String description;
     public Number duration;
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public Number getDuration() {
         return duration;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setDescription(String description) {
         this.description = description;
     }
@@ -42,10 +46,12 @@ public class Commercial implements Program, java.io.Serializable {
         this.duration = Float.valueOf(duration);
     }
 
+    @Override
     public void setDuration(Number duration) {
         this.duration = duration;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }

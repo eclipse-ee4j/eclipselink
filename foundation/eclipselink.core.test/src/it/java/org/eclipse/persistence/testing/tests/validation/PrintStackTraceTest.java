@@ -34,6 +34,7 @@ public class PrintStackTraceTest extends AutoVerifyTestCase {
     /**
      * This method was created in VisualAge.
      */
+    @Override
     public void test() {
 
         // do not use logMessages(), which has been already set up for the session

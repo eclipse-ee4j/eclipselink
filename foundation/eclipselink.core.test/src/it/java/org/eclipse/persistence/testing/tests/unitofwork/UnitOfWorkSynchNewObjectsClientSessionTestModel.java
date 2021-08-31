@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
  */
 public class UnitOfWorkSynchNewObjectsClientSessionTestModel extends UnitOfWorkClientSessionTestModel {
 
+    @Override
     public void setup() {
         for (Iterator descriptors = getSession().getDescriptors().values().iterator(); descriptors.hasNext(); ) {
             ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
@@ -33,6 +34,7 @@ public class UnitOfWorkSynchNewObjectsClientSessionTestModel extends UnitOfWorkC
         super.setup();
     }
 
+    @Override
     public void reset() {
         for (Iterator descriptors = getSession().getDescriptors().values().iterator(); descriptors.hasNext(); ) {
             ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();

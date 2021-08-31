@@ -38,6 +38,7 @@ public abstract class PerformanceRegressionTestCase extends PerformanceCompariso
      * Compare the current test run result with the previous results
      * do determine if the test passes or fails.
      */
+    @Override
     public void verify() {
         super.verify();
         verify(this);

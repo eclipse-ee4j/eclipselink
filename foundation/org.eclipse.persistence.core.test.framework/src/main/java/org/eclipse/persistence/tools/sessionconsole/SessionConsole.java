@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -2144,6 +2144,7 @@ public class SessionConsole extends JFrame {
 
     class IvjEventHandler implements java.awt.event.ActionListener,
                                      java.awt.event.WindowListener {
+        @Override
         public void actionPerformed(java.awt.event.ActionEvent e) {
             if (e.getSource() == SessionConsole.this.getCloseMenuItem()) {
                 connEtoM1(e);
@@ -2235,27 +2236,34 @@ public class SessionConsole extends JFrame {
             }
         }
 
+        @Override
         public void windowActivated(java.awt.event.WindowEvent e) {
         }
 
+        @Override
         public void windowClosed(java.awt.event.WindowEvent e) {
         }
 
+        @Override
         public void windowClosing(java.awt.event.WindowEvent e) {
             if (e.getSource() == SessionConsole.this) {
                 connEtoC28(e);
             }
         }
 
+        @Override
         public void windowDeactivated(java.awt.event.WindowEvent e) {
         }
 
+        @Override
         public void windowDeiconified(java.awt.event.WindowEvent e) {
         }
 
+        @Override
         public void windowIconified(java.awt.event.WindowEvent e) {
         }
 
+        @Override
         public void windowOpened(java.awt.event.WindowEvent e) {
         }
     }

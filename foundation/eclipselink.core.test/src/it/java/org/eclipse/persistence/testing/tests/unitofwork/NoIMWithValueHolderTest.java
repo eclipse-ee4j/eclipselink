@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -59,6 +59,7 @@ public class NoIMWithValueHolderTest extends AutoVerifyTestCase {
         setDescription("This test case should NOT get into an infinite loop (if you're reading this, it passed).");
     }
 
+    @Override
     public void reset() {
         if (getSession() instanceof org.eclipse.persistence.sessions.remote.RemoteSession) {
             return;
@@ -72,6 +73,7 @@ public class NoIMWithValueHolderTest extends AutoVerifyTestCase {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
         if (getSession() instanceof org.eclipse.persistence.sessions.remote.RemoteSession) {
             throw new TestWarningException("This test cannot be run through the remote.");
@@ -85,6 +87,7 @@ public class NoIMWithValueHolderTest extends AutoVerifyTestCase {
         originalEmployeeDescriptor.getQueryManager().assumeExistenceForDoesExist();
     }
 
+    @Override
     protected void test() {
         // Attempt to read and change an Employee
         unitOfWork = getSession().acquireUnitOfWork();

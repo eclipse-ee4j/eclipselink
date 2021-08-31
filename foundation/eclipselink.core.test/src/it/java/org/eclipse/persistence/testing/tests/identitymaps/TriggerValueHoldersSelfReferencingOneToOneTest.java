@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class TriggerValueHoldersSelfReferencingOneToOneTest extends TestCase {
      * Test setup.
      * Open transaction, initialize query and initialize cache with 1st query executions.
      */
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         uow = getSession().acquireUnitOfWork();
@@ -50,6 +51,7 @@ public class TriggerValueHoldersSelfReferencingOneToOneTest extends TestCase {
      * Test cleanup.
      * Release transaction and reset cache.
      */
+    @Override
     public void reset() {
         uow.release();
         uow = null;
@@ -61,6 +63,7 @@ public class TriggerValueHoldersSelfReferencingOneToOneTest extends TestCase {
      * Verify that {@code ConcurrentModificationException} is not thrown from {@code IdentityMapManager}
      * during 2nd queries execution when objects are already in the cache.
      */
+    @Override
     public void test() {
         // We query for both Employees here because it is impossible to tell which order
         // keys will be returned from the identity map in

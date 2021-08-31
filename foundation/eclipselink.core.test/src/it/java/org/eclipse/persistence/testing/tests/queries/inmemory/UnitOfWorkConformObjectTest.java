@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,10 +36,12 @@ public class UnitOfWorkConformObjectTest extends TestCase {
         setDescription("Test that the query is done on the unit of work changes.");
     }
 
+    @Override
     public void reset() {
         uow.release();
     }
 
+    @Override
     protected void setup() {
         uow = getSession().acquireUnitOfWork();
         uow.readAllObjects(Employee.class);
@@ -55,11 +57,13 @@ public class UnitOfWorkConformObjectTest extends TestCase {
         clone.setLastName("Bobo");
     }
 
+    @Override
     public void test() {
         this.query.setShouldPrepare(false);
         this.result = this.uow.executeQuery(this.query);
     }
 
+    @Override
     protected void verify() {
         if ((this.result == null) && this.expected) {
             throw new TestErrorException("Query should have not have returned null");

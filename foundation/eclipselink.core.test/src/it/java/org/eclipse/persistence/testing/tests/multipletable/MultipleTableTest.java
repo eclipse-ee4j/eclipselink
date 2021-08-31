@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,11 +39,13 @@ public class MultipleTableTest extends AutoVerifyTestCase {
         setName("Multiple table test [" + Helper.getShortClassName(m_testObject) + "]");
     }
 
+    @Override
     public void reset() {
         m_session.getIdentityMapAccessor().initializeIdentityMaps();
         rollbackTransaction();
     }
 
+    @Override
     protected void setup() {
         m_session = (DatabaseSession) getSession();
         m_exception = null;
@@ -51,6 +53,7 @@ public class MultipleTableTest extends AutoVerifyTestCase {
         m_session.getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     protected void test() {
         try {
             UnitOfWork uow = m_session.acquireUnitOfWork();
@@ -61,6 +64,7 @@ public class MultipleTableTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void verify() {
         if (m_exception != null) {
             throw new TestErrorException("An exception was throw when committing the test object [" + m_testObject + "]" + ": " + m_exception);

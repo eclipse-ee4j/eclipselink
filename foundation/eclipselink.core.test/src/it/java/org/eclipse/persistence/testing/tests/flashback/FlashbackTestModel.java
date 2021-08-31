@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -60,6 +60,7 @@ public class FlashbackTestModel extends TestModel {
         return session.acquireHistoricalSession(getAsOfClause());
     }
 
+    @Override
     public void addTests() {
         // Add ExpressionTestSuite...
         //
@@ -468,6 +469,7 @@ public class FlashbackTestModel extends TestModel {
      * Assume setup() is called prior to addTests.  This seems bizarre
      * but is the way it works.
      */
+    @Override
     public void setup() {
         // Must do configuration here...
         if (getTimestamp() != null) {
@@ -482,6 +484,7 @@ public class FlashbackTestModel extends TestModel {
         }
     }
 
+    @Override
     public void reset() {
         if (getTimestamp() == null) {
             return;

@@ -547,6 +547,7 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         }
     }
 
+    @Override
     public void setup() {
         //JGL: If the arguments are already set by the test, don't
         //set them again

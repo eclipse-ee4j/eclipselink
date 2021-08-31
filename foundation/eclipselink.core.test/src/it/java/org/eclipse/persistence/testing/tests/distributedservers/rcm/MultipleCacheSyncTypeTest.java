@@ -53,6 +53,7 @@ public class MultipleCacheSyncTypeTest extends ConfigurableCacheSyncDistributedT
      * Setup the test by ensuring that the necessary employee is both in the local cache
      * and one distributed cache.
      */
+    @Override
     public void setup() {
         super.setup();
         ExpressionBuilder employees = new ExpressionBuilder();
@@ -72,6 +73,7 @@ public class MultipleCacheSyncTypeTest extends ConfigurableCacheSyncDistributedT
     /**
      * Make one change to each type of object so that change sets are sent for all the objects
      */
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Employee charles = (Employee)getSession().readObject(Employee.class, expression);
@@ -92,6 +94,7 @@ public class MultipleCacheSyncTypeTest extends ConfigurableCacheSyncDistributedT
         uow.commit();
     }
 
+    @Override
     public void verify() {
         Employee chuck = (Employee)getSession().readObject(Employee.class, expression);
         Employee distributedChuck = (Employee)getObjectFromDistributedCache(chuck);

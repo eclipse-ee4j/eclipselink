@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,19 +27,23 @@ public class ReadProxyObjectTest extends AutoVerifyTestCase {
         setDescription("Tests ReadObject on a proxy object using Proxy Indirection.");
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
     }
 
+    @Override
     public void test() {
         Employee emp = (Employee)getSession().readObject(Employee.class, new ExpressionBuilder().get("firstName").like("Rick%"));
         ReadObjectQuery read = new ReadObjectQuery(emp.getAddress());
         address = (Address)getSession().executeQuery(read);
     }
 
+    @Override
     public void verify() {
         if (address == null) {
             throw new TestErrorException("No address was returned");

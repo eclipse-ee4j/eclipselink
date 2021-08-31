@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -167,10 +167,12 @@ public class JPQLExceptionTest extends JPQLTestCase {
         theSuite.addTest(JPQLExceptionTest.noAliasWithWHEREAndParameterExceptionTest());
     }
 
+    @Override
     public void setup() {
         super.setup();
     }
 
+    @Override
     public void test() {
         try {
             getSession().logMessage("Running EJBQL -> " + getEjbqlString());
@@ -182,6 +184,7 @@ public class JPQLExceptionTest extends JPQLTestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (caughtException == null) {
             throw new TestErrorException("The proper exception was not thrown:" + org.eclipse.persistence.internal.helper.Helper.cr() + "caught exception was null! \n\n[EXPECTING] " + expectedException);
@@ -206,10 +209,12 @@ public class JPQLExceptionTest extends JPQLTestCase {
         throw new TestErrorException("The proper exception was not thrown:" + org.eclipse.persistence.internal.helper.Helper.cr() + "[CAUGHT] " + caughtException + "\n\n[EXPECTING] " + expectedException);
     }
 
+    @Override
     public void reset() {
         super.reset();
     }
 
+    @Override
     public ObjectLevelReadQuery getQuery() {
         if (theQuery == null) {
             if (useReportQuery) {

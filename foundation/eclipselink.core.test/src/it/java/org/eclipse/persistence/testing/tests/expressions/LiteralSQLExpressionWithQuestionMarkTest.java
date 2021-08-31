@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,11 +44,12 @@ public class LiteralSQLExpressionWithQuestionMarkTest extends TestCase {
         setDescription("LiteralExpression Query with emp.firstName not equal " + literalString + " binding: " + useBinding);
     }
 
+    @Override
     public void test() {
         ExpressionBuilder builder = new ExpressionBuilder();
         ReportQuery query = new ReportQuery(Employee.class, builder);
         query.setShouldBindAllParameters(this.useBinding);
-        query.setCacheUsage(query.DoNotCheckCache);
+        query.setCacheUsage(ObjectLevelReadQuery.DoNotCheckCache);
 
         query.addAttribute("id");
         query.addArgument("nameParameter", String.class);
@@ -69,6 +70,7 @@ public class LiteralSQLExpressionWithQuestionMarkTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (caughtException != null) {
             throw new TestErrorException("Exception occurred executing ReportQuery with literal expression: " + this.literalString, caughtException);

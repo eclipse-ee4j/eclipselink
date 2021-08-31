@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ import org.eclipse.persistence.sessions.server.Server;
 public class UnitOfWorkClientSessionTestModel extends org.eclipse.persistence.testing.framework.TestModel {
     public Session originalSession;
 
+    @Override
     public void addRequiredSystems() {
         // H2 has locking issue with multiple connections.
         if (getSession().getPlatform().isH2()) {
@@ -46,6 +47,7 @@ public class UnitOfWorkClientSessionTestModel extends org.eclipse.persistence.te
         addRequiredSystem(new InheritanceSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(new UnitOfWorkTestSuite());
         // bug 3128227
@@ -60,6 +62,7 @@ public class UnitOfWorkClientSessionTestModel extends org.eclipse.persistence.te
         return server;
     }
 
+    @Override
     public void reset() {
         // Setup might not be run yet.
         if (originalSession != null) {
@@ -68,6 +71,7 @@ public class UnitOfWorkClientSessionTestModel extends org.eclipse.persistence.te
         }
     }
 
+    @Override
     public void setup() {
         this.originalSession = getSession();
         Session client = buildServerSession().acquireClientSession();

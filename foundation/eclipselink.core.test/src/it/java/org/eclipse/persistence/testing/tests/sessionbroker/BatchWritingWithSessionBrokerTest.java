@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,18 +33,21 @@ public class BatchWritingWithSessionBrokerTest extends AutoVerifyTestCase {
         setDescription("Tests batch writing in conjunction with a unit of work, a session broker and a client/server session.");
     }
 
+    @Override
     public void reset() {
         ((SessionBroker)getSession()).getSessionForName("broker1").getLogin().dontUseBatchWriting();
         //((SessionBroker)getSession()).getSessionForName("broker2").getLogin().dontUseBatchWriting();
         getAbstractSession().rollbackTransaction();
     }
 
+    @Override
     public void setup() {
         getAbstractSession().beginTransaction();
         ((SessionBroker)getSession()).getSessionForName("broker1").getLogin().useBatchWriting();
         //((SessionBroker)getSession()).getSessionForName("broker2").getLogin().useBatchWriting();
     }
 
+    @Override
     public void test() {
 
         UnitOfWork uow = ((SessionBroker)getSession()).acquireUnitOfWork();
@@ -55,6 +58,7 @@ public class BatchWritingWithSessionBrokerTest extends AutoVerifyTestCase {
         uow.commit();
     }
 
+    @Override
     public void verify() {
         int size = getSession().readAllObjects(Employee.class).size();
         if (size != 17) {

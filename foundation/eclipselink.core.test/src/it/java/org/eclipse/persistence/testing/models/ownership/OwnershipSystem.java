@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ public class OwnershipSystem extends TestSystem {
         project = new OwnershipProject();
     }
 
+    @Override
     public void addDescriptors(DatabaseSession session) {
         if (project == null) {
             project = new OwnershipProject();
@@ -35,6 +36,7 @@ public class OwnershipSystem extends TestSystem {
         (session).addDescriptors(project);
     }
 
+    @Override
     public void createTables(DatabaseSession session) {
         // Drop old constraints.
         DatabasePlatform platform = (DatabasePlatform)session.getDatasourcePlatform();
@@ -79,6 +81,7 @@ public class OwnershipSystem extends TestSystem {
         schemaManager.createSequences();
     }
 
+    @Override
     public void populate(DatabaseSession session) {
         Object instance;
         PopulationManager manager = PopulationManager.getDefaultManager();

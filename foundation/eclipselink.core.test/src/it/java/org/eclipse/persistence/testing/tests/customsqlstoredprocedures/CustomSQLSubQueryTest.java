@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,6 +42,7 @@ public class CustomSQLSubQueryTest extends AutoVerifyTestCase {
         setDescription("The test runs a ReadAllQuery with a customSQL subquery to the database.");
     }
 
+    @Override
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
 
@@ -52,6 +53,7 @@ public class CustomSQLSubQueryTest extends AutoVerifyTestCase {
         numberOfManagedEmployees = someManager.getManagedEmployees().size();
     }
 
+    @Override
     protected void test() {
         query = new ReadAllQuery();
         query.setReferenceClass(referenceClass);
@@ -70,6 +72,7 @@ public class CustomSQLSubQueryTest extends AutoVerifyTestCase {
      * Verify that the query ran successfully, and
      * that the number of objects returned matches the number of managed employees.
      */
+    @Override
     protected void verify() throws Exception {
         Vector params = new Vector();
         params.add(someManager.getId());//numberOfManagedEmployees

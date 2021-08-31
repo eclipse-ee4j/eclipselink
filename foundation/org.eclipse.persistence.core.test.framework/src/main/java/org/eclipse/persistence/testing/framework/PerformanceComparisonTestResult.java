@@ -221,6 +221,7 @@ public class PerformanceComparisonTestResult extends TestResult {
     /**
      * Always log the result for analysis.
      */
+    @Override
     public boolean shouldLogResult() {
         return true;
     }
@@ -228,6 +229,7 @@ public class PerformanceComparisonTestResult extends TestResult {
     /**
      * logs the result of the test on the print stream.
      */
+    @Override
     public void logResult(Writer log) {
         String indentationString = getTestCase().getIndentationString();
         try {

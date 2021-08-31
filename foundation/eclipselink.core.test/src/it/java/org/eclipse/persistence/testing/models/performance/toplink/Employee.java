@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,14 +34,17 @@ public class Employee extends org.eclipse.persistence.testing.models.performance
         managerHolder = new ValueHolder();
     }
 
+    @Override
     public Address getAddress() {
         return (Address)addressHolder.getValue();
     }
 
+    @Override
     public org.eclipse.persistence.testing.models.performance.Employee getManager() {
         return (Employee)managerHolder.getValue();
     }
 
+    @Override
     public void setAddress(Address address) {
         this.addressHolder.setValue(address);
     }
@@ -62,6 +65,7 @@ public class Employee extends org.eclipse.persistence.testing.models.performance
         this.managerHolder = managerHolder;
     }
 
+    @Override
     public void setManager(org.eclipse.persistence.testing.models.performance.Employee manager) {
         this.managerHolder.setValue(manager);
     }

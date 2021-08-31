@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,32 +24,39 @@ public class IndirectMapProject extends IndirectContainerProject {
         super();
     }
 
+    @Override
     protected void configureContactContainer(org.eclipse.persistence.mappings.DirectCollectionMapping directcollectionmapping) {
         directcollectionmapping.useCollectionClass(java.util.Vector.class);
     }
 
+    @Override
     protected void configureLineContainer(org.eclipse.persistence.mappings.OneToManyMapping onetomanymapping) {
         onetomanymapping.useMapClass(java.util.Hashtable.class, "getKey");
     }
 
+    @Override
     protected void configureSalesRepContainer(org.eclipse.persistence.mappings.ManyToManyMapping manytomanymapping) {
         manytomanymapping.useMapClass(java.util.Hashtable.class, "getKey");
     }
 
+    @Override
     protected void modifyOrderDescriptor(RelationalDescriptor descriptor) {
         ((org.eclipse.persistence.mappings.CollectionMapping)descriptor.getMappingForAttributeName("salesReps")).useTransparentMap("getKey");
         ((org.eclipse.persistence.mappings.CollectionMapping)descriptor.getMappingForAttributeName("contacts")).useTransparentCollection();
         ((org.eclipse.persistence.mappings.CollectionMapping)descriptor.getMappingForAttributeName("lines")).useTransparentMap("getKey");
     }
 
+    @Override
     public Class orderClass() {
         return org.eclipse.persistence.testing.models.transparentindirection.MappedOrder.class;
     }
 
+    @Override
     public Class orderLineClass() {
         return org.eclipse.persistence.testing.models.transparentindirection.MappedOrderLine.class;
     }
 
+    @Override
     protected Class salesRepClass() {
         return org.eclipse.persistence.testing.models.transparentindirection.MappedSalesRep.class;
     }

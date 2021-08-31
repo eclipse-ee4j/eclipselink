@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ public class NativeQueryTableCreator extends AdvancedTableCreator {
      * cause issues on case sensitive databases if "Descrip" is not used within EclipseLink queries on case
      * sensitive databases.
      */
+    @Override
     public TableDefinition buildBUYERTable() {
         TableDefinition table = new TableDefinition();
 

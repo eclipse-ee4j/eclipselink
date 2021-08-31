@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,6 +23,7 @@ public class ConcurrentAccessTest extends AutoVerifyTestCase {
     public ConcurrentAccessTest() {
     }
 
+    @Override
     public void test() {
         this.cache = new CacheIdentityMap(10, null, getAbstractSession(), false);
 
@@ -89,6 +90,7 @@ public class ConcurrentAccessTest extends AutoVerifyTestCase {
             this.cache = cache;
         }
 
+        @Override
         public void run() {
             try {
                 for (int count = 0; count < 10000; ++count) {

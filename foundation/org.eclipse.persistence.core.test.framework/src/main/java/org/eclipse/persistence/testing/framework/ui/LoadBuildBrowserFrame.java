@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -72,6 +72,7 @@ public class LoadBuildBrowserFrame extends javax.swing.JFrame implements ActionL
      * Method to handle events for the ActionListener interface.
      * @param e java.awt.event.ActionEvent
      */
+    @Override
     public void actionPerformed(java.awt.event.ActionEvent e) {
         if (e.getSource() == getQueryButton()) {
             connEtoC1(e);
@@ -1123,6 +1124,7 @@ public class LoadBuildBrowserFrame extends javax.swing.JFrame implements ActionL
      */
 
     /* WARNING: THIS METHOD WILL BE REGENERATED. */
+    @Override
     public void itemStateChanged(java.awt.event.ItemEvent e) {
         // user code begin {1}
         // user code end
@@ -1189,6 +1191,7 @@ public class LoadBuildBrowserFrame extends javax.swing.JFrame implements ActionL
         }
     }
 
+    @Override
     public void stateChanged(javax.swing.event.ChangeEvent e) {
         if (e.getSource() == getInCheckBox()) {
             connEtoC6(e);
@@ -1250,6 +1253,7 @@ public class LoadBuildBrowserFrame extends javax.swing.JFrame implements ActionL
      */
 
     /* WARNING: THIS METHOD WILL BE REGENERATED. */
+    @Override
     public void windowActivated(java.awt.event.WindowEvent e) {
         // user code begin {1}
         // user code end
@@ -1263,6 +1267,7 @@ public class LoadBuildBrowserFrame extends javax.swing.JFrame implements ActionL
      */
 
     /* WARNING: THIS METHOD WILL BE REGENERATED. */
+    @Override
     public void windowClosed(java.awt.event.WindowEvent e) {
         // user code begin {1}
         // user code end
@@ -1276,6 +1281,7 @@ public class LoadBuildBrowserFrame extends javax.swing.JFrame implements ActionL
      */
 
     /* WARNING: THIS METHOD WILL BE REGENERATED. */
+    @Override
     public void windowClosing(java.awt.event.WindowEvent e) {
         // user code begin {1}
         // user code end
@@ -1294,6 +1300,7 @@ public class LoadBuildBrowserFrame extends javax.swing.JFrame implements ActionL
      */
 
     /* WARNING: THIS METHOD WILL BE REGENERATED. */
+    @Override
     public void windowDeactivated(java.awt.event.WindowEvent e) {
         // user code begin {1}
         // user code end
@@ -1307,6 +1314,7 @@ public class LoadBuildBrowserFrame extends javax.swing.JFrame implements ActionL
      */
 
     /* WARNING: THIS METHOD WILL BE REGENERATED. */
+    @Override
     public void windowDeiconified(java.awt.event.WindowEvent e) {
         // user code begin {1}
         // user code end
@@ -1320,6 +1328,7 @@ public class LoadBuildBrowserFrame extends javax.swing.JFrame implements ActionL
      */
 
     /* WARNING: THIS METHOD WILL BE REGENERATED. */
+    @Override
     public void windowIconified(java.awt.event.WindowEvent e) {
         // user code begin {1}
         // user code end
@@ -1333,6 +1342,7 @@ public class LoadBuildBrowserFrame extends javax.swing.JFrame implements ActionL
      */
 
     /* WARNING: THIS METHOD WILL BE REGENERATED. */
+    @Override
     public void windowOpened(java.awt.event.WindowEvent e) {
         // user code begin {1}
         // user code end

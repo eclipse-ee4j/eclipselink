@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ public class ParameterizedBatchUpdatesTestModel extends TopLinkBatchUpdatesTestM
         super();
     }
 
+    @Override
     public void addForcedRequiredSystems() {
         DatabasePlatform platform = getSession().getPlatform();
         wasBatchWriting = Boolean.valueOf(platform.usesBatchWriting());
@@ -48,6 +49,7 @@ public class ParameterizedBatchUpdatesTestModel extends TopLinkBatchUpdatesTestM
         addForcedRequiredSystem(new EmployeeSystem());
     }
 
+    @Override
     public void reset() {
         super.reset();
         DatabasePlatform platform = getSession().getPlatform();
@@ -60,6 +62,7 @@ public class ParameterizedBatchUpdatesTestModel extends TopLinkBatchUpdatesTestM
         }
     }
 
+    @Override
     public void addTests() {
         super.addTests();
         addTest(new CacheStatementBatchWritingTest());

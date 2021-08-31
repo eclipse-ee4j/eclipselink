@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,11 +32,13 @@ public class PrivateDeleteTest extends TestCase {
     public PrivateDeleteTest() {
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         rollbackTransaction();
     }
 
+    @Override
     protected void setup() {
         beginTransaction();
         ExpressionBuilder expBldr = new ExpressionBuilder();
@@ -45,6 +47,7 @@ public class PrivateDeleteTest extends TestCase {
         m_employeeFromDatabase = (Employee)getSession().readObject(Employee.class, whatWeWant);
     }
 
+    @Override
     public void test() {
         //** Save the employee address ID */
         m_nAddressId = m_employeeFromDatabase.getAddress().getId();
@@ -64,6 +67,7 @@ public class PrivateDeleteTest extends TestCase {
         getSession().executeQuery(query);
     }
 
+    @Override
     protected void verify() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         Expression expression = new ExpressionBuilder().get("id").equal(m_nManagedEmployeeID.intValue());

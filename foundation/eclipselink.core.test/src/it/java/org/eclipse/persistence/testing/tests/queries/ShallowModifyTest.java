@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,16 +34,19 @@ public class ShallowModifyTest extends TestCase {
         super();
     }
 
+    @Override
     protected void setup() {
         beginTransaction();
         employeeFromDatabase = (Employee)getSession().readObject(Employee.class);
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         rollbackTransaction();
     }
 
+    @Override
     public void test() {
         Address address;
 
@@ -61,6 +64,7 @@ public class ShallowModifyTest extends TestCase {
         getSession().executeQuery(query);
     }
 
+    @Override
     protected void verify() {
         Address address;
         Expression expression;

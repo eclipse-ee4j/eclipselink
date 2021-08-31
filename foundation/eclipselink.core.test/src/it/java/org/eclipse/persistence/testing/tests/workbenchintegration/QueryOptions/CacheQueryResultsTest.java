@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,22 +30,26 @@ public class CacheQueryResultsTest extends AutoVerifyTestCase {
         setDescription("Test cache query results option");
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     protected void setup() {
         query =
                 (ReadObjectQuery)getSession().getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class).getQueryManager().getQuery("cacheQueryResultsQuery");
         employeeFromDatabase = (Employee)getSession().executeQuery(query);
     }
 
+    @Override
     public void test() {
         employeeFromDatabase.setFirstName("Yvon");
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         employee = (Employee)getSession().executeQuery(query);
     }
 
+    @Override
     protected void verify() {
         if (!(employee.getFirstName().equals(employeeFromDatabase.getFirstName()))) {
             throw new TestErrorException("The cache query results test has failed");

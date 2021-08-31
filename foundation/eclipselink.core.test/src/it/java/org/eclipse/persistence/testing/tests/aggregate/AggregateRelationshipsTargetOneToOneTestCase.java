@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ public class AggregateRelationshipsTargetOneToOneTestCase extends TestCase {
         setDescription("AggregateRelationships: test target OneToOneMapping");
     }
 
+    @Override
     public void setup() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
 
@@ -49,6 +50,7 @@ public class AggregateRelationshipsTargetOneToOneTestCase extends TestCase {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     public void test() {
         int id = originalParent.getId();
         try {
@@ -60,12 +62,14 @@ public class AggregateRelationshipsTargetOneToOneTestCase extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         assertNotNull("Parent read back should not be null", readParent);
         compareObjects(originalParent, readParent);
         compareObjects(originalParent.getAggregate().getStepChild(), readParent.getAggregate().getStepChild());
     }
 
+    @Override
     public void reset() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         uow.deleteObject(originalParent.getAggregate().getStepChild());

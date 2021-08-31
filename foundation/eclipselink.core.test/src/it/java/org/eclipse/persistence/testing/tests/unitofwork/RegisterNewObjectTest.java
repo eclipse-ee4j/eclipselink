@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,15 +31,18 @@ public class RegisterNewObjectTest extends TestCase {
         setDescription("This test verifies the the UOW cache and the Parent Session's cache when registering a new object");
     }
 
+    @Override
     public void reset() {
         getAbstractSession().rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
         getAbstractSession().beginTransaction();
     }
 
+    @Override
     public void test() {
         Session session = getSession();
         UnitOfWork uow = session.acquireUnitOfWork();

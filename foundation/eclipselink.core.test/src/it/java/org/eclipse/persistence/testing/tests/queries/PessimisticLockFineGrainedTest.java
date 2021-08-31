@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,6 +45,7 @@ public class PessimisticLockFineGrainedTest extends TestCase {
         setDescription("This test verifies the pessimistic locking feature works properly when set on the descriptor.");
     }
 
+    @Override
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         ClassDescriptor addressDescriptor = getSession().getDescriptor(Address.class);
@@ -61,6 +62,7 @@ public class PessimisticLockFineGrainedTest extends TestCase {
         ((ObjectLevelReadQuery)((ForeignReferenceMapping)employeeDescriptor.getMappingForAttributeName("address")).getSelectionQuery()).setLockMode(ObjectLevelReadQuery.DEFAULT_LOCK_MODE);
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         if (uow != null) {
@@ -74,6 +76,7 @@ public class PessimisticLockFineGrainedTest extends TestCase {
         ((ObjectLevelReadQuery)((ForeignReferenceMapping)employeeDescriptor.getMappingForAttributeName("address")).getSelectionQuery()).dontRefreshIdentityMapResult();
     }
 
+    @Override
     public void test() throws Exception {
         checkSelectForUpateSupported();
 

@@ -32,6 +32,7 @@ public class NullPointerWhileSettingValueThruInstanceVariableAccessorTest extend
         setDescription("This tests Null Pointer While Setting Value Thru Instance Variable Accessor (TL-ERROR 071)");
     }
 
+    @Override
     protected void setup() {
         expectedException = DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(null, null, null);
 
@@ -39,6 +40,7 @@ public class NullPointerWhileSettingValueThruInstanceVariableAccessorTest extend
         mapping = descriptor.getMappingForAttributeName("salary");
     }
 
+    @Override
     public void test() {
         try {
             mapping.setAttributeValueInObject(null, Integer.valueOf(0));

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,14 +28,18 @@ import org.eclipse.persistence.testing.tests.returning.ProjectAndDatabaseAdapter
 
 public abstract class AdapterWithReturnObjectControl implements ProjectAndDatabaseAdapter, ReturnObjectControl {
 
+    @Override
     public boolean isOriginalSetupRequired() {
         return false;
     }
 
+    @Override
     public abstract void updateProject(Project project, Session session);
 
+    @Override
     public abstract void updateDatabase(Session session);
 
+    @Override
     public Object getObjectForInsert(Session session, Object objectToInsert) {
         ClassDescriptor desc = session.getClassDescriptor(objectToInsert);
         org.eclipse.persistence.sessions.Record rowToInsert = desc.getObjectBuilder().buildRow(objectToInsert, (AbstractSession)session, WriteType.INSERT);
@@ -50,6 +54,7 @@ public abstract class AdapterWithReturnObjectControl implements ProjectAndDataba
         }
     }
 
+    @Override
     public Object getObjectForUpdate(Session session, Object objectToUpdateBeforeChange, Object objectToUpdateAfterChange, boolean useUOW) {
         ClassDescriptor desc = session.getClassDescriptor(objectToUpdateBeforeChange);
         org.eclipse.persistence.sessions.Record rowBeforeChange = desc.getObjectBuilder().buildRow(objectToUpdateBeforeChange, (AbstractSession)session, WriteType.UPDATE);
@@ -97,7 +102,7 @@ public abstract class AdapterWithReturnObjectControl implements ProjectAndDataba
             mapping.writeFromObjectIntoRow(object2, (DatabaseRecord)row2, (AbstractSession)session, writeType);
 
             for (int i = 0; i < row1.size(); i++) {
-                DatabaseField field = (DatabaseField)((DatabaseRecord)row1).getFields().elementAt(i);
+                DatabaseField field = ((DatabaseRecord)row1).getFields().elementAt(i);
                 Object valueBefore = ((DatabaseRecord)row1).getValues().elementAt(i);
                 Object valueAfter = row2.get(field);
                 boolean changed;

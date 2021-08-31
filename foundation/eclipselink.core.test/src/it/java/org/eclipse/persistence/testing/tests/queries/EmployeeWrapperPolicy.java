@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,6 +45,7 @@ public class EmployeeWrapperPolicy implements WrapperPolicy {
      * Required: Lets the policy perform initialization.
      * @param session the session to initialize against
      */
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         // do nothing.
     }
@@ -54,6 +55,7 @@ public class EmployeeWrapperPolicy implements WrapperPolicy {
      * Required: Return true if the wrapped value should be traversed.
      * Normally the wrapped value is looked after independently, it is not required to be traversed.
      */
+    @Override
     public boolean isTraversable() {
         return false;
     }
@@ -62,6 +64,7 @@ public class EmployeeWrapperPolicy implements WrapperPolicy {
      * PUBLIC:
      * Required: Return true if the object is already wrapped.
      */
+    @Override
     public boolean isWrapped(Object object) {
         return (object instanceof WrappedEmployee);
     }
@@ -71,6 +74,7 @@ public class EmployeeWrapperPolicy implements WrapperPolicy {
      * Required: Set the descriptor.
      * @param descriptor the descriptor for the object being wrapped
      */
+    @Override
     public void setDescriptor(ClassDescriptor descriptor) {
         this.descriptor = descriptor;
     }
@@ -82,6 +86,7 @@ public class EmployeeWrapperPolicy implements WrapperPolicy {
      * @param proxy the wrapped object
      * @param session the session to unwrap into
      */
+    @Override
     public Object unwrapObject(Object proxy, AbstractSession session) {
         if (proxy instanceof WrappedEmployee) {
             timesUnwrapCalled++;
@@ -100,6 +105,7 @@ public class EmployeeWrapperPolicy implements WrapperPolicy {
      * @param session the session to wrap the object against.
      * @return java.lang.Object the wrapped object
      */
+    @Override
     public Object wrapObject(Object original, AbstractSession session) {
         if (original instanceof WrappedEmployee) {
             return original;

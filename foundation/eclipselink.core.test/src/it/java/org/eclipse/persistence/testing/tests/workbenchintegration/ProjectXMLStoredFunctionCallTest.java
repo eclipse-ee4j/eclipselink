@@ -34,9 +34,11 @@ public class ProjectXMLStoredFunctionCallTest extends TestCase {
         setDescription("Tests that sepecified stored function can read from XML and execute correctly.");
     }
 
+    @Override
     public void reset() {
     }
 
+    @Override
     public void setup() {
         // right now only the stored function is set up in Oracle
         if (!(getSession().getPlatform().isOracle())) {
@@ -58,6 +60,7 @@ public class ProjectXMLStoredFunctionCallTest extends TestCase {
         }
     }
 
+    @Override
     public void test() {
         Vector parameters = new Vector();
         Long p_inout = Long.valueOf(99);
@@ -67,6 +70,7 @@ public class ProjectXMLStoredFunctionCallTest extends TestCase {
         result = getSession().executeQuery(query, parameters);
     }
 
+    @Override
     public void verify() {
       DatabaseRecord row = (DatabaseRecord)((Vector)result).firstElement();
       Long p_inout = (Long)row.get("P_INOUT");

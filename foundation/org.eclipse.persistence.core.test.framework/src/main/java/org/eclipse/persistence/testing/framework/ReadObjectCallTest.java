@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,6 +62,7 @@ public class ReadObjectCallTest extends AutoVerifyTestCase {
         call = aCall;
     }
 
+    @Override
     protected void setup() {
         if (getSession().getLogin().getTableQualifier() != "")
             throw new TestWarningException("this test can't work with table qualifier set");
@@ -69,6 +70,7 @@ public class ReadObjectCallTest extends AutoVerifyTestCase {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     protected void test() {
         this.objectFromDatabase = getSession().readObject(getReferenceClass(), getCall());
     }
@@ -77,6 +79,7 @@ public class ReadObjectCallTest extends AutoVerifyTestCase {
      * Verify if the objects match completely through allowing the session to use the descriptors.
      * This will compare the objects and all of their privately owned parts.
      */
+    @Override
     protected void verify() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         if (!(compareObjects(getSession().readObject(objectFromDatabase), this.objectFromDatabase))) {

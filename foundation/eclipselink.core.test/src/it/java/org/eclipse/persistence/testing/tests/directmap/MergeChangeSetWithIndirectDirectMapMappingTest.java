@@ -36,11 +36,13 @@ public class MergeChangeSetWithIndirectDirectMapMappingTest extends Transactiona
         setDescription("Tests the merge change set over a distributed cache using a indirect direct map mapping");
     }
 
+    @Override
     public void setup() {
         m_exceptionCaught = false;
         super.setup();
     }
 
+    @Override
     public void test() throws Exception {
         // put a new value in, will now be in the cache
         UnitOfWork uow1 = getSession().acquireUnitOfWork();
@@ -64,6 +66,7 @@ public class MergeChangeSetWithIndirectDirectMapMappingTest extends Transactiona
         mapsQueryResult = (DirectMapMappings)getSession().executeQuery(query);
     }
 
+    @Override
     public void verify() throws Exception {
         if (m_exceptionCaught) {
             throw new TestErrorException("Merge change set into distributed cache failed with direct-map mapping");

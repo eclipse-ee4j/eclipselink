@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,6 +53,7 @@ public class ModTest extends JPQLTestCase {
         return test;
     }
 
+    @Override
     public void setup() {
         if (getSession().getLogin().getPlatform().isSQLServer() || getSession().getLogin().getPlatform().isSybase()) {
             throw new TestWarningException("This test is not supported on SQL Server and Sybase. Because 'MOD' is not a recognized function name on SQL Server and Sybase.");

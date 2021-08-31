@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,7 @@ public class ConcurrencyTestAdapter extends ConcurrentPerformanceComparisonTest 
         setDescription("Concurrent test for:" + test.getDescription());
     }
 
+    @Override
     public void setup() {
         super.setup();
         this.test.setExecutor(getExecutor());
@@ -36,6 +37,7 @@ public class ConcurrencyTestAdapter extends ConcurrentPerformanceComparisonTest 
         }
     }
 
+    @Override
     public void reset() {
         super.reset();
         try {
@@ -45,6 +47,7 @@ public class ConcurrencyTestAdapter extends ConcurrentPerformanceComparisonTest 
         }
     }
 
+    @Override
     public void runTask() throws Exception {
         try {
             this.test.test();

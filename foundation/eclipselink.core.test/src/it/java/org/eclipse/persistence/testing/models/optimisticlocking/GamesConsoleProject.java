@@ -42,6 +42,7 @@ public GamesConsoleProject() {
     addDescriptor(buildSkillClassDescriptor());
 }
 
+@Override
 public void applyLogin() {
     DatabaseLogin login = new DatabaseLogin();
     login.usePlatform(new org.eclipse.persistence.platform.database.OraclePlatform());
@@ -381,9 +382,9 @@ public ClassDescriptor buildPowerSupplyUnitClassDescriptor() {
     onMapping.setAttributeName("on");
     onMapping.setFieldName("on->DIRECT");
     ObjectTypeConverter onMappingConverter = new ObjectTypeConverter();
-    onMappingConverter.setDefaultAttributeValue(new java.lang.Boolean("false"));
-    onMappingConverter.addConversionValue(Character.valueOf('F'), new java.lang.Boolean("false"));
-    onMappingConverter.addConversionValue(Character.valueOf('T'), new java.lang.Boolean("true"));
+    onMappingConverter.setDefaultAttributeValue(Boolean.valueOf("false"));
+    onMappingConverter.addConversionValue(Character.valueOf('F'), Boolean.valueOf("false"));
+    onMappingConverter.addConversionValue(Character.valueOf('T'), Boolean.valueOf("true"));
     onMapping.setConverter(onMappingConverter);
     descriptor.addMapping(onMapping);
 

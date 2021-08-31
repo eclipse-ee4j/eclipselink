@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -143,6 +143,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
     //This method is run at the end of EVERY test case method
 
+    @Override
     public void tearDown() {
         clearCache();
     }
@@ -1688,7 +1689,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         Vector expectedResult = (Vector)getServerSession().executeQuery(raq);
 
-        double salarySquareRoot = Math.sqrt((double) ((Employee) expectedResult.firstElement()).getSalary());
+        double salarySquareRoot = Math.sqrt(((Employee) expectedResult.firstElement()).getSalary());
 
         clearCache();
 
@@ -1754,7 +1755,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         Vector expectedResult = (Vector)getServerSession().executeQuery(raq);
 
-        double salarySquareRoot = Math.sqrt((double) ((Employee) expectedResult.firstElement()).getSalary());
+        double salarySquareRoot = Math.sqrt(((Employee) expectedResult.firstElement()).getSalary());
 
         clearCache();
 

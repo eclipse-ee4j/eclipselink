@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ public class QBEObjectWithAllFieldsFilled extends TestCase {
         this.setDescription("To test the Query By Example for a simple Employee with no emply fields.");
     }
 
+    @Override
     public void setup() {
         //This tests the normal case, with no emply fields:
         employee = new Employee();
@@ -41,6 +42,7 @@ public class QBEObjectWithAllFieldsFilled extends TestCase {
 
     }
 
+    @Override
     public void test() {
         ReadObjectQuery query = new ReadObjectQuery();
         query.setExampleObject(employee);

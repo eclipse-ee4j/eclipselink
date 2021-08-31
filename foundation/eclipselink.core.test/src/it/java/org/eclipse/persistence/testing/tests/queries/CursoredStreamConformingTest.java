@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,6 +46,7 @@ public CursoredStreamConformingTest(boolean useNestedUnitOfWork) {
     }
 
 }
+@Override
 protected void setup()
 {
     getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -76,6 +77,7 @@ protected void setup()
         getExecutor().setSession(configuration.getUnitOfWork());
     }
 }
+@Override
 public void test ( ) {
 
     ReadAllQuery query = new ReadAllQuery();
@@ -112,6 +114,7 @@ public void test ( ) {
 /**
  * Verify if number of query objects matches number of cursor objects
  */
+@Override
 protected void verify()
 {
     //System.out.println("Normal objects: " + getNormalQueryObjects());
@@ -132,6 +135,7 @@ protected void verify()
     }
 }
 
+@Override
 public void reset() {
     if (useNestedUnitOfWork) {
         getExecutor().getSession().release();

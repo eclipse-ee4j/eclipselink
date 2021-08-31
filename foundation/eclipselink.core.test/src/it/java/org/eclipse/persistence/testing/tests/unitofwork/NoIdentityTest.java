@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class NoIdentityTest extends TransactionalTestCase {
         setDescription("Test that the unit of work still works when object identity is lost.");
     }
 
+    @Override
     public void reset() {
         super.reset();
 
@@ -49,6 +50,7 @@ public class NoIdentityTest extends TransactionalTestCase {
         getSession().getDescriptor(PolicyHolder.class).useFullIdentityMap();
     }
 
+    @Override
     public void setup() {
         super.setup();
 
@@ -69,6 +71,7 @@ public class NoIdentityTest extends TransactionalTestCase {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test() {
         Vector claims = getSession().readAllObjects(Claim.class);
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -79,6 +82,7 @@ public class NoIdentityTest extends TransactionalTestCase {
         uow.commit();
     }
 
+    @Override
     public void verify() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         Object objectFromDatabase = getSession().readObject(this.objectToBeWritten);

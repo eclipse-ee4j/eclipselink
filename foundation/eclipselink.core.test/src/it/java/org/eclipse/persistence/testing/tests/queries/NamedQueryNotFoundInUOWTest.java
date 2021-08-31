@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,24 +29,28 @@ public class NamedQueryNotFoundInUOWTest extends TransactionalTestCase {
         setDescription("Verifies if a Named Query Can be found from a UnitOfWork");
     }
 
+    @Override
     public void reset() {
         super.reset();
         // do not want to keep named queries on serverSession
         getSession().removeQuery("someQueryForThisTest_NamedQueryNotFoundInUOWTest");
     }
 
+    @Override
     public void setup() {
         super.setup();
         getSession().addQuery("someQueryForThisTest_NamedQueryNotFoundInUOWTest", new ReadObjectQuery(Employee.class));
     }
 
     // end of setup()
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         query = uow.getQuery("someQueryForThisTest_NamedQueryNotFoundInUOWTest");
     }
 
     // end of test()
+    @Override
     public void verify() {
         if (query == null) {
             throw new TestErrorException("Named Query not found from UnitOfWork");

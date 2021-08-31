@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,6 +40,7 @@ public abstract class DistributedServersModel extends TestModel {
         setDescription("This suite tests updating objects with changed parts.");
     }
 
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new EmployeeSystem());
         addRequiredSystem(new DistributedSystem());
@@ -48,6 +49,7 @@ public abstract class DistributedServersModel extends TestModel {
         addRequiredSystem(new org.eclipse.persistence.testing.models.aggregate.AggregateSystem());
     }
 
+    @Override
     public void addTests() {
         PopulationManager manager = PopulationManager.getDefaultManager();
         Employee employee = (Employee)manager.getObject(Employee.class, "0001");
@@ -117,6 +119,7 @@ public abstract class DistributedServersModel extends TestModel {
      * This method returns the system to the previous state
      * Creation date: (7/21/00 10:44:03 AM)
      */
+    @Override
     public void reset() {
         if (isRegistryStarted()) {
             try {
@@ -153,6 +156,7 @@ public abstract class DistributedServersModel extends TestModel {
      * This method sets up the distributed servers and the registry
      * Creation date: (7/21/00 10:44:03 AM)
      */
+    @Override
     public void setup() {
         if (!isRegistryStarted()) {
             try {

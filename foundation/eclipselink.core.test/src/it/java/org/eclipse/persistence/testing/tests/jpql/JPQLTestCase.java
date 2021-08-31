@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -92,6 +92,7 @@ public class JPQLTestCase extends TransactionalTestCase {
         return attributes;
     }
 
+    @Override
     public void reset() {
         // Force the query to be rebuilt each time...
         setQuery(null);
@@ -144,6 +145,7 @@ public class JPQLTestCase extends TransactionalTestCase {
         }
     }
 
+    @Override
     public void setup() {
         if (!isPlatformSupported(getSession().getLogin().getPlatform())) {
             throw new TestWarningException("This EJBQL is not supported on this platform.");
@@ -155,6 +157,7 @@ public class JPQLTestCase extends TransactionalTestCase {
         getQuery().setEJBQLString(getEjbqlString());
     }
 
+    @Override
     public void test() throws Exception {
         getSession().logMessage("Running EJBQL -> " + getEjbqlString());
         executeEJBQLQuery();
@@ -179,6 +182,7 @@ public class JPQLTestCase extends TransactionalTestCase {
         }
     }
 
+    @Override
     public void verify() throws Exception {
         if (!getComparer().compareObjects(getOriginalObject(), getReturnedObjects())) {
             throw new TestErrorException(getName() + " Verify Failed:" + getOriginalObject() + " != " + getReturnedObjects());

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,12 +22,14 @@ import org.eclipse.persistence.testing.framework.*;
  * Test calling a procedure that return a custom PLSQL type, ARRAY.
  */
 public class StoredProcedureARRAYTest extends TestCase {
+    @Override
     public void setup() {
         if (!(getSession().getPlatform().isOracle())) {
             throw new TestWarningException("This test can only be run in Oracle");
         }
     }
 
+    @Override
     public void test() {
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName("StoredProcedure_ARRAY");

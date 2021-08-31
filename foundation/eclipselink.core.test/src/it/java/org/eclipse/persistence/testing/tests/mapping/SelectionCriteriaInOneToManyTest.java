@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,6 +35,7 @@ public class SelectionCriteriaInOneToManyTest extends AutoVerifyTestCase {
         setDescription("Verify that buildSelectionCriteria in one-to-many mapping works");
     }
 
+    @Override
     protected void setup() throws Exception {
         //Add an amendmend method to Employee
         MappingSystem mappingSystem = new MappingSystem();
@@ -52,10 +53,12 @@ public class SelectionCriteriaInOneToManyTest extends AutoVerifyTestCase {
         newSession.login();
     }
 
+    @Override
     public void test() {
         modifyOneToManyMappingExample();
     }
 
+    @Override
     protected void verify() {
         if (!employee1.getManagedEmployees().contains(employee3)) {
             throw new TestErrorException("OneToManyMapping.buildSelectionCriteria could not set the correct selection criteria.1");
@@ -65,6 +68,7 @@ public class SelectionCriteriaInOneToManyTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void reset() {
         newSession.getIdentityMapAccessor().initializeIdentityMaps();
         newSession.logout();

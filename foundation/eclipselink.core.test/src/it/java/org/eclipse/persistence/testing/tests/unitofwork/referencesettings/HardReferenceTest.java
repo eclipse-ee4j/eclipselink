@@ -20,6 +20,7 @@ import org.eclipse.persistence.testing.tests.unitofwork.changeflag.model.ALCTEmp
 import org.eclipse.persistence.testing.framework.TestErrorException;
 
 public class HardReferenceTest extends AutoVerifyTestCase {
+    @Override
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         int size = uow.readAllObjects(ALCTEmployee.class).size();

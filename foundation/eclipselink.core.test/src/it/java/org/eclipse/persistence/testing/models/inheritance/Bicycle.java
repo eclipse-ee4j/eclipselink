@@ -17,6 +17,7 @@ package org.eclipse.persistence.testing.models.inheritance;
 public class Bicycle extends NonFueledVehicle {
     public String description;
 
+    @Override
     public void change() {
         this.setPassengerCapacity(Integer.valueOf(100));
         this.addPartNumber("NEWBIKEPART 1");

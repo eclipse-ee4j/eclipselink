@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,10 +48,12 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
         setDescription("This model tests reading/writing/deleting using the unidirectionl employee demo.");
     }
 
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new EmployeeSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(getReadObjectTestSuite());
         addTest(getComplexUpdateObjectTestSuite());
@@ -268,6 +270,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
             setName("EmployeeComplexUpdateTest: " + employeeString +(employeeString.length()>0 && phoneString.length()>0 ? "; " : "")+ phoneString+";");
             setDescription("The test updates original Employee object: " +originalObject.toString()+ " from the database by adding and/or removing managedEmployees and/or PhoneNumbers and verifies that the object updated correctly.");
         }
+        @Override
         public String getName() {
             String testName = super.getName();
             int lastIndex = testName.lastIndexOf(";");
@@ -276,6 +279,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
             }
             return testName;
         }
+        @Override
         protected void changeObject() {
             UnitOfWork uow = (UnitOfWork)getSession();
             Employee cloneEmployee = (Employee)workingCopy;
@@ -296,6 +300,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
                 cloneEmployee.addPhoneNumber(clonePhoneToAdd);
             }
         }
+        @Override
         protected void setup() {
             super.setup();
 
@@ -353,12 +358,14 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
             setName("CascadeLockingPolicyTest");
             setDescription("Tests optimistic lock cascading for UnidirectionalOneToManyMapping");
         }
+        @Override
         public void setup() {
             super.setup();
             for(int i=0; i<version.length; i++) {
                 version[i] = 0;
             }
         }
+        @Override
         public void test() {
             // setup
             Employee manager = new Employee();
@@ -421,6 +428,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
             uow.commit();
             version[6] = ((Long)getSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(manager, manager.getId(), getAbstractSession())).longValue();
         }
+        @Override
         public void verify() {
             int numTestsFailed = 0;
             String errorMsg = "";
@@ -443,6 +451,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
         }
         void setSelectionCriteria(ReadAllQuery query) {
         }
+        @Override
         public void test() {
             // clear cache
             getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -534,6 +543,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
             super();
             setName("EmployeeBatchReadingTest - select by first name");
         }
+        @Override
         void setSelectionCriteria(ReadAllQuery query) {
             query.setSelectionCriteria(query.getExpressionBuilder().get("firstName").like("J%"));
         }
@@ -546,6 +556,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
         }
         void setSelectionCriteria(ReadAllQuery query) {
         }
+        @Override
         public void test() {
             ReadAllQuery query = new ReadAllQuery();
             query.setReferenceClass(Employee.class);
@@ -569,6 +580,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
             super();
             setName("JoinTest - select by first name");
         }
+        @Override
         void setSelectionCriteria(ReadAllQuery query) {
             query.setSelectionCriteria(query.getExpressionBuilder().get("firstName").like("J%"));
         }
@@ -588,6 +600,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
         long getVersion(Employee emp) {
             return ((Long)getSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(emp, emp.getId(), getAbstractSession())).longValue();
         }
+        @Override
         public void reset() {
             UnitOfWork uow = getSession().acquireUnitOfWork();
             for(int i=0; i<employee.length; i++) {
@@ -610,6 +623,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
             setName("TargetLockingTest_AddRemoveTarget");
             setDescription("Tests target optimistic locking for UnidirectionalOneToManyMapping when targets are added to and removed from the source.");
         }
+        @Override
         public void setup() {
             // create 5 Employees.
             employee = new Employee[5];
@@ -640,6 +654,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
             }
             uow.commit();
         }
+        @Override
         public void test() {
             UnitOfWork uow = getSession().acquireUnitOfWork();
             Employee managerClone = (Employee)uow.registerObject(employee[0]);
@@ -653,6 +668,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
             // after commit the  versions of all Employees should be changed.
             uow.commit();
         }
+        @Override
         public void verify() {
             long version[] = new long[employee.length];
             String errorMsg = "";
@@ -695,6 +711,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
             }
             setDescription("Tests target optimistic locking for UnidirectionalOneToManyMapping when the source is deleted.");
         }
+        @Override
         public void setup() {
             // create 3 Employees.
             employee = new Employee[3];
@@ -720,6 +737,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
 
             getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         }
+        @Override
         public void test() {
             employee[0] = (Employee)getSession().readObject(employee[0]);
             if(isIndirectionTriggered) {
@@ -734,6 +752,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
             // set the deleted Employee to null so that reset method won't attempt to delete it again.
             employee[0] = null;
         }
+        @Override
         public void verify() {
             long version[] = new long[employee.length];
             String errorMsg = "";

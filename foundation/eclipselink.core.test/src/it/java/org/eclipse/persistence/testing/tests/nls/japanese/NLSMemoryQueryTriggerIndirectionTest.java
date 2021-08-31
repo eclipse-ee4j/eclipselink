@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,10 +29,12 @@ public class NLSMemoryQueryTriggerIndirectionTest extends AutoVerifyTestCase {
         setDescription("[NLS_Japanese] Test memory query trigger indirection option");
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
@@ -40,6 +42,7 @@ public class NLSMemoryQueryTriggerIndirectionTest extends AutoVerifyTestCase {
         queryAll = (ReadAllQuery)getSession().getDescriptor(org.eclipse.persistence.testing.tests.nls.japanese.NLSEmployee.class).getQueryManager().getQuery("memoryQueryTriggerIndirectionQuery");
     }
 
+    @Override
     public void test() {
         ReadAllQuery queryAllCopy = (ReadAllQuery)queryAll.clone();
         queryAllCopy.checkCacheOnly();//read from cache only
@@ -47,6 +50,7 @@ public class NLSMemoryQueryTriggerIndirectionTest extends AutoVerifyTestCase {
         inMemoryResult = (Vector)getSession().executeQuery(queryAllCopy);
     }
 
+    @Override
     public void verify() {
         if (inMemoryResult.size() != (allEmployees.size() - 1)) {
             throw new TestErrorException("In Memory Query did not return all objects.  Auto-indirection triggering is not working");

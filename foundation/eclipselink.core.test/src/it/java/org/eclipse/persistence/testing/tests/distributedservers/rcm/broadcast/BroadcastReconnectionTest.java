@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -74,6 +74,7 @@ public class BroadcastReconnectionTest extends TestWrapper {
             this.session = session;
         }
 
+        @Override
         public Object handleException(RuntimeException exception) {
             if (exception instanceof RemoteCommandManagerException) {
                 if (((RemoteCommandManagerException)exception).getErrorCode() == helper.getRcmExceptionErrorCodeOnFailureToCreateLocalConnection()) {
@@ -94,6 +95,7 @@ public class BroadcastReconnectionTest extends TestWrapper {
             }
         }
 
+        @Override
         public void run() {
             while (isActive) {
                 // no need for try block - we are eating the exception (see handleException method)
@@ -114,6 +116,7 @@ public class BroadcastReconnectionTest extends TestWrapper {
         }
     }
 
+    @Override
     protected void setup() throws Throwable {
         // save originals to restore back in reset
         shouldRemoveConnectionOnErrorOriginal = getTransportManager().shouldRemoveConnectionOnError();
@@ -156,6 +159,7 @@ public class BroadcastReconnectionTest extends TestWrapper {
         super.setup();
     }
 
+    @Override
     protected void test() throws Throwable {
         try {
             // This is expected to fail - the factory has been shut down.
@@ -215,6 +219,7 @@ public class BroadcastReconnectionTest extends TestWrapper {
         super.test();
     }
 
+    @Override
     protected void verify() throws Throwable {
         if (shouldRemoveConnectionOnError) {
             if (sourceHasThrownErrorPropagatingCommandException) {
@@ -256,6 +261,7 @@ public class BroadcastReconnectionTest extends TestWrapper {
         super.verify();
     }
 
+    @Override
     public void reset() throws Throwable {
         if (localConnectionCreators != null) {
             Iterator it = localConnectionCreators.iterator();

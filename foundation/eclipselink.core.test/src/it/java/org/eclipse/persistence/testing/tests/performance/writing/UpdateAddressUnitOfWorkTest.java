@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class UpdateAddressUnitOfWorkTest extends PerformanceTest {
     /**
      * Find any employee.
      */
+    @Override
     public void setup() {
         super.setup();
         Expression expression = new ExpressionBuilder().get("postalCode").equal("L5J2B5");
@@ -43,6 +44,7 @@ public class UpdateAddressUnitOfWorkTest extends PerformanceTest {
     /**
      * Read address and clear the cache, test database read.
      */
+    @Override
     public void test() throws Exception {
         super.test();
         UnitOfWork uow = getSession().acquireUnitOfWork();

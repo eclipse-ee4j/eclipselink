@@ -20,7 +20,7 @@ import javax.naming.NamingException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.eclipse.persistence.testing.framework.wdf.AbstractBaseTest;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;

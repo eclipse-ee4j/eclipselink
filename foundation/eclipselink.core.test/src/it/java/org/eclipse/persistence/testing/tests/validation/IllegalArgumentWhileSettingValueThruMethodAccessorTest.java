@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ public class IllegalArgumentWhileSettingValueThruMethodAccessorTest extends Exce
         setDescription("This tests Illegal Argument While Setting Value Thru Method Accessor (TL-ERROR 33)");
     }
 
+    @Override
     protected void setup() {
         expectedException = DescriptorException.illegalArgumentWhileSettingValueThruMethodAccessor("setName", "Person", null);
         getAbstractSession().beginTransaction();
@@ -46,6 +47,7 @@ public class IllegalArgumentWhileSettingValueThruMethodAccessorTest extends Exce
     ClassDescriptor orgDescriptor;
     IntegrityChecker orgIntegrityChecker;
 
+    @Override
     public void reset() {
         ((DatabaseSession)getSession()).getDescriptors().remove(org.eclipse.persistence.testing.tests.validation.PersonMethodAccess.class);
         if (orgDescriptor != null)
@@ -56,6 +58,7 @@ public class IllegalArgumentWhileSettingValueThruMethodAccessorTest extends Exce
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test() {
         PersonMethodAccess person = new PersonMethodAccess();
         person.setName("Person");

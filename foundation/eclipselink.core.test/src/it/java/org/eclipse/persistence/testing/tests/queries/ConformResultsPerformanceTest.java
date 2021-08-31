@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,12 +40,14 @@ public class ConformResultsPerformanceTest extends ConformResultsInUnitOfWorkTes
         setShouldUseWrapperPolicy(true);
     }
 
+    @Override
     public void buildConformQuery() {
         conformedQuery = new ReadAllQuery(Employee.class);
         conformedQuery.conformResultsInUnitOfWork();
         conformedQuery.setSelectionCriteria(new ExpressionBuilder().get("lastName").notEqual("test"));
     }
 
+    @Override
     public void prepareTest() {
         EmployeeWrapperPolicy.timesUnwrapCalled = 0;
         startTime = System.currentTimeMillis();
@@ -55,6 +57,7 @@ public class ConformResultsPerformanceTest extends ConformResultsInUnitOfWorkTes
      * Insure that the conforming worked and that unwrap was called a liner number
      * of times.
      */
+    @Override
     public void verify() {
         long testTime = System.currentTimeMillis() - startTime;
         int size = ((Vector)result).size();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class TargetInvocationWhileInvokingAttributeMethodTest extends ExceptionT
     TransformationMapping mapping;
     DatabaseRecord row;
 
+    @Override
     protected void setup() {
         descriptor = new RelationalDescriptor();
         descriptor.setJavaClass(TargetInvocationWhileInvokingAttributeMethodTest.class);
@@ -48,6 +49,7 @@ public class TargetInvocationWhileInvokingAttributeMethodTest extends ExceptionT
         expectedException = DescriptorException.targetInvocationWhileInvokingAttributeMethod(mapping, new Exception());
     }
 
+    @Override
     public void test() {
         try {
             mapping.invokeAttributeTransformer(row, new TargetInvocationWhileInvokingAttributeMethodTest(), (AbstractSession)getSession());
@@ -57,7 +59,7 @@ public class TargetInvocationWhileInvokingAttributeMethodTest extends ExceptionT
     }
 
     public String invalidMethod(Record row) throws java.lang.IllegalAccessException {
-        throw new java.lang.IllegalAccessException();
+        throw new IllegalAccessException();
     }
 
 

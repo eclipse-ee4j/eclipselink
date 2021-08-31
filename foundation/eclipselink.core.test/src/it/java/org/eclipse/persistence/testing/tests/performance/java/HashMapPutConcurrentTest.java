@@ -31,6 +31,7 @@ public class HashMapPutConcurrentTest extends ConcurrentPerformanceComparisonTes
         }
     }
 
+    @Override
     public void setup() {
         super.setup();
         map = new HashMap(100);
@@ -39,6 +40,7 @@ public class HashMapPutConcurrentTest extends ConcurrentPerformanceComparisonTes
         }
     }
 
+    @Override
     public void runTask() throws Exception {
         for (int index = 0; index < 100; index ++) {
             Integer value = (Integer)this.map.put(this.keys[index],this.keys[index]);

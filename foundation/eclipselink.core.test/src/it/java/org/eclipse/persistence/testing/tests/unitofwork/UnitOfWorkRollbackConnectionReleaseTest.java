@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,12 +36,14 @@ public class UnitOfWorkRollbackConnectionReleaseTest extends AutoVerifyTestCase 
     ClientSession m_clientSession;
     boolean m_exceptionCaught;
 
+    @Override
     public void reset() {
         m_clientSession.getIdentityMapAccessor().initializeAllIdentityMaps();
         m_clientSession.setWriteConnection(accessor);
         accessor.rollbackTransaction((AbstractSession)getSession());
     }
 
+    @Override
     public void setup() {
         m_exceptionCaught = false;
         m_clientSession = (ClientSession)getSession();
@@ -58,6 +60,7 @@ public class UnitOfWorkRollbackConnectionReleaseTest extends AutoVerifyTestCase 
         m_clientSession.setWriteConnection(null);
     }
 
+    @Override
     public void test() {
         try {
             // Look for a NPE exception
@@ -67,6 +70,7 @@ public class UnitOfWorkRollbackConnectionReleaseTest extends AutoVerifyTestCase 
         }
     }
 
+    @Override
     public void verify() {
         if (m_exceptionCaught) {
             throw new TestErrorException("Null pointer exception was caught on rollback");

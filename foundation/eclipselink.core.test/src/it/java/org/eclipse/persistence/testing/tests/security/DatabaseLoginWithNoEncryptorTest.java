@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,6 +39,7 @@ public class DatabaseLoginWithNoEncryptorTest extends AutoVerifyTestCase {
         setDescription("Test the login without making a set password call, i.e. no Securable object initialized");
     }
 
+    @Override
     public void reset() {
         if ((mySession != null) && mySession.isConnected()) {
             mySession.logout();// If session is logged in, log it out
@@ -48,6 +49,7 @@ public class DatabaseLoginWithNoEncryptorTest extends AutoVerifyTestCase {
         mySession = null;
     }
 
+    @Override
     protected void setup() throws Throwable {
     exceptionOccurred = false;
 
@@ -75,6 +77,7 @@ public class DatabaseLoginWithNoEncryptorTest extends AutoVerifyTestCase {
         mySession.dontLogMessages();
     }
 
+    @Override
     public void test() {
         try {
             mySession.login();
@@ -83,6 +86,7 @@ public class DatabaseLoginWithNoEncryptorTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void verify() {
         if (exceptionOccurred) {
             throw new TestErrorException("Exception was caught on login");

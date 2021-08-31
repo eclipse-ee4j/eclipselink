@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,6 +40,7 @@ public class ConcurrentTestWithReadLocks extends org.eclipse.persistence.testing
         this.index = index;
     }
 
+    @Override
     public void reset() {
         ConcurrentTestWithReadLocks.execute = false;
         for (int count = 0; count < numThreads; ++count) {
@@ -52,6 +53,7 @@ public class ConcurrentTestWithReadLocks extends org.eclipse.persistence.testing
         ConcurrentTestWithReadLocks.server.logout();
     }
 
+    @Override
     public void setup() {
         ConcurrentTestWithReadLocks.execute = true;
         try {
@@ -76,6 +78,7 @@ public class ConcurrentTestWithReadLocks extends org.eclipse.persistence.testing
         }
     }
 
+    @Override
     public void test() {
         for (int count = 0; count < numThreads; ++count) {
             ConcurrentTestWithReadLocks.threadList[count].start();
@@ -90,6 +93,7 @@ public class ConcurrentTestWithReadLocks extends org.eclipse.persistence.testing
         }
     }
 
+    @Override
     public void verify() {
         if (!execute) {
             for (int count = 0; count < numThreads; ++count) {
@@ -106,6 +110,7 @@ public class ConcurrentTestWithReadLocks extends org.eclipse.persistence.testing
                 // If the type is set to checker then this set the thread
                 // to watch the other threads for deadlock.  If none occurs then
                 // the test will time out.
+                @Override
                 public void run() {
                     if (org.eclipse.persistence.testing.tests.clientserver.ConcurrentTestWithReadLocks.this.isCheckerThread) {
                         watchOtherThreads();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -74,31 +74,38 @@ public class EquipmentDAO implements Equipment, java.io.Serializable {
 
     public EquipmentDAO() {}
 
+    @Override
     public long getEntityId() {
         return entityId;
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
-    public void setId( String id ) {
+    @Override
+    public void setId(String id ) {
         this.id = id;
     }
 
+    @Override
     public java.util.List<Port> getPorts() {
             return ports;
     }
 
+    @Override
     public void setPorts(ArrayList<Port> ports ) {
         this.ports = ports;
     }
 
+    @Override
     public void addPort(Port p) {
         getPorts().add(p);
         p.setEquipment(this);
     }
 
+    @Override
     public Port removePort(int i) {
         Port port = getPorts().remove(i);
 

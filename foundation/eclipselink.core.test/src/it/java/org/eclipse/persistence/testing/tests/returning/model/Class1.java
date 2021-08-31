@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,10 +57,12 @@ public class Class1 extends BaseClass {
         this.aggregate = aggregate;
     }
 
+    @Override
     public String getFieldAName() {
         return "A1";
     }
 
+    @Override
     public String getFieldBName() {
         return "B1";
     }
@@ -94,6 +96,7 @@ public class Class1 extends BaseClass {
         }
     }
 
+    @Override
     public Object clone() {
         Class1 clone = (Class1)super.clone();
         clone.id = id;
@@ -103,6 +106,7 @@ public class Class1 extends BaseClass {
         return clone;
     }
 
+    @Override
     public boolean isValid() {
         if (super.isValid()) {
             if (aggregate == null) {

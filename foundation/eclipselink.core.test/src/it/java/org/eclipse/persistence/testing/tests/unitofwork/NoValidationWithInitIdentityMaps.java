@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ public class NoValidationWithInitIdentityMaps extends TransactionalTestCase {
         setDescription("Test using no validation.");
     }
 
+    @Override
     public void setup() {
         if(getSession().isClientSession()) {
             listener = checkTransactionIsolation();
@@ -48,6 +49,7 @@ public class NoValidationWithInitIdentityMaps extends TransactionalTestCase {
         }
     }
 
+    @Override
     public void reset() {
         super.reset();
         getSession().getDescriptor(Employee.class).setExistenceChecking(this.existenceCheck);
@@ -57,6 +59,7 @@ public class NoValidationWithInitIdentityMaps extends TransactionalTestCase {
         }
     }
 
+    @Override
     public void test() {
         testNoneCheckDatabaseNewObject();
         testNoneAssumeNonExistenceNewObject();
@@ -140,6 +143,7 @@ public class NoValidationWithInitIdentityMaps extends TransactionalTestCase {
         uow.commit();
     }
 
+    @Override
     public void verify() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         Object objectFromDatabase = getSession().readObject(objectToBeWritten);

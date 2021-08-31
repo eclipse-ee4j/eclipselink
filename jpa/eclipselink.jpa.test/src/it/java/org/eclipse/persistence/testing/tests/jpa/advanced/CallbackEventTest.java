@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ public class CallbackEventTest extends EntityContainerTestBase  {
     protected Employee m_employee;
     protected int m_beforeEvent, m_afterEvent;
 
+    @Override
     public void setup () {
         super.setup();
         this.reset = true;
@@ -61,6 +62,7 @@ public class CallbackEventTest extends EntityContainerTestBase  {
         ((EntityManagerImpl)getEntityManager()).getActiveSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void reset () {
         if (reset) {
             reset = false;
@@ -68,6 +70,7 @@ public class CallbackEventTest extends EntityContainerTestBase  {
         super.reset();
     }
 
+    @Override
     public void verify() {
         if ((m_afterEvent-m_beforeEvent) != 1) {
             throw new TestErrorException("The callback method was called "+(m_afterEvent - m_beforeEvent)+

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ public class MergeCloneWithReferencesTransparentIndirectionTest extends AutoVeri
         setDescription("This verifies that mergeClone works with transparent indirection.");
     }
 
+    @Override
     public void setup() {
         if (getSession() instanceof org.eclipse.persistence.sessions.remote.RemoteSession) {
             throw new TestWarningException("This test cannot be run through the remote.");
@@ -44,6 +45,7 @@ public class MergeCloneWithReferencesTransparentIndirectionTest extends AutoVeri
         uow.commit();
     }
 
+    @Override
     public void reset() {
         if (order != null) {
             UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -53,6 +55,7 @@ public class MergeCloneWithReferencesTransparentIndirectionTest extends AutoVeri
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test() {
         Order order = (Order)getSession().readObject(Order.class);
         order.getLineVector().size();

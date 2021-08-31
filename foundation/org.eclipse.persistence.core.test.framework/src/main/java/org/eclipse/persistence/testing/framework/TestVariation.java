@@ -241,6 +241,7 @@ public class TestVariation {
             }
         }
 
+        @Override
         protected void setup() throws Throwable {
             for (int i = 0; i < required.length; i++) {
                 if (getters[i] != null) {
@@ -261,6 +262,7 @@ public class TestVariation {
             super.setup();
         }
 
+        @Override
         public void reset() throws Throwable {
             super.reset();
             for (int i = required.length - 1; i >= 0; i--) {

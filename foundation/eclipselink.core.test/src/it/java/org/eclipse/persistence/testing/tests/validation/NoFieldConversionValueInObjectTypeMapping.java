@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,16 +34,19 @@ public class NoFieldConversionValueInObjectTypeMapping extends ExceptionTest {
     public Map attributeToFieldValues;
     public ObjectTypeConverter objectType;
 
+    @Override
     public void reset() {
         super.reset();
         this.objectType.setFieldToAttributeValues(this.fieldToAttributeValues);
         this.objectType.setAttributeToFieldValues(this.attributeToFieldValues);
     }
 
+    @Override
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     protected void test() {
         ClassDescriptor employeeDescriptor = getSession().getDescriptor(new org.eclipse.persistence.testing.models.employee.domain.Employee());
 

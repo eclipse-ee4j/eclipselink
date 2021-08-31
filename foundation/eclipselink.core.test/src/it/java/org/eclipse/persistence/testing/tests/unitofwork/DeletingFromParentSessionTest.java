@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,15 +28,18 @@ public class DeletingFromParentSessionTest extends DeleteObjectTest {
         setDescription("This test deletes an object from a unit of work, and checks to make sure it is removed from the parent session's cache.");
     }
 
+    @Override
     protected void setup() {
         getAbstractSession().beginTransaction();
     }
 
+    @Override
     public void reset() {
         getAbstractSession().rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     protected void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
 
@@ -59,6 +62,7 @@ public class DeletingFromParentSessionTest extends DeleteObjectTest {
         uow.commit();
     }
 
+    @Override
     public void verify() {
         Object primaryKey = getSession().getId(this.originalObject);
         if (getSession().getIdentityMapAccessor().containsObjectInIdentityMap(primaryKey,

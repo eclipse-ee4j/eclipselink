@@ -36,11 +36,13 @@ public class UpdateAllQueryExpressionMathTest extends AutoVerifyTestCase {
     public UpdateAllQueryExpressionMathTest() {
     }
 
+    @Override
     public void reset() {
         m_session.getIdentityMapAccessor().initializeIdentityMaps();
         rollbackTransaction();
     }
 
+    @Override
     protected void setup() {
         m_session = getSession();
         beginTransaction();
@@ -48,6 +50,7 @@ public class UpdateAllQueryExpressionMathTest extends AutoVerifyTestCase {
         m_originalClaims = getClaims();
     }
 
+    @Override
     public void test() {
         ExpressionBuilder eb = new ExpressionBuilder();
         UpdateAllQuery updateQuery = new UpdateAllQuery(org.eclipse.persistence.testing.models.insurance.Claim.class);
@@ -56,6 +59,7 @@ public class UpdateAllQueryExpressionMathTest extends AutoVerifyTestCase {
         m_session.executeQuery(updateQuery);
     }
 
+    @Override
     protected void verify() {
         m_session.getIdentityMapAccessor().initializeIdentityMaps();// Ensure we read from the database
         m_updatedClaims = getClaims();

@@ -38,6 +38,7 @@ public class UpdateObjectInvalidationTest extends ConfigurableCacheSyncDistribut
         cacheSyncConfigValues.put(Employee.class, Integer.valueOf(ClassDescriptor.INVALIDATE_CHANGED_OBJECTS));
     }
 
+    @Override
     public void setup() {
         super.setup();
 
@@ -61,6 +62,7 @@ public class UpdateObjectInvalidationTest extends ConfigurableCacheSyncDistribut
         assertNotNull(result);
     }
 
+    @Override
     public void test() {
         // Update the employee and commit (x2)
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -74,6 +76,7 @@ public class UpdateObjectInvalidationTest extends ConfigurableCacheSyncDistribut
         uow.commit();
     }
 
+    @Override
     public void verify() {
         // The employee should exist in the distributed cache, and it should be invalidated
         if (isObjectValidOnDistributedServer(employee) == true) {

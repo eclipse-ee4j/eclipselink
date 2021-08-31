@@ -43,6 +43,7 @@ public class InsuranceProject extends org.eclipse.persistence.sessions.Project {
         addDescriptor(buildBicyclePolicyDescriptor());
     }
 
+    @Override
     public void applyLogin() {
         DatabaseLogin login = new DatabaseLogin();
         setLogin(login);

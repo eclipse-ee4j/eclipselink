@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,7 @@ public class Phone implements Contact, java.io.Serializable {
     public Number id;
     public ContactHolder employee;
 
+    @Override
     public Object clone() {
         Phone object = new Phone();
         object.number = this.number;
@@ -46,6 +47,7 @@ public class Phone implements Contact, java.io.Serializable {
         return example;
     }
 
+    @Override
     public ContactHolder getEmp() {
         return this.employee;
     }
@@ -54,6 +56,7 @@ public class Phone implements Contact, java.io.Serializable {
         return this.employee;
     }
 
+    @Override
     public Number getId() {
         return id;
     }
@@ -62,6 +65,7 @@ public class Phone implements Contact, java.io.Serializable {
         this.employee = emp;
     }
 
+    @Override
     public void setHolder(ContactHolder emp) {
         this.employee = emp;
     }

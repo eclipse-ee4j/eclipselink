@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,6 +63,7 @@ public class ComplexInheritanceUsingNamedQueryTest extends org.eclipse.persisten
         return this.argument;
     }
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         Project project = null;
@@ -113,6 +114,7 @@ public class ComplexInheritanceUsingNamedQueryTest extends org.eclipse.persisten
         }
     }
 
+    @Override
     public void test() {
         //Run named query
         try {
@@ -123,6 +125,7 @@ public class ComplexInheritanceUsingNamedQueryTest extends org.eclipse.persisten
         }
     }
 
+    @Override
     public void verify() throws Exception {
         //Check for specific Exception described in CR#3844
         if (caughtException != null) {
@@ -133,6 +136,7 @@ public class ComplexInheritanceUsingNamedQueryTest extends org.eclipse.persisten
         super.verify();
     }
 
+    @Override
     public void reset() {
         // Remove the named query and alias from the session
         getSession().removeQuery("findLargeProjectByBudgetEJBQL");

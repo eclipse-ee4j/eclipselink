@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,10 +33,12 @@ public class NestedUnitOfWorkDeleteConformedNestedNewObjectTest extends AutoVeri
         setDescription("Test designed to verify that a new object registered in a nested unit of work is unregistered when deleted in same unit of work.");
     }
 
+    @Override
     public void setup() {
         getAbstractSession().beginTransaction();
     }
 
+    @Override
     public void test() {
 
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -67,6 +69,7 @@ public class NestedUnitOfWorkDeleteConformedNestedNewObjectTest extends AutoVeri
 
     }
 
+    @Override
     public void reset() {
         getAbstractSession().commitTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
