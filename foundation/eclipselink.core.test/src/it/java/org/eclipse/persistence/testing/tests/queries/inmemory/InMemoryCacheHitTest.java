@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,12 +30,14 @@ public class InMemoryCacheHitTest extends CacheHitTest {
     /**
      * Load the object into the cache.
      */
+    @Override
     protected void loadObjectIntoCache() {
         ReadObjectQuery query = (ReadObjectQuery)this.query.clone();
         query.dontCheckCache();
         objectToRead = getSession().executeQuery(query);
     }
 
+    @Override
     protected Object readObject() {
         return getSession().executeQuery(this.query);
     }

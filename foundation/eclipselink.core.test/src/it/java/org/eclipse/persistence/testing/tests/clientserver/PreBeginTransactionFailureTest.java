@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,11 +26,13 @@ public class PreBeginTransactionFailureTest extends AutoVerifyTestCase {
     protected Exception exception;
 
     class SessionListener extends SessionEventAdapter {
+        @Override
         public void preBeginTransaction(SessionEvent event) {
             throw expectedException;
         }
     }
 
+    @Override
     public void reset() {
         if (serverSession != null) {
             serverSession.logout();
@@ -39,6 +41,7 @@ public class PreBeginTransactionFailureTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void setup() {
         Project project = new EmployeeProject();
         project.setLogin((DatabaseLogin)getSession().getLogin().clone());
@@ -52,6 +55,7 @@ public class PreBeginTransactionFailureTest extends AutoVerifyTestCase {
         uow = clientSession.acquireUnitOfWork();
     }
 
+    @Override
     public void test() {
         Employee emp = new Employee();
         Employee empCopy = (Employee)uow.registerObject(emp);
@@ -63,6 +67,7 @@ public class PreBeginTransactionFailureTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (!expectedException.equals(exception)) {
             throw new TestErrorException("A wrong exception has been thrown.");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,11 +35,13 @@ public class InvalidateAllTest extends AutoVerifyTestCase {
     public InvalidateAllTest() {
     }
 
+    @Override
     public void reset() {
         m_session.getIdentityMapAccessor().initializeIdentityMaps();
         rollbackTransaction();
     }
 
+    @Override
     protected void setup() {
         m_session = getSession();
         beginTransaction();
@@ -49,10 +51,12 @@ public class InvalidateAllTest extends AutoVerifyTestCase {
         m_smallProjects = m_session.readAllObjects(SmallProject.class);
     }
 
+    @Override
     public void test() {
         ((IdentityMapAccessor)m_session.getIdentityMapAccessor()).invalidateAll();
     }
 
+    @Override
     protected void verify() {
         Enumeration e = m_largeProjects.elements();
 

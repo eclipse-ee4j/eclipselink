@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,6 +35,7 @@ public class InvalidSetMethodParameterTypeForProxyIndirectionTest extends Except
     Class[] targetInterfaces = { InvalidAttributeTypeForProxyIndirectionTest.class };
     OneToManyMapping mapping = new OneToManyMapping();
 
+    @Override
     protected void setup() {
         //setup need to remove setup null pointer thrown error
         RelationalDescriptor descriptor = new RelationalDescriptor();
@@ -48,11 +49,13 @@ public class InvalidSetMethodParameterTypeForProxyIndirectionTest extends Except
         getSession().getIntegrityChecker().dontCatchExceptions();
     }
 
+    @Override
     public void reset() {
         if (orgIntegrityChecker != null)
             getSession().setIntegrityChecker(orgIntegrityChecker);
     }
 
+    @Override
     public void test() {
         ProxyIndirectionPolicy policy = new ProxyIndirectionPolicy();
         mapping.setReferenceClass(attributeType);

@@ -32,6 +32,7 @@ public class JPA2ComplexUpdateEmployeePerformanceComparisonTest extends Performa
     /**
      * Get an employee id.
      */
+    @Override
     public void setup() {
         EntityManager manager = createEntityManager();
         this.originalEmployee = (Employee)manager.createQuery("Select e from Employee e").getResultList().get(0);
@@ -44,6 +45,7 @@ public class JPA2ComplexUpdateEmployeePerformanceComparisonTest extends Performa
     /**
      * Update employee.
      */
+    @Override
     public void test() throws Exception {
         EntityManager manager = createEntityManager();
         manager.getTransaction().begin();

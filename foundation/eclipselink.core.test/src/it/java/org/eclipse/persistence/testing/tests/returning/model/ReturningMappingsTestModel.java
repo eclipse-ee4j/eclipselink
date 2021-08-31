@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ public class ReturningMappingsTestModel extends TestModel {
         this.returnObjectControl = returnObjectControl;
     }
 
+    @Override
     public void addRequiredSystems() {
         if (!getSession().getPlatform().isOracle()) {
             throw new TestWarningException("ReturningMappingsTestModel runs on Oracle only.");
@@ -37,6 +38,7 @@ public class ReturningMappingsTestModel extends TestModel {
         addRequiredSystem(new ReturningTestSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(getTestSuite());
     }

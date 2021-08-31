@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,6 +44,7 @@ public class IsolatedObjectNotSentTest extends ConfigurableCacheSyncDistributedT
         setDescription("Test to ensure that objects that are set as isolated will not be sent over Cache Synchronization.");
     }
 
+    @Override
     public void setup() {
         super.setup();
         ExpressionBuilder employees = new ExpressionBuilder();
@@ -53,6 +54,7 @@ public class IsolatedObjectNotSentTest extends ConfigurableCacheSyncDistributedT
         DistributedServer server = (DistributedServer)DistributedServersModel.getDistributedServers().get(0);
         this.distributedEmployee = (IsolatedEmployee)server.getDistributedSession().readObject(IsolatedEmployee.class, this.expression);
         this.listener = new SessionEventAdapter() {
+            @Override
             public void preMergeUnitOfWorkChangeSet(SessionEvent event) {
                 sentChanges = true;
             }
@@ -61,6 +63,7 @@ public class IsolatedObjectNotSentTest extends ConfigurableCacheSyncDistributedT
         this.sentChanges = false;
     }
 
+    @Override
     public void test() {
         this.employee = (IsolatedEmployee)getSession().readObject(IsolatedEmployee.class, this.expression);
 
@@ -70,6 +73,7 @@ public class IsolatedObjectNotSentTest extends ConfigurableCacheSyncDistributedT
         uow.commit();
     }
 
+    @Override
     public void verify() {
         this.distributedEmployee = (IsolatedEmployee)getObjectFromDistributedCache(this.employee);
         if (this.distributedEmployee.getSalary() == this.employee.getSalary()) {
@@ -80,6 +84,7 @@ public class IsolatedObjectNotSentTest extends ConfigurableCacheSyncDistributedT
         }
     }
 
+    @Override
     public void reset() {
         super.reset();
         DistributedServer server = (DistributedServer)DistributedServersModel.getDistributedServers().get(0);

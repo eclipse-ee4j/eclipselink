@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,10 +26,12 @@ public class NullPointerWhileGettingValueThruMethodAccessorTest extends Exceptio
         setDescription("This tests Null Pointer While Getting Value Thru Method Accessor (TL-ERROR 70)");
     }
 
+    @Override
     protected void setup() {
         expectedException = DescriptorException.nullPointerWhileGettingValueThruMethodAccessor("getName", "Person", null);
     }
 
+    @Override
     public void test() {
         try {
             DatabaseMapping dMapping = descriptor().getMappingForAttributeName("p_name");

@@ -34,6 +34,7 @@ public class StoredProcedureTest2 extends TestCase {
         setName(getName() + " bind = " + shouldBindAllParameters);
     }
 
+    @Override
     public void setup() {
         // right now only the stored procedure is set up in Oracle
         if (!(getSession().getPlatform().isOracle())) {
@@ -41,6 +42,7 @@ public class StoredProcedureTest2 extends TestCase {
         }
     }
 
+    @Override
     public void test() {
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName("StoredProcedure_InOutput2");
@@ -58,6 +60,7 @@ public class StoredProcedureTest2 extends TestCase {
         row = (DatabaseRecord)((Vector)getSession().executeQuery(query, args)).firstElement();
     }
 
+    @Override
     public void verify() {
         int id1 = ((Number)row.get("P_ID")).intValue();
         int id2 = ((Number)row.get("P_ID2")).intValue();

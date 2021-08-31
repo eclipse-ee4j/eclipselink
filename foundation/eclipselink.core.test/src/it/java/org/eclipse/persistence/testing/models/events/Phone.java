@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,14 +49,17 @@ public class Phone implements DescriptorEventListener {
         resetFlags();
     }
 
+    @Override
     public void aboutToInsert(DescriptorEvent event) {
         aboutToInsertExecuted = true;
     }
 
+    @Override
     public void aboutToDelete(DescriptorEvent event) {
         aboutToDeleteExecuted = true;
     }
 
+    @Override
     public void aboutToUpdate(DescriptorEvent event) {
         aboutToUpdateExecuted = true;
     }
@@ -97,34 +100,42 @@ public class Phone implements DescriptorEventListener {
         return false;
     }
 
+    @Override
     public void postBuild(DescriptorEvent event) {
         postBuildExecuted = true;
     }
 
+    @Override
     public void postClone(DescriptorEvent event) {
         postCloneExecuted = true;
     }
 
+    @Override
     public void postDelete(DescriptorEvent event) {
         postDeleteExecuted = true;
     }
 
+    @Override
     public void postInsert(DescriptorEvent event) {
         postInsertExecuted = true;
     }
 
+    @Override
     public void postMerge(DescriptorEvent event) {
         postMergeExecuted = true;
     }
 
+    @Override
     public void postRefresh(DescriptorEvent event) {
         postRefreshExecuted = true;
     }
 
+    @Override
     public void postUpdate(DescriptorEvent event) {
         postUpdateExecuted = true;
     }
 
+    @Override
     public void postWrite(DescriptorEvent event) {
         postWriteExecuted = true;
     }
@@ -133,29 +144,36 @@ public class Phone implements DescriptorEventListener {
         preCreateExecuted = true;
     }
 
+    @Override
     public void preDelete(DescriptorEvent event) {
         preDeleteExecuted = true;
     }
 
+    @Override
     public void preInsert(DescriptorEvent event) {
         preInsertExecuted = true;
     }
 
+    @Override
     public void preRemove(DescriptorEvent event) {
         preRemoveExecuted = true;
     }
 
+    @Override
     public void preUpdate(DescriptorEvent event) {
         preUpdateExecuted = true;
     }
 
+    @Override
     public void preWrite(DescriptorEvent event) {
         preWriteExecuted = true;
     }
 
+    @Override
     public void prePersist(DescriptorEvent event) {
     }
 
+    @Override
     public void preUpdateWithChanges(DescriptorEvent event) {
     }
 

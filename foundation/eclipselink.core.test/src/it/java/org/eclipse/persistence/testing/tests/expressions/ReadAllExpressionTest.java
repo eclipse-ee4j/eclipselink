@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -112,6 +112,7 @@ public class ReadAllExpressionTest extends org.eclipse.persistence.testing.frame
         this.supportedInMemory = supportedInMemory;
     }
 
+    @Override
     protected void setup() {
         if (!isPlatformSupported(getSession().getLogin().getPlatform())) {
             throw new TestWarningException("This expression is not supported on this platform.");
@@ -141,11 +142,13 @@ public class ReadAllExpressionTest extends org.eclipse.persistence.testing.frame
         }
     }
 
+    @Override
     public void reset() throws Exception {
         super.reset();
         freeHardReferenceToInMemoryObjects();
     }
 
+    @Override
     protected void test() {
         if (shouldTestBatchAttributesOnEmployee()) {
             super.test();

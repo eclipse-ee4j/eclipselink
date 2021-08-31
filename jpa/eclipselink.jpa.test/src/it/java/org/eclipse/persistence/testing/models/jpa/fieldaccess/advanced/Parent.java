@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,35 +53,43 @@ public class Parent implements ParentInterface, Serializable {
         addChild(child);
     }
 
+    @Override
     public void addChild(Child cs) {
         cs.setParent(this);
         this.children.add(cs);
     }
 
+    @Override
     public List<Child> getChildren() {
         return children;
     }
 
+    @Override
     public Integer getId() {
         return this.id;
     }
 
+    @Override
     public String getSerialNumber() {
         return this.serialNumber;
     }
 
+    @Override
     public int getVersion() {
         return version;
     }
 
+    @Override
     public void setChildren(List<Child> children) {
         this.children = children;
     }
 
+    @Override
     public void setId(Integer id) {
         this.id = id;
     }
 
+    @Override
     public void setSerialNumber(String serialNumber) {
         this.serialNumber = serialNumber;
     }

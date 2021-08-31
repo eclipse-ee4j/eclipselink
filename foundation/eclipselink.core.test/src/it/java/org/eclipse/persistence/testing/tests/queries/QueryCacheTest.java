@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,6 +35,7 @@ public class QueryCacheTest extends TestCase {
         setDescription("Ensure the results of a cached query are correct.");
     }
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         query = new ReadAllQuery(Employee.class);
@@ -45,6 +46,7 @@ public class QueryCacheTest extends TestCase {
         query.addArgument("name");
     }
 
+    @Override
     public void test() {
         Vector arguments = new Vector();
         arguments.add("J%");
@@ -52,6 +54,7 @@ public class QueryCacheTest extends TestCase {
         secondResults = (Vector)getSession().executeQuery(query, arguments);
     }
 
+    @Override
     public void verify() {
         if ((initialResults.size() != 3) || (secondResults.size() != 3)) {
             throw new TestErrorException("The results sizes do not match.");
@@ -69,6 +72,7 @@ public class QueryCacheTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }

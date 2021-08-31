@@ -23,6 +23,7 @@ public class DataReadQueryTest extends TestCase {
         super();
     }
 
+    @Override
     public void setup() {
         //right now only the stored procedure is set up in SQLServer
         if (!getSession().getPlatform().isSQLServer()) {
@@ -30,6 +31,7 @@ public class DataReadQueryTest extends TestCase {
         }
     }
 
+    @Override
     public void test() {
         DataReadQuery readQuery = new DataReadQuery();
         StoredProcedureCall call;

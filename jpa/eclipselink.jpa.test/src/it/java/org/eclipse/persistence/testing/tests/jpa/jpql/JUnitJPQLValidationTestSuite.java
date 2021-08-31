@@ -78,6 +78,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
     }
 
     //This method is run at the end of EVERY test case method
+    @Override
     public void tearDown()
     {
         clearCache();

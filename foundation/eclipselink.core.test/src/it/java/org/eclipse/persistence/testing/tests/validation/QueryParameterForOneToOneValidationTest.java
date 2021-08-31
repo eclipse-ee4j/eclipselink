@@ -49,10 +49,12 @@ public class QueryParameterForOneToOneValidationTest extends ExceptionTest {
         setDescription("Test that an exception is thrown for 1:1 when using a simple parameter instead of a complex object");
     }
 
+    @Override
     public void setup() {
         expectedException = QueryException.incorrectClassForObjectComparison(null, null, null);
     }
 
+    @Override
     public void test() {
         // find a suitable id
         org.eclipse.persistence.testing.models.employee.domain.Employee empExample =
@@ -83,7 +85,7 @@ public class QueryParameterForOneToOneValidationTest extends ExceptionTest {
             // special case for conforming
             if (this.shouldConform) {
                 // enable conforming
-                query.setCacheUsage(query.CheckCacheOnly);
+                query.setCacheUsage(ObjectLevelReadQuery.CheckCacheOnly);
                 // preload objects into identitymap
                 getSession().readAllObjects(PhoneNumber.class);
                 getSession().readAllObjects(Employee.class);

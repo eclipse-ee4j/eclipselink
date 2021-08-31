@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ public class UpdateTestCase extends TestCase {
         setDescription("Tests the use of a hint in an update");
     }
 
+    @Override
     public void setup() {
         ClassDescriptor employeeDescriptor = getSession().getDescriptor(Employee.class);
         qm = employeeDescriptor.getQueryManager();
@@ -44,11 +45,13 @@ public class UpdateTestCase extends TestCase {
         getAbstractSession().writeObject(emp);
     }
 
+    @Override
     public void reset() {
         qm.setUpdateQuery(null);
         getAbstractSession().deleteObject(emp);
     }
 
+    @Override
     public void test() {
         DatabaseQuery updateQuery = qm.getUpdateQuery();
         updateQuery.setHintString(HINT_STRING);

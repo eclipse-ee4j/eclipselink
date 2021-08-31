@@ -31,6 +31,7 @@ public class JPAInsertDeleteEmployeePerformanceComparisonTest extends Performanc
     /**
      * Read an existing employee for emulated database run.
      */
+    @Override
     public void setup() {
         EntityManager manager = createEntityManager();
         Employee any = (Employee)manager.createQuery("Select e from Employee e").getResultList().get(0);
@@ -48,6 +49,7 @@ public class JPAInsertDeleteEmployeePerformanceComparisonTest extends Performanc
     /**
      * Insert employee.
      */
+    @Override
     public void test() throws Exception {
         EntityManager manager = createEntityManager();
         manager.getTransaction().begin();

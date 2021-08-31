@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,6 +22,7 @@ public class Company implements ContactHolder, java.io.Serializable, Cloneable {
     public Contact contact;
     public Email email;
 
+    @Override
     public Object clone() {
         Company clone = new Company();
         clone.id = this.id;
@@ -54,18 +55,22 @@ public class Company implements ContactHolder, java.io.Serializable, Cloneable {
         return example;
     }
 
+    @Override
     public Contact getContact() {
         return contact;
     }
 
+    @Override
     public Number getId() {
         return this.id;
     }
 
+    @Override
     public void setContact(Contact contact) {
         this.contact = contact;
     }
 
+    @Override
     public void setId(Number id) {
         this.id = id;
     }

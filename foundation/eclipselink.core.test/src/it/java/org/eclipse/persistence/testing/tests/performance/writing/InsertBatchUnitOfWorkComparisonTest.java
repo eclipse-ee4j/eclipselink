@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,6 +41,7 @@ public class InsertBatchUnitOfWorkComparisonTest extends PerformanceComparisonTe
     /**
      * Insert 10 addresses and then reset database.
      */
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         for (int index = 0; index < 10; index++) {
@@ -64,6 +65,7 @@ public class InsertBatchUnitOfWorkComparisonTest extends PerformanceComparisonTe
      */
     public void addParameterizedSQLTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 getSession().getLogin().cacheAllStatements();
                 InsertBatchUnitOfWorkComparisonTest.this.test();
@@ -80,6 +82,7 @@ public class InsertBatchUnitOfWorkComparisonTest extends PerformanceComparisonTe
      */
     public void addParameterizedBatchWritingTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 getSession().getLogin().cacheAllStatements();
                 getSession().getLogin().useBatchWriting();
@@ -98,6 +101,7 @@ public class InsertBatchUnitOfWorkComparisonTest extends PerformanceComparisonTe
      */
     public void addNativeBatchWritingTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 getSession().getLogin().cacheAllStatements();
                 getSession().getLogin().useBatchWriting();
@@ -108,10 +112,12 @@ public class InsertBatchUnitOfWorkComparisonTest extends PerformanceComparisonTe
                 getSession().getLogin().dontUseBatchWriting();
             }
 
+            @Override
             public void startTest() {
                 ((DatabaseAccessor)((AbstractSession)getSession()).getAccessor()).clearStatementCache((AbstractSession)getSession());
             }
 
+            @Override
             public void endTest() {
                 ((DatabaseAccessor)((AbstractSession)getSession()).getAccessor()).clearStatementCache((AbstractSession)getSession());
             }
@@ -126,6 +132,7 @@ public class InsertBatchUnitOfWorkComparisonTest extends PerformanceComparisonTe
      */
     public void addBatchWritingTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 getSession().getLogin().useBatchWriting();
                 getSession().getLogin().dontBindAllParameters();
@@ -144,6 +151,7 @@ public class InsertBatchUnitOfWorkComparisonTest extends PerformanceComparisonTe
      */
     public void addBufferedBatchWritingTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 getSession().getLogin().useBatchWriting();
                 getSession().getLogin().dontUseJDBCBatchWriting();
@@ -164,6 +172,7 @@ public class InsertBatchUnitOfWorkComparisonTest extends PerformanceComparisonTe
      */
     public void addParameterizedStatementsTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 DatabaseAccessor.shouldUseDynamicStatements = false;
                 getSession().getLogin().dontBindAllParameters();
@@ -182,6 +191,7 @@ public class InsertBatchUnitOfWorkComparisonTest extends PerformanceComparisonTe
      */
     public void addDynamicStatementsTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 getSession().getLogin().dontBindAllParameters();
                 InsertBatchUnitOfWorkComparisonTest.this.test();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,7 @@ import org.eclipse.persistence.testing.framework.*;
 public class ObjectChangeSetEventTest extends EventHookTestCase {
     public Customer customer;
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         beginTransaction();
@@ -30,6 +31,7 @@ public class ObjectChangeSetEventTest extends EventHookTestCase {
         uow.commit();
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Customer cloneCustomer = (Customer)uow.readObject(this.customer);
@@ -37,6 +39,7 @@ public class ObjectChangeSetEventTest extends EventHookTestCase {
         uow.commit();
     }
 
+    @Override
     public void verify() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         Customer originalCustomer = (Customer)getSession().readObject(this.customer);

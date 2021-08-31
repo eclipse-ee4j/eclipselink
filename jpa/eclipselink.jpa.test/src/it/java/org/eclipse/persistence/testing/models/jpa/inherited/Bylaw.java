@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,11 +25,13 @@ public class Bylaw implements CityNumberPair {
     public String city;
     public int number;
 
+    @Override
     @Id
     public String getCity() {
         return city;
     }
 
+    @Override
     @Id
     @Column(name="NUMB")
     @GeneratedValue
@@ -37,10 +39,12 @@ public class Bylaw implements CityNumberPair {
         return number;
     }
 
+    @Override
     public void setCity(String city) {
         this.city = city;
     }
 
+    @Override
     public void setNumber(int number) {
         this.number = number;
     }

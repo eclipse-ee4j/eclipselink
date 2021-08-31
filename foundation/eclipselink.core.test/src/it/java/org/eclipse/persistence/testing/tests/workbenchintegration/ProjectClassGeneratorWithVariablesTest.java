@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,18 +36,21 @@ public class ProjectClassGeneratorWithVariablesTest extends AutoVerifyTestCase {
         setDescription("Test if ProjectTestGenerator generates correct file when we use the overloaded constructor with 3 variables");
     }
 
+    @Override
     public void reset() {
         File file = new File(generator.getOutputFileName());
         file.delete();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
         project = new org.eclipse.persistence.testing.models.employee.relational.EmployeeProject();
     }
 
+    @Override
     public void test() {
         try {
             generator = new ProjectClassGenerator(project, TestWithThreeVar, testWriter);
@@ -57,6 +60,7 @@ public class ProjectClassGeneratorWithVariablesTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void verify() {
         if (!(generator.getClassName()).equals(TestWithThreeVar)) {
             throw new TestErrorException("Project class on " + generator.getOutputFileName() +

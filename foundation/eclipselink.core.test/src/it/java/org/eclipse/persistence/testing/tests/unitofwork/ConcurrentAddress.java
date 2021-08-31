@@ -57,6 +57,7 @@ public class ConcurrentAddress implements Serializable, Cloneable {
         this.country = "";
     }
 
+    @Override
     public Object clone() {
         ConcurrentAddress result = new ConcurrentAddress();
         result.id = this.id;

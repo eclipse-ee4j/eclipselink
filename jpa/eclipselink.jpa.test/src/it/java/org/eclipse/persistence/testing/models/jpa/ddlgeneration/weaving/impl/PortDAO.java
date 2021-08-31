@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,38 +55,47 @@ public class PortDAO implements Port, java.io.Serializable {
     @Version
     int entityVersion;
 
+    @Override
     public int getPortOrder() {
         return portOrder;
     }
 
+    @Override
     public void setPortOrder(int portOrder) {
         this.portOrder = portOrder;
     }
 
+    @Override
     public long getEntityId() {
         return entityId;
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
-    public void setId( String id ) {
+    @Override
+    public void setId(String id ) {
         this.id = id;
     }
 
+    @Override
     public Equipment getEquipment() {
         return equipment;
     }
 
+    @Override
     public void setEquipment(Equipment equipment) {
         this.equipment = (EquipmentDAO) equipment;
     }
 
+    @Override
     public Equipment getVirtualEquipment() {
         return virtualEquipment;
     }
 
+    @Override
     public void setVirtualEquipment(Equipment virtualEquipment) {
         this.virtualEquipment = (EquipmentDAO) virtualEquipment;
     }

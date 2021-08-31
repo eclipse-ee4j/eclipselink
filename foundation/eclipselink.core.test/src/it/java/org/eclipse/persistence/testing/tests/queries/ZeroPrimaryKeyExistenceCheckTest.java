@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,6 +45,7 @@ public class ZeroPrimaryKeyExistenceCheckTest extends TransactionalTestCase {
         setDescription("Test for checking 0 is valid primary key");
     }
 
+    @Override
     @SuppressWarnings("deprecation")
     public void setup() {
         super.setup();
@@ -56,6 +57,7 @@ public class ZeroPrimaryKeyExistenceCheckTest extends TransactionalTestCase {
         sqlTracker = new QuerySQLTracker(getSession());
     }
 
+    @Override
     public void test() {
         PolicyHolder holder = new PolicyHolder();
         holder.setFirstName("David");
@@ -90,6 +92,7 @@ public class ZeroPrimaryKeyExistenceCheckTest extends TransactionalTestCase {
         uow.commit();
     }
 
+    @Override
     public void verify() {
         int expectedNumberOfStatements = 0;
         if (isZeroValidPrimaryKeyValue) {
@@ -105,6 +108,7 @@ public class ZeroPrimaryKeyExistenceCheckTest extends TransactionalTestCase {
         }
     }
 
+    @Override
     @SuppressWarnings("deprecation")
     public void reset() {
         super.reset();

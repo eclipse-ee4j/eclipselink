@@ -23,6 +23,7 @@ import org.eclipse.persistence.tools.schemaframework.*;
 import org.eclipse.persistence.testing.framework.*;
 
 public class InterfaceWithTablesSystem extends TestSystem {
+    @Override
     public void addDescriptors(DatabaseSession session) {
         Vector descriptors = new Vector();
 
@@ -42,6 +43,7 @@ public class InterfaceWithTablesSystem extends TestSystem {
         return descriptor;
     }
 
+    @Override
     public void createTables(DatabaseSession session) {
         SchemaManager schemaManager = new SchemaManager(session);
 
@@ -74,6 +76,7 @@ public class InterfaceWithTablesSystem extends TestSystem {
         return table;
     }
 
+    @Override
     public void populate(DatabaseSession session) {
         PopulationManager manager = PopulationManager.getDefaultManager();
 

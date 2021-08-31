@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -76,6 +76,7 @@ public class TestModelAdapted extends TestModel {
         return testNamesToExclude;
     }
 
+    @Override
     public void addForcedRequiredSystems() {
         Vector systems = getTestModel().buildForcedRequiredSystems();
         for (int i = 0; i < systems.size(); i++) {
@@ -84,6 +85,7 @@ public class TestModelAdapted extends TestModel {
         }
     }
 
+    @Override
     public void addRequiredSystems() {
         Vector systems = getTestModel().buildRequiredSystems();
         for (int i = 0; i < systems.size(); i++) {
@@ -92,10 +94,12 @@ public class TestModelAdapted extends TestModel {
         }
     }
 
+    @Override
     public void reset() {
         getExecutor().removeConfigureSystem(new TestSystemAdapted());
     }
 
+    @Override
     public void addTests() {
         getTestModel().addTests();
         Vector testsToAdd = (Vector)getTestModel().getTests().clone();
@@ -141,6 +145,7 @@ public class TestModelAdapted extends TestModel {
         return false;
     }
 
+    @Override
     public void setExecutor(org.eclipse.persistence.testing.framework.TestExecutor anExecutor) {
         super.setExecutor(anExecutor);
         getTestModel().setExecutor(anExecutor);

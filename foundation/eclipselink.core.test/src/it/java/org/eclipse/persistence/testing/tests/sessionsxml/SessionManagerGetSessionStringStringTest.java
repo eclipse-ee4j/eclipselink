@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ public class SessionManagerGetSessionStringStringTest extends AutoVerifyTestCase
         setDescription("Tests the getSession(String, String) API from SessionManager");
     }
 
+    @Override
     public void reset() {
         if ((m_session != null) && m_session.isConnected()) {
             m_session.logout();
@@ -45,12 +46,14 @@ public class SessionManagerGetSessionStringStringTest extends AutoVerifyTestCase
         }
     }
 
+    @Override
     public void test() {
         //this change for making tests pass on oc4j server, suggested by James
         //m_session = (DatabaseSession)SessionManager.getManager().getSession("EmployeeSession", "org/eclipse/persistence/testing/models/sessionsxml/XMLSchemaSession.xml");
         m_session = (DatabaseSession)SessionManager.getManager().getSession(new XMLSessionConfigLoader("org/eclipse/persistence/testing/models/sessionsxml/XMLSchemaSession.xml"), "EmployeeSession", getClass().getClassLoader(), true, true);
     }
 
+    @Override
     protected void verify() {
         if (m_session == null) {
             throw new TestErrorException("Session did not load properly");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ public class TestUpdateKeyOnAggregateKeyCollectionTableMapping extends TestCase 
 
     private AggregateEntityMapHolder holder = null;
 
+    @Override
     public void setup(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holder = new AggregateEntityMapHolder();
@@ -50,6 +51,7 @@ public class TestUpdateKeyOnAggregateKeyCollectionTableMapping extends TestCase 
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holder = (AggregateEntityMapHolder)uow.readObject(holder);
@@ -62,6 +64,7 @@ public class TestUpdateKeyOnAggregateKeyCollectionTableMapping extends TestCase 
         uow.commit();
     }
 
+    @Override
     public void verify(){
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         holder = (AggregateEntityMapHolder)getSession().readObject(holder);
@@ -102,6 +105,7 @@ public class TestUpdateKeyOnAggregateKeyCollectionTableMapping extends TestCase 
 
     }
 
+    @Override
     public void reset(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         uow.deleteObject(holder);

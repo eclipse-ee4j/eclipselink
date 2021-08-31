@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,6 +38,7 @@ public class HardCacheWeakIdentityMapTest extends TestCase {
     public HardCacheWeakIdentityMapTest() {
     }
 
+    @Override
     public void setup() {
         originalIdentityMapClass = getSession().getDescriptor(Employee.class).getIdentityMapClass();
         originalIdentityMapSize = getSession().getDescriptor(Employee.class).getIdentityMapSize();
@@ -47,6 +48,7 @@ public class HardCacheWeakIdentityMapTest extends TestCase {
         beginTransaction();
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
         getSession().getDescriptor(Employee.class).setIdentityMapClass(originalIdentityMapClass);
@@ -54,6 +56,7 @@ public class HardCacheWeakIdentityMapTest extends TestCase {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     public void test() {
         // insert and store two employees in a predictable order
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -94,6 +97,7 @@ public class HardCacheWeakIdentityMapTest extends TestCase {
         referenceCacheSizeMaintained = (referenceCacheSizeMaintained && (map.getReferenceCache().size() == REFERENCE_CACHE_SIZE));
     }
 
+    @Override
     public void verify() {
         HardCacheWeakIdentityMap map = (HardCacheWeakIdentityMap)getAbstractSession().getIdentityMapAccessorInstance().getIdentityMap(Employee.class);
 

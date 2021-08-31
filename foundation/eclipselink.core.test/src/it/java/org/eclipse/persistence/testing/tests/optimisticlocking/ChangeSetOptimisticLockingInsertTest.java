@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ public class ChangeSetOptimisticLockingInsertTest extends AutoVerifyTestCase {
         setDescription("This test verifies that a changeset gets the correct writelock value");
     }
 
+    @Override
     protected void setup() {
         // Force changes sets for new objects.
         ClassDescriptor.shouldUseFullChangeSetsForNewObjects = true;
@@ -45,6 +46,7 @@ public class ChangeSetOptimisticLockingInsertTest extends AutoVerifyTestCase {
         originalObject = uow.readObject(domainClass);
     }
 
+    @Override
     public void reset() {
         // Reset force changes sets for new objects.
         ClassDescriptor.shouldUseFullChangeSetsForNewObjects = false;
@@ -52,9 +54,10 @@ public class ChangeSetOptimisticLockingInsertTest extends AutoVerifyTestCase {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     public void test() {
         try {
-            originalObject = domainClass.newInstance();
+            originalObject = domainClass.getConstructor().newInstance();
         } catch (Exception ex) {
             throw new TestErrorException("Failed to run test.  Unable to get new instance. " + ex.toString());
         }
@@ -63,6 +66,7 @@ public class ChangeSetOptimisticLockingInsertTest extends AutoVerifyTestCase {
         uow.commit();
     }
 
+    @Override
     protected void verify() {
         try {
             MergeManager mergeManager = new MergeManager((AbstractSession)getSession());

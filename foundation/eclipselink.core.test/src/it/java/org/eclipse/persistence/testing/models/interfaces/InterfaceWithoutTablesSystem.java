@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,11 +24,13 @@ public class InterfaceWithoutTablesSystem extends TestSystem {
         project = new InterfaceWithoutTablesProject();
     }
 
+    @Override
     public void addDescriptors(DatabaseSession session) {
         Admendments.addToManagerialJobDescriptor(project.getDescriptors().get(ManagerialJob.class));
         session.addDescriptors(project);
     }
 
+    @Override
     public void createTables(DatabaseSession session) {
         SchemaManager schemaManager = new SchemaManager(session);
 
@@ -64,6 +66,7 @@ public class InterfaceWithoutTablesSystem extends TestSystem {
         schemaManager.createSequences();
     }
 
+    @Override
     public void populate(DatabaseSession session) {
         PopulationManager manager = PopulationManager.getDefaultManager();
         UnitOfWork unitOfWork = session.acquireUnitOfWork();

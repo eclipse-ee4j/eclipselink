@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class AdvancedWriteTransformer implements FieldTransformer {
      * information from the mapping in order to do the transformation
      * @param mapping - the mapping this transformer is associated with.
      */
+    @Override
     public void initialize(AbstractTransformationMapping mapping) {
         this.attributeName = mapping.getAttributeName();
     }
@@ -43,6 +44,7 @@ public class AdvancedWriteTransformer implements FieldTransformer {
      * @param fieldName - the name of the field being transformed. Used if the user wants to use this transformer for multiple fields.
      * @return - The value to be written for the field associated with this transformer
      */
+    @Override
     public Time buildFieldValue(Object instance, String fieldName, Session session) {
         if(attributeName.equals("overtimeHours")) {
             if(fieldName.equals("START_OVERTIME")) {

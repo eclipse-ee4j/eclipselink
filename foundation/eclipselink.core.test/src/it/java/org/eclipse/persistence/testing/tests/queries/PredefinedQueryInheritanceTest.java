@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,6 +46,7 @@ public class PredefinedQueryInheritanceTest extends org.eclipse.persistence.test
         setDescription("Tests that named queries work on subclasses from where they're defined.");
     }
 
+    @Override
     public void reset() {
         // Get a handle on the descriptor of Project.class
     if (getSession() instanceof org.eclipse.persistence.sessions.remote.RemoteSession) {
@@ -67,6 +68,7 @@ public class PredefinedQueryInheritanceTest extends org.eclipse.persistence.test
 
     }
 
+    @Override
     protected void setup() {
         subclassTestObjectRead = null;
         storedException = null;
@@ -106,6 +108,7 @@ public class PredefinedQueryInheritanceTest extends org.eclipse.persistence.test
 
     }
 
+    @Override
     protected void test() {
         // Get subclass of Project class (LargeProject) back from database using the
         // named query defined in Project
@@ -123,6 +126,7 @@ public class PredefinedQueryInheritanceTest extends org.eclipse.persistence.test
         }
     }
 
+    @Override
     protected void verify() throws Exception {
         // If any errors, throw them here
         if (storedException != null) {

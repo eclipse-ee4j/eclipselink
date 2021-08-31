@@ -45,6 +45,7 @@ import org.eclipse.persistence.sessions.SessionEventAdapter;
 class JDBCIsoLevelSwitchListener extends SessionEventAdapter {
     Map<Connection, Integer> connections = new HashMap<Connection, Integer>();
 
+    @Override
     public void postAcquireConnection(SessionEvent event) {
         Connection conn = ((DatabaseAccessor) event.getResult()).getConnection();
         int old;
@@ -59,6 +60,7 @@ class JDBCIsoLevelSwitchListener extends SessionEventAdapter {
         }
     }
 
+    @Override
     public void preReleaseConnection(SessionEvent event) {
         Connection conn = ((DatabaseAccessor) event.getResult()).getConnection();
         try {

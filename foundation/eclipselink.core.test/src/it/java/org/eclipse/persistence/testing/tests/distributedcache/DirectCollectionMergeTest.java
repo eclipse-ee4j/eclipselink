@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,10 +22,12 @@ public class DirectCollectionMergeTest extends DistributedCacheMergeTest {
         super();
     }
 
+    @Override
     protected void modifyCollection(UnitOfWork uow, Object objectToModify) {
         ((Employee)objectToModify).addResponsibility((String)newItemForCollection());
     }
 
+    @Override
     protected int getCollectionSize(Object rootObject) {
         return ((Employee)rootObject).getResponsibilitiesList().size();
     }
@@ -35,6 +37,7 @@ public class DirectCollectionMergeTest extends DistributedCacheMergeTest {
     }
         */
 
+         @Override
          protected Object buildOriginalObject() {
         Employee emp = new Employee();
         emp.setFirstName("Sally");

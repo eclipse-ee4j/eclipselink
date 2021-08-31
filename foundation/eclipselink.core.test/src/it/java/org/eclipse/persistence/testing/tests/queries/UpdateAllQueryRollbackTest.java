@@ -36,16 +36,19 @@ public class UpdateAllQueryRollbackTest extends TestCase {
     public UpdateAllQueryRollbackTest() {
     }
 
+    @Override
     public void reset() {
         m_session.getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     protected void setup() {
         m_session = getSession();
         m_exceptionCaught = false;
         m_session.getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     public void test() {
         m_uow = m_session.acquireUnitOfWork();
 
@@ -65,6 +68,7 @@ public class UpdateAllQueryRollbackTest extends TestCase {
         }
     }
 
+    @Override
     protected void verify() {
         if (m_exceptionCaught) {
             Vector emps = m_session.readAllObjects(Employee.class);

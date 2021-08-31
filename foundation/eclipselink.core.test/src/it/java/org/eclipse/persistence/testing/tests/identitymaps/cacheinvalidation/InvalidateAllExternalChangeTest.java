@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,10 +44,12 @@ public class InvalidateAllExternalChangeTest extends AutoVerifyTestCase {
     private String originalEmployeeName;
     private DatabaseLogin login;
 
+    @Override
     public void reset() {
         executor.resetSession();
     }
 
+    @Override
     protected void setup() {
         executor = getExecutor();
         executor.swapServerSession();
@@ -58,6 +60,7 @@ public class InvalidateAllExternalChangeTest extends AutoVerifyTestCase {
         descriptor.setCacheIsolation(CacheIsolationType.PROTECTED);
     }
 
+    @Override
     public void test() throws Exception {
         ClientSession clientSession = serverSession.acquireClientSession();
         Employee initialEmployee = (Employee) clientSession.executeQuery(new ReadObjectQuery(Employee.class));
@@ -82,6 +85,7 @@ public class InvalidateAllExternalChangeTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void verify() {
         ClientSession clientSession = serverSession.acquireClientSession();
         Employee modifiedEmployee = (Employee) clientSession.executeQuery(query);

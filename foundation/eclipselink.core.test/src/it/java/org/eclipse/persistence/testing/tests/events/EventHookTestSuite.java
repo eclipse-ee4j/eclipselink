@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class EventHookTestSuite extends TestSuite {
         setDescription("This suite tests the pre and post delete/insert/update/write event hook features.");
     }
 
+    @Override
     public void addTests() {
         addSRGTests();
         //Add new tests here, if any.
@@ -40,6 +41,7 @@ public class EventHookTestSuite extends TestSuite {
     }
 
     //SRG test set is maintained by QA only, do NOT add any new tests into it.
+    @Override
     public void addSRGTests() {
         addTest(new UpdateEventHookTest());
         addTest(new InsertEventHookTest());

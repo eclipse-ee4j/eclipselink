@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,11 +37,13 @@ public class CursoredStreamClientSessionTest extends TestCase {
         setDescription("Verifies if a CursoredStream query execution on a ClientSession correctly throws a DatabaseException");
     }
 
+    @Override
     public void reset() {
         this.clientSession.release();
         this.serverSession.logout();
     }
 
+    @Override
     public void setup() {
         org.eclipse.persistence.sessions.Project proj =
             new org.eclipse.persistence.testing.models.employee.relational.EmployeeProject();
@@ -53,6 +55,7 @@ public class CursoredStreamClientSessionTest extends TestCase {
         this.clientSession = this.serverSession.acquireClientSession();
     }
 
+    @Override
     public void test() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Employee.class);
@@ -69,6 +72,7 @@ public class CursoredStreamClientSessionTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (caughtException == null) {
             throw new TestErrorException("The proper exception was not thrown:\n" +

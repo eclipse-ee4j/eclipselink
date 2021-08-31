@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,22 +36,26 @@ public class ChangeSetOptimisticLockingUpdateTest extends TestCase {
         setDescription("This test verifies that a changeset gets the correct writelock value");
     }
 
+    @Override
     protected void setup() {
         beginTransaction();
         uow = getSession().acquireUnitOfWork();
         originalObject = uow.readObject(domainClass);
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     public void test() {
         ((LockObject)originalObject).value = "Time:" + System.currentTimeMillis();
         uow.commit();
     }
 
+    @Override
     protected void verify() {
         ObjectChangeSet changeSet = (ObjectChangeSet)uow.getUnitOfWorkChangeSet().getObjectChangeSetForClone(originalObject);
         Object lockValue =

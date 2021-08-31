@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,6 +43,7 @@ public class DescriptorQueryManagerMultithreadedTest extends MultithreadTestCase
             setDescription("Ensure DescriptorQueryManager works well with concurrent getQuery() and addQuery()");
         }
 
+        @Override
         public void test() {
             queryManager = getSession().getDescriptor(Employee.class).getQueryManager();
 
@@ -66,6 +67,7 @@ public class DescriptorQueryManagerMultithreadedTest extends MultithreadTestCase
             }
         }
 
+        @Override
         public void verify() {
             // getQuery() will return null if either there is no query in the list, or if there
             // are multiple queries in the list since we are not providing a list of arguments.
@@ -93,6 +95,7 @@ public class DescriptorQueryManagerMultithreadedTest extends MultithreadTestCase
         setTests(tests);
     }
 
+    @Override
     public void setup() {
         super.setup();
         // save the current queries
@@ -103,6 +106,7 @@ public class DescriptorQueryManagerMultithreadedTest extends MultithreadTestCase
         }
     }
 
+    @Override
     public void reset() {
         super.reset();
         // restore the current queries

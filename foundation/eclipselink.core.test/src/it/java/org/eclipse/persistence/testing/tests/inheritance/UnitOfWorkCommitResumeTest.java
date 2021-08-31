@@ -126,6 +126,7 @@ public class UnitOfWorkCommitResumeTest extends WriteObjectTest {
 
     }
 
+    @Override
     protected void setup() {
         super.setup();
 
@@ -140,6 +141,7 @@ public class UnitOfWorkCommitResumeTest extends WriteObjectTest {
         }
     }
 
+    @Override
     protected void test() {
         // CommitAndResume, changeAgain, CommitAndResume again.
         this.unitOfWork.commitAndResume();
@@ -151,6 +153,7 @@ public class UnitOfWorkCommitResumeTest extends WriteObjectTest {
      * Verify if the objects match completely through allowing the session to use the descriptors.
      * This will compare the objects and all of their privately owned parts.
      */
+    @Override
     protected void verify() {
         try {
             if (!(((AbstractSession)getSession()).compareObjects(this.unitOfWorkWorkingCopy, this.objectToBeWritten))) {

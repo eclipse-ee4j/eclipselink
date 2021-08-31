@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ public class AutoTableGeneratorEmployeeSystem extends EmployeeSystem {
      * Drop tables/constraints, and then create default tables via schema
      * manager
      */
+    @Override
     public void createTables(DatabaseSession session) {
         boolean orig_FAST_TABLE_CREATOR = SchemaManager.FAST_TABLE_CREATOR;
         // on Symfoware, to avoid table locking issues, don't drop old tables

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ public class RefreshQueryCacheExpiryTest extends CacheExpiryTest {
         setDescription("Ensure refresh queries correcly refresh both the object and the expiry time");
     }
 
+    @Override
     public void setup() {
         super.setup();
         getSession().getDescriptor(Employee.class).setCacheInvalidationPolicy(new TimeToLiveCacheInvalidationPolicy(10000));
@@ -39,6 +40,7 @@ public class RefreshQueryCacheExpiryTest extends CacheExpiryTest {
         employeeNames = new Vector();
     }
 
+    @Override
     public void test() {
         Enumeration empEnum = employees.elements();
         while (empEnum.hasMoreElements()) {
@@ -51,6 +53,7 @@ public class RefreshQueryCacheExpiryTest extends CacheExpiryTest {
         employees = (Vector)getSession().executeQuery(query);
     }
 
+    @Override
     public void verify() {
         Enumeration empEnum = employees.elements();
         while (empEnum.hasMoreElements()) {

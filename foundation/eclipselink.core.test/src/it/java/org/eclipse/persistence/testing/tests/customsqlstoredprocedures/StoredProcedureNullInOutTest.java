@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ public class StoredProcedureNullInOutTest extends TestCase {
         setName(getName() + " bind = " + shouldBindAllParameters);
     }
 
+    @Override
     public void setup() {
         // right now only the stored procedure is set up in Oracle
         if (!(getSession().getPlatform().isOracle())) {
@@ -39,6 +40,7 @@ public class StoredProcedureNullInOutTest extends TestCase {
         }
     }
 
+    @Override
     public void test() {
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName("StoredProcedure_InOut_Out_In");
@@ -64,6 +66,7 @@ public class StoredProcedureNullInOutTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (exception != null) {
             throw new TestErrorException("StoredProcedure_InOut_Out_In(null, null) has failed", exception);

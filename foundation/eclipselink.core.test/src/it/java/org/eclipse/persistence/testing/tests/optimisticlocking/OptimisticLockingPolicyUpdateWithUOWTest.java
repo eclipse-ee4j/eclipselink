@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,11 +26,13 @@ public class OptimisticLockingPolicyUpdateWithUOWTest extends AutoVerifyTestCase
         setDescription("This test verifies that an optimistic lock value is copied into the Original Object Correctly");
     }
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         beginTransaction();
     }
 
+    @Override
     public void test() {
         try {
             UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -42,6 +44,7 @@ public class OptimisticLockingPolicyUpdateWithUOWTest extends AutoVerifyTestCase
         }
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ public class OneToOnePKTest extends AutoVerifyTestCase {
         setDescription("Check that objects with foreign keys as PK can be queries correctly.");
     }
 
+    @Override
     public void setup() {
         CompanyCard card = CompanyCard.example1();
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -40,6 +41,7 @@ public class OneToOnePKTest extends AutoVerifyTestCase {
         uow.commit();
     }
 
+    @Override
     public void test() {
         // read a baby
         ExpressionBuilder card = new ExpressionBuilder();

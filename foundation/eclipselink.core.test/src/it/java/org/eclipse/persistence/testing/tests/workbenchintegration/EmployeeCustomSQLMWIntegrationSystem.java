@@ -73,6 +73,7 @@ public class EmployeeCustomSQLMWIntegrationSystem extends EmployeeCustomSQLSyste
 
     //build your owner stored procedure rather than those inherited if necessary.
     //schema.replaceObject(buildOracleStoredProcedureForProjectXML());
+    @Override
     public void createTables(DatabaseSession session) {
         super.createTables(session);
         org.eclipse.persistence.internal.databaseaccess.DatabasePlatform platform = session.getLogin().getPlatform();

@@ -23,6 +23,7 @@ import org.eclipse.persistence.testing.tests.unitofwork.changeflag.model.ALCTEmp
 import org.eclipse.persistence.testing.framework.TestErrorException;
 
 public class WeakReferenceTest extends AutoVerifyTestCase {
+    @Override
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork(ReferenceMode.WEAK);
         int size = uow.readAllObjects(ALCTEmployee.class).size();
@@ -40,7 +41,7 @@ public class WeakReferenceTest extends AutoVerifyTestCase {
             }
             System.gc();
             try{
-                Thread.currentThread().sleep(200);
+                Thread.sleep(200);
             }catch (InterruptedException ex){
             }
             System.gc();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,12 +32,14 @@ public class RefreshIfNewerVersionTest extends CacheExpiryTest {
         setDescription("Ensure refresh if newer version updates the cache expiry flag when the versions are the same.");
     }
 
+    @Override
     public void setup() {
         super.setup();
         shouldRefreshCache = getSession().getDescriptor(Employee.class).shouldOnlyRefreshCacheIfNewerVersion();
         getSession().getDescriptor(Employee.class).setShouldOnlyRefreshCacheIfNewerVersion(true);
     }
 
+    @Override
     public void test() {
         Employee employee = (Employee)getSession().readObject(Employee.class);
         originalReadTime = ((AbstractSession)getSession()).getIdentityMapAccessorInstance().getCacheKeyForObject(employee).getReadTime();
@@ -54,6 +56,7 @@ public class RefreshIfNewerVersionTest extends CacheExpiryTest {
         secondReadTime = ((AbstractSession)getSession()).getIdentityMapAccessorInstance().getCacheKeyForObject(employee).getReadTime();
     }
 
+    @Override
     public void verify() {
         // Check to see if the expiry is more than 10 seconds away.
         if (originalReadTime >= secondReadTime) {
@@ -61,6 +64,7 @@ public class RefreshIfNewerVersionTest extends CacheExpiryTest {
         }
     }
 
+    @Override
     public void reset() {
         super.reset();
         getSession().getDescriptor(Employee.class).setShouldOnlyRefreshCacheIfNewerVersion(shouldRefreshCache);

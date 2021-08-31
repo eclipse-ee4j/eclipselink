@@ -38,6 +38,7 @@ public class SameNamePKTest extends TestCase {
     protected SecureSystem system = null;
     protected Exception exception = null;
 
+    @Override
     public void setup() {
         beginTransaction();
         // Insert an example Object
@@ -53,6 +54,7 @@ public class SameNamePKTest extends TestCase {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test() {
         ReadObjectQuery query = new ReadObjectQuery(SecureSystem.class);
         ExpressionBuilder aBuilder = new ExpressionBuilder();
@@ -66,6 +68,7 @@ public class SameNamePKTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (exception != null) {
             throw new TestErrorException("An exception was thrown while trying to query across two attributes of the same name.",
@@ -76,6 +79,7 @@ public class SameNamePKTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();

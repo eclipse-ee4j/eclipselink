@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,6 +22,7 @@ import org.eclipse.persistence.testing.framework.*;
  */
 public class EmulatedReadAllvsReadAllFromResultSet extends ReadAllvsReadAllFromResultSet {
 
+    @Override
     public void setup() {
         Session session = buildEmulatedSession();
 
@@ -37,11 +38,13 @@ public class EmulatedReadAllvsReadAllFromResultSet extends ReadAllvsReadAllFromR
         super.setup();
     }
 
+    @Override
     public void reset() throws Exception {
         getExecutor().resetSession();
         super.reset();
     }
 
+    @Override
     public PerformanceComparisonTestCase readAllFromResultSet() {
         PerformanceComparisonTestCase test = super.readAllFromResultSet();
         test.setAllowableDecrease(20);

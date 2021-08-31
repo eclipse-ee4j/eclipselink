@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ public class OnlyRefreshIfNewTest extends AutoVerifyTestCase {
         setDescription("This test verifies that the shouldOnlyRefreshCacheIfNewerVersion() feature works properly.");
     }
 
+    @Override
     public void reset() {
         this.empDescriptor.dontAlwaysRefreshCache();
         this.empDescriptor.dontOnlyRefreshCacheIfNewerVersion();
@@ -36,6 +37,7 @@ public class OnlyRefreshIfNewTest extends AutoVerifyTestCase {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     protected void setup() {
         this.empDescriptor = getSession().getClassDescriptor(Employee.class);
         this.empDescriptor.alwaysRefreshCache();
@@ -46,6 +48,7 @@ public class OnlyRefreshIfNewTest extends AutoVerifyTestCase {
         this.employeeObject = (Employee)getSession().readObject(Employee.class, new ExpressionBuilder().get("firstName").equal("Charles"));
     }
 
+    @Override
     public void test() {
         // Change the object
         this.firstName = new String("Chelmsford");
@@ -55,6 +58,7 @@ public class OnlyRefreshIfNewTest extends AutoVerifyTestCase {
         getSession().readObject(employeeObject);
     }
 
+    @Override
     protected void verify() {
         if (!employeeObject.getFirstName().equals(this.firstName)) {
             throw new TestErrorException("The onlyRefreshIfNew test failed on first name.");

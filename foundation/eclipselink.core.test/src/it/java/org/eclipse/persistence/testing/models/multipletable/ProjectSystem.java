@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,6 +23,7 @@ public class ProjectSystem extends TestSystem {
         project = new ProjectProject();
     }
 
+    @Override
     public void addDescriptors(DatabaseSession session) {
         if (project == null) {
             project = new ProjectProject();
@@ -30,6 +31,7 @@ public class ProjectSystem extends TestSystem {
         session.addDescriptors(project);
     }
 
+    @Override
     public void createTables(DatabaseSession session) {
         SchemaManager schemaManager = new SchemaManager(session);
 
@@ -39,6 +41,7 @@ public class ProjectSystem extends TestSystem {
         schemaManager.createSequences();
     }
 
+    @Override
     public void populate(DatabaseSession session) {
         LargeBusinessProject instance;
         PopulationManager manager = PopulationManager.getDefaultManager();

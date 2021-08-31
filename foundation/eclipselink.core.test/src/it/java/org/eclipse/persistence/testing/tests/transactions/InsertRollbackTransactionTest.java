@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,6 +51,7 @@ public class InsertRollbackTransactionTest extends AutoVerifyTestCase {
         searchExpression = exp1.or(exp2);
     }
 
+    @Override
     public String getDescription() {
         return "This test verifies that the commit transaction feature works for database inserts.";
     }
@@ -63,6 +64,7 @@ public class InsertRollbackTransactionTest extends AutoVerifyTestCase {
         return searchExpression;
     }
 
+    @Override
     public void reset() {
         // Check if there the employee object is in the database
         Employee databaseEmployee = (Employee)getSession().readObject(Employee.class, getSearchExpression());
@@ -73,6 +75,7 @@ public class InsertRollbackTransactionTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void resetVerify() {
         Session session = getSession();
 
@@ -85,12 +88,14 @@ public class InsertRollbackTransactionTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void test() {
         getDatabaseSession().beginTransaction();
         getDatabaseSession().insertObject(getEmployee());
         getDatabaseSession().rollbackTransaction();
     }
 
+    @Override
     protected void verify() {
         // Read the object from the database
         Employee databaseEmployee = (Employee)getSession().readObject(Employee.class, getSearchExpression());

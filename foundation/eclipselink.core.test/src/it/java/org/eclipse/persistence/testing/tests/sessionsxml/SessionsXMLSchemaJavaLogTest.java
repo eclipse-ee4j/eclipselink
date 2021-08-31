@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -45,6 +45,7 @@ public class SessionsXMLSchemaJavaLogTest extends AutoVerifyTestCase {
         setDescription("Test loading of a session xml with java logging against the XML Schema");
     }
 
+    @Override
     public void reset() {
         if (employeeSession != null && employeeSession.isConnected()) {
             employeeSession.logout(); // If session is logged in, log it out
@@ -56,6 +57,7 @@ public class SessionsXMLSchemaJavaLogTest extends AutoVerifyTestCase {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test() {
         try {
             XMLSessionConfigLoader loader = new XMLSessionConfigLoader("org/eclipse/persistence/testing/models/sessionsxml/XMLSchemaJavaLog.xml");
@@ -69,6 +71,7 @@ public class SessionsXMLSchemaJavaLogTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void verify() {
         if (generationException != null) {
             throw new TestErrorException("Exception thrown during session configuration: " + generationException.toString());

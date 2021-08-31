@@ -25,18 +25,22 @@ public class DirectMapMergeTest extends DistributedCacheMergeTest {
         super();
     }
 
+    @Override
     protected void modifyCollection(UnitOfWork uow, Object objectToModify) {
         ((DirectMapMappings)objectToModify).directMap.put(Integer.valueOf(11), newItemForCollection());
     }
 
+    @Override
     protected int getCollectionSize(Object rootObject) {
         return ((DirectMapMappings)rootObject).directMap.keySet().size();
     }
 
+    @Override
     protected Class getRootClass() {
         return DirectMapMappings.class;
     }
 
+    @Override
     protected Project getNewProject() {
         Project p = new DirectMapMappingsProject();
         DirectMapMapping mapping = (DirectMapMapping)p.getDescriptor(DirectMapMappings.class).getMappingForAttributeName("directMap");
@@ -44,6 +48,7 @@ public class DirectMapMergeTest extends DistributedCacheMergeTest {
         return p;
     }
 
+    @Override
     protected Object buildOriginalObject() {
         DirectMapMappings dm = new DirectMapMappings();
         dm.directMap.put(Integer.valueOf("1"), "first value");

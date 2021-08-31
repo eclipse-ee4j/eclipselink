@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -153,7 +153,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
         } else {
             // Do not run on Sybase as may hang.
             if (getServerSession().getPlatform().isSybase()) {
-                this.validDatabase = false;
+                validDatabase = false;
                 return;
             }
             isRAC = true;
@@ -213,7 +213,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Test reading.
      */
     public void testReadEmployee() {
-        if (!this.validDatabase) {
+        if (!validDatabase) {
             return;
         }
         EntityManager em = createEntityManager();
@@ -253,7 +253,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Test reading.
      */
     public void testReadProject() {
-        if (!this.validDatabase) {
+        if (!validDatabase) {
             return;
         }
         EntityManager em = createEntityManager();
@@ -293,7 +293,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Test reading.
      */
     public void testReadAllEmployee() {
-        if (!this.validDatabase) {
+        if (!validDatabase) {
             return;
         }
         EntityManager em = createEntityManager();
@@ -320,7 +320,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Test reading.
      */
     public void testReadAllProject() {
-        if (!this.validDatabase) {
+        if (!validDatabase) {
             return;
         }
         EntityManager em = createEntityManager();
@@ -347,7 +347,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Test remove.
      */
     public void testRemoveEmployee() {
-        if (!this.validDatabase) {
+        if (!validDatabase) {
             return;
         }
         for (int index = 0; index < 3; index++) {
@@ -359,7 +359,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Test remove.
      */
     public void testRemoveProject() {
-        if (!this.validDatabase) {
+        if (!validDatabase) {
             return;
         }
         for (int index = 0; index < 3; index++) {
@@ -371,7 +371,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Test persist.
      */
     public void testPersistEmployee() {
-        if (!this.validDatabase) {
+        if (!validDatabase) {
             return;
         }
         for (int index = 0; index < 3; index++) {
@@ -384,7 +384,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Bug 371514 - fragile hashing in HashPartitioningPolicy
      */
     public void testPersistOfficeWithLongName() {
-        if (!this.validDatabase) {
+        if (!validDatabase) {
             return;
         }
         for (int index = 0; index < 25; index++) {
@@ -398,7 +398,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Test persist.
      */
     public void testPersistProject() {
-        if (!this.validDatabase) {
+        if (!validDatabase) {
             return;
         }
         for (int index = 0; index < 3; index++) {
@@ -411,7 +411,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Test update.
      */
     public void testUpdateEmployee() {
-        if (!this.validDatabase) {
+        if (!validDatabase) {
             return;
         }
         for (int index = 0; index < 3; index++) {
@@ -449,7 +449,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Test update.
      */
     public void testUpdateProject() {
-        if (!this.validDatabase) {
+        if (!validDatabase) {
             return;
         }
         for (int index = 0; index < 3; index++) {
@@ -483,7 +483,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Test that partitioning is being used.
      */
     public void testPartitioning() throws Exception {
-        if (!this.validDatabase) {
+        if (!validDatabase) {
             return;
         }
         boolean found = false;
@@ -523,7 +523,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * The persist should decide the connection, not the query.
      */
     public void testPersistPartitioning() throws Exception {
-        if (!this.validDatabase) {
+        if (!validDatabase) {
             return;
         }
         if (isOnServer()) {

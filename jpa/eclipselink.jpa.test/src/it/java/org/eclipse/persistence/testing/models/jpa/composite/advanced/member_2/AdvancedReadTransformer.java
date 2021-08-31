@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ public class AdvancedReadTransformer implements AttributeTransformer {
     /**
      * @param mapping - The mapping associated with this transformer. Only used if some special information is required.
      */
+    @Override
     public void initialize(AbstractTransformationMapping mapping) {
         this.attributeName = mapping.getAttributeName();
     }
@@ -42,6 +43,7 @@ public class AdvancedReadTransformer implements AttributeTransformer {
      * @param object - The current object that the attribute is being built for.
      * @return - The attribute value to be built into the object containing this mapping.
      */
+    @Override
     public Object buildAttributeValue(Record record, Object object, Session session) {
         if(attributeName.equals("overtimeHours")) {
             Time[] hours = new Time[2];

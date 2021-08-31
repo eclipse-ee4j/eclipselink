@@ -686,6 +686,7 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
         addTest(test);
     }
 
+    @Override
     public void addTests() {
         setManager(PopulationManager.getDefaultManager());
 

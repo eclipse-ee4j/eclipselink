@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,11 +37,13 @@ public class ConformResultsAcrossOneToManyTest extends org.eclipse.persistence.t
 
     }
 
+    @Override
     public void reset() {
         //clear the cache
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
         allEmployees = new Vector();
         allPhones = new Vector();
@@ -60,6 +62,7 @@ public class ConformResultsAcrossOneToManyTest extends org.eclipse.persistence.t
         }
     }
 
+    @Override
     public void test() {
 
         //all the employees with work type phonenumbers should be
@@ -75,6 +78,7 @@ public class ConformResultsAcrossOneToManyTest extends org.eclipse.persistence.t
 
     }
 
+    @Override
     public void verify() {
         if (employeesInCache.size() == 13) {
             //?

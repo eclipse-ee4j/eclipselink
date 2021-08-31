@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class InheritanceOuterJoinTest extends PerformanceComparisonTestCase {
         //addOuterJoinFromClauseTest();
     }
 
+    @Override
     public void setup() throws Exception {
         connection = (Connection)getAbstractSession().getAccessor().getDatasourceConnection();
         selectTypeStatement = connection.prepareStatement("Select PROJ_TYPE from PROJECT");
@@ -42,6 +43,7 @@ public class InheritanceOuterJoinTest extends PerformanceComparisonTestCase {
         selectAllProjectStatement = connection.prepareStatement("Select * from PROJECT P, LPROJECT L where L.PROJ_ID (+) = P.PROJ_ID");
     }
 
+    @Override
     public void reset() throws Exception {
         selectTypeStatement.close();
         selectSmallProjectStatement.close();
@@ -68,6 +70,7 @@ public class InheritanceOuterJoinTest extends PerformanceComparisonTestCase {
     /**
      * Multiple queries.
      */
+    @Override
     public void test() throws Exception {
         fetchRows(selectTypeStatement.executeQuery());
         fetchRows(selectSmallProjectStatement.executeQuery());
@@ -79,6 +82,7 @@ public class InheritanceOuterJoinTest extends PerformanceComparisonTestCase {
      */
     public void addOuterJoinTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() throws Exception {
                 fetchRows(selectAllProjectStatement.executeQuery());
             }

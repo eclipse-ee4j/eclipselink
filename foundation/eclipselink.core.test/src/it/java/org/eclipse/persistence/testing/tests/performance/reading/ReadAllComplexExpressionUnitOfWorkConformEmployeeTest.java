@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ public class ReadAllComplexExpressionUnitOfWorkConformEmployeeTest extends Perfo
     /**
      * Create a unit of work with changes.
      */
+    @Override
     public void setup() {
         uow = getSession().acquireUnitOfWork();
         List employees = uow.readAllObjects(Employee.class);
@@ -54,6 +55,7 @@ public class ReadAllComplexExpressionUnitOfWorkConformEmployeeTest extends Perfo
     /**
      * Read employee and clear the cache, test database read.
      */
+    @Override
     public void test() throws Exception {
         ReadAllQuery query = new ReadAllQuery(Employee.class);
         ExpressionBuilder employee = new ExpressionBuilder();

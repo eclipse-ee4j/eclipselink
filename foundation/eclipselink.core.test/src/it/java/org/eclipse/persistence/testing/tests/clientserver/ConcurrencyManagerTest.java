@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ public class ConcurrencyManagerTest extends AutoVerifyTestCase {
 
     }
 
+    @Override
     public void reset() {
         try {
             for (int index = 0; index < MaxThread; index++) {
@@ -49,6 +50,7 @@ public class ConcurrencyManagerTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void setup() {
         try {
             this.login = (DatabaseLogin)getSession().getLogin().clone();
@@ -67,6 +69,7 @@ public class ConcurrencyManagerTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void test() {
         try {
             for (int index = 0; index < MaxThread; index++) {
@@ -89,6 +92,7 @@ public class ConcurrencyManagerTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void verify() {
         try {
             if (this.server.errorOccured) {

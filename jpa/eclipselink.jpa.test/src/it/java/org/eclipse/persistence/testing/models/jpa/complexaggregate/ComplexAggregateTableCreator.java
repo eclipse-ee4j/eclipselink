@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -751,6 +751,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
     /**
      * Remove pk constraint as there is a identity field, and H2, HSQL do not allow this.
      */
+    @Override
     public void replaceTables(DatabaseSession session, SchemaManager schemaManager) {
         if (session.getPlatform().isH2() || session.getPlatform().isHSQL()) {
             for (Iterator iterator = getTableDefinitions().iterator(); iterator.hasNext(); ) {

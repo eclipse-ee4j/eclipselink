@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,12 +26,15 @@ import org.eclipse.persistence.testing.models.aggregate.SwitchStateON;
 public class AggregateWithoutAttributesInheritanceTestCase extends org.eclipse.persistence.testing.framework.AutoVerifyTestCase {
     public boolean ok;
 
+    @Override
     public void reset() {
     }
 
+    @Override
     public void setup() {
     }
 
+    @Override
     public void test() {
         DatabaseSession session = (DatabaseSession)getSession();
 
@@ -51,6 +54,7 @@ public class AggregateWithoutAttributesInheritanceTestCase extends org.eclipse.p
         ok = sw.state.getClass() == SwitchStateON.class;
     }
 
+    @Override
     public void verify() {
         if (!ok) {
             throw new TestErrorException("The Aggregate was changed, but the cache was not merged.");

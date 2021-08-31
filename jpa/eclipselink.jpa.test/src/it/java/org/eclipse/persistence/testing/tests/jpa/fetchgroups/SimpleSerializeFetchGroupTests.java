@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -522,6 +522,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         }
     }
 
+    @Override
     @Test
     public void managerFetchGroup() throws Exception {
         EntityManager em = createEntityManager();
@@ -635,6 +636,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         }
     }
 
+    @Override
     @Test
     public void employeeNamesFetchGroup() throws Exception {
         EntityManager em = createEntityManager();
@@ -696,6 +698,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         }
     }
 
+    @Override
     @Test
     public void joinFetchEmployeeAddressWithDynamicFetchGroup() {
         EntityManager em = createEntityManager();
@@ -712,6 +715,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         assertNotNull(emps);
     }
 
+    @Override
     @Test
     public void joinFetchEmployeeAddressPhoneWithDynamicFetchGroup() {
         EntityManager em = createEntityManager();
@@ -1038,7 +1042,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             Employee emp = query.getSingleResult();
 
             // Detach Employee through Serialization
-            Employee detachedEmp = (Employee)serialize(emp);
+            Employee detachedEmp = serialize(emp);
 
             // Modify the detached Employee inverting the names, adding a phone number, and setting the salary
             detachedEmp.setFirstName(emp.getLastName());

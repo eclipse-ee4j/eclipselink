@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,10 +32,12 @@ public class NLSshouldPrepareTest extends AutoVerifyTestCase {
         setDescription("[NLS_Japanese] Test SQL prepared once option");
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
         query = (ReadObjectQuery)getSession().getDescriptor(org.eclipse.persistence.testing.tests.nls.japanese.NLSEmployee.class).getQueryManager().getQuery("shouldPrepareQuery");
 
@@ -50,11 +52,13 @@ public class NLSshouldPrepareTest extends AutoVerifyTestCase {
         getSession().executeQuery(queryCopy, vec);
     }
 
+    @Override
     public void test() {
         vec.set(0, null);
         getSession().executeQuery(queryCopy, vec);
     }
 
+    @Override
     public void verify() {
         //if (!queryCopy.getCall().getSQLString().equals("SELECT t0.VERSION, t1.EMP_ID, t0.L_NAME, t0.F_NAME, t1.SALARY, t0.EMP_ID, t0.GENDER, t0.END_DATE, t0.START_DATE, t0.MANAGER_ID, t0.END_TIME, t0.START_TIME, t0.ADDR_ID FROM EMPLOYEE t0, SALARY t1 WHERE ((t0.F_NAME = 'Bob') AND (t1.EMP_ID = t0.EMP_ID))"))
         //Following works for japanese database with english data:

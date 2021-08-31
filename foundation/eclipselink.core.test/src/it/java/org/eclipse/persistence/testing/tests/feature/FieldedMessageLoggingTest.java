@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ public class FieldedMessageLoggingTest extends AutoVerifyTestCase {
         setDescription("Tests that message Logging containing formatting string like '{0' - does not cause a parse exception");
     }
 
+     @Override
      public void setup() {
         caughtException = null;
         oldLog = getSession().getSessionLog();
@@ -39,6 +40,7 @@ public class FieldedMessageLoggingTest extends AutoVerifyTestCase {
         getSession().setSessionLog(newLog);
     }
 
+    @Override
     public void test() {
         Session s = getSession();
         try {
@@ -48,12 +50,14 @@ public class FieldedMessageLoggingTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void verify() throws Exception {
         if (caughtException != null) {
             throw caughtException;
         }
     }
 
+    @Override
     public void reset() {
         getSession().setSessionLog(oldLog);
     }

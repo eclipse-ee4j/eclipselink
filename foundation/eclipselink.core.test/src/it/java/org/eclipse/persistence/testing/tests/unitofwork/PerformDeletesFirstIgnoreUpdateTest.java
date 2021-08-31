@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ public class PerformDeletesFirstIgnoreUpdateTest extends TransactionalTestCase {
     static class UpdateListener extends DescriptorEventAdapter {
         boolean updated;
 
+        @Override
         public void postUpdate(DescriptorEvent event) {
             updated = true;
         }
@@ -43,12 +44,14 @@ public class PerformDeletesFirstIgnoreUpdateTest extends TransactionalTestCase {
         setDescription("Verifies that TopLink doesn't issue UPDATE phone number after deleting it");
     }
 
+    @Override
     public void setup() {
         super.setup();
         phoneUpdateListener = new UpdateListener();
         getSession().getDescriptor(PhoneNumber.class).getEventManager().addListener(phoneUpdateListener);
     }
 
+    @Override
     public void test() {
         PhoneNumber phone = (PhoneNumber)getSession().readObject(PhoneNumber.class);
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -66,6 +69,7 @@ public class PerformDeletesFirstIgnoreUpdateTest extends TransactionalTestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (dbException != null) {
             throw new TestErrorException("Attempted to update Phone number before delete", dbException);
@@ -75,6 +79,7 @@ public class PerformDeletesFirstIgnoreUpdateTest extends TransactionalTestCase {
         }
     }
 
+    @Override
     public void reset() {
         if (phoneUpdateListener != null) {
             super.reset();

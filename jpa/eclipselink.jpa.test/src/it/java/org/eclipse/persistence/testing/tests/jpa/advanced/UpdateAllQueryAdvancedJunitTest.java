@@ -49,6 +49,7 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() {
         if (getServerSession().getPlatform().isSymfoware()) {
             warning("UpdateAllQueryAdvancedJunitTest skipped for this platform, "
@@ -106,10 +107,12 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
         TestSuite suite = new TestSuite(UpdateAllQueryAdvancedJunitTest.class);
 
         return new TestSetup(suite) {
+            @Override
             protected void setUp(){
                 new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
             }
 
+            @Override
             protected void tearDown() {
                 new UpdateAllQueryAdvancedJunitTest().clearCache();
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ public class Scenario6_2 extends ReportQueryTestCase {
         setDescription("Join query");
     }
 
+    @Override
     protected void buildExpectedResults() throws Exception {
         ExpressionBuilder builder = new ExpressionBuilder();
 
@@ -41,6 +42,7 @@ public class Scenario6_2 extends ReportQueryTestCase {
             addResult(result, null);
         }
     }
+@Override
 protected void setup()  throws Exception
 {
         super.setup();

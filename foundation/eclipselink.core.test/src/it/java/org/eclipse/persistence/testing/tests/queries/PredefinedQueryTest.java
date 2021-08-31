@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ public class PredefinedQueryTest extends ReadObjectTest {
         this.arguments = arguments;
     }
 
+    @Override
     protected void setup() {
     ClassDescriptor descriptor;
     if (getSession() instanceof org.eclipse.persistence.sessions.remote.RemoteSession) {
@@ -47,6 +48,7 @@ public class PredefinedQueryTest extends ReadObjectTest {
         descriptor.getQueryManager().addQuery(getQuery().getName(), getQuery());
     }
 
+    @Override
     protected void test() {
         try {
             this.objectFromDatabase = getSession().executeQuery(getQuery().getName(), getQuery().getReferenceClass(), this.arguments);

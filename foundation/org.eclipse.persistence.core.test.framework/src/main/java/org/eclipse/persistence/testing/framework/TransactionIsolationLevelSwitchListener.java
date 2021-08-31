@@ -58,6 +58,7 @@ public class TransactionIsolationLevelSwitchListener extends SessionEventAdapter
         }
     }
 
+    @Override
     public void postAcquireConnection(SessionEvent event) {
         Connection conn = ((DatabaseAccessor) event.getResult())
                 .getConnection();
@@ -104,6 +105,7 @@ public class TransactionIsolationLevelSwitchListener extends SessionEventAdapter
         }
     }
 
+    @Override
     public void preReleaseConnection(SessionEvent event) {
         Connection conn = ((DatabaseAccessor) event.getResult())
                 .getConnection();

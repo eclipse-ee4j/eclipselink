@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,32 +24,39 @@ public class IndirectListProject extends IndirectContainerProject {
         super();
     }
 
+    @Override
     protected void configureContactContainer(org.eclipse.persistence.mappings.DirectCollectionMapping directcollectionmapping) {
         directcollectionmapping.useCollectionClass(java.util.Vector.class);
     }
 
+    @Override
     protected void configureLineContainer(org.eclipse.persistence.mappings.OneToManyMapping onetomanymapping) {
         onetomanymapping.useCollectionClass(java.util.Vector.class);
     }
 
+    @Override
     protected void configureSalesRepContainer(org.eclipse.persistence.mappings.ManyToManyMapping manytomanymapping) {
         manytomanymapping.useCollectionClass(java.util.Vector.class);
     }
 
+    @Override
     protected void modifyOrderDescriptor(RelationalDescriptor descriptor) {
         ((org.eclipse.persistence.mappings.CollectionMapping)descriptor.getMappingForAttributeName("salesReps")).useTransparentCollection();
         ((org.eclipse.persistence.mappings.CollectionMapping)descriptor.getMappingForAttributeName("contacts")).useTransparentCollection();
         ((org.eclipse.persistence.mappings.CollectionMapping)descriptor.getMappingForAttributeName("lines")).useTransparentCollection();
     }
 
+    @Override
     protected Class orderClass() {
         return org.eclipse.persistence.testing.models.transparentindirection.Order.class;
     }
 
+    @Override
     protected Class orderLineClass() {
         return org.eclipse.persistence.testing.models.transparentindirection.OrderLine.class;
     }
 
+    @Override
     protected Class salesRepClass() {
         return org.eclipse.persistence.testing.models.transparentindirection.SalesRep.class;
     }

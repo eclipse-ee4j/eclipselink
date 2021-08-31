@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,11 +33,13 @@ public class CollectionMappingMergeObjectTest extends org.eclipse.persistence.te
         setDescription("Test that merging changes in a unit of work works successfully.");
     }
 
+    @Override
     public void setup() {
         //
         getAbstractSession().beginTransaction();
     }
 
+    @Override
     public void reset() {
         //
         getAbstractSession().rollbackTransaction();
@@ -45,6 +47,7 @@ public class CollectionMappingMergeObjectTest extends org.eclipse.persistence.te
         e = null;
     }
 
+    @Override
     public void test() {
         //
         Session session = getSession();
@@ -81,6 +84,7 @@ public class CollectionMappingMergeObjectTest extends org.eclipse.persistence.te
         }
     }
 
+    @Override
     public void verify() {
         //
         if (e != null) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,10 +39,12 @@ public class ChangeEventTest extends AutoVerifyTestCase {
 
     // The following is an anonymous class which is used for event listening
     private DescriptorEventAdapter eventAdapter = new DescriptorEventAdapter() {
+            @Override
             public void preWrite(DescriptorEvent event) {
                 writeOccurred(event);
             }
 
+            @Override
             public void preInsert(DescriptorEvent event) {
                 insertOccurred(event);
             }
@@ -52,12 +54,14 @@ public class ChangeEventTest extends AutoVerifyTestCase {
         super();
     }
 
+    @Override
     public void setup() {
         getSession().getDescriptor(Employee.class).getEventManager().addListener(eventAdapter);
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         getAbstractSession().beginTransaction();
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Vector employees = uow.readAllObjects(Employee.class);
@@ -70,12 +74,14 @@ public class ChangeEventTest extends AutoVerifyTestCase {
         uow.commit();
     }
 
+    @Override
     public void reset() {
         getAbstractSession().rollbackTransaction();
         getSession().getDescriptor(Employee.class).getEventManager().removeListener(eventAdapter);
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     public void verify() {
         if (!writeOccurred) {
             throw new TestErrorException("There was no preWrite event thrown.");

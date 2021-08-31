@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,6 +44,7 @@ public class ConformResultsAcrossWrappedOneToManyTest extends ConformResultsInUn
         setShouldUseWrapperPolicy(true);
     }
 
+    @Override
     public void buildConformQuery() {
         if (conformedQuery != null) {
             return;
@@ -55,6 +56,7 @@ public class ConformResultsAcrossWrappedOneToManyTest extends ConformResultsInUn
         conformedQuery.conformResultsInUnitOfWork();
     }
 
+    @Override
     public void prepareTest() {
         // The key to this test is already having a triggered valueholder in the
         // unit of work cache.
@@ -73,6 +75,7 @@ public class ConformResultsAcrossWrappedOneToManyTest extends ConformResultsInUn
         expectedResult = employees;
     }
 
+    @Override
     public void verify() {
         int resultSize = ((Vector)result).size();
         if (resultSize != expectedResult.size()) {

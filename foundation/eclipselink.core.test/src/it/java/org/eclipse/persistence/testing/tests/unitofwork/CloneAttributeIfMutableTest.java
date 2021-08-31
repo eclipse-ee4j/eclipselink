@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.tests.unitofwork;
 
 import java.util.Vector;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.sessions.*;
@@ -41,6 +41,7 @@ public class CloneAttributeIfMutableTest extends TestCase {
         setDescription("Test that cloning an object also clones its attributes if their mappings are set as mutable");
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         original = MutableAttributeObject.example1();
@@ -48,6 +49,7 @@ public class CloneAttributeIfMutableTest extends TestCase {
         uow.release();
     }
 
+    @Override
     public void verify() {
         Vector errors = new Vector();
         // extra check to pre-verify that: clone != original

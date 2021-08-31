@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,6 +35,7 @@ public class PartialAttributeWithCustomSQLTest extends TestCase {
         setDescription("Test querying with partial attributes in conjunction with using custom SQL");
     }
 
+    @Override
     public void test() {
         ReadAllQuery query = new ReadAllQuery(Employee.class);
         ClassDescriptor descriptor = getSession().getClassDescriptor(Employee.class);
@@ -53,6 +54,7 @@ public class PartialAttributeWithCustomSQLTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (caughtException != null) {
             final String msg = "Caught an unexpected exception while querying with partial attributes and custom SQL";

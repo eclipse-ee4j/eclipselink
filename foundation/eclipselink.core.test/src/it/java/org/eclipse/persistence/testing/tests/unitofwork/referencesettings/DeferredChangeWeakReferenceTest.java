@@ -20,6 +20,7 @@ import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
 public class DeferredChangeWeakReferenceTest extends AutoVerifyTestCase {
+    @Override
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         int size = uow.readAllObjects(Employee.class).size();

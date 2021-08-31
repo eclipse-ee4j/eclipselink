@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,6 +57,7 @@ public class PessimisticLockIndirectionJoiningTest extends TestCase {
         setDescription("This test verifies the pessimistic locking feature works properly when set on the descriptor.");
     }
 
+    @Override
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
 
@@ -89,6 +90,7 @@ public class PessimisticLockIndirectionJoiningTest extends TestCase {
         projectSelectionQuery.setLockMode(ObjectLevelReadQuery.DEFAULT_LOCK_MODE);
     }
 
+    @Override
     public void test() throws Exception {
         checkSelectForUpateSupported();
 
@@ -116,7 +118,7 @@ public class PessimisticLockIndirectionJoiningTest extends TestCase {
             } else {
                 project = getSession().getProject();
             }
-            project = (org.eclipse.persistence.sessions.Project)project.clone();
+            project = project.clone();
             project.setLogin((DatabaseLogin)project.getLogin().clone());
             session2 = project.createDatabaseSession();
             session2.setLog(getSession().getLog());
@@ -151,6 +153,7 @@ public class PessimisticLockIndirectionJoiningTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         if (uow != null) {

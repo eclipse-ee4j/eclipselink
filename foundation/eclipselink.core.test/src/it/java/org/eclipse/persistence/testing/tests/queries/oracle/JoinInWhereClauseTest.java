@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ public class JoinInWhereClauseTest extends HierarchicalQueryTest
     setDescription("Tests the use of a hierarchical query with a join in the where clause");
 
   }
+  @Override
   public Vector expectedResults() {
     if(expected == null) {
       expected = new Vector();
@@ -38,6 +39,7 @@ public class JoinInWhereClauseTest extends HierarchicalQueryTest
     }
     return expected;
   }
+  @Override
   public ReadAllQuery getQuery() {
   //A query to read the hierarchy starting with Edward White, but excluding
   //anyone who reports to Tracy Rue and below.

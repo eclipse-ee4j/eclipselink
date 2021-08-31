@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,6 +53,7 @@ public class SessionsXMLSchemaSequencingTest extends AutoVerifyTestCase {
         definedSequences.put("ADDRESS_SEQ", new UnaryTableSequence("ADDRESS_SEQ", 40));
     }
 
+    @Override
     public void reset() {
         for (int i = 0; i < numSessions; i++) {
             if (session[i] != null) {
@@ -62,6 +63,7 @@ public class SessionsXMLSchemaSequencingTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void setup() throws Exception {
         XMLSessionConfigLoader loader = new XMLSessionConfigLoader("org/eclipse/persistence/testing/models/sessionsxml/XMLSchemaSessionSequencing.xml");
         for (int i = 0; i < numSessions; i++) {
@@ -69,6 +71,7 @@ public class SessionsXMLSchemaSequencingTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void verify() {
         for (int i = 0; i < numSessions; i++) {
             boolean isDefaultSequenceDefined = sessionName[i].indexOf("NoDefaultSequence") == -1;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,15 +40,18 @@ public abstract class HierarchicalQueryTest extends TestCase {
     //Returns the query to execute
     public abstract ReadAllQuery getQuery();
 
+    @Override
     public void setup() {
         if (!(getSession().getPlatform().isOracle())) {
             throw new TestWarningException("This test is intended for Oracle databases only");
         }
     }
 
+    @Override
     public void reset() {
     }
 
+    @Override
     public void test() {
         try {
             results = (Vector)getSession().executeQuery(getQuery());
@@ -62,6 +65,7 @@ public abstract class HierarchicalQueryTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         Vector expectedResults = expectedResults();
         if (expectedResults.size() != results.size()) {

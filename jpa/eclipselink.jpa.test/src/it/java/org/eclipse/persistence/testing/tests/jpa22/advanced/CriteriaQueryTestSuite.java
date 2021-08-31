@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ import jakarta.persistence.criteria.Root;
 import jakarta.persistence.metamodel.EntityType;
 
 import junit.framework.Test;
+import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
@@ -58,12 +59,14 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         setPuName("MulitPU-1");
     }
 
+    @Override
     public void setUp () {
         m_reset = true;
         super.setUp();
         clearCache();
     }
 
+    @Override
     public void tearDown () {
         if (m_reset) {
             m_reset = false;
@@ -390,7 +393,7 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
 
         closeEntityManager(em);
         if (testSQL != null) {
-            this.assertEquals("UPDATE Criteria query did not match SQL used for a JPQL query; generated SQL was: \""
+            assertEquals("UPDATE Criteria query did not match SQL used for a JPQL query; generated SQL was: \""
                         +testSQL + "\"  but we expected: \""+baseSQL+"\"", testSQL, baseSQL);
         } else {
             //check list of strings instead
@@ -550,7 +553,7 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         closeEntityManager(em);
 
         if (testSQL != null) {
-            this.assertEquals("Delete Criteria query did not match SQL used for a JPQL query; generated SQL was: \""
+            assertEquals("Delete Criteria query did not match SQL used for a JPQL query; generated SQL was: \""
                         +testSQL + "\"  but we expected: \""+baseSQL+"\"", testSQL, baseSQL);
         } else {
             //check list of strings instead

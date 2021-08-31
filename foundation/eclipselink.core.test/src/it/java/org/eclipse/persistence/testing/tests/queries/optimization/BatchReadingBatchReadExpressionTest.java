@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,10 +40,12 @@ public class BatchReadingBatchReadExpressionTest extends TestCase {
         setName(getName() + batchType);
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     public void test() {
         query = new ReadAllQuery();
         query.setReferenceClass(Restaurant.class);
@@ -61,6 +63,7 @@ public class BatchReadingBatchReadExpressionTest extends TestCase {
 
     }
 
+    @Override
     public void verify() {
         // The batchReadAttributeExpressions vector should only ever by one since we only add one expression in the execute() method of this test.
         ForeignReferenceMapping batchMapping =

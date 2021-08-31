@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,6 +22,7 @@ public abstract class UnitOfWorkEventTest extends org.eclipse.persistence.testin
         return eventTriggered;
     }
 
+    @Override
     public void reset() {
         setEventTriggered(false);
         getAbstractSession().rollbackTransaction();
@@ -32,6 +33,7 @@ public abstract class UnitOfWorkEventTest extends org.eclipse.persistence.testin
         this.eventTriggered = newValue;
     }
 
+    @Override
     public void setup() {
         setEventTriggered(false);
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();

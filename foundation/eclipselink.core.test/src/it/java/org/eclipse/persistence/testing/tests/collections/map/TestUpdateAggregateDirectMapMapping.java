@@ -21,6 +21,7 @@ import org.eclipse.persistence.testing.models.collections.map.AggregateDirectMap
 
 public class TestUpdateAggregateDirectMapMapping extends TestReadAggregateDirectMapMapping {
 
+    @Override
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holders = uow.readAllObjects(AggregateDirectMapHolder.class, holderExp);
@@ -39,6 +40,7 @@ public class TestUpdateAggregateDirectMapMapping extends TestReadAggregateDirect
 
     }
 
+    @Override
     public void verify(){
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         Object changedHolder = holders.get(0);

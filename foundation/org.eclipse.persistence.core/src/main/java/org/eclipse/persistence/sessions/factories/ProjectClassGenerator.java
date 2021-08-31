@@ -1931,6 +1931,29 @@ public class ProjectClassGenerator {
             return "Character.valueOf('" + value + "')";
         }
 
+        if (value instanceof Boolean) {
+            return "Boolean.valueOf(\"" + value + "\")";
+        }
+        if (value instanceof Integer) {
+            return "Integer.valueOf(\"" + value + "\")";
+        }
+        if (value instanceof Double) {
+            return "Double.valueOf(\"" + value + "\")";
+        }
+        if (value instanceof Float) {
+            return "Float.valueOf(\"" + value + "\")";
+        }
+        if (value instanceof Long) {
+            return "Long.valueOf(\"" + value + "\")";
+        }
+        if (value instanceof Byte) {
+            return "Byte.valueOf(\"" + value + "\")";
+        }
+
+        if (value instanceof Short) {
+            return "Short.valueOf(\"" + value + "\")";
+        }
+
         //Bug2662265
         if (value instanceof java.util.Date) {
             java.util.Date date = (java.util.Date)value;

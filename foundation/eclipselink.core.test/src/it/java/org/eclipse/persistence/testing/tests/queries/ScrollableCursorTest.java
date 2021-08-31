@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -74,6 +74,7 @@ public class ScrollableCursorTest extends TestCase {
         size = aSize;
     }
 
+    @Override
     protected void setup() {
         if (getSession().getPlatform().isDB2() || getSession().getPlatform().isAccess() ||
             getSession().getPlatform().isTimesTen() || getSession().getPlatform().isSymfoware() ||
@@ -94,6 +95,7 @@ public class ScrollableCursorTest extends TestCase {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test() {
 
         ReadAllQuery query = new ReadAllQuery();
@@ -151,6 +153,7 @@ public class ScrollableCursorTest extends TestCase {
     /**
      * Verify if number of query objects matches number of cursor objects
      */
+    @Override
     protected void verify() {
         if (getNormalQueryObjects().size() != getCursoredQueryObjects().size()) {
             throw new TestErrorException("The number of streamed objects (" + getCursoredQueryObjects().size() +

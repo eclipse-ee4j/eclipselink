@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,10 +38,12 @@ public class AggregateVersionOpimisticLockingTest extends TestCase {
                        " version in an aggregate works when inserting in a UnitOfWork");
     }
 
+    @Override
     public void setup() {
         beginTransaction();
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Client client = new Client();
@@ -79,6 +81,7 @@ public class AggregateVersionOpimisticLockingTest extends TestCase {
         finalVersion = client.getVersion().getVersion();
     }
 
+    @Override
     public void verify() {
         if (insertException != null) {
             throw new TestErrorException("An exception was thrown when trying to insert an object " +
@@ -105,6 +108,7 @@ public class AggregateVersionOpimisticLockingTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
         insertException = null;

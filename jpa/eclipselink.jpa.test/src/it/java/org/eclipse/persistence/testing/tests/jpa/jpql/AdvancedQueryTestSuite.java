@@ -94,12 +94,14 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
 
     // This method is run at the start of EVERY test case method.
 
+    @Override
     public void setUp() {
 
     }
 
     // This method is run at the end of EVERY test case method.
 
+    @Override
     public void tearDown() {
         clearCache();
     }
@@ -1664,6 +1666,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             this.timeout = timeout;
         }
 
+        @Override
         public void run() {
             // sleep for "timeout" milliseconds) to allow the first lock to timeout
             try {

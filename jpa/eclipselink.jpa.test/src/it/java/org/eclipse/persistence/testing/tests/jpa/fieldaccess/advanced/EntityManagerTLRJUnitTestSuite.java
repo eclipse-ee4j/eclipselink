@@ -42,8 +42,9 @@ import jakarta.persistence.PersistenceException;
 import jakarta.persistence.OptimisticLockException;
 import jakarta.persistence.RollbackException;
 
-import junit.framework.*;
-
+import junit.framework.AssertionFailedError;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.logging.SessionLog;
@@ -79,6 +80,7 @@ import org.eclipse.persistence.logging.SessionLogEntry;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.*;
+import org.junit.Assert;
 
 /**
  * Test the EntityManager API using the advanced model.
@@ -3420,7 +3422,7 @@ public class EntityManagerTLRJUnitTestSuite extends JUnitTestCase {
         } finally {
             Address initialAddress = em.find(Address.class, Integer.valueOf(addressId));
             employee.setAddress(null);
-            employee.setManager((Employee)null);
+            employee.setManager(null);
             em.remove(address);
             em.remove(employee);
             em.remove(initialAddress);
@@ -3481,7 +3483,7 @@ public class EntityManagerTLRJUnitTestSuite extends JUnitTestCase {
         } finally {
             Address initialAddress = em.find(Address.class, Integer.valueOf(addressId));
             employee.setAddress(null);
-            employee.setManager((Employee)null);
+            employee.setManager(null);
             em.remove(address);
             em.remove(employee);
             em.remove(initialAddress);
@@ -3544,7 +3546,7 @@ public class EntityManagerTLRJUnitTestSuite extends JUnitTestCase {
         } finally {
             Address initialAddress = em.find(Address.class, Integer.valueOf(addressId));
             employee.setAddress(null);
-            employee.setManager((Employee)null);
+            employee.setManager(null);
             em.remove(address);
             em.remove(employee);
             em.remove(initialAddress);
@@ -4305,20 +4307,35 @@ public class EntityManagerTLRJUnitTestSuite extends JUnitTestCase {
     // At first tried to use JTATransactionController class, but that introduced dependencies
     // on jakarta.transaction package (and therefore failed in gf entity persistence tests).
     static class DummyExternalTransactionController extends org.eclipse.persistence.transaction.AbstractTransactionController {
+        @Override
         public boolean isRolledBack_impl(Object status){return false;}
+        @Override
         protected void registerSynchronization_impl(org.eclipse.persistence.transaction.AbstractSynchronizationListener listener, Object txn) throws Exception{}
+        @Override
         protected Object getTransaction_impl() throws Exception {return null;}
+        @Override
         protected Object getTransactionKey_impl(Object transaction) throws Exception {return null;}
+        @Override
         protected Object getTransactionStatus_impl() throws Exception {return null;}
+        @Override
         protected void beginTransaction_impl() throws Exception{}
+        @Override
         protected void commitTransaction_impl() throws Exception{}
+        @Override
         protected void rollbackTransaction_impl() throws Exception{}
+        @Override
         protected void markTransactionForRollback_impl() throws Exception{}
+        @Override
         protected boolean canBeginTransaction_impl(Object status){return false;}
+        @Override
         protected boolean canCommitTransaction_impl(Object status){return false;}
+        @Override
         protected boolean canRollbackTransaction_impl(Object status){return false;}
+        @Override
         protected boolean canIssueSQLToDatabase_impl(Object status){return false;}
+        @Override
         protected boolean canMergeUnitOfWork_impl(Object status){return false;}
+        @Override
         protected String statusToString_impl(Object status){return "";}
     }
 

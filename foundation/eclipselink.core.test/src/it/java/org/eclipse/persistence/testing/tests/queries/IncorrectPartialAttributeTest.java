@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,14 +32,17 @@ public class IncorrectPartialAttributeTest extends TestCase {
         setDescription("Ensure the proper exception is thrown when a query with a partial attribute that doesn't exist is run.");
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test() {
         ReadAllQuery query = new ReadAllQuery(Employee.class);
         query.dontMaintainCache();
@@ -56,6 +59,7 @@ public class IncorrectPartialAttributeTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (!correctException) {
             throw new TestErrorException("Specifying non-existant partial attributes does not result is the correct exception.");

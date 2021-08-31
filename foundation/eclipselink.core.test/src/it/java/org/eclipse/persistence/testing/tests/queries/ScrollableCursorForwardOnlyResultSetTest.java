@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,12 +31,14 @@ public class ScrollableCursorForwardOnlyResultSetTest extends TestCase {
         setDescription("Test the scrollable cursor hasNext() on a forward only result set");
     }
 
+    @Override
     protected void setup() {
         if (!(getSession().getPlatform().isOracle())) {
             throwWarning("This test is intended for Oracle databases only.");
         }
     }
 
+    @Override
     public void test() {
         //stored procedure call
         StoredProcedureCall spCall = new StoredProcedureCall();
@@ -75,6 +77,7 @@ public class ScrollableCursorForwardOnlyResultSetTest extends TestCase {
     /**
      * Verify if the scrollable cursor can iterate a forward only result set
      */
+    @Override
     protected void verify() {
         if (caughtException != null) {
             if (caughtException.getDatabaseErrorCode() == 17075) {//SQLException: Invalid operation for forward only result set

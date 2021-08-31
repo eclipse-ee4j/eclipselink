@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,6 +53,7 @@ public class TestSystemAdapted extends TestSystem {
         return testSystem;
     }
 
+    @Override
     public void addDescriptors(DatabaseSession session) {
         if (project == null) {
             if (getAdapter().isOriginalSetupRequired()) {
@@ -62,7 +63,7 @@ public class TestSystemAdapted extends TestSystem {
                     // (typically because during the second call project value is no longer null,
                     // which causes problems in case more than one project is used).
                     // Therefore another instance of TestSystem is created - not to spoil the original.
-                    TestSystem tempTestSystem = getTestSystem().getClass().newInstance();
+                    TestSystem tempTestSystem = getTestSystem().getClass().getConstructor().newInstance();
                     tempTestSystem.addDescriptors(session);
                     try {
                         tempTestSystem.createTables(session);
@@ -84,6 +85,7 @@ public class TestSystemAdapted extends TestSystem {
         afterAddDescriptors(session, getTestSystem());
     }
 
+    @Override
     public void createTables(DatabaseSession session) throws Exception {
         getTestSystem().createTables(session);
         getAdapter().updateDatabase(session);
@@ -93,6 +95,7 @@ public class TestSystemAdapted extends TestSystem {
         return Helper.getShortClassName(getTestSystem()) + " using " + Helper.getShortClassName(getAdapter());
     }
 
+    @Override
     public void populate(DatabaseSession session) throws Exception {
         getTestSystem().populate(session);
     }

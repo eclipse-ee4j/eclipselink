@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +20,7 @@ import org.eclipse.persistence.testing.framework.TestErrorException;
 class SimpleFromFailed extends org.eclipse.persistence.testing.tests.jpql.JPQLTestCase {
     Exception error = null;
 
+    @Override
     public void setup() {
         String ejbqlString = "SELECT OBJECT(emp) Frow Employee emp";
         setEjbqlString(ejbqlString);
@@ -27,6 +28,7 @@ class SimpleFromFailed extends org.eclipse.persistence.testing.tests.jpql.JPQLTe
         super.setup();
     }
 
+    @Override
     public void test() throws Exception {
         error = null;
         try {
@@ -40,6 +42,7 @@ class SimpleFromFailed extends org.eclipse.persistence.testing.tests.jpql.JPQLTe
     /**
      * verify(): Make sure the error message is the right one
      **/
+    @Override
     public void verify() throws Exception {
         if (error == null) {
             setTestException(new TestErrorException(getName() + " Verify Failed: " + "No error thrown"));

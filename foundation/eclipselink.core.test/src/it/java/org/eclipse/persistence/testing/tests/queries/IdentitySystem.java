@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ public class IdentitySystem extends TestSystem {
         project = new NoIdentityMapProject();
     }
 
+@Override
 public void addDescriptors(DatabaseSession session) {
         if (project == null) {
             project = new NoIdentityMapProject();
@@ -73,6 +74,7 @@ public void addDescriptors(DatabaseSession session) {
         return populationManager.containsObject(domainClass, identifier);
     }
 
+@Override
 public void createTables(DatabaseSession session)
 {
         SchemaManager schemaManager = new SchemaManager(session);
@@ -91,6 +93,7 @@ public void createTables(DatabaseSession session)
     /**
     * Return a connected session using the default login.
     */
+    @Override
     public DatabaseSession login() {
         DatabaseSession session;
 
@@ -100,6 +103,7 @@ public void createTables(DatabaseSession session)
         return session;
     }
 
+@Override
 public void populate(DatabaseSession session)
 {
         IdentitySystem system = new IdentitySystem();

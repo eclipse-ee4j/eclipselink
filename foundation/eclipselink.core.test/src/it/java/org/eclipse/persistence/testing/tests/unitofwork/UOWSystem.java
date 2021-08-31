@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,6 +24,7 @@ import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 
 public class UOWSystem extends TestSystem {
 
+    @Override
     public void addDescriptors(DatabaseSession session) {
         Vector descriptors = new Vector();
 
@@ -41,6 +42,7 @@ public class UOWSystem extends TestSystem {
         session.addDescriptors(descriptors);
     }
 
+    @Override
     public void createTables(DatabaseSession session) {
         SchemaManager schemaManager = new SchemaManager(session);
 
@@ -57,6 +59,7 @@ public class UOWSystem extends TestSystem {
         schemaManager.createSequences();
     }
 
+    @Override
     public void populate(DatabaseSession session) {
         UnitOfWork uow = session.acquireUnitOfWork();
 

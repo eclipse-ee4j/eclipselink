@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,14 +32,17 @@ public class UnitOfWorkDeleteNoValidationTest extends AutoVerifyTestCase {
                        "UnitOfWork with validation turned off.");
     }
 
+    @Override
     public void setup() {
         getAbstractSession().beginTransaction();
     }
 
+    @Override
     public void reset() {
         getAbstractSession().rollbackTransaction();
     }
 
+    @Override
     public void test() {
         try {
             UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -52,6 +55,7 @@ public class UnitOfWorkDeleteNoValidationTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (caughtClassCastException) {
             throw new TestErrorException("A ClassCastException was thrown when an object was deleted in a UnitOfWork with validation turned off.");

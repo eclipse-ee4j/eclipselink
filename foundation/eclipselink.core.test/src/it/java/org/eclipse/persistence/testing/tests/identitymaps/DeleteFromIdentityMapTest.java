@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,10 +38,12 @@ public class DeleteFromIdentityMapTest extends RegisterInIdentityMapTest {
         super(mapClass);
     }
 
+    @Override
     public String getDescription() {
         return "This test verifies an object was properly retrieved from the identity map";
     }
 
+    @Override
     public void setup() {
         super.setup();
         beginTransaction();
@@ -52,6 +54,7 @@ public class DeleteFromIdentityMapTest extends RegisterInIdentityMapTest {
         getSession().getDescriptor(Employee.class).getQueryManager().setUpdateQuery(null);
     }
 
+    @Override
     public void reset() {
         super.reset();
         // Must reset queries in case they were build with an optimistic locking policy
@@ -62,6 +65,7 @@ public class DeleteFromIdentityMapTest extends RegisterInIdentityMapTest {
         rollbackTransaction();
     }
 
+    @Override
     public void test() {
         super.test();
         try {
@@ -74,6 +78,7 @@ public class DeleteFromIdentityMapTest extends RegisterInIdentityMapTest {
         }
     }
 
+    @Override
     public void verifyCacheIdentityMap() {
         Vector cache = (Vector)employees.clone();
         cache.setSize(11);
@@ -82,6 +87,7 @@ public class DeleteFromIdentityMapTest extends RegisterInIdentityMapTest {
         checkIdentityMap(cache);
     }
 
+    @Override
     public void verifyFullIdentityMap() {
         Vector cache = (Vector)employees.clone();
         cache.setSize(employees.size() - 1);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,50 +31,62 @@ public class CubicleImpl implements Cubicle {
     public Employee employee;
     public Computer computer;
 
+    @Override
     public Employee getEmployee() {
         return this.employee;
     }
 
+    @Override
     public Computer getComputer() {
         return this.computer;
     }
 
+    @Override
     public float getHeight() {
         return this.height;
     }
 
+    @Override
     public int getID() {
         return this.id;
     }
 
+    @Override
     public float getLength() {
         return this._length;
     }
 
+    @Override
     public float getWidth() {
         return this.width;
     }
 
+    @Override
     public void setComputer(Computer value) {
         this.computer = value;
     }
 
+    @Override
     public void setEmployee(Employee value) {
         this.employee = value;
     }
 
+    @Override
     public void setHeight(float value) {
         this.height = value;
     }
 
+    @Override
     public void setID(int value) {
         this.id = value;
     }
 
+    @Override
     public void setLength(float value) {
         this._length = value;
     }
 
+    @Override
     public void setWidth(float value) {
         this.width = value;
     }

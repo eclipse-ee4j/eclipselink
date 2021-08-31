@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,12 +29,14 @@ public class ReadAllOuterJoinExpressionTest2 extends ReadAllExpressionTest {
         // Most have some level of support, even dbase.
     }
 
+    @Override
     public void reset() throws Exception {
         super.reset();
         rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     protected void setup() {
         super.setup();
         // Make the holders have no address.

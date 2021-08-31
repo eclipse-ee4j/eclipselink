@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,10 +31,12 @@ public class NLSMemoryQueryReturnConfirmedTest extends AutoVerifyTestCase {
         setDescription("[NLS_Japanese] Test memory query ignore indirection exception return conformed option");
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
@@ -57,6 +59,7 @@ public class NLSMemoryQueryReturnConfirmedTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void test() {
         ReadAllQuery queryAllCopy = (ReadAllQuery)queryAll.clone();
         queryAllCopy.checkCacheOnly();//read from cache only
@@ -65,6 +68,7 @@ public class NLSMemoryQueryReturnConfirmedTest extends AutoVerifyTestCase {
         inMemoryResult = (Vector)getSession().executeQuery(queryAllCopy);
     }
 
+    @Override
     public void verify() {
         if (inMemoryResult.size() != (allEmployees.size() - 1)) {
             throw new TestErrorException("In Memory Query did not return all objects because of indirection.  TopLink is not returning indirection relationships as conformed when the policy is set to do so.");

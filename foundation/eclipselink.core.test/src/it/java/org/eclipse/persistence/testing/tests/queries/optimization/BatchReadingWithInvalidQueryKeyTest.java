@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,6 +39,7 @@ public class BatchReadingWithInvalidQueryKeyTest extends TestCase {
         setName(getName() + batchType);
     }
 
+    @Override
     public void test() {
         // Pull the objects into the cache first. For the test to fail
         // the object must already be in the cache.
@@ -56,6 +57,7 @@ public class BatchReadingWithInvalidQueryKeyTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (m_validationException == null) {
             throw new TestErrorException("No exception was caught on the invalid query key");

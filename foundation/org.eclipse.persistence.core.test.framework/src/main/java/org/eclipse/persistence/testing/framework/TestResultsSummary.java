@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -79,6 +79,7 @@ public class TestResultsSummary implements ResultInterface, Comparable, Serializ
         this.totalTime = totalTime;
     }
 
+    @Override
     public int compareTo(Object summary) {
         return getName().compareTo(((TestResultsSummary)summary).getName());
     }
@@ -274,6 +275,7 @@ public class TestResultsSummary implements ResultInterface, Comparable, Serializ
         return warnings;
     }
 
+    @Override
     public boolean shouldLogResult() {
         return !hasPassed();
     }
@@ -281,6 +283,7 @@ public class TestResultsSummary implements ResultInterface, Comparable, Serializ
     /**
      * Passed means the test was ok.
      */
+    @Override
     public boolean hasPassed() {
         // This is a safest way to check then doing totaltests == passedtests.
         if ((getWarnings() != 0) || (getFatalErrors() != 0) || (getProblems() != 0) || (getErrors() != 0) || didSetupFail() || (getSetupFailures() != 0) || didSetupWarn() || (getSetupWarnings() != 0)) {
@@ -316,6 +319,7 @@ public class TestResultsSummary implements ResultInterface, Comparable, Serializ
     /**
      * Print itself on the print stream.
      */
+    @Override
     public void logResult(Writer log) {
         // The indentationString adds some number of tabs to the print stream.
         String indentationString = getTestCollection().getIndentationString();

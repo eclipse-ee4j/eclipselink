@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,10 +37,12 @@ public class VehicleSystem extends TestSystem {
         this.project = new VehicleProject();
     }
 
+    @Override
     public void createTables(DatabaseSession session) {
         new VehicleTableCreator().replaceTables(session);
     }
 
+    @Override
     public void addDescriptors(DatabaseSession session) {
         if (project == null) {
             project = new VehicleProject();
@@ -53,6 +55,7 @@ public class VehicleSystem extends TestSystem {
      * This method will instantiate all of the example instances and insert them into the database
      * using the given session.
      */
+    @Override
     public void populate(DatabaseSession session) {
         VehiclePopulator system = new VehiclePopulator();
         UnitOfWork unitOfWork = session.acquireUnitOfWork();

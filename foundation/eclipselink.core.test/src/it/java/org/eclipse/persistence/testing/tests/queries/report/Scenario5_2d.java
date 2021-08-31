@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,7 @@ public class Scenario5_2d extends ReportQueryTestCase {
         setDescription("Cursored Stream using SQL but types selected don't match item types (firstName->id)");
     }
 
+    @Override
     protected void buildExpectedResults() {
         Vector employees = getSession().readAllObjects(Employee.class);
 
@@ -41,6 +42,7 @@ public class Scenario5_2d extends ReportQueryTestCase {
         }
     }
 
+    @Override
     protected void setup() throws Exception {
         super.setup();
         reportQuery = new ReportQuery(new ExpressionBuilder());
@@ -51,6 +53,7 @@ public class Scenario5_2d extends ReportQueryTestCase {
         reportQuery.useCursoredStream(1, 1, new ValueReadQuery("SELECT COUNT(*) FROM EMPLOYEE"));
     }
 
+    @Override
     public void test() {
         try {
             stream = (CursoredStream)getSession().executeQuery(reportQuery);
@@ -60,6 +63,7 @@ public class Scenario5_2d extends ReportQueryTestCase {
         }
     }
 
+    @Override
     protected void verify() {
         try {
             if (results == null || results.size() != 1 ||

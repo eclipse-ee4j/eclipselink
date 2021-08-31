@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -110,7 +110,7 @@ public class MTOMServiceTestSuite extends DBWSTestSuite {
             // verify MTOM format, i.e.
             // <xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="cid:c060bfb1-82cb-4820-9d87-4f2422b50915"/>
             for (@SuppressWarnings("unchecked")
-            Iterator<AttachmentPart> attachmentsIterator = (Iterator<AttachmentPart>)response.getAttachments(); attachmentsIterator.hasNext();) {
+                 Iterator<AttachmentPart> attachmentsIterator = response.getAttachments(); attachmentsIterator.hasNext();) {
                 AttachmentPart ap = attachmentsIterator.next();
 
                 SOAPElement elt = SOAPFactory.newInstance().createElement(new QName("http://www.w3.org/2004/08/xop/include", "Include", "xop"));

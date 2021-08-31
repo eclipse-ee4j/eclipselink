@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class WriteTypeObjectTest extends WriteObjectTest {
         super.setTestShouldMutate(false);
     }
 
+    @Override
     public String getName() {
         return "WriteTypeObjectTest(" + originalObject.getClass() + ")";
     }
@@ -41,6 +42,7 @@ public class WriteTypeObjectTest extends WriteObjectTest {
         return this.objectFromDatabase;
     }
 
+    @Override
     protected void setup() {
         if (shouldUseNativeSQL()) {
             if (!getSession().getLogin().shouldUseNativeSQL()) {
@@ -66,6 +68,7 @@ public class WriteTypeObjectTest extends WriteObjectTest {
         super.verify();
     }
 
+    @Override
     protected void test() {
         ((TypeTester)this.originalObject).test(this);
     }
@@ -78,6 +81,7 @@ public class WriteTypeObjectTest extends WriteObjectTest {
      * Verify if the objects match completely through allowing the session to use the descriptors.
      * This will compare the objects and all of their privately owned parts.
      */
+    @Override
     protected void verify() throws TestErrorException, TestWarningException {
         ((TypeTester)this.originalObject).verify(this);
     }
@@ -89,6 +93,7 @@ public class WriteTypeObjectTest extends WriteObjectTest {
         return didUseNativeSQL;
     }
 
+    @Override
     public void reset() {
         super.reset();
 

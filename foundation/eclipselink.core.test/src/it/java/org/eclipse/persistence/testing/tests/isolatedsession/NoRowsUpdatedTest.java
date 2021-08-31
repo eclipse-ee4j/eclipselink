@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,6 +45,7 @@ public class NoRowsUpdatedTest extends AutoVerifyTestCase {
         this.server.getProject().setHasIsolatedClasses(true);
     }
 
+    @Override
     public void reset() {
         try {
             this.server.logout();
@@ -70,6 +71,7 @@ public class NoRowsUpdatedTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void setup() {
         try {
             Vector emps = getSession().readAllObjects(IsolatedEmployee.class);
@@ -101,6 +103,7 @@ public class NoRowsUpdatedTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void test() {
         Session client1 = this.server.acquireClientSession();
         this.eventAdaptor.setSession_Id(1);
@@ -115,6 +118,7 @@ public class NoRowsUpdatedTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (!this.eventAdaptor.noRowsModified) {
             throw new TestErrorException("Failed to throw the no rows updated event");

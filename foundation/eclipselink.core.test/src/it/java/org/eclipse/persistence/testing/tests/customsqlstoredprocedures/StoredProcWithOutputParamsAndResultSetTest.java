@@ -44,6 +44,7 @@ public class StoredProcWithOutputParamsAndResultSetTest extends TestCase {
         }
     }
 
+    @Override
     public void setup() {
         shouldBindAllParametersOriginal = getSession().getLogin().getShouldBindAllParameters();
         //right now only the stored procedure is set up in SQLServer
@@ -53,6 +54,7 @@ public class StoredProcWithOutputParamsAndResultSetTest extends TestCase {
         getSession().getLogin().setShouldBindAllParameters(shouldBindAllParameters);
     }
 
+    @Override
     public void test() {
         ReadAllQuery readQuery = new ReadAllQuery(Employee.class);
         DatabaseCall call;
@@ -126,6 +128,7 @@ public class StoredProcWithOutputParamsAndResultSetTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         getSession().getLogin().setShouldBindAllParameters(shouldBindAllParametersOriginal);
     }

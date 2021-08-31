@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class AllChangeSetsTest extends AutoVerifyTestCase {
     static class SessionListener extends SessionEventAdapter {
         public int changedObjectsCount;
 
+        @Override
         public void preMergeUnitOfWorkChangeSet(SessionEvent event) {
             UnitOfWorkChangeSet uowChangeSet = (UnitOfWorkChangeSet)event.getProperty("UnitOfWorkChangeSet");
             changedObjectsCount = uowChangeSet.getAllChangeSets().size();
@@ -43,6 +44,7 @@ public class AllChangeSetsTest extends AutoVerifyTestCase {
     SessionListener listener = new SessionListener();
     int changedObjectsCount;
 
+    @Override
     public void reset() {
         if (getAbstractSession().isInTransaction()) {
             getAbstractSession().rollbackTransaction();
@@ -51,6 +53,7 @@ public class AllChangeSetsTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void setup() {
         getSession().getEventManager().addListener(listener);
         getAbstractSession().beginTransaction();
@@ -58,6 +61,7 @@ public class AllChangeSetsTest extends AutoVerifyTestCase {
         listener.changedObjectsCount = -1;
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Vector employees = uow.readAllObjects(Employee.class);
@@ -108,6 +112,7 @@ public class AllChangeSetsTest extends AutoVerifyTestCase {
         uow.commit();
     }
 
+    @Override
     public void verify() {
         if (listener.changedObjectsCount == -1) {
             throw new TestProblemException("postCalculateUnitOfWorkChangeSet was not handled");

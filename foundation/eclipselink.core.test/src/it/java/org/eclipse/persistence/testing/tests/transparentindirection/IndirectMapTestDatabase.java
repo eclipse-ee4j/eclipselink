@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.transparentindirection;
 
+import junit.framework.TestCase;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.testing.models.transparentindirection.AbstractOrderLine;
 import org.eclipse.persistence.testing.models.transparentindirection.AbstractSalesRep;
@@ -32,18 +33,22 @@ public class IndirectMapTestDatabase extends IndirectContainerTestDatabase {
         super(name);
     }
 
+    @Override
     protected AbstractOrder buildOrderShell() {
         return new MappedOrder();
     }
 
+    @Override
     protected AbstractOrder buildTestOrderShell(String customerName) {
         return new MappedOrder(customerName);
     }
 
+    @Override
     protected AbstractOrderLine newOrderLine(String item, int quanity) {
         return new MappedOrderLine(item, quanity);
     }
 
+    @Override
     protected AbstractSalesRep newSalesRep(String name) {
         return new MappedSalesRep(name);
     }
@@ -61,9 +66,9 @@ public class IndirectMapTestDatabase extends IndirectContainerTestDatabase {
         MappedOrder orderFromDB = (MappedOrder)getSession().readObject(key);
 
         AbstractSalesRep tempSalesRep = (AbstractSalesRep)((MappedOrder)this.buildTestOrder1()).salesReps.values().iterator().next();
-        this.assertEquals("Invalid sales rep key/value pair.", tempSalesRep.name, ((AbstractSalesRep)orderFromDB.salesReps.get(tempSalesRep.getKey())).name);
+        assertEquals("Invalid sales rep key/value pair.", tempSalesRep.name, ((AbstractSalesRep)orderFromDB.salesReps.get(tempSalesRep.getKey())).name);
 
         AbstractOrderLine tempLine = (AbstractOrderLine)((MappedOrder)this.buildTestOrder1()).lines.values().iterator().next();
-        this.assertEquals("Invalid order line key/value pair.", tempLine.itemName, ((AbstractOrderLine)orderFromDB.lines.get(tempLine.getKey())).itemName);
+        assertEquals("Invalid order line key/value pair.", tempLine.itemName, ((AbstractOrderLine)orderFromDB.lines.get(tempLine.getKey())).itemName);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ public class VerifyDeletedObjectsTest extends ComplexUpdateTest {
         super();
     }
 
+    @Override
     protected void changeObject() {
         Employee employee = (Employee)this.workingCopy;
         employee.setFirstName("Bob");
@@ -40,12 +41,14 @@ public class VerifyDeletedObjectsTest extends ComplexUpdateTest {
         employee.addPhoneNumber(new org.eclipse.persistence.testing.models.employee.domain.PhoneNumber("office", "416", "8224599"));
     }
 
+    @Override
     public void setup() {
         this.originalObject = getSession().readObject(Employee.class);
         super.setup();
         this.numbers = (Vector)((Employee)this.distributedCopy).getPhoneNumbers().clone();
     }
 
+    @Override
     public void verify() {
         Employee distEmp = (Employee)getObjectFromDistributedSession(this.query);
         Enumeration enumtr = this.numbers.elements();

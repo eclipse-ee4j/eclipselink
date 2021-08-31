@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,6 +24,7 @@ import org.eclipse.persistence.testing.framework.TestErrorException;
  * thrown.
  */
 public class ParameterNameMismatchTest extends JPQLTestCase {
+    @Override
     public void setup() {
         // ?2 is used intentionally, with only "1" added to the query.
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp where emp.firstName = ?2";
@@ -40,6 +41,7 @@ public class ParameterNameMismatchTest extends JPQLTestCase {
     /**
      * Run the test, and make sure the proper error is thrown.
      */
+    @Override
     public void test() throws Exception {
         try {
             super.test();
@@ -59,6 +61,7 @@ public class ParameterNameMismatchTest extends JPQLTestCase {
     /**
      * Verify: we aren't expecting any results, so do nothing.
      */
+    @Override
     public void verify() throws Exception {
     }
 }

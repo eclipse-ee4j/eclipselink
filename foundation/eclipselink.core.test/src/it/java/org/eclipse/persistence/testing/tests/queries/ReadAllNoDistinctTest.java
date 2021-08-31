@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,6 +44,7 @@ public class ReadAllNoDistinctTest extends ReadAllTest {
         return false;
     }
 
+    @Override
     protected void setup() {
         super.setup();
         getQuery().dontUseDistinct();
@@ -52,6 +53,7 @@ public class ReadAllNoDistinctTest extends ReadAllTest {
   getQuery().setSelectionCriteria(new ExpressionBuilder().anyOf("phoneNumbers").get("number").notEqual("Empty"));
     }
 
+    @Override
     protected void verify() {
         if (!areDuplicatesReturned()) {
             throw new org.eclipse.persistence.testing.framework.TestException("The DISTINCT was not removed from the SQL");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,12 +26,14 @@ public class ClientLoginTest extends TestCase {
     public ClientLoginTest() {
     }
 
+    @Override
     public void reset() {
         this.server.logout();
         getDatabaseSession().logout();
         getDatabaseSession().login();
     }
 
+    @Override
     public void setup() {
         this.login = (DatabaseLogin)getSession().getLogin().clone();
         this.server = new Server(this.login);
@@ -39,6 +41,7 @@ public class ClientLoginTest extends TestCase {
         this.server.login();
     }
 
+    @Override
     public void test() {
         DatabaseLogin newLogin = (DatabaseLogin)this.login.clone();
         newLogin.setUserName("xFredyFlinstonez");//Nonsense username and password
@@ -51,6 +54,7 @@ public class ClientLoginTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         if ((clientSession != null) && clientSession.isConnected()) {
             throw new TestErrorException("The client's login value was ignored.  Test failed");

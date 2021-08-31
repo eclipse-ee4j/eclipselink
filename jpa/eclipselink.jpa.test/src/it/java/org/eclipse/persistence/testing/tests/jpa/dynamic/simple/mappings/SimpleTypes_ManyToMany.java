@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -191,7 +191,7 @@ public class SimpleTypes_ManyToMany {
         createAwithB();
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        DynamicEntity a = (DynamicEntity)em.find(simpleTypeA.getJavaClass(), 1);
+        DynamicEntity a = em.find(simpleTypeA.getJavaClass(), 1);
         assertNotNull(a);
         List<DynamicEntity> bs = a.<List<DynamicEntity>>get("b");
         assertNotNull(bs);

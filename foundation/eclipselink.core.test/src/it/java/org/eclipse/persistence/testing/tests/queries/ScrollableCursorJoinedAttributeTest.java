@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,6 +38,7 @@ public class ScrollableCursorJoinedAttributeTest extends TestCase {
         setDescription("Scrollable Cursor Test incorporating a joined attribute");
     }
 
+    @Override
     public void test() {
         if (getSession().getPlatform().isHANA() || getSession().getPlatform().isSQLServer()) {
             throw new TestWarningException("ScrollableCursor is not supported on this platform");
@@ -63,6 +64,7 @@ public class ScrollableCursorJoinedAttributeTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (caughtException != null) {
             throwError("Cursored query should not result in an exception", caughtException);
@@ -70,6 +72,7 @@ public class ScrollableCursorJoinedAttributeTest extends TestCase {
         assertNotSame("Test data for cursored results should be nonzero", 0, cursoredResults.size());
     }
 
+    @Override
     public void reset() {
         this.cursoredResults = null;
     }

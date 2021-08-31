@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,7 +55,7 @@ public class MergingUnitOfWorkTest extends WriteObjectTest {
         ((Vector)projectDescription.getLanguages().getValue()).removeElement(((Vector)projectDescription.getLanguages().getValue()).firstElement());
         ((Vector)projectDescription.getLanguages().getValue()).addElement(Language.example1());
         ((Vector)projectDescription.getLanguages().getValue()).addElement(Language.example2());
-        ((Computer)projectDescription.getComputer().getValue()).setDescription("Commodore 64");
+        projectDescription.getComputer().getValue().setDescription("Commodore 64");
     }
 
     protected void deepMergeWorkingCopies() {
@@ -68,7 +68,7 @@ public class MergingUnitOfWorkTest extends WriteObjectTest {
             ProjectDescription projectDescription = this.mergedCopy.getProjectDescription();
             Vector responsibilities = (Vector)projectDescription.getResponsibilities().getValue();
             Vector languages = (Vector)projectDescription.getLanguages().getValue();
-            Computer computer = (Computer)projectDescription.getComputer().getValue();
+            Computer computer = projectDescription.getComputer().getValue();
 
             if (this.mergedCopy.getFirstName() != "Kevin") {
                 throw new TestErrorException("Deep Merge did not merge changes in Employee.");
@@ -76,10 +76,10 @@ public class MergingUnitOfWorkTest extends WriteObjectTest {
             if (projectDescription.getDescription() != "Quality Assurance project") {
                 throw new TestErrorException("Deep Merge did not merge changes in ProjectDescription (Aggregate mapping).");
             }
-            if (responsibilities.size() != ((Vector)this.workingCopy1.getProjectDescription().getResponsibilities().getValue()).size()) {
+            if (responsibilities.size() != this.workingCopy1.getProjectDescription().getResponsibilities().getValue().size()) {
                 throw new TestErrorException("Deep Merge did not merge changes in Responsibility (private 1:M).");
             }
-            if (languages.size() != ((Vector)this.workingCopy1.getProjectDescription().getLanguages().getValue()).size()) {
+            if (languages.size() != this.workingCopy1.getProjectDescription().getLanguages().getValue().size()) {
                 throw new TestErrorException("Deep Merge did not merge changes in Language (public M:M).");
             }
             if (computer.getDescription() != "Commodore 64") {
@@ -92,7 +92,7 @@ public class MergingUnitOfWorkTest extends WriteObjectTest {
             ProjectDescription projectDescription = this.mergedCopy.getProjectDescription();
             Vector responsibilities = (Vector)projectDescription.getResponsibilities().getValue();
             Vector languages = (Vector)projectDescription.getLanguages().getValue();
-            Computer computer = (Computer)projectDescription.getComputer().getValue();
+            Computer computer = projectDescription.getComputer().getValue();
 
             if (this.mergedCopy.getFirstName() == "Kevin") {
                 throw new TestErrorException("Deep revert did not merge changes in Employee.");
@@ -100,10 +100,10 @@ public class MergingUnitOfWorkTest extends WriteObjectTest {
             if (projectDescription.getDescription() == "Quality Assurance project") {
                 throw new TestErrorException("Deep revert did not merge changes in ProjectDescription (Aggregate mapping).");
             }
-            if (responsibilities.size() == ((Vector)this.workingCopy1.getProjectDescription().getResponsibilities().getValue()).size()) {
+            if (responsibilities.size() == this.workingCopy1.getProjectDescription().getResponsibilities().getValue().size()) {
                 throw new TestErrorException("Deep revert did not merge changes in Responsibility (private 1:M).");
             }
-            if (languages.size() == ((Vector)this.workingCopy1.getProjectDescription().getLanguages().getValue()).size()) {
+            if (languages.size() == this.workingCopy1.getProjectDescription().getLanguages().getValue().size()) {
                 throw new TestErrorException("Deep revert did not merge changes in Language (public M:M).");
             }
             if (computer.getDescription() == "Commodore 64") {
@@ -117,7 +117,7 @@ public class MergingUnitOfWorkTest extends WriteObjectTest {
             ProjectDescription projectDescription = this.mergedCopy.getProjectDescription();
             Vector responsibilities = (Vector)projectDescription.getResponsibilities().getValue();
             Vector languages = (Vector)projectDescription.getLanguages().getValue();
-            Computer computer = (Computer)projectDescription.getComputer().getValue();
+            Computer computer = projectDescription.getComputer().getValue();
 
             if (this.mergedCopy.getFirstName() == "Kevin") {
                 throw new TestErrorException("Shallow revert did not merge changes in Employee.");
@@ -125,10 +125,10 @@ public class MergingUnitOfWorkTest extends WriteObjectTest {
             if (projectDescription.getDescription() == "Quality Assurance project") {
                 throw new TestErrorException("Shallow revert did not merge changes in ProjectDescription (Aggregate mapping).");
             }
-            if (responsibilities.size() == ((Vector)this.workingCopy1.getProjectDescription().getResponsibilities().getValue()).size()) {
+            if (responsibilities.size() == this.workingCopy1.getProjectDescription().getResponsibilities().getValue().size()) {
                 throw new TestErrorException("Shallow revert did not merge changes in Responsibility (private 1:M).");
             }
-            if (languages.size() == ((Vector)this.workingCopy1.getProjectDescription().getLanguages().getValue()).size()) {
+            if (languages.size() == this.workingCopy1.getProjectDescription().getLanguages().getValue().size()) {
                 throw new TestErrorException("Shallow revert did not merge changes in Language (public M:M).");
             }
             if (computer.getDescription() != "Commodore 64") {
@@ -142,7 +142,7 @@ public class MergingUnitOfWorkTest extends WriteObjectTest {
             ProjectDescription projectDescription = this.mergedCopy.getProjectDescription();
             Vector responsibilities = (Vector)projectDescription.getResponsibilities().getValue();
             Vector languages = (Vector)projectDescription.getLanguages().getValue();
-            Computer computer = (Computer)projectDescription.getComputer().getValue();
+            Computer computer = projectDescription.getComputer().getValue();
 
             if (this.mergedCopy.getFirstName() == "Kevin") {
                 throw new TestErrorException("Revert did not merge changes in Employee.");
@@ -150,10 +150,10 @@ public class MergingUnitOfWorkTest extends WriteObjectTest {
             if (projectDescription.getDescription() == "Quality Assurance project") {
                 throw new TestErrorException("Revert did not merge changes in ProjectDescription (Aggregate mapping).");
             }
-            if (responsibilities.size() == ((Vector)this.workingCopy1.getProjectDescription().getResponsibilities().getValue()).size()) {
+            if (responsibilities.size() == this.workingCopy1.getProjectDescription().getResponsibilities().getValue().size()) {
                 throw new TestErrorException("Revert did not merge changes in Responsibility (private 1:M).");
             }
-            if (languages.size() == ((Vector)this.workingCopy1.getProjectDescription().getLanguages().getValue()).size()) {
+            if (languages.size() == this.workingCopy1.getProjectDescription().getLanguages().getValue().size()) {
                 throw new TestErrorException("Revert did not merge changes in Language (public M:M).");
             }
             if (computer.getDescription() == "Commodore 64") {
@@ -162,6 +162,7 @@ public class MergingUnitOfWorkTest extends WriteObjectTest {
         }
     }
 
+    @Override
     protected void setup() {
         super.setup();
 
@@ -183,7 +184,7 @@ public class MergingUnitOfWorkTest extends WriteObjectTest {
         ProjectDescription projectDescription = this.mergedCopy.getProjectDescription();
         Vector responsibilities = (Vector)projectDescription.getResponsibilities().getValue();
         Vector languages = (Vector)projectDescription.getLanguages().getValue();
-        Computer computer = (Computer)projectDescription.getComputer().getValue();
+        Computer computer = projectDescription.getComputer().getValue();
 
         if (this.mergedCopy.getFirstName() != "Kevin") {
             throw new TestErrorException("Shallow Merge did not merge changes in Employee.");
@@ -193,11 +194,11 @@ public class MergingUnitOfWorkTest extends WriteObjectTest {
             throw new TestErrorException("Shallow Merge merged changes in ProjectDescription (Aggregate mapping) but shouldn't have.");
         }
 
-        if (responsibilities.size() == ((Vector)this.workingCopy1.getProjectDescription().getResponsibilities().getValue()).size()) {
+        if (responsibilities.size() == this.workingCopy1.getProjectDescription().getResponsibilities().getValue().size()) {
             throw new TestErrorException("Shallow Merge merged changes in Responsibility (private 1:M) but shouldn't have.");
         }
 
-        if (languages.size() == ((Vector)this.workingCopy1.getProjectDescription().getLanguages().getValue()).size()) {
+        if (languages.size() == this.workingCopy1.getProjectDescription().getLanguages().getValue().size()) {
             throw new TestErrorException("Shallow Merge merged changes in Language (public M:M) but shouldn't have.");
         }
 
@@ -215,7 +216,7 @@ public class MergingUnitOfWorkTest extends WriteObjectTest {
         ProjectDescription projectDescription = this.mergedCopy.getProjectDescription();
         Vector responsibilities = (Vector)projectDescription.getResponsibilities().getValue();
         Vector languages = (Vector)projectDescription.getLanguages().getValue();
-        Computer computer = (Computer)projectDescription.getComputer().getValue();
+        Computer computer = projectDescription.getComputer().getValue();
 
         if (this.mergedCopy.getFirstName() != "Kevin") {
             throw new TestErrorException("Standard Merge did not merge changes in Employee.");
@@ -223,10 +224,10 @@ public class MergingUnitOfWorkTest extends WriteObjectTest {
         if (projectDescription.getDescription() != "Quality Assurance project") {
             throw new TestErrorException("Standard Merge did not merge changes in ProjectDescription (Aggregate mapping).");
         }
-        if (responsibilities.size() != ((Vector)this.workingCopy1.getProjectDescription().getResponsibilities().getValue()).size()) {
+        if (responsibilities.size() != this.workingCopy1.getProjectDescription().getResponsibilities().getValue().size()) {
             throw new TestErrorException("Standard Merge did not merge changes in Responsibility (private 1:M).");
         }
-        if (languages.size() == ((Vector)this.workingCopy1.getProjectDescription().getLanguages().getValue()).size()) {
+        if (languages.size() == this.workingCopy1.getProjectDescription().getLanguages().getValue().size()) {
             throw new TestErrorException("Standard Merge merged changes in Language (public M:M) but shouldn't have.");
         }
         if (computer.getDescription() != "Commodore 64") {
@@ -234,10 +235,12 @@ public class MergingUnitOfWorkTest extends WriteObjectTest {
         }
     }
 
+    @Override
     protected void test() {
         return;
     }
 
+    @Override
     protected void verify() {
         return;
     }

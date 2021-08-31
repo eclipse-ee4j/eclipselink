@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class TestDataSource implements DataSource {
         this.properties = properties;
     }
 
+    @Override
     public Connection getConnection() throws SQLException {
         try {
             Class.forName(driverName);
@@ -44,34 +45,42 @@ public class TestDataSource implements DataSource {
         return DriverManager.getConnection(url, properties);
     }
 
+    @Override
     public Connection getConnection(String user, String password) throws SQLException {
         properties.put("user", user);
         properties.put("password", password);
         return this.getConnection();
     }
 
+    @Override
     public int getLoginTimeout() throws SQLException {
         return 0;
     }
 
+    @Override
     public PrintWriter getLogWriter() throws SQLException {
         return null;
     }
 
+    @Override
     public void setLoginTimeout(int arg1) throws SQLException {
     }
 
+    @Override
     public void setLogWriter(PrintWriter arg1) throws SQLException {
     }
 
 
+    @Override
     public boolean isWrapperFor(Class<?> iFace) throws SQLException{
         return false;
     }
 
+    @Override
     public <T>T unwrap(Class<T> iFace)  throws SQLException {
         return iFace.cast(this);
     }
 
+    @Override
     public Logger getParentLogger(){return null;}
 }

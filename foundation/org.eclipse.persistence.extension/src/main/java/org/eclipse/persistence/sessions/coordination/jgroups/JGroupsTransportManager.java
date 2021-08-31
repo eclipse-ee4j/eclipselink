@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +18,7 @@ import java.util.Map;
 
 import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
 import org.eclipse.persistence.internal.sessions.coordination.RemoteConnection;
+import org.eclipse.persistence.internal.sessions.coordination.broadcast.BroadcastRemoteConnection;
 import org.eclipse.persistence.internal.sessions.coordination.jgroups.JGroupsRemoteConnection;
 import org.eclipse.persistence.sessions.coordination.broadcast.BroadcastTransportManager;
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
@@ -60,7 +61,7 @@ public class JGroupsTransportManager extends BroadcastTransportManager {
      * It uses a JGroups JChannel using the RCM channel name and specified (or defaulted) config file.
      * Channel is set to not receive own messages.
      */
-    protected JGroupsRemoteConnection createConnection(boolean isLocalConnectionBeingCreated) throws RemoteCommandManagerException {
+    protected BroadcastRemoteConnection createConnection(boolean isLocalConnectionBeingCreated) throws RemoteCommandManagerException {
         try {
             JChannel channel;
             if (configFile != null && !configFile.isEmpty()) {

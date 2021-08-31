@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,11 +28,13 @@ public class NoExpiryInvalidationTest extends CacheExpiryTest {
         setDescription("Test the invalidation API with a NoExpiryCacheExpiryPolicy.");
     }
 
+    @Override
     public void setup() {
         super.setup();
         getSession().getDescriptor(Employee.class).setCacheInvalidationPolicy(new NoExpiryCacheInvalidationPolicy());
     }
 
+    @Override
     public void test() {
         employee = (Employee)getSession().readObject(Employee.class);
         Employee empFromCache =
@@ -43,6 +45,7 @@ public class NoExpiryInvalidationTest extends CacheExpiryTest {
         employee = (Employee)getSession().readObject(employee);
     }
 
+    @Override
     public void verify() {
         if (!employee.getFirstName().equals(firstName)) {
             throw new TestErrorException("Invalidation did not work with NoExpiryCacheExpiryPolicy.");

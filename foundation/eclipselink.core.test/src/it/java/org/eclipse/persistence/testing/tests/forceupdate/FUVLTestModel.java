@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ public class FUVLTestModel extends TestModel {
         setDescription("This model tests Force Update Version Locking feature.");
     }
 
+    @Override
     public void setup() {
         try {
             Thread.sleep(1000);
@@ -32,10 +33,12 @@ public class FUVLTestModel extends TestModel {
         }
     }
 
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new FUVLSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(getFUVLTestSuite());
         addTest(getFUVLNopTestSuite());

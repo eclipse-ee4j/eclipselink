@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,10 +31,12 @@ public class AddJoinedAttributeTest extends AutoVerifyTestCase {
         setDescription("Test if SQL is reprepared the second time");
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
@@ -42,11 +44,13 @@ public class AddJoinedAttributeTest extends AutoVerifyTestCase {
         employees = (Vector)getSession().executeQuery(query);
     }
 
+    @Override
     public void test() {
         query.addJoinedAttribute("address");
         employees = (Vector)getSession().executeQuery(query);
     }
 
+    @Override
     public void verify() {
         if (!query.getCall().getSQLString().equals(EXPECTED_SQL)) {
             throw new org.eclipse.persistence.testing.framework.TestErrorException("AddJoinedAttributeTest failed. \n [Expected] " + EXPECTED_SQL + "\n[Found] " + query.getCall().getSQLString());

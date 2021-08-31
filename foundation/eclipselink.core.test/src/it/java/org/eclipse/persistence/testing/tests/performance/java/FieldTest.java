@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ public class FieldTest extends PerformanceComparisonTestCase {
     /**
      * Normal.
      */
+    @Override
     public void test() throws Exception {
         variable = new String("hello");
     }
@@ -48,6 +49,7 @@ public class FieldTest extends PerformanceComparisonTestCase {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
             protected Object variable;
 
+            @Override
             public void test() {
                 setVariable(new String("hello"));
             }
@@ -72,6 +74,7 @@ public class FieldTest extends PerformanceComparisonTestCase {
 
             public Class object = Object.class;
 
+            @Override
             public void test() {
                 if (!this.getClass().isAssignableFrom(this.getClass())) {
                     throw new Error("Not assignable");
@@ -96,6 +99,7 @@ public class FieldTest extends PerformanceComparisonTestCase {
 
             public Method method;
 
+            @Override
             public final void test() {
                 if (method == null) {
                     Class[] argTypes = { Object.class };
@@ -134,6 +138,7 @@ public class FieldTest extends PerformanceComparisonTestCase {
 
             public Field field;
 
+            @Override
             public final void test() {
                 if (field == null) {
                     try {

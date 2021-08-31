@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ public class VerifyCascadeDelete extends TransactionalTestCase {
         setDescription("Verifies that deletes in an aggregate collections does not cascade to non-privately owned children");
     }
 
+    @Override
     public void setup() {
         super.setup();
         // AggregateCollectionMapping descriptors now cloned - should be obtained from the parent descriptor (Agent or Builder).
@@ -57,6 +58,7 @@ public class VerifyCascadeDelete extends TransactionalTestCase {
         }
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Object objectClone = uow.readObject(object);
@@ -64,12 +66,14 @@ public class VerifyCascadeDelete extends TransactionalTestCase {
         uow.commit();
     }
 
+    @Override
     public void verify() {
         if (getSession().readObject(company) == null) {
             throw new TestErrorException("Cascaded the delete of a non-private part.");
         }
     }
 
+    @Override
     public void reset() {
         super.reset();
         companyMapping.setIsPrivateOwned(privateOwnedValue);

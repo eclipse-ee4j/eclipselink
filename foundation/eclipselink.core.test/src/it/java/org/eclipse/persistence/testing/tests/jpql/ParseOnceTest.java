@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,6 +24,7 @@ import org.eclipse.persistence.testing.framework.TestErrorException;
  * the EJBQLString once.
  */
 public class ParseOnceTest extends JPQLTestCase {
+    @Override
     public void setup() {
         Vector employeesUsed = getSomeEmployees();
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp";
@@ -36,6 +37,7 @@ public class ParseOnceTest extends JPQLTestCase {
     /**
      * Make sure the query's call is not prepared before the test, and is prepared after.
      */
+    @Override
     public void test() throws Exception {
         if (((JPQLCallQueryMechanism)getQuery().getQueryMechanism()).getJPQLCall().isParsed()) {
             throw new TestErrorException("JPQLCall should not be parsed before the test");

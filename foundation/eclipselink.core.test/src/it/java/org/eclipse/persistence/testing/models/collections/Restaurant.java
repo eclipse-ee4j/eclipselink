@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,10 +57,12 @@ public class Restaurant implements ChangeTracker {
         licenses = new HashMap();
     }
 
+    @Override
     public PropertyChangeListener _persistence_getPropertyChangeListener() {
         return listener;
     }
 
+    @Override
     public void _persistence_setPropertyChangeListener(PropertyChangeListener listener) {
         this.listener = listener;
     }
@@ -394,6 +396,7 @@ public class Restaurant implements ChangeTracker {
     }
 
     static class LocationComparator implements Comparator {
+        @Override
         public int compare(Object object1, Object object2) {
             if ((object1.getClass() != Location.class) || (object2.getClass() != Location.class)) {
                 throw new ClassCastException("Invalid comparison : " + object1 + ", " + object2);

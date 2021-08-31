@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,6 +47,7 @@ public class MultipleDeleteFromIdentityMapTest extends TestCase {
         return -1;
     }
 
+    @Override
     public void test() {
         for (int index = 0; index < primaryKeys.size(); index++) {
             Vector key = (Vector)primaryKeys.elementAt(index);
@@ -67,6 +68,7 @@ public class MultipleDeleteFromIdentityMapTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         int numberOfOriginalObjects = originalObjects.size();
         int expectedSize = numberOfOriginalObjects - deletionKeys.size();

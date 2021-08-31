@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ public class BigBadSystem extends TestSystem {
         project = new BigBadProject();
     }
 
+    @Override
     public void addDescriptors(DatabaseSession session) {
         if (project == null) {
             project = new BigBadProject();
@@ -39,6 +40,7 @@ public class BigBadSystem extends TestSystem {
         session.addDescriptors(project);
     }
 
+    @Override
     public void createTables(DatabaseSession session) {
         (new BigBadTableCreator()).replaceTables(session);
     }
@@ -46,6 +48,7 @@ public class BigBadSystem extends TestSystem {
     /**
      * Write 100 big bad instances with generated data.
      */
+    @Override
     public void populate(DatabaseSession session) {
         session.getLogin().useStringBinding(100);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,6 +47,7 @@ public class ConstructingDescriptorExceptionTests extends AutoVerifyTestCase {
     Vector testResults = new Vector();
     EclipseLinkException caughtException = null;
 
+    @Override
     public void test() throws NoSuchMethodException {
         try {
             Class javaClass = ConstructingDescriptorExceptionTests.class;
@@ -257,6 +258,7 @@ public class ConstructingDescriptorExceptionTests extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void verify() {
         if (caughtException != null) {
             throw new TestErrorException("An exception was thrown:" + org.eclipse.persistence.internal.helper.Helper.cr() + "caught exception was not null! \n\n[EXPECTING] no Exceptions ");

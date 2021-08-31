@@ -34,6 +34,7 @@ public class ListTest extends PerformanceComparisonTestCase {
     /**
      * Vector.
      */
+    @Override
     public void test() throws Exception {
         Vector vector = new Vector(10);
         for (int index = 0; index < size; index++) {
@@ -49,6 +50,7 @@ public class ListTest extends PerformanceComparisonTestCase {
      */
     public void addArrayListTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 List list = new ArrayList(10);
                 for (int index = 0; index < size; index++) {
@@ -69,6 +71,7 @@ public class ListTest extends PerformanceComparisonTestCase {
      */
     public void addLinkedListTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 List list = new LinkedList();
                 for (int index = 0; index < size; index++) {

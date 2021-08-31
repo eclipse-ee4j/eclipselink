@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,12 +24,14 @@ import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
 public class PrepareUnitOfWorkTest extends UnitOfWorkEventTest {
 
+    @Override
     public void setup() {
         super.setup();
         setDescription("Test the prepareUnitOfWork Event");
         SessionEventAdapter tvAdapter = new SessionEventAdapter() {
                 // Listen for PrepareUnitOfWorkEvents
 
+                @Override
                 public void prepareUnitOfWork(SessionEvent event) {
                     setEventTriggered(true);
                 }
@@ -37,6 +39,7 @@ public class PrepareUnitOfWorkTest extends UnitOfWorkEventTest {
         getSession().getEventManager().addListener(tvAdapter);
     }
 
+    @Override
     public void test() {
         UnitOfWork tvUnitOfWork = getSession().acquireUnitOfWork();
         Employee employee = (Employee)tvUnitOfWork.readObject(Employee.class);
@@ -46,6 +49,7 @@ public class PrepareUnitOfWorkTest extends UnitOfWorkEventTest {
         tvUnitOfWork.commit();
     }
 
+    @Override
     public void verify() {
         if (getSession().isRemoteSession()) {
             throw new TestWarningException("This feature is not supported at remoteSession");

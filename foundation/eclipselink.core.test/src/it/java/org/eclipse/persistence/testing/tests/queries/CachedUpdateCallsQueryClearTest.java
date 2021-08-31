@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,11 +35,13 @@ public class CachedUpdateCallsQueryClearTest extends TestCase {
         setDescription("Test that the DescriptorQueryManager's cached update calls query attribute is de-referenced");
     }
 
+    @Override
     public void setup() {
         getDatabaseSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         getDatabaseSession().beginTransaction();
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getDatabaseSession().acquireUnitOfWork();
         Employee employee = (Employee) uow.readObject(
@@ -50,6 +52,7 @@ public class CachedUpdateCallsQueryClearTest extends TestCase {
         uow.commit();
     }
 
+    @Override
     public void verify() {
         ClassDescriptor descriptor = getSession().getDescriptor(Employee.class);
         DescriptorQueryManager descriptorQueryManager = descriptor.getDescriptorQueryManager();
@@ -73,6 +76,7 @@ public class CachedUpdateCallsQueryClearTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         getDatabaseSession().rollbackTransaction();
         getDatabaseSession().getIdentityMapAccessor().initializeAllIdentityMaps();

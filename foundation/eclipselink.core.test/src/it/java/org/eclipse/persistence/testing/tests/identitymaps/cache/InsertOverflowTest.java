@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@ public class InsertOverflowTest extends AutoVerifyTestCase {
         this.originalMaxSize = cache.getMaxSize();
     }
 
+    @Override
     public void test() {
         for (int index = 0; index < (originalMaxSize * 10); index++) {
             Employee employee = new Employee();
@@ -39,6 +40,7 @@ public class InsertOverflowTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void verify() {
         // Check to see if maximum size was maintained.
         if (cache.getSize() != originalMaxSize) {

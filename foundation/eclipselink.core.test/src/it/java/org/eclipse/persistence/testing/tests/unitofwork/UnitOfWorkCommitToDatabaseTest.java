@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,12 +37,14 @@ public class UnitOfWorkCommitToDatabaseTest extends AutoVerifyTestCase {
         setDescription("UnitOfWorkCommitToDatabaseTest checks the commitToDatabase() method");
     }
 
+    @Override
     protected void setup() {
         // Mark begin of "transaction" on database
         getAbstractSession().beginTransaction();
         storedException = null;
     }
 
+    @Override
     public void reset() {
         // Cancel the transaction on the database
         getAbstractSession().rollbackTransaction();
@@ -50,6 +52,7 @@ public class UnitOfWorkCommitToDatabaseTest extends AutoVerifyTestCase {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     protected void test() {
         try {
             // Test object
@@ -68,6 +71,7 @@ public class UnitOfWorkCommitToDatabaseTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void verify() throws Exception {
         // Check if object was committed to database
         try {

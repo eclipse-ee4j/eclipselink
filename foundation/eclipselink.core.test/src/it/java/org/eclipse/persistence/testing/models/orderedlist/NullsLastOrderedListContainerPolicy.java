@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,6 +38,7 @@ public class NullsLastOrderedListContainerPolicy extends OrderedListContainerPol
         /*
          * Compares indexes, null is greater than any non-null.
          */
+        @Override
         public int compare(IndexedObject indexedObject1, IndexedObject indexedObject2) {
             Integer index1 = indexedObject1.getIndex();
             Integer index2 = indexedObject2.getIndex();
@@ -82,6 +83,7 @@ public class NullsLastOrderedListContainerPolicy extends OrderedListContainerPol
         super(containerClassName);
     }
 
+    @Override
     public List correctOrderList(List<IndexedObject> indexedObjects) {
         Collections.sort(indexedObjects, nullsLastComparator);
         int size = indexedObjects.size();

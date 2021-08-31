@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,10 +33,12 @@ public abstract class Project extends org.eclipse.persistence.testing.models.per
         this.teamLeaderHolder = new ValueHolder();
     }
 
+    @Override
     public org.eclipse.persistence.testing.models.performance.Employee getTeamLeader() {
         return (Employee)teamLeaderHolder.getValue();
     }
 
+    @Override
     public void setTeamLeader(org.eclipse.persistence.testing.models.performance.Employee teamLeader) {
         this.teamLeaderHolder.setValue(teamLeader);
     }

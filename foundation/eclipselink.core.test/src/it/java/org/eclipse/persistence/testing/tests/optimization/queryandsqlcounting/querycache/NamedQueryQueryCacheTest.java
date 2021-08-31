@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -70,6 +70,7 @@ public class NamedQueryQueryCacheTest extends AutoVerifyTestCase {
         return getSession();
     }
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
 
@@ -84,6 +85,7 @@ public class NamedQueryQueryCacheTest extends AutoVerifyTestCase {
         tracker = new QuerySQLTracker(getSession());
     }
 
+    @Override
     public void test() {
         if (queryLocation == QUERY_ON_DESCRIPTOR) {
             results = getSessionForQueryTest().executeQuery(CACHING_QUERY_NAME, getQueryForTest().getReferenceClass());
@@ -92,6 +94,7 @@ public class NamedQueryQueryCacheTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (tracker.getSqlStatements().size() != expectedSQLCount) {
             throw new TestErrorException("An incorrect number of SQL statements were generated: " + tracker.getSqlStatements().size() + ". This likely indicates a problem with the query cache.");
@@ -101,6 +104,7 @@ public class NamedQueryQueryCacheTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void reset() {
         tracker.remove();
         if (queryLocation == QUERY_ON_DESCRIPTOR) {

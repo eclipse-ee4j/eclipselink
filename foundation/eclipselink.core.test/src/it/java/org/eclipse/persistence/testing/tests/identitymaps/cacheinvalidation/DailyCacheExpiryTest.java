@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,6 +42,7 @@ DailyCacheExpiryTest extends CacheExpiryTest {
         this.readTimeAdjustment = readTimeAdjustment;
     }
 
+    @Override
     public void setup() {
         super.setup();
         GregorianCalendar calendar = new GregorianCalendar();
@@ -52,6 +53,7 @@ DailyCacheExpiryTest extends CacheExpiryTest {
         getSession().getDescriptor(Employee.class).setCacheInvalidationPolicy(policy);
     }
 
+    @Override
     public void test() {
         employee = (Employee)getSession().readObject(Employee.class);
         initialFirstName = employee.getFirstName();
@@ -62,6 +64,7 @@ DailyCacheExpiryTest extends CacheExpiryTest {
         employee = (Employee)getSession().readObject(Employee.class);
     }
 
+    @Override
     public void verify() {
         if (shouldExpire && (!employee.getFirstName().equals(initialFirstName)) ||
             (!shouldExpire && (employee.getFirstName().equals(initialFirstName)))) {

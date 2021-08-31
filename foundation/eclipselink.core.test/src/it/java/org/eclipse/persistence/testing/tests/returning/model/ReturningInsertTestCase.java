@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,10 +34,12 @@ public class ReturningInsertTestCase extends TestCase {
         this.control = control;
     }
 
+    @Override
     protected void setup() {
         workingObject = (Class1)originalObject.clone();
     }
 
+    @Override
     protected void test() {
         if (useUOW) {
             UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -48,6 +50,7 @@ public class ReturningInsertTestCase extends TestCase {
         }
     }
 
+    @Override
     protected void verify() {
         Class1 controlObject = (Class1)control.getObjectForInsert(getSession(), originalObject);
         if (!workingObject.isValid()) {

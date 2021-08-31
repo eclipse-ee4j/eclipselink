@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ public class DatabaseSessionLogoutThenLoginTest extends AutoVerifyTestCase {
         setDescription("This test tests if login then logout then login again works properly.");
     }
 
+    @Override
     public void test() {
         EmployeeSystem employeeSystem = new EmployeeSystem();
         DatabaseLogin databaseLogin = (DatabaseLogin)getSession().getLogin().clone();
@@ -49,6 +50,7 @@ public class DatabaseSessionLogoutThenLoginTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (caughtException != null) {
             throw new TestErrorException("DatabaseSessionLogoutThenLoginTest throws an exception: " + caughtException);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ public class TableNotSpecifiedTest extends ExceptionTest {
         setDescription("This tests Table Not Specified (TL-ERROR 94) " + "");
     }
 
+    @Override
     protected void setup() {
         expectedException = DescriptorException.tableNotSpecified(null);
         orgDescriptor = ((DatabaseSession)getSession()).getDescriptor(org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod.class);
@@ -40,6 +41,7 @@ public class TableNotSpecifiedTest extends ExceptionTest {
     ClassDescriptor orgDescriptor;
     IntegrityChecker orgIntegrityChecker;
 
+    @Override
     public void reset() {
         ((DatabaseSession)getSession()).getDescriptors().remove(org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod.class);
         if (orgDescriptor != null)
@@ -48,6 +50,7 @@ public class TableNotSpecifiedTest extends ExceptionTest {
             getSession().setIntegrityChecker(orgIntegrityChecker);
     }
 
+    @Override
     public void test() {
         try {
             getSession().setIntegrityChecker(new IntegrityChecker());

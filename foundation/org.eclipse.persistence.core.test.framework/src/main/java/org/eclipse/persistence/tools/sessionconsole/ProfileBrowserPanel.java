@@ -38,12 +38,14 @@ public class ProfileBrowserPanel extends JPanel {
 
     class IvjEventHandler implements java.awt.event.ActionListener,
                                      java.awt.event.ItemListener {
+        @Override
         public void actionPerformed(java.awt.event.ActionEvent e) {
             if (e.getSource() ==
                 ProfileBrowserPanel.this.getQualifyClassNameCheckbox())
                 connEtoC1(e);
         }
 
+        @Override
         public void itemStateChanged(java.awt.event.ItemEvent e) {
             if (e.getSource() == ProfileBrowserPanel.this.getGroupByChoice())
                 connEtoC2(e);

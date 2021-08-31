@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ import org.eclipse.persistence.testing.tests.jpa.EntityContainerTestBase;
 public class EntityListenerPostLoadRefreshTest extends EntityContainerTestBase {
     protected int m_beforeEvent, m_afterEvent;
 
+    @Override
     public void test() throws Exception {
         beginTransaction();
 
@@ -43,6 +44,7 @@ public class EntityListenerPostLoadRefreshTest extends EntityContainerTestBase {
         this.rollbackTransaction();
     }
 
+    @Override
     public void verify() {
         if ((m_afterEvent-m_beforeEvent) != 1) {
             throw new TestErrorException("The callback method was called "+(m_afterEvent - m_beforeEvent)+

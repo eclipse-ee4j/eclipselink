@@ -29,11 +29,13 @@ public class DescriptorInitTest extends TestCase {
         setDescription("Tests initialization of descriptors while adding during enumeration.");
     }
 
+    @Override
     public void reset() {
         // Must disconnect the previous session.
         ((org.eclipse.persistence.sessions.DatabaseSession)getSession()).login();
     }
 
+    @Override
     public void setup() {
         project = new InterfaceHashtableProject();
         project.setLogin((DatabaseLogin)getSession().getLogin().clone());
@@ -44,6 +46,7 @@ public class DescriptorInitTest extends TestCase {
         ((org.eclipse.persistence.sessions.DatabaseSession)getSession()).logout();
     }
 
+    @Override
     public void test() {
         for (java.util.Iterator iterator = project.getDescriptors().values().iterator(); iterator.hasNext(); ) {
             ClassDescriptor descriptor = (ClassDescriptor)iterator.next();
@@ -75,6 +78,7 @@ public class DescriptorInitTest extends TestCase {
         dbsession.logout();
     }
 
+    @Override
     public void verify() {
         //Make sure all Descriptors have been initialized.
         for (java.util.Iterator iterator = project.getDescriptors().values().iterator(); iterator.hasNext(); ) {

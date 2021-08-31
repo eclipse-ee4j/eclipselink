@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ public class NoConstructorIndirectionContainerClassTest extends ExceptionTest {
     }
     ContainerIndirectionPolicy policy;
 
+    @Override
     protected void setup() {
         policy = new ContainerIndirectionPolicy();
         //  policy.setContainerClass(NoConstructorIndirectionContainerClassTest.class);//no problems
@@ -36,6 +37,7 @@ public class NoConstructorIndirectionContainerClassTest extends ExceptionTest {
         expectedException = DescriptorException.noConstructorIndirectionContainerClass(policy, ClassWithoutConstructor.class);
     }
 
+    @Override
     public void test() {
         try {
             policy.initialize();

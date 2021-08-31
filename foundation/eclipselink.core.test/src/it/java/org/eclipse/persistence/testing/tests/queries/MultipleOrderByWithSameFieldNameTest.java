@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ public class MultipleOrderByWithSameFieldNameTest extends AutoVerifyTestCase {
         setDescription("This test verifies the ordering feature works properly with multiple orderings with the same field name.");
     }
 
+    @Override
     public void test() {
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression orderExpr1 = builder.get("address").get("street").ascending();

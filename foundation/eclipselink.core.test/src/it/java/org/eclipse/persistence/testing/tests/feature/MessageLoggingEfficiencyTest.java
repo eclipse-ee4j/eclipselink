@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ public class MessageLoggingEfficiencyTest extends AutoVerifyTestCase {
         setDescription("Tests that Message Logging does not call toString on objects unless Debugging is enabled");
     }
 
+    @Override
     public void setup() {
         caughtException = null;
 
@@ -42,6 +43,7 @@ public class MessageLoggingEfficiencyTest extends AutoVerifyTestCase {
         getSession().setSessionLog(newLog);
     }
 
+    @Override
     public void test() {
         Session s = getSession();
         UnitOfWork uow = s.acquireUnitOfWork();
@@ -76,6 +78,7 @@ public class MessageLoggingEfficiencyTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void verify() throws Exception {
         if (caughtException != null) {
             //The caughtException is the TestErrorException thrown from the MessageLoggingEfficiencyTestClass
@@ -84,6 +87,7 @@ public class MessageLoggingEfficiencyTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void reset() {
         getSession().setSessionLog(oldLog);
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();

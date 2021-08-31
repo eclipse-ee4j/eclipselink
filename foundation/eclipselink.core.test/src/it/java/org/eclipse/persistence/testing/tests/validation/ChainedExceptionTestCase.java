@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,11 +42,13 @@ public class ChainedExceptionTestCase extends AutoVerifyTestCase {
         setDescription("This test ensures toplink uses the correct API for JDK 1.4 chained exceptions.");
     }
 
+    @Override
     public void setup() {
         internalException = new Exception("Test Exception");
         internalIllegalAccessException = new IllegalAccessException("Test Exception");
     }
 
+    @Override
     public void test() {
         databaseException = DatabaseException.configurationErrorNewInstanceIllegalAccessException(internalIllegalAccessException, java.lang.Object.class);
         descriptorException = DescriptorException.couldNotInstantiateIndirectContainerClass(java.lang.Object.class, internalException);
@@ -54,6 +56,7 @@ public class ChainedExceptionTestCase extends AutoVerifyTestCase {
         validationException = ValidationException.ejbInvalidProjectClass("projectClassName", "projectName", internalException);
     }
 
+    @Override
     public void verify() {
 
         if ((databaseException.getInternalException() != databaseException.getCause()) || (databaseException.getCause() != internalIllegalAccessException)) {

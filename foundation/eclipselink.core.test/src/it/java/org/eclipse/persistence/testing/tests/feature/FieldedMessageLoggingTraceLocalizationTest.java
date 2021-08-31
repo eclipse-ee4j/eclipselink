@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ public class FieldedMessageLoggingTraceLocalizationTest extends AutoVerifyTestCa
         setDescription("Tests that message Logging keys are translated to values for FINE* levels'");
     }
 
+     @Override
      public void setup() {
         caughtException = null;
         oldLog = getSession().getSessionLog();
@@ -41,6 +42,7 @@ public class FieldedMessageLoggingTraceLocalizationTest extends AutoVerifyTestCa
         getSession().setSessionLog(newLog);
     }
 
+    @Override
     public void test() {
         Session s = getSession();
         try {
@@ -50,12 +52,14 @@ public class FieldedMessageLoggingTraceLocalizationTest extends AutoVerifyTestCa
         }
     }
 
+    @Override
     public void verify() throws Exception {
         if (caughtException != null) {
             throw caughtException;
         }
     }
 
+    @Override
     public void reset() {
         getSession().setSessionLog(oldLog);
     }

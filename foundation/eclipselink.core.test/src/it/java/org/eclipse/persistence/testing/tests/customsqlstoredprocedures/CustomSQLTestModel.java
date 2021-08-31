@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,6 +46,7 @@ public class CustomSQLTestModel extends TestModel {
     /**
      * This sets the custom SQL for the populate.
      */
+    @Override
     public void addForcedRequiredSystems() {
         getExecutor().removeConfigureSystem(new EmployeeSystem());
 
@@ -60,6 +61,7 @@ public class CustomSQLTestModel extends TestModel {
         }
     }
 
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new org.eclipse.persistence.testing.models.legacy.LegacySystem());
     }
@@ -67,6 +69,7 @@ public class CustomSQLTestModel extends TestModel {
     /**
     * Ensure that the employee model is setup and change the employee descriptor to use custom SQL.
     */
+    @Override
     public void addTests() {
         addTest(getReadObjectTestSuite());
         addTest(getRefreshObjectTestSuite());
@@ -257,6 +260,7 @@ public class CustomSQLTestModel extends TestModel {
     /**
      * Revert the descriptors back to their old state.
      */
+    @Override
     public void reset() {
         getExecutor().removeConfigureSystem(new EmployeeCustomSQLSystem());
 
@@ -267,6 +271,7 @@ public class CustomSQLTestModel extends TestModel {
     /**
      * Ensure that the employee model is setup and change the employee descriptor to use custom SQL.
      */
+    @Override
     public void setup() {
         // Setup complex mapping employee as well.
         ClassDescriptor empDescriptor = getSession().getClassDescriptor(org.eclipse.persistence.testing.models.legacy.Employee.class);
@@ -278,6 +283,7 @@ public class CustomSQLTestModel extends TestModel {
      */
     public static TestCase buildSQLTransactionTest() {
         TestCase test = new TestCase() {
+            @Override
             public void test() {
                 UnitOfWork uow = getSession().acquireUnitOfWork();
                 uow.executeNonSelectingSQL("Insert into ADDRESS (ADDRESS_ID) values (999999)");
@@ -303,6 +309,7 @@ public class CustomSQLTestModel extends TestModel {
      */
     public static TestCase build2OutCursorTest() {
         TestCase test = new TestCase() {
+            @Override
             public void test() {
                 if (!(getSession().getPlatform().isOracle())) {
                     throwWarning("This test can only be run in Oracle");
@@ -333,6 +340,7 @@ public class CustomSQLTestModel extends TestModel {
      */
     public static TestCase buildUnnamedCursorTest() {
         TestCase test = new TestCase() {
+            @Override
             public void test() {
                 if (!(getSession().getPlatform().isOracle())) {
                     throwWarning("This test can only be run in Oracle");
@@ -356,6 +364,7 @@ public class CustomSQLTestModel extends TestModel {
      */
     public static TestCase build2ResultSetTest() {
         TestCase test = new TestCase() {
+            @Override
             public void test() {
                 if (!(getSession().getPlatform().isMySQL())) {
                     throwWarning("This test can only be run in MySQL");
@@ -381,6 +390,7 @@ public class CustomSQLTestModel extends TestModel {
      */
     public static TestCase buildStoredFunctionRefCursorTest() {
         TestCase test = new TestCase() {
+            @Override
             public void test() {
                 if (!(getSession().getPlatform().isOracle())) {
                     throwWarning("This test can only be run in Oracle");

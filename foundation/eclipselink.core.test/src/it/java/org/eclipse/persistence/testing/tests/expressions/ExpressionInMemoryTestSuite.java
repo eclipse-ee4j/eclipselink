@@ -390,6 +390,7 @@ public class ExpressionInMemoryTestSuite extends ExpressionUnitTestSuite {
         addTest(test);
     }
 
+    @Override
     public void addTests() {
         // By adding tests from the parent, In-Memory expression support
         // can be kept current with future changes.

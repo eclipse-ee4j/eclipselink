@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ public class PerformDeletesFirstTest extends TransactionalTestCase {
         setDescription("Verifies that TopLink will Delete objects first if so instructed");
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         uow.setShouldPerformDeletesFirst(true);
@@ -50,6 +51,7 @@ public class PerformDeletesFirstTest extends TransactionalTestCase {
     }
     // end of test()
 
+    @Override
     public void verify() {
         ReadObjectQuery query = new ReadObjectQuery(weather);
         query.dontCheckCache();

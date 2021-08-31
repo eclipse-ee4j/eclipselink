@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,6 +40,7 @@ public class AggregateInvalidationIdentityTest extends AutoVerifyTestCase {
         setDescription("Tests that identity is maintained for an aggregate, if the parent is invalidated and then re-read");
     }
 
+    @Override
     protected void setup() {
         beginTransaction();
         session = (DatabaseSession)getSession();
@@ -52,6 +53,7 @@ public class AggregateInvalidationIdentityTest extends AutoVerifyTestCase {
         uow.commit();
     }
 
+    @Override
     public void test() {
         // here's the test - invalidate the non-aggregate parent
         session.getIdentityMapAccessor().invalidateObject(originalEmployee);
@@ -65,6 +67,7 @@ public class AggregateInvalidationIdentityTest extends AutoVerifyTestCase {
         refreshedAddressDescription = refreshedEmployee.getAddressDescription();
     }
 
+    @Override
     public void verify() {
         // the refreshed employee must be the same object as the original object
         if (refreshedEmployee.hashCode() != originalEmployee.hashCode()) {
@@ -76,6 +79,7 @@ public class AggregateInvalidationIdentityTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void reset() {
         session = null;
         rollbackTransaction();

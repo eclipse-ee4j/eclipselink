@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,9 +50,10 @@ public class DescriptorRefreshCacheTest extends ReadObjectTest {
         ((Vector)projectDescription.getLanguages().getValue()).removeElement(((Vector)projectDescription.getLanguages().getValue()).firstElement());
         ((Vector)projectDescription.getLanguages().getValue()).addElement(Language.example1());
         ((Vector)projectDescription.getLanguages().getValue()).addElement(Language.example2());
-        ((Computer)projectDescription.getComputer().getValue()).setDescription("Newton");
+        projectDescription.getComputer().getValue().setDescription("Newton");
     }
 
+    @Override
     public void reset() {
         this.empDescriptor.dontAlwaysRefreshCache();
         this.empDescriptor.dontDisableCacheHits();
@@ -65,6 +66,7 @@ public class DescriptorRefreshCacheTest extends ReadObjectTest {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     protected void setup() {
         beginTransaction();
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
@@ -84,13 +86,14 @@ public class DescriptorRefreshCacheTest extends ReadObjectTest {
         this.objectFromDatabase = getSession().readObject(this.originalObject);
     }
 
+    @Override
     public void test() {
         Employee originalState = (Employee)this.objectFromDatabase;
         String originalFirstName = originalState.getFirstName();
         String originalProjectDescription = originalState.getProjectDescription().getDescription();
         Vector originalResponsibilities = (Vector)((Vector)originalState.getProjectDescription().getResponsibilities().getValue()).clone();
         Vector originalLanguages = (Vector)((Vector)originalState.getProjectDescription().getLanguages().getValue()).clone();
-        Computer originalComputer = (Computer)originalState.getProjectDescription().getComputer().getValue();
+        Computer originalComputer = originalState.getProjectDescription().getComputer().getValue();
         String originalComputerDescription = originalComputer.getDescription();
 
         changeObject(originalState);
@@ -101,20 +104,20 @@ public class DescriptorRefreshCacheTest extends ReadObjectTest {
             throw new TestErrorException("Always refresh cache does not work.");
         }
 
-        if (originalComputer != (Computer)employee.getProjectDescription().getComputer().getValue()) {
+        if (originalComputer != employee.getProjectDescription().getComputer().getValue()) {
             throw new TestErrorException("Always refresh cache does not work.");
         }
 
         for (Enumeration enumtr = originalResponsibilities.elements(); enumtr.hasMoreElements();) {
             Responsibility responsibility = (Responsibility)enumtr.nextElement();
-            if (!((Vector)employee.getProjectDescription().getResponsibilities().getValue()).contains(responsibility)) {
+            if (!employee.getProjectDescription().getResponsibilities().getValue().contains(responsibility)) {
                 throw new TestErrorException("Always refresh cache does not work.");
             }
         }
 
         for (Enumeration enumtr = originalLanguages.elements(); enumtr.hasMoreElements();) {
             Language language = (Language)enumtr.nextElement();
-            if (!((Vector)employee.getProjectDescription().getLanguages().getValue()).contains(language)) {
+            if (!employee.getProjectDescription().getLanguages().getValue().contains(language)) {
                 throw new TestErrorException("Always refresh cache does not work.");
             }
         }
@@ -122,7 +125,7 @@ public class DescriptorRefreshCacheTest extends ReadObjectTest {
         ProjectDescription projectDescription = employee.getProjectDescription();
         Vector responsibilities = (Vector)projectDescription.getResponsibilities().getValue();
         Vector languages = (Vector)projectDescription.getLanguages().getValue();
-        Computer computer = (Computer)projectDescription.getComputer().getValue();
+        Computer computer = projectDescription.getComputer().getValue();
 
         if (!employee.getFirstName().equals(originalFirstName)) {
             throw new TestErrorException("Always refresh cache does not work.");

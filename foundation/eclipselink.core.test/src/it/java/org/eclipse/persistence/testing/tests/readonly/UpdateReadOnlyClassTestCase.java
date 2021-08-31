@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,11 +38,13 @@ public class UpdateReadOnlyClassTestCase extends org.eclipse.persistence.testing
         super();
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     protected void setup() {
         beginTransaction();
 
@@ -54,6 +56,7 @@ public class UpdateReadOnlyClassTestCase extends org.eclipse.persistence.testing
         uow.addReadOnlyClasses(readOnlyClasses);
     }
 
+    @Override
     protected void test() {
         // Read in a Country.
         aCountry = (Country)uow.readObject(Country.class);
@@ -65,6 +68,7 @@ public class UpdateReadOnlyClassTestCase extends org.eclipse.persistence.testing
         uow.commit();
     }
 
+    @Override
     protected void verify() {
         // Check to see that aCountry was not deleted from the database.
         ExpressionBuilder xBuilder = new ExpressionBuilder();

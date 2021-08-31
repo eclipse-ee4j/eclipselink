@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -24,7 +24,7 @@ import javax.naming.NamingException;
 import jakarta.persistence.Cache;
 import jakarta.persistence.EntityManager;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;

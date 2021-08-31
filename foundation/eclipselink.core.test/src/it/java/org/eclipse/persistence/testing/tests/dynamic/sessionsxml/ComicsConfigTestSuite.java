@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -76,6 +76,7 @@ public class ComicsConfigTestSuite {
         new DynamicTypeBuilder(dcl.createDynamicClass("model.Publisher"), null);
         new DynamicTypeBuilder(dcl.createDynamicClass("model.Title"), null);
         XMLSessionConfigLoader loader = new XMLSessionConfigLoader(COMICS_SESSION_XML) {
+            @Override
             @SuppressWarnings("unchecked")
             public boolean load(SessionManager sessionManager, ClassLoader loader) {
                 Document document = loadDocument(loader);

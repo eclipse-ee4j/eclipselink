@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,6 +41,7 @@ public class ReadObjectvsParameterizedSQLTest extends PerformanceComparisonTestC
     /**
      * Find any employee.
      */
+    @Override
     public void setup() {
         employee = (Employee)getSession().readObject(Employee.class);
 
@@ -62,6 +63,7 @@ public class ReadObjectvsParameterizedSQLTest extends PerformanceComparisonTestC
     /**
      * Read object.
      */
+    @Override
     public void test() throws Exception {
         getSession().getIdentityMapAccessor().removeFromIdentityMap(employee);
         ReadObjectQuery query = new ReadObjectQuery(Employee.class);
@@ -75,6 +77,7 @@ public class ReadObjectvsParameterizedSQLTest extends PerformanceComparisonTestC
      */
     public void addReadObjectSameQueryTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 getSession().getIdentityMapAccessor().removeFromIdentityMap(employee);
                 Vector arguments = new Vector(2);
@@ -93,6 +96,7 @@ public class ReadObjectvsParameterizedSQLTest extends PerformanceComparisonTestC
      */
     public void addReadObjectParameterizedSQLTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 getSession().getIdentityMapAccessor().removeFromIdentityMap(employee);
                 ReadObjectQuery query = new ReadObjectQuery(Employee.class);
@@ -113,6 +117,7 @@ public class ReadObjectvsParameterizedSQLTest extends PerformanceComparisonTestC
      */
     public void addReadObjectParameterizedSQLSameQueryTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 getSession().getIdentityMapAccessor().removeFromIdentityMap(employee);
                 Vector arguments = new Vector(2);
@@ -131,6 +136,7 @@ public class ReadObjectvsParameterizedSQLTest extends PerformanceComparisonTestC
      */
     public void addReadObjectPreparedStatementTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 DatabaseAccessor.shouldUseDynamicStatements = false;
                 getSession().getIdentityMapAccessor().removeFromIdentityMap(employee);
@@ -152,6 +158,7 @@ public class ReadObjectvsParameterizedSQLTest extends PerformanceComparisonTestC
      */
     public void addReadObjectDynamicTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 getSession().getIdentityMapAccessor().removeFromIdentityMap(employee);
                 ReadObjectQuery query = new ReadObjectQuery(Employee.class);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ public class DistributedSessionBrokerServersModel extends RCMDistributedServersM
     /**
      * This method returns the system to the original state
      */
+    @Override
     public void reset() {
         super.reset();
         if (hasSetSessionBroker && getSession().isSessionBroker()) {
@@ -44,6 +45,7 @@ public class DistributedSessionBrokerServersModel extends RCMDistributedServersM
     /**
      * This method sets up the distributed servers and the registry
      */
+    @Override
     public void setup() {
         if (!hasSetSessionBroker && !getSession().isSessionBroker()) {
             getDatabaseSession().logout();

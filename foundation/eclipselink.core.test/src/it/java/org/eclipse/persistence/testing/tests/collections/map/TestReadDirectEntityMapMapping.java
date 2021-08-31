@@ -46,6 +46,7 @@ public class TestReadDirectEntityMapMapping extends TestCase {
         setName("TestReadDirectEntityMapMapping fetchJoin = " + fetchJoin);
     }
 
+    @Override
     public void setup(){
         mapping = (ManyToManyMapping)getSession().getProject().getDescriptor(DirectEntityMapHolder.class).getMappingForAttributeName("directToEntityMap");
         oldFetchJoinValue = mapping.getJoinFetch();
@@ -70,10 +71,12 @@ public class TestReadDirectEntityMapMapping extends TestCase {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test(){
         holders = getSession().readAllObjects(DirectEntityMapHolder.class, holderExp);
     }
 
+    @Override
     public void verify(){
         if (holders == null || holders.size() != 1){
             throw new TestErrorException("Incorrect number of MapHolders was read.");
@@ -93,6 +96,7 @@ public class TestReadDirectEntityMapMapping extends TestCase {
         }
     }
 
+    @Override
     public void reset(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Iterator i = holders.iterator();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,6 +49,7 @@ public class ComplexUpdateTest extends WriteObjectTest {
         // By default do nothing
     }
 
+    @Override
     public String getName() {
         return super.getName() + " " + "Distributed";
     }
@@ -96,6 +97,7 @@ public class ComplexUpdateTest extends WriteObjectTest {
         return unitOfWork;
     }
 
+    @Override
     public void reset() {
         super.reset();
         Enumeration enumtr = DistributedServersModel.getDistributedServers().elements();
@@ -112,6 +114,7 @@ public class ComplexUpdateTest extends WriteObjectTest {
         unitOfWork = newUnitOfWork;
     }
 
+    @Override
     protected void setup() {
         super.setup();
         //Make sure that the object has been loaded on the remote server
@@ -140,6 +143,7 @@ public class ComplexUpdateTest extends WriteObjectTest {
         }
     }
 
+    @Override
     protected void test() {
         changeObject();
         // Ensure that the original has not been changed.
@@ -153,6 +157,7 @@ public class ComplexUpdateTest extends WriteObjectTest {
      * Verify if the objects match completely through allowing the session to use the descriptors.
      * This will compare the objects and all of their privately owned parts.
      */
+    @Override
     protected void verify() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         this.objectFromDatabase = getSession().executeQuery(this.query);

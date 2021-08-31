@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,6 +42,7 @@ public class EventListenerCollectionTest extends org.eclipse.persistence.testing
         setDescription("Ensure event listeners collection is a NonSynchronizedVector.");
     }
 
+    @Override
     public void setup() {
         project = new EmployeeProject();
 
@@ -51,11 +52,13 @@ public class EventListenerCollectionTest extends org.eclipse.persistence.testing
         descriptor.getEventManager().addListener(new DescriptorEventAdapter());
     }
 
+    @Override
     public void test() {
         XMLProjectWriter.write(FILENAME, project);
         project = XMLProjectReader.read(FILENAME, getClass().getClassLoader());
     }
 
+    @Override
     public void verify() {
         ClassDescriptor descriptor =
             project.getDescriptors().get(Employee.class);
@@ -68,6 +71,7 @@ public class EventListenerCollectionTest extends org.eclipse.persistence.testing
         }
     }
 
+    @Override
     public void reset() {
         File file = new File(FILENAME);
         file.delete();

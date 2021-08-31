@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
         super(name);
     }
 
+    @Override
     public void compareObjects(Object obj, Object objRead) {
         assertTrue("The object [" + obj + "] when read back did not match the original", getServerSession().compareObjects(obj, objRead));
     }
@@ -1100,7 +1101,7 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             em.clear();
             
             beginTransaction(em); 
-            wheel1 = (Wheel) em.getReference(Wheel.class, wheel1.getId());
+            wheel1 = em.getReference(Wheel.class, wheel1.getId());
             assertNotNull(wheel1); 
             
             //Set Embeddable without 1-M details

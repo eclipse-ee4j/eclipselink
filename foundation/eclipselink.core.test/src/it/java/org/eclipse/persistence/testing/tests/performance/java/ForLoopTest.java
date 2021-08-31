@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,6 +44,7 @@ public class ForLoopTest extends PerformanceComparisonTestCase {
     /**
      * index loop.
      */
+    @Override
     public void test() throws Exception {
         int size = list.size();
         for (int index = 0; index < size; index++) {
@@ -57,6 +58,7 @@ public class ForLoopTest extends PerformanceComparisonTestCase {
      */
     public void addEnumeratorTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 for (Enumeration enumtr = list.elements(); enumtr.hasMoreElements();) {
                     Object object = enumtr.nextElement();
@@ -74,6 +76,7 @@ public class ForLoopTest extends PerformanceComparisonTestCase {
      */
     public void addIteratorTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 for (Iterator iter = list.iterator(); iter.hasNext();) {
                     Object object = iter.next();
@@ -91,6 +94,7 @@ public class ForLoopTest extends PerformanceComparisonTestCase {
      */
     public void addIteratorArrayListTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 for (Iterator iter = arrayList.iterator(); iter.hasNext();) {
                     Object object = iter.next();
@@ -108,6 +112,7 @@ public class ForLoopTest extends PerformanceComparisonTestCase {
      */
     public void addForArrayListTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 for (Object object : arrayList) {
                     object.hashCode();
@@ -124,6 +129,7 @@ public class ForLoopTest extends PerformanceComparisonTestCase {
      */
     public void addForTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 for (Object object : list) {
                     object.hashCode();
@@ -140,6 +146,7 @@ public class ForLoopTest extends PerformanceComparisonTestCase {
      */
     public void addIndexArrayListTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 int size = arrayList.size();
                 for (int index = 0; index < size; index++) {

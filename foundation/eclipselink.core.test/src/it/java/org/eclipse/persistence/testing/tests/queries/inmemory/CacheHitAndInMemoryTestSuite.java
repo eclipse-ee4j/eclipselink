@@ -237,6 +237,7 @@ public class CacheHitAndInMemoryTestSuite extends TestSuite {
         addTest(test);
     }
 
+    @Override
     public void addTests() {
         addCacheTests();
         addInMemoryHitTests();

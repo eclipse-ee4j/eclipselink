@@ -29,6 +29,7 @@ public class PredefinedInQueryReadAllTest extends ReadAllTest {
         setName("PredefinedInQueryReadAllTest");
     }
 
+    @Override
     protected void setup() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Employee.class);
@@ -42,6 +43,7 @@ public class PredefinedInQueryReadAllTest extends ReadAllTest {
 
     }
 
+    @Override
     protected void test() {
         Vector sals = new Vector();
         sals.addElement(Integer.valueOf(100));

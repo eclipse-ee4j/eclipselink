@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,6 +16,7 @@
 
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
+import junit.framework.TestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeeListener;
@@ -128,7 +129,7 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
         m_afterEvent = EmployeeListener.PRE_REMOVE_COUNT;
         closeEntityManager(em);
 
-        this.assertTrue("The preRemove callback method was called, remove should have been ignored.", m_beforeEvent == m_afterEvent);
+        assertTrue("The preRemove callback method was called, remove should have been ignored.", m_beforeEvent == m_afterEvent);
         //Employee emp = (Employee)em.find(Employee.class, new_emp.getId());
 
         //this.assertTrue("The remove should have been ignored.", m_beforeEvent == m_afterEvent);
@@ -157,7 +158,7 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
         }
 
 
-        this.assertTrue("Calling persist on a managed object should be ignored", m_beforeEvent==m_afterEvent);
+        assertTrue("Calling persist on a managed object should be ignored", m_beforeEvent==m_afterEvent);
     }
 
     public void testPreUpdateEvent_UpdateAltered() {
@@ -281,10 +282,10 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
             em.merge(emp);
             // merge returns a managed copy of an unmanaged instance
             Project managedProj = emp.getProjects().iterator().next();
-            this.assertTrue("Cascading merge to a new object should trigger prePersist callback", managedProj.pre_persist_count == 1);
+            assertTrue("Cascading merge to a new object should trigger prePersist callback", managedProj.pre_persist_count == 1);
             em.merge(emp);
             // second merge should be ignored
-            this.assertTrue("prePersist callback should only be triggered once", managedProj.pre_persist_count == 1);
+            assertTrue("prePersist callback should only be triggered once", managedProj.pre_persist_count == 1);
         } finally {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);

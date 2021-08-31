@@ -87,14 +87,17 @@ public class PersonnelManager implements ManagerialJob, java.io.Serializable {
         return department;
     }
 
+    @Override
     public Number getJobCode() {
         return jobCode;
     }
 
+    @Override
     public Vector getManagedEmployees() {
         return (Vector)managedEmployees.getValue();
     }
 
+    @Override
     public Float getSalary() {
         return salary;
     }
@@ -114,6 +117,7 @@ public class PersonnelManager implements ManagerialJob, java.io.Serializable {
         this.department = department;
     }
 
+    @Override
     public void setJobCode(Number jobCode) {
         this.jobCode = jobCode;
     }
@@ -122,6 +126,7 @@ public class PersonnelManager implements ManagerialJob, java.io.Serializable {
         managedEmployees.setValue(employees);
     }
 
+    @Override
     public void setSalary(Float salary) {
         this.salary = salary;
     }

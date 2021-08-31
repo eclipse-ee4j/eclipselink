@@ -34,6 +34,7 @@ public class JPA2UpdateEmployeePerformanceComparisonTest extends PerformanceRegr
     /**
      * Get an employee id.
      */
+    @Override
     public void setup() {
         EntityManager manager = createEntityManager();
         Employee employee = (Employee)manager.createQuery("Select e from Employee e").getResultList().get(0);
@@ -46,6 +47,7 @@ public class JPA2UpdateEmployeePerformanceComparisonTest extends PerformanceRegr
     /**
      * Update employee.
      */
+    @Override
     public void test() throws Exception {
         EntityManager manager = createEntityManager();
         manager.getTransaction().begin();

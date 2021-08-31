@@ -30,11 +30,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -56,6 +51,7 @@ import org.eclipse.persistence.sessions.UnitOfWork;
 
 //domain-specific (testing) imports
 import static org.eclipse.persistence.testing.tests.dynamic.DynamicTestingHelper.createSession;
+import static org.junit.Assert.*;
 
 public class SimpleTypeWithEnumTestSuite {
 
@@ -179,7 +175,7 @@ public class SimpleTypeWithEnumTestSuite {
         DynamicEntity simpleInstance = simpleEntityType.newDynamicEntity();
         simpleInstance.set("id", id);
         simpleInstance.set("value2", true);
-        Enum blue = simpleEnum.valueOf(simpleEnum.getClass(), "BLUE");
+        Enum blue = Enum.valueOf(simpleEnum.getClass(), "BLUE");
         simpleInstance.set("color", blue);
 
         ReportQuery countQuery = dynamicHelper.newReportQuery("Simple", new ExpressionBuilder());

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,6 +38,7 @@ public class AggregateCollectionOuterJoinTest extends AutoVerifyTestCase {
         setDescription("Tests that outer joins work with aggregate collections.");
     }
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         beginTransaction();
@@ -63,6 +64,7 @@ public class AggregateCollectionOuterJoinTest extends AutoVerifyTestCase {
         uow.commit();
     }
 
+    @Override
     public void test() {
         // Read using an outer join on an agent's houses houses.
         ReadAllQuery query = new ReadAllQuery(cls);
@@ -73,6 +75,7 @@ public class AggregateCollectionOuterJoinTest extends AutoVerifyTestCase {
         objects = (List)getSession().executeQuery(query);
     }
 
+    @Override
     public void verify() {
         // We should get back the prepopulated agent plus one agent that was added in setup.
         if (objects.size() != 2) {
@@ -80,6 +83,7 @@ public class AggregateCollectionOuterJoinTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeIdentityMaps();

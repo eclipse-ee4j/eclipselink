@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,11 +28,13 @@ import org.eclipse.persistence.testing.framework.*;
 public class PostCalculateUOWChangeSetEventTest extends EventHookTestCase {
     private int m_finalEventCount;
 
+    @Override
     public void setup() {
         super.setup();
         getDatabaseSession().writeObject(getEmailAccount());
     }
 
+    @Override
     protected void test() {
         int eventCountStart = EventHookSystem.POST_CALCULATE_UOW_CHANGE_SET;
 
@@ -44,6 +46,7 @@ public class PostCalculateUOWChangeSetEventTest extends EventHookTestCase {
         m_finalEventCount = EventHookSystem.POST_CALCULATE_UOW_CHANGE_SET - eventCountStart;
     }
 
+    @Override
     protected void verify() {
         if (m_finalEventCount != 1) {
             throw new TestErrorException("The post calculate unit of work change set event fired: " + m_finalEventCount + " times. Should fire only once.");

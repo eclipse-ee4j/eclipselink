@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,6 +48,7 @@ public class TransparentIndirectionTest extends org.eclipse.persistence.testing.
         setDescription("This test verifies that Tranparent Indirection works with change tracking");
     }
 
+    @Override
     public void reset() {
         if (getAbstractSession().isInTransaction()) {
             getAbstractSession().rollbackTransaction();
@@ -55,6 +56,7 @@ public class TransparentIndirectionTest extends org.eclipse.persistence.testing.
         }
     }
 
+    @Override
     public void setup() {
         if (getSession() instanceof org.eclipse.persistence.sessions.remote.RemoteSession) {
             throw new TestWarningException("This test cannot be run through the remote.");
@@ -69,6 +71,7 @@ public class TransparentIndirectionTest extends org.eclipse.persistence.testing.
      * the merge worked.
      */
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         this.clone =
@@ -106,6 +109,7 @@ public class TransparentIndirectionTest extends org.eclipse.persistence.testing.
      * Checks to see that the names of the updated version and the origional are the same
      */
 
+    @Override
     public void verify() {
         FieldOffice cachedOffice = (FieldOffice)getSession().readObject(this.clone);
         FieldOffice cachedOffice2 = (FieldOffice)getSession().readObject(this.clone2);

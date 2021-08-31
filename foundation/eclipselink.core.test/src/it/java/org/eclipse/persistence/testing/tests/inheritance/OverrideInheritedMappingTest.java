@@ -32,6 +32,7 @@ public class OverrideInheritedMappingTest extends TestCase {
     /**
      * This method was created in VisualAge.
      */
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
@@ -39,6 +40,7 @@ public class OverrideInheritedMappingTest extends TestCase {
     /**
      * This method was created in VisualAge.
      */
+    @Override
     public void setup() {
         this.theCar = Car.example4();
     }
@@ -46,6 +48,7 @@ public class OverrideInheritedMappingTest extends TestCase {
     /**
      * This method was created in VisualAge.
      */
+    @Override
     public void test() {
         //Insert a car
         org.eclipse.persistence.sessions.UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -63,6 +66,7 @@ public class OverrideInheritedMappingTest extends TestCase {
     /**
      * This method was created in VisualAge.
      */
+    @Override
     public void verify() {
         //Update fuel capacity of the previously inserted car
         getSession().executeNonSelectingCall(new org.eclipse.persistence.queries.SQLCall("UPDATE CAR SET FUEL_CAP = 200 WHERE (ID = " + this.carID + ")"));

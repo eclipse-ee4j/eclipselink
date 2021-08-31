@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class SessionIsConnectedFlagTest extends TestCase {
         setDescription("Test Session isConnected flag pre-logout, post-logout and post-login");
     }
 
+    @Override
     public void test() {
         if (!getSession().isDatabaseSession()) {
             throwWarning("Test is designed to be run with DatabaseSession");

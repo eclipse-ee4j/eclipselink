@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -66,6 +66,7 @@ public class TestResult implements ResultInterface, Comparable, Serializable {
         loadBuildSummary = new ValueHolder();
     }
 
+    @Override
     public int compareTo(Object summary) {
         return getName().compareTo(((TestResult)summary).getName());
     }
@@ -78,6 +79,7 @@ public class TestResult implements ResultInterface, Comparable, Serializable {
         return exception;
     }
 
+    @Override
     public boolean shouldLogResult() {
         return !hasPassed();
     }
@@ -211,6 +213,7 @@ public class TestResult implements ResultInterface, Comparable, Serializable {
     /**
      * Passed means the test was ok.
      */
+    @Override
     public boolean hasPassed() {
         return getOutcome().equals(PASSED);
     }
@@ -252,6 +255,7 @@ public class TestResult implements ResultInterface, Comparable, Serializable {
     /**
      * logs the result of the test on the print stream.
      */
+    @Override
     public void logResult(Writer log) {
         String indentationString = getTestCase().getIndentationString();
         try {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,6 +41,7 @@ public class JPAMemoryRegressionModel extends TestModel {
         setDescription("Memory tests that compare JPA memory usage.");
     }
 
+    @Override
     public void addTests() {
         addTest(buildReadTest());
         addTest(buildInsertTest());
@@ -51,6 +52,7 @@ public class JPAMemoryRegressionModel extends TestModel {
     /**
      * Create/populate database.
      */
+    @Override
     public void setup() {
         setupProvider();
         getSession().logMessage(getExecutor().getEntityManagerFactory().getClass().toString());
@@ -105,7 +107,7 @@ public class JPAMemoryRegressionModel extends TestModel {
         String providerClass = "org.eclipse.persistence.jpa.PersistenceProvider";
         PersistenceProvider provider = null;
         try {
-            provider = (PersistenceProvider)Class.forName(providerClass).newInstance();
+            provider = (PersistenceProvider)Class.forName(providerClass).getConstructor().newInstance();
         } catch (Exception error) {
             throw new TestProblemException("Failed to create persistence provider.", error);
         }
@@ -138,6 +140,7 @@ public class JPAMemoryRegressionModel extends TestModel {
                 getExecutor().setEntityManagerFactory(null);
             }
 
+            @Override
             public void test() {
                 EntityManager manager = createEntityManager();
                 Query query = manager.createQuery("Select e from Employee e");
@@ -161,6 +164,7 @@ public class JPAMemoryRegressionModel extends TestModel {
                 manager.close();
             }
 
+            @Override
             public void test() {
                 for (int count = 0; count < 500; count++) {
                     EntityManager manager = createEntityManager();
@@ -200,6 +204,7 @@ public class JPAMemoryRegressionModel extends TestModel {
                 manager.close();
             }
 
+            @Override
             public void test() {
                 EntityManager manager = createEntityManager();
                 Query query = manager.createQuery("Select e from Employee e");
@@ -237,6 +242,7 @@ public class JPAMemoryRegressionModel extends TestModel {
                 ((JpaEntityManager)manager).getServerSession().getIdentityMapAccessor().initializeAllIdentityMaps();
                 manager.close();
             }
+            @Override
             public void test() {
                 EntityManager manager = createEntityManager();
                 Query query = manager.createQuery("Select e from Employee e");

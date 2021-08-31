@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,18 +26,21 @@ import org.eclipse.persistence.testing.tests.queries.ConformResultsInUnitOfWorkT
 public class DeleteAndConform extends ConformResultsInUnitOfWorkTest {
     Employee employee;
 
+    @Override
     public void buildConformQuery() {
         conformedQuery = new ReadAllQuery();
         conformedQuery.setReferenceClass(Employee.class);
         conformedQuery.conformResultsInUnitOfWork();
     }
 
+    @Override
     public void prepareTest() {
         //delete the object from unit of work, so it should not show up in the query results
         employee = (Employee)getSession().readObject(Employee.class);
         unitOfWork.deleteObject(employee);
     }
 
+    @Override
     public void verify() {
         for (Enumeration enumtr = ((Vector)result).elements(); enumtr.hasMoreElements(); ) {
             if (((Employee)enumtr.nextElement()).getId() == employee.getId()) {

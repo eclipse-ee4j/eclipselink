@@ -80,6 +80,7 @@ public class StoredProcedureTest_Inout_Out_In extends TestCase {
         }
     }
 
+    @Override
     public void setup() {
         // right now only the stored procedure is set up in Oracle
         if (!(getSession().getPlatform().isOracle())) {
@@ -87,6 +88,7 @@ public class StoredProcedureTest_Inout_Out_In extends TestCase {
         }
     }
 
+    @Override
     public void test() {
         DatabaseCall call = null;
         if (useCustomSQL) {
@@ -140,6 +142,7 @@ public class StoredProcedureTest_Inout_Out_In extends TestCase {
         row = (DatabaseRecord)((Vector)getSession().executeQuery(query, args)).firstElement();
     }
 
+    @Override
     public void verify() {
         Number inoutExpected = in;
         Number outExpected = inout;

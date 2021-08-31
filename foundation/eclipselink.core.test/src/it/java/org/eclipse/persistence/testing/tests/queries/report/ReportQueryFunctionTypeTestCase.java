@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,6 +55,7 @@ public class ReportQueryFunctionTypeTestCase extends AutoVerifyTestCase {
         setName(getName() + suffix);
     }
 
+    @Override
     public void test() {
         // This is currently where DataDirect is installed on DB2. If this URL
         // changes then this test will fail since DataDirect on DB2 returns
@@ -99,6 +100,7 @@ public class ReportQueryFunctionTypeTestCase extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void verify() {
         if (results.isEmpty()) {
             throw new TestErrorException("No results were returned from the report query.");
@@ -142,6 +144,7 @@ public class ReportQueryFunctionTypeTestCase extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void reset() {
         if(this.hasSetReadAllQueryIntoDescriptor) {
             ClassDescriptor desc = getSession().getDescriptor(Employee.class);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ import static org.eclipse.persistence.queries.ReadAllQuery.Direction.CHILD_TO_PA
 
 public class HierarchicalOneToManyInverseTest extends HierarchicalQueryTest {
 
+    @Override
     public Vector expectedResults() {
         Vector<Employee> v = new Vector<>();
         Employee norman = (Employee) getSession().readObject(Employee.class, new ExpressionBuilder().get("firstName").equal("Norman"));
@@ -37,6 +38,7 @@ public class HierarchicalOneToManyInverseTest extends HierarchicalQueryTest {
         return v;
     }
 
+    @Override
     public ReadAllQuery getQuery() {
         ReadAllQuery query = new ReadAllQuery(Employee.class);
         ExpressionBuilder builder = new ExpressionBuilder();

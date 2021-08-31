@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,11 +36,13 @@ public class OneToManyBatchReadingCustomSelectionQueryTest extends TestCase {
         setName(getName() + batchType);
     }
 
+    @Override
     public void reset() {
         getAbstractSession().rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
         getAbstractSession().beginTransaction();
         if ((batchType == BatchFetchType.IN) && !getSession().getPlatform().isOracle()) {
@@ -48,6 +50,7 @@ public class OneToManyBatchReadingCustomSelectionQueryTest extends TestCase {
         }
     }
 
+    @Override
     public void test() {
 
         ReadAllQuery q = new ReadAllQuery();
@@ -58,6 +61,7 @@ public class OneToManyBatchReadingCustomSelectionQueryTest extends TestCase {
         shipments = (java.util.Vector)uow.executeQuery(q);
     }
 
+    @Override
     public void verify() {
         Enumeration enumtr = shipments.elements();
         while (enumtr.hasMoreElements()) {

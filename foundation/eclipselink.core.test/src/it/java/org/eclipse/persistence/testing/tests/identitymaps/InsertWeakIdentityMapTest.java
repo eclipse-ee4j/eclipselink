@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,12 +38,14 @@ public class InsertWeakIdentityMapTest extends TestCase {
         return (WeakIdentityMap)getAbstractSession().getIdentityMapAccessorInstance().getIdentityMap(Employee.class);
     }
 
+    @Override
     public void reset() {
         getSession().getDescriptor(Employee.class).setIdentityMapClass(originalIdentityMapClass);
         getSession().getDescriptor(Employee.class).setIdentityMapSize(originalIdentityMapSize);
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     public void setup() {
         originalIdentityMapClass = getSession().getDescriptor(Employee.class).getIdentityMapClass();
         originalIdentityMapSize = getSession().getDescriptor(Employee.class).getIdentityMapSize();
@@ -52,6 +54,7 @@ public class InsertWeakIdentityMapTest extends TestCase {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     public void test() {
         for (int index = 0; index < (identityMapSize * 2); index++) {
             Employee obj = new Employee();
@@ -64,6 +67,7 @@ public class InsertWeakIdentityMapTest extends TestCase {
         System.gc();
     }
 
+    @Override
     public void verify() {
         // Force full GC.
         for (int loops = 0; loops < 10; loops++) {

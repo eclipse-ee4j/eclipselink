@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,6 +22,7 @@ import org.eclipse.persistence.testing.framework.PerformanceComparisonTestCase;
  */
 public class EmulatedReadObjectPreparedvsDynamicTest extends ReadObjectPreparedvsDynamicTest {
 
+    @Override
     public void setup() {
         Session session = buildEmulatedSession();
 
@@ -39,35 +40,41 @@ public class EmulatedReadObjectPreparedvsDynamicTest extends ReadObjectPreparedv
         super.setup();
     }
 
+    @Override
     public void reset() throws Throwable {
         getExecutor().resetSession();
         super.reset();
     }
 
+    @Override
     public PerformanceComparisonTestCase buildPreparedTest() {
         PerformanceComparisonTestCase test = super.buildPreparedTest();
         test.setAllowableDecrease(100);
         return test;
     }
 
+    @Override
     public PerformanceComparisonTestCase buildPreparedEJBQLTest() {
         PerformanceComparisonTestCase test = super.buildPreparedEJBQLTest();
         test.setAllowableDecrease(100);
         return test;
     }
 
+    @Override
     public PerformanceComparisonTestCase buildDynamicEJBQLTest() {
         PerformanceComparisonTestCase test = super.buildDynamicEJBQLTest();
         test.setAllowableDecrease(100);
         return test;
     }
 
+    @Override
     public PerformanceComparisonTestCase buildDynamicNoParseCacheEJBQLTest() {
         PerformanceComparisonTestCase test = super.buildDynamicNoParseCacheEJBQLTest();
         test.setAllowableDecrease(-200);
         return test;
     }
 
+    @Override
     public PerformanceComparisonTestCase buildDynamicExpressionCachedExpressionTest() {
         PerformanceComparisonTestCase test = super.buildDynamicExpressionCachedExpressionTest();
         test.setAllowableDecrease(100);

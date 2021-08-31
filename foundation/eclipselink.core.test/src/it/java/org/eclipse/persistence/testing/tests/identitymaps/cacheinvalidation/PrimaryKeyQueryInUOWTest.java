@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,11 +33,13 @@ public class PrimaryKeyQueryInUOWTest extends CacheExpiryTest {
         setDescription("Test Cache Expiry a read Object Query.");
     }
 
+    @Override
     public void setup() {
         super.setup();
         getSession().getDescriptor(Employee.class).setCacheInvalidationPolicy(new TimeToLiveCacheInvalidationPolicy(10000));
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         ReadObjectQuery rq = new ReadObjectQuery(Employee.class);
@@ -88,6 +90,7 @@ public class PrimaryKeyQueryInUOWTest extends CacheExpiryTest {
         uow3.commit();
     }
 
+    @Override
     public void verify() {
         if (!originalName.equals("Smith")) {
             throw new TestErrorException("The original name before expiry should be Smith, but " + originalName +

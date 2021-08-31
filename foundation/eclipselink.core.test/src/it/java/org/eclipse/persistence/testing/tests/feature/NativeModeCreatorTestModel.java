@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,6 +42,7 @@ public class NativeModeCreatorTestModel extends TestModel {
     /**
      * This sets the table qualifier and native mode.
      */
+    @Override
     public void addForcedRequiredSystems() {
         DatabasePlatform platform = getSession().getPlatform();
         usesNativeSQL = Boolean.valueOf(platform.usesNativeSQL());
@@ -66,6 +67,7 @@ public class NativeModeCreatorTestModel extends TestModel {
         addForcedRequiredSystem(new InheritanceSystem());
     }
 
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new OwnershipSystem());
         addRequiredSystem(new LegacySystem());
@@ -75,6 +77,7 @@ public class NativeModeCreatorTestModel extends TestModel {
         addRequiredSystem(new AggregateSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(EmployeeBasicTestModel.getReadObjectTestSuite());
         addTest(EmployeeBasicTestModel.getUpdateObjectTestSuite());
@@ -98,6 +101,7 @@ public class NativeModeCreatorTestModel extends TestModel {
     /**
      * This sets the table qualifier and native mode.
      */
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         // Set table qualifier for Oracle, assume user name is schema.
@@ -135,6 +139,7 @@ public class NativeModeCreatorTestModel extends TestModel {
     /**
      * This unsets the table qualifier and native mode.
      */
+    @Override
     public void reset() {
         getExecutor().resetSession();
 

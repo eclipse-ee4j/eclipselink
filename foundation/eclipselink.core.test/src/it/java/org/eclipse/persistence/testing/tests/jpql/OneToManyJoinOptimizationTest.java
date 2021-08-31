@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class OneToManyJoinOptimizationTest extends JPQLTestCase {
         setDescription("Test the SQL statement generation for one-to-many relationships");
     }
 
+    @Override
     public void setup() {
         setEjbqlString("SELECT DISTINCT OBJECT(emp) FROM Employee emp, IN(emp.phoneNumbers) pn WHERE emp.firstName = 'Jill' AND pn.type = 'Work' AND pn.areaCode = '613'");
 
@@ -51,6 +52,7 @@ public class OneToManyJoinOptimizationTest extends JPQLTestCase {
     }
 
     // test will run the string from the super class
+    @Override
     public void verify() throws Exception {
         // this will test that we received the correct object back
         super.verify();

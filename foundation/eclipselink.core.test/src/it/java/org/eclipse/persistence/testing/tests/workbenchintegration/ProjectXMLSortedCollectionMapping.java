@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,12 +48,15 @@ public class ProjectXMLSortedCollectionMapping extends TestCase {
         setDescription("Tests sorted collection mapping with specified comparator can be written to or read from project XML correctly.");
     }
 
+    @Override
     public void reset() {
     }
 
+    @Override
     public void setup() {
     }
 
+    @Override
     public void test() {
         try{
             Project writeToProject = new EmployeeProject();
@@ -78,6 +81,7 @@ public class ProjectXMLSortedCollectionMapping extends TestCase {
         }
     }
 
+    @Override
     protected void verify() {
         if (exception != null){
             throw new TestErrorException("There is problem when read project back from project.xml",exception);
@@ -105,6 +109,7 @@ public class ProjectXMLSortedCollectionMapping extends TestCase {
     }
 
     public static class ProjectComparator implements Comparator{
+        @Override
         public int compare(Object object1, Object object2) {
             if ((object1.getClass() != Project.class) || (object2.getClass() != Project.class)) {
                 throw new ClassCastException("Invalid comparison : " + object1 + ", " + object2);

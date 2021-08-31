@@ -63,6 +63,7 @@ import jakarta.persistence.spi.LoadState;
 import jakarta.persistence.spi.ProviderUtil;
 
 import junit.framework.Test;
+import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.annotations.BatchFetchType;
@@ -652,7 +653,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
     }
 
     public void testValuePKListMissingElement(){
-        if (this.isOnServer()) {
+        if (isOnServer()) {
             return;
         }
         EntityManager em = createEntityManager();
@@ -876,8 +877,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
     public void testMetamodelMinimalSanityTest() {
         EntityManager em = createEntityManager();
         // pre-clear metamodel to enable test reentry (SE only - not EE)
-        if(!this.isOnServer()) {
-            ((EntityManagerFactoryDelegate)((EntityManagerImpl)em).getEntityManagerFactory()).setMetamodel(null);
+        if(!isOnServer()) {
+            ((EntityManagerFactoryDelegate) em.getEntityManagerFactory()).setMetamodel(null);
         }
         Metamodel metamodel = em.getMetamodel();
         // get declared attributes
@@ -1538,13 +1539,13 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                 Employee clone = (Employee)q.getSingleResult();
                 clone.toString();
             }catch (java.lang.NullPointerException e){
-                this.fail("NPE occured building an Entity whos reference in the shared cache was garbage collected: "+e);
+                fail("NPE occured building an Entity whos reference in the shared cache was garbage collected: "+e);
             }
         }finally {
             if (this.isTransactionActive(em)) {
                 this.rollbackTransaction(em);
             }
-            this.getServerSession().getIdentityMapAccessorInstance().initializeAllIdentityMaps();
+            getServerSession().getIdentityMapAccessorInstance().initializeAllIdentityMaps();
         }
     }
 
@@ -3218,7 +3219,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             }
             
             // execute a non historical query through JPQL against the Oyster entity
-            oysters = (List<Oyster>)em.createQuery("SELECT e FROM Oyster e", Oyster.class).getResultList();
+            oysters = em.createQuery("SELECT e FROM Oyster e", Oyster.class).getResultList();
             assertTrue("JPA query: Oysters should be non-empty", oysters.size() > 0);
             for (Oyster oysterElem : oysters) {
                 assertNotNull("JPA query: Oyster should have a pearl, historical query executed", oysterElem.getPearl());

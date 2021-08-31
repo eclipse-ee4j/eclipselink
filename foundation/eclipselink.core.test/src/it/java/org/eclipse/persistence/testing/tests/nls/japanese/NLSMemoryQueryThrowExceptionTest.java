@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,10 +28,12 @@ public class NLSMemoryQueryThrowExceptionTest extends AutoVerifyTestCase {
         setDescription("[NLS_Japanese] Test memory query throw indirection exception option");
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
@@ -39,6 +41,7 @@ public class NLSMemoryQueryThrowExceptionTest extends AutoVerifyTestCase {
         getSession().executeQuery(query);
     }
 
+    @Override
     public void test() {
         ReadObjectQuery queryCopy = (ReadObjectQuery)query.clone();
         queryCopy.checkCacheOnly();//read from cache only
@@ -50,6 +53,7 @@ public class NLSMemoryQueryThrowExceptionTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (!exceptionThrown) {
             throw new TestErrorException("In Memory Query did not return all objects because of indirection");

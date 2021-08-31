@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,9 +27,11 @@ public class DonotAliaseTheTableWhenWeHaveSubSelectExpression extends org.eclips
         setDescription("DonotAliaseTheTableWhenWeHaveSubSelectExpression");
     }
 
+    @Override
     public void reset() {
     }
 
+    @Override
     public void setup() {
         this.login = (DatabaseLogin)getSession().getLogin().clone();
         this.server = new Server(this.login);
@@ -38,6 +40,7 @@ public class DonotAliaseTheTableWhenWeHaveSubSelectExpression extends org.eclips
         this.server.copyDescriptors(getSession());
     }
 
+    @Override
     public void test() {
         Session cs = server.serverSession.acquireClientSession();
 
@@ -56,6 +59,7 @@ public class DonotAliaseTheTableWhenWeHaveSubSelectExpression extends org.eclips
         cs.executeQuery(query);
     }
 
+    @Override
     public void verify() {
     }
 }

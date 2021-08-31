@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,11 +39,13 @@ public class InsuranceBasicTestModel extends TestModel {
         setDescription("This model tests reading/writing/deleting using the insurance demo.");
     }
 
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new InsuranceSystem());
 
     }
 
+    @Override
     public void addTests() {
         addTest(getReadObjectTestSuite());
         addTest(getReadAllTestSuite());
@@ -160,6 +162,7 @@ public class InsuranceBasicTestModel extends TestModel {
         public RemovePrivatelyOwnedTestCase() {
             setName("RemovePrivatelyOwnedTestCase");
         }
+        @Override
         public void test() {
             // setup
             UnitOfWork uow = getSession().acquireUnitOfWork();

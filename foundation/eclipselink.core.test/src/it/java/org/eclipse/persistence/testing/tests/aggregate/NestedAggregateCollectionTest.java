@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,14 +40,17 @@ public class NestedAggregateCollectionTest extends org.eclipse.persistence.testi
         setName(getName() + AgentBuilderHelper.getNameInBrackets(cls));
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
     }
 
+    @Override
     public void setup() {
         beginTransaction();
     }
 
+    @Override
     public void test() {
         DatabaseSession session = (DatabaseSession)getSession();
 
@@ -97,6 +100,7 @@ public class NestedAggregateCollectionTest extends org.eclipse.persistence.testi
         }
     }
 
+    @Override
     public void verify() {
         if (errorMessage != null) {
             throw new TestErrorException(errorMessage);

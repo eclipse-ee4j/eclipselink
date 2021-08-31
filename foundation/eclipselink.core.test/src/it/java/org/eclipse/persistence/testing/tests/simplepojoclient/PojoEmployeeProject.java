@@ -37,6 +37,7 @@ PojoEmployeeProject extends org.eclipse.persistence.sessions.Project {
         addDescriptor(buildPojoEmployeeDescriptor());
     }
 
+    @Override
     public void applyLogin() {
         DatabaseLogin login = new DatabaseLogin();
         login.usePlatform(OracleDBPlatformHelper.getInstance().getOracle9Platform());

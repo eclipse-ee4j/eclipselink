@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class ReadObjectvsJoinTest extends PerformanceComparisonTestCase {
         addReadObjectJoinTest();
     }
 
+    @Override
     public void setup() throws Exception {
         Expression expression = new ExpressionBuilder().get("firstName").equal("Bob");
         employee = (Employee)getSession().readObject(Employee.class, expression);
@@ -52,6 +53,7 @@ public class ReadObjectvsJoinTest extends PerformanceComparisonTestCase {
     /**
      * Read an employee and access address, phones, cleared cache.
      */
+    @Override
     public void test() throws Exception {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         Vector arguments = new Vector();
@@ -66,6 +68,7 @@ public class ReadObjectvsJoinTest extends PerformanceComparisonTestCase {
      */
     public void addReadObjectJoinTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 getSession().getIdentityMapAccessor().initializeIdentityMaps();
                 Vector arguments = new Vector();

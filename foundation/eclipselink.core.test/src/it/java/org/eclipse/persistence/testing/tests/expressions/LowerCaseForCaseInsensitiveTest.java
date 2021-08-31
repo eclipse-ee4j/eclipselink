@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,6 +47,7 @@ public class LowerCaseForCaseInsensitiveTest extends TestCase {
         setDescription("Test default lowercase for case-insensitive expressions");
     }
 
+    @Override
     public void setup() {
         // set the Expression default upper case value to lower case
         Expression.shouldUseUpperCaseForIgnoreCase = false;
@@ -59,6 +60,7 @@ public class LowerCaseForCaseInsensitiveTest extends TestCase {
         uow.commit();
     }
 
+    @Override
     public void test() {
         if (operation == null) {
             fail("Test invoked with a null operation");
@@ -115,6 +117,7 @@ public class LowerCaseForCaseInsensitiveTest extends TestCase {
         assertTrue("Persisted employee expected in results (checkCacheOnly=" + checkCacheOnly + ")", results.contains(employee));
     }
 
+    @Override
     public void reset() {
         // set the Expression default upper case value to the default
         Expression.shouldUseUpperCaseForIgnoreCase = previousUppercaseDefaultValue;

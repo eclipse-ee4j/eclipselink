@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,16 +31,19 @@ public class OrderedListMergeTest extends DistributedCacheMergeTest {
         super();
     }
 
+    @Override
     protected void modifyCollection(UnitOfWork uow, Object objectToModify) {
         Child newChildWC = (Child)uow.registerNewObject(newItemForCollection());
         ((Employee)objectToModify).children.add(newChildWC);
         newChildWC.parent = (Employee)objectToModify;
     }
 
+    @Override
     protected int getCollectionSize(Object rootObject) {
         return ((Employee)rootObject).children.size();
     }
 
+    @Override
     protected Object buildOriginalObject() {
         Employee emp = new Employee();
         emp.setFirstName("Sally");
@@ -90,6 +93,7 @@ public class OrderedListMergeTest extends DistributedCacheMergeTest {
         return child;
     }
 
+    @Override
     protected Project getNewProject() {
         Project empProject = new EmployeeProject();
         empProject.getDescriptor(Employee.class).setObjectChangePolicy(new AttributeChangeTrackingPolicy());

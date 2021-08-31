@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,6 +44,7 @@ public class ConcurrentDecryptionTest extends AutoVerifyTestCase {
     private String encryptedPassword;
 
 
+    @Override
     protected void setup() throws Throwable {
         encryptor = new JCEEncryptor();
         encryptedPassword = encryptor.encryptPassword(password);
@@ -62,7 +63,7 @@ public class ConcurrentDecryptionTest extends AutoVerifyTestCase {
                 thread[i].start();
             }
             try {
-                Thread.currentThread().sleep(sleepTime);
+                Thread.sleep(sleepTime);
             } catch (InterruptedException e) {
                 //exception could be ignored
                 e.printStackTrace();
@@ -73,6 +74,7 @@ public class ConcurrentDecryptionTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void verify() throws Throwable {
         if (error!=null){
             throw new TestErrorException("error encountered: "+error, error);
@@ -85,6 +87,7 @@ public class ConcurrentDecryptionTest extends AutoVerifyTestCase {
         public Runner1(ConcurrentDecryptionTest concurrentDecryptionTest) {
             this.concurrentDecryptionTest = concurrentDecryptionTest;
         }
+        @Override
         public void run() {
             try {
                 while (concurrentDecryptionTest.run && (concurrentDecryptionTest.error == null) ){

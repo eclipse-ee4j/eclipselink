@@ -35,6 +35,7 @@ public class JPAReadObjectAddressPerformanceComparisonTest extends PerformanceRe
     /**
      * Get an address id.
      */
+    @Override
     public void setup() {
         EntityManager manager = createEntityManager();
         addressId = ((Address)manager.createQuery("Select a from Address a").getResultList().get(0)).getId();
@@ -44,6 +45,7 @@ public class JPAReadObjectAddressPerformanceComparisonTest extends PerformanceRe
     /**
      * Read address.
      */
+    @Override
     public void test() throws Exception {
         EntityManager manager = createEntityManager();
         manager.getTransaction().begin();

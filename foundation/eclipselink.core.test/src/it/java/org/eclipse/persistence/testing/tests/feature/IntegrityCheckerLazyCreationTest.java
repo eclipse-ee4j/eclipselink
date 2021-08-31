@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,16 +34,19 @@ public class IntegrityCheckerLazyCreationTest extends AutoVerifyTestCase {
         setDescription("Test that the integrity checker on a session is lazily initialized");
     }
 
+    @Override
     public void reset() {
         integrityChecker = null;
     }
 
+    @Override
     public void test() {
         Session session = getSession();
         session.setIntegrityChecker(null);
         integrityChecker = session.getIntegrityChecker();
     }
 
+    @Override
     public void verify() {
         if (integrityChecker == null) {
             throw new TestErrorException("The integrity checker was not lazily initialized");

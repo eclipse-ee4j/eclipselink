@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ public class ClientServerTestModel extends TestModel {
         setDescription("This suite tests updating objects through various clients session.");
     }
 
+    @Override
     public void addRequiredSystems() {
         try {
             getSession().getLog().write("WARNING, some JDBC drivers may fail if they are not thread safe." +
@@ -49,6 +50,7 @@ public class ClientServerTestModel extends TestModel {
         addRequiredSystem(new org.eclipse.persistence.testing.tests.unitofwork.UOWSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(getClientServerTestSuite());
         addTest(getClientServerReadingTestSuite());
@@ -126,6 +128,7 @@ public class ClientServerTestModel extends TestModel {
     /**
      * Because this changes the database it must put it back to a valid state.
      */
+    @Override
     public void reset() {
         //getExecutor().removeConfigureSystem(new EmployeeSystem());
         getExecutor().removeConfigureSystem(new ClientEmployeeSystem());

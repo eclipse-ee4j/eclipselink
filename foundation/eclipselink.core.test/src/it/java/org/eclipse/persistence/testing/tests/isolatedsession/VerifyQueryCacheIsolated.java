@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,12 +35,14 @@ public class VerifyQueryCacheIsolated extends ClientServerTest {
         setDescription("This test verifies that certain data from a query cache is only available to the client");
     }
 
+    @Override
     public void setup() {
         super.setup();
         query = new ReadAllQuery(IsolatedEmployee.class);
         query.cacheQueryResults();
     }
 
+    @Override
     public void test() {
         session = (Session)this.clients.get(0);
         if (!(session instanceof IsolatedClientSession)) {
@@ -50,6 +52,7 @@ public class VerifyQueryCacheIsolated extends ClientServerTest {
         readEmployees = (Vector)session.executeQuery(query);
     }
 
+    @Override
     public void verify() {
         if (this.server.getIdentityMapAccessorInstance().getQueryResult(query, null, false) != null) {
             throw new TestErrorException("The query results were not isolated");

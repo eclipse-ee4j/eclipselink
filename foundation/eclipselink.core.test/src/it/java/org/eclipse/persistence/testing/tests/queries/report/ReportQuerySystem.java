@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,11 +25,13 @@ public class ReportQuerySystem extends TestSystem {
         project = new ReportQueryProject();
     }
 
+    @Override
     public void addDescriptors(DatabaseSession session) {
         session.addDescriptors(project);
         session.addDescriptors(new BarBeerProject());
     }
 
+    @Override
     public void createTables(DatabaseSession session) {
         SchemaManager schemaManager = new SchemaManager(session);
         schemaManager.replaceObject(ReportEmployee.tableDefinition());
@@ -42,6 +44,7 @@ public class ReportQuerySystem extends TestSystem {
         schemaManager.createSequences();
     }
 
+    @Override
     public void populate(DatabaseSession session) {
         PopulationManager manager = PopulationManager.getDefaultManager();
         UnitOfWork unitOfWork = session.acquireUnitOfWork();

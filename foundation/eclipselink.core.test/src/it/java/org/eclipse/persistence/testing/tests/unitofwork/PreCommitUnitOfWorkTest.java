@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,12 +21,14 @@ import org.eclipse.persistence.testing.framework.TestErrorException;
 
 
 public class PreCommitUnitOfWorkTest extends UnitOfWorkEventTest {
+    @Override
     public void setup() {
         super.setup();
         setDescription("Test the preCommitUnitOfWork Event");
         SessionEventAdapter tvAdapter = new SessionEventAdapter() {
                 // Listen for PreCommitUnitOfWorkEvents
 
+                @Override
                 public void preCommitUnitOfWork(SessionEvent event) {
                     setEventTriggered(true);
                 }
@@ -34,11 +36,13 @@ public class PreCommitUnitOfWorkTest extends UnitOfWorkEventTest {
         getSession().getEventManager().addListener(tvAdapter);
     }
 
+    @Override
     public void test() {
         UnitOfWork tvUnitOfWork = getSession().acquireUnitOfWork();
         tvUnitOfWork.commit();
     }
 
+    @Override
     public void verify() {
         if (!isEventTriggered()) {
             throw new TestErrorException("The preCommitUnitOfWork event was not triggered.");
