@@ -28,6 +28,7 @@ public class SetMethodTestCases extends XMLMappingTestCases {
         setProject(new CustomerProject());
     }
 
+    @Override
     protected Object getControlObject() {
         Customer customer = new Customer();
 
@@ -42,6 +43,7 @@ public class SetMethodTestCases extends XMLMappingTestCases {
         return customer;
     }
 
+    @Override
     public void xmlToObjectTest(Object testObject) throws Exception {
         super.xmlToObjectTest(testObject);
         Customer testCustomer = (Customer)testObject;

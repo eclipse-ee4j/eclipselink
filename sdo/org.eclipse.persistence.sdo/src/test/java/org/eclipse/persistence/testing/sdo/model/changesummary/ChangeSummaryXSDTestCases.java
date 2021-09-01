@@ -74,6 +74,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         TestRunner.main(arguments);
     }
 
+    @Override
     public void setUp() {
         super.setUp();// watch setup redundancy
         //define types from deep with cs

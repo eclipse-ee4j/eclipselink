@@ -39,6 +39,7 @@ public class PurchaseOrderGenerateWithAnnotationsTestCases extends XSDHelperGene
         TestRunner.run(PurchaseOrderGenerateWithAnnotationsTestCases.class);
     }
 
+    @Override
     public String getControlFileName() {
         return "org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderWithAnnotationsGenerated.xsd";
     }
@@ -47,6 +48,7 @@ public class PurchaseOrderGenerateWithAnnotationsTestCases extends XSDHelperGene
         return "org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderWithAnnotationsGeneratedRoundTrip.xsd";
     }
 
+    @Override
     public List getTypesToGenerateFrom() {
         SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
         SDOProperty xmlDataTypeProperty = (SDOProperty) typeHelper.getOpenContentProperty(SDOConstants.SDOXML_URL, SDOConstants.SDOXML_DATATYPE);

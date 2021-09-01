@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +18,7 @@ import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 public class ClassCtoClassBAdapter extends XmlAdapter<ClassC, ClassB> {
 
+    @Override
     public ClassC marshal(ClassB classBObject) throws Exception {
         String s = classBObject.getSomeValue();
         ClassC classC= new ClassC();
@@ -25,6 +26,7 @@ public class ClassCtoClassBAdapter extends XmlAdapter<ClassC, ClassB> {
         return classC;
     }
 
+    @Override
     public ClassB unmarshal(ClassC classCObject) throws Exception {
         String s = classCObject.getClassCValue();
         ClassB classB = new ClassB();

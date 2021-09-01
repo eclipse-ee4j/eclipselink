@@ -28,6 +28,7 @@ public class Base64TestCases extends OXTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() {
         xcm = XMLConversionManager.getDefaultXMLManager();
     }

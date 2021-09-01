@@ -52,6 +52,7 @@ public class AnyCollectionOnlyMappedWithoutGroupingTestCases extends XMLMappingT
 
     }
 
+    @Override
     public Object getControlObject() {
         Root root = new Root();
         Vector any = new Vector();
@@ -95,6 +96,7 @@ public class AnyCollectionOnlyMappedWithoutGroupingTestCases extends XMLMappingT
         return root;
     }
 
+    @Override
     public Document getWriteControlDocument() {
         return writeControlDoc;
     }

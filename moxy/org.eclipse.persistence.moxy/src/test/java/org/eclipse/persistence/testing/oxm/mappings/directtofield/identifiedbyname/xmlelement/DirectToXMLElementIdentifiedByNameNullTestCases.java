@@ -37,6 +37,7 @@ public class DirectToXMLElementIdentifiedByNameNullTestCases extends XMLMappingT
         setProject(new DirectToXMLElementIdentifiedByNameProject());
     }
 
+    @Override
     public void setUp() {
         try {
             super.setUp();
@@ -52,10 +53,12 @@ public class DirectToXMLElementIdentifiedByNameNullTestCases extends XMLMappingT
         }
     }
 
+    @Override
     protected Document getWriteControlDocument() throws Exception {
         return comparisonControlDocument;
     }
 
+    @Override
     protected Object getControlObject() {
         Employee employee = new Employee();
 
@@ -65,6 +68,7 @@ public class DirectToXMLElementIdentifiedByNameNullTestCases extends XMLMappingT
         return employee;
     }
 
+    @Override
     public void testObjectToContentHandler() throws Exception {
         SAXDocumentBuilder builder = new SAXDocumentBuilder();
         xmlMarshaller.marshal(getWriteControlObject(), builder);

@@ -48,6 +48,7 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/oxm/xpathengine/AddressBook.xml");
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ import org.eclipse.persistence.testing.framework.TestErrorException;
 
 public class StoredFunctionXMLTypeTest extends TestCase {
     public static String charsToIgnore = " \n\t";
+    @Override
     public void test() throws Exception {
         // 12.1 works with both OracleTypes.OPAQUE and Types.SQLXML
         // 11.2.0.3 - only with OracleTypes.OPAQUE

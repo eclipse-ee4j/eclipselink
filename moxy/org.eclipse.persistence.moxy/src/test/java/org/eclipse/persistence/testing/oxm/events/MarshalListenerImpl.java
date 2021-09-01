@@ -37,6 +37,7 @@ public class MarshalListenerImpl implements XMLMarshalListener {
     public MarshalListenerImpl() {
         events = new ArrayList();
     }
+    @Override
     public void beforeMarshal(Object obj) {
         if(obj instanceof Employee) {
             events.add(EMPLOYEE_BEFORE_MARSHAL);
@@ -46,6 +47,7 @@ public class MarshalListenerImpl implements XMLMarshalListener {
             events.add(PHONE_BEFORE_MARSHAL);
         }
     }
+    @Override
     public void afterMarshal(Object obj) {
         if(obj instanceof Employee) {
             events.add(EMPLOYEE_AFTER_MARSHAL);

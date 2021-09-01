@@ -40,6 +40,7 @@ public class BasicDocumentPreservationTestCases extends OXTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception {
         context = this.getXMLContext("DocumentPreservationSession");
         marshaller = context.createMarshaller();

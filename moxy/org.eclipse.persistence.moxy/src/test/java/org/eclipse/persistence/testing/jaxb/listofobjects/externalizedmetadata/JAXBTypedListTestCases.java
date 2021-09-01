@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,6 +44,7 @@ public class JAXBTypedListTestCases  extends JAXBListOfObjectsTestCases {
         init();
     }
 
+    @Override
     protected Type getTypeToUnmarshalTo() throws Exception {
         return Company.class;
     }
@@ -67,6 +68,7 @@ public class JAXBTypedListTestCases  extends JAXBListOfObjectsTestCases {
         return namespaces;
     }
 
+    @Override
     protected Map getProperties() {
         String pkg = "org.eclipse.persistence.testing.jaxb.listofobjects.externalizedmetadata";
         HashMap<String, Source> overrides = new HashMap<String, Source>();
@@ -121,6 +123,7 @@ public class JAXBTypedListTestCases  extends JAXBListOfObjectsTestCases {
         return null;
     }
 
+    @Override
     protected Object getControlObject() {
         Company company = new Company();
         List depts = new ArrayList();
@@ -137,6 +140,7 @@ public class JAXBTypedListTestCases  extends JAXBListOfObjectsTestCases {
 
     }
 
+    @Override
     public List< InputStream> getControlSchemaFiles(){
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/externalizedmetadata/typedlist.xsd");
 
@@ -145,6 +149,7 @@ public class JAXBTypedListTestCases  extends JAXBListOfObjectsTestCases {
         return controlSchema;
     }
 
+    @Override
     protected String getNoXsiTypeControlResourceName() {
         return XML_RESOURCE_XSI_TYPE;
     }

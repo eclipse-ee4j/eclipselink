@@ -37,11 +37,13 @@ public class ChangeSummaryModifyOpenContentTestCases extends ChangeSummaryRootLo
     }
 
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/open/team_csroot_modify_open.xml");
     }
 
 
+    @Override
     protected void verifyAfterLoad(XMLDocument document) {
         super.verifyAfterLoad(document);
 

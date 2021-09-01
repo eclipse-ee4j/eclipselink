@@ -36,12 +36,14 @@ public class DirectToXMLElementWithWhitespaceTestCases extends XMLMappingTestCas
         setProject(new DirectToXMLElementWithWhitespaceProject());
     }
 
+    @Override
     protected Object getControlObject() {
         Employee employee = new Employee();
         employee.setID(CONTROL_ID);
         return employee;
     }
 
+    @Override
     public void setUp() {
         try {
             super.setUp();
@@ -57,10 +59,12 @@ public class DirectToXMLElementWithWhitespaceTestCases extends XMLMappingTestCas
         }
     }
 
+    @Override
     protected Document getWriteControlDocument() throws Exception {
         return comparisonControlDocument;
     }
 
+    @Override
     public void testObjectToContentHandler() throws Exception {
         SAXDocumentBuilder builder = new SAXDocumentBuilder();
         xmlMarshaller.marshal(getWriteControlObject(), builder);

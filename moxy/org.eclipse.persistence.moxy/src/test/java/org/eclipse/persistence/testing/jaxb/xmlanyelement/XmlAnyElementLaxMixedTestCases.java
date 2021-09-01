@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,6 +48,7 @@ public class XmlAnyElementLaxMixedTestCases extends JAXBWithJSONTestCases {
             jaxbMarshaller.setProperty(MarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
         }
 
+        @Override
         protected Object getControlObject() {
             EmployeeLaxMixed employee = new EmployeeLaxMixed();
 
@@ -87,6 +88,7 @@ public class XmlAnyElementLaxMixedTestCases extends JAXBWithJSONTestCases {
             return employee;
         }
 
+        @Override
         public Object getReadControlObject() {
             EmployeeLaxMixed employee = new EmployeeLaxMixed();
 
@@ -142,6 +144,7 @@ public class XmlAnyElementLaxMixedTestCases extends JAXBWithJSONTestCases {
             return employee;
         }
 
+        @Override
         public Object getJSONReadControlObject() {
             EmployeeLaxMixed employee = new EmployeeLaxMixed();
 
@@ -199,9 +202,11 @@ public class XmlAnyElementLaxMixedTestCases extends JAXBWithJSONTestCases {
             return employee;
         }
 
+        @Override
         public void testObjectToXMLDocument() throws Exception {
         }
 
+        @Override
         public void testRoundTrip() throws Exception{}
 
 }

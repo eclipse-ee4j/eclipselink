@@ -37,10 +37,12 @@ public class ChangeSummaryDeleteOpenContentTestCases extends ChangeSummaryRootLo
         TestRunner.main(arguments);
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/open/team_csroot_delete_open.xml");
     }
 
+    @Override
     protected void verifyAfterLoad(XMLDocument document) {
         super.verifyAfterLoad(document);
 

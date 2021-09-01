@@ -37,6 +37,7 @@ public class DirectToXMLAttributeIdentifiedByNameNullTestCases extends XMLMappin
         setProject(new DirectToXMLAttributeIdentifiedByNameProject());
     }
 
+    @Override
     public void setUp() {
         try {
             super.setUp();
@@ -52,6 +53,7 @@ public class DirectToXMLAttributeIdentifiedByNameNullTestCases extends XMLMappin
         }
     }
 
+    @Override
     protected Object getControlObject() {
         Employee employee = new Employee();
 
@@ -61,10 +63,12 @@ public class DirectToXMLAttributeIdentifiedByNameNullTestCases extends XMLMappin
         return employee;
     }
 
+    @Override
     protected Document getWriteControlDocument() throws Exception {
         return comparisonControlDocument;
     }
 
+    @Override
     public void testObjectToContentHandler() throws Exception {
         SAXDocumentBuilder builder = new SAXDocumentBuilder();
         xmlMarshaller.marshal(getWriteControlObject(), builder);

@@ -114,6 +114,7 @@ public class SDOTestCase extends junit.framework.TestCase {
         // default to a static context
     }
 
+    @Override
     public void setUp() {
         xmlComparer = new SDOXMLComparer();
         if (customContext) {
@@ -147,6 +148,7 @@ public class SDOTestCase extends junit.framework.TestCase {
         ((SDOXSDHelper) xsdHelper).reset();
     }
 
+    @Override
     public void tearDown() throws Exception {
 
         ((SDOTypeHelper) typeHelper).reset();
@@ -190,6 +192,7 @@ public class SDOTestCase extends junit.framework.TestCase {
     public void assertSchemaIdentical(Document control, Document test) {
         assertTrue("Node " + control + " is not equal to node " + test, xmlComparer.isSchemaEqual(control, test));
     }
+    @Override
     public String getName() {
         String longClassName = getClass().getName();
         String shortClassName = longClassName.substring(longClassName.lastIndexOf(".") + 1, longClassName.length() - 1);

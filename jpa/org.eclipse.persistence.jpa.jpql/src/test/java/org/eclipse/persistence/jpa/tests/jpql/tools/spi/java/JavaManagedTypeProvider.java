@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -136,6 +136,7 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Iterable<IEntity> entities() {
         return new SnapshotCloneIterable<IEntity>(entities.values());
     }
@@ -143,6 +144,7 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IEmbeddable getEmbeddable(IType type) {
         return getEmbeddable(type.getName());
     }
@@ -150,6 +152,7 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IEmbeddable getEmbeddable(String typeName) {
         return embeddables.get(typeName);
     }
@@ -157,6 +160,7 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IEntity getEntity(IType type) {
         return getEntity(type.getName());
     }
@@ -164,6 +168,7 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IEntity getEntity(String typeName) {
         return entities.get(typeName);
     }
@@ -171,6 +176,7 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IEntity getEntityNamed(String entityName) {
 
         for (IEntity entity : entities.values()) {
@@ -185,6 +191,7 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IManagedType getManagedType(IType type) {
         return getManagedType(type.getName());
     }
@@ -192,6 +199,7 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IManagedType getManagedType(String typeName) {
         return managedTypes.get(typeName);
     }
@@ -199,6 +207,7 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IMappedSuperclass getMappedSuperclass(IType type) {
         return getMappedSuperclass(type.getName());
     }
@@ -206,6 +215,7 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IMappedSuperclass getMappedSuperclass(String typeName) {
         return mappedSuperclasses.get(typeName);
     }
@@ -217,6 +227,7 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
     /**
      * {@inheritDoc}
      */
+    @Override
     public JavaTypeRepository getTypeRepository() {
         if (typeRepository == null) {
             typeRepository = new JavaTypeRepository(getClass().getClassLoader());
@@ -246,6 +257,7 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Iterable<IManagedType> managedTypes() {
         return new SnapshotCloneIterable<IManagedType>(managedTypes.values());
     }

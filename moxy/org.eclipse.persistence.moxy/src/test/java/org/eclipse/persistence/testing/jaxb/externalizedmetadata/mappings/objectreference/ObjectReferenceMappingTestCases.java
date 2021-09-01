@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,6 +56,7 @@ public class ObjectReferenceMappingTestCases extends JAXBWithJSONTestCases {
     /**
      * Create the control Root.
      */
+    @Override
     public Object getControlObject() {
         if(ctrlObject ==null){
             Root root = new Root();
@@ -91,20 +92,24 @@ public class ObjectReferenceMappingTestCases extends JAXBWithJSONTestCases {
         super.testSchemaGen(controlSchemas);
     }
 
+    @Override
     public void xmlToObjectTest(Object testObject) throws Exception {
         super.xmlToObjectTest(testObject);
            assertTrue("Accessor method was not called as expected", ((Root)testObject).employees.get(0).wasSetCalled);
     }
 
+    @Override
     public void testRoundTrip() throws Exception{
         //doesn't apply since read and write only mappings are present
     }
 
+    @Override
     public void objectToXMLDocumentTest(Document testDocument) throws Exception {
         super.objectToXMLDocumentTest(testDocument);
         assertTrue("Accessor method was not called as expected", ctrlObject.employees.get(0).wasGetCalled);
     }
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/objectreference/root-oxm.xml");
 

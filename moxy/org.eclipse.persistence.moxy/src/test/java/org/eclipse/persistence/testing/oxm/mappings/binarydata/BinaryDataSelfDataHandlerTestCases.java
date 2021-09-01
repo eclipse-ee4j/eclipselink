@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,6 +44,7 @@ public class BinaryDataSelfDataHandlerTestCases extends XMLMappingTestCases{// X
         setProject(p);
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         MyAttachmentUnmarshaller handler = new MyAttachmentUnmarshaller();
@@ -60,6 +61,7 @@ public class BinaryDataSelfDataHandlerTestCases extends XMLMappingTestCases{// X
         return marshaller;
     }
 
+    @Override
     protected Object getControlObject() {
         Employee emp = new Employee(123);
 
@@ -67,6 +69,7 @@ public class BinaryDataSelfDataHandlerTestCases extends XMLMappingTestCases{// X
         return emp;
     }
 
+    @Override
     public Object getReadControlObject() {
         Employee emp = new Employee(123);
 
@@ -78,6 +81,7 @@ public class BinaryDataSelfDataHandlerTestCases extends XMLMappingTestCases{// X
         return emp;
     }
 
+    @Override
     public void objectToXMLDocumentTest(Document testDocument) throws Exception {
         super.objectToXMLDocumentTest(testDocument);
         assertNotNull(this.attachmentMarshaller.getLocalName());

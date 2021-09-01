@@ -51,6 +51,7 @@ public class MarshallerEncodingTest extends OXTestCase {
         this.controlString = controlString;
     }
 
+    @Override
     public void setUp() throws Exception {
         contextPath = System.getProperty("jaxb.test.contextpath", JAXBSAXTestSuite.CONTEXT_PATH);
 
@@ -250,6 +251,7 @@ public class MarshallerEncodingTest extends OXTestCase {
         fail("A MarshalException should have been thrown but was not");
     }
 
+    @Override
     public void tearDown() throws PropertyException {
         marshaller.setProperty(Marshaller.JAXB_ENCODING, originalEncoding);
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, originalFormatting);

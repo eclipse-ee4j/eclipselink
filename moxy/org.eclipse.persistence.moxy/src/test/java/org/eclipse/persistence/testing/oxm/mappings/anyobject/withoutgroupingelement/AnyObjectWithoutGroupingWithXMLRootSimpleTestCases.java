@@ -31,6 +31,7 @@ public class AnyObjectWithoutGroupingWithXMLRootSimpleTestCases extends XMLWithJ
         setControlJSON("org/eclipse/persistence/testing/oxm/mappings/anyobject/withoutgroupingelement/simple_xmlroot.json");
     }
 
+    @Override
     public Object getControlObject() {
         Root root = new Root();
 

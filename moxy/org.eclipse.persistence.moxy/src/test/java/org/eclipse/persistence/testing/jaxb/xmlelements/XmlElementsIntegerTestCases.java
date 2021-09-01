@@ -35,6 +35,7 @@ public class XmlElementsIntegerTestCases extends JAXBWithJSONTestCases{
         setClasses(classes);
     }
 
+    @Override
     protected Object getControlObject() {
         Employee employee = new Employee();
         employee.id = CONTROL_ID;

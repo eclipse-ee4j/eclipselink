@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ public class XMLFileTestModel extends TestModel {
         setDescription("Test TopLink EIS with an emulated xml file adapter.");
     }
 
+    @Override
     public void addTests() {
         TestSuite directSuite = new TestSuite();
         directSuite.setName("DirectTestSuite");
@@ -49,6 +50,7 @@ public class XMLFileTestModel extends TestModel {
 
     }
 
+    @Override
     public void setup() {
         oldSession = getSession();
         DatabaseSession session = XMLProjectReader.read("org/eclipse/persistence/testing/models/order/eis/xmlfile/order-project.xml", getClass().getClassLoader()).createDatabaseSession();
@@ -62,6 +64,7 @@ public class XMLFileTestModel extends TestModel {
 
     }
 
+    @Override
     public void reset() {
         getDatabaseSession().logout();
         getExecutor().setSession(oldSession);

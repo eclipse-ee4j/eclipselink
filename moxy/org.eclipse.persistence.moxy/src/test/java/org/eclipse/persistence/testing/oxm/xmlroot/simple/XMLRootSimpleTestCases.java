@@ -48,6 +48,7 @@ public class XMLRootSimpleTestCases extends XMLMappingTestCases {
         TestRunner.main(arguments);
     }
 
+    @Override
     public Object getControlObject() {
         XMLRoot xmlRoot = new XMLRoot();
         xmlRoot.setLocalName(CONTROL_ELEMENT_NAME);
@@ -56,6 +57,7 @@ public class XMLRootSimpleTestCases extends XMLMappingTestCases {
         return xmlRoot;
     }
 
+    @Override
     public Object getWriteControlObject() {
         XMLRoot xmlRoot = new XMLRoot();
         xmlRoot.setLocalName(CONTROL_ELEMENT_NAME);
@@ -69,6 +71,7 @@ public class XMLRootSimpleTestCases extends XMLMappingTestCases {
     }
 
     // Unmarshal tests
+    @Override
     public void testXMLToObjectFromInputStream() throws Exception {
         InputStream instream = ClassLoader.getSystemResourceAsStream(getXMLResource());
         Object testObject = xmlUnmarshaller.unmarshal(instream, String.class);
@@ -76,17 +79,20 @@ public class XMLRootSimpleTestCases extends XMLMappingTestCases {
         xmlToObjectTest(testObject);
     }
 
+    @Override
     public void testXMLToObjectFromNode() throws Exception {
         Object testObject = xmlUnmarshaller.unmarshal(getControlDocument(), String.class);
         xmlToObjectTest(testObject);
     }
 
+    @Override
     public void testXMLToObjectFromURL() throws Exception {
         java.net.URL url = ClassLoader.getSystemResource(getXMLResource());
         Object testObject = xmlUnmarshaller.unmarshal(url, String.class);
         xmlToObjectTest(testObject);
     }
 
+    @Override
     public void testXMLToObjectFromXMLStreamReader() throws Exception {
         if(null != XML_INPUT_FACTORY) {
                 InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -102,6 +108,7 @@ public class XMLRootSimpleTestCases extends XMLMappingTestCases {
         }
     }
 
+    @Override
     public void testXMLToObjectFromXMLEventReader() throws Exception {
         if(null != XML_INPUT_FACTORY) {
                 InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -117,6 +124,7 @@ public class XMLRootSimpleTestCases extends XMLMappingTestCases {
         }
     }
 
+    @Override
     public void xmlToObjectTest(Object testObject) throws Exception {
         log("\n**testXMLDocumentToObject**");
         log("Expected:");
@@ -133,9 +141,11 @@ public class XMLRootSimpleTestCases extends XMLMappingTestCases {
     }
 
     // DOES NOT APPLY
+    @Override
     public void testUnmarshallerHandler() throws Exception {
     }
 
+    @Override
     public Document getWriteControlDocument() throws Exception {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/oxm/xmlroot/simple/employee-write.xml");
         Document writeDocument = parser.parse(inputStream);

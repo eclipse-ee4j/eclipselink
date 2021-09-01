@@ -95,6 +95,7 @@ public abstract class LoadAndSaveTestCases extends LoadAndSaveWithOptionsTestCas
 
     // First package should be the package that contains the class for the get root interface name class
     // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    @Override
     protected List<String> getPackages() {
         List<String> packages = new ArrayList<String>();
         // Override this function if your targetNamespace is defined or you use the sdoJava:package annotation
@@ -140,6 +141,7 @@ public abstract class LoadAndSaveTestCases extends LoadAndSaveWithOptionsTestCas
         assertEquals("CompileUtil returned a non-zero exit value.", 0, returnVal);
     }
 
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
         // TODO: hard coded path should be parameterized as an option to the test suite

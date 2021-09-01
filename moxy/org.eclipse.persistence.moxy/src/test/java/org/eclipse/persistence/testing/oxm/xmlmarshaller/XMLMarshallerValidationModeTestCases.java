@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,6 +49,7 @@ public class XMLMarshallerValidationModeTestCases extends OXTestCase {
         TestRunner.main(arguments);
     }
 
+    @Override
     public void setUp() throws Exception {
         context = this.getXMLContext(new XMLMarshallerCarProject());
         unmarshaller = context.createUnmarshaller();
@@ -60,6 +61,7 @@ public class XMLMarshallerValidationModeTestCases extends OXTestCase {
 
     }
 
+    @Override
     public void tearDown() throws Exception {
         unmarshaller.setValidationMode(originalMode);
     }
@@ -249,6 +251,7 @@ public class XMLMarshallerValidationModeTestCases extends OXTestCase {
         public TestEntityResolver() {
         }
 
+        @Override
         public InputSource resolveEntity(String publicId, String systemId) {
             InputStream localDtdStream = ClassLoader.getSystemResourceAsStream(DTD_NAME);
             if (localDtdStream != null) {
@@ -271,14 +274,17 @@ public class XMLMarshallerValidationModeTestCases extends OXTestCase {
             fatalErrorHasOccurred = false;
             warningHasOccurred = false;
         }
+        @Override
         public void error(SAXParseException arg0) throws SAXException {
             errorHasOccurred = true;
             throw arg0;
         }
+        @Override
         public void fatalError(SAXParseException arg0) throws SAXException {
             fatalErrorHasOccurred = true;
             throw arg0;
         }
+        @Override
         public void warning(SAXParseException arg0) throws SAXException {
             warningHasOccurred = true;
             throw arg0;

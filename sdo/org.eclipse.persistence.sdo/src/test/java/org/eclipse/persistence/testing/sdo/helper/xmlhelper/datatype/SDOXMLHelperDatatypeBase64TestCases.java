@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,30 +35,37 @@ public class SDOXMLHelperDatatypeBase64TestCases extends SDOXMLHelperDatatypeTes
         TestRunner.main(arguments);
     }
 
+    @Override
     protected Class getDatatypeJavaClass() {
         return byte[].class;
     }
 
+    @Override
     protected SDOType getValueType() {
         return SDOConstants.SDO_BYTES;
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/datatype/myBase64Binary-1.xml");
     }
 
+    @Override
     protected String getControlRootURI() {
         return "myBase64Binary-NS";
     }
 
+    @Override
     protected String getControlRootName() {
         return "myBase64Binary";
     }
 
+    @Override
     protected String getSchemaNameForUserDefinedType() {
         return getSchemaLocation() + "myBase64Binary.xsd";
     }
 
+    @Override
     protected String getSchemaNameForBuiltinType() {
         return getSchemaLocation() + "myBase64Binary-builtin.xsd";
     }

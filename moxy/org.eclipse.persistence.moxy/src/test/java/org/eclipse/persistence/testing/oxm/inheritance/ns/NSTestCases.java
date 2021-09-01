@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,10 +32,12 @@ public class NSTestCases extends XMLWithJSONMappingTestCases {
         setControlJSON("org/eclipse/persistence/testing/oxm/inheritance/ns.json");
     }
 
+    @Override
     protected boolean getNamespaceAware(){
         return true;
     }
 
+    @Override
     protected Map<String, String> getNamespaces(){
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("urn:parent", "parent");

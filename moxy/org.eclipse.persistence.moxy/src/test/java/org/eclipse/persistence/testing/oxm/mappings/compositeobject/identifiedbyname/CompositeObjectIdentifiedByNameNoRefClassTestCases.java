@@ -55,6 +55,7 @@ public class CompositeObjectIdentifiedByNameNoRefClassTestCases extends XMLMappi
         setProject(p);
     }
 
+    @Override
     protected Object getControlObject() {
         Employee employee = new Employee();
         employee.setID(CONTROL_EMPLOYEE_ID);

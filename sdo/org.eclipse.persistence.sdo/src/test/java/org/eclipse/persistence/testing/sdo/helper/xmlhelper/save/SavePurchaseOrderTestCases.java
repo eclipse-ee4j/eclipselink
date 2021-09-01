@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,22 +24,27 @@ public class SavePurchaseOrderTestCases extends SDOXMLHelperSaveTestCases {
         super(name);
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/purchaseOrderNS.xml");
     }
 
+    @Override
     protected String getNoSchemaControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/purchaseOrderNSNoSchema.xml");
     }
 
+    @Override
     protected String getSchemaName() {
         return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/PurchaseOrder.xsd";
     }
 
+    @Override
     protected String getControlRootName() {
         return "purchaseOrder";
     }
 
+    @Override
     protected XMLDocument getXMLDocumentToSave() {
         DataObject purchaseOrder = dataFactory.create(getControlRootURI(), "PurchaseOrderType");
 
@@ -97,6 +102,7 @@ public class SavePurchaseOrderTestCases extends SDOXMLHelperSaveTestCases {
         return doc;
     }
 
+    @Override
     protected void registerTypes() {
         Type intType = typeHelper.getType("commonj.sdo", "Int");
         Type stringType = typeHelper.getType("commonj.sdo", "String");

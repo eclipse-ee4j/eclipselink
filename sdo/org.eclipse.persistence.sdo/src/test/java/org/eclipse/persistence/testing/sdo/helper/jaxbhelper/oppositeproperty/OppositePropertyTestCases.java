@@ -41,6 +41,7 @@ public class OppositePropertyTestCases extends SDOTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() {
         OppositeProject project = new OppositeProject();
         XMLContext xmlContext = new XMLContext(project);
@@ -134,6 +135,7 @@ public class OppositePropertyTestCases extends SDOTestCase {
         assertNotNull(child2.getChild1());
     }
 
+    @Override
     public void tearDown() {
     }
 }

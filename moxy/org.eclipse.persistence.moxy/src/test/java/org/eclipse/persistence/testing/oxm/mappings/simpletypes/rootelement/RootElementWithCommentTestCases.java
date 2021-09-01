@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,6 +43,7 @@ public class RootElementWithCommentTestCases extends XMLMappingTestCases {
         setProject(p);
     }
 
+    @Override
     protected Object getControlObject() {
         Employee employee = new Employee();
         employee.setMarried(true);
@@ -50,6 +51,7 @@ public class RootElementWithCommentTestCases extends XMLMappingTestCases {
         return employee;
     }
 
+    @Override
     protected Document getWriteControlDocument() throws Exception {
         String xmlResource = "org/eclipse/persistence/testing/oxm/mappings/simpletypes/rootelement/SimpleRootElementWithCommentTestWriting.xml";
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(xmlResource);
@@ -63,6 +65,7 @@ public class RootElementWithCommentTestCases extends XMLMappingTestCases {
         return writeControlDocument;
     }
 
+    @Override
     public void testObjectToContentHandler() throws Exception {
         // DO NOTHING BECAUSE CONTENT HANDLER CAN NOT READ COMMENTS
     }

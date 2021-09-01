@@ -49,6 +49,7 @@ public class InheritanceRootCompositeCollectionObjectOnlyNSTestCases extends JAX
         jaxbMarshaller.setProperty(MarshallerProperties.JSON_USE_XSD_TYPES_WITH_PREFIX, true);
     }
 
+    @Override
     protected Object getControlObject() {
         RootCompositeCollectionObjectOnly root = new RootCompositeCollectionObjectOnly();
         SubType subType = new SubType();

@@ -30,11 +30,13 @@ public class ChangeSummaryRootSimpleCreateNestedTestCases extends ChangeSummaryR
         TestRunner.main(arguments);
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/team_csroot_create_simple_nested.xml");
     }
 
 
+    @Override
     protected void verifyAfterLoad(XMLDocument document) {
         super.verifyAfterLoad(document);
         ChangeSummary teamCS = document.getRootObject().getChangeSummary();

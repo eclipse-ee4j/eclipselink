@@ -22,6 +22,7 @@ public class DoubleToBigDecimalTestCases extends OXTestCase {
 
     XMLConversionManager xmlConversionManager;
 
+    @Override
     public void setUp() {
         xmlConversionManager = XMLConversionManager.getDefaultXMLManager();
     }

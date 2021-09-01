@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -218,6 +218,7 @@ public class JavaTypeDeclaration implements ITypeDeclaration {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getDimensionality() {
         if (array) {
             String name = type.getName();
@@ -233,6 +234,7 @@ public class JavaTypeDeclaration implements ITypeDeclaration {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType getType() {
         return type;
     }
@@ -244,6 +246,7 @@ public class JavaTypeDeclaration implements ITypeDeclaration {
     /**
      * {@inheritDoc}
      */
+    @Override
     public ITypeDeclaration[] getTypeParameters() {
         if (genericTypes == null) {
             if (genericType == null) {
@@ -259,6 +262,7 @@ public class JavaTypeDeclaration implements ITypeDeclaration {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean isArray() {
         return array;
     }

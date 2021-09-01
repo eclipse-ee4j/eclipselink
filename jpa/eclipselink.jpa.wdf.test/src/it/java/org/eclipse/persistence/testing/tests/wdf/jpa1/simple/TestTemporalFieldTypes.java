@@ -111,26 +111,32 @@ public class TestTemporalFieldTypes extends JPA1Base {
     @Test
     public void testUtilDateAsTimestamp() {
         MutableValidator validator = new MutableValidator() {
+            @Override
             public void set(BasicTypesFieldAccess obj) {
                 obj.setUtilDate(new Date(1000));
             }
 
+            @Override
             public void change(BasicTypesFieldAccess obj) {
                 obj.setUtilDate(new Date(2000));
             }
 
+            @Override
             public void setNull(BasicTypesFieldAccess obj) {
                 obj.setUtilDate(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesFieldAccess obj) {
                 return obj.getUtilDate() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesFieldAccess obj) {
                 return !obj.getUtilDate().equals(new Date(1000));
             }
 
+            @Override
             public void mutate(BasicTypesFieldAccess obj) {
                 obj.getUtilDate().setTime(2000);
             }
@@ -141,26 +147,32 @@ public class TestTemporalFieldTypes extends JPA1Base {
     @Test
     public void testUtilCalendarAsTimestamp() {
         MutableValidator validator = new MutableValidator() {
+            @Override
             public void set(BasicTypesFieldAccess obj) {
                 obj.setUtilCalendar(new GregorianCalendar(2005, 9, 8, 10, 49));
             }
 
+            @Override
             public void change(BasicTypesFieldAccess obj) {
                 obj.setUtilCalendar(new GregorianCalendar(2005, 9, 9, 10, 49));
             }
 
+            @Override
             public void setNull(BasicTypesFieldAccess obj) {
                 obj.setUtilCalendar(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesFieldAccess obj) {
                 return obj.getUtilCalendar() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesFieldAccess obj) {
                 return !obj.getUtilCalendar().equals(new GregorianCalendar(2005, 9, 8, 10, 49));
             }
 
+            @Override
             public void mutate(BasicTypesFieldAccess obj) {
                 obj.getUtilCalendar().set(2005, 9, 9);
             }
@@ -171,26 +183,32 @@ public class TestTemporalFieldTypes extends JPA1Base {
     @Test
     public void testUtilCalendarAsDate() {
         MutableValidator validator = new MutableValidator() {
+            @Override
             public void set(BasicTypesFieldAccess obj) {
                 obj.setUtilCalendar(new GregorianCalendar(2005, 9, 8));
             }
 
+            @Override
             public void change(BasicTypesFieldAccess obj) {
                 obj.setUtilCalendar(new GregorianCalendar(2005, 9, 9));
             }
 
+            @Override
             public void setNull(BasicTypesFieldAccess obj) {
                 obj.setUtilCalendar(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesFieldAccess obj) {
                 return obj.getUtilCalendar() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesFieldAccess obj) {
                 return !obj.getUtilCalendar().equals(new GregorianCalendar(2005, 9, 8));
             }
 
+            @Override
             public void mutate(BasicTypesFieldAccess obj) {
                 obj.getUtilCalendar().set(2005, 9, 9);
             }
@@ -201,26 +219,32 @@ public class TestTemporalFieldTypes extends JPA1Base {
     @Test
     public void testUtilCalendarAsTime() {
         MutableValidator validator = new MutableValidator() {
+            @Override
             public void set(BasicTypesFieldAccess obj) {
                 obj.setUtilCalendar(new GregorianCalendar(1970, 1, 1, 10, 49));
             }
 
+            @Override
             public void change(BasicTypesFieldAccess obj) {
                 obj.setUtilCalendar(new GregorianCalendar(1970, 1, 1, 11, 49));
             }
 
+            @Override
             public void setNull(BasicTypesFieldAccess obj) {
                 obj.setUtilCalendar(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesFieldAccess obj) {
                 return obj.getUtilCalendar() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesFieldAccess obj) {
                 return !obj.getUtilCalendar().equals(new GregorianCalendar(1970, 1, 1, 10, 49));
             }
 
+            @Override
             public void mutate(BasicTypesFieldAccess obj) {
                 obj.getUtilCalendar().set(1970, 1, 1, 11, 49);
             }
@@ -231,26 +255,32 @@ public class TestTemporalFieldTypes extends JPA1Base {
     @Test
     public void testSqlDate() {
         MutableValidator validator = new MutableValidator() {
+            @Override
             public void set(BasicTypesFieldAccess obj) {
                 obj.setSqlDate(java.sql.Date.valueOf("2005-09-08"));
             }
 
+            @Override
             public void change(BasicTypesFieldAccess obj) {
                 obj.setSqlDate(java.sql.Date.valueOf("2005-09-09"));
             }
 
+            @Override
             public void setNull(BasicTypesFieldAccess obj) {
                 obj.setSqlDate(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesFieldAccess obj) {
                 return obj.getSqlDate() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesFieldAccess obj) {
                 return !obj.getSqlDate().equals(java.sql.Date.valueOf("2005-09-08"));
             }
 
+            @Override
             public void mutate(BasicTypesFieldAccess obj) {
                 obj.getSqlDate().setTime(java.sql.Date.valueOf("2005-09-09").getTime());
             }
@@ -261,26 +291,32 @@ public class TestTemporalFieldTypes extends JPA1Base {
     @Test
     public void testSqlTime() {
         MutableValidator validator = new MutableValidator() {
+            @Override
             public void set(BasicTypesFieldAccess obj) {
                 obj.setSqlTime(java.sql.Time.valueOf("10:49:00"));
             }
 
+            @Override
             public void change(BasicTypesFieldAccess obj) {
                 obj.setSqlTime(java.sql.Time.valueOf("11:49:00"));
             }
 
+            @Override
             public void setNull(BasicTypesFieldAccess obj) {
                 obj.setSqlTime(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesFieldAccess obj) {
                 return obj.getSqlTime() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesFieldAccess obj) {
                 return !obj.getSqlTime().equals(java.sql.Time.valueOf("10:49:00"));
             }
 
+            @Override
             public void mutate(BasicTypesFieldAccess obj) {
                 obj.getSqlTime().setTime(java.sql.Time.valueOf("11:49:00").getTime());
             }
@@ -291,26 +327,32 @@ public class TestTemporalFieldTypes extends JPA1Base {
     @Test
     public void testSqlTimestamp() {
         MutableValidator validator = new MutableValidator() {
+            @Override
             public void set(BasicTypesFieldAccess obj) {
                 obj.setSqlTimestamp(new java.sql.Timestamp(1000));
             }
 
+            @Override
             public void change(BasicTypesFieldAccess obj) {
                 obj.setSqlTimestamp(new java.sql.Timestamp(2000));
             }
 
+            @Override
             public void setNull(BasicTypesFieldAccess obj) {
                 obj.setSqlTimestamp(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesFieldAccess obj) {
                 return obj.getSqlTimestamp() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesFieldAccess obj) {
                 return !obj.getSqlTimestamp().equals(new java.sql.Timestamp(1000));
             }
 
+            @Override
             public void mutate(BasicTypesFieldAccess obj) {
                 obj.getSqlTimestamp().setTime(2000);
             }
@@ -322,26 +364,32 @@ public class TestTemporalFieldTypes extends JPA1Base {
     @Test
     public void testUtilDateAsTime() {
         MutableValidator validator = new MutableValidator() {
+            @Override
             public void set(BasicTypesFieldAccess obj) {
                 obj.setUtilDate(new Date(1000));
             }
 
+            @Override
             public void change(BasicTypesFieldAccess obj) {
                 obj.setUtilDate(new Date(2000));
             }
 
+            @Override
             public void setNull(BasicTypesFieldAccess obj) {
                 obj.setUtilDate(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesFieldAccess obj) {
                 return obj.getUtilDate() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesFieldAccess obj) {
                 return !obj.getUtilDate().equals(new Date(1000));
             }
 
+            @Override
             public void mutate(BasicTypesFieldAccess obj) {
                 obj.getUtilDate().setTime(2000);
             }
@@ -356,26 +404,32 @@ public class TestTemporalFieldTypes extends JPA1Base {
             final long millis = java.sql.Date.valueOf("2005-09-08").getTime();
             final long changedMillis = java.sql.Date.valueOf("2005-09-09").getTime();
 
+            @Override
             public void set(BasicTypesFieldAccess obj) {
                 obj.setUtilDate(new java.util.Date(millis));
             }
 
+            @Override
             public void change(BasicTypesFieldAccess obj) {
                 obj.setUtilDate(new java.util.Date(changedMillis));
             }
 
+            @Override
             public void setNull(BasicTypesFieldAccess obj) {
                 obj.setUtilDate(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesFieldAccess obj) {
                 return obj.getUtilDate() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesFieldAccess obj) {
                 return !obj.getUtilDate().equals(new java.util.Date(millis));
             }
 
+            @Override
             public void mutate(BasicTypesFieldAccess obj) {
                 obj.getUtilDate().setTime(changedMillis);
             }

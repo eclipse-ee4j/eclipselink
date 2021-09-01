@@ -42,6 +42,7 @@ public class ChangeSummaryTestCases extends SDOTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() {
         super.setUp();
 

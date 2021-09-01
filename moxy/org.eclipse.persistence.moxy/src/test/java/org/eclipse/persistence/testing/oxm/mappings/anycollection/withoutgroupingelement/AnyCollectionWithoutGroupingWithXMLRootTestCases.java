@@ -45,6 +45,7 @@ public class AnyCollectionWithoutGroupingWithXMLRootTestCases extends XMLMapping
         setControlDocument("org/eclipse/persistence/testing/oxm/mappings/anycollection/withoutgroupingelement/complex_children_xmlroot.xml");
     }
 
+    @Override
     public Object getControlObject() {
         Root root = new Root();
         Vector any = new Vector();

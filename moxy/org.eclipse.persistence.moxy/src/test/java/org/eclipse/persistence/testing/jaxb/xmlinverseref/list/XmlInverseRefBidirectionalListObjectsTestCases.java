@@ -57,6 +57,7 @@ public class XmlInverseRefBidirectionalListObjectsTestCases extends JAXBWithJSON
         return p;
     }
 
+     @Override
      public void xmlToObjectTest(Object testObject) throws Exception {
             log("\n**xmlToObjectTest**");
             log("Expected:");
@@ -76,6 +77,7 @@ public class XmlInverseRefBidirectionalListObjectsTestCases extends JAXBWithJSON
             compareObject(testObject);
         }
 
+       @Override
        public void jsonToObjectTest(Object testObject, Object controlObject) throws Exception {
             if(controlObject == null){
                 assertNull(testObject);

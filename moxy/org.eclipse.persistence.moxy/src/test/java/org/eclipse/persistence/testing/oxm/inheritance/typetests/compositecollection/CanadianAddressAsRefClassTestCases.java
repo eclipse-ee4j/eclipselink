@@ -38,6 +38,7 @@ public class CanadianAddressAsRefClassTestCases extends XMLWithJSONMappingTestCa
 
     }
 
+    @Override
     public Object getControlObject() {
         Employee emp = new Employee();
         ArrayList adds = new ArrayList();

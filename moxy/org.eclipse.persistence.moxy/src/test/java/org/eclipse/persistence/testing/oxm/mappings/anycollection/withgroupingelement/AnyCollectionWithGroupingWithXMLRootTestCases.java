@@ -52,6 +52,7 @@ public class AnyCollectionWithGroupingWithXMLRootTestCases extends XMLWithJSONMa
         return namespaces;
     }
 
+    @Override
     public Object getControlObject() {
         Root root = new Root();
         Vector any = new Vector();
@@ -133,6 +134,7 @@ public class AnyCollectionWithGroupingWithXMLRootTestCases extends XMLWithJSONMa
         return root;
     }
 
+    @Override
     public Object getJSONReadControlObject(){
         //different order - mixed always last and same qnames grouped together, no namespaces
 

@@ -32,6 +32,7 @@ public class CustomEntityResolver implements EntityResolver {
         CustomEntityResolver.withExtension = withExtension;
     }
 
+    @Override
     public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
         // Grab only the filename part from the full path
         File f = new File(systemId);

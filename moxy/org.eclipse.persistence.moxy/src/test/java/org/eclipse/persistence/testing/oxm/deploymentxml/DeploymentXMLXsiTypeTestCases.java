@@ -57,6 +57,7 @@ public class DeploymentXMLXsiTypeTestCases extends XMLTestCase {
        URL eclipselinkSchemaURL = getClass().getClassLoader().getResource(schema);
        parser.setEntityResolver(new EntityResolver() {
 
+           @Override
            public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
                if (XMLProjectReader.OPM_SCHEMA.equals(systemId)) {
                    URL url = getClass().getClassLoader().getResource(XMLProjectReader.SCHEMA_DIR + XMLProjectReader.OPM_SCHEMA);

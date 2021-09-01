@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,35 +36,43 @@ public class LoadAndSaveIDRefTestCases extends LoadAndSaveTestCases {
         TestRunner.main(arguments);
     }
 
+    @Override
     protected String getNoSchemaControlFileName() {
         return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/PurchaseOrderWithIDREF.xml";
     }
 
+    @Override
     protected String getControlDataObjectFileName() {
         return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/PurchaseOrderWithIDREF.xml";
     }
 
+    @Override
     protected String getControlFileName() {
         return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/PurchaseOrderWithIDREF.xml";
     }
 
+    @Override
     protected String getSchemaName() {
         return "org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderWithIDREF.xsd";
     }
 
+    @Override
     protected String getControlRootURI() {
         return NON_DEFAULT_URI;
     }
 
+    @Override
     protected String getControlRootName() {
         return "company";
     }
 
+     @Override
      protected String getRootInterfaceName() {
         return "Company";
     }
 
      // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+     @Override
      protected List<String> getPackages() {
          List<String> packages = new ArrayList<String>();
          packages.add(NON_DEFAULT_JAVA_PACKAGE_DIR);
@@ -163,6 +171,7 @@ public class LoadAndSaveIDRefTestCases extends LoadAndSaveTestCases {
         //return typeHelper.define(customerType);
     }
 
+    @Override
     public void registerTypes() {
         SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
         SDOType stringType = (SDOType) typeHelper.getType("commonj.sdo", "String");
@@ -205,6 +214,7 @@ public class LoadAndSaveIDRefTestCases extends LoadAndSaveTestCases {
         typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);
     }
 
+    @Override
     public void verifyAfterLoad(XMLDocument doc)
     {
       super.verifyAfterLoad(doc);

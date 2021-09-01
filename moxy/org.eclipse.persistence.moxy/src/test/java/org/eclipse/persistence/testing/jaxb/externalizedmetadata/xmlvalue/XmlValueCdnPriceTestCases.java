@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,6 +39,7 @@ public class XmlValueCdnPriceTestCases extends JAXBWithJSONTestCases{
     }
 
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlvalue/eclipselink-oxm-cdnprice.xml");
 
@@ -64,6 +65,7 @@ public class XmlValueCdnPriceTestCases extends JAXBWithJSONTestCases{
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
 
+    @Override
     protected Object getControlObject() {
         CDNPriceNoAnnotation price = new CDNPriceNoAnnotation();
         price.price = new BigDecimal("123.45678901234567890");

@@ -58,6 +58,7 @@ public class XmlElementTestCases extends JAXBWithJSONTestCases {
         setClasses(new Class[] { Employee.class});
     }
 
+     @Override
      public Map getProperties(){
             InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelement/eclipselink-oxm.xml");
 
@@ -208,6 +209,7 @@ public class XmlElementTestCases extends JAXBWithJSONTestCases {
                 "}}";
     }
 
+    @Override
     public boolean isUnmarshalTest() {
          return false;
     }

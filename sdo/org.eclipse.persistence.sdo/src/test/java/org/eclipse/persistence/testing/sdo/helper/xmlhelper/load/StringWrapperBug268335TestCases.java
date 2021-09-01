@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,14 +23,17 @@ public class StringWrapperBug268335TestCases extends SDOXMLHelperLoadTestCases {
         super(name);
     }
 
+    @Override
     protected String getFileNameToLoad() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/load/268335-string.xml");
     }
 
+    @Override
     protected String getSchemaName() {
         return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/load/268335.xsd";
     }
 
+    @Override
     protected void verifyDocument(XMLDocument document) {
         super.verifyDocument(document);
 
@@ -42,6 +45,7 @@ public class StringWrapperBug268335TestCases extends SDOXMLHelperLoadTestCases {
         assertEquals("The wrong wrapper type was created.", doClassName, "org.eclipse.persistence.sdo.types.SDOWrapperType.StringWrapperImpl");
     }
 
+    @Override
     protected void createTypes() {
     }
 }

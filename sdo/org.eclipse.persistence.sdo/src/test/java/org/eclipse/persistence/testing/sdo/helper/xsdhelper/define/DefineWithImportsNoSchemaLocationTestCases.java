@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,6 +43,7 @@ public class DefineWithImportsNoSchemaLocationTestCases extends XSDHelperDefineT
         TestRunner.run(DefineWithImportsNoSchemaLocationTestCases.class);
     }
 
+    @Override
     public void testDefine() {
 
         InputStream is = getSchemaInputStream(getSchemaToDefine());
@@ -58,14 +59,17 @@ public class DefineWithImportsNoSchemaLocationTestCases extends XSDHelperDefineT
         compare(getControlTypes(), types);
     }
 
+    @Override
     public String getSchemaToDefine() {
         return "org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/ImportsWithNamespacesNoSchemaLocations.xsd";
     }
 
+    @Override
     protected String getSchemaLocation() {
         return FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/";
     }
 
+    @Override
     public List<Type> getControlTypes() {
         String uri = "my.uri";
         String uri2 = "my.uri2";
@@ -138,6 +142,7 @@ public class DefineWithImportsNoSchemaLocationTestCases extends XSDHelperDefineT
             this.schemaLocationBase = schemaLocation;
         }
 
+        @Override
         public Source resolveSchema(Source sourceXSD, String namespace, String schemaLocation) {
             try {
                 if (namespace.equals("my.uri3")) {
@@ -165,6 +170,7 @@ public class DefineWithImportsNoSchemaLocationTestCases extends XSDHelperDefineT
          * @param systemId
          * @return null
          */
+        @Override
         public InputSource resolveEntity(String publicId, String systemId) {
             return null;
         }

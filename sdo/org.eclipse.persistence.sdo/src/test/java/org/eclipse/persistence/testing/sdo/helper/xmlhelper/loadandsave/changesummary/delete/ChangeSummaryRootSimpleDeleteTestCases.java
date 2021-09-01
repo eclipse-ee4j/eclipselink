@@ -35,11 +35,13 @@ public class ChangeSummaryRootSimpleDeleteTestCases extends ChangeSummaryRootLoa
         TestRunner.main(arguments);
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/team_csroot_delete_simple.xml");
     }
 
 
+    @Override
     protected void verifyAfterLoad(XMLDocument document) {
         super.verifyAfterLoad(document);
         ChangeSummary teamCS = document.getRootObject().getChangeSummary();

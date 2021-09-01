@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -69,14 +69,17 @@ public class ConflictingQNamesTestCases extends TypeMappingInfoWithJSONTestCases
         return typeMappingInfos;
     }
 
+    @Override
     public TypeMappingInfo getTypeMappingInfo(){
        return typeMappingInfos[1];
     }
 
+    @Override
     protected Object getControlObject() {
         return 10f;
     }
 
+    @Override
     public Object getReadControlObject() {
         QName qname = new QName("", "root");
         JAXBElement jbe = new JAXBElement(qname, Float.class, null);
@@ -84,6 +87,7 @@ public class ConflictingQNamesTestCases extends TypeMappingInfoWithJSONTestCases
         return jbe;
     }
 
+    @Override
     public Map<String, InputStream> getControlSchemaFiles() {
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/typemappinginfo/conflictingQNames.xsd");
 

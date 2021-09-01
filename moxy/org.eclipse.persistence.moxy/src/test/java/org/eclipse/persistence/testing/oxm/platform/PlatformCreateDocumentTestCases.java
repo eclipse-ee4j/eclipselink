@@ -229,6 +229,7 @@ public class PlatformCreateDocumentTestCases extends OXTestCase {
     }
 
     public class MyEntityResolver implements EntityResolver {
+        @Override
         public InputSource resolveEntity(String string, String string2) {
             try {
                 InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/oxm/platform/manual.dtd");

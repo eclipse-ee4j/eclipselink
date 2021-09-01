@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,6 +42,7 @@ public class XMLLoginSessionsXMLTestCases extends TestCase {
         super(name);
     }
 
+    @Override
     public void setUp() {
         m_sessionConfig = new DatabaseSessionConfig();
         m_sessionConfig.setName(SESSION_NAME);
@@ -162,6 +163,7 @@ public class XMLLoginSessionsXMLTestCases extends TestCase {
         return (DatabaseSessionConfig) readConfigs.getSessionConfigs().firstElement();
     }
 
+    @Override
     public void tearDown() {
         File tempFile = new File(SESSION_FILE_NAME);
         tempFile.delete();

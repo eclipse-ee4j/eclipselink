@@ -52,6 +52,7 @@ public class InheritanceWithMultiplePackagesNSTestCases extends InheritanceWithM
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_USE_XSD_TYPES_WITH_PREFIX, true);
     }
 
+    @Override
     protected Object getControlObject() {
         RootComplex root = new RootComplex();
         SubType subType = new SubType();

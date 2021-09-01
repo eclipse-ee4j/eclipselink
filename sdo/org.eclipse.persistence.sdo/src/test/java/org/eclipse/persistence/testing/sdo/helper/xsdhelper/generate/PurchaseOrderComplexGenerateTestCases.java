@@ -38,6 +38,7 @@ public class PurchaseOrderComplexGenerateTestCases extends XSDHelperGenerateTest
         TestRunner.main(arguments);
     }
 
+    @Override
     public String getControlFileName() {
         return "org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderComplexGenerated.xsd";
     }
@@ -66,6 +67,7 @@ public class PurchaseOrderComplexGenerateTestCases extends XSDHelperGenerateTest
         return xsdHelper.define(is, null);
     }
 
+    @Override
     public java.util.List getTypesToGenerateFrom() {
         java.util.List types = new ArrayList();
         String uri = "http://www.example.org";

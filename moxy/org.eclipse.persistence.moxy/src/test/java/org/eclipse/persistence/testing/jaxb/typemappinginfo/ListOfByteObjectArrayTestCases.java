@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,6 +54,7 @@ public class ListOfByteObjectArrayTestCases extends TypeMappingInfoWithJSONTestC
         return typeMappingInfos;
     }
 
+    @Override
     protected Object getControlObject() {
 
         Byte[] bytes3 = new Byte[]{0,1,2,3};
@@ -71,6 +72,7 @@ public class ListOfByteObjectArrayTestCases extends TypeMappingInfoWithJSONTestC
     }
 
 
+    @Override
     public Map<String, InputStream> getControlSchemaFiles(){
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/typemappinginfo/listOfByteObjectArray.xsd");
 

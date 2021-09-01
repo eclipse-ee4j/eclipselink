@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ public class NcharTestSystem extends TestSystem {
         project = new CharNcharProject();
     }
 
+    @Override
     public void addDescriptors(DatabaseSession session) {
         if (project == null) {
             project = new CharNcharProject();
@@ -38,6 +39,7 @@ public class NcharTestSystem extends TestSystem {
         session.addDescriptors(project);
     }
 
+    @Override
     public void createTables(DatabaseSession session) {
         new CharNcharTableCreator().replaceTables(session);
     }

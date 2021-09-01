@@ -38,23 +38,28 @@ public abstract class ChangeSummaryOnRootTestCases extends ChangeSummaryRootLoad
     public static final String URINAME = "http://www.example.org";
     public static final String TYPENAME = "purchaseOrder";
 
+    @Override
     protected String getControlRootURI() {
         return URINAME;
     }
 
+    @Override
     protected String getControlRootName() {
         return TYPENAME;
     }
 
+    @Override
     protected String getRootInterfaceName() {
         return "PurchaseOrderType";
     }
 
+    @Override
     protected String getControlFileName() {
         // implemented by subclass
         return getControlFileName2();
     }
 
+    @Override
     public void testClassGenerationLoadAndSave() throws Exception {
       //TODO:implement
     }
@@ -68,6 +73,7 @@ public abstract class ChangeSummaryOnRootTestCases extends ChangeSummaryRootLoad
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/PurchaseOrderDeepWithCS.xml");
     }
 
+    @Override
     public void testNoSchemaLoadFromInputStreamSaveDataObjectToString() throws Exception {
         //do nothing
         //TODO: need to make this test run
@@ -77,6 +83,7 @@ public abstract class ChangeSummaryOnRootTestCases extends ChangeSummaryRootLoad
         super(name);
     }
 
+    @Override
     public String getSchemaName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/PurchaseOrderDeepWithCS.xsd");
     }
@@ -86,6 +93,7 @@ public abstract class ChangeSummaryOnRootTestCases extends ChangeSummaryRootLoad
         TestRunner.main(arguments);
     }
 
+    @Override
     public void setUp() {
         super.setUp();// watch setup redundancy
         //define types from deep with cs
@@ -102,6 +110,7 @@ public abstract class ChangeSummaryOnRootTestCases extends ChangeSummaryRootLoad
         }
     }
 
+    @Override
     protected String getControlString(String fileName) {
         try {
             FileInputStream inputStream = new FileInputStream(fileName);
@@ -115,16 +124,19 @@ public abstract class ChangeSummaryOnRootTestCases extends ChangeSummaryRootLoad
         }
     }
 
+    @Override
     protected void verifyAfterLoad(XMLDocument document) {
         assertNull(document.getRootObject().getContainer());
     }
 
+    @Override
     protected List defineTypes() {
         // do not define types twice - so we do not set dirty=true
         //return xsdHelper.define(getSchema(getSchemaName()));
         return new ArrayList(((SDOTypeHelper)typeHelper).getTypesHashMap().values());
     }
 
+    @Override
     protected String getSchemaLocation() {
         return "";
     }

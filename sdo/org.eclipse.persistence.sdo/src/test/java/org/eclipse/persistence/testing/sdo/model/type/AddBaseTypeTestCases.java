@@ -31,6 +31,7 @@ public class AddBaseTypeTestCases extends SDOTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() {
         super.setUp();
         Type stringType = typeHelper.getType("commonj.sdo", "String");

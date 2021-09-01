@@ -51,6 +51,7 @@ public class CompositeCollectionWithGroupingTextTestCases extends XMLMappingTest
         setProject(p);
     }
 
+    @Override
     protected Object getControlObject() {
         Employee employee = new Employee();
 

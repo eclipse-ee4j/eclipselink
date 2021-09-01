@@ -39,6 +39,7 @@ public class SchemaTypeBase64TestCases extends XMLMappingTestCases {
         setProject(project);
     }
 
+    @Override
     protected Object getControlObject() {
         ByteHolder byteHolder = new ByteHolder();
 

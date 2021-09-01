@@ -23,10 +23,12 @@ import commonj.sdo.Property;
 import commonj.sdo.helper.XMLDocument;
 
 public class ChangeSummaryXSDWithCSonRootDeleteComplexSingleAtRootTest extends ChangeSummaryOnRootTestCases {
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/PurchaseOrderDeepWithCSonRootDeleteComplexSingleAtRoot.xml");
     }
 
+    @Override
     protected String getControlFileName2() {
         return getControlFileName();
     }
@@ -40,6 +42,7 @@ public class ChangeSummaryXSDWithCSonRootDeleteComplexSingleAtRootTest extends C
         TestRunner.main(arguments);
     }
 
+    @Override
     protected void verifyAfterLoad(XMLDocument document) {
         super.verifyAfterLoad(document);
         // replace global object with one from xml file (with cs pre-populated)

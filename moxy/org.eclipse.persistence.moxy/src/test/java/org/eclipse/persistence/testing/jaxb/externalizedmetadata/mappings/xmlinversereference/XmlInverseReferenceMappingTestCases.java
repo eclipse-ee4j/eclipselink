@@ -61,6 +61,7 @@ public class XmlInverseReferenceMappingTestCases extends JAXBWithJSONTestCases {
         setClasses(new Class[]{Root.class});
     }
 
+    @Override
     protected Root getControlObject() {
         Employee employee = new Employee();
         employee.id = CONTROL_ID;
@@ -96,6 +97,7 @@ public class XmlInverseReferenceMappingTestCases extends JAXBWithJSONTestCases {
         return root;
     }
 
+    @Override
     public Root getWriteControlObject() {
         ArrayList rootAddresses = new ArrayList();
         ArrayList rootPhones = new ArrayList();
@@ -146,6 +148,7 @@ public class XmlInverseReferenceMappingTestCases extends JAXBWithJSONTestCases {
         return root;
     }
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/xmlinversereference/root-oxm.xml");
 

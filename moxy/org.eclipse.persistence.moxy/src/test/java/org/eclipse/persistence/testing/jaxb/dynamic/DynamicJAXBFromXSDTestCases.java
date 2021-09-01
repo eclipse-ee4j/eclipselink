@@ -68,6 +68,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         super(name);
     }
 
+    @Override
     public String getName() {
         return "Dynamic JAXB: XSD: " + super.getName();
     }

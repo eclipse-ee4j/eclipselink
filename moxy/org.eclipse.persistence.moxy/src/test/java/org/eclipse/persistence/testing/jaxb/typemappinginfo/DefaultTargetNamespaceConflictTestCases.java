@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,6 +50,7 @@ public class DefaultTargetNamespaceConflictTestCases extends TypeMappingInfoWith
         setTypeMappingInfos(getTypeMappingInfos());
     }
 
+    @Override
     public TypeMappingInfo getTypeMappingInfo(){
           return getTypeMappingInfos()[0];
     }
@@ -69,6 +70,7 @@ public class DefaultTargetNamespaceConflictTestCases extends TypeMappingInfoWith
         return typeMappingInfos;
     }
 
+    @Override
     protected Object getControlObject() {
         OtherThing otherThing = new OtherThing();
         otherThing.someProperty = 10;
@@ -94,6 +96,7 @@ public class DefaultTargetNamespaceConflictTestCases extends TypeMappingInfoWith
     }
 
 
+    @Override
     protected Map getProperties() {
         HashMap props = new HashMap();
         props.put(JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY, "namespace1");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,15 +43,18 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
     @Override
     protected ContentAssistExtension buildContentAssistExtension() {
         return new ContentAssistExtension() {
+            @Override
             public Iterable<String> classNames(String prefix, ClassType type) {
                 if (type == ClassType.INSTANTIABLE) {
                     return filter(EclipseLinkContentAssistExtensionTest.this.classNames(), prefix);
                 }
                 return filter(EclipseLinkContentAssistExtensionTest.this.enumTypes(), prefix);
             }
+            @Override
             public Iterable<String> columnNames(String tableName, String prefix) {
                 return filter(EclipseLinkContentAssistExtensionTest.this.columnNames(tableName), prefix);
             }
+            @Override
             public Iterable<String> tableNames(String prefix) {
                 return filter(EclipseLinkContentAssistExtensionTest.this.tableNames(), prefix);
             }

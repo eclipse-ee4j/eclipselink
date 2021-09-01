@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,6 +46,7 @@ public class ChoiceMappingWithJoinNodesTestCases extends JAXBWithJSONTestCases{
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_VALUE_WRAPPER, "value");
     }
 
+    @Override
     protected Object getControlObject() {
           Address address1 = new Address("a100", "123 Some Street", "shipping");
           Address address2 = new Address("a101", "66 Dead End Rd.", "home");
@@ -82,6 +83,7 @@ public class ChoiceMappingWithJoinNodesTestCases extends JAXBWithJSONTestCases{
           return ctrlRoot;
     }
 
+    @Override
     public Map getProperties(){
         Map<String, Object> props = new HashMap<String, Object>();
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/choice/reference/root-oxm.xml");

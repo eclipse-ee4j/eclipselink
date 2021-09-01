@@ -35,12 +35,14 @@ public class IncludeRootFalseWithXMLRootElementTestCases extends NoRootElementTe
         setClasses(new Class[]{AddressWithRootElement.class});
     }
 
+    @Override
     public void setUp() throws Exception{
         super.setUp();
         jsonMarshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
         jsonUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
       }
 
+    @Override
     public Object getControlObject() {
         AddressWithRootElement addr = new AddressWithRootElement();
         addr.setId(10);
@@ -55,6 +57,7 @@ public class IncludeRootFalseWithXMLRootElementTestCases extends NoRootElementTe
         return AddressWithRootElement.class;
     }
 
+    @Override
     public Object getReadControlObject(){
         QName name = new QName("");
         JAXBElement jbe = new JAXBElement<AddressWithRootElement>(name, AddressWithRootElement.class, (AddressWithRootElement)getControlObject());
@@ -62,6 +65,7 @@ public class IncludeRootFalseWithXMLRootElementTestCases extends NoRootElementTe
     }
 
 
+    @Override
     public void testJSONSchemaGeneration() throws Exception{
         generateJSONSchema(getClass().getClassLoader().getResourceAsStream(JSON_SCHEMA));
     }

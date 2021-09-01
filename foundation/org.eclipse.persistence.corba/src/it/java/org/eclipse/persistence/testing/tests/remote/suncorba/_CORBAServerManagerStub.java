@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,10 +40,12 @@ public class _CORBAServerManagerStub extends org.omg.CORBA.portable.ObjectImpl i
     super ();
     _set_delegate (delegate);
   }
+  @Override
   public String[] _ids ()
   {
     return __ids.clone ();
   }
+  @Override
   public org.eclipse.persistence.sessions.remote.corba.sun.CORBARemoteSessionController createRemoteSessionController ()
   {
     org.omg.CORBA.portable.InputStream _in = null;

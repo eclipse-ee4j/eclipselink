@@ -32,6 +32,7 @@ public class MimeTypeOnOtherPropertyDefineTestCases extends CustomerDefineTestCa
         TestRunner.main(arguments);
     }
 
+    @Override
     protected DataObject getDataObject() {
         DataObject customerType = super.getDataObject();
         Type bytesType = typeHelper.getType("commonj.sdo", "Bytes");
@@ -60,6 +61,7 @@ public class MimeTypeOnOtherPropertyDefineTestCases extends CustomerDefineTestCa
         return customerType;
     }
 
+    @Override
     protected void verify(Type definedType) {
         super.verify(definedType);
         Type bytesType = typeHelper.getType("commonj.sdo", "Bytes");
@@ -76,6 +78,7 @@ public class MimeTypeOnOtherPropertyDefineTestCases extends CustomerDefineTestCa
 
     }
 
+    @Override
     protected int getPropsSize() {
         return 5;
     }

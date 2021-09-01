@@ -37,6 +37,7 @@ public class AnyObjectWithGroupingWithXMLRootTestCases extends XMLMappingTestCas
         setControlDocument("org/eclipse/persistence/testing/oxm/mappings/anyobject/withgroupingelement/complex_child_ns_xmlroot.xml");
     }
 
+    @Override
     public Object getControlObject() {
         Root root = new Root();
 

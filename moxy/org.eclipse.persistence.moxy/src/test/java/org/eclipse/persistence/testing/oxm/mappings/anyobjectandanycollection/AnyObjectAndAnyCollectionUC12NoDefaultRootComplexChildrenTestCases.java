@@ -58,6 +58,7 @@ public class AnyObjectAndAnyCollectionUC12NoDefaultRootComplexChildrenTestCases 
 
     }
 
+    @Override
     public Object getControlObject() {
         Customer customer = new Customer();
         Address anAddress1 = new Address();
@@ -168,14 +169,17 @@ public class AnyObjectAndAnyCollectionUC12NoDefaultRootComplexChildrenTestCases 
     }
 
     // override superclass testcase since it is invalid here
+    @Override
     public void testXMLToObjectFromInputStream() throws Exception {
     }
 
     // override superclass testcase since it is invalid here
+    @Override
     public void testXMLToObjectFromURL() throws Exception {
     }
 
     // override superclass testcase since it is invalid here
+    @Override
     public void testUnmarshallerHandler() throws Exception {
     }
 }

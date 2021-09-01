@@ -43,6 +43,7 @@ public class XmlValueCdnPricesTestCases extends JAXBWithJSONTestCases{
     }
 
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlvalue/eclipselink-oxm-cdnprices.xml");
 
@@ -68,6 +69,7 @@ public class XmlValueCdnPricesTestCases extends JAXBWithJSONTestCases{
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
 
+    @Override
     protected Object getControlObject() {
         CDNPricesNoAnnotation price = new CDNPricesNoAnnotation();
         price.prices = new ArrayList();

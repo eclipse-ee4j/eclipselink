@@ -53,6 +53,7 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBWithJSONTestCases{
         super(name);
     }
 
+    @Override
     public void setClasses(Class[] newClasses) throws Exception {
         classLoader = new JaxbClassLoader(Thread.currentThread()
                 .getContextClassLoader());
@@ -63,6 +64,7 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBWithJSONTestCases{
         this.classes = newClasses;
     }
 
+    @Override
     public void setTypes(Type[] newTypes) throws Exception {
         classLoader = new JaxbClassLoader(Thread.currentThread()
                 .getContextClassLoader());
@@ -87,10 +89,12 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBWithJSONTestCases{
         types = newTypes;
     }
 
+    @Override
     protected Object getControlObject() {
         return null;
     }
 
+    @Override
     public void testXMLToObjectFromXMLStreamReader() throws Exception {
         if(null != XML_INPUT_FACTORY) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -141,6 +145,7 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBWithJSONTestCases{
     }
 
 
+    @Override
     public void testXMLToObjectFromXMLEventReader() throws Exception {
         if(null != XML_INPUT_FACTORY) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -187,6 +192,7 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBWithJSONTestCases{
         }
     }
 
+    @Override
     public void testXMLToObjectFromNode() throws Exception {
         if(isUnmarshalTest()) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -212,6 +218,7 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBWithJSONTestCases{
         }
     }
 
+    @Override
     public void testObjectToXMLStreamWriter() throws Exception {
         StringWriter writer = new StringWriter();
         Object objectToWrite = getWriteControlObject();
@@ -229,6 +236,7 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBWithJSONTestCases{
         objectToXMLDocumentTest(testDocument);
     }
 
+    @Override
     public void testObjectToXMLStreamWriterRecord() throws Exception {
         StringWriter writer = new StringWriter();
         Object objectToWrite = getWriteControlObject();
@@ -247,6 +255,7 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBWithJSONTestCases{
         objectToXMLDocumentTest(testDocument);
     }
 
+    @Override
     public void testObjectToXMLEventWriter() throws Exception {
         StringWriter writer = new StringWriter();
         Object objectToWrite = getWriteControlObject();
@@ -314,6 +323,7 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBWithJSONTestCases{
 
 
     //Override and don't compare namespaceresolver size
+    @Override
     public void testObjectToXMLStringWriter() throws Exception {
         StringWriter writer = new StringWriter();
         Object objectToWrite = getWriteControlObject();
@@ -329,6 +339,7 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBWithJSONTestCases{
         objectToXMLDocumentTest(testDocument);
     }
 
+     @Override
      public void testObjectToOutputStream() throws Exception {
             Object objectToWrite = getWriteControlObject();
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -343,6 +354,7 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBWithJSONTestCases{
             objectToXMLDocumentTest(testDocument);
         }
 
+        @Override
         public void testObjectToOutputStreamASCIIEncoding() throws Exception {
             Object objectToWrite = getWriteControlObject();
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -361,12 +373,14 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBWithJSONTestCases{
         }
 
 
+    @Override
     public void testRoundTrip() throws Exception {
         //This test is not applicable because to Marshal we need a specialized jaxbelement
     }
 
 
     //Override and don't compare namespaceresolver size
+     @Override
      public void testObjectToContentHandler() throws Exception {
             SAXDocumentBuilder builder = new SAXDocumentBuilder();
             Object objectToWrite = getWriteControlObject();
@@ -386,6 +400,7 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBWithJSONTestCases{
         }
 
         //Override and don't compare namespaceresolver size
+        @Override
         public void testObjectToXMLDocument() throws Exception {
             Object objectToWrite = getWriteControlObject();
 
@@ -420,6 +435,7 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBWithJSONTestCases{
         testSchemaGen(getControlSchemaFiles());
     }
 
+    @Override
     public Object getWriteControlObject(){
         JAXBElement jaxbElement = (JAXBElement)getControlObject();
 
@@ -457,6 +473,7 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBWithJSONTestCases{
 
     protected abstract String getNoXsiTypeControlResourceName();
 
+    @Override
     public void xmlToObjectTest(Object testObject, Object controlObject) throws Exception {
             log("\n**xmlToObjectTest**");
             log("Expected:");

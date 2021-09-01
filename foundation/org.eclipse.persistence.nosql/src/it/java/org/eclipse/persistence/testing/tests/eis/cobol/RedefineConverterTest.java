@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ public class RedefineConverterTest extends CobolTest {
         return "This test will take a database row, write its contents to a byte array and then " + "read the contents back into another database row, then compare the results to assure " + "the two rows are equal";
     }
 
+    @Override
     protected void test() {
         RecordMetaData recordMetaData = CobolTestModel.getConversionRecord();
         row = CobolTestModel.getConversionRow();
@@ -51,6 +52,7 @@ public class RedefineConverterTest extends CobolTest {
         }
     }
 
+    @Override
     protected void verify() throws TestException {
         if (!CobolTestModel.compareCobolRows(row, resultRow)) {
             TestErrorException exception = new TestErrorException("The rows do not match.");

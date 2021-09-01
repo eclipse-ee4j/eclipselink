@@ -59,6 +59,7 @@ public class XmlAnyAttributeTestCases extends JAXBWithJSONTestCases {
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
     }
 
+    @Override
     public JAXBMarshaller getJSONMarshaller() throws Exception{
 
         Map<String, String> namespaces = new HashMap<String, String>();
@@ -72,6 +73,7 @@ public class XmlAnyAttributeTestCases extends JAXBWithJSONTestCases {
         return jsonMarhsaller;
     }
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlanyattribute/eclipselink-oxm.xml");
 
@@ -98,6 +100,7 @@ public class XmlAnyAttributeTestCases extends JAXBWithJSONTestCases {
         assertTrue("Expected map class [java.util.LinkedHashMap] but was ["+ mapping.getContainerPolicy().getContainerClassName()+"]", mapping.getContainerPolicy().getContainerClassName().equals("java.util.LinkedHashMap"));
     }
 
+    @Override
     protected Object getControlObject() {
         Employee ctrlEmp = new Employee();
         ctrlEmp.a = 1;

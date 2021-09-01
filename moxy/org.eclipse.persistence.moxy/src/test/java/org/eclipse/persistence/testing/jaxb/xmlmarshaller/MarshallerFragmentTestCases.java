@@ -36,6 +36,7 @@ public class MarshallerFragmentTestCases extends OXTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception {
         //set up XMLMarshaller
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
@@ -61,6 +62,7 @@ public class MarshallerFragmentTestCases extends OXTestCase {
         removeCopyrightNode(controlDocument);
     }
 
+    @Override
     public void tearDown() {
         try {
             marshaller.setProperty(XMLConstants.JAXB_FRAGMENT, originalSetting);

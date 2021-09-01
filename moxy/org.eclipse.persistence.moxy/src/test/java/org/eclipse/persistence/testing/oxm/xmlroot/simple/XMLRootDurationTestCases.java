@@ -49,6 +49,7 @@ public class XMLRootDurationTestCases extends XMLMappingTestCases {
         TestRunner.main(arguments);
     }
 
+    @Override
     public Object getControlObject() {
         XMLRoot xmlRoot = new XMLRoot();
         xmlRoot.setLocalName(CONTROL_ELEMENT_NAME);
@@ -66,6 +67,7 @@ public class XMLRootDurationTestCases extends XMLMappingTestCases {
     }
 
     // Unmarshal tests
+    @Override
     public void testXMLToObjectFromInputStream() throws Exception {
         InputStream instream = ClassLoader.getSystemResourceAsStream(getXMLResource());
         Object testObject = xmlUnmarshaller.unmarshal(instream, Duration.class);
@@ -73,17 +75,20 @@ public class XMLRootDurationTestCases extends XMLMappingTestCases {
         xmlToObjectTest(testObject);
     }
 
+    @Override
     public void testXMLToObjectFromNode() throws Exception {
         Object testObject = xmlUnmarshaller.unmarshal(getControlDocument(), Duration.class);
         xmlToObjectTest(testObject);
     }
 
+    @Override
     public void testXMLToObjectFromURL() throws Exception {
         java.net.URL url = ClassLoader.getSystemResource(getXMLResource());
         Object testObject = xmlUnmarshaller.unmarshal(url, Duration.class);
         xmlToObjectTest(testObject);
     }
 
+    @Override
     public void testXMLToObjectFromXMLStreamReader() throws Exception {
         if(null != XML_INPUT_FACTORY) {
                 InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -99,6 +104,7 @@ public class XMLRootDurationTestCases extends XMLMappingTestCases {
         }
     }
 
+    @Override
     public void testXMLToObjectFromXMLEventReader() throws Exception {
         if(null != XML_INPUT_FACTORY) {
                 InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -114,6 +120,7 @@ public class XMLRootDurationTestCases extends XMLMappingTestCases {
         }
     }
 
+    @Override
     public void xmlToObjectTest(Object testObject) throws Exception {
         log("\n**testXMLDocumentToObject**");
         log("Expected:");
@@ -130,6 +137,7 @@ public class XMLRootDurationTestCases extends XMLMappingTestCases {
     }
 
     // DOES NOT APPLY
+    @Override
     public void testUnmarshallerHandler() throws Exception {
     }
 

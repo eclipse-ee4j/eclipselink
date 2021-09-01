@@ -31,6 +31,7 @@ public class ClassWithInnerClass {
             return true;
         }
 
+        @Override
         public int compareTo(MyInner o) {
             if(o.innerName == null){
                 return 0;

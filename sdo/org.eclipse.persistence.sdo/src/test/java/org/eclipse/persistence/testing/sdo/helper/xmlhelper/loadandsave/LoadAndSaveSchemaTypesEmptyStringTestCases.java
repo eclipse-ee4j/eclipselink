@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,14 +37,17 @@ public class LoadAndSaveSchemaTypesEmptyStringTestCases extends LoadAndSaveSchem
         TestRunner.main(arguments);
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/schemaTypesEmpty.xml");
     }
 
+    @Override
     protected String getNoSchemaControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/schemaTypesEmptyNoSchema.xml");
     }
 
+    @Override
     protected void verifyAfterLoad(XMLDocument document) {
             assertNotNull(document);
             assertNotNull(document.getRootObject());

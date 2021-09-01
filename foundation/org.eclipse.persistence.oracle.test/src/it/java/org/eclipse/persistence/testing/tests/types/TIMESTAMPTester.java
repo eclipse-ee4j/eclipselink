@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -165,6 +165,7 @@ public abstract class TIMESTAMPTester extends TypeTester {
         this.sessionTimeZone = timeZone;
     }
 
+    @Override
     protected void setup(Session session) {
         super.setup(session);
     }
@@ -363,6 +364,7 @@ public abstract class TIMESTAMPTester extends TypeTester {
         return TimeZone.getDefault().getID().equals(this.sessionTimeZone) || !isLtzTimestampInGmt;
     }
 
+    @Override
     protected void test(WriteTypeObjectTest testCase) {
         try {
             if(this.sessionTimeZone != null) {
@@ -374,6 +376,7 @@ public abstract class TIMESTAMPTester extends TypeTester {
         super.test(testCase);
     }
 
+    @Override
     protected void verify(WriteTypeObjectTest testCase) throws TestException {
         try {
             super.verify(testCase);

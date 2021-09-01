@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,6 +46,7 @@ public class SqlPackageType extends SqlTypeWithMethods {
     protected String[] m_executeNames;
     protected ParamInfoValues m_paramInfoValues;
 
+    @Override
     public boolean isPackage() {
         return true;
     }
@@ -63,6 +64,7 @@ public class SqlPackageType extends SqlTypeWithMethods {
         //initSecurityAttributes(sqlName);
     }
 
+    @Override
     protected List<FieldInfo> getFieldInfo() {
         return null;
     }
@@ -103,6 +105,7 @@ public class SqlPackageType extends SqlTypeWithMethods {
     }
     */
 
+    @Override
     protected MethodInfo[] getMethodInfo(String schema, String name) throws SQLException {
         /*
          * POSITION of Nth argument is N SEQUENCE of Nth argument is >= N POSITION of function
@@ -132,8 +135,9 @@ public class SqlPackageType extends SqlTypeWithMethods {
         return minfo;
     }
 
+    @Override
     protected ResultInfo getResultInfo(String schema, String name, String methodName,
-        String methodNo) throws SQLException {
+                                       String methodNo) throws SQLException {
         if (m_resultInfoValues == null || !m_resultInfoValues.matches(schema, name)) {
             m_resultInfoValues = new ResultInfoValues(schema, name, m_methodFilter, m_viewCache);
         }
@@ -180,8 +184,9 @@ public class SqlPackageType extends SqlTypeWithMethods {
         }
     }
 
+    @Override
     protected ParamInfo[] getParamInfo(String schema, String name, String methodName,
-        String methodNo) throws SQLException {
+                                       String methodNo) throws SQLException {
         if (m_paramInfoValues == null || !m_paramInfoValues.matches(schema, name)) {
             m_paramInfoValues = new ParamInfoValues(schema, name, m_methodFilter, m_viewCache);
         }

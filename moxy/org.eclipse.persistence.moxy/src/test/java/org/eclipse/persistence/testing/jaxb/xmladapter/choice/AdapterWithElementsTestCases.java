@@ -31,6 +31,7 @@ public class AdapterWithElementsTestCases extends JAXBWithJSONTestCases {
         setClasses(classes);
     }
 
+    @Override
     protected Object getControlObject() {
         Foo foo = new Foo();
         foo.singleChoice = new BarA();

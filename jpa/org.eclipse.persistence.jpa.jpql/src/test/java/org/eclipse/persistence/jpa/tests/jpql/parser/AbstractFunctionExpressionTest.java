@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 
     private JPQLQueryStringFormatter buildQueryStringFormatter_1() {
         return new JPQLQueryStringFormatter() {
+            @Override
             public String format(String query) {
                 return query.replace("(,)", "(, )");
             }
@@ -41,6 +42,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 
     private JPQLQueryStringFormatter buildQueryStringFormatter_2() {
         return new JPQLQueryStringFormatter() {
+            @Override
             public String format(String query) {
                 return query.replace(",)", ", )");
             }
@@ -49,6 +51,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 
     private JPQLQueryStringFormatter buildQueryStringFormatter_3(final String jpqlQuery) {
         return new JPQLQueryStringFormatter() {
+            @Override
             public String format(String query) {
                 return jpqlQuery;
             }
@@ -57,6 +60,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 
     private JPQLQueryStringFormatter buildQueryStringFormatter_4(final String jpqlQuery) {
         return new JPQLQueryStringFormatter() {
+            @Override
             public String format(String query) {
                 return jpqlQuery.replaceAll("=", " = ").replaceAll("\\s+", " ");
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,7 @@ public class ClassGenWithJavaReservedWordCollisionTestCases extends SDOClassGenT
         TestRunner.main(arguments);
     }
 
+    @Override
     protected List getControlFileNames() {
         ArrayList controlFileNames = new ArrayList();
         controlFileNames.add("Company.java");
@@ -46,10 +47,12 @@ public class ClassGenWithJavaReservedWordCollisionTestCases extends SDOClassGenT
         return controlFileNames;
     }
 
+    @Override
     protected String getSourceFolder() {
         return "collidejava";
     }
 
+    @Override
     protected String getControlSourceFolder() {
         return "org/eclipse/persistence/testing/sdo/helper/classgen/collidejava/";
     }
@@ -67,6 +70,7 @@ public class ClassGenWithJavaReservedWordCollisionTestCases extends SDOClassGenT
         //compareFiles(getControlFiles(), getGeneratedFiles(classGenerator.getGeneratedBuffers()));
     }*/
 
+    @Override
     protected String getSchemaName() {
         return "org/eclipse/persistence/testing/sdo/schemas/classgen/CompanyWithSequenceCSWithJavaReservedName.xsd";
     }

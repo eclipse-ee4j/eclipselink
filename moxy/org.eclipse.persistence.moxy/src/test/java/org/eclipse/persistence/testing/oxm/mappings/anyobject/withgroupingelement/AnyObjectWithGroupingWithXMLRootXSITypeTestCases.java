@@ -38,6 +38,7 @@ public class AnyObjectWithGroupingWithXMLRootXSITypeTestCases extends XMLMapping
         setControlDocument("org/eclipse/persistence/testing/oxm/mappings/anyobject/withgroupingelement/complex_child_ns_xmlroot_xsitype.xml");
     }
 
+    @Override
     public Object getControlObject() {
         Root root = new Root();
 

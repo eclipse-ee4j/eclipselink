@@ -38,6 +38,7 @@ public class SchemaTypeHexTestCases extends XMLMappingTestCases {
         setProject(project);
     }
 
+    @Override
     protected Object getControlObject() {
         ByteHolder byteHolder = new ByteHolder();
 

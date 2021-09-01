@@ -84,6 +84,7 @@ public class DynamicJAXBFromSessionsXMLTestCases extends JAXBTestCases {
         xmlContext = ((DynamicJAXBContext) jaxbContext).getXMLContext();
     }
 
+    @Override
     protected Object getControlObject() {
         DynamicEntity docWrapper = ((DynamicJAXBContext) jaxbContext).newDynamicEntity(DOCWRAPPER_CLASS_NAME);
 
@@ -336,6 +337,7 @@ public class DynamicJAXBFromSessionsXMLTestCases extends JAXBTestCases {
         }
     }
 
+    @Override
     public void xmlToObjectTest(Object testObject) throws Exception {
         log("\n**xmlToObjectTest**");
         log("Expected:");

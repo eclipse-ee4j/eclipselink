@@ -45,6 +45,7 @@ public class TypeNameValueTestCases extends JSONTestCases {
         setControlJSON(JSON_RESOURCE);
     }
 
+    @Override
     public void setUp() throws Exception{
         super.setUp();
         jsonUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
@@ -72,6 +73,7 @@ public class TypeNameValueTestCases extends JSONTestCases {
         return jbe;
     }
 
+    @Override
     protected Object getControlObject() {
         return buildProperties();
     }

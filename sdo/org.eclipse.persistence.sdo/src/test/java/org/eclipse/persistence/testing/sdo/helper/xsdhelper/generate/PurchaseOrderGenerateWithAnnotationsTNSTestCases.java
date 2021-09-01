@@ -27,19 +27,23 @@ public class PurchaseOrderGenerateWithAnnotationsTNSTestCases extends PurchaseOr
         TestRunner.run(PurchaseOrderGenerateWithAnnotationsTNSTestCases.class);
     }
 
+    @Override
     public String getControlFileName() {
         return "org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderWithAnnotationsGeneratedTNS.xsd";
     }
 
+    @Override
     public String getControlFileNameDifferentOrder() {
         return "org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderWithAnnotationsGeneratedTNSRoundTrip.xsd";
     }
 
+    @Override
     public java.util.List defineTypesFromSchema() {
         InputStream is = getSchemaInputStream("org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderWithAnnotationsTNS.xsd");
         return xsdHelper.define(is, null);
     }
 
+    @Override
     public String getControlUri() {
         return "my.uri";
     }

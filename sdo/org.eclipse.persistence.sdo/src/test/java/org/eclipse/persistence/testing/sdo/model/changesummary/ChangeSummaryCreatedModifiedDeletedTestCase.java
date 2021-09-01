@@ -62,6 +62,7 @@ public class ChangeSummaryCreatedModifiedDeletedTestCase extends SDOTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() {
         super.setUp(); // watch setup redundancy
         DataObject rootTypeDO = defineType(URINAME, TYPENAME);

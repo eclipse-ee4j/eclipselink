@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class TestDeferredContentHandler extends DeferredContentHandler {
         reader = theReader;
     }
 
+    @Override
     protected void processEmptyElement() throws SAXException {
         PROCESS_EMPTY++;
         endProcessing();
@@ -45,11 +46,13 @@ public class TestDeferredContentHandler extends DeferredContentHandler {
         endProcessing();
     }
 
+    @Override
     protected void processComplexElement() throws SAXException {
         PROCESS_COMPLEX_ELEMENT++;
         endProcessing();
     }
 
+    @Override
     protected void processSimpleElement() throws SAXException {
         PROCESS_SIMPLE_ELEMENT++;
         endProcessing();

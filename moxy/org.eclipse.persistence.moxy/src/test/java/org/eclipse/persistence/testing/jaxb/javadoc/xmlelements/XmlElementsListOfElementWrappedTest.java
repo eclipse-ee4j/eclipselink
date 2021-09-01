@@ -34,6 +34,7 @@ public class XmlElementsListOfElementWrappedTest extends JAXBWithJSONTestCases {
         setClasses(classes);
     }
 
+    @Override
     protected Object getControlObject() {
         XmlElementsListOfElementWrapped example = new XmlElementsListOfElementWrapped();
         example.items = new ArrayList();

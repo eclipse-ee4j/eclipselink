@@ -60,6 +60,7 @@ public class DefaultNamespace2TestCases extends JAXBWithJSONTestCases {
         return root;
     }
 
+       @Override
        public Root getReadControlObject() {
            Root root = new Root();
 

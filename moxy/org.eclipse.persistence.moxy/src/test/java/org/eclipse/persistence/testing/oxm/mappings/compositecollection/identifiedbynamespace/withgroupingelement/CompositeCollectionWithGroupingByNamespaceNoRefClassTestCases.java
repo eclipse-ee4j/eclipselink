@@ -64,6 +64,7 @@ public class CompositeCollectionWithGroupingByNamespaceNoRefClassTestCases exten
 
     }
 
+    @Override
     protected Object getControlObject() {
         Employee employee = new Employee();
 

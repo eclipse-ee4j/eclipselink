@@ -60,10 +60,12 @@ public class BinaryDataIdentifiedByNameEmptyNSRTestCases extends XMLWithJSONMapp
         setProject(new BinaryDataIdentifiedByNameProject(namespaceResolver));
     }
 
+    @Override
     protected Object getControlObject() {
         return Employee.example1();
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         MyAttachmentUnmarshaller attachmentUnmarshaller = new MyAttachmentUnmarshaller();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,15 +48,18 @@ public final class EclipseLinkSemanticValidatorExtensionTest2_4 extends Abstract
 
     private EclipseLinkSemanticValidatorExtension buildSemanticExtension() {
         return new EclipseLinkSemanticValidatorExtension() {
+            @Override
             public boolean columnExists(String tableName, String columnName) {
                 return columnNames(tableName).contains(columnName);
             }
+            @Override
             public String getEntityTable(String entityName) {
                 if ("Employee".equals(entityName)) {
                     return "EMPLOYEE";
                 }
                 return null;
             }
+            @Override
             public boolean tableExists(String tableName) {
                 return tableNames().contains(tableName);
             }

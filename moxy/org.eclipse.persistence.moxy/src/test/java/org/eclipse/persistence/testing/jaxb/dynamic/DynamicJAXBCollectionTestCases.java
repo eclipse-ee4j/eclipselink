@@ -45,6 +45,7 @@ public class DynamicJAXBCollectionTestCases extends TestCase {
         super(name);
     }
 
+    @Override
     public String getName() {
         return "Dynamic JAXB: Collections: " + super.getName();
     }

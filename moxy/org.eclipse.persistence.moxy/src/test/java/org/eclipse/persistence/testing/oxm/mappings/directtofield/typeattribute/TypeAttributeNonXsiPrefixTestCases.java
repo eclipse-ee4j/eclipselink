@@ -28,6 +28,7 @@ public class TypeAttributeNonXsiPrefixTestCases extends XMLMappingTestCases {
         setProject(new TypeAttributeNonXsiPrefixProject());
     }
 
+    @Override
     protected Object getControlObject() {
         Employee employee = new Employee();
         employee.setIdentifier(CONTROL_ID);

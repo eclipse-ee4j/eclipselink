@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -65,6 +65,7 @@ public class RootLevelByteArrayNullContentTestCases extends TypeMappingInfoWithJ
         MyAttachmentMarshaller.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, bytes);
     }
 
+    @Override
     protected Object getControlObject() {
 
         QName qname = new QName("someUri", "testTagName");
@@ -76,6 +77,7 @@ public class RootLevelByteArrayNullContentTestCases extends TypeMappingInfoWithJ
     protected String getNoXsiTypeControlResourceName() {
         return XML_RESOURCE;
     }
+    @Override
     public Map<String, InputStream> getControlSchemaFiles(){
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/typemappinginfo/byteArray.xsd");
 

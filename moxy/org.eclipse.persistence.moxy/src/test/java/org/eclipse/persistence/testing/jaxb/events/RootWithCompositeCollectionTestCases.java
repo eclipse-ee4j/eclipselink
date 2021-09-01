@@ -71,6 +71,7 @@ public class RootWithCompositeCollectionTestCases extends JAXBWithJSONTestCases 
 
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         listener = new JAXBMarshalListenerImpl();
@@ -79,6 +80,7 @@ public class RootWithCompositeCollectionTestCases extends JAXBWithJSONTestCases 
         this.getJAXBMarshaller().setListener(listener);
         this.getJAXBUnmarshaller().setListener(unmarshalListener);
     }
+    @Override
     public void xmlToObjectTest(Object testObject) throws Exception {
         super.xmlToObjectTest(testObject);
         assertTrue("Class based callbacks not correct", ((Employee)testObject).triggeredEvents.equals(expectedClassBasedUnmarshalEvents));
@@ -87,6 +89,7 @@ public class RootWithCompositeCollectionTestCases extends JAXBWithJSONTestCases 
 
     }
 
+    @Override
     public void jsonToObjectTest(Object testObject) throws Exception {
         super.jsonToObjectTest(testObject);
         assertTrue("Class based callbacks not correct", ((Employee)testObject).triggeredEvents.equals(expectedClassBasedUnmarshalEvents));
@@ -95,6 +98,7 @@ public class RootWithCompositeCollectionTestCases extends JAXBWithJSONTestCases 
 
     }
 
+    @Override
     public void objectToXMLDocumentTest(Document testDocument) throws Exception {
         super.objectToXMLDocumentTest(testDocument);
         assertTrue("Class based callbacks not correct", ((Employee)getWriteControlObject()).triggeredEvents.equals(expectedClassBasedMarshalEvents));
@@ -102,6 +106,7 @@ public class RootWithCompositeCollectionTestCases extends JAXBWithJSONTestCases 
 
     }
 
+    @Override
     public Object getControlObject() {
         Employee employee = new Employee();
         employee.phoneNumbers = new ArrayList();
@@ -117,6 +122,7 @@ public class RootWithCompositeCollectionTestCases extends JAXBWithJSONTestCases 
     }
 
 
+    @Override
     public Object getWriteControlObject() {
         if(writeControlObject == null) {
             writeControlObject = getControlObject();
@@ -124,6 +130,7 @@ public class RootWithCompositeCollectionTestCases extends JAXBWithJSONTestCases 
         return writeControlObject;
     }
 
+    @Override
     public void testXMLToObjectFromInputStream() throws Exception {
         InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
         Object testObject = getJAXBUnmarshaller().unmarshal(instream);
@@ -131,11 +138,13 @@ public class RootWithCompositeCollectionTestCases extends JAXBWithJSONTestCases 
         xmlToObjectTest(testObject);
     }
 
+    @Override
     public void testObjectToXMLDocument() throws Exception {
         //Document testDocument = getJAXBMarshaller().objectToXML(getWriteControlObject());
         //objectToXMLDocumentTest(testDocument);
     }
 
+    @Override
     public void testObjectToXMLStringWriter() throws Exception {
         StringWriter writer = new StringWriter();
         getJAXBMarshaller().marshal(getWriteControlObject(), writer);
@@ -149,6 +158,7 @@ public class RootWithCompositeCollectionTestCases extends JAXBWithJSONTestCases 
         objectToXMLDocumentTest(testDocument);
     }
 
+    @Override
     public void testRoundTrip() throws Exception{
         if(isUnmarshalTest()) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -178,6 +188,7 @@ public class RootWithCompositeCollectionTestCases extends JAXBWithJSONTestCases 
         }
     }
 
+    @Override
     public void testObjectToContentHandler() throws Exception {
         SAXDocumentBuilder builder = new SAXDocumentBuilder();
         getJAXBMarshaller().marshal(getWriteControlObject(), builder);
@@ -194,12 +205,14 @@ public class RootWithCompositeCollectionTestCases extends JAXBWithJSONTestCases 
         assertXMLIdentical(controlDocument, testDocument);
     }
 
+    @Override
     public void testXMLToObjectFromURL() throws Exception {
         java.net.URL url = ClassLoader.getSystemResource(resourceName);
         Object testObject = getJAXBUnmarshaller().unmarshal(url);
         xmlToObjectTest(testObject);
     }
 
+    @Override
     public void testUnmarshallerHandler() throws Exception {
     }
 }

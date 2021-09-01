@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -110,6 +110,7 @@ public class JavaTypeRepository implements ITypeRepository {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType getEnumType(String enumTypeName) {
 
         // Get the position of the last dot so we can remove the constant
@@ -130,6 +131,7 @@ public class JavaTypeRepository implements ITypeRepository {
     /**
      * {@inheritDoc}
      */
+    @Override
     public JavaType getType(Class<?> javaClass) {
         return getType(javaClass.getName());
     }
@@ -137,6 +139,7 @@ public class JavaTypeRepository implements ITypeRepository {
     /**
      * {@inheritDoc}
      */
+    @Override
     public JavaType getType(String typeName) {
 
         if (typeName == IType.UNRESOLVABLE_TYPE) {
@@ -153,6 +156,7 @@ public class JavaTypeRepository implements ITypeRepository {
     /**
      * {@inheritDoc}
      */
+    @Override
     public TypeHelper getTypeHelper() {
         if (typeHelper == null) {
             typeHelper = new TypeHelper(this);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,18 +19,22 @@ import org.eclipse.persistence.sdo.SDODataObject;
 
 public class USAddressImpl extends SDODataObject implements USAddress {
 
+    @Override
     public java.lang.String getName() {
         return (java.lang.String)get("name");
     }
 
+    @Override
     public void setName(java.lang.String value) {
         set("name", value);
     }
 
+    @Override
     public java.lang.String getStreet() {
         return (java.lang.String)get("street");
     }
 
+    @Override
     public void setStreet(java.lang.String value) {
         set("street", value);
     }

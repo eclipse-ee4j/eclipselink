@@ -41,6 +41,7 @@ public class MultipleBindingsFourFilesTestCases extends JAXBWithJSONTestCases {
             super(name);
         }
 
+        @Override
         public void setUp() throws Exception {
             setControlDocument(XML_RESOURCE);
             setControlJSON(JSON_RESOURCE);
@@ -58,6 +59,7 @@ public class MultipleBindingsFourFilesTestCases extends JAXBWithJSONTestCases {
             setTypes(types);
         }
 
+        @Override
         protected Object getControlObject() {
             Employee emp = new Employee();
             emp.age = 35;
@@ -85,6 +87,7 @@ public class MultipleBindingsFourFilesTestCases extends JAXBWithJSONTestCases {
             super.testSchemaGen(controlSchemas);
         }
 
+        @Override
         protected Map getProperties() {
 
             Map overrides = new HashMap();

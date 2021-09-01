@@ -26,10 +26,12 @@ public class SDOCopyHelperOriginalDeepCopyTestCases extends SDOCopyHelperDeepCop
         junit.textui.TestRunner.run(SDOCopyHelperOriginalDeepCopyTestCases.class);
     }
 
+    @Override
     public SDOChangeSummary getChangeSummary() {
         return containedDataObject.getChangeSummary();
     }
 
+    @Override
     public void assertEqualityHelperEqual(DataObject original, DataObject copy) {
         if (original.getChangeSummary() != null) {
             if (original.getChangeSummary().getChangedDataObjects().size() > 0) {

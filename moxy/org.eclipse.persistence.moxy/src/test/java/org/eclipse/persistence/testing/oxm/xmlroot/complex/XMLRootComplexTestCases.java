@@ -46,6 +46,7 @@ public class XMLRootComplexTestCases extends XMLMappingTestCases {
         return new XMLRootComplexProject();
     }
 
+    @Override
     protected Object getControlObject() {
         Person peep = new Person();
         peep.setName(CONTROL_PERSON_NAME);
@@ -58,6 +59,7 @@ public class XMLRootComplexTestCases extends XMLMappingTestCases {
     }
 
     // Unmarshal tests
+    @Override
     public void testXMLToObjectFromInputStream() throws Exception {
         InputStream instream = ClassLoader.getSystemResourceAsStream(getXMLResource());
         Object testObject = xmlUnmarshaller.unmarshal(instream, Person.class);
@@ -65,17 +67,20 @@ public class XMLRootComplexTestCases extends XMLMappingTestCases {
         xmlToObjectTest(testObject);
     }
 
+    @Override
     public void testXMLToObjectFromNode() throws Exception {
         Object testObject = xmlUnmarshaller.unmarshal(getControlDocument(), Person.class);
         xmlToObjectTest(testObject);
     }
 
+    @Override
     public void testXMLToObjectFromURL() throws Exception {
         java.net.URL url = ClassLoader.getSystemResource(getXMLResource());
         Object testObject = xmlUnmarshaller.unmarshal(url, Person.class);
         xmlToObjectTest(testObject);
     }
 
+    @Override
     public void testXMLToObjectFromXMLStreamReader() throws Exception {
         if(null != XML_INPUT_FACTORY) {
                 InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -91,6 +96,7 @@ public class XMLRootComplexTestCases extends XMLMappingTestCases {
         }
     }
 
+    @Override
     public void testXMLToObjectFromXMLEventReader() throws Exception {
         if(null != XML_INPUT_FACTORY) {
                 InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -106,6 +112,7 @@ public class XMLRootComplexTestCases extends XMLMappingTestCases {
         }
     }
 
+    @Override
     public void xmlToObjectTest(Object testObject) throws Exception {
         log("\n**testXMLDocumentToObject**");
         log("Expected:");
@@ -126,6 +133,7 @@ public class XMLRootComplexTestCases extends XMLMappingTestCases {
     }
 
     // DOES NOT APPLY
+    @Override
     public void testUnmarshallerHandler() throws Exception {
     }
 

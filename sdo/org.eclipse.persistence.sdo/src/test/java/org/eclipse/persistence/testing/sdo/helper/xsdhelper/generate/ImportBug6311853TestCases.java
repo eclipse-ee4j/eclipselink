@@ -44,11 +44,13 @@ public class ImportBug6311853TestCases extends XSDHelperGenerateTestCases {
         TestRunner.main(arguments);
     }
 
+    @Override
     public String getControlFileName() {
         return "org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/ImportBug6311853.xsd";
 
     }
 
+    @Override
     public Map getMap() {
         HashMap schemaLocationMap = new HashMap();
         schemaLocationMap.put(new QName("my.uri2", "Person"), "ImportBug6311853.xsd");
@@ -56,6 +58,7 @@ public class ImportBug6311853TestCases extends XSDHelperGenerateTestCases {
         return schemaLocationMap;
     }
 
+    @Override
     public List getTypesToGenerateFrom() {
         List types = new ArrayList();
         String uri = "my.uri2";

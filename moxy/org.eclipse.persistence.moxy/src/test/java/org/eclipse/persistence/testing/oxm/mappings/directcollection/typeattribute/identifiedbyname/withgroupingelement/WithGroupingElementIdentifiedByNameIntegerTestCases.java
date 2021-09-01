@@ -34,6 +34,7 @@ public class WithGroupingElementIdentifiedByNameIntegerTestCases extends XMLMapp
         setProject(new WithGroupingElementIdentifiedByNameProject());
   }
 
+  @Override
   protected Object getControlObject() {
         Vector responsibilities = new Vector();
         responsibilities.addElement(CONTROL_RESPONSIBILITY1);

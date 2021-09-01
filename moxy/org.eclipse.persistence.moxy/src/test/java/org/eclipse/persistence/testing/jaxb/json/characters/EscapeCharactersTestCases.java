@@ -28,6 +28,7 @@ public class EscapeCharactersTestCases extends JSONMarshalUnmarshalTestCases {
         setControlJSON(JSON_RESOURCE);
     }
 
+    @Override
     protected Object getControlObject() {
         EscapeCharacterHolder holder = new EscapeCharacterHolder();
 
@@ -61,6 +62,7 @@ public class EscapeCharactersTestCases extends JSONMarshalUnmarshalTestCases {
         return holder;
     }
 
+    @Override
     protected void compareStrings(String test, String testString, String expectedString, boolean removeWhitespace) {
         log(test);
         log("Expected (With All Whitespace Removed):");

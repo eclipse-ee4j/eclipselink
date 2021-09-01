@@ -38,6 +38,7 @@ public class XMLElementsWithWrapperTestCases extends JAXBWithJSONTestCases{
         setControlJSON(JSON_RESOURCE);
     }
 
+    @Override
     public Map getProperties() {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelements/eclipselink-oxm-wrapper.xml");
 

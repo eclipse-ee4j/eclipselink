@@ -76,6 +76,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         super(name);
     }
 
+    @Override
     public void setUp() {
         super.setUp();
         stringType = typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.STRING);
@@ -98,14 +99,17 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         return "company";
     }
 
+    @Override
     public String getSchemaToDefine() {
         return XSD_PATH;
     }
 
+    @Override
     public String getControlGeneratedFileName() {
         return XSD_PATH;
     }
 
+    @Override
     protected List<Type> getTypesToGenerateFrom() {
         return getControlTypes();
     }
@@ -335,6 +339,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         return aType;
     }
 
+    @Override
     protected DataObject addProperty(DataObject parentType, String name, Type propType) {
         DataObject newProperty = parentType.createDataObject("property");
         SDOProperty prop = (SDOProperty)newProperty.getType().getProperty("name");
@@ -402,6 +407,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
     public void registerTypes() {
         registerTypes(true);
     }
+    @Override
     public List<Type> getControlTypes() {
         List<Type> types = new ArrayList<Type>();
         if(typeHelper.getType(URINAME, COMPANY_TYPENAME) != null) {

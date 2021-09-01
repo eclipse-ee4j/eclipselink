@@ -87,6 +87,7 @@ public class XMLMarshalTestCases extends OXTestCase {
         TestRunner.main(arguments);
     }
 
+    @Override
     public void setUp() throws Exception {
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         builderFactory.setNamespaceAware(true);

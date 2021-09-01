@@ -63,6 +63,7 @@ public class BinaryDataIdentifiedByNameXOPonNSRTestCases extends XMLWithJSONMapp
         setProject(new BinaryDataIdentifiedByNameProject(namespaceResolver));
     }
 
+    @Override
     protected Object getControlObject() {
         Employee emp = Employee.example1();
         String s = "THISISATEXTSTRINGFORTHISDATAHANDLER";
@@ -72,6 +73,7 @@ public class BinaryDataIdentifiedByNameXOPonNSRTestCases extends XMLWithJSONMapp
         return emp;
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         attachmentUnmarshaller = new MyAttachmentUnmarshaller();
@@ -89,6 +91,7 @@ public class BinaryDataIdentifiedByNameXOPonNSRTestCases extends XMLWithJSONMapp
         return marshaller;
     }
 
+    @Override
     public void xmlToObjectTest(Object testObject) throws Exception {
         super.xmlToObjectTest(testObject);
 

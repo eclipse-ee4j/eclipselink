@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,38 +29,47 @@ public class LoadAndSaveEmptyElementTestCases extends LoadAndSaveTestCases {
         super(name);
     }
 
+    @Override
     protected String getSchemaName() {
         return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/empty/input.xsd";
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/empty/input.xml");
     }
 
+    @Override
     protected String getControlWriteFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/empty/output.xml");
     }
 
+    @Override
     protected String getNoSchemaControlWriteFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/empty/output.xml");
     }
 
+    @Override
     protected String getNoSchemaControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/empty/input.xml");
     }
 
+    @Override
     protected String getControlRootURI() {
         return "namespace1";
     }
 
+    @Override
     protected String getControlRootName() {
         return "root";
     }
 
+    @Override
     protected String getRootInterfaceName() {
         return "RootType";
     }
 
+    @Override
     protected void verifyAfterLoad (XMLDocument document) {
         super.verifyAfterLoad(document);
         DataObject rootDO = document.getRootObject();
@@ -90,12 +99,14 @@ public class LoadAndSaveEmptyElementTestCases extends LoadAndSaveTestCases {
      }
 
     // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    @Override
     protected List<String> getPackages() {
         List<String> packages = new ArrayList<String>();
         packages.add("namespace1");
         return packages;
     }
 
+    @Override
     public void registerTypes() {
         Type stringType = typeHelper.getType("commonj.sdo", "String");
         Type decimalType = typeHelper.getType("commonj.sdo", "Decimal");

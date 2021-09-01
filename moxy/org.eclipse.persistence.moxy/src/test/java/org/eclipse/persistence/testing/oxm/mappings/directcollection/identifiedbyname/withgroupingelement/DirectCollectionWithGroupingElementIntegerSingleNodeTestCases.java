@@ -36,6 +36,7 @@ public class DirectCollectionWithGroupingElementIntegerSingleNodeTestCases exten
         setProject(p);
     }
 
+    @Override
     protected Object getControlObject() {
         Vector responsibilities = new Vector();
         responsibilities.addElement(CONTROL_RESPONSIBILITY1);

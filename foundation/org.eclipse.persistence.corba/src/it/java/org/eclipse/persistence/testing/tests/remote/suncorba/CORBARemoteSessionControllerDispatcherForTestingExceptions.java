@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,6 +52,7 @@ protected Transporter handleByMode() {
  * @param remoteCommand RemoteCommand The command to be executed on the remote session
  */
 
+@Override
 public Transporter processCommand(Transporter remoteTransporter)
 {
     return handleByMode();
@@ -61,6 +62,7 @@ public Transporter processCommand(Transporter remoteTransporter)
  * Begin a transaction on the database.
  */
 
+@Override
 public Transporter beginTransaction()
 {
     return handleByMode();
@@ -70,6 +72,7 @@ public Transporter beginTransaction()
  * Begin a transaction on the database.
  */
 
+@Override
 public Transporter beginEarlyTransaction()
 {
     return handleByMode();
@@ -78,6 +81,7 @@ public Transporter beginEarlyTransaction()
  * Remote unit of work after serialization is commited locally.
  */
 
+@Override
 public Transporter commitRootUnitOfWork(Transporter remoteUnitOfWork)
 {
     return handleByMode();
@@ -86,6 +90,7 @@ public Transporter commitRootUnitOfWork(Transporter remoteUnitOfWork)
  * Commit a transaction on the database.
  */
 
+@Override
 public Transporter commitTransaction()
 {
     return handleByMode();
@@ -132,6 +137,7 @@ public Transporter containsObjectInIdentityMap__oracle_toplink_internal_remote_T
  * Used for closing cursored streams across RMI.
  */
 
+@Override
 public Transporter cursoredStreamClose(Transporter remoteCursoredStreamID) {
     return handleByMode();
 }
@@ -139,6 +145,7 @@ public Transporter cursoredStreamClose(Transporter remoteCursoredStreamID) {
  * Retrieve next page size of objects from the remote cursored stream
  */
 
+@Override
 public Transporter cursoredStreamNextPage(Transporter remoteCursoredStream, int pageSize) {
     return handleByMode();
 }
@@ -146,6 +153,7 @@ public Transporter cursoredStreamNextPage(Transporter remoteCursoredStream, int 
  * Return the cursored stream size
  */
 
+@Override
 public Transporter cursoredStreamSize(Transporter remoteCursoredStreamOid) {
     return handleByMode();
 }
@@ -153,6 +161,7 @@ public Transporter cursoredStreamSize(Transporter remoteCursoredStreamOid) {
  * Returns a remote cursor stub in a transporter
  */
 
+@Override
 public Transporter cursorSelectObjects(Transporter remoteTransporter)
 {
     return handleByMode();
@@ -161,6 +170,7 @@ public Transporter cursorSelectObjects(Transporter remoteTransporter)
  * A remote query after serialization is executed locally.
  */
 
+@Override
 public Transporter executeNamedQuery(Transporter nameTransporter, Transporter classTransporter, Transporter argumentsTransporter)
 {
     return handleByMode();
@@ -169,6 +179,7 @@ public Transporter executeNamedQuery(Transporter nameTransporter, Transporter cl
  * A remote query after serialization is executed locally.
  */
 
+@Override
 public Transporter executeQuery(Transporter query)
 {
     return handleByMode();
@@ -177,6 +188,7 @@ public Transporter executeQuery(Transporter query)
  * Extract descriptor from the session
  */
 
+@Override
 public Transporter getDescriptor(Transporter theClass)
 {
     return handleByMode();
@@ -185,6 +197,7 @@ public Transporter getDescriptor(Transporter theClass)
  * Extract descriptor from the session
  */
 
+@Override
 public Transporter getDescriptorForAlias(Transporter theClass)
 {
     return handleByMode();
@@ -194,6 +207,7 @@ public Transporter getDescriptorForAlias(Transporter theClass)
  * Get the default read-only classes
  **/
 
+@Override
 public Transporter getDefaultReadOnlyClasses()
 {
     return handleByMode();
@@ -229,6 +243,7 @@ public Transporter getFromIdentityMap__oracle_toplink_internal_remote_Transporte
  * Get the associated session login.
  */
 
+@Override
 public Transporter getLogin()
 {
     return handleByMode();
@@ -262,6 +277,7 @@ public Transporter getRemoteLog()
  * Get the value returned by remote function call
  */
 
+@Override
 public Transporter getSequenceNumberNamed(Transporter remoteFunctionCall) {
     return handleByMode();
 }
@@ -290,6 +306,7 @@ public Transporter initializeIdentityMap(Transporter theClass)
 {
     return handleByMode();
 }
+@Override
 public Transporter initializeIdentityMapsOnServerSession()
 {
     return handleByMode();
@@ -298,6 +315,7 @@ public Transporter initializeIdentityMapsOnServerSession()
  * The corresponding original value holder is instantiated.
  */
 
+@Override
 public Transporter instantiateRemoteValueHolderOnServer(Transporter remoteValueHolder)
 {
     return handleByMode();
@@ -365,6 +383,7 @@ public Transporter removeFromIdentityMap__oracle_toplink_internal_remote_Transpo
  * Rollback a transaction on the database.
  */
 
+@Override
 public Transporter rollbackTransaction()
 {
     return handleByMode();
@@ -373,6 +392,7 @@ public Transporter rollbackTransaction()
  * Moves the cursor to the given row number in the result set
  */
 
+@Override
 public Transporter scrollableCursorAbsolute(Transporter remoteScrollableCursorOid, int rows) {
     return handleByMode();
 }
@@ -380,6 +400,7 @@ public Transporter scrollableCursorAbsolute(Transporter remoteScrollableCursorOi
  * Moves the cursor to the end of the result set, just after the last row.
  */
 
+@Override
 public Transporter scrollableCursorAfterLast(Transporter remoteScrollableCursorOid){
     return handleByMode();
 }
@@ -387,6 +408,7 @@ public Transporter scrollableCursorAfterLast(Transporter remoteScrollableCursorO
  * Moves the cursor to the front of the result set, just before the first row
  */
 
+@Override
 public Transporter scrollableCursorBeforeFirst(Transporter remoteScrollableCursor) {
     return handleByMode();
 }
@@ -394,6 +416,7 @@ public Transporter scrollableCursorBeforeFirst(Transporter remoteScrollableCurso
  * Used for closing scrollable cursor across RMI.
  */
 
+@Override
 public Transporter scrollableCursorClose(Transporter remoteScrollableCursorOid)  {
     return handleByMode();
 }
@@ -401,6 +424,7 @@ public Transporter scrollableCursorClose(Transporter remoteScrollableCursorOid) 
  * Retrieves the current row index number
  */
 
+@Override
 public Transporter scrollableCursorCurrentIndex(Transporter remoteScrollableCursor) {
     return handleByMode();
 }
@@ -408,6 +432,7 @@ public Transporter scrollableCursorCurrentIndex(Transporter remoteScrollableCurs
  * Moves the cursor to the first row in the result set
  */
 
+@Override
 public Transporter scrollableCursorFirst(Transporter remoteScrollableCursor) {
     return handleByMode();
 }
@@ -415,6 +440,7 @@ public Transporter scrollableCursorFirst(Transporter remoteScrollableCursor) {
  * Indicates whether the cursor is after the last row in the result set.
  */
 
+@Override
 public Transporter scrollableCursorIsAfterLast(Transporter remoteScrollableCursor) {
     return handleByMode();
 }
@@ -422,6 +448,7 @@ public Transporter scrollableCursorIsAfterLast(Transporter remoteScrollableCurso
  * Indicates whether the cursor is before the first row in the result set.
  */
 
+@Override
 public Transporter scrollableCursorIsBeforeFirst(Transporter remoteScrollableCursor) {
     return handleByMode();
 }
@@ -429,6 +456,7 @@ public Transporter scrollableCursorIsBeforeFirst(Transporter remoteScrollableCur
  * Indicates whether the cursor is on the first row of the result set.
  */
 
+@Override
 public Transporter scrollableCursorIsFirst(Transporter remoteScrollableCursor) {
     return handleByMode();
 }
@@ -436,6 +464,7 @@ public Transporter scrollableCursorIsFirst(Transporter remoteScrollableCursor) {
  * Indicates whether the cursor is on the last row of the result set.
  */
 
+@Override
 public Transporter scrollableCursorIsLast(Transporter remoteScrollableCursor)  {
     return handleByMode();
 }
@@ -443,6 +472,7 @@ public Transporter scrollableCursorIsLast(Transporter remoteScrollableCursor)  {
  * Moves the cursor to the last row in the result set
  */
 
+@Override
 public Transporter scrollableCursorLast(Transporter remoteScrollableCursor)  {
     return handleByMode();
 }
@@ -450,6 +480,7 @@ public Transporter scrollableCursorLast(Transporter remoteScrollableCursor)  {
  * Retrieve next object from the scrollable cursor
  */
 
+@Override
 public Transporter scrollableCursorNextObject(Transporter scrollableCursorOid) {
     return handleByMode();
 }
@@ -457,6 +488,7 @@ public Transporter scrollableCursorNextObject(Transporter scrollableCursorOid) {
  * Retrieve previous object from the scrollable cursor
  */
 
+@Override
 public Transporter scrollableCursorPreviousObject(Transporter scrollableCursorOid) {
     return handleByMode();
 }
@@ -464,6 +496,7 @@ public Transporter scrollableCursorPreviousObject(Transporter scrollableCursorOi
  * Moves the cursor to the given row number in the result set
  */
 
+@Override
 public Transporter scrollableCursorRelative(Transporter remoteScrollableCursor, int rows)  {
     return handleByMode();
 }
@@ -471,6 +504,7 @@ public Transporter scrollableCursorRelative(Transporter remoteScrollableCursor, 
  * Return the cursor size
  */
 
+@Override
 public Transporter scrollableCursorSize(Transporter remoteCursorOid) {
     return handleByMode();
 }

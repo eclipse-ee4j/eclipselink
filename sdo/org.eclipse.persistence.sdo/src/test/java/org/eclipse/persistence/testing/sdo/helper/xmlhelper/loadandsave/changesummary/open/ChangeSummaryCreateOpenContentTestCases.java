@@ -37,14 +37,17 @@ public class ChangeSummaryCreateOpenContentTestCases extends ChangeSummaryRootLo
         TestRunner.main(arguments);
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/open/team_csroot_create_open.xml");
     }
 
+    @Override
     protected String getNoSchemaControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/open/team_csroot_create_open.xml");
     }
 
+    @Override
     protected void verifyAfterLoad(XMLDocument document) {
         super.verifyAfterLoad(document);
 

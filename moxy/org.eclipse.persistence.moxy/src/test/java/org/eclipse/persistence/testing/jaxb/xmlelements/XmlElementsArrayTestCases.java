@@ -38,6 +38,7 @@ public class XmlElementsArrayTestCases extends JAXBWithJSONTestCases {
         setClasses(classes);
     }
 
+    @Override
     protected Object getControlObject() {
         EmployeeArray employee = new EmployeeArray();
         employee.id = CONTROL_ID;
@@ -54,6 +55,7 @@ public class XmlElementsArrayTestCases extends JAXBWithJSONTestCases {
         return employee;
     }
 
+    @Override
     protected Object getJSONReadControlObject() {
         EmployeeArray employee = new EmployeeArray();
           employee.id = CONTROL_ID;

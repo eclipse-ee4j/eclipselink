@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,10 +40,12 @@ import static dbws.testing.shadowddlgeneration.oldjpub.Util.POSITION;
 
 public class SqlToplevelType extends SqlTypeWithMethods {
 
+    @Override
     public boolean isPackage() {
         return true;
     }
 
+    @Override
     public boolean isTopLevel() {
         return true;
     }
@@ -53,10 +55,12 @@ public class SqlToplevelType extends SqlTypeWithMethods {
         super(sqlName, OracleTypes.PACKAGE, true, parentType, methodFilter, reflector);
     }
 
+    @Override
     protected List<FieldInfo> getFieldInfo() {
         return null;
     }
 
+    @Override
     protected MethodInfo[] getMethodInfo(String schema, String name) throws SQLException {
         /*
          * POSITION of Nth argument is N SEQUENCE of Nth argument is >= N POSITION of function
@@ -100,6 +104,7 @@ public class SqlToplevelType extends SqlTypeWithMethods {
         return minfo;
     }
 
+    @Override
     protected ResultInfo getResultInfo(String schema, String name, String method, String methodNo)
         throws SQLException {
         Iterator<ViewRow> iter = null;
@@ -119,6 +124,7 @@ public class SqlToplevelType extends SqlTypeWithMethods {
         return ResultInfo.getResultInfo(iter);
     }
 
+    @Override
     protected ParamInfo[] getParamInfo(String schema, String name, String method, String methodNo)
         throws SQLException {
         Iterator<ViewRow> iter = null;

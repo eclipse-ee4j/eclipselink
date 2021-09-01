@@ -31,14 +31,17 @@ public class LoadAndSaveNestedSchemaTypeTestCases extends LoadAndSaveUnknownTest
         TestRunner.main(arguments);
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/withoutxsd/nestedSchemaTypes.xml");
     }
 
+    @Override
     protected String getSchemaName() {
         return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/withoutxsd/PurchaseOrder.xsd";
     }
 
+    @Override
     protected void verifyAfterLoad(XMLDocument document) {
         assertNull(document.getRootObject().getContainer());
         DataObject root = document.getRootObject();

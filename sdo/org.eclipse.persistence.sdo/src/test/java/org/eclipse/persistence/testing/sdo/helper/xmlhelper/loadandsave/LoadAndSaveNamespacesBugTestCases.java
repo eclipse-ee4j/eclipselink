@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,6 +35,7 @@ public class LoadAndSaveNamespacesBugTestCases extends LoadAndSaveTestCases {
         TestRunner.main(arguments);
     }
 
+    @Override
     protected List defineTypes() {
         List allTypes = new ArrayList();
         List types1 = xsdHelper.define(getSchema("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/namespaces/simpleSDOSchema.xsd"));
@@ -46,30 +47,37 @@ public class LoadAndSaveNamespacesBugTestCases extends LoadAndSaveTestCases {
         return allTypes;
     }
 
+    @Override
     protected String getSchemaName() {
         return "";
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/namespaces/namespacesBug.xml");
     }
 
+    @Override
     protected String getControlWriteFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/namespaces/namespacesBugWrite.xml");
     }
 
+    @Override
     protected String getNoSchemaControlWriteFileName() {
         return getControlWriteFileName();
     }
 
+    @Override
     protected String getControlRootURI() {
         return "http://www.example.org/";
     }
 
+    @Override
     protected String getControlRootName() {
         return "arg0";
     }
 
+    @Override
     protected void generateClasses(String tmpDirName) throws Exception {
         String xsdString = getSchema("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/namespaces/simpleSDOSchema.xsd");
         StringReader reader = new StringReader(xsdString);
@@ -81,16 +89,19 @@ public class LoadAndSaveNamespacesBugTestCases extends LoadAndSaveTestCases {
         classGenerator.generate(reader, tmpDirName);
     }
 
+    @Override
     protected List getPackages() {
         List packages = new ArrayList();
         packages.add("myPackage");
         return packages;
     }
 
+    @Override
     protected String getRootInterfaceName() {
         return "MySDO";
     }
 
+    @Override
     public void registerTypes() {
         Type stringType = typeHelper.getType("commonj.sdo", "String");
 

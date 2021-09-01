@@ -52,6 +52,7 @@ public class TwoProjectsTestSuite extends OXTestCase {
         junit.textui.TestRunner.main(new String[] { "-c", "org.eclipse.persistence.testing.oxm.xmlmarshaller.twoprojects.TwoProjectsTestSuite" });
     }
 
+    @Override
     public void setUp() throws Exception {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         parser = dbf.newDocumentBuilder();

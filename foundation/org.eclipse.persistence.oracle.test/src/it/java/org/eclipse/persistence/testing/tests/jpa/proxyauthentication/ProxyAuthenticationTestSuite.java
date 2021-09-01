@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -66,6 +66,7 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
     // writeUser is set by an event risen by ModifyQuery.
     private static String writeUser;
     public static class Listener extends SessionEventAdapter {
+        @Override
         public void outputParametersDetected(SessionEvent event) {
             writeUser = (String)((Map)event.getResult()).get("OUT");
         }
@@ -97,6 +98,7 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
         super(name);
     }
 
+    @Override
     public String getPersistenceUnitName() {
         return PU_NAME;
     }
@@ -127,6 +129,7 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
         return suite;
     }
 
+    @Override
     public void setUp() {
         // runs for the first time - setup user names and properties used by the tests.
         if(setupErrorMsg == null) {
@@ -155,6 +158,7 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
         }
     }
 
+    @Override
     public void tearDown() {
         // clean-up
         if(setupErrorMsg.length() > 0) {

@@ -46,6 +46,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         super(name);
     }
 
+    @Override
     public String getName() {
         return "Dynamic JAXB: Context Creation: " + super.getName();
     }

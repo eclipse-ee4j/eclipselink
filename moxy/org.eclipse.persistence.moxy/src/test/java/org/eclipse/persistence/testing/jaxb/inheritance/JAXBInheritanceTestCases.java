@@ -37,6 +37,7 @@ public class JAXBInheritanceTestCases extends JAXBWithJSONTestCases {
         setControlJSON("org/eclipse/persistence/testing/jaxb/inheritance/inheritance.json");
     }
 
+    @Override
     public Object getControlObject() {
         // reads a document that also contains a value for "ddd" and makes sure
         // we ignore it
@@ -52,6 +53,7 @@ public class JAXBInheritanceTestCases extends JAXBWithJSONTestCases {
         return jaxbElement;
     }
 
+    @Override
     public Object getReadControlObject() {
         // reads a document that also contains a value for "ddd" and makes sure
         // we ignore it

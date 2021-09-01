@@ -64,6 +64,7 @@ public class DocumentPreservationTestCases extends XMLMappingTestCases {
         platform = Platform.DOC_PRES;
     }
 
+    @Override
     protected Object getControlObject() {
         Object result;
 
@@ -116,6 +117,7 @@ public class DocumentPreservationTestCases extends XMLMappingTestCases {
         }
     }
 
+    @Override
     public void testXMLToObjectFromInputStream() throws Exception {
         InputStream stream = ClassLoader.getSystemResourceAsStream(XML_CONTROL_RESOURCE);
         Object testObject = getXMLContext().createUnmarshaller().unmarshal(stream);
@@ -128,17 +130,20 @@ public class DocumentPreservationTestCases extends XMLMappingTestCases {
             xmlToObjectTest(testObject);
         }
     */
+    @Override
     public void testXMLToObjectFromURL() throws Exception {
         java.net.URL url = ClassLoader.getSystemResource(XML_CONTROL_RESOURCE);
         Object testObject = getXMLContext().createUnmarshaller().unmarshal(url);
         xmlToObjectTest(testObject);
     }
 
+    @Override
     public void testObjectToXMLDocument() throws Exception {
         Document testDocument = getXMLContext().createMarshaller().objectToXML(getWriteControlObject());
         objectToXMLDocumentTest(testDocument);
     }
 
+    @Override
     public void testObjectToXMLStringWriter() throws Exception {
         StringWriter writer = new StringWriter();
         XMLMarshaller marshaller = getXMLContext().createMarshaller();
@@ -165,6 +170,7 @@ public class DocumentPreservationTestCases extends XMLMappingTestCases {
         objectToXMLDocumentTest(testDocument);
     }
 
+    @Override
     public void testObjectToOutputStream() throws Exception {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         XMLMarshaller marshaller = getXMLContext().createMarshaller();
@@ -175,6 +181,7 @@ public class DocumentPreservationTestCases extends XMLMappingTestCases {
         Document testDocument = parser.parse(is);
         objectToXMLDocumentTest(testDocument);
     }
+    @Override
     public void testObjectToOutputStreamASCIIEncoding() throws Exception {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         XMLMarshaller marshaller = getXMLContext().createMarshaller();
@@ -187,12 +194,15 @@ public class DocumentPreservationTestCases extends XMLMappingTestCases {
         objectToXMLDocumentTest(testDocument);
     }
 
+    @Override
     public void testObjectToXMLStreamWriter() throws Exception {
     }
 
+    @Override
     public void testObjectToXMLEventWriter() throws Exception {
     }
 
+    @Override
     public void testUnmarshallerHandler() throws Exception {
         SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
         saxParserFactory.setNamespaceAware(true);
@@ -209,6 +219,7 @@ public class DocumentPreservationTestCases extends XMLMappingTestCases {
         xmlToObjectTest(xmlUnmarshallerHandler.getResult());
     }
 
+    @Override
     public void testObjectToContentHandler() throws Exception {
         // DO NOTHING BECAUSE CONTENT HANDLER CAN NOT READ COMMENTS
     }

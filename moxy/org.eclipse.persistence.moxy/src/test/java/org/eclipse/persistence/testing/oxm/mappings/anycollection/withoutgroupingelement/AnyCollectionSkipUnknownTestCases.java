@@ -33,6 +33,7 @@ public class AnyCollectionSkipUnknownTestCases extends XMLMappingTestCases {
         setControlDocument("org/eclipse/persistence/testing/oxm/mappings/anycollection/withoutgroupingelement/skip_unknown_children.xml");
     }
 
+    @Override
     public Object getControlObject() {
         Root root = new Root();
         Vector any = new Vector();
@@ -53,6 +54,7 @@ public class AnyCollectionSkipUnknownTestCases extends XMLMappingTestCases {
         return root;
     }
 
+    @Override
     protected Document getWriteControlDocument() throws Exception {
         String resource = "org/eclipse/persistence/testing/oxm/mappings/anycollection/withoutgroupingelement/skip_unknown_children_write.xml";
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(resource);

@@ -37,6 +37,7 @@ public class EmployeeWithoutDefaultRootElementTestCases extends XMLMappingTestCa
         TestRunner.main(arguments);
     }
 
+    @Override
     protected Object getControlObject() {
         Employee employee = new Employee();
         employee.setName(CONTROL_EMPLOYEE_NAME);
@@ -49,17 +50,21 @@ public class EmployeeWithoutDefaultRootElementTestCases extends XMLMappingTestCa
     }
 
     // THIS TEST DOES NOT APPLY
+    @Override
     public void testObjectToXMLDocument() throws Exception {
     }
 
     // THIS TEST DOES NOT APPLY
+    @Override
     public void testObjectToXMLStringWriter() throws Exception {
     }
 
     // THIS TEST DOES NOT APPLY
+    @Override
     public void testObjectToContentHandler() throws Exception {
     }
 
+    @Override
     public void xmlToObjectTest(Object testObject) throws Exception {
         log("\n**testXMLDocumentToObject**");
         log("Expected:");

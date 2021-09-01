@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -85,6 +85,7 @@ public abstract class JavaManagedType implements IManagedType {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int compareTo(IManagedType managedType) {
         return getType().getName().compareTo(managedType.getType().getName());
     }
@@ -100,6 +101,7 @@ public abstract class JavaManagedType implements IManagedType {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IMapping getMappingNamed(String name) {
         initializeMappings();
         return mappings.get(name);
@@ -108,6 +110,7 @@ public abstract class JavaManagedType implements IManagedType {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IManagedTypeProvider getProvider() {
         return provider;
     }
@@ -115,6 +118,7 @@ public abstract class JavaManagedType implements IManagedType {
     /**
      * {@inheritDoc}
      */
+    @Override
     public JavaType getType() {
         return type;
     }
@@ -181,6 +185,7 @@ public abstract class JavaManagedType implements IManagedType {
     /**
      * {@inheritDoc}
      */
+    @Override
     public final Iterable<IMapping> mappings() {
         initializeMappings();
         return new SnapshotCloneIterable<IMapping>(mappings.values());

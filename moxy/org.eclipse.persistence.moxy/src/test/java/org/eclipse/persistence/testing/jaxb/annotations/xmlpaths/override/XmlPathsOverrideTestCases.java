@@ -49,6 +49,7 @@ public class XmlPathsOverrideTestCases extends JAXBWithJSONTestCases{
         setClasses(new Class[]{});
     }
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/annotations/xmlpaths/override/employee-oxm.xml");
 
@@ -66,6 +67,7 @@ public class XmlPathsOverrideTestCases extends JAXBWithJSONTestCases{
      *
      * @return
      */
+    @Override
     public Employee getControlObject() {
         Employee emp = new Employee();
         emp.thing = Integer.valueOf(INT_VAL);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -37,6 +37,7 @@ public class OracleLOBLocatorSessionCustomizer implements SessionCustomizer {
          * PUBLIC:
          * This Event is raised after the session logs in.
          */
+        @Override
         public void postLogin(SessionEvent event) {
             Session session = event.getSession();
             Platform dbPlatform = session.getDatasourcePlatform();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,14 +24,17 @@ public class SaveSimpleElementTestCases extends SDOXMLHelperSaveTestCases {
         super(name);
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/simpleElement.xml");
     }
 
+    @Override
     protected String getNoSchemaControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/simpleElementNoSchema.xml");
     }
 
+    @Override
     protected XMLDocument getXMLDocumentToSave() {
         DataObject dataObject = dataFactory.create(getControlRootURI(), CONTROL_ROOT_TYPE);
         Property firstNameProp = dataObject.getInstanceProperty(FIRSTNAME);
@@ -43,6 +46,7 @@ public class SaveSimpleElementTestCases extends SDOXMLHelperSaveTestCases {
         return doc;
     }
 
+    @Override
     public void registerTypes() {
         Type stringType = typeHelper.getType("commonj.sdo", "String");
 

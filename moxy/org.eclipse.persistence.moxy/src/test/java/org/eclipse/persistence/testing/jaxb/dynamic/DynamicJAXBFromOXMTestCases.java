@@ -79,6 +79,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         super(name);
     }
 
+    @Override
     public String getName() {
         return "Dynamic JAXB: OXM: " + super.getName();
     }

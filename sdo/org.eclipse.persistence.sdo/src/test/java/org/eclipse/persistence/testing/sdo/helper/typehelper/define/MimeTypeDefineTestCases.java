@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ public class MimeTypeDefineTestCases extends CustomerDefineTestCases {
         TestRunner.main(arguments);
     }
 
+    @Override
     protected DataObject getDataObject() {
         DataObject customerType = super.getDataObject();
 
@@ -53,6 +54,7 @@ public class MimeTypeDefineTestCases extends CustomerDefineTestCases {
         return customerType;
     }
 
+    @Override
     protected void verify(Type definedType) {
         super.verify(definedType);
         Type bytesType = typeHelper.getType("commonj.sdo", "Bytes");
@@ -92,6 +94,7 @@ public class MimeTypeDefineTestCases extends CustomerDefineTestCases {
 
     }
 
+    @Override
     protected int getPropsSize() {
         return 4;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,9 +39,11 @@ public class _RMIServerManagerController_Tie extends ObjectImpl implements Tie {
         "RMI:org.eclipse.persistence.testing.tests.remote.rmi.IIOP.RMIServerManager:0000000000000000"
     };
 
+    @Override
     public String[] _ids() {
         return _type_ids;
     }
+    @Override
     public OutputStream  _invoke(String method, InputStream _in, ResponseHandler reply) throws SystemException {
         try {
             org.omg.CORBA_2_3.portable.InputStream in =
@@ -59,23 +61,29 @@ public class _RMIServerManagerController_Tie extends ObjectImpl implements Tie {
             throw new UnknownException(ex);
         }
     }
+    @Override
     public void deactivate() {
         _orb().disconnect(this);
         _set_delegate(null);
         target = null;
     }
+    @Override
     public Remote getTarget() {
         return target;
     }
+    @Override
     public ORB orb() {
         return _orb();
     }
+    @Override
     public void orb(ORB orb) {
         orb.connect(this);
     }
+    @Override
     public void setTarget(Remote target) {
         this.target = (RMIServerManagerController) target;
     }
+    @Override
     public org.omg.CORBA.Object thisObject() {
         return this;
     }

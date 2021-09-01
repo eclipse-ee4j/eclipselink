@@ -40,6 +40,7 @@ public class AnyObjectWithoutGroupingWithXMLRootTestCases extends XMLWithJSONMap
     }
 
 
+    @Override
     public Object getControlObject() {
         Root root = new Root();
 

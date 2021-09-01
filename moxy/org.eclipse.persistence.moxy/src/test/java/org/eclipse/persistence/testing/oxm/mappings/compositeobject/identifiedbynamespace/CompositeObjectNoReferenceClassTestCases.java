@@ -53,6 +53,7 @@ public class CompositeObjectNoReferenceClassTestCases extends XMLMappingTestCase
         setProject(p);
     }
 
+    @Override
     protected Object getControlObject() {
         Employee employee = new Employee();
         employee.setID(CONTROL_EMPLOYEE_ID);

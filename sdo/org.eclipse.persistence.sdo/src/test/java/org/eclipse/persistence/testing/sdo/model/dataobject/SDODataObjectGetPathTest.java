@@ -48,6 +48,7 @@ public class SDODataObjectGetPathTest extends SDOTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() {
         super.setUp();
         try {

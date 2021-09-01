@@ -32,18 +32,22 @@ public class ChangeSummaryChildLoggingOnLoadAndSaveTestCases extends ChangeSumma
         TestRunner.main(arguments);
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/team_cschild_log_default.xml");
     }
 
+     @Override
      protected String getControlDataObjectFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/team_cschild_log_default.xml");
     }
 
+    @Override
     protected String getNoSchemaControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/team_cschild_log_default_noschema.xml");
     }
 
+    @Override
     protected void verifyAfterLoad(XMLDocument document) {
         super.verifyAfterLoad(document);
         ChangeSummary teamCS = document.getRootObject().getChangeSummary();

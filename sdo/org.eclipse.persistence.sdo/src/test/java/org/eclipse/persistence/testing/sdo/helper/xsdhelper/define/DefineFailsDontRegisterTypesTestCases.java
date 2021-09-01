@@ -31,10 +31,12 @@ public class DefineFailsDontRegisterTypesTestCases extends XSDHelperDefineTestCa
         TestRunner.run(DefineFailsDontRegisterTypesTestCases.class);
     }
 
+    @Override
     public String getSchemaToDefine() {
         return "org/eclipse/persistence/testing/sdo/helper/xsdhelper/define/DefineFails.xsd";
     }
 
+    @Override
     public void testDefine() {
         InputStream is = getSchemaInputStream(getSchemaToDefine());
         int sizeBefore = ((SDOTypeHelper)typeHelper).getTypesHashMap().size();
@@ -58,6 +60,7 @@ public class DefineFailsDontRegisterTypesTestCases extends XSDHelperDefineTestCa
         assertNull(xsdHelper.getGlobalProperty("http://www.example.org", "customer", true));
     }
 
+    @Override
     public List getControlTypes() {
         List types = new ArrayList();
         return types;

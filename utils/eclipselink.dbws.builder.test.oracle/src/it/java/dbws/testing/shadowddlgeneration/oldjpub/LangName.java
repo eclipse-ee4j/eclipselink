@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ public abstract class LangName extends Name {
     /**
      * Returns the package name of the declared class.
      */
+    @Override
     public String getDeclPackage() {
         return m_context;
     }
@@ -39,6 +40,7 @@ public abstract class LangName extends Name {
      * Returns the name of the generated class within the package. This name is generated for the
      * declaration of the class, as opposed to uses of the class.
      */
+    @Override
     public String getDeclClass() {
         return m_name;
     }

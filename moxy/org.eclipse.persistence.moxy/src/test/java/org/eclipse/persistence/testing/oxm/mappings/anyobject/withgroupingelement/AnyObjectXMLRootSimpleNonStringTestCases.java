@@ -38,6 +38,7 @@ public class AnyObjectXMLRootSimpleNonStringTestCases extends XMLMappingTestCase
         setControlDocument("org/eclipse/persistence/testing/oxm/mappings/anyobject/withgroupingelement/simple_non_string_xmlroot.xml");
     }
 
+    @Override
     public Object getControlObject() {
         Root root = new Root();
 

@@ -28,6 +28,7 @@ public class DefineAndGenerateChoicesTestCases extends XSDHelperDefineAndGenerat
         super(name);
     }
 
+    @Override
     public String getSchemaToDefine() {
         return "org/eclipse/persistence/testing/sdo/helper/xsdhelper/OrderSequenceAndChoice.xsd";
     }
@@ -37,14 +38,17 @@ public class DefineAndGenerateChoicesTestCases extends XSDHelperDefineAndGenerat
         TestRunner.main(arguments);
     }
 
+    @Override
     public String getControlGeneratedFileName() {
         return "org/eclipse/persistence/testing/sdo/helper/xsdhelper/OrderSequenceAndChoiceGenerated.xsd";
     }
 
+    @Override
     public List getTypesToGenerateFrom() {
         return getControlTypes();
     }
 
+    @Override
     public List getControlTypes() {
         List types = new ArrayList();
 
@@ -261,6 +265,7 @@ public class DefineAndGenerateChoicesTestCases extends XSDHelperDefineAndGenerat
         return addressSDOType;
     }
 
+    @Override
     protected void compareGeneratedTypes(List controlTypes, List generatedTypes) {
         super.compareGeneratedTypes(controlTypes, generatedTypes);
         //also check order

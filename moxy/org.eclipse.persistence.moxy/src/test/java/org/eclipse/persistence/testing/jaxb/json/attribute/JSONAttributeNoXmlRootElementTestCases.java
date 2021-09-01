@@ -35,21 +35,25 @@ public class JSONAttributeNoXmlRootElementTestCases extends JAXBWithJSONTestCase
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
     }
 
+    @Override
     public Class getUnmarshalClass(){
         return AddressNoRoot.class;
     }
 
+    @Override
     public Object getReadControlObject() {
         JAXBElement jbe = new JAXBElement<AddressNoRoot>(new QName("street"), AddressNoRoot.class, new AddressNoRoot());
         return jbe;
     }
 
 
+    @Override
     protected Object getJSONReadControlObject() {
         JAXBElement jbe = new JAXBElement<AddressNoRoot>(new QName(""), AddressNoRoot.class, (AddressNoRoot) getControlObject());
         return jbe;
     }
 
+    @Override
     protected Object getControlObject() {
         AddressNoRoot add = new AddressNoRoot();
         add.setId(10);
@@ -61,6 +65,7 @@ public class JSONAttributeNoXmlRootElementTestCases extends JAXBWithJSONTestCase
 
 
 
+      @Override
       public void testXMLToObjectFromURL() throws Exception {
             if(isUnmarshalTest()) {
                 java.net.URL url = ClassLoader.getSystemResource(resourceName);
@@ -76,6 +81,8 @@ public class JSONAttributeNoXmlRootElementTestCases extends JAXBWithJSONTestCase
             }
         }
 
+      @Override
       public void testRoundTrip() throws Exception {}
+      @Override
       public void testUnmarshallerHandler() throws Exception {}
 }

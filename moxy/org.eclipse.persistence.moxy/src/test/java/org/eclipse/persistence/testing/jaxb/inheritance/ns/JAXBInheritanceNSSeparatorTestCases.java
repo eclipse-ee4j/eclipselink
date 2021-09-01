@@ -40,6 +40,7 @@ public class JAXBInheritanceNSSeparatorTestCases extends JAXBInheritanceNSTestCa
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR, '*');
     }
 
+    @Override
     public JAXBMarshaller getJSONMarshaller() throws Exception{
         JAXBMarshaller m = super.getJSONMarshaller();
         m.setProperty(MarshallerProperties.JSON_NAMESPACE_SEPARATOR, '*');

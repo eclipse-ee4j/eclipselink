@@ -48,12 +48,14 @@ public class XMLGregorianCalendarTestCases extends XMLMappingTestCases {
         setControlDocument("org/eclipse/persistence/testing/oxm/xmlconversionmanager/emp.xml");
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         getXmlConversionManager().setTimeZoneQualified(true);
         getXmlConversionManager().setTimeZone(TimeZone.getTimeZone("GMT+3"));
     }
 
+    @Override
     public Object getControlObject() {
         try {
             Calendar cal = Calendar.getInstance();
@@ -87,6 +89,7 @@ public class XMLGregorianCalendarTestCases extends XMLMappingTestCases {
         }
     }
 
+    @Override
     public Document getWriteControlDocument() throws Exception {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/oxm/xmlconversionmanager/emp-write.xml");
         Document doc = parser.parse(inputStream);

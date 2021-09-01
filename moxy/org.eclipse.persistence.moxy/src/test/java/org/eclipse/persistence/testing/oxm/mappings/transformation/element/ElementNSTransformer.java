@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class ElementNSTransformer implements AttributeTransformer, FieldTransfor
     private XMLField intermediateField;
     private XMLField endField;
 
+    @Override
     public void initialize(AbstractTransformationMapping mapping) {
         NamespaceResolver nsResolver = new NamespaceResolver();
         nsResolver.put("ns", "urn:element");
@@ -47,6 +48,7 @@ public class ElementNSTransformer implements AttributeTransformer, FieldTransfor
         endField.setNamespaceResolver(nsResolver);
     }
 
+    @Override
     public Object buildAttributeValue(Record record, Object object, Session session) {
         if(null == record) {
             return null;
@@ -64,6 +66,7 @@ public class ElementNSTransformer implements AttributeTransformer, FieldTransfor
         }
     }
 
+    @Override
     public Object buildFieldValue(Object instance, String fieldName, Session session) {
         Root root = (Root) instance;
         if(fieldName.endsWith(root.getElement())) {

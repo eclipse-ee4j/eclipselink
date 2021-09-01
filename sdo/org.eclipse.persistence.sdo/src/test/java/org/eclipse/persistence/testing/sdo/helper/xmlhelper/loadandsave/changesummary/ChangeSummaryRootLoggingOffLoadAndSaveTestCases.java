@@ -30,11 +30,13 @@ public class ChangeSummaryRootLoggingOffLoadAndSaveTestCases extends ChangeSumma
         TestRunner.main(arguments);
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/team_csroot_log_off.xml");
     }
 
 
+    @Override
     protected void verifyAfterLoad(XMLDocument document) {
         super.verifyAfterLoad(document);
         ChangeSummary teamCS = document.getRootObject().getChangeSummary();

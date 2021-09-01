@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@ public final class MyDomAdapter extends XmlAdapter<Node, Dom> {
 
     public MyDomAdapter() {}
 
+    @Override
     public Node marshal(Dom arg0) throws Exception {
         Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         Element elt = doc.createElement(STUFF_STR);
@@ -34,6 +35,7 @@ public final class MyDomAdapter extends XmlAdapter<Node, Dom> {
         return elt;
     }
 
+    @Override
     public Dom unmarshal(Node arg0) throws Exception {
         Dom stuff = new Dom();
         Node elt = arg0.getFirstChild();

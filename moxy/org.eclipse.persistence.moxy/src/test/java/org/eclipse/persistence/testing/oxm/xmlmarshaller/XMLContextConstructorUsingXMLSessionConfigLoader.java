@@ -47,6 +47,7 @@ public class XMLContextConstructorUsingXMLSessionConfigLoader extends OXTestCase
         super(name);
     }
 
+    @Override
     public void setUp()
     {
       SessionManager.setManager(new SessionManager());

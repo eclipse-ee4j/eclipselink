@@ -58,6 +58,7 @@ public class AnyObjectAndAnyCollectionUC14NoDefaultRootComplexChildrenTestCases 
 
     }
 
+    @Override
     public Object getControlObject() {
         Customer customer = new Customer();
         Address anAddress1 = new Address();

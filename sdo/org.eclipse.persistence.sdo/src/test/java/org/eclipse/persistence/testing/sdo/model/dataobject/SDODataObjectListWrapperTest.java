@@ -57,6 +57,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() {
         super.setUp();
         String xsdString = getXSDString("org/eclipse/persistence/testing/sdo/helper/xmlhelper/PurchaseOrderDeep.xsd");

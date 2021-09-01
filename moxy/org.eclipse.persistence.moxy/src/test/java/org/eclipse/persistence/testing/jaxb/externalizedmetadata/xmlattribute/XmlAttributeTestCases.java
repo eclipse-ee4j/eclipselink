@@ -53,6 +53,7 @@ public class XmlAttributeTestCases extends JAXBWithJSONTestCases {
         setClasses(new Class[]{Employee.class});
     }
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlattribute/eclipselink-oxm.xml");
 

@@ -33,6 +33,7 @@ public class AnyObjectWithGroupingWithXMLRootSimpleTestCases extends XMLMappingT
         setControlDocument("org/eclipse/persistence/testing/oxm/mappings/anyobject/withgroupingelement/simple_ns_xmlroot.xml");
     }
 
+    @Override
     public Object getControlObject() {
         Root root = new Root();
 

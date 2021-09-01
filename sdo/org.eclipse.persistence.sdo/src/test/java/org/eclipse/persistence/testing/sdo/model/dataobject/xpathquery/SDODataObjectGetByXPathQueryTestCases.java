@@ -81,6 +81,7 @@ public class SDODataObjectGetByXPathQueryTestCases extends SDOTestCase {
     protected SDOType baseType1;
     protected SDOProperty baseProperty3;
 
+    @Override
     public void setUp() {// set up as a/b/c
         super.setUp();
         SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);

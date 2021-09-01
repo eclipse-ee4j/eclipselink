@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,6 +47,7 @@ public class StaticWithDynamicTestCases extends JAXBWithJSONTestCases {
         setControlJSON(JSON_CONTROL_DOC);
     }
 
+    @Override
     public String getName() {
         return "Dynamic JAXB: OXM: " + super.getName();
     }
@@ -102,6 +103,7 @@ public class StaticWithDynamicTestCases extends JAXBWithJSONTestCases {
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_VALUE_WRAPPER, "value");
     }
 
+    @Override
     public void xmlToObjectTest(Object testObject, Object controlObject) throws Exception {
         log("\n**xmlToObjectTest**");
         log("Expected:");
@@ -112,6 +114,7 @@ public class StaticWithDynamicTestCases extends JAXBWithJSONTestCases {
         compareDynamicEntities(testObject, controlObject);
     }
 
+    @Override
     public void jsonToObjectTest(Object testObject) throws Exception {
         log("\n**xmlToObjectTest**");
         log("Expected:");

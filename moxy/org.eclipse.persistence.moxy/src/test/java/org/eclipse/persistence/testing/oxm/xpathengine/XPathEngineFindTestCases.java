@@ -40,6 +40,7 @@ public class XPathEngineFindTestCases extends TestCase {
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/oxm/xpathengine/AddressBook.xml");
 

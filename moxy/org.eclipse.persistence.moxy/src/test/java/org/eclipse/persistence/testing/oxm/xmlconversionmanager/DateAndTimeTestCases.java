@@ -130,6 +130,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         this.CONTROL_G_YEAR_MONTH = cal.getTimeInMillis();
     }
 
+    @Override
     public void setUp() {
         xcm = XMLConversionManager.getDefaultXMLManager();
     }

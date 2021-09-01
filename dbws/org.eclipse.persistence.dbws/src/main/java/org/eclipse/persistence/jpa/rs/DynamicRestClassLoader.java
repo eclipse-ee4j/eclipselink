@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,18 +39,21 @@ public class DynamicRestClassLoader extends DynamicClassLoader {
         super(delegate, writer);
     }
 
+    @Override
     public void createDynamicAdapter(String className) {
         // Reference adapter for JPARS version < 2.0
         RestAdapterClassWriter restAdapter = new RestAdapterClassWriter(className);
         addClass(restAdapter.getClassName(), restAdapter);
     }
 
+    @Override
     public void createDynamicCollectionAdapter(String className) {
         // Collection adapter for JPARS version >= 2.0
         RestCollectionAdapterClassWriter restCollectionAdapter = new RestCollectionAdapterClassWriter(className);
         addClass(restCollectionAdapter.getClassName(), restCollectionAdapter);
     }
 
+    @Override
     public void createDynamicReferenceAdapter(String className) {
         // Reference adapter for JPARS version >= 2.0
         RestReferenceAdapterV2ClassWriter restReferenceAdapterV2 = new RestReferenceAdapterV2ClassWriter(className);

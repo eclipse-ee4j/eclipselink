@@ -49,6 +49,7 @@ public class AutoDetectMediaTypeTestCases extends JAXBWithJSONTestCases {
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.AUTO_DETECT_MEDIA_TYPE, true);
     }
 
+    @Override
     protected Object getControlObject() {
         EmployeeCollection employee = new EmployeeCollection();
         ArrayList choices = new ArrayList();
@@ -64,6 +65,7 @@ public class AutoDetectMediaTypeTestCases extends JAXBWithJSONTestCases {
      }
 
 
+    @Override
     protected Object getJSONReadControlObject(){
         //same as getReadControl Except order is different
         EmployeeCollection employee = new EmployeeCollection();
@@ -80,10 +82,12 @@ public class AutoDetectMediaTypeTestCases extends JAXBWithJSONTestCases {
         return employee;
     }
 
+    @Override
     public MediaType getXMLUnmarshalMediaType(){
           return MediaType.APPLICATION_JSON;
     }
 
+    @Override
     public MediaType getJSONUnmarshalMediaType(){
        return MediaType.APPLICATION_XML;
     }

@@ -25,26 +25,32 @@ public class DeptImpl extends SDODataObject implements Dept {
     public DeptImpl() {
     }
 
+    @Override
     public java.lang.Integer getDeptno() {
         return Integer.valueOf(getInt(START_PROPERTY_INDEX + 0));
     }
 
+    @Override
     public void setDeptno(java.lang.Integer value) {
         set(START_PROPERTY_INDEX + 0, value);
     }
 
+    @Override
     public java.lang.String getDname() {
         return getString(START_PROPERTY_INDEX + 1);
     }
 
+    @Override
     public void setDname(java.lang.String value) {
         set(START_PROPERTY_INDEX + 1, value);
     }
 
+    @Override
     public java.lang.String getLoc() {
         return getString(START_PROPERTY_INDEX + 2);
     }
 
+    @Override
     public void setLoc(java.lang.String value) {
         set(START_PROPERTY_INDEX + 2, value);
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -58,6 +58,7 @@ public abstract class KeyBasedMappingTestCases extends XMLMappingTestCases {
         super(name);
     }
 
+    @Override
     public void objectToXMLDocumentTest(Document testDocument) throws Exception {
         log("**objectToXMLDocumentTest**");
         log("Expected:");
@@ -67,10 +68,12 @@ public abstract class KeyBasedMappingTestCases extends XMLMappingTestCases {
         assertXMLIdentical(getWriteControlDocument(), testDocument);
     }
 
+    @Override
     protected void setProject(Project project) {
         this.project = project;
     }
 
+    @Override
     public void testObjectToContentHandler() throws Exception {
         SAXDocumentBuilder builder = new SAXDocumentBuilder();
         xmlMarshaller.marshal(getWriteControlObject(), builder);
@@ -84,11 +87,13 @@ public abstract class KeyBasedMappingTestCases extends XMLMappingTestCases {
         assertXMLIdentical(controlDocument, testDocument);
     }
 
+    @Override
     public void testObjectToXMLDocument() throws Exception {
         Document testDocument = xmlMarshaller.objectToXML(getWriteControlObject());
         objectToXMLDocumentTest(testDocument);
     }
 
+    @Override
     public void testObjectToXMLStringWriter() throws Exception {
         StringWriter writer = new StringWriter();
         xmlMarshaller.marshal(getWriteControlObject(), writer);
@@ -100,6 +105,7 @@ public abstract class KeyBasedMappingTestCases extends XMLMappingTestCases {
         objectToXMLDocumentTest(testDocument);
     }
 
+    @Override
     public void testUnmarshallerHandler() throws Exception {
         SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
         saxParserFactory.setNamespaceAware(true);
@@ -113,6 +119,7 @@ public abstract class KeyBasedMappingTestCases extends XMLMappingTestCases {
         xmlToObjectTest(xmlUnmarshallerHandler.getResult());
     }
 
+    @Override
     public void testXMLToObjectFromInputStream() throws Exception {
         InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
         Object testObject = xmlUnmarshaller.unmarshal(instream);
@@ -120,12 +127,14 @@ public abstract class KeyBasedMappingTestCases extends XMLMappingTestCases {
         xmlToObjectTest(testObject);
     }
 
+    @Override
     public void testXMLToObjectFromURL() throws Exception {
         java.net.URL url = ClassLoader.getSystemResource(resourceName);
         Object testObject = xmlUnmarshaller.unmarshal(url);
         xmlToObjectTest(testObject);
     }
 
+    @Override
     public void xmlToObjectTest(Object testObject) throws Exception {
         log("\n**xmlToObjectTest**");
         log("Expected:");

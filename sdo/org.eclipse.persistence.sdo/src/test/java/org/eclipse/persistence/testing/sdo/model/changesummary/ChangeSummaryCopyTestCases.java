@@ -38,6 +38,7 @@ public class ChangeSummaryCopyTestCases extends SDOTestCase {
     private DataObject dataObjectD;
     private DataObject dataObjectE;
 
+    @Override
     public void setUp() {
         super.setUp();
         DataObject rootTypeDO = defineType(URINAME, TYPENAME);
@@ -73,6 +74,7 @@ public class ChangeSummaryCopyTestCases extends SDOTestCase {
 
     }
 
+    @Override
     public void tearDown() {
         dataObjectB.getChangeSummary().beginLogging();
     }

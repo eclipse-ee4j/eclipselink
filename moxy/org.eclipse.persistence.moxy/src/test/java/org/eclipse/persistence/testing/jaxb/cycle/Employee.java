@@ -27,6 +27,7 @@ public class Employee implements CycleRecoverable {
     public String name;
     public List<ContactInfo> contactInfos = new ArrayList<ContactInfo>();
 
+    @Override
     public Object onCycleDetected(Context arg0) {
         // Ensure Context's marshaller was set
         String marshallerString = arg0.getMarshaller().toString();

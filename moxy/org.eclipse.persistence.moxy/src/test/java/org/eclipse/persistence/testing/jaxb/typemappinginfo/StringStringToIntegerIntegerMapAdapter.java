@@ -22,6 +22,7 @@ import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 public class StringStringToIntegerIntegerMapAdapter extends XmlAdapter<Map<Integer, Integer>, Map<String, String>>{
 
+    @Override
     public Map<Integer, Integer> marshal(Map<String, String> v) throws Exception {
         Map<Integer, Integer> theMap = new HashMap<Integer, Integer>();
         Iterator<Map.Entry<String, String>> iter = v.entrySet().iterator();
@@ -38,6 +39,7 @@ public class StringStringToIntegerIntegerMapAdapter extends XmlAdapter<Map<Integ
         return theMap;
     }
 
+    @Override
     public Map<String, String>unmarshal(Map<Integer, Integer> v) throws Exception {
         Map<String, String> theMap = new HashMap<String, String>();
         Iterator<Map.Entry<Integer, Integer>> iter = v.entrySet().iterator();

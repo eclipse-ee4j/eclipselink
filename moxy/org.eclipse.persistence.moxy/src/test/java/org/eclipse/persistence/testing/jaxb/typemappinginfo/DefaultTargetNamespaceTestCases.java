@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,6 +53,7 @@ public class DefaultTargetNamespaceTestCases extends TypeMappingInfoWithJSONTest
         return typeMappingInfos;
     }
 
+    @Override
     protected Object getControlObject() {
         Customer cust = new Customer();
         cust.firstName = "John";
@@ -64,6 +65,7 @@ public class DefaultTargetNamespaceTestCases extends TypeMappingInfoWithJSONTest
     }
 
 
+    @Override
     public Map<String, InputStream> getControlSchemaFiles(){
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/typemappinginfo/customer_dtn.xsd");
 
@@ -75,6 +77,7 @@ public class DefaultTargetNamespaceTestCases extends TypeMappingInfoWithJSONTest
     protected String getNoXsiTypeControlResourceName() {
         return XML_RESOURCE;
     }
+    @Override
     protected Map getProperties() {
         HashMap props = new HashMap();
         props.put(JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY, "overridden/namespace");

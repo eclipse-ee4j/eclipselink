@@ -97,6 +97,7 @@ public class ChangeSummaryVolumetricsTest extends ChangeSummaryTestCases {
         }
     }
 
+    @Override
     public void setUp() {
         super.setUp();
         SDOType changeSummaryType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY);

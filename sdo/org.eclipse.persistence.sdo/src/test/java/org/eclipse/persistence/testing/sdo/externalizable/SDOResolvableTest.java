@@ -43,6 +43,7 @@ public class SDOResolvableTest extends SDOResolvableTestCases {
         super(name);
     }
 
+    @Override
     public void setUp() {
         try {
             xmlComparer = new SDOXMLComparer();

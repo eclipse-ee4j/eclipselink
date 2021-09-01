@@ -58,6 +58,7 @@ public class AnyObjectAndAnyCollectionUC16NoDefaultRootComplexChildrenTestCases 
 
     }
 
+    @Override
     public Object getControlObject() {
         //<customer><contact-method><address>Ottawa</address><address>Montreal</address><phone>5551111</phone>joe@example.com<address>Ottawa</address><address>Montreal</address><phone>5551111</phone>joe@example.com</contact-method></customer>F
         Customer customer = new Customer();
@@ -88,6 +89,7 @@ public class AnyObjectAndAnyCollectionUC16NoDefaultRootComplexChildrenTestCases 
      * Returns the object to be used in a comparison on a read
      * This will typically be the same object used to write
      */
+    @Override
     public Object getReadControlObject() {
         Customer customer = new Customer();
         Address anAddress1 = new Address();

@@ -47,6 +47,7 @@ public class XmlAnyElementListTestCases extends JAXBWithJSONTestCases{
 
     }
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlanyelement/eclipselink-oxm-xml-list.xml");
 
@@ -58,6 +59,7 @@ public class XmlAnyElementListTestCases extends JAXBWithJSONTestCases{
         return properties;
     }
 
+    @Override
     public Object getControlObject(){
         EmployeeWithList ctrlEmpWithList = new EmployeeWithList();
         ctrlEmpWithList.a = 1;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -58,6 +58,7 @@ public class BinaryDataCollectionForcedInlineBinaryTestCases extends XMLWithJSON
         setProject(new BinaryDataCollectionWithGroupingElementIdentifiedByNameProject(namespaceResolver));
     }
 
+    @Override
     protected Object getControlObject() {
         Employee employee = null;
 
@@ -78,6 +79,7 @@ public class BinaryDataCollectionForcedInlineBinaryTestCases extends XMLWithJSON
         return employee;
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         MyAttachmentMarshaller marshaller = new MyAttachmentMarshaller();

@@ -50,6 +50,7 @@ public class AnyObjectXMLRootSimpleNonStringTestCases extends XMLWithJSONMapping
         return namespaces;
     }
 
+    @Override
     public Object getControlObject() {
         Root root = new Root();
 

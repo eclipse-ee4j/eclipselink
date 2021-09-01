@@ -45,6 +45,7 @@ public class MarshallerFormattingTestCases extends OXTestCase {
         TestRunner.main(arguments);
     }
 
+    @Override
     public void setUp() throws Exception {
         contextPath = System.getProperty("jaxb.test.contextpath", JAXBSAXTestSuite.CONTEXT_PATH);
         JAXBContext jaxbContext = JAXBContext.newInstance(contextPath, getClass().getClassLoader());

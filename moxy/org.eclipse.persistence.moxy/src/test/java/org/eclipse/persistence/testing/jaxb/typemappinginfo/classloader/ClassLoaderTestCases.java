@@ -59,6 +59,7 @@ public class ClassLoaderTestCases extends TypeMappingInfoWithJSONTestCases {
         return typeMappingInfos;
     }
 
+    @Override
     public void setTypeMappingInfos(TypeMappingInfo[] newTypes) throws Exception {
         URL[] urls = new URL[0];
         URLClassLoader emptyClassLoader = new URLClassLoader(urls, null);
@@ -69,6 +70,7 @@ public class ClassLoaderTestCases extends TypeMappingInfoWithJSONTestCases {
         jaxbUnmarshaller = jaxbContext.createUnmarshaller();
     }
 
+    @Override
     protected Object getControlObject() {
 
         QName qname = new QName("examplenamespace", "root");
@@ -96,6 +98,7 @@ public class ClassLoaderTestCases extends TypeMappingInfoWithJSONTestCases {
         return jaxbElement;
     }
 
+    @Override
     public Object getWriteControlObject() {
 
         QName qname = new QName("examplenamespace", "root");
@@ -123,6 +126,7 @@ public class ClassLoaderTestCases extends TypeMappingInfoWithJSONTestCases {
         return jaxbElement;
     }
 
+    @Override
     public Map<String, InputStream> getControlSchemaFiles(){
         Map<String, InputStream> controlSchema = new HashMap<String, InputStream>();
         InputStream instream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/typemappinginfo/classloader/classloader.xsd");

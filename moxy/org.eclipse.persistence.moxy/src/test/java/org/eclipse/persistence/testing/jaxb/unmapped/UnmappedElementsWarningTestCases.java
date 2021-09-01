@@ -49,6 +49,7 @@ public class UnmappedElementsWarningTestCases extends OXTestCase{
         TestRunner.run(UnmappedElementsWarningTestCases.class);
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         Class[] classes = new Class[1];

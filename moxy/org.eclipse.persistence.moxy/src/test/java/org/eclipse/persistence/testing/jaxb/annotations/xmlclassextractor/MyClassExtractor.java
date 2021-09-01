@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,7 @@ import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.sessions.Session;
 
 public class MyClassExtractor extends ClassExtractor {
+    @Override
     public Class extractClassFromRow(Record databaseRow, Session session) {
         return Car.class;
     }

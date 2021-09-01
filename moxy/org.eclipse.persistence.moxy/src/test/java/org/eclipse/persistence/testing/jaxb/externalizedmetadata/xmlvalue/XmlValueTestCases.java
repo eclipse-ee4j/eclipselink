@@ -51,6 +51,7 @@ public class XmlValueTestCases extends JAXBWithJSONTestCases {
         setClasses(new Class[] { MyValueClass.class });
     }
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(ADAPTER_OXM_DOC);
 
@@ -63,6 +64,7 @@ public class XmlValueTestCases extends JAXBWithJSONTestCases {
     }
 
 
+    @Override
     public Object getControlObject() {
         MyValueClass mvc = new MyValueClass();
         mvc.blah = Boolean.valueOf("true");

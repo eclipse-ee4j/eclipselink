@@ -66,10 +66,12 @@ public class BinaryDataIdentifiedByNameEmptyNSRNillableTestCases extends XMLWith
         setProject(p);
     }
 
+    @Override
     protected Object getControlObject() {
         return Employee.example1();
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         MyAttachmentUnmarshaller attachmentUnmarshaller = new MyAttachmentUnmarshaller();

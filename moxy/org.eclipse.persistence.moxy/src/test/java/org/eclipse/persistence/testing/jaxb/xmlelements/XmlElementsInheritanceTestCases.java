@@ -41,6 +41,7 @@ public class XmlElementsInheritanceTestCases extends JAXBWithJSONTestCases {
         setClasses(classes);
     }
 
+    @Override
     protected Object getControlObject() {
         EmployeeCollection employee = new EmployeeCollection();
         employee.id = CONTROL_ID;
@@ -57,6 +58,7 @@ public class XmlElementsInheritanceTestCases extends JAXBWithJSONTestCases {
         return employee;
     }
 
+    @Override
     protected Object getJSONReadControlObject() {
           EmployeeCollection employee = new EmployeeCollection();
           employee.id = CONTROL_ID;

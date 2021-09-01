@@ -37,6 +37,7 @@ public class UnmarshalListenerImpl implements XMLUnmarshalListener {
     public UnmarshalListenerImpl() {
         events = new ArrayList();
     }
+    @Override
     public void beforeUnmarshal(Object obj, Object parent) {
         if(obj instanceof Employee) {
             events.add(EMPLOYEE_BEFORE_UNMARSHAL);
@@ -46,6 +47,7 @@ public class UnmarshalListenerImpl implements XMLUnmarshalListener {
             events.add(PHONE_BEFORE_UNMARSHAL);
         }
     }
+    @Override
     public void afterUnmarshal(Object obj, Object parent) {
         if(obj instanceof Employee) {
             events.add(EMPLOYEE_AFTER_UNMARSHAL);

@@ -58,6 +58,7 @@ public class ChangeSummaryXSDWithCSonChildProject extends SDOTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() {
         super.setUp();// watch setup redundancy
         //define types from deep with cs

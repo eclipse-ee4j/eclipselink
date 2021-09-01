@@ -35,14 +35,17 @@ public class ChangeSummaryChildSimpleDeleteTestCases extends ChangeSummaryChildL
         TestRunner.main(arguments);
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/team_cschild_delete_simple.xml");
     }
 
+    @Override
     protected String getNoSchemaControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/team_cschild_delete_simple_noschema.xml");
     }
 
+    @Override
     protected void verifyAfterLoad(XMLDocument document) {
         super.verifyAfterLoad(document);
         ChangeSummary teamCS = document.getRootObject().getChangeSummary();

@@ -49,6 +49,7 @@ public class MappingClassLoaderTestCases extends OXTestCase {
         TestRunner.main(arguments);
     }
 
+    @Override
     public void setUp() throws Exception {
         classLoader = new JARClassLoader("org/eclipse/persistence/testing/oxm/classloader/MappingTests.jar");
         xmlContext = getXMLContext(new MappingTestProject(classLoader, platform, metadata), classLoader);

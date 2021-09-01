@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ public class XmlElementNillableTypeLevelOverrideTestCases extends JAXBTestCases 
         setClasses(new Class[] { TypeRootOverride.class });
     }
 
+    @Override
     public Map getProperties() {
 
         InputStream iStream = ClassLoader.getSystemResourceAsStream(BINDINGS_DOC);

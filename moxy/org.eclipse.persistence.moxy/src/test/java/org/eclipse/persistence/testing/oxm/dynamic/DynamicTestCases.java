@@ -61,6 +61,7 @@ public class DynamicTestCases extends XMLMappingTestCases {
         setControlDocument(XML_RESOURCE);
     }
 
+    @Override
     public Object getControlObject() {
         try {
             Object rootObj = newInstance(ROOT_CLASS_NAME);

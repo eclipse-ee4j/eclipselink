@@ -35,6 +35,7 @@ public class PrefixMapperContextTestCases extends TestCase {
         super(name);
     }
 
+    @Override
     public String getName() {
         return "JAXB set/getProperty Tests: " + super.getName();
     }

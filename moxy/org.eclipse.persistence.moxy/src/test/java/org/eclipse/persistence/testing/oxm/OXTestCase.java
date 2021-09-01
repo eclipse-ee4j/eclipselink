@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -251,6 +251,7 @@ public abstract class OXTestCase extends XMLTestCase {
         }
     }
 
+    @Override
     public String getName() {
         String longClassName = this.getClass().getName();
         String shortClassName = longClassName.substring(longClassName.lastIndexOf(".") + 1, longClassName.length() - 1);
@@ -420,6 +421,7 @@ public abstract class OXTestCase extends XMLTestCase {
         }
     }
 
+    @Override
     protected void compareValues(Object controlValue, Object testValue){
         if(controlValue instanceof JAXBElement && testValue instanceof JAXBElement){
             compareJAXBElementObjects((JAXBElement)controlValue, (JAXBElement)testValue);
