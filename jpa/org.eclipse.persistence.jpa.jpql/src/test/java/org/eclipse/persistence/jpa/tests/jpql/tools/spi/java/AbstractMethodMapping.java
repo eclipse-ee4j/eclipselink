@@ -44,33 +44,21 @@ public abstract class AbstractMethodMapping extends AbstractMapping {
         super(parent, method);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Method getMember() {
         return (Method) super.getMember();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Annotation[] getMemberAnnotations() {
         return getMember().getAnnotations();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Type getMemberGenericType() {
         return getMember().getGenericReturnType();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Class<?> getMemberType() {
 
@@ -122,9 +110,6 @@ public abstract class AbstractMethodMapping extends AbstractMapping {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean hasAnnotation(Class<? extends Annotation> annotationType) {
         return getMember().isAnnotationPresent(annotationType);

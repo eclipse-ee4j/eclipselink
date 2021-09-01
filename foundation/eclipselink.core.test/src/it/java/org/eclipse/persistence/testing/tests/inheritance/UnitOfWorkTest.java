@@ -66,7 +66,7 @@ public class UnitOfWorkTest extends WriteObjectTest {
 
     protected void changeUnitOfWorkWorkingCopy() {
         Company company = (Company)this.unitOfWorkWorkingCopy;
-        Vector vehicles = (Vector)company.getVehicles().getValue();
+        Vector vehicles = company.getVehicles().getValue();
 
         //delete a vehicle
         //    vehicles.removeElement(vehicles.firstElement());

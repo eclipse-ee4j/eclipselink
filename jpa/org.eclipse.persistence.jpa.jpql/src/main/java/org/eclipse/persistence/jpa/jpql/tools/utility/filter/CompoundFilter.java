@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -75,9 +75,6 @@ public abstract class CompoundFilter<T> implements Filter<T>,
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SuppressWarnings("unchecked")
     public CompoundFilter<T> clone() {
@@ -89,9 +86,6 @@ public abstract class CompoundFilter<T> implements Filter<T>,
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean equals(Object object) {
         if (!(object instanceof CompoundFilter<?>)) {
@@ -122,9 +116,6 @@ public abstract class CompoundFilter<T> implements Filter<T>,
         return filter2;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int hashCode() {
         return filter1.hashCode() ^ filter2.hashCode();
@@ -137,9 +128,6 @@ public abstract class CompoundFilter<T> implements Filter<T>,
      */
     protected abstract String operatorString();
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

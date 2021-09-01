@@ -31,7 +31,7 @@ public class RemoteSessionTest extends TestCase {
     public void setup() {
         //sneakily using some existing code
         RMIRemoteModel remote = new RMIRemoteModel();
-        DatabaseSession dbSession = ((org.eclipse.persistence.sessions.Project)getSession().getProject().clone()).createDatabaseSession();
+        DatabaseSession dbSession = getSession().getProject().clone().createDatabaseSession();
         dbSession.setSessionLog(getSession().getSessionLog());
         dbSession.login();
         RMIServerManagerController.start(dbSession);

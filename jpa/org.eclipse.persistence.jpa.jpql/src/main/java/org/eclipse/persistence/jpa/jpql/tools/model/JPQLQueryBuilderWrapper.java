@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,17 +52,11 @@ public abstract class JPQLQueryBuilderWrapper implements IJPQLQueryBuilder {
         this.delegate = delegate;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ICaseExpressionStateObjectBuilder buildCaseExpressionStateObjectBuilder(StateObject parent) {
         return delegate.buildCaseExpressionStateObjectBuilder(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryStateObject buildStateObject(IManagedTypeProvider provider,
                                                  CharSequence jpqlQuery,
@@ -71,9 +65,6 @@ public abstract class JPQLQueryBuilderWrapper implements IJPQLQueryBuilder {
         return delegate.buildStateObject(provider, jpqlQuery, tolerant);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryStateObject buildStateObject(IManagedTypeProvider provider,
                                                  CharSequence jpqlQuery,
@@ -83,9 +74,6 @@ public abstract class JPQLQueryBuilderWrapper implements IJPQLQueryBuilder {
         return delegate.buildStateObject(provider, jpqlQuery, queryBNFId, tolerant);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public StateObject buildStateObject(StateObject parent,
                                         CharSequence jpqlFragment,
@@ -94,33 +82,21 @@ public abstract class JPQLQueryBuilderWrapper implements IJPQLQueryBuilder {
         return delegate.buildStateObject(parent, jpqlFragment, queryBNFId);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IConditionalExpressionStateObjectBuilder buildStateObjectBuilder(AbstractConditionalClauseStateObject stateObject) {
         return delegate.buildStateObjectBuilder(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ISelectExpressionStateObjectBuilder buildStateObjectBuilder(SelectClauseStateObject stateObject) {
         return delegate.buildStateObjectBuilder(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ISimpleSelectExpressionStateObjectBuilder buildStateObjectBuilder(SimpleSelectClauseStateObject stateObject) {
         return delegate.buildStateObjectBuilder(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public INewValueStateObjectBuilder buildStateObjectBuilder(UpdateItemStateObject stateObject) {
         return delegate.buildStateObjectBuilder(stateObject);
@@ -135,9 +111,6 @@ public abstract class JPQLQueryBuilderWrapper implements IJPQLQueryBuilder {
         return delegate;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLGrammar getGrammar() {
         return delegate.getGrammar();

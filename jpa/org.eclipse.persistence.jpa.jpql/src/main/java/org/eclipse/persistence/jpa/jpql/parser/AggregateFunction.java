@@ -72,9 +72,6 @@ public abstract class AggregateFunction extends AbstractSingleEncapsulatedExpres
         super(parent, identifier);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedEncapsulatedExpressionTo(List<Expression> children) {
 
@@ -99,9 +96,6 @@ public abstract class AggregateFunction extends AbstractSingleEncapsulatedExpres
         return new StateFieldPathExpression(this, word);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getEncapsulatedExpressionQueryBNFId() {
         return InternalAggregateFunctionBNF.ID;
@@ -118,9 +112,6 @@ public abstract class AggregateFunction extends AbstractSingleEncapsulatedExpres
         return (distinctIdentifier != null) ?distinctIdentifier : ExpressionTools.EMPTY_STRING;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(AggregateExpressionBNF.ID);
@@ -145,9 +136,6 @@ public abstract class AggregateFunction extends AbstractSingleEncapsulatedExpres
         return hasSpaceAfterDistinct;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected final void parseEncapsulatedExpression(WordParser wordParser,
                                                      int whitespaceCount,
@@ -163,9 +151,6 @@ public abstract class AggregateFunction extends AbstractSingleEncapsulatedExpres
         super.parseEncapsulatedExpression(wordParser, whitespaceCount, tolerant);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedTextEncapsulatedExpression(StringBuilder writer, boolean actual) {
 

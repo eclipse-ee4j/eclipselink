@@ -47,17 +47,11 @@ public class JavaEmbeddable extends JavaManagedType
         super(provider, type, mappingBuilder);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(IManagedTypeVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return getType().getName();

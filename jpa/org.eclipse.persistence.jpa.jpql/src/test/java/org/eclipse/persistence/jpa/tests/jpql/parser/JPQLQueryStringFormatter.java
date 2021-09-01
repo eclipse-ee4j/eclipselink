@@ -32,9 +32,6 @@ public interface JPQLQueryStringFormatter {
      */
     public static JPQLQueryStringFormatter DEFAULT = new JPQLQueryStringFormatter() {
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public String format(String query) {
             return query;

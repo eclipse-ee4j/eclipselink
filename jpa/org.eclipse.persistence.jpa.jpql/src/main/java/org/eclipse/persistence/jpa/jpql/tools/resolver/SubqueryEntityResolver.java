@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -90,18 +90,12 @@ public class SubqueryEntityResolver extends Resolver {
         this.entityName         = abstractSchemaName.getText();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected IType buildType() {
         IManagedType entity = getManagedType();
         return (entity != null) ? entity.getType() : getTypeHelper().objectType();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected ITypeDeclaration buildTypeDeclaration() {
         return getType().getTypeDeclaration();
@@ -116,9 +110,6 @@ public class SubqueryEntityResolver extends Resolver {
         return entityName;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IManagedType getManagedType() {
 
@@ -136,9 +127,6 @@ public class SubqueryEntityResolver extends Resolver {
         return managedType;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IMapping getMapping() {
 
@@ -194,9 +182,6 @@ public class SubqueryEntityResolver extends Resolver {
         return derivedPathResolver;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return entityName;

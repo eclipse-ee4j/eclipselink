@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -189,27 +189,18 @@ public class JPQLQueryHelper {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(DeleteClause expression) {
             resolver = new DeclarationResolver(queryContext, null);
             collectDescriptors(expression, resolver);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(FromClause expression) {
             resolver = new DeclarationResolver(queryContext, null);
             collectDescriptors(expression, resolver);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SimpleSelectStatement expression) {
             resolver = new DeclarationResolver(queryContext, resolver);
@@ -217,9 +208,6 @@ public class JPQLQueryHelper {
             resolver = resolver.getParent();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(UpdateClause expression) {
             resolver = new DeclarationResolver(queryContext, null);

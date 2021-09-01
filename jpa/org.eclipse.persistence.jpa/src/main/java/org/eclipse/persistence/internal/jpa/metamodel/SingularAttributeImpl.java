@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -193,7 +193,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
         if (getDescriptor().usesOptimisticLocking() && getMapping().isDirectToFieldMapping()) {
             OptimisticLockingPolicy policy = getDescriptor().getOptimisticLockingPolicy();
 
-            return policy.getWriteLockField().equals(((AbstractDirectMapping) getMapping()).getField());
+            return policy.getWriteLockField().equals(getMapping().getField());
         }
         return false;
     }

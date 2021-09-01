@@ -98,35 +98,23 @@ public final class CollectionMemberDeclaration extends AbstractExpression {
         super(parent, IN);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getCollectionValuedPathExpression().accept(visitor);
         getIdentificationVariable().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         children.add(getCollectionValuedPathExpression());
         children.add(getIdentificationVariable());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
 
@@ -171,9 +159,6 @@ public final class CollectionMemberDeclaration extends AbstractExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -234,9 +219,6 @@ public final class CollectionMemberDeclaration extends AbstractExpression {
         return identificationVariable;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(CollectionMemberDeclarationBNF.ID);
@@ -342,9 +324,6 @@ public final class CollectionMemberDeclaration extends AbstractExpression {
                !hasIdentificationVariable();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
         return wordParser.character() == RIGHT_PARENTHESIS ||
@@ -352,9 +331,6 @@ public final class CollectionMemberDeclaration extends AbstractExpression {
                super.isParsingComplete(wordParser, word, expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -445,9 +421,6 @@ public final class CollectionMemberDeclaration extends AbstractExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
 

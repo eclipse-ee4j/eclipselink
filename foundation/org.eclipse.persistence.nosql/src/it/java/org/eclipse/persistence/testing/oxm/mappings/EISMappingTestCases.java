@@ -90,7 +90,7 @@ public abstract class EISMappingTestCases extends OXTestCase {
 
     protected void setProject(Project project) {
         if (!(metadata == Metadata.JAVA)) {
-            String directorySetting = (String)((EISLogin)project.getDatasourceLogin()).getProperty("directory");
+            String directorySetting = (String) project.getDatasourceLogin().getProperty("directory");
             StringWriter stringWriter = new StringWriter();
             new XMLProjectWriter().write(project, stringWriter);
             log("DEPLOYMENT XML: " + stringWriter.toString());
@@ -102,7 +102,7 @@ public abstract class EISMappingTestCases extends OXTestCase {
                 Class nextClass = (Class)keysIterator.next();
                 EISDescriptor next = (EISDescriptor)descriptors.get(nextClass);
                 for (int i = 0; i < next.getMappings().size(); i++) {
-                    DatabaseMapping nextMapping = (DatabaseMapping)next.getMappings().get(i);
+                    DatabaseMapping nextMapping = next.getMappings().get(i);
                     if (nextMapping instanceof EISOneToOneMapping) {
                         String attrName = nextMapping.getAttributeName();
                         Call oldMappingCall = ((EISOneToOneMapping)nextMapping).getSelectionQuery().getDatasourceCall();
@@ -121,7 +121,7 @@ public abstract class EISMappingTestCases extends OXTestCase {
                 newProject.getDescriptor(nextClass).getQueryManager().setUpdateCall(next.getQueryManager().getUpdateCall());
             }
 
-            ((EISLogin)newProject.getDatasourceLogin()).setProperty("directory", directorySetting);
+            newProject.getDatasourceLogin().setProperty("directory", directorySetting);
             session = newProject.createDatabaseSession();
         } else {
             session = project.createDatabaseSession();
@@ -140,7 +140,7 @@ public abstract class EISMappingTestCases extends OXTestCase {
     }
 
     public Connection connect() throws ResourceException {
-        connectionFactory = (XMLFileConnectionFactory)new XMLFileConnectionFactory();
+        connectionFactory = new XMLFileConnectionFactory();
         connection = connectionFactory.getConnection();
 
         if (useLogging) {
@@ -214,8 +214,8 @@ public abstract class EISMappingTestCases extends OXTestCase {
         if (session.isConnected()) {
             session.logout();
         }
-        String directory = (String)((EISLogin)session.getDatasourceLogin()).getProperty("directory");
-        ((EISLogin)session.getDatasourceLogin()).setProperty("directory", directory + "/reading");
+        String directory = (String) session.getDatasourceLogin().getProperty("directory");
+        session.getDatasourceLogin().setProperty("directory", directory + "/reading");
 
         session.login();
     }
@@ -224,8 +224,8 @@ public abstract class EISMappingTestCases extends OXTestCase {
         if (session.isConnected()) {
             session.logout();
         }
-        String directory = (String)((EISLogin)session.getDatasourceLogin()).getProperty("directory");
-        ((EISLogin)session.getDatasourceLogin()).setProperty("directory", directory + "/writing");
+        String directory = (String) session.getDatasourceLogin().getProperty("directory");
+        session.getDatasourceLogin().setProperty("directory", directory + "/writing");
 
         session.login();
     }
@@ -310,7 +310,7 @@ public abstract class EISMappingTestCases extends OXTestCase {
         uow.commit();
 
         session.getIdentityMapAccessor().initializeAllIdentityMaps();
-        Vector afterDeleteObjects = (Vector)session.readAllObjects(getSourceClass());
+        Vector afterDeleteObjects = session.readAllObjects(getSourceClass());
         this.assertEquals("Objects were not all deleted", 0, afterDeleteObjects.size());
 
         log("****After commit deletes:");

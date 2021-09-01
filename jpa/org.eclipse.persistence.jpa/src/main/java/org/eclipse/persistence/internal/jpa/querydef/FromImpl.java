@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -503,11 +503,11 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
         if (attribute.isCollection()) {
             org.eclipse.persistence.expressions.Expression node;
             if (jt.equals(JoinType.INNER)) {
-                node = this.currentNode.anyOf(((PluralAttribute) attribute).getName());
+                node = this.currentNode.anyOf(attribute.getName());
             } else if (jt.equals(JoinType.RIGHT)) {
                 throw new UnsupportedOperationException(ExceptionLocalization.buildMessage("RIGHT_JOIN_NOT_SUPPORTED"));
             } else {
-                node = this.currentNode.anyOfAllowingNone(((PluralAttribute) attribute).getName());
+                node = this.currentNode.anyOfAllowingNone(attribute.getName());
             }
             Join join;
             if (((PluralAttribute) attribute).getElementType().getPersistenceType().equals(PersistenceType.BASIC)) {

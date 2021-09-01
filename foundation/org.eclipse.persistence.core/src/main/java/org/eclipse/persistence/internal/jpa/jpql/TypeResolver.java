@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -438,51 +438,33 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AbsExpression expression) {
         // Visit the child expression in order to create the resolver
         expression.getExpression().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AbstractSchemaName expression) {
         ClassDescriptor descriptor = queryContext.getDescriptor(expression.getText());
         type = descriptor.getJavaClass();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AdditionExpression expression) {
         visitArithmeticExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AllOrAnyExpression expression) {
         expression.getExpression().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AndExpression expression) {
         type = Boolean.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ArithmeticFactor expression) {
 
@@ -495,41 +477,26 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AsOfClause expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AvgFunction expression) {
         type = Double.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(BadExpression expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(BetweenExpression expression) {
         type = Boolean.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CaseExpression expression) {
         visitCollectionEquivalentExpression(
@@ -538,105 +505,66 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
         );
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CastExpression expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CoalesceExpression expression) {
         visitCollectionEquivalentExpression(expression.getExpression(), null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CollectionExpression expression) {
         expression.acceptChildren(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CollectionMemberDeclaration expression) {
         expression.getCollectionValuedPathExpression().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CollectionMemberExpression expression) {
         type = Boolean.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CollectionValuedPathExpression expression) {
         type = resolveMappingType(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ComparisonExpression expression) {
         type = Boolean.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ConcatExpression expression) {
         type = String.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ConnectByClause expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ConstructorExpression expression) {
         type = queryContext.getType(expression.getClassName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CountFunction expression) {
         type = Long.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(DatabaseType expression) {
         // Nothing to do
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(DateTime expression) {
 
@@ -667,41 +595,26 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(DeleteClause expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(DeleteStatement expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(DivisionExpression expression) {
         visitArithmeticExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(EmptyCollectionComparisonExpression expression) {
         type = Boolean.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(EntityTypeLiteral expression) {
         String entityTypeName = expression.getEntityTypeName();
@@ -709,73 +622,46 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
         type = descriptor.getJavaClass();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(EntryExpression expression) {
         type = Map.Entry.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ExistsExpression expression) {
         type = Boolean.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ExtractExpression expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(FromClause expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(FunctionExpression expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(GroupByClause expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(HavingClause expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(HierarchicalQueryClause expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(IdentificationVariable expression) {
 
@@ -806,57 +692,36 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(IdentificationVariableDeclaration expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(IndexExpression expression) {
         type = Integer.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(InExpression expression) {
         type = Boolean.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(InputParameter expression) {
         type = UNRESOLVABLE_TYPE;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(Join expression) {
         expression.getJoinAssociationPath().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(JPQLExpression expression) {
         expression.getQueryStatement().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(KeyExpression expression) {
         IdentificationVariable identificationVariable = (IdentificationVariable) expression.getExpression();
@@ -866,9 +731,6 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
         type = (Class<?>) mapContainerPolicy.getKeyType();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(KeywordExpression expression) {
 
@@ -884,41 +746,26 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(LengthExpression expression) {
         type = Integer.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(LikeExpression expression) {
         type = Boolean.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(LocateExpression expression) {
         type = Integer.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(LowerExpression expression) {
         type = String.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(MaxFunction expression) {
 
@@ -932,9 +779,6 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(MinFunction expression) {
 
@@ -948,57 +792,36 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ModExpression expression) {
         type = Integer.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(MultiplicationExpression expression) {
         visitArithmeticExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(NotExpression expression) {
         type = Boolean.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(NullComparisonExpression expression) {
         type = Boolean.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(NullExpression expression) {
         type = UNRESOLVABLE_TYPE;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(NullIfExpression expression) {
         expression.getFirstExpression().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(NumericLiteral expression) {
 
@@ -1039,81 +862,51 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ObjectExpression expression) {
         expression.getExpression().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(OnClause expression) {
         expression.getConditionalExpression().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(OrderByClause expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(OrderByItem expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(OrderSiblingsByClause expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(OrExpression expression) {
         type = Boolean.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(RangeVariableDeclaration expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(RegexpExpression expression) {
         type = Boolean.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ResultVariable expression) {
         expression.getSelectExpression().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SelectClause expression) {
 
@@ -1131,33 +924,21 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SelectStatement expression) {
         expression.getSelectClause().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SimpleFromClause expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SimpleSelectClause expression) {
         expression.getSelectExpression().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SimpleSelectStatement expression) {
         queryContext.newSubQueryContext(expression, null);
@@ -1169,73 +950,46 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SizeExpression expression) {
         type = Integer.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SqrtExpression expression) {
         type = Double.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(StartWithClause expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(StateFieldPathExpression expression) {
         type = resolveMappingType(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(StringLiteral expression) {
         type = String.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SubExpression expression) {
         expression.getExpression().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SubstringExpression expression) {
         type = String.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SubtractionExpression expression) {
         visitArithmeticExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SumFunction expression) {
 
@@ -1247,97 +1001,61 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
         type = convertSumFunctionType(type);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(TableExpression expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(TableVariableDeclaration expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(TreatExpression expression) {
         expression.getEntityType().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(TrimExpression expression) {
         type = String.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(TypeExpression expression) {
         expression.getExpression().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UnionClause expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UnknownExpression expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UpdateClause expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UpdateItem expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UpdateStatement expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UpperExpression expression) {
         type = String.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ValueExpression expression) {
 
@@ -1359,17 +1077,11 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(WhenClause expression) {
         expression.getThenExpression().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(WhereClause expression) {
         expression.getConditionalExpression().accept(this);
@@ -1461,9 +1173,6 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
             super();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CollectionExpression expression) {
             this.expression = expression;
@@ -1476,9 +1185,6 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
         DatabaseMapping mapping;
         QueryKey queryKey;
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(AbstractSchemaName expression) {
             descriptor = queryContext.getDescriptor(expression.getText());
@@ -1492,9 +1198,6 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
             visitPathExpression(expression);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(EntityTypeLiteral expression) {
             descriptor = queryContext.getDescriptor(expression.getEntityTypeName());
@@ -1547,9 +1250,6 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
             descriptor = mapPolicy.getKeyMapping().getReferenceDescriptor();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(RangeVariableDeclaration expression) {
             expression.getIdentificationVariable().accept(this);

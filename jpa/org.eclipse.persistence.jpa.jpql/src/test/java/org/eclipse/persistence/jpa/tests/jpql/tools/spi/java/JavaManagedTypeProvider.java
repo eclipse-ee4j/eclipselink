@@ -133,49 +133,31 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
         return new JavaMappedSuperclass(this, getTypeRepository().getType(type), mappingBuilder);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Iterable<IEntity> entities() {
         return new SnapshotCloneIterable<IEntity>(entities.values());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IEmbeddable getEmbeddable(IType type) {
         return getEmbeddable(type.getName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IEmbeddable getEmbeddable(String typeName) {
         return embeddables.get(typeName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IEntity getEntity(IType type) {
         return getEntity(type.getName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IEntity getEntity(String typeName) {
         return entities.get(typeName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IEntity getEntityNamed(String entityName) {
 
@@ -188,33 +170,21 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IManagedType getManagedType(IType type) {
         return getManagedType(type.getName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IManagedType getManagedType(String typeName) {
         return managedTypes.get(typeName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IMappedSuperclass getMappedSuperclass(IType type) {
         return getMappedSuperclass(type.getName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IMappedSuperclass getMappedSuperclass(String typeName) {
         return mappedSuperclasses.get(typeName);
@@ -224,9 +194,6 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
         return mappingBuilder;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JavaTypeRepository getTypeRepository() {
         if (typeRepository == null) {
@@ -254,9 +221,6 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
         initialize();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Iterable<IManagedType> managedTypes() {
         return new SnapshotCloneIterable<IManagedType>(managedTypes.values());

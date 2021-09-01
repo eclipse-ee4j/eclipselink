@@ -45,7 +45,7 @@ public class EmployeeSystem extends TestSystem {
         // Configure sequencing to be same as Hibernate defaults.
         session.getLogin().useNativeSequencing();
         session.getLogin().getDefaultSequence().setPreallocationSize(100);
-        ((DatabaseSessionImpl)session).getSequencingControl().resetSequencing();
+        session.getSequencingControl().resetSequencing();
         dropTableConstraints(session);
         // Recreate sequences to help provide more consistent hash values for primary key
         // to improve test consistency.

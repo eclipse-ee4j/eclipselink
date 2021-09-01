@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -66,9 +66,6 @@ public final class ComparisonExpression extends CompoundExpression {
         super(parent, identifier);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
@@ -83,33 +80,21 @@ public final class ComparisonExpression extends CompoundExpression {
         return getText();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getLeftExpressionQueryBNFId() {
         return ComparisonExpressionBNF.ID;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(ComparisonExpressionBNF.ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getRightExpressionQueryBNFId() {
         return ComparisonExpressionBNF.ID;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 
@@ -135,9 +120,6 @@ public final class ComparisonExpression extends CompoundExpression {
                super.isParsingComplete(wordParser, word, expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String parseIdentifier(WordParser wordParser) {
         return getText();

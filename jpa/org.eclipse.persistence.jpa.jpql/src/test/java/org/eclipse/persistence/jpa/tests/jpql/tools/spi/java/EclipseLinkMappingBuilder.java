@@ -40,9 +40,6 @@ public class EclipseLinkMappingBuilder implements IMappingBuilder<Member> {
         super();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IMapping buildMapping(IManagedType parent, Member value) {
 

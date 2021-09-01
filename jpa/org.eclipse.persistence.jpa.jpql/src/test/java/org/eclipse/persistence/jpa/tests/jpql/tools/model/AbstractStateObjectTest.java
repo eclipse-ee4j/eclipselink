@@ -2280,8 +2280,8 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
      * Tests the injected {@link IJPQLQueryFormatter} and make sure the generated string will be
      * the same as the given JPQL query.
      *
-     * @param jpqlStateObject
-     * @param jpqlQuery
+     * @param jpqlStateObject state object
+     * @param jpqlQuery query
      */
     protected void testFormatter(JPQLQueryStateObject jpqlStateObject, String jpqlQuery) {
 
@@ -2344,8 +2344,6 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
      * @param jpqlQuery The JPQL query to parse and to test the parsed tree representation
      * @param queryStatement The tester used to verify the parsed tree is correctly representing the
      * JPQL query
-     * @param formatter This formatter is used to personalized the formatting of the JPQL query
-     * before it is used to test the generated string
      * @param tolerant Determines if the parsing system should be tolerant, meaning if it should try
      * to parse grammatically invalid or incomplete queries
      */

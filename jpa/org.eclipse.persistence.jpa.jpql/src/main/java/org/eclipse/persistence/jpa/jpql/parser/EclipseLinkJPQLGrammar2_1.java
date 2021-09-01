@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -130,9 +130,6 @@ public final class EclipseLinkJPQLGrammar2_1 extends AbstractJPQLGrammar {
         return INSTANCE;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected JPQLGrammar buildBaseGrammar() {
 
@@ -145,33 +142,21 @@ public final class EclipseLinkJPQLGrammar2_1 extends AbstractJPQLGrammar {
         return jpqlGrammar;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPAVersion getJPAVersion() {
         return JPAVersion.VERSION_2_0;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getProvider() {
         return DefaultEclipseLinkJPQLGrammar.PROVIDER_NAME;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getProviderVersion() {
         return VERSION.getVersion();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initializeBNFs() {
 
@@ -211,9 +196,6 @@ public final class EclipseLinkJPQLGrammar2_1 extends AbstractJPQLGrammar {
         addChildBNF(PatternValueBNF.ID,                        ArithmeticExpressionBNF.ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initializeExpressionFactories() {
 
@@ -221,9 +203,6 @@ public final class EclipseLinkJPQLGrammar2_1 extends AbstractJPQLGrammar {
         registerFactory(new TreatExpressionFactory());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initializeIdentifiers() {
 
@@ -239,9 +218,6 @@ public final class EclipseLinkJPQLGrammar2_1 extends AbstractJPQLGrammar {
         registerIdentifierVersion(TREAT,     JPAVersion.VERSION_2_0);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return "EclipseLink 2.1";

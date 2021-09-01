@@ -93,26 +93,17 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression {
         super(parent, TRIM);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getTrimCharacter().accept(visitor);
         super.acceptChildren(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedEncapsulatedExpressionTo(List<Expression> children) {
 
@@ -147,9 +138,6 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression {
         super.addOrderedEncapsulatedExpressionTo(children);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getEncapsulatedExpressionQueryBNFId() {
         return StringPrimaryBNF.ID;
@@ -177,9 +165,6 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression {
         return (specificationIdentifier != null) ? specificationIdentifier : ExpressionTools.EMPTY_STRING;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(FunctionsReturningStringsBNF.ID);
@@ -207,9 +192,6 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression {
         return trimCharacter;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean hasEncapsulatedExpression() {
         return hasSpecification() || hasTrimCharacter() || hasFrom || hasExpression();
@@ -274,9 +256,6 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression {
               !trimCharacter.isNull();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parseEncapsulatedExpression(WordParser wordParser,
                                                int whitespaceCount,
@@ -344,9 +323,6 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression {
         return Specification.DEFAULT;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedTextEncapsulatedExpression(StringBuilder writer, boolean actual) {
 

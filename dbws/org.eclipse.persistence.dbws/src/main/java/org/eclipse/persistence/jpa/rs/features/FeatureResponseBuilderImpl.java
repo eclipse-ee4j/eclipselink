@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,17 +43,11 @@ import org.eclipse.persistence.jpa.rs.util.list.SingleResultQueryList;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object buildReadAllQueryResponse(PersistenceContext context, Map<String, Object> queryParams, List<Object> items, UriInfo uriInfo) {
         return items;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object buildReportQueryResponse(PersistenceContext context, Map<String, Object> queryParams, List<Object[]> results, List<ReportItem> items, UriInfo uriInfo) {
         if ((results != null) && (!results.isEmpty())) {
@@ -64,9 +58,6 @@ public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object buildAttributeResponse(PersistenceContext context, Map<String, Object> queryParams, String attribute, Object result, UriInfo uriInfo) {
         if (result instanceof Collection) {
@@ -81,9 +72,6 @@ public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
         return result;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object buildSingleResultQueryResponse(PersistenceContext context, Map<String, Object> queryParams, Object result, List<ReportItem> items, UriInfo uriInfo) {
         final SingleResultQueryList response = new SingleResultQueryList();
@@ -92,9 +80,6 @@ public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
         return response;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object buildSingleEntityResponse(PersistenceContext context, Map<String, Object> queryParams, Object result, UriInfo uriInfo) {
         return result;

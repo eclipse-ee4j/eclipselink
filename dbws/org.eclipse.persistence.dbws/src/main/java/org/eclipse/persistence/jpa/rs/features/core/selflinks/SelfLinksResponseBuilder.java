@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,17 +53,11 @@ import java.util.Map;
 @SuppressWarnings({ "unchecked"})
 public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object buildReadAllQueryResponse(PersistenceContext context, Map<String, Object> queryParams, List<Object> items, UriInfo uriInfo) {
         return collectionResponse(context, items, uriInfo);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object buildReportQueryResponse(PersistenceContext context, Map<String, Object> queryParams, List<Object[]> results, List<ReportItem> items, UriInfo uriInfo) {
         ReportQueryResultCollection response = new ReportQueryResultCollection();
@@ -78,9 +72,6 @@ public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
         return response;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object buildSingleResultQueryResponse(PersistenceContext context, Map<String, Object> queryParams, Object result, List<ReportItem> items, UriInfo uriInfo) {
         final SingleResultQueryResult response = new SingleResultQueryResult();
@@ -94,9 +85,6 @@ public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
         return response;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object buildAttributeResponse(PersistenceContext context, Map<String, Object> queryParams, String attribute, Object item, UriInfo uriInfo) {
         if (item instanceof List) {
@@ -105,9 +93,6 @@ public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
         return item;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object buildSingleEntityResponse(PersistenceContext context, Map<String, Object> queryParams, Object result, UriInfo uriInfo) {
         if (result instanceof PersistenceWeavedRest) {

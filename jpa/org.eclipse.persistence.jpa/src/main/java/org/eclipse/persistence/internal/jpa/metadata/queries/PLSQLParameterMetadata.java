@@ -230,8 +230,8 @@ public class PLSQLParameterMetadata extends ORMetadata {
             // check for cursor return type
             if (Direction.OUT_CURSOR.name().equals(m_direction)) {
                 // the constructor by default adds a RETURN argument, so remove it
-                ((PLSQLStoredFunctionCall)call).getArguments().remove(0);
-                ((PLSQLStoredFunctionCall)call).useNamedCursorOutputAsResultSet(Direction.OUT_CURSOR.name(), type);
+                call.getArguments().remove(0);
+                call.useNamedCursorOutputAsResultSet(Direction.OUT_CURSOR.name(), type);
             } else {
                 if (getLength() != null) {
                     ((PLSQLStoredFunctionCall)call).setResult(type, getLength());

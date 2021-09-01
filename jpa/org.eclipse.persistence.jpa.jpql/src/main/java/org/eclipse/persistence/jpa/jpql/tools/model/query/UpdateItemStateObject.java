@@ -103,17 +103,11 @@ public class UpdateItemStateObject extends AbstractStateObject {
         setPath(path);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
@@ -151,9 +145,6 @@ public class UpdateItemStateObject extends AbstractStateObject {
         return builder;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public UpdateItem getExpression() {
         return (UpdateItem) super.getExpression();
@@ -168,9 +159,6 @@ public class UpdateItemStateObject extends AbstractStateObject {
         return newValue;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public UpdateClauseStateObject getParent() {
         return (UpdateClauseStateObject) super.getParent();
@@ -204,18 +192,12 @@ public class UpdateItemStateObject extends AbstractStateObject {
         return newValue != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();
         stateFieldPath = new StateFieldPathExpressionStateObject(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -326,9 +308,6 @@ public class UpdateItemStateObject extends AbstractStateObject {
         stateFieldPath.setIdentificationVariableInternally(variable);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
 

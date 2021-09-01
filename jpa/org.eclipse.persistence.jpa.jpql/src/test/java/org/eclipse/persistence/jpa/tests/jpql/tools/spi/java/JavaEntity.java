@@ -65,9 +65,6 @@ public class JavaEntity extends JavaManagedType
         super(provider, type, mappingBuilder);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(IManagedTypeVisitor visitor) {
         visitor.visit(this);
@@ -133,9 +130,6 @@ public class JavaEntity extends JavaManagedType
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getName() {
         if (name == null) {
@@ -144,9 +138,6 @@ public class JavaEntity extends JavaManagedType
         return name;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IQuery getNamedQuery(String queryName) {
         initializeQueries();
@@ -168,9 +159,6 @@ public class JavaEntity extends JavaManagedType
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return getName();

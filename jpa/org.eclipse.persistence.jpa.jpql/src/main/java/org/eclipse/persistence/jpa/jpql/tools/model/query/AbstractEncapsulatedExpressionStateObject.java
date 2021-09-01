@@ -43,9 +43,6 @@ public abstract class AbstractEncapsulatedExpressionStateObject extends Abstract
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AbstractEncapsulatedExpression getExpression() {
         return (AbstractEncapsulatedExpression) super.getExpression();
@@ -71,9 +68,6 @@ public abstract class AbstractEncapsulatedExpressionStateObject extends Abstract
      */
     protected abstract void toTextEncapsulatedExpression(Appendable writer) throws IOException;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
         writer.append(getIdentifier());

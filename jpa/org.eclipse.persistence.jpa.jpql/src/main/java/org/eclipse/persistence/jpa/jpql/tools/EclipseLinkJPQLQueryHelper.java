@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -83,9 +83,6 @@ public class EclipseLinkJPQLQueryHelper extends AbstractJPQLQueryHelper {
         super(queryContext);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public BasicRefactoringTool buildBasicRefactoringTool() {
         return new EclipseLinkBasicRefactoringTool(
@@ -95,9 +92,6 @@ public class EclipseLinkJPQLQueryHelper extends AbstractJPQLQueryHelper {
         );
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected AbstractContentAssistVisitor buildContentAssistVisitor(JPQLQueryContext queryContext) {
         return new EclipseLinkContentAssistVisitor(queryContext);
@@ -114,17 +108,11 @@ public class EclipseLinkJPQLQueryHelper extends AbstractJPQLQueryHelper {
         return EclipseLinkSemanticValidatorExtension.NULL_EXTENSION;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected EclipseLinkGrammarValidator buildGrammarValidator(JPQLGrammar jpqlGrammar) {
         return new EclipseLinkGrammarValidator(jpqlGrammar);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected JPQLQueryContext buildJPQLQueryContext(JPQLGrammar jpqlGrammar) {
         return new EclipseLinkJPQLQueryContext(jpqlGrammar);
@@ -139,9 +127,6 @@ public class EclipseLinkJPQLQueryHelper extends AbstractJPQLQueryHelper {
         return new EclipseLinkJPQLQueryBuilder(getGrammar());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public RefactoringTool buildRefactoringTool() {
 
@@ -154,9 +139,6 @@ public class EclipseLinkJPQLQueryHelper extends AbstractJPQLQueryHelper {
         );
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected AbstractEclipseLinkSemanticValidator buildSemanticValidator(JPQLQueryContext queryContext) {
         return new EclipseLinkSemanticValidator(

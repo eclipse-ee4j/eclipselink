@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -71,9 +71,6 @@ public abstract class AbstractIdentificationVariableDeclarationStateObject exten
         setIdentificationVariable(identificationVariable);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         children.add(rangeVariableDeclaration);
@@ -176,9 +173,6 @@ public abstract class AbstractIdentificationVariableDeclarationStateObject exten
      */
     protected abstract AbstractRangeVariableDeclarationStateObject buildRangeVariableDeclarationStateObject();
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IdentificationVariableDeclaration getExpression() {
         return (IdentificationVariableDeclaration) super.getExpression();
@@ -202,9 +196,6 @@ public abstract class AbstractIdentificationVariableDeclarationStateObject exten
         return getRangeVariableDeclaration().getIdentificationVariableStateObject();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AbstractFromClauseStateObject getParent() {
         return (AbstractFromClauseStateObject) super.getParent();
@@ -238,9 +229,6 @@ public abstract class AbstractIdentificationVariableDeclarationStateObject exten
         return getRangeVariableDeclaration().getRootStateObject();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ListIterable<IdentificationVariableStateObject> identificationVariables() {
         List<IdentificationVariableStateObject> stateObjects = new ArrayList<IdentificationVariableStateObject>();
@@ -251,18 +239,12 @@ public abstract class AbstractIdentificationVariableDeclarationStateObject exten
         return new SnapshotCloneListIterable<IdentificationVariableStateObject>(stateObjects);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();
         rangeVariableDeclaration = buildRangeVariableDeclarationStateObject();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -275,9 +257,6 @@ public abstract class AbstractIdentificationVariableDeclarationStateObject exten
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String listName() {
         return JOINS_LIST;
@@ -324,9 +303,6 @@ public abstract class AbstractIdentificationVariableDeclarationStateObject exten
         getRangeVariableDeclaration().setRootPath(root);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
 

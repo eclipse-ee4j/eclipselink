@@ -96,17 +96,11 @@ public final class SelectStatement extends AbstractSelectStatement {
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         super.acceptChildren(visitor);
@@ -114,9 +108,6 @@ public final class SelectStatement extends AbstractSelectStatement {
         getUnionClauses().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         super.addChildrenTo(children);
@@ -124,9 +115,6 @@ public final class SelectStatement extends AbstractSelectStatement {
         children.add(getUnionClauses());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
 
@@ -147,25 +135,16 @@ public final class SelectStatement extends AbstractSelectStatement {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected FromClause buildFromClause() {
         return new FromClause(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected SelectClause buildSelectClause() {
         return new SelectClause(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -192,9 +171,6 @@ public final class SelectStatement extends AbstractSelectStatement {
         return orderByClause;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(SelectStatementBNF.ID);
@@ -254,9 +230,6 @@ public final class SelectStatement extends AbstractSelectStatement {
               !unionClauses.isNull();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 
@@ -270,9 +243,6 @@ public final class SelectStatement extends AbstractSelectStatement {
         return super.isParsingComplete(wordParser, word, expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -293,9 +263,6 @@ public final class SelectStatement extends AbstractSelectStatement {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -78,18 +78,12 @@ final class ReadAllQueryBuilder extends EclipseLinkAnonymousExpressionVisitor {
         this.query = query;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CollectionExpression expression) {
         // Multiple expressions in the select clause => ReportQuery
         initializeReportQuery();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void visit(Expression expression) {
       // Does not select an identification variable
@@ -97,9 +91,6 @@ final class ReadAllQueryBuilder extends EclipseLinkAnonymousExpressionVisitor {
         initializeReportQuery();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(IdentificationVariable expression) {
 
@@ -125,27 +116,18 @@ final class ReadAllQueryBuilder extends EclipseLinkAnonymousExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(NullExpression expression) {
         // For from clause only JPQL the full object is always selected, so is ReadAllQuery.
         initializeReadAllQuery();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ObjectExpression expression) {
         // Visit the identification variable directly
         expression.getExpression().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ResultVariable expression) {
         // Make sure to traverse the select expression since
@@ -153,17 +135,11 @@ final class ReadAllQueryBuilder extends EclipseLinkAnonymousExpressionVisitor {
         expression.getSelectExpression().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SelectClause expression) {
         expression.getSelectExpression().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SelectStatement expression) {
         this.selectStatement = expression;

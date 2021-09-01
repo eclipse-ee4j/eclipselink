@@ -164,7 +164,7 @@ public class RemoteConnectionExceptionsTest extends TestCase {
             if (ok) {
                 ok = TestException.class.isInstance(exception);
                 if (ok) {
-                    ok = ((TestException)exception).getMessage().endsWith(generator.getMessage());
+                    ok = exception.getMessage().endsWith(generator.getMessage());
                 }
             }
         } else {

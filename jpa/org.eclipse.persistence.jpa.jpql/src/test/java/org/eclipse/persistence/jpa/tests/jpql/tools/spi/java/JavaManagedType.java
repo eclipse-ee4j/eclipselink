@@ -82,9 +82,6 @@ public abstract class JavaManagedType implements IManagedType {
         return mappingBuilder.buildMapping(this, member);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int compareTo(IManagedType managedType) {
         return getType().getName().compareTo(managedType.getType().getName());
@@ -98,26 +95,17 @@ public abstract class JavaManagedType implements IManagedType {
         return accessType.value();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IMapping getMappingNamed(String name) {
         initializeMappings();
         return mappings.get(name);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IManagedTypeProvider getProvider() {
         return provider;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JavaType getType() {
         return type;
@@ -182,9 +170,6 @@ public abstract class JavaManagedType implements IManagedType {
                 Modifier.isProtected(modifiers));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final Iterable<IMapping> mappings() {
         initializeMappings();

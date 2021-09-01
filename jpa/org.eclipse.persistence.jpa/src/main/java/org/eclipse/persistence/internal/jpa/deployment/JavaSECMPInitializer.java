@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -98,7 +98,7 @@ public class JavaSECMPInitializer extends JPAInitializer {
                     if(!isInitialized) {
                         initializeTopLinkLoggingFile();
                         if(fromAgent) {
-                            AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.WEAVER, "cmp_init_initialize_from_agent", (Object[])null);
+                            AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.WEAVER, "cmp_init_initialize_from_agent", null);
                         }
                         usesAgent = true;
                         initializer = new JavaSECMPInitializer(classLoader);

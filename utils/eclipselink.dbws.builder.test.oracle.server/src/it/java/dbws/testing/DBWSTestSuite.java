@@ -361,7 +361,7 @@ public class DBWSTestSuite {
         try {
             MessageFactory factory = MessageFactory.newInstance();
             soapMessage = factory.createMessage();
-            soapMessage.getSOAPPart().setContent((Source)new StreamSource(new StringReader(message)));
+            soapMessage.getSOAPPart().setContent(new StreamSource(new StringReader(message)));
             soapMessage.saveChanges();
         } catch (Exception e) {
             e.printStackTrace();

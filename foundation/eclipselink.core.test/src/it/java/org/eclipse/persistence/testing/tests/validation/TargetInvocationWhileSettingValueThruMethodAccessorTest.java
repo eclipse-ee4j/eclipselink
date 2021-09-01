@@ -56,7 +56,7 @@ public class TargetInvocationWhileSettingValueThruMethodAccessorTest extends Exc
     @Override
     public void test() {
         try {
-            ((MethodAttributeAccessor)mapping.getAttributeAccessor()).initializeAttributes(org.eclipse.persistence.testing.tests.validation.EmployeeWithProblems.class);
+            mapping.getAttributeAccessor().initializeAttributes(org.eclipse.persistence.testing.tests.validation.EmployeeWithProblems.class);
             mapping.setAttributeValueInObject(person, "invalid_data");
         } catch (EclipseLinkException exception) {
             caughtException = exception;

@@ -118,49 +118,31 @@ public class LocateExpressionStateObject extends AbstractTripleEncapsulatedExpre
         super(parent, firstJpqlFragment, secondJpqlFragment, thirdJpqlFragment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public LocateExpression getExpression() {
         return (LocateExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getFirstQueryBNFId() {
         return StringPrimaryBNF.ID;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return LOCATE;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getSecondQueryBNFId() {
         return StringPrimaryBNF.ID;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getThirdQueryBNFId() {
         return SimpleArithmeticExpressionBNF.ID;

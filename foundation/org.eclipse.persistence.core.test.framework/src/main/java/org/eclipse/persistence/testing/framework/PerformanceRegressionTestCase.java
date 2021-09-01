@@ -111,7 +111,7 @@ public abstract class PerformanceRegressionTestCase extends PerformanceCompariso
         // Query the current version last 5 runs for averaging.
         query = new ReadAllQuery(TestResult.class);
         result = new ExpressionBuilder();
-        query.setSelectionCriteria(result.get("name").equal(((TestCase)test).getName()).and(result.get("loadBuildSummary").get("machine").equal(LoadBuildSystem.getSummary().getMachine())).and(result.get("loadBuildSummary").get("loginChoice").equal(LoadBuildSystem.getSummary().getLoginChoice())).and(result.get("loadBuildSummary").get("toplinkVersion").equal(currentVersion)));
+        query.setSelectionCriteria(result.get("name").equal(test.getName()).and(result.get("loadBuildSummary").get("machine").equal(LoadBuildSystem.getSummary().getMachine())).and(result.get("loadBuildSummary").get("loginChoice").equal(LoadBuildSystem.getSummary().getLoginChoice())).and(result.get("loadBuildSummary").get("toplinkVersion").equal(currentVersion)));
         query.addOrdering(result.get("loadBuildSummary").get("timestamp").descending());
         query.useCursoredStream(1, 1);
         stream = (CursoredStream)session.executeQuery(query);

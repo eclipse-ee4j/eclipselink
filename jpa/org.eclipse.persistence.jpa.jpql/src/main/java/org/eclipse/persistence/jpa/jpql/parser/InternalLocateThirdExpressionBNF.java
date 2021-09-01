@@ -44,9 +44,6 @@ public final class InternalLocateThirdExpressionBNF extends JPQLQueryBNF {
         super(ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();

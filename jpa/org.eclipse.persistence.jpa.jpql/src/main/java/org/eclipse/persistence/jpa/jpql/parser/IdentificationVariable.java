@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -109,33 +109,21 @@ public final class IdentificationVariable extends AbstractExpression {
         this.virtual = virtual;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         // Nothing to traverse
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
         children.add(buildStringExpression(getText()));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(IdentificationVariableBNF.ID);
@@ -157,9 +145,6 @@ public final class IdentificationVariable extends AbstractExpression {
         return stateFieldPathExpression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getText() {
         return super.getText();
@@ -178,17 +163,11 @@ public final class IdentificationVariable extends AbstractExpression {
         return variableName;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isVirtual() {
         return virtual;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
         wordParser.moveForward(getText());
@@ -212,17 +191,11 @@ public final class IdentificationVariable extends AbstractExpression {
         rebuildParsedText();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toParsedText() {
         return getText();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
         writer.append(getText());

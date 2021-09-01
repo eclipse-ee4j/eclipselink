@@ -215,9 +215,6 @@ public class JavaTypeDeclaration implements ITypeDeclaration {
         return "L";
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getDimensionality() {
         if (array) {
@@ -231,9 +228,6 @@ public class JavaTypeDeclaration implements ITypeDeclaration {
         return 0;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IType getType() {
         return type;
@@ -243,9 +237,6 @@ public class JavaTypeDeclaration implements ITypeDeclaration {
         return typeRepository.getType(type);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ITypeDeclaration[] getTypeParameters() {
         if (genericTypes == null) {
@@ -259,17 +250,11 @@ public class JavaTypeDeclaration implements ITypeDeclaration {
         return genericTypes;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isArray() {
         return array;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
 

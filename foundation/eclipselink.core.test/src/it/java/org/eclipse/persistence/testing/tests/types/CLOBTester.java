@@ -149,7 +149,7 @@ public class CLOBTester extends TypeTester {
             super.verify(testCase);
         } catch (TestErrorException verifyFailedException) {
             // Database bridges which do not support long literal values
-            if ((caughtException != null) && (testCase.getSession().getPlatform().isOracle() && (((java.sql.SQLException)((DatabaseException)caughtException).getInternalException()).getErrorCode() == 1704))) {
+            if ((caughtException != null) && (testCase.getSession().getPlatform().isOracle() && (((java.sql.SQLException) caughtException.getInternalException()).getErrorCode() == 1704))) {
                 throw new TestWarningException("CLOB Write failed. " + caughtException.toString() + "\n Turn on String Binding and re-run test");
             }
 

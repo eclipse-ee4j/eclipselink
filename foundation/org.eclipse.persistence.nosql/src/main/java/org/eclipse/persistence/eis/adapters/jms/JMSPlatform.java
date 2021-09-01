@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -151,12 +151,12 @@ public class JMSPlatform extends EISPlatform {
                 // set the send destination URL - if one exists
                 property = (String)interaction.getProperty(DESTINATION_URL);
                 if (property != null) {
-                    ((CciJMSSendReceiveInteractionSpec)jmsSpec).setDestinationURL(property);
+                    jmsSpec.setDestinationURL(property);
                 } else {
                     // if no JNDI lookup, set the send destination  - if one exists
                     property = (String)interaction.getProperty(DESTINATION);
                     if (property != null) {
-                        ((CciJMSSendReceiveInteractionSpec)jmsSpec).setDestination(property);
+                        jmsSpec.setDestination(property);
                     } else {
                         // need to have either the destination or JNDI lookup defined
                         throw EISException.propertiesNotSet(DESTINATION_URL, DESTINATION);

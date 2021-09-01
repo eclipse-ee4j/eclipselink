@@ -56,33 +56,21 @@ public class ObjectExpressionStateObject extends EncapsulatedIdentificationVaria
         super(parent, identificationVariable);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addProblems(List<Problem> problems) {
         super.addProblems(problems);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ObjectExpression getExpression() {
         return (ObjectExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return OBJECT;

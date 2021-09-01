@@ -60,27 +60,18 @@ public abstract class CompoundExpression extends AbstractExpression {
         super(parent, identifier);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getLeftExpression().accept(visitor);
         getRightExpression().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected final void addChildrenTo(Collection<Expression> children) {
         children.add(getLeftExpression());
         children.add(getRightExpression());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected final void addOrderedChildrenTo(List<Expression> children) {
 
@@ -106,9 +97,6 @@ public abstract class CompoundExpression extends AbstractExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -214,9 +202,6 @@ public abstract class CompoundExpression extends AbstractExpression {
         return hasSpaceAfterIdentifier;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected final void parse(WordParser wordParser, boolean tolerant) {
 
@@ -267,9 +252,6 @@ public abstract class CompoundExpression extends AbstractExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected final void toParsedText(StringBuilder writer, boolean actual) {
 

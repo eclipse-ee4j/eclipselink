@@ -38,9 +38,6 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 @SuppressWarnings("nls")
 public final class EclipseLinkSemanticValidatorExtensionTest2_4 extends AbstractSemanticValidatorTest {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected JPQLQueryContext buildQueryContext() {
         return new EclipseLinkJPQLQueryContext(jpqlGrammar);
@@ -66,9 +63,6 @@ public final class EclipseLinkSemanticValidatorExtensionTest2_4 extends Abstract
         };
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected AbstractSemanticValidator buildValidator() {
         return new EclipseLinkSemanticValidator(
@@ -99,17 +93,11 @@ public final class EclipseLinkSemanticValidatorExtensionTest2_4 extends Abstract
         return columnNames;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isComparisonTypeChecked() {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isPathExpressionToCollectionMappingAllowed() {
         return true;

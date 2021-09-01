@@ -44,33 +44,21 @@ public abstract class AbstractFieldMapping extends AbstractMapping {
         super(parent, field);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Field getMember() {
         return (Field) super.getMember();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Annotation[] getMemberAnnotations() {
         return getMember().getAnnotations();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Type getMemberGenericType() {
         return getMember().getGenericType();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Class<?> getMemberType() {
 
@@ -115,9 +103,6 @@ public abstract class AbstractFieldMapping extends AbstractMapping {
         return field.getType();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean hasAnnotation(Class<? extends Annotation> annotationType) {
         return getMember().isAnnotationPresent(annotationType);

@@ -39,9 +39,6 @@ public class JavaMappingBuilder implements IMappingBuilder<Member> {
         super();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IMapping buildMapping(IManagedType parent, Member value) {
 

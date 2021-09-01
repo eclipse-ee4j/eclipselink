@@ -37,9 +37,6 @@ import static org.junit.Assert.*;
 public final class EclipseLinkContentAssistExtensionTest extends AbstractContentAssistExtensionTest {
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected ContentAssistExtension buildContentAssistExtension() {
         return new ContentAssistExtension() {

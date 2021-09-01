@@ -42,9 +42,6 @@ public final class KeyExpression extends EncapsulatedIdentificationVariableExpre
         super(parent, KEY);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);

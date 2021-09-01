@@ -55,7 +55,7 @@ public class TreatExpressionStateObject extends AbstractStateObject {
     private EntityTypeLiteralStateObject entityTypeName;
 
     /**
-     * Keeps a reference onto the {@link JoinStateObject} since it owns the {@link IStatObject}
+     * Keeps a reference onto the {@link JoinStateObject} since it owns the {@link StateObject}
      * representing the collection-valued path expression.
      */
     private JoinStateObject joinStateObject;
@@ -107,9 +107,6 @@ public class TreatExpressionStateObject extends AbstractStateObject {
         this(parent, false, entityTypeName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         acceptUnknownVisitor(visitor);
@@ -127,9 +124,6 @@ public class TreatExpressionStateObject extends AbstractStateObject {
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
@@ -179,9 +173,6 @@ public class TreatExpressionStateObject extends AbstractStateObject {
         return entityTypeName.getText();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public TreatExpression getExpression() {
         return (TreatExpression) super.getExpression();
@@ -237,18 +228,12 @@ public class TreatExpressionStateObject extends AbstractStateObject {
         return entityTypeName != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();
         entityTypeName = new EntityTypeLiteralStateObject(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -331,9 +316,6 @@ public class TreatExpressionStateObject extends AbstractStateObject {
         setAs(!as);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
 

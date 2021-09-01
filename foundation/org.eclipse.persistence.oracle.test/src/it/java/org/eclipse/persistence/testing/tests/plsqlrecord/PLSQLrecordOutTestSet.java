@@ -92,7 +92,7 @@ public class PLSQLrecordOutTestSet  {
         query.setCall(call);
 
         project.getDescriptor(PLSQLEmployeeType.class).getQueryManager().addQuery("PLSQLrecordOut", query);
-        Project projectToXml = (Project)project.clone();
+        Project projectToXml = project.clone();
         // trim off login 'cause it changes under test - this way, a comparison
         // can be done to a control document
         projectToXml.setDatasourceLogin(null);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1006,7 +1006,7 @@ final class JPQLQueryContext {
      */
     @SuppressWarnings("unchecked")
     <T> T newInstance(Class<?> type, Class<?> parameterType, Object parameter) {
-        return (T) newInstance(type, new Class[] { parameterType }, new Object[] { parameter });
+        return newInstance(type, new Class[] { parameterType }, new Object[] { parameter });
     }
 
     /**

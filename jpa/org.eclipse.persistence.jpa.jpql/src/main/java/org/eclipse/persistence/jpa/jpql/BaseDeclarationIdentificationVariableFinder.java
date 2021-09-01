@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,17 +61,11 @@ public class BaseDeclarationIdentificationVariableFinder extends AbstractTravers
         super();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(BadExpression expression) {
         // Incomplete/invalid query, stop here
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CollectionExpression expression) {
         if (traverse) {
@@ -83,9 +77,6 @@ public class BaseDeclarationIdentificationVariableFinder extends AbstractTravers
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(DeleteClause expression) {
         try {
@@ -97,17 +88,11 @@ public class BaseDeclarationIdentificationVariableFinder extends AbstractTravers
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(DeleteStatement expression) {
         expression.getDeleteClause().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(FromClause expression) {
         if (traverse) {
@@ -118,9 +103,6 @@ public class BaseDeclarationIdentificationVariableFinder extends AbstractTravers
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(IdentificationVariable expression) {
         if (traverse) {
@@ -128,9 +110,6 @@ public class BaseDeclarationIdentificationVariableFinder extends AbstractTravers
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(IdentificationVariableDeclaration expression) {
         if (traverse) {
@@ -141,25 +120,16 @@ public class BaseDeclarationIdentificationVariableFinder extends AbstractTravers
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(JPQLExpression expression) {
         expression.getQueryStatement().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(NullExpression expression) {
         // Incomplete/invalid query, stop here
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(RangeVariableDeclaration expression) {
         if (traverse) {
@@ -170,25 +140,16 @@ public class BaseDeclarationIdentificationVariableFinder extends AbstractTravers
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SelectStatement expression) {
         // Nothing to do because this visitor is only meant for DELETE or UPDATE queries
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UnknownExpression expression) {
         // Incomplete/invalid query, stop here
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UpdateClause expression) {
         try {
@@ -200,9 +161,6 @@ public class BaseDeclarationIdentificationVariableFinder extends AbstractTravers
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UpdateStatement expression) {
         expression.getUpdateClause().accept(this);

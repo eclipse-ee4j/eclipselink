@@ -85,17 +85,11 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
         };
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected AbstractGrammarValidator buildValidator() {
         return new EclipseLinkGrammarValidator(jpqlGrammar);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isJoinFetchIdentifiable() {
         return true;
@@ -106,9 +100,6 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
         return currentVersion.isNewerThanOrEqual(version);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isSubqueryAllowedAnywhere() {
         return isNewerThanOrEqual(EclipseLinkVersion.VERSION_2_4);

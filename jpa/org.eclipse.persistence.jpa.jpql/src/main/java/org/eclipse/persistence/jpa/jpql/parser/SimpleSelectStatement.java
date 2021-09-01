@@ -33,41 +33,26 @@ public final class SimpleSelectStatement extends AbstractSelectStatement {
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected SimpleFromClause buildFromClause() {
         return new SimpleFromClause(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected SimpleSelectClause buildSelectClause() {
         return new SimpleSelectClause(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(SubqueryBNF.ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean shouldManageSpaceAfterClause() {
         return false;

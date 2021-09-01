@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1232,7 +1232,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                              * The following call will perform a getMethod call for us.
                              * If no getMethod exists, we will secondarily check the getMethodName below.
                              */
-                            aType = ((MethodAttributeAccessor)colMapping.getAttributeAccessor()).getAttributeClass();
+                            aType = colMapping.getAttributeAccessor().getAttributeClass();
                             if((aType != null) && List.class.isAssignableFrom(aType)) {
                                 member = new ListAttributeImpl(this, colMapping, true);
                             } else if((aType != null) && Collection.class.isAssignableFrom(aType)) {

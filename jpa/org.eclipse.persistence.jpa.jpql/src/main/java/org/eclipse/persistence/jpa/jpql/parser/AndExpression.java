@@ -54,33 +54,21 @@ public final class AndExpression extends LogicalExpression {
         super(parent, AND);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getLeftExpressionQueryBNFId() {
         return ConditionalTermBNF.ID;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getRightExpressionQueryBNFId() {
         return ConditionalFactorBNF.ID;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
         return word.equalsIgnoreCase(AND) ||

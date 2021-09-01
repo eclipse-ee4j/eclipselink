@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -317,12 +317,12 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    cloneMethod = AccessController.doPrivileged(new PrivilegedGetMethod(this.getDelegate().getClass(), "clone", (Class[])null, false));
+                    cloneMethod = AccessController.doPrivileged(new PrivilegedGetMethod(this.getDelegate().getClass(), "clone", null, false));
                 } catch (PrivilegedActionException exception) {
                     throw QueryException.cloneMethodRequired();
                 }
             } else {
-                cloneMethod = PrivilegedAccessHelper.getMethod(this.getDelegate().getClass(), "clone", (Class[])null, false);
+                cloneMethod = PrivilegedAccessHelper.getMethod(this.getDelegate().getClass(), "clone", null, false);
             }
         } catch (NoSuchMethodException ex) {
             throw QueryException.cloneMethodRequired();
@@ -331,7 +331,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    return (Set<E>)AccessController.doPrivileged(new PrivilegedMethodInvoker(cloneMethod, this.getDelegate(), (Object[])null));
+                    return (Set<E>)AccessController.doPrivileged(new PrivilegedMethodInvoker(cloneMethod, this.getDelegate(), null));
                 } catch (PrivilegedActionException exception) {
                     Exception throwableException = exception.getException();
                     if (throwableException instanceof IllegalAccessException) {
@@ -343,7 +343,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
                     }
                 }
             } else {
-                return (Set<E>)PrivilegedAccessHelper.invokeMethod(cloneMethod, this.getDelegate(), (Object[])null);
+                return (Set<E>)PrivilegedAccessHelper.invokeMethod(cloneMethod, this.getDelegate(), null);
             }
         } catch (IllegalAccessException ex1) {
             throw QueryException.cloneMethodInaccessible();

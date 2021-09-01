@@ -60,13 +60,10 @@ public abstract class JavaJPQLQueryTestHelper implements JPQLQueryTestHelper {
     /**
      * Creates
      *
-     * @return
+     * @return mapping builder
      */
     protected abstract IMappingBuilder<Member> buildMappingBuilder();
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IORMConfiguration getORMConfiguration(String ormXmlFileName) throws Exception {
 
@@ -84,9 +81,6 @@ public abstract class JavaJPQLQueryTestHelper implements JPQLQueryTestHelper {
         return ormConfiguration;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IManagedTypeProvider getPersistenceUnit() throws Exception {
         if (persistenceUnit == null) {
@@ -116,30 +110,18 @@ public abstract class JavaJPQLQueryTestHelper implements JPQLQueryTestHelper {
         persistenceUnit.addEmbeddable(ZipCode.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setUp() throws Exception {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setUpBefore() throws Exception {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void tearDown() throws Exception {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void tearDownAfter() throws Exception {
     }

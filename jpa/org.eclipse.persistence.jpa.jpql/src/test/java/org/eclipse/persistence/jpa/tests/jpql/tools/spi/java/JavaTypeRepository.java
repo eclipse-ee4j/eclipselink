@@ -107,9 +107,6 @@ public class JavaTypeRepository implements ITypeRepository {
         return classLoader;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IType getEnumType(String enumTypeName) {
 
@@ -128,17 +125,11 @@ public class JavaTypeRepository implements ITypeRepository {
         return type.isEnum() ? type : null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JavaType getType(Class<?> javaClass) {
         return getType(javaClass.getName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JavaType getType(String typeName) {
 
@@ -153,9 +144,6 @@ public class JavaTypeRepository implements ITypeRepository {
         return loadTypeImp(typeName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public TypeHelper getTypeHelper() {
         if (typeHelper == null) {

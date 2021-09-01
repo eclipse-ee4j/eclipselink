@@ -126,9 +126,6 @@ public class JavaType implements IType {
         return names;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Iterable<IConstructor> constructors() {
         if (constructors == null) {
@@ -137,25 +134,16 @@ public class JavaType implements IType {
         return new SnapshotCloneIterable<IConstructor>(constructors);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean equals(IType type) {
         return (this == type) || typeName.equals(type.getName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean equals(Object object) {
         return equals((IType) object);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String[] getEnumConstants() {
         if (enumConstants == null) {
@@ -164,9 +152,6 @@ public class JavaType implements IType {
         return enumConstants;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getName() {
         return typeName;
@@ -181,9 +166,6 @@ public class JavaType implements IType {
         return type;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ITypeDeclaration getTypeDeclaration() {
         if (typeDeclaration == null) {
@@ -206,25 +188,16 @@ public class JavaType implements IType {
         return typeRepository;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean hasAnnotation(Class<? extends Annotation> annotationType) {
         return (type != null) && type.isAnnotationPresent(annotationType);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int hashCode() {
         return typeName.hashCode();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isAssignableTo(IType otherType) {
 
@@ -248,25 +221,16 @@ public class JavaType implements IType {
         return otherClass.isAssignableFrom(thisClass);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEnum() {
         return (type != null) && type.isEnum();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isResolvable() {
         return (type != null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return typeName;

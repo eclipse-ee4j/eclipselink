@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,33 +47,21 @@ public class IdentificationVariableResolver extends Resolver {
         this.variableName = variableName;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IType buildType() {
         return getParentType();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ITypeDeclaration buildTypeDeclaration() {
         return getParentTypeDeclaration();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IManagedType getManagedType() {
         return getParentManagedType();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IMapping getMapping() {
         return getParentMapping();
@@ -88,9 +76,6 @@ public class IdentificationVariableResolver extends Resolver {
         return variableName;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return variableName + " -> " + getParent();

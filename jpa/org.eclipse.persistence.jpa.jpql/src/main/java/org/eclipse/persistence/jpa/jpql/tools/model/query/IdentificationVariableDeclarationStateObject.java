@@ -79,9 +79,6 @@ public class IdentificationVariableDeclarationStateObject extends AbstractIdenti
         getRangeVariableDeclaration().setDeclaration(entityName, identificationVariable);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
@@ -172,9 +169,6 @@ public class IdentificationVariableDeclarationStateObject extends AbstractIdenti
         return addJoinFetch(LEFT_OUTER_JOIN_FETCH, path);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected AbstractRangeVariableDeclarationStateObject buildRangeVariableDeclarationStateObject() {
         return new RangeVariableDeclarationStateObject(this);
@@ -198,9 +192,6 @@ public class IdentificationVariableDeclarationStateObject extends AbstractIdenti
         return getRootStateObject().getText();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IManagedType getManagedType(StateObject stateObject) {
 
@@ -211,25 +202,16 @@ public class IdentificationVariableDeclarationStateObject extends AbstractIdenti
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public RangeVariableDeclarationStateObject getRangeVariableDeclaration() {
         return (RangeVariableDeclarationStateObject) super.getRangeVariableDeclaration();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AbstractSchemaNameStateObject getRootStateObject() {
         return (AbstractSchemaNameStateObject) super.getRootStateObject();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String listName() {
         return JOINS_LIST;

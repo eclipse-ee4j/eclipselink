@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -157,17 +157,11 @@ public final class HermesParser implements JPAQueryBuilder {
         return new JPQLException(errorMessage);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DatabaseQuery buildQuery(CharSequence jpqlQuery, AbstractSession session) {
         return populateQueryImp(jpqlQuery, null, session);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Expression buildSelectionCriteria(String entityName,
                                              String selectionCriteria,
@@ -251,9 +245,6 @@ public final class HermesParser implements JPAQueryBuilder {
         return DefaultEclipseLinkJPQLGrammar.instance();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void populateQuery(CharSequence jpqlQuery, DatabaseQuery query, AbstractSession session) {
         populateQueryImp(jpqlQuery, query, session);
@@ -303,9 +294,6 @@ public final class HermesParser implements JPAQueryBuilder {
         return ResourceBundle.getBundle(JPQLQueryProblemResourceBundle.class.getName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setValidationLevel(String validationLevel) {
         this.validationLevel = validationLevel;
@@ -388,9 +376,6 @@ public final class HermesParser implements JPAQueryBuilder {
             return new ObjectLevelReadQueryVisitor(queryContext, query);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(DeleteStatement expression) {
 
@@ -412,17 +397,11 @@ public final class HermesParser implements JPAQueryBuilder {
             expression.accept(visitor);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(JPQLExpression expression) {
             expression.getQueryStatement().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SelectStatement expression) {
 
@@ -440,9 +419,6 @@ public final class HermesParser implements JPAQueryBuilder {
             expression.accept(buildVisitor(query));
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(UpdateStatement expression) {
 

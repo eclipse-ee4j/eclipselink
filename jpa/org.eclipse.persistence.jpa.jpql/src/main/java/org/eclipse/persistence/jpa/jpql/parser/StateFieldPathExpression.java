@@ -72,17 +72,11 @@ public final class StateFieldPathExpression extends AbstractPathExpression {
         super(parent, expression, paths);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(StateFieldPathExpressionBNF.ID);

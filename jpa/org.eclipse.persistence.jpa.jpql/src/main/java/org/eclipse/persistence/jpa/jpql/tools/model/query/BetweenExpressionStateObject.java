@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -179,17 +179,11 @@ public class BetweenExpressionStateObject extends AbstractStateObject {
         this(parent, jpqlFragment, false, lowerBoundJpqlFragment, upperBoundJpqlFragment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
@@ -216,9 +210,6 @@ public class BetweenExpressionStateObject extends AbstractStateObject {
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public BetweenExpression getExpression() {
         return (BetweenExpression) super.getExpression();
@@ -293,9 +284,6 @@ public class BetweenExpressionStateObject extends AbstractStateObject {
         return upperBoundStateObject != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -419,9 +407,6 @@ public class BetweenExpressionStateObject extends AbstractStateObject {
         setNot(!not);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
 

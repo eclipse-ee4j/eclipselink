@@ -101,14 +101,14 @@ public class TestSequence extends JPA1Base {
             final Element water = new Element("water");
             em.persist(tree); // id 1
             em2.persist(water); // id 4
-            Assert.assertEquals("wrong allocation", ((int) tree.getId() + 3), ((int) water.getId()));
+            Assert.assertEquals("wrong allocation", (tree.getId() + 3), ((int) water.getId()));
             final Plant flower = new Plant("flower");
             final Plant grass = new Plant("grass");
             final Plant bush = new Plant("bush");
             em.persist(flower); // id 2
             em.persist(grass); // id 3
             em.persist(bush); // id 7
-            Assert.assertEquals("wrong allocation", ((int) water.getId() + 3), ((int) bush.getId()));
+            Assert.assertEquals("wrong allocation", (water.getId() + 3), ((int) bush.getId()));
             em.getTransaction().commit();
             em2.getTransaction().commit();
         } finally {

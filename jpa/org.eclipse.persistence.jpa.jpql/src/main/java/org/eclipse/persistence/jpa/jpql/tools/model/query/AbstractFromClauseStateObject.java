@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -90,9 +90,6 @@ public abstract class AbstractFromClauseStateObject extends AbstractListHolderSt
         return stateObject;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addProblems(List<Problem> currentProblems) {
         super.addProblems(currentProblems);
@@ -157,17 +154,11 @@ public abstract class AbstractFromClauseStateObject extends AbstractListHolderSt
      */
     protected abstract String declarationBNF();
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ListIterable<? extends VariableDeclarationStateObject> declarations() {
         return items();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IdentificationVariableStateObject findIdentificationVariable(String variable) {
 
@@ -180,25 +171,16 @@ public abstract class AbstractFromClauseStateObject extends AbstractListHolderSt
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DeclarationStateObject getDeclaration() {
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AbstractFromClause getExpression() {
         return (AbstractFromClause) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IManagedType getManagedType(StateObject stateObject) {
 
@@ -214,9 +196,6 @@ public abstract class AbstractFromClauseStateObject extends AbstractListHolderSt
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AbstractSelectStatementStateObject getParent() {
         return (AbstractSelectStatementStateObject) super.getParent();
@@ -247,18 +226,12 @@ public abstract class AbstractFromClauseStateObject extends AbstractListHolderSt
         return new SnapshotCloneIterable<IdentificationVariableStateObject>(stateObjects);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
         return super.isEquivalent(stateObject) &&
                areChildrenEquivalent((AbstractListHolderStateObject<?>) stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String listName() {
         return VARIABLE_DECLARATIONS_LIST;
@@ -275,9 +248,6 @@ public abstract class AbstractFromClauseStateObject extends AbstractListHolderSt
         buildStateObjects(jpqlFragment, declarationBNF());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
         writer.append(FROM);

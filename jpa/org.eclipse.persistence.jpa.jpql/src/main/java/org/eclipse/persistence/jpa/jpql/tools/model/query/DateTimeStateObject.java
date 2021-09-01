@@ -65,17 +65,11 @@ public class DateTimeStateObject extends SimpleStateObject {
         super(parent, date);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DateTime getExpression() {
         return (DateTime) super.getExpression();

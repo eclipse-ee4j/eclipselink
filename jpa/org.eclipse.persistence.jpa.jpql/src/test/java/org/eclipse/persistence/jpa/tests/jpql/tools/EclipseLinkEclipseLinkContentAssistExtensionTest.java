@@ -29,9 +29,6 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  */
 public final class EclipseLinkEclipseLinkContentAssistExtensionTest extends AbstractContentAssistTest {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected ContentAssistExtension buildContentAssistExtension() {
         return new ContentAssistExtension() {
@@ -53,9 +50,6 @@ public final class EclipseLinkEclipseLinkContentAssistExtensionTest extends Abst
         };
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected List<String> clauses(String afterIdentifier, String beforeIdentifier, boolean subquery) {
 
@@ -150,9 +144,6 @@ public final class EclipseLinkEclipseLinkContentAssistExtensionTest extends Abst
         return proposals;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected List<String> fromClauseInternalClauses(String afterIdentifier) {
 
@@ -191,9 +182,6 @@ public final class EclipseLinkEclipseLinkContentAssistExtensionTest extends Abst
         return super.fromClauseInternalClauses(afterIdentifier);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isJoinFetchIdentifiable() {
         return true;

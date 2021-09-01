@@ -89,17 +89,11 @@ public class EmptyCollectionComparisonExpressionStateObject extends AbstractStat
         this(parent, false, path);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
@@ -118,9 +112,6 @@ public class EmptyCollectionComparisonExpressionStateObject extends AbstractStat
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public EmptyCollectionComparisonExpression getExpression() {
         return (EmptyCollectionComparisonExpression) super.getExpression();
@@ -147,18 +138,12 @@ public class EmptyCollectionComparisonExpressionStateObject extends AbstractStat
         return not;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();
         stateObject = new CollectionValuedPathExpressionStateObject(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -211,9 +196,6 @@ public class EmptyCollectionComparisonExpressionStateObject extends AbstractStat
         setNot(!not);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
 

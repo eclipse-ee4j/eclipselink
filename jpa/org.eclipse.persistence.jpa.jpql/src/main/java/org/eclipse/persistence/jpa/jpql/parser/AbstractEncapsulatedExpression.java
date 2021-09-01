@@ -61,9 +61,6 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression 
         super(parent, identifier);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected final void addOrderedChildrenTo(List<Expression> children) {
 
@@ -156,9 +153,6 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression 
         return hasSpaceAfterIdentifier;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 
@@ -185,9 +179,6 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression 
                wordParser.startsWith(EQUAL);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -278,9 +269,6 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression 
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected final void toParsedText(StringBuilder writer, boolean actual) {
 

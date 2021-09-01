@@ -46,17 +46,11 @@ public final class LocateExpression extends AbstractTripleEncapsulatedExpression
         super(parent, LOCATE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getParameterQueryBNFId(int index) {
         switch (index) {
@@ -65,17 +59,11 @@ public final class LocateExpression extends AbstractTripleEncapsulatedExpression
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(FunctionsReturningNumericsBNF.ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isThirdExpressionOptional() {
         return true;

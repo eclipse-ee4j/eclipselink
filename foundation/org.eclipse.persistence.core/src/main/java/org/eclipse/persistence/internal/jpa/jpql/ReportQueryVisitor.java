@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,26 +53,17 @@ final class ReportQueryVisitor extends ReadAllQueryVisitor {
         super(queryContext, query);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(GroupByClause expression) {
         GroupByVisitor visitor = new GroupByVisitor();
         expression.accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(HavingClause expression) {
         ((ReportQuery) query).setHavingExpression(queryContext.buildExpression(expression));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     void visitAbstractSelectClause(AbstractSelectClause expression) {
 
@@ -85,9 +76,6 @@ final class ReportQueryVisitor extends ReadAllQueryVisitor {
         type = builder.type[0];
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     void visitAbstractSelectStatement(AbstractSelectStatement expression) {
 
@@ -102,9 +90,6 @@ final class ReportQueryVisitor extends ReadAllQueryVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     void visitIdentificationVariable(IdentificationVariable expression) {
         // ReportQuery does not require it
@@ -116,25 +101,16 @@ final class ReportQueryVisitor extends ReadAllQueryVisitor {
      */
     private class GroupByVisitor extends EclipseLinkAnonymousExpressionVisitor {
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CollectionExpression expression) {
             expression.acceptChildren(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(GroupByClause expression) {
             expression.getGroupByItems().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         protected void visit(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
             ((ReportQuery) query).addGrouping(queryContext.buildExpression(expression));

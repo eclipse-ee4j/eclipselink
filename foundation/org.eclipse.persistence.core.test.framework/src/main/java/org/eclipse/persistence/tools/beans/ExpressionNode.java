@@ -130,7 +130,7 @@ public class ExpressionNode {
         if (getExpression() instanceof ConstantExpression) {
             return ((ConstantExpression)getExpression()).getValue().toString();
         } else if (getExpression() instanceof QueryKeyExpression) {
-            return ((QueryKeyExpression)getExpression()).getName().toString();
+            return getExpression().getName().toString();
         } else {
             String anOperator =
                 getOperator(getExpression().getOperator().getSelector());

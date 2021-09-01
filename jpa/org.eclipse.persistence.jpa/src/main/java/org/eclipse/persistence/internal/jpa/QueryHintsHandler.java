@@ -870,8 +870,8 @@ public class QueryHintsHandler {
             if (query.isObjectBuildingQuery()) {
                 ((ObjectBuildingQuery)query).setShouldRefreshIdentityMapResult(((Boolean)valueToApply).booleanValue());
                 // Set default cascade to be by mapping.
-                if (!((ObjectBuildingQuery)query).shouldCascadeParts()) {
-                    ((ObjectBuildingQuery)query).cascadeByMapping();
+                if (!query.shouldCascadeParts()) {
+                    query.cascadeByMapping();
                 }
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
@@ -1607,7 +1607,7 @@ public class QueryHintsHandler {
                         while (mapping.isAggregateObjectMapping() && tokenizer.hasMoreTokens()){
                             expression = expression.get(token);
                             token = tokenizer.nextToken();
-                            descriptor = ((org.eclipse.persistence.mappings.AggregateObjectMapping)mapping).getReferenceDescriptor();
+                            descriptor = mapping.getReferenceDescriptor();
                             mapping = descriptor.getObjectBuilder().getMappingForAttributeName(token);
                         }
                         if (!mapping.isForeignReferenceMapping()){
@@ -1660,7 +1660,7 @@ public class QueryHintsHandler {
                         while (mapping.isAggregateObjectMapping() && tokenizer.hasMoreTokens()){
                             expression = expression.get(token);
                             token = tokenizer.nextToken();
-                            descriptor = ((org.eclipse.persistence.mappings.AggregateObjectMapping)mapping).getReferenceDescriptor();
+                            descriptor = mapping.getReferenceDescriptor();
                             mapping = descriptor.getObjectBuilder().getMappingForAttributeName(token);
                         }
                         if (!mapping.isForeignReferenceMapping()){

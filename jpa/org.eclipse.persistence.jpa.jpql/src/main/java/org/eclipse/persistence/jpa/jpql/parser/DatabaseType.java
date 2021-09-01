@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,41 +42,26 @@ public final class DatabaseType extends AbstractDoubleEncapsulatedExpression {
         super(parent, databaseType);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         acceptUnknownVisitor(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(DatabaseTypeQueryBNF.ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isSecondExpressionOptional() {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String parameterExpressionBNF(int index) {
         return NumericLiteralBNF.ID;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean shouldParseRightParenthesis(WordParser wordParser, boolean tolerant) {
         // If the database type uses parenthesis, then this expression will own the right

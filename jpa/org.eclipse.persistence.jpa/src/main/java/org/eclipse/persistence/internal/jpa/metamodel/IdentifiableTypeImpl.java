@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -248,7 +248,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
         // There already is an instance of the PKclass on the policy
         if (cmpPolicy != null && cmpPolicy.isCMP3Policy()) {
             // BasicType, EntityType or IdentifiableType are handled here, lookup the class in the types map and create a wrapper if it does not exist yet
-            return this.getMetamodel().getType(((CMP3Policy) cmpPolicy).getPKClass());
+            return this.getMetamodel().getType(cmpPolicy.getPKClass());
         }
         // Non-specification mandated exception
         throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
@@ -342,7 +342,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
             // Optional: Verify the mapping on the each field and whether it is an IdClass
             Class pkClass = null;
             if(this.getDescriptor().hasCMPPolicy()) {
-                pkClass = ((CMP3Policy)this.getDescriptor().getCMPPolicy()).getPKClass();
+                pkClass = this.getDescriptor().getCMPPolicy().getPKClass();
                 if(null == pkClass) {
                     return false;
                 }

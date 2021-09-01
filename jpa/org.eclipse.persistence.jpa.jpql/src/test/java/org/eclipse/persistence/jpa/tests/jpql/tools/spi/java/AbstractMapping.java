@@ -182,17 +182,11 @@ public abstract class AbstractMapping implements IMapping {
         return BASIC;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int compareTo(IMapping mapping) {
         return getName().compareTo(mapping.getName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getMappingType() {
         if (mappingType == -1) {
@@ -216,25 +210,16 @@ public abstract class AbstractMapping implements IMapping {
 
     protected abstract Class<?> getMemberType();
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getName() {
         return member.getName();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IManagedType getParent() {
         return parent;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IType getType() {
         if (type == null) {
@@ -243,9 +228,6 @@ public abstract class AbstractMapping implements IMapping {
         return type;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ITypeDeclaration getTypeDeclaration() {
         if (typeDeclaration == null) {
@@ -280,9 +262,6 @@ public abstract class AbstractMapping implements IMapping {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isCollection() {
         switch (getMappingType()) {
@@ -302,9 +281,6 @@ public abstract class AbstractMapping implements IMapping {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isProperty() {
         switch (getMappingType()) {
@@ -315,9 +291,6 @@ public abstract class AbstractMapping implements IMapping {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isRelationship() {
         switch (getMappingType()) {
@@ -331,17 +304,11 @@ public abstract class AbstractMapping implements IMapping {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isTransient() {
         return getMappingType() == TRANSIENT;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return getName() + " : " + getTypeDeclaration();

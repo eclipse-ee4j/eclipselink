@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -2481,7 +2481,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         }
 
         boolean shouldRepairOrder = false;
-        if((List)changeRecord.getLatestCollection() instanceof IndirectList) {
+        if(changeRecord.getLatestCollection() instanceof IndirectList) {
             shouldRepairOrder = ((IndirectList)changeRecord.getLatestCollection()).isListOrderBrokenInDb();
         }
         if(shouldRepairOrder) {

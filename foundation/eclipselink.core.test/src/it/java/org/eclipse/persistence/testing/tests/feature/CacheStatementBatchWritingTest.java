@@ -76,7 +76,7 @@ public class CacheStatementBatchWritingTest extends TransactionalTestCase {
         try {
             Method method = uow.getParent().getAccessor().getClass().getDeclaredMethod("getStatementCache", new Class[] { });
             method.setAccessible(true);
-            statementCache = (Map)method.invoke((DatabaseAccessor)uow.getParent().getAccessor(), new Object[] { });
+            statementCache = (Map)method.invoke(uow.getParent().getAccessor(), new Object[] { });
             statement =  (PreparedStatement)statementCache.get(sql);
         } catch (Exception ex) {
             throw new TestErrorException("Failed to run test. Check java.policy file \"SupressAccessChecks\" perission required :" +

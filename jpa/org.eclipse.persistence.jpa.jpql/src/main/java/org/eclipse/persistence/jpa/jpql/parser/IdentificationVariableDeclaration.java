@@ -66,35 +66,23 @@ public final class IdentificationVariableDeclaration extends AbstractExpression 
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getRangeVariableDeclaration().accept(visitor);
         getJoins().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         children.add(getRangeVariableDeclaration());
         children.add(getJoins());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
 
@@ -130,9 +118,6 @@ public final class IdentificationVariableDeclaration extends AbstractExpression 
         return new CollectionExpression(this, children, commas, spaces, true);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -159,9 +144,6 @@ public final class IdentificationVariableDeclaration extends AbstractExpression 
         return joins;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(IdentificationVariableDeclarationBNF.ID);
@@ -212,9 +194,6 @@ public final class IdentificationVariableDeclaration extends AbstractExpression 
         return hasSpace;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 
@@ -235,9 +214,6 @@ public final class IdentificationVariableDeclaration extends AbstractExpression 
                super.isParsingComplete(wordParser, word, expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -268,17 +244,11 @@ public final class IdentificationVariableDeclaration extends AbstractExpression 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean shouldParseWithFactoryFirst() {
         return parsingJoinExpression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
 

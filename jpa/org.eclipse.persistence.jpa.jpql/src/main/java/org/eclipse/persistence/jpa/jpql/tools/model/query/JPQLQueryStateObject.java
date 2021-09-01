@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -72,17 +72,11 @@ public class JPQLQueryStateObject extends AbstractStateObject {
         initialize(queryBuilder, provider);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
@@ -165,57 +159,36 @@ public class JPQLQueryStateObject extends AbstractStateObject {
         return stateObject;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected StateObject checkParent(StateObject parent) {
         return parent;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DeclarationStateObject getDeclaration() {
         return (queryStatement == null) ? null : queryStatement.getDeclaration();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLExpression getExpression() {
         return (JPQLExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLGrammar getGrammar() {
         return queryBuilder.getGrammar();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IManagedTypeProvider getManagedTypeProvider() {
         return provider;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public StateObject getParent() {
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IJPQLQueryBuilder getQueryBuilder() {
         return queryBuilder;
@@ -231,9 +204,6 @@ public class JPQLQueryStateObject extends AbstractStateObject {
         return queryStatement;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryStateObject getRoot() {
         return this;
@@ -264,9 +234,6 @@ public class JPQLQueryStateObject extends AbstractStateObject {
         this.queryBuilder = queryBuilder;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -312,9 +279,6 @@ public class JPQLQueryStateObject extends AbstractStateObject {
         firePropertyChanged(QUERY_STATEMENT_PROPERTY, oldStatement, queryStatement);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
         if (queryStatement != null) {

@@ -41,7 +41,7 @@ public class StoredFunctionXMLTypeTest extends TestCase {
         // see the stored function definition in XMLTypeEmployeeSystem
         StoredFunctionCall call = new StoredFunctionCall(sqlType, "XMLTYPE", String.class);
         call.setProcedureName("STOREDFUNCTION_XMLTYPE");
-        if (sqlType == OracleTypes.OPAQUE && (getAbstractSession().isClientSession() || ((DatabaseLogin)getAbstractSession().getDatasourceLogin()).shouldUseExternalConnectionPooling())) {
+        if (sqlType == OracleTypes.OPAQUE && (getAbstractSession().isClientSession() || getAbstractSession().getDatasourceLogin().shouldUseExternalConnectionPooling())) {
             // UnwrapConnectionXDBTestModel uses external connection pooling. In this case transaction is required to keep the same connection open until the string is extracted.
             getAbstractSession().beginTransaction();
         }

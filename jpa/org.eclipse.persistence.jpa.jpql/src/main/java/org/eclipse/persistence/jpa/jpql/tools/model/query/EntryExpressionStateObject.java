@@ -55,25 +55,16 @@ public class EntryExpressionStateObject extends EncapsulatedIdentificationVariab
         super(parent, identificationVariable);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public EntryExpression getExpression() {
         return (EntryExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return ENTRY;

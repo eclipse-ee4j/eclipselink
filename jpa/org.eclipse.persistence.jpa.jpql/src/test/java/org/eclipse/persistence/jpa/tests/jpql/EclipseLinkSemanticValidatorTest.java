@@ -47,9 +47,6 @@ public final class EclipseLinkSemanticValidatorTest extends AbstractSemanticVali
         };
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected JPQLQueryContext buildQueryContext() {
         return new EclipseLinkJPQLQueryContext(jpqlGrammar);
@@ -59,9 +56,6 @@ public final class EclipseLinkSemanticValidatorTest extends AbstractSemanticVali
         return EclipseLinkSemanticValidatorExtension.NULL_EXTENSION;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected AbstractSemanticValidator buildValidator() {
         return new EclipseLinkSemanticValidator(
@@ -70,17 +64,11 @@ public final class EclipseLinkSemanticValidatorTest extends AbstractSemanticVali
         );
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isComparisonTypeChecked() {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isPathExpressionToCollectionMappingAllowed() {
         return true;

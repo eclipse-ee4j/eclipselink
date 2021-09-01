@@ -42,33 +42,21 @@ public class HavingClauseStateObject extends AbstractConditionalClauseStateObjec
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public HavingClause getExpression() {
         return (HavingClause) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return HAVING;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AbstractSelectStatementStateObject getParent() {
         return (AbstractSelectStatementStateObject) super.getParent();

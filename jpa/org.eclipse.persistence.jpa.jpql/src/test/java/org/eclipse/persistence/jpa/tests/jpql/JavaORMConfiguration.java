@@ -80,45 +80,30 @@ public class JavaORMConfiguration extends JavaManagedTypeProvider
         return url.toURI().toString();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Iterable<IEntity> entities() {
         populate();
         return super.entities();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IEntity getEntity(String entityName) {
         populate();
         return super.getEntity(entityName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IManagedType getManagedType(IType type) {
         populate();
         return super.getManagedType(type);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IQuery getNamedQuery(String queryName) {
         populate();
         return queries.get(queryName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Iterable<IManagedType> managedTypes() {
         populate();

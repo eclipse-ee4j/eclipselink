@@ -406,7 +406,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
         try {
             beginTransaction_proxy(em);
             // read
-            employeeRead = (Employee)em.find(Employee.class, employee.getId());
+            employeeRead = em.find(Employee.class, employee.getId());
             if (employeeRead != null) {
                 // clean-up
                 em.remove(employeeRead);
@@ -486,7 +486,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
             System.out.println("Currently only WLS 10.3.4 and later is known to fully support Oracle Proxy Authentication in both JTA and Non Jta cases.");
             return;
         }
-        if(((DatabaseLogin)serverSession.getReadConnectionPool().getLogin()).shouldUseExternalTransactionController()) {
+        if(serverSession.getReadConnectionPool().getLogin().shouldUseExternalTransactionController()) {
             throw new RuntimeException("Test problem: non jta data source is required");
         }
         System.out.println("====testNonJtaDataSource begin");

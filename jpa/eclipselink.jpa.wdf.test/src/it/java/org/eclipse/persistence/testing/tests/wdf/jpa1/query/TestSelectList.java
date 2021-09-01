@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -232,7 +232,7 @@ public class TestSelectList extends JPA1Base {
             for (BasicTypesFieldAccess btfa : entities) {
                 btfa.setPrimitiveDouble(Double.parseDouble("0.5"));
                 btfa.setString2Varchar("maeh");
-                btfa.setPrimitiveLong((long) 456);
+                btfa.setPrimitiveLong(456);
                 btfa.setBigDecimal(new BigDecimal(5));
                 btfa.setBigInteger(BigInteger.valueOf(10));
 

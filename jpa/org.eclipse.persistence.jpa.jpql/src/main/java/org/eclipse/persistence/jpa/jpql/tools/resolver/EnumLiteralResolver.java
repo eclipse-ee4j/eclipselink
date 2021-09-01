@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,17 +52,11 @@ public class EnumLiteralResolver extends Resolver {
         this.enumLiteral = enumLiteral;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected IType buildType() {
         return type;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected ITypeDeclaration buildTypeDeclaration() {
         return type.getTypeDeclaration();
@@ -78,9 +72,6 @@ public class EnumLiteralResolver extends Resolver {
         return enumLiteral.substring(index + 1);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return enumLiteral;

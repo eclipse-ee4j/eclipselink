@@ -36,9 +36,6 @@ public final class AdditionExpression extends ArithmeticExpression {
         super(parent, PLUS);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);

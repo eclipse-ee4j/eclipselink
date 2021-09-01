@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -558,7 +558,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
                 // Next iterate over the changes and add them to the container
                 for (Iterator i = removeObjects.keySet().iterator(); i.hasNext();) {
                     Object keyToRemove = i.next();
-                    containerPolicy.removeFrom(keyToRemove, (Object)null, valueOfTarget, session);
+                    containerPolicy.removeFrom(keyToRemove, null, valueOfTarget, session);
                 }
 
                 for (Iterator i = addObjects.keySet().iterator(); i.hasNext();) {

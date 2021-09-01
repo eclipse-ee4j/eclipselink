@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,7 +50,7 @@ public class UnaryTableSequencingTestSuite extends BaseSequencingTestSuite {
         UnaryTableSequence sequence = new UnaryTableSequence(SEQ_TABLE_NAME);
         sequence.setCounterFieldName("SEQ_VALUE");
         sequence.setPreallocationSize(5);
-        ((AbstractSession)session).getProject().getLogin().setDefaultSequence(sequence);
+        session.getProject().getLogin().setDefaultSequence(sequence);
         sequence.onConnect(session.getPlatform());
         typeBuilder.configureSequencing(sequence, SEQ_TABLE_NAME, "SID");
 

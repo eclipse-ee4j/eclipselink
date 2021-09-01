@@ -49,7 +49,7 @@ public class InvalidUseOfTransparentIndirectionTest_extractPrimaryKeyForReferenc
 
         expectedException = DescriptorException.invalidUseOfTransparentIndirection(null);
 
-        descriptor = ((DatabaseSession)getSession()).getDescriptor(Employee.class);
+        descriptor = getSession().getDescriptor(Employee.class);
         //extractPrimaryKeyForReferenceObject is used in OneToOneMapping
         mapping = (OneToOneMapping)descriptor.getMappingForAttributeName("address");
         orgIndirectionPolicy = mapping.getIndirectionPolicy();

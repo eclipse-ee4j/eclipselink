@@ -130,7 +130,7 @@ public class RCMDistributedServersModel extends DistributedServersModel {
         cm.setUrl("rmi://localhost:1099");
         // turn on cache sync with RCM
         ((AbstractSession)getSession()).setShouldPropagateChanges(true);
-        cm.setServerPlatform(((org.eclipse.persistence.sessions.DatabaseSession)getSession()).getServerPlatform());
+        cm.setServerPlatform(getSession().getServerPlatform());
 
         cm.initialize();
         // Sleep to allow RCM to startup and find each session.

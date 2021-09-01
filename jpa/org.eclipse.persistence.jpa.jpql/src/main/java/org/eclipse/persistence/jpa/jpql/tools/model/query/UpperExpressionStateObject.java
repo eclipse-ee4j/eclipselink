@@ -64,33 +64,21 @@ public class UpperExpressionStateObject extends AbstractSingleEncapsulatedExpres
         super(parent, jpqlFragment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public UpperExpression getExpression() {
         return (UpperExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return UPPER;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getQueryBNFId() {
         return StringPrimaryBNF.ID;
@@ -108,9 +96,6 @@ public class UpperExpressionStateObject extends AbstractSingleEncapsulatedExpres
         super.setExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setStateObject(StateObject stateObject) {
         super.setStateObject(stateObject);

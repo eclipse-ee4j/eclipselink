@@ -3545,8 +3545,8 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         DatabaseRecord firstRow = (DatabaseRecord) resultRows.firstElement();
         String[] columns = new String[firstRow.getFields().size()];
         for (int index = 0; index < firstRow.getFields().size(); index++) {
-            columns[index] = ((DatabaseField) firstRow.getFields().elementAt(
-                    index)).getName();
+            columns[index] = firstRow.getFields().elementAt(
+                    index).getName();
         }
         model.setColumnIdentifiers(columns);
         for (Enumeration rowsEnumeration = resultRows.elements(); rowsEnumeration

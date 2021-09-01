@@ -52,17 +52,11 @@ public class JavaQuery implements IQuery {
         setExpression(jpqlQuery);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getExpression() {
         return jpqlQuery;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IManagedTypeProvider getProvider() {
         return provider;
@@ -77,9 +71,6 @@ public class JavaQuery implements IQuery {
         this.jpqlQuery = (jpqlQuery != null) ? jpqlQuery.toString() : ExpressionTools.EMPTY_STRING;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

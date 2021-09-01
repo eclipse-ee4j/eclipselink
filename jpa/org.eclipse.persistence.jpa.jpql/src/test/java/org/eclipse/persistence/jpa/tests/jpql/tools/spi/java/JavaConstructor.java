@@ -77,9 +77,6 @@ public class JavaConstructor implements IConstructor {
         return new JavaTypeDeclaration(typeRepository, type, genericType, javaType.isArray());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ITypeDeclaration[] getParameterTypes() {
         if (parameterTypes == null) {
@@ -92,9 +89,6 @@ public class JavaConstructor implements IConstructor {
         return type.getTypeRepository();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return constructor.toGenericString();

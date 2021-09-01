@@ -42,7 +42,7 @@ public class InvalidIdentityMapTest extends ExceptionTest {
 
         expectedException = DescriptorException.invalidIdentityMap(null, null); //causes 7012 error
 
-        descriptor = ((DatabaseSession)getSession()).getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
+        descriptor = getSession().getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
         orgIdentityMapClass = descriptor.getIdentityMapClass();
         //the following causes the correct error to occure.
         descriptor.setIdentityMapClass(null);

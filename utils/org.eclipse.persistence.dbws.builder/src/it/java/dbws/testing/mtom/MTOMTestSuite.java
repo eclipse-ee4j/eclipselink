@@ -500,7 +500,7 @@ public class MTOMTestSuite extends ProviderHelper implements Provider<SOAPMessag
             part.setContent(domSource);
             SOAPMessage response = null;
             response = dispatch.invoke(request);
-            AttachmentPart aPart = (AttachmentPart)response.getAttachments().next();
+            AttachmentPart aPart = response.getAttachments().next();
             DataHandler dh = aPart.getDataHandler();
             InputStream inputStream = dh.getInputStream();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,25 +34,16 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 @SuppressWarnings("nls")
 public class EclipseLinkGrammarValidatorTest extends AbstractGrammarValidatorTest {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected AbstractGrammarValidator buildValidator() {
         return new EclipseLinkGrammarValidator(jpqlGrammar);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isJoinFetchIdentifiable() {
         return EclipseLinkVersionTools.isNewerThanOrEqual2_4(jpqlGrammar);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isSubqueryAllowedAnywhere() {
         return EclipseLinkVersionTools.isNewerThanOrEqual2_4(jpqlGrammar);

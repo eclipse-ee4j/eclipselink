@@ -31,17 +31,11 @@ import org.eclipse.persistence.jpa.tests.jpql.UniqueSignature;
 @UniqueSignature
 public final class DefaultContentAssistExtensionTest extends AbstractContentAssistExtensionTest {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Class<?> acceptableType(String identifier) {
         return defaultAcceptableType(identifier);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected ContentAssistExtension buildContentAssistExtension() {
         return new ContentAssistExtension() {
@@ -63,33 +57,21 @@ public final class DefaultContentAssistExtensionTest extends AbstractContentAssi
         };
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected List<String> classNames() {
         return Collections.emptyList();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected List<String> columnNames(String tableName) {
         return Collections.emptyList();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected List<String> enumTypes() {
         return Collections.emptyList();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected List<String> tableNames() {
         return Collections.emptyList();

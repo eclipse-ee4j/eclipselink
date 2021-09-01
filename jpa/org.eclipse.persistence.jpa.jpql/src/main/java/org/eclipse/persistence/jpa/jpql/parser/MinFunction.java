@@ -37,9 +37,6 @@ public final class MinFunction extends AggregateFunction {
         super(parent, MIN);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
