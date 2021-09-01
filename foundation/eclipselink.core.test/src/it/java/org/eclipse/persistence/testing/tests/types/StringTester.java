@@ -163,7 +163,7 @@ public class StringTester extends TypeTester {
             super.verify(testCase);
         } catch (TestErrorException verifyFailedException) {
             // Char fields always are trimmed (by us) this is an error if they are not
-            if (((StringTester)testCase.getObjectFromDatabase()) != null) {
+            if (testCase.getObjectFromDatabase() != null) {
                 String fixed = ((StringTester)testCase.getObjectFromDatabase()).getFixedString();
                 if ((fixed != null) && (fixed.length() > 0) && (fixed.charAt(fixed.length() - 1) == ' ')) {
                     if (fixed.equals(" ")) {// Stupid drivers make "" -> " "

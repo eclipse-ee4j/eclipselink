@@ -64,6 +64,7 @@ public class JAXBEmployeesAndIntegersTestCases extends
         return namespaces;
     }
 
+    @Override
     protected Type getTypeToUnmarshalTo() {
 
         try{
@@ -75,6 +76,7 @@ public class JAXBEmployeesAndIntegersTestCases extends
         return null;
     }
 
+    @Override
     public List< InputStream> getControlSchemaFiles(){
         InputStream instream3 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeesAndIntegers3.xsd");
         InputStream instream1 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeesAndIntegers1.xsd");
@@ -89,6 +91,7 @@ public class JAXBEmployeesAndIntegersTestCases extends
     }
 
 
+    @Override
     protected Object getControlObject() {
         List<Integer> integers = new ArrayList<Integer>();
         integers.add(Integer.valueOf("10"));
@@ -103,6 +106,7 @@ public class JAXBEmployeesAndIntegersTestCases extends
         return jaxbElement;
     }
 
+    @Override
     protected String getNoXsiTypeControlResourceName() {
         return XML_RESOURCE_NO_XSI_TYPE;
     }

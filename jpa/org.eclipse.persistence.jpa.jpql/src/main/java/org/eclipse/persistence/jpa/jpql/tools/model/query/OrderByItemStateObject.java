@@ -134,17 +134,11 @@ public class OrderByItemStateObject extends AbstractStateObject {
         parse(jpqlFragment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
@@ -153,9 +147,6 @@ public class OrderByItemStateObject extends AbstractStateObject {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public OrderByItem getExpression() {
         return (OrderByItem) super.getExpression();
@@ -171,9 +162,6 @@ public class OrderByItemStateObject extends AbstractStateObject {
         return ordering;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public OrderByClauseStateObject getParent() {
         return (OrderByClauseStateObject) super.getParent();
@@ -225,9 +213,6 @@ public class OrderByItemStateObject extends AbstractStateObject {
         return ordering == Ordering.DESC;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -296,9 +281,6 @@ public class OrderByItemStateObject extends AbstractStateObject {
         firePropertyChanged(STATE_OBJECT_PROPERTY, oldStateObject, stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
 

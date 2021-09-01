@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ public class AttributeEnumInvalidValueTestCases extends JAXBWithJSONTestCases{
 
     }
 
+    @Override
     public void setUp() throws Exception{
         super.setUp();
         handler = new MyEventHandler();
@@ -45,14 +46,17 @@ public class AttributeEnumInvalidValueTestCases extends JAXBWithJSONTestCases{
         return myClass;
     }
 
+    @Override
     public void jsonToObjectTest(Object testObject, Object controlObject) throws Exception {
         assertEquals(ValidationEvent.ERROR, handler.getSeverity());
    }
 
+    @Override
     public void xmlToObjectTest(Object testObject) throws Exception {
         assertEquals(ValidationEvent.ERROR, handler.getSeverity());
     }
 
+    @Override
     public void testRoundTrip(){};
 
 }

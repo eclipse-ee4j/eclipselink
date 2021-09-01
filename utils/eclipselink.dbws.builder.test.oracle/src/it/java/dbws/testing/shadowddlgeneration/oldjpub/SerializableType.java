@@ -40,15 +40,18 @@ public class SerializableType extends SqlType {
     /**
      * Returns the fully-qualified name of the type represented by this Type object, as a String.
      */
+    @Override
     public String getName() { // BLOB
         // return m_name.getSimpleName();
         return SqlReflector.BLOB_TYPE.getSqlName().getSimpleName();
     }
 
+    @Override
     public String getTargetTypeName() {
         return getName();
     }
 
+    @Override
     public String getTypeName() {
         return getName();
     }
@@ -70,6 +73,7 @@ public class SerializableType extends SqlType {
         return "oracle.sql.BLOB";
     }
 
+    @Override
     public boolean isArray() {
         return m_arrayDim > 0;
     }

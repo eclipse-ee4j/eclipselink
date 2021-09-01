@@ -42,7 +42,7 @@ public class IllegalArgumentWhileSettingValueThruInstanceVariableAccessorTest ex
         expectedException = DescriptorException.illegalArgumentWhileSettingValueThruInstanceVariableAccessor(null, null, null, null);
         getAbstractSession().beginTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-        orgDescriptor = ((DatabaseSession)getSession()).getDescriptor(org.eclipse.persistence.testing.tests.validation.PersonInstanceAccess.class);
+        orgDescriptor = getSession().getDescriptor(org.eclipse.persistence.testing.tests.validation.PersonInstanceAccess.class);
         orgIntegrityChecker = getSession().getIntegrityChecker();
     }
     ClassDescriptor orgDescriptor;
@@ -50,7 +50,7 @@ public class IllegalArgumentWhileSettingValueThruInstanceVariableAccessorTest ex
 
     @Override
     public void reset() {
-        ((DatabaseSession)getSession()).getDescriptors().remove(org.eclipse.persistence.testing.tests.validation.PersonInstanceAccess.class);
+        getSession().getDescriptors().remove(org.eclipse.persistence.testing.tests.validation.PersonInstanceAccess.class);
         if (orgDescriptor != null)
             ((DatabaseSession)getSession()).addDescriptor(orgDescriptor);
         if (orgIntegrityChecker != null)
@@ -70,16 +70,16 @@ public class IllegalArgumentWhileSettingValueThruInstanceVariableAccessorTest ex
             getSession().getIntegrityChecker().dontCatchExceptions();
             ((DatabaseSession)getSession()).addDescriptor(descriptor());
             //((DatabaseSession) getSession()).login();
-            UnitOfWork uow = ((DatabaseSession)getSession()).acquireUnitOfWork();
+            UnitOfWork uow = getSession().acquireUnitOfWork();
             uow.registerObject(person);
             uow.commit();
 
             DatabaseMapping dMapping = descriptor().getMappingForAttributeName("p_name");
             DatabaseMapping idMapping = descriptor().getMappingForAttributeName("p_id");
-            ((InstanceVariableAttributeAccessor)dMapping.getAttributeAccessor()).initializeAttributes(PersonInstanceAccess.class);
-            ((InstanceVariableAttributeAccessor)idMapping.getAttributeAccessor()).initializeAttributes(PersonInstanceAccess.class);
+            dMapping.getAttributeAccessor().initializeAttributes(PersonInstanceAccess.class);
+            idMapping.getAttributeAccessor().initializeAttributes(PersonInstanceAccess.class);
             //((InstanceVariableAttributeAccessor)idMapping.getAttributeAccessor()).setGetMethodName("Vesna");
-            ((InstanceVariableAttributeAccessor)dMapping.getAttributeAccessor()).setAttributeValueInObject(address, dMapping.getAttributeValueFromObject(person));
+            dMapping.getAttributeAccessor().setAttributeValueInObject(address, dMapping.getAttributeValueFromObject(person));
 
             //((DatabaseSession) getSession()).logout();
         } catch (EclipseLinkException exception) {

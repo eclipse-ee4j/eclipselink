@@ -121,9 +121,6 @@ public abstract class AbstractTripleEncapsulatedExpressionStateObject extends Ab
         parseThird (thirdJpqlFragment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
 
@@ -142,9 +139,6 @@ public abstract class AbstractTripleEncapsulatedExpressionStateObject extends Ab
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AbstractTripleEncapsulatedExpression getExpression() {
         return (AbstractTripleEncapsulatedExpression) super.getExpression();
@@ -234,9 +228,6 @@ public abstract class AbstractTripleEncapsulatedExpressionStateObject extends Ab
         return thirdStateObject != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -319,9 +310,6 @@ public abstract class AbstractTripleEncapsulatedExpressionStateObject extends Ab
         firePropertyChanged(THIRD_STATE_OBJECT_PROPERTY, oldThirdStateObject, thirdStateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextEncapsulatedExpression(Appendable writer) throws IOException {
 

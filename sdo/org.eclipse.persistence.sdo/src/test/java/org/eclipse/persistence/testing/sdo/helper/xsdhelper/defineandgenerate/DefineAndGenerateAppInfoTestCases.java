@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,10 +37,12 @@ public class DefineAndGenerateAppInfoTestCases extends XSDHelperDefineAndGenerat
         super(name);
     }
 
+    @Override
     public String getControlGeneratedFileName() {
         return "org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderAppInfoGenerated.xsd";
     }
 
+    @Override
     public String getSchemaToDefine() {
         return "org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderAppInfo.xsd";
     }
@@ -49,6 +51,7 @@ public class DefineAndGenerateAppInfoTestCases extends XSDHelperDefineAndGenerat
         TestRunner.run(DefineAndGenerateAppInfoTestCases.class);
     }
 
+    @Override
     public void testDefineAndGenerate() throws Exception {
         InputStream is = getSchemaInputStream(getSchemaToDefine());
         List types = xsdHelper.define(is, getSchemaLocation());
@@ -89,6 +92,7 @@ public class DefineAndGenerateAppInfoTestCases extends XSDHelperDefineAndGenerat
         return null;
     }
 
+    @Override
     public void compareGeneratedTypes(List controlTypes, List generatedTypes) {
         super.compareGeneratedTypes(controlTypes, generatedTypes);
         Type itemsType = typeHelper.getType(getUri(), "Items");
@@ -130,6 +134,7 @@ public class DefineAndGenerateAppInfoTestCases extends XSDHelperDefineAndGenerat
         String streetTest2 = xsdHelper.getAppinfo(streetProp, "streetTest2");
     }
 
+    @Override
     public List getControlTypes() {
         List types = new ArrayList();
 

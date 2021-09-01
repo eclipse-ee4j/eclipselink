@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -78,49 +78,31 @@ final class DefaultJPQLQueryProblem implements JPQLQueryProblem {
         this.messageArguments = messageArguments;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getEndPosition() {
         return endIndex;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Expression getExpression() {
         return expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String[] getMessageArguments() {
         return messageArguments;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getMessageKey() {
         return messageKey;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getStartPosition() {
         return startIndex;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

@@ -1331,7 +1331,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
                 Class adapterClass = entry.getValue();
                 if (adapterClass != null) {
                     try {
-                        XmlAdapter adapter = (XmlAdapter) adapterClass.newInstance();
+                        XmlAdapter adapter = (XmlAdapter) adapterClass.getConstructor().newInstance();
                         Class boundType = getBoundTypeForXmlAdapterClass(adapterClass);
                         RootLevelXmlAdapter rootLevelXmlAdapter = new RootLevelXmlAdapter(adapter, boundType);
 

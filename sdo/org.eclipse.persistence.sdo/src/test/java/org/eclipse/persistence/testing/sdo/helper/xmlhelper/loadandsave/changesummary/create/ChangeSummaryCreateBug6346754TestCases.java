@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,31 +36,38 @@ public class ChangeSummaryCreateBug6346754TestCases extends LoadAndSaveTestCases
         TestRunner.main(arguments);
     }
 
+    @Override
     protected String getSchemaName() {
         return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/bug6346754/SupplierService.xsd";
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/bug6346754/bug6346754.xml");
     }
 
+    @Override
     protected String getSchemaLocation() {
         return (FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/bug6346754/");
     }
 
+    @Override
     protected String getControlRootName() {
         return "processData";
     }
 
+    @Override
     protected String getControlRootURI() {
         return "http://example.com/supplier/service/";
     }
 
+    @Override
     protected String getRootInterfaceName() {
         return "ProcessData";
     }
 
     // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    @Override
     protected List<String> getPackages() {
         List<String> packages = new ArrayList<String>();
         packages.add("mypackage/process");
@@ -70,6 +77,7 @@ public class ChangeSummaryCreateBug6346754TestCases extends LoadAndSaveTestCases
         return packages;
     }
 
+    @Override
     protected void generateClasses(String tmpDirName) throws Exception {
         String xsdString = getSchema(getSchemaName());
         StringReader reader = new StringReader(xsdString);
@@ -83,9 +91,11 @@ public class ChangeSummaryCreateBug6346754TestCases extends LoadAndSaveTestCases
 
     }
 
+    @Override
     public void registerTypes() {
     }
 
+    @Override
     protected List defineTypes() {
         try {
             FileInputStream inputStream = new FileInputStream(getSchemaName());
@@ -100,6 +110,7 @@ public class ChangeSummaryCreateBug6346754TestCases extends LoadAndSaveTestCases
         return null;
     }
 
+    @Override
     public void testNoSchemaLoadFromInputStreamSaveDataObjectToString() {
         //do nothing
         //running this test doesn't really add much and would need to manually create close to 100 types

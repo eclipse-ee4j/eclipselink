@@ -37,7 +37,7 @@ public class ClassIndicatorFieldNotFoundTest extends ExceptionTest {
     @Override
     protected void setup() {
         expectedException = DescriptorException.classIndicatorFieldNotFound(null, null);
-        orgDescriptor = ((DatabaseSession)getSession()).getDescriptor(org.eclipse.persistence.testing.models.employee.domain.SmallProject.class);
+        orgDescriptor = getSession().getDescriptor(org.eclipse.persistence.testing.models.employee.domain.SmallProject.class);
         orgIntegrityChecker = getSession().getIntegrityChecker();
     }
     ClassDescriptor orgDescriptor;
@@ -45,7 +45,7 @@ public class ClassIndicatorFieldNotFoundTest extends ExceptionTest {
 
     @Override
     public void reset() {
-        ((DatabaseSession)getSession()).getDescriptors().remove(org.eclipse.persistence.testing.models.employee.domain.SmallProject.class);
+        getSession().getDescriptors().remove(org.eclipse.persistence.testing.models.employee.domain.SmallProject.class);
         if (orgDescriptor != null)
             ((DatabaseSession)getSession()).addDescriptor(orgDescriptor);
         if (orgIntegrityChecker != null)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,9 +20,11 @@ import org.eclipse.persistence.sessions.Session;
 
 public class ValueConverter implements Converter {
 
+    @Override
     public void initialize(DatabaseMapping mapping, Session session) {
     }
 
+    @Override
     public Object convertObjectValueToDataValue(Object objectValue, Session session) {
         String[] stringArray = (String[]) objectValue;
         IntermediateValue intermediateValue = new IntermediateValue();
@@ -33,6 +35,7 @@ public class ValueConverter implements Converter {
         return intermediateValue;
     }
 
+    @Override
     public Object convertDataValueToObjectValue(Object dataValue, Session session) {
         IntermediateValue intermediateValue = (IntermediateValue) dataValue;
         String[] stringArray = new String[intermediateValue.getPartB().size() + 1];
@@ -43,6 +46,7 @@ public class ValueConverter implements Converter {
         return stringArray;
     }
 
+    @Override
     public boolean isMutable() {
         return true;
     }

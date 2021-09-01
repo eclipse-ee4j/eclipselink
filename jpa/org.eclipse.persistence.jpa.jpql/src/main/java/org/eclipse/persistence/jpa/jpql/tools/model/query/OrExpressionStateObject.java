@@ -94,41 +94,26 @@ public class OrExpressionStateObject extends LogicalExpressionStateObject {
         super(parent, leftJpqlFragment, rightJpqlFragment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public OrExpression getExpression() {
         return (OrExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return OR;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getLeftQueryBNFId() {
         return ConditionalExpressionBNF.ID;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getRightQueryBNFId() {
         return ConditionalTermBNF.ID;

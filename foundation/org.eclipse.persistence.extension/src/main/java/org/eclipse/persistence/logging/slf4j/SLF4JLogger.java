@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -248,9 +248,6 @@ public class SLF4JLogger extends AbstractSessionLog {
         return logLevels[category.getId()].shouldLog((byte)level);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void log(final SessionLogEntry logEntry) {
         if (logEntry == null) {

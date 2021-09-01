@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -109,9 +109,6 @@ public abstract class AggregateFunctionStateObject extends AbstractSingleEncapsu
         super(parent, path);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AggregateFunction getExpression() {
         return (AggregateFunction) super.getExpression();
@@ -128,9 +125,6 @@ public abstract class AggregateFunctionStateObject extends AbstractSingleEncapsu
         return distinct;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -155,9 +149,6 @@ public abstract class AggregateFunctionStateObject extends AbstractSingleEncapsu
         firePropertyChanged(DISTINCT_PROPERTY, oldDistinct, distinct);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setStateObject(StateObject stateObject) {
         super.setStateObject(stateObject);
@@ -170,9 +161,6 @@ public abstract class AggregateFunctionStateObject extends AbstractSingleEncapsu
         setDistinct(!hasDistinct());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextEncapsulatedExpression(Appendable writer) throws IOException {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,6 +41,7 @@ public class XmlAnyElementWithEltRefsNonGlobalTestCases extends JAXBWithJSONTest
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
     }
 
+      @Override
       public Map getProperties(){
             InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlanyelement/xmlelementrefs/foo-oxm.xml");
 
@@ -52,6 +53,7 @@ public class XmlAnyElementWithEltRefsNonGlobalTestCases extends JAXBWithJSONTest
             return properties;
         }
 
+    @Override
     public Object getControlObject(){
         Customer c = new Customer();
         c.id = 1221;
@@ -68,6 +70,7 @@ public class XmlAnyElementWithEltRefsNonGlobalTestCases extends JAXBWithJSONTest
         return c;
     }
 
+    @Override
     public Object getJSONReadControlObject(){
         Customer c = new Customer();
         c.id = 1221;

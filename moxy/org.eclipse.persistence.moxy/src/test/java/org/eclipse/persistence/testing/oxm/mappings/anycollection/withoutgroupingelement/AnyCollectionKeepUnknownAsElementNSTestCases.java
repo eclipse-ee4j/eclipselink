@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,6 +39,7 @@ public class AnyCollectionKeepUnknownAsElementNSTestCases extends XMLMappingTest
         setControlDocument("org/eclipse/persistence/testing/oxm/mappings/anycollection/withoutgroupingelement/keep_as_element_ns.xml");
     }
 
+    @Override
     public Object getControlObject() {
         Root root = new Root();
         Vector any = new Vector();
@@ -70,6 +71,7 @@ public class AnyCollectionKeepUnknownAsElementNSTestCases extends XMLMappingTest
         TestRunner.main(arguments);
     }
 
+    @Override
     public void xmlToObjectTest(Object testObject) throws Exception {
         super.xmlToObjectTest(testObject);
         Object firstObject = ((Root)testObject).getAny().get(1);
@@ -83,6 +85,7 @@ public class AnyCollectionKeepUnknownAsElementNSTestCases extends XMLMappingTest
 
     }
 
+    @Override
     public Document getWriteControlDocument() throws Exception {
         java.io.InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/oxm/mappings/anycollection/withoutgroupingelement/keep_as_element_ns_write.xml");
 

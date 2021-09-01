@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,6 +24,7 @@ import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 public class MyObjectAdapter extends XmlAdapter<MyObject, HashMap<Integer, String>> {
 
+    @Override
     public MyObject marshal(HashMap<Integer, String> arg0) throws Exception {
         MyObject myObject = new MyObject();
 
@@ -38,6 +39,7 @@ public class MyObjectAdapter extends XmlAdapter<MyObject, HashMap<Integer, Strin
         return myObject;
     }
 
+    @Override
     public HashMap<Integer, String> unmarshal(MyObject arg0) throws Exception {
         HashMap theMap = new HashMap<Integer, String>();
         List<String> keys = arg0.getKeys();

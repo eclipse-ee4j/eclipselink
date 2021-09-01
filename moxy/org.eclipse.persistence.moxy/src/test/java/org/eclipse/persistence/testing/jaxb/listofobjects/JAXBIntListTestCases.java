@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,13 +30,17 @@ public class JAXBIntListTestCases extends JAXBIntegerListTestCases {
         super(name);
     }
 
+    @Override
     protected Type getTypeToUnmarshalTo() throws Exception {
         if(typeToUnmarshalTo == null){
 
         Type listOfInts = new ParameterizedType() {
               Type[] typeArgs = {int.class};
+              @Override
               public Type[] getActualTypeArguments() { return typeArgs;}
+              @Override
               public Type getOwnerType() { return null; }
+              @Override
               public Type getRawType() { return List.class; }
             };
             typeToUnmarshalTo = listOfInts;
@@ -44,6 +48,7 @@ public class JAXBIntListTestCases extends JAXBIntegerListTestCases {
         return typeToUnmarshalTo;
     }
 
+    @Override
     protected Object getControlObject() {
         ArrayList<Integer> integers = new ArrayList<Integer>();
          integers.add(10);

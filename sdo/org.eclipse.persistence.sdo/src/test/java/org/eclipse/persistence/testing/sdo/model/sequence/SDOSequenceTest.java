@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -67,6 +67,7 @@ public class SDOSequenceTest extends SDOSequenceTestCases {
         super(name);
     }
 
+    @Override
     public void setUp() {
         super.setUp();
         stringType = typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.STRING);
@@ -88,14 +89,17 @@ public class SDOSequenceTest extends SDOSequenceTestCases {
         return "company";
     }
 
+    @Override
     public String getSchemaToDefine() {
         return XSD_PATH;
     }
 
+    @Override
     public String getControlGeneratedFileName() {
         return XSD_PATH;
     }
 
+    @Override
     protected List<Type> getTypesToGenerateFrom() {
         return getControlTypes();
     }
@@ -334,6 +338,7 @@ public class SDOSequenceTest extends SDOSequenceTestCases {
         Type companyType = registerCompanyType(poType, customerType, itemType);
     }
 
+    @Override
     public List<Type> getControlTypes() {
         List<Type> types = new ArrayList<Type>();
         if(typeHelper.getType(URINAME, COMPANY_TYPENAME) != null) {
@@ -406,7 +411,7 @@ public class SDOSequenceTest extends SDOSequenceTestCases {
         SDODataObject po = (SDODataObject)root.get(PO_SEQUENCE_PATH);
         assertNotNull(po);
         assertTrue(po.getType().isSequenced());
-        SDOSequence aSequence = (SDOSequence)po.getSequence();
+        SDOSequence aSequence = po.getSequence();
         assertNotNull(aSequence);
 //        assertEquals(4, aSequence.size());
     }
@@ -436,7 +441,7 @@ public class SDOSequenceTest extends SDOSequenceTestCases {
         SDODataObject po = (SDODataObject)root.get(PO_SEQUENCE_PATH);
         assertNotNull(po);
         assertTrue(po.getType().isSequenced());
-        SDOSequence aSequence = (SDOSequence)po.getSequence();
+        SDOSequence aSequence = po.getSequence();
 
 
         // move 2 sequenced objects
@@ -455,7 +460,7 @@ public class SDOSequenceTest extends SDOSequenceTestCases {
         SDODataObject po = (SDODataObject)root.get(PO_SEQUENCE_PATH);
         assertNotNull(po);
         assertTrue(po.getType().isSequenced());
-        SDOSequence aSequence = (SDOSequence)po.getSequence();
+        SDOSequence aSequence = po.getSequence();
 
         // move 2 sequenced objects
         Property beforeMoveProp0 = aSequence.getProperty(0);

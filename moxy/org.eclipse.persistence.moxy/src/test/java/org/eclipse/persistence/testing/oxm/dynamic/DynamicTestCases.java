@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,12 +55,13 @@ public class DynamicTestCases extends XMLMappingTestCases {
         ClassLoader sysClassLoader = Thread.currentThread().getContextClassLoader();
         dynamicClassLoader = new DynamicClassLoader(sysClassLoader);
 
-        dynamicTestProject = DynamicTypeBuilder.loadDynamicProject((Project) new DynamicTestProject(), null, dynamicClassLoader);
+        dynamicTestProject = DynamicTypeBuilder.loadDynamicProject(new DynamicTestProject(), null, dynamicClassLoader);
 
         setProject(dynamicTestProject);
         setControlDocument(XML_RESOURCE);
     }
 
+    @Override
     public Object getControlObject() {
         try {
             Object rootObj = newInstance(ROOT_CLASS_NAME);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -58,6 +58,7 @@ public class XmlAnyElementNSTestCases extends JAXBWithJSONTestCases {
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
     }
 
+    @Override
     protected Object getJSONReadControlObject() {
         Employee emp = (Employee)getControlObject();
         Object objectRemoved = ((ArrayList)emp.elements).remove(emp.elements.size()-1);
@@ -67,6 +68,7 @@ public class XmlAnyElementNSTestCases extends JAXBWithJSONTestCases {
         return emp;
     }
 
+    @Override
     protected Object getControlObject() {
         Employee employee = new Employee();
         employee.name = "John Doe";
@@ -97,8 +99,10 @@ public class XmlAnyElementNSTestCases extends JAXBWithJSONTestCases {
         return employee;
     }
 
+    @Override
     public void testObjectToContentHandler() throws Exception {
     }
+    @Override
     public void testObjectToXMLDocument() throws Exception {
     }
     public void testXMLToObjectFromSAXSource() throws Exception {

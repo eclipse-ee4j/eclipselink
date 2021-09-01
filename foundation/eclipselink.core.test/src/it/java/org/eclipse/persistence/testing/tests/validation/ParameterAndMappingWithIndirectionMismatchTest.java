@@ -74,7 +74,7 @@ public class ParameterAndMappingWithIndirectionMismatchTest extends ExceptionTes
         idMapping.setFieldName("EMPLOYEE.EMP_ID");
         idMapping.setGetMethodName("getId");
         idMapping.setSetMethodName("setId");
-        ((MethodAttributeAccessor)idMapping.getAttributeAccessor()).initializeAttributes(PersonWithValueHolder.class);
+        idMapping.getAttributeAccessor().initializeAttributes(PersonWithValueHolder.class);
         descriptor.addMapping(idMapping);
 
         OneToOneMapping addressMapping = new OneToOneMapping();

@@ -150,17 +150,11 @@ public class LikeExpressionStateObject extends AbstractStateObject {
         this(parent, stringStateObject, false, patternValue, null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
@@ -188,9 +182,6 @@ public class LikeExpressionStateObject extends AbstractStateObject {
         return escapeCharacter.getText();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public LikeExpression getExpression() {
         return (LikeExpression) super.getExpression();
@@ -226,18 +217,12 @@ public class LikeExpressionStateObject extends AbstractStateObject {
         return stringStateObject != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();
         escapeCharacter = new StringLiteralStateObject(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -313,9 +298,6 @@ public class LikeExpressionStateObject extends AbstractStateObject {
         setNot(!not);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
 

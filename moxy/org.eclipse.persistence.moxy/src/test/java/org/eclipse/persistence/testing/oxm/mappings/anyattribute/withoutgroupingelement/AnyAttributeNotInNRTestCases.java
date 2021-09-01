@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class AnyAttributeNotInNRTestCases extends XMLMappingTestCases {
         setControlDocument("org/eclipse/persistence/testing/oxm/mappings/anyattribute/withoutgroupingelement/multiple_attributes_ns_not_in_nr.xml");
     }
 
+    @Override
     public Object getControlObject() {
         Root root = new Root();
         HashMap any = new HashMap();
@@ -48,6 +49,7 @@ public class AnyAttributeNotInNRTestCases extends XMLMappingTestCases {
         return root;
     }
 
+    @Override
     public Object getWriteControlObject() {
         Root root = new Root();
         HashMap any = new HashMap();

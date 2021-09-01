@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -122,9 +122,6 @@ public abstract class AbstractValidatorTest extends JPQLCoreTest {
         return ResourceBundle.getBundle(JPQLQueryProblemResourceBundle.class.getName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void setUpClass() throws Exception {
         super.setUpClass();
@@ -137,9 +134,6 @@ public abstract class AbstractValidatorTest extends JPQLCoreTest {
         validator = buildValidator();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void tearDown() throws Exception {
         if (validator != null) {
@@ -148,9 +142,6 @@ public abstract class AbstractValidatorTest extends JPQLCoreTest {
         super.tearDown();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void tearDownClass() throws Exception {
         jpqlGrammar    = null;

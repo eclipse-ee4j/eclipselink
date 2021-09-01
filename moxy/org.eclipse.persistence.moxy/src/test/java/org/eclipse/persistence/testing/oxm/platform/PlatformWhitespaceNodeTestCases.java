@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,6 +16,7 @@ package org.eclipse.persistence.testing.oxm.platform;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import junit.framework.TestCase;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
@@ -42,7 +43,7 @@ public class PlatformWhitespaceNodeTestCases extends OXTestCase {
         Text textNode = createTextNode("this-is-not-whitespace");
         boolean isWhiteSpaceNode = xmlPlatform.isWhitespaceNode(textNode);
 
-        this.assertFalse(isWhiteSpaceNode);
+        assertFalse(isWhiteSpaceNode);
     }
 
     public void testWhitespaceNodeNull() throws Exception{
@@ -50,7 +51,7 @@ public class PlatformWhitespaceNodeTestCases extends OXTestCase {
         Text textNode = createTextNode(null);
         boolean isWhiteSpaceNode = xmlPlatform.isWhitespaceNode(textNode);
 
-        this.assertFalse(isWhiteSpaceNode);
+        assertFalse(isWhiteSpaceNode);
     }
 
     public void testWhitespaceNodeTrue() throws Exception{
@@ -58,7 +59,7 @@ public class PlatformWhitespaceNodeTestCases extends OXTestCase {
         Text textNode = createTextNode("   ");
         boolean isWhiteSpaceNode = xmlPlatform.isWhitespaceNode(textNode);
 
-        this.assertTrue(isWhiteSpaceNode);
+        assertTrue(isWhiteSpaceNode);
     }
 
     public void testWhitespaceNodeEmptyTrue() throws Exception{
@@ -66,6 +67,6 @@ public class PlatformWhitespaceNodeTestCases extends OXTestCase {
         Text textNode = createTextNode("");
         boolean isWhiteSpaceNode = xmlPlatform.isWhitespaceNode(textNode);
 
-        this.assertTrue(isWhiteSpaceNode);
+        assertTrue(isWhiteSpaceNode);
     }
 }

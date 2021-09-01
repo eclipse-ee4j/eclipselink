@@ -44,22 +44,26 @@ public class JAXBStringIntegerHashMapTestCases extends JAXBListOfObjectsNoJSONTe
         setTypes(types);
     }
 
+    @Override
     public void setUp() throws Exception{
         super.setUp();
         getXMLComparer().setIgnoreOrder(true);
     }
 
+    @Override
     public void tearDown(){
         super.tearDown();
         getXMLComparer().setIgnoreOrder(false);
     }
 
+    @Override
     protected Type getTypeToUnmarshalTo() throws Exception {
         Field fld = getClass().getField("test");
 
         return fld.getGenericType();
     }
 
+    @Override
     protected Object getControlObject() {
         HashMap<String, Integer> theMap = new HashMap<String, Integer>();
         theMap.put("thekey", Integer.valueOf(10));
@@ -73,6 +77,7 @@ public class JAXBStringIntegerHashMapTestCases extends JAXBListOfObjectsNoJSONTe
         return jaxbElement;
     }
 
+    @Override
     public List< InputStream> getControlSchemaFiles(){
        InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/stringIntegerHashMap.xsd");
 
@@ -81,6 +86,7 @@ public class JAXBStringIntegerHashMapTestCases extends JAXBListOfObjectsNoJSONTe
         return controlSchema;
     }
 
+    @Override
     protected String getNoXsiTypeControlResourceName() {
         return XML_RESOURCE_NO_XSI_TYPE;
     }

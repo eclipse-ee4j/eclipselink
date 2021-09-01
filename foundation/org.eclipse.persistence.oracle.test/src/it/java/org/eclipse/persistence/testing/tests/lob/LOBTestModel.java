@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,6 +61,7 @@ public class LOBTestModel extends TestModel {
         setDescription("This suite tests TopLink LOB support with Oracle thin driver.");
     }
 
+    @Override
     public void addRequiredSystems() {
         if (!getSession().getPlatform().isOracle()) {
             throw new TestWarningException("WARNING: This model is not supposed to be run on databases other than Oracle.");
@@ -68,6 +69,7 @@ public class LOBTestModel extends TestModel {
         addRequiredSystem(new LOBImageModelSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(getLOBInsertTestSuite());
         addTest(getLOBUpdateTestSuite());

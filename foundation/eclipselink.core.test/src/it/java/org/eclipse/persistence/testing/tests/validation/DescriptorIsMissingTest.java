@@ -38,7 +38,7 @@ public class DescriptorIsMissingTest extends ExceptionTest {
     @Override
     protected void setup() {
         expectedException = DescriptorException.descriptorIsMissing(null, null);
-        orgDescriptor = ((DatabaseSession)getSession()).getDescriptor(org.eclipse.persistence.testing.models.insurance.Address.class);
+        orgDescriptor = getSession().getDescriptor(org.eclipse.persistence.testing.models.insurance.Address.class);
         orgIntegrityChecker = getSession().getIntegrityChecker();
     }
     ClassDescriptor orgDescriptor;
@@ -46,7 +46,7 @@ public class DescriptorIsMissingTest extends ExceptionTest {
 
     @Override
     public void reset() {
-        ((DatabaseSession)getSession()).getDescriptors().remove(org.eclipse.persistence.testing.models.insurance.Address.class);
+        getSession().getDescriptors().remove(org.eclipse.persistence.testing.models.insurance.Address.class);
         if (orgDescriptor != null)
             ((DatabaseSession)getSession()).addDescriptor(orgDescriptor);
         if (orgIntegrityChecker != null)

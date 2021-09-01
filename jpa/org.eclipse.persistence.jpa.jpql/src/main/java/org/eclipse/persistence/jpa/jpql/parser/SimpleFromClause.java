@@ -39,25 +39,16 @@ public final class SimpleFromClause extends AbstractFromClause {
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getDeclarationQueryBNFId() {
         return InternalSimpleFromClauseBNF.ID;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(SubqueryFromClauseBNF.ID);

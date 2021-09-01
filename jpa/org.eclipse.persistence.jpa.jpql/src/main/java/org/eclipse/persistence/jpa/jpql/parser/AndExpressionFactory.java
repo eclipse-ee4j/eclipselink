@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,9 +47,6 @@ public final class AndExpressionFactory extends ExpressionFactory {
         super(ID, Expression.AND);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SuppressWarnings("null")
     protected AbstractExpression buildExpression(AbstractExpression parent,
@@ -105,9 +102,6 @@ public final class AndExpressionFactory extends ExpressionFactory {
          */
         boolean found;
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(OrExpression expression) {
             found = true;

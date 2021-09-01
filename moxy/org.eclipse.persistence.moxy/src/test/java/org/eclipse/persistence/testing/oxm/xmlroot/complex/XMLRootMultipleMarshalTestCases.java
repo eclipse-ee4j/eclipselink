@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,10 +35,12 @@ public class XMLRootMultipleMarshalTestCases extends XMLMappingTestCases {
         setProject(new EmployeeProject());
     }
 
+    @Override
     public boolean isUnmarshalTest() {
         return false;
     }
 
+    @Override
     protected Object getControlObject() {
         Employee employee = new Employee();
         Address address= new Address();
@@ -56,6 +58,7 @@ public class XMLRootMultipleMarshalTestCases extends XMLMappingTestCases {
         return XML_RESOURCE;
     }
 
+    @Override
     public void testObjectToXMLDocument() throws Exception {
         StringWriter dummyWriter = new StringWriter();
         xmlMarshaller.marshal(getWriteControlObject(), dummyWriter);
@@ -63,6 +66,7 @@ public class XMLRootMultipleMarshalTestCases extends XMLMappingTestCases {
         super.testObjectToXMLDocument();
     }
 
+    @Override
     public void testObjectToXMLStringWriter() throws Exception {
         StringWriter dummyWriter = new StringWriter();
         xmlMarshaller.marshal(getWriteControlObject(), dummyWriter);
@@ -70,6 +74,7 @@ public class XMLRootMultipleMarshalTestCases extends XMLMappingTestCases {
         super.testObjectToXMLStringWriter();
     }
 
+    @Override
     public void testObjectToContentHandler() throws Exception {
         StringWriter dummyWriter = new StringWriter();
         xmlMarshaller.marshal(getWriteControlObject(), dummyWriter);

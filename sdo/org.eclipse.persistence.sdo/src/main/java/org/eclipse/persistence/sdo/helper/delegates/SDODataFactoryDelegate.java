@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -111,14 +111,12 @@ public class SDODataFactoryDelegate implements SDODataFactory {
             if (implClass != null) {
                 // initialization of the properties Map Implementation will be done in the default constructor call below
                 // testcase is in org.apache.tuscany.sdo.test
-                SDODataObject theDataObject = (SDODataObject)implClass.newInstance();
+                SDODataObject theDataObject = (SDODataObject)implClass.getConstructor().newInstance();
                 theDataObject._setType(sdoType);
                 theDataObject._setHelperContext(getHelperContext());
                 return theDataObject;
             }
-        } catch (InstantiationException e) {
-            throw new IllegalArgumentException(SDOException.errorCreatingDataObjectForClass(e, (sdoType).getInstanceClassName(), sdoType.getURI(), sdoType.getName()));
-        } catch (IllegalAccessException e) {
+        } catch (ReflectiveOperationException e) {
             throw new IllegalArgumentException(SDOException.errorCreatingDataObjectForClass(e, (sdoType).getInstanceClassName(), sdoType.getURI(), sdoType.getName()));
         }
         SDODataObject dataObject = new SDODataObject();

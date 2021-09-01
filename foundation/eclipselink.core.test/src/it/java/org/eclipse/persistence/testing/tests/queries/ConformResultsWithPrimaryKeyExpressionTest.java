@@ -104,10 +104,10 @@ public class ConformResultsWithPrimaryKeyExpressionTest extends ConformResultsIn
             exactPrimaryKeyExpression = emp.get("id").equal("" + selectionObject.getId());
         }
         if (shouldCheckCacheByExactPrimaryKey()) {
-            ((ReadObjectQuery)conformedQuery).setSelectionCriteria(exactPrimaryKeyExpression);
+            conformedQuery.setSelectionCriteria(exactPrimaryKeyExpression);
         } else {
             Expression inexactPrimaryKeyExpression = exactPrimaryKeyExpression.and(emp.get("firstName").equal(selectionObject.getFirstName()));
-            ((ReadObjectQuery)conformedQuery).setSelectionCriteria(inexactPrimaryKeyExpression);
+            conformedQuery.setSelectionCriteria(inexactPrimaryKeyExpression);
         }
         conformedQuery.conformResultsInUnitOfWork();
     }

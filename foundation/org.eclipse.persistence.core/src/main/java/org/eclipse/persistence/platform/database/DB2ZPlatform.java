@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2015, 2020 IBM Corporation. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -250,7 +250,7 @@ public class DB2ZPlatform extends DB2Platform {
                 //TODO find shouldUseGetSetNString() support for DB2/Z
                 methodName = "setJccStringAtName";
                 methodArgs = new Class[] {String.class, String.class};
-                parameters = new Object[] {name, (String) parameter};
+                parameters = new Object[] {name, parameter};
             }
         } else if (parameter instanceof Number) {
             Number number = (Number) parameter;
@@ -265,7 +265,7 @@ public class DB2ZPlatform extends DB2Platform {
             }  else if (number instanceof BigDecimal) {
                 methodName = "setJccBigDecimalAtName";
                 methodArgs = new Class[] {String.class, BigDecimal.class};
-                parameters = new Object[] {name, (BigDecimal) number};
+                parameters = new Object[] {name, number};
             } else if (number instanceof Double) {
                 methodName = "setJccDoubleAtName";
                 methodArgs = new Class[] {String.class, double.class};
@@ -295,7 +295,7 @@ public class DB2ZPlatform extends DB2Platform {
         } else if (parameter instanceof java.sql.Date){
             methodName = "setJccDateAtName";
             methodArgs = new Class[] {String.class, java.sql.Date.class};
-            parameters = new Object[] {name, (java.sql.Date)parameter};
+            parameters = new Object[] {name, parameter};
         } else if (parameter instanceof java.time.LocalDate){
             // Convert to java.sql.Date
             methodName = "setJccDateAtName";
@@ -304,7 +304,7 @@ public class DB2ZPlatform extends DB2Platform {
         } else if (parameter instanceof java.sql.Timestamp){
             methodName = "setJccTimestampAtName";
             methodArgs = new Class[] {String.class, java.sql.Timestamp.class};
-            parameters = new Object[] {name, (java.sql.Timestamp)parameter};
+            parameters = new Object[] {name, parameter};
         } else if (parameter instanceof java.time.LocalDateTime){
             // Convert to java.sql.Timestamp
             methodName = "setJccTimestampAtName";
@@ -318,7 +318,7 @@ public class DB2ZPlatform extends DB2Platform {
         } else if (parameter instanceof java.sql.Time){
             methodName = "setJccTimeAtName";
             methodArgs = new Class[] {String.class, java.sql.Time.class};
-            parameters = new Object[] {name, (java.sql.Time)parameter};
+            parameters = new Object[] {name, parameter};
         } else if (parameter instanceof java.time.LocalTime){
             java.time.LocalTime lt = (java.time.LocalTime) parameter;
             java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), lt));
@@ -351,7 +351,7 @@ public class DB2ZPlatform extends DB2Platform {
             } else {
                 methodName = "setJccBytesAtName";
                 methodArgs = new Class[] {String.class, byte[].class};
-                parameters = new Object[] {name, (byte[])parameter};
+                parameters = new Object[] {name, parameter};
             }
         }
         // Next process types that need conversion.
@@ -374,15 +374,15 @@ public class DB2ZPlatform extends DB2Platform {
         } else if (parameter instanceof Character[]) {
             methodName = "setJccStringAtName";
             methodArgs = new Class[] {String.class, String.class};
-            parameters = new Object[] {name, (String)convertObject(parameter, ClassConstants.STRING)};
+            parameters = new Object[] {name, convertObject(parameter, ClassConstants.STRING)};
         } else if (parameter instanceof Byte[]) {
             methodName = "setJccBytesAtName";
             methodArgs = new Class[] {String.class, byte[].class};
-            parameters = new Object[] {name, (byte[])convertObject(parameter, ClassConstants.APBYTE)};
+            parameters = new Object[] {name, convertObject(parameter, ClassConstants.APBYTE)};
         } else if (parameter instanceof java.sql.SQLXML) {
             methodName = "setJccSQLXMLAtName";
             methodArgs = new Class[] {String.class, java.sql.SQLXML.class};
-            parameters = new Object[] {name, (java.sql.SQLXML) parameter};
+            parameters = new Object[] {name, parameter};
         } else if (parameter instanceof BindCallCustomParameter) {
             ((BindCallCustomParameter)(parameter)).set(this, statement, name, session);
         } else if (typeConverters != null && typeConverters.containsKey(parameter.getClass())){

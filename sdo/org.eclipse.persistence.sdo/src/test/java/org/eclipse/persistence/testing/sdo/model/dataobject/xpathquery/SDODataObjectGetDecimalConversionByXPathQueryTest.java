@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +17,8 @@ package org.eclipse.persistence.testing.sdo.model.dataobject.xpathquery;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
+import junit.framework.TestCase;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -28,7 +30,7 @@ public class SDODataObjectGetDecimalConversionByXPathQueryTest extends SDODataOb
     }
 
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet() {
-        SDOProperty prop = (SDOProperty)dataObject_c0.getType().getProperty("test");
+        SDOProperty prop = dataObject_c0.getType().getProperty("test");
         prop.setType(SDOConstants.SDO_DECIMAL);
 
         BigDecimal bb = new BigDecimal(12);
@@ -37,12 +39,12 @@ public class SDODataObjectGetDecimalConversionByXPathQueryTest extends SDODataOb
         //dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setBigDecimal(propertyTest + "test", bb);
 
-        this.assertEquals(bb, dataObject_a.getBigDecimal(propertyTest + "test"));
+        assertEquals(bb, dataObject_a.getBigDecimal(propertyTest + "test"));
     }
 
     // purpose: opencontent properties
     public void testGetDecimalConversionFromDefinedPropertyWithPath() {
-        SDOProperty property_c1_object = ((SDOProperty)dataObject_c1.getInstanceProperty("PName-c1"));
+        SDOProperty property_c1_object = dataObject_c1.getInstanceProperty("PName-c1");
         property_c1_object.setType(SDOConstants.SDO_DECIMAL);
 
         List objects = new ArrayList();
@@ -53,7 +55,7 @@ public class SDODataObjectGetDecimalConversionByXPathQueryTest extends SDODataOb
 
         dataObject_c1.set(property_c1_object, objects);// add it to instance list
 
-        this.assertEquals(bb, dataObject_a.getBigDecimal("PName-a0/PName-b0[number='1']/PName-c1.1"));
+        assertEquals(bb, dataObject_a.getBigDecimal("PName-a0/PName-b0[number='1']/PName-c1.1"));
     }
 
     //2. purpose: getDataObject with property value is not dataobject
@@ -80,7 +82,7 @@ public class SDODataObjectGetDecimalConversionByXPathQueryTest extends SDODataOb
     //3. purpose: getDataObject with property set to boolean value
     public void testGetDataObjectConversionFromProperty() {
         //try {
-        this.assertNull(dataObject_a.getDataObject("PName-a/notExistedTest"));
+        assertNull(dataObject_a.getDataObject("PName-a/notExistedTest"));
 
         //fail("IllegalArgumentException should be thrown.");
         //} catch (IllegalArgumentException e) {
@@ -90,7 +92,7 @@ public class SDODataObjectGetDecimalConversionByXPathQueryTest extends SDODataOb
     //purpose: getDataObject with nul value
     public void testGetDataObjectConversionWithNullArgument() {
         String p = null;
-        this.assertNull(dataObject_a.getDataObject(p));
+        assertNull(dataObject_a.getDataObject(p));
     }
 
     public void testSetGetDataObjectWithQueryPath() {
@@ -106,6 +108,6 @@ public class SDODataObjectGetDecimalConversionByXPathQueryTest extends SDODataOb
 
         dataObject_a.setBigDecimal("PName-a0/PName-b0[number='1']/PName-c1.0", bb);
 
-        this.assertEquals(bb, dataObject_a.getBigDecimal("PName-a0/PName-b0[number='1']/PName-c1.0"));
+        assertEquals(bb, dataObject_a.getBigDecimal("PName-a0/PName-b0[number='1']/PName-c1.0"));
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,6 +39,7 @@ public class SimpleUnionNoConversionTestCases extends XMLMappingTestCases {
         setProject(new SimpleUnionProject());
     }
 
+    @Override
     protected Object getControlObject() {
         Person person = new Person();
         person.addItem(CONTROL_ITEM);
@@ -47,6 +48,7 @@ public class SimpleUnionNoConversionTestCases extends XMLMappingTestCases {
         return person;
     }
 
+    @Override
     public void testXMLToObjectFromInputStream() throws Exception {
         try {
             xmlUnmarshaller.unmarshal(ClassLoader.getSystemResource(XML_RESOURCE));
@@ -57,6 +59,7 @@ public class SimpleUnionNoConversionTestCases extends XMLMappingTestCases {
         fail("no error occurred...expected XMLConversionException");
     }
 
+    @Override
     public void testXMLToObjectFromNode() throws Exception {
         try {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -71,6 +74,7 @@ public class SimpleUnionNoConversionTestCases extends XMLMappingTestCases {
         fail("no error occurred...expected XMLConversionException");
     }
 
+    @Override
     public void testXMLToObjectFromURL() throws Exception {
         try {
             xmlUnmarshaller.unmarshal(getControlDocument());
@@ -81,6 +85,7 @@ public class SimpleUnionNoConversionTestCases extends XMLMappingTestCases {
         fail("no error occurred...expected XMLConversionException");
     }
 
+    @Override
     public void testXMLToObjectFromXMLStreamReader() throws Exception {
         if(null != XML_INPUT_FACTORY) {
             try {
@@ -101,6 +106,7 @@ public class SimpleUnionNoConversionTestCases extends XMLMappingTestCases {
         }
     }
 
+    @Override
     public void testXMLToObjectFromXMLEventReader() throws Exception {
         if(null != XML_INPUT_FACTORY) {
             try {
@@ -133,6 +139,7 @@ public class SimpleUnionNoConversionTestCases extends XMLMappingTestCases {
         }
     */
 
+    @Override
     public void testUnmarshallerHandler() throws Exception {
         try {
             super.testUnmarshallerHandler();

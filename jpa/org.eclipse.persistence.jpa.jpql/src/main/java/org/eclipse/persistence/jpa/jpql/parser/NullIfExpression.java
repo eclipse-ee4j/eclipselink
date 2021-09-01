@@ -41,25 +41,16 @@ public final class NullIfExpression extends AbstractDoubleEncapsulatedExpression
         super(parent, NULLIF);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(NullIfExpressionBNF.ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String parameterExpressionBNF(int index) {
         return ScalarExpressionBNF.ID;

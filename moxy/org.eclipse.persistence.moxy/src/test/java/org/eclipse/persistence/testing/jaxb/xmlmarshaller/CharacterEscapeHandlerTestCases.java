@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ public class CharacterEscapeHandlerTestCases extends JAXBWithJSONTestCases {
         setClasses(classes);
     }
 
+    @Override
     protected Object getControlObject() {
         Employee emp = new Employee();
         emp.setName("elem*");
@@ -38,11 +39,13 @@ public class CharacterEscapeHandlerTestCases extends JAXBWithJSONTestCases {
         return emp;
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         jaxbMarshaller.setProperty(MarshallerProperties.CHARACTER_ESCAPE_HANDLER, new CustomCharacterEscapeHandler());
     }
 
+    @Override
     public boolean isUnmarshalTest() {
         return false;
     }
@@ -51,6 +54,7 @@ public class CharacterEscapeHandlerTestCases extends JAXBWithJSONTestCases {
      * CharacterEscapeHandler is not supported for this marshal target,
      * so just pass.
      */
+    @Override
     public void testObjectToXMLStreamWriter() throws Exception {
     }
 
@@ -58,6 +62,7 @@ public class CharacterEscapeHandlerTestCases extends JAXBWithJSONTestCases {
      * CharacterEscapeHandler is not supported for this marshal target,
      * so just pass.
      */
+    @Override
     public void testObjectToXMLStreamWriterRecord() throws Exception {
     }
 
@@ -65,6 +70,7 @@ public class CharacterEscapeHandlerTestCases extends JAXBWithJSONTestCases {
      * CharacterEscapeHandler is not supported for this marshal target,
      * so just pass.
      */
+    @Override
     public void testObjectToXMLEventWriter() throws Exception {
     }
 
@@ -72,6 +78,7 @@ public class CharacterEscapeHandlerTestCases extends JAXBWithJSONTestCases {
      * CharacterEscapeHandler is not supported for this marshal target,
      * so just pass.
      */
+    @Override
     public void testObjectToContentHandler() throws Exception {
     }
 
@@ -79,6 +86,7 @@ public class CharacterEscapeHandlerTestCases extends JAXBWithJSONTestCases {
      * CharacterEscapeHandler is not supported for this marshal target,
      * so just pass.
      */
+    @Override
     public void testObjectToXMLDocument() throws Exception {
     }
 

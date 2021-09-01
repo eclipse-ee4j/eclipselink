@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -67,9 +67,9 @@ public abstract class LoadAndSaveTestCases extends LoadAndSaveWithOptionsTestCas
         compileFiles(tmpDirName, getPackages());
 
         URL[] urls = new URL[1];
-        urls[0] = f.toURL();
+        urls[0] = f.toURI().toURL();
         URLClassLoader myURLLoader = new URLClassLoader(urls);
-        String package1 = (String)getPackages().get(0);
+        String package1 = getPackages().get(0);
         String className = package1 + "/" + getRootInterfaceName();
         className = className.replaceAll("/", ".");
 
@@ -95,6 +95,7 @@ public abstract class LoadAndSaveTestCases extends LoadAndSaveWithOptionsTestCas
 
     // First package should be the package that contains the class for the get root interface name class
     // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    @Override
     protected List<String> getPackages() {
         List<String> packages = new ArrayList<String>();
         // Override this function if your targetNamespace is defined or you use the sdoJava:package annotation
@@ -140,6 +141,7 @@ public abstract class LoadAndSaveTestCases extends LoadAndSaveWithOptionsTestCas
         assertEquals("CompileUtil returned a non-zero exit value.", 0, returnVal);
     }
 
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
         // TODO: hard coded path should be parameterized as an option to the test suite

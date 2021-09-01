@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -424,49 +424,31 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AbsExpressionStateObject stateObject) {
         toStringSingleEncapsulated(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AbstractSchemaNameStateObject stateObject) {
         toStringSimpleStateObject(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AdditionExpressionStateObject stateObject) {
         toStringCompound(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AllOrAnyExpressionStateObject stateObject) {
         toStringSingleEncapsulated(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AndExpressionStateObject stateObject) {
         toStringCompound(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ArithmeticFactorStateObject stateObject) {
         if (stateObject.isDecorated()) {
@@ -480,25 +462,16 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AvgFunctionStateObject stateObject) {
         toStringAggregateFunction(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(BadExpressionStateObject stateObject) {
         toStringSimpleStateObject(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(BetweenExpressionStateObject stateObject) {
 
@@ -533,9 +506,6 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CaseExpressionStateObject stateObject) {
 
@@ -568,9 +538,6 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CoalesceExpressionStateObject stateObject) {
 
@@ -595,9 +562,6 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CollectionMemberDeclarationStateObject stateObject) {
 
@@ -633,9 +597,6 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CollectionMemberExpressionStateObject stateObject) {
 
@@ -666,25 +627,16 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CollectionValuedPathExpressionStateObject stateObject) {
         toStringPathExpression(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ComparisonExpressionStateObject stateObject) {
         toStringCompound(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ConcatExpressionStateObject stateObject) {
 
@@ -700,9 +652,6 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ConstructorExpressionStateObject stateObject) {
 
@@ -729,17 +678,11 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CountFunctionStateObject stateObject) {
         toStringAggregateFunction(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(DateTimeStateObject stateObject) {
 
@@ -751,9 +694,6 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(DeleteClauseStateObject stateObject) {
 
@@ -767,41 +707,26 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(DeleteStatementStateObject stateObject) {
         toStringModifyStatement(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(DerivedPathIdentificationVariableDeclarationStateObject stateObject) {
         toStringIdentificationVariableDeclaration(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(DerivedPathVariableDeclarationStateObject stateObject) {
         toStringRangeVariableDeclaration(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(DivisionExpressionStateObject stateObject) {
         toStringCompound(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(EmptyCollectionComparisonExpressionStateObject stateObject) {
 
@@ -815,33 +740,21 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(EntityTypeLiteralStateObject stateObject) {
         toStringSimpleStateObject(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(EntryExpressionStateObject stateObject) {
         toStringEncapsulatedIdentificationVariable(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(EnumTypeStateObject stateObject) {
         toStringSimpleStateObject(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ExistsExpressionStateObject stateObject) {
 
@@ -872,17 +785,11 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(FromClauseStateObject stateObject) {
         toStringFromClause(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(FunctionExpressionStateObject stateObject) {
 
@@ -906,9 +813,6 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(GroupByClauseStateObject stateObject) {
 
@@ -926,33 +830,21 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(HavingClauseStateObject stateObject) {
         toStringConditional(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(IdentificationVariableDeclarationStateObject stateObject) {
         toStringIdentificationVariableDeclaration(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(IdentificationVariableStateObject stateObject) {
         toStringSimpleStateObject(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(IndexExpressionStateObject stateObject) {
 
@@ -969,9 +861,6 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(InExpressionStateObject stateObject) {
 
@@ -1010,17 +899,11 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(InputParameterStateObject stateObject) {
         toStringSimpleStateObject(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(JoinStateObject stateObject) {
 
@@ -1043,25 +926,16 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(JPQLQueryStateObject stateObject) {
         toText(stateObject.getQueryStatement());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(KeyExpressionStateObject stateObject) {
         toStringEncapsulatedIdentificationVariable(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(KeywordExpressionStateObject stateObject) {
 
@@ -1073,17 +947,11 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(LengthExpressionStateObject stateObject) {
         toStringSingleEncapsulated(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(LikeExpressionStateObject stateObject) {
 
@@ -1113,57 +981,36 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(LocateExpressionStateObject stateObject) {
         toStringTripleEncapsulated(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(LowerExpressionStateObject stateObject) {
         toStringSingleEncapsulated(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(MaxFunctionStateObject stateObject) {
         toStringAggregateFunction(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(MinFunctionStateObject stateObject) {
         toStringAggregateFunction(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ModExpressionStateObject stateObject) {
         toStringDoubleEncapsulated(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(MultiplicationExpressionStateObject stateObject) {
         toStringCompound(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(NotExpressionStateObject stateObject) {
 
@@ -1181,9 +1028,6 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(NullComparisonExpressionStateObject stateObject) {
 
@@ -1201,33 +1045,21 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(NullIfExpressionStateObject stateObject) {
         toStringDoubleEncapsulated(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(NumericLiteralStateObject stateObject) {
         toStringSimpleStateObject(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ObjectExpressionStateObject stateObject) {
         toStringEncapsulatedIdentificationVariable(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(OrderByClauseStateObject stateObject) {
 
@@ -1245,9 +1077,6 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(OrderByItemStateObject stateObject) {
 
@@ -1267,25 +1096,16 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(OrExpressionStateObject stateObject) {
         toStringCompound(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(RangeVariableDeclarationStateObject stateObject) {
         toStringRangeVariableDeclaration(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ResultVariableStateObject stateObject) {
 
@@ -1313,9 +1133,6 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SelectClauseStateObject stateObject) {
 
@@ -1338,9 +1155,6 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SelectStatementStateObject stateObject) {
 
@@ -1352,17 +1166,11 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SimpleFromClauseStateObject stateObject) {
         toStringFromClause(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SimpleSelectClauseStateObject stateObject) {
 
@@ -1385,81 +1193,51 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SimpleSelectStatementStateObject stateObject) {
         toStringSelectStatement(stateObject, false);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SizeExpressionStateObject stateObject) {
         toStringSingleEncapsulated(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SqrtExpressionStateObject stateObject) {
         toStringSingleEncapsulated(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(StateFieldPathExpressionStateObject stateObject) {
         toStringPathExpression(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(StringLiteralStateObject stateObject) {
         toStringSimpleStateObject(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SubExpressionStateObject stateObject) {
         toStringSingleEncapsulated(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SubstringExpressionStateObject stateObject) {
         toStringTripleEncapsulated(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SubtractionExpressionStateObject stateObject) {
         toStringCompound(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SumFunctionStateObject stateObject) {
         toStringAggregateFunction(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(TreatExpressionStateObject stateObject) {
 
@@ -1492,9 +1270,6 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(TrimExpressionStateObject stateObject) {
 
@@ -1539,25 +1314,16 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(TypeExpressionStateObject stateObject) {
         toStringSingleEncapsulated(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UnknownExpressionStateObject stateObject) {
         toStringSimpleStateObject(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UpdateClauseStateObject stateObject) {
 
@@ -1579,9 +1345,6 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UpdateItemStateObject stateObject) {
 
@@ -1602,33 +1365,21 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UpdateStatementStateObject stateObject) {
         toStringModifyStatement(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UpperExpressionStateObject stateObject) {
         toStringSingleEncapsulated(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ValueExpressionStateObject stateObject) {
         toStringEncapsulatedIdentificationVariable(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(WhenClauseStateObject stateObject) {
 
@@ -1654,9 +1405,6 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(WhereClauseStateObject stateObject) {
         toStringConditional(stateObject);

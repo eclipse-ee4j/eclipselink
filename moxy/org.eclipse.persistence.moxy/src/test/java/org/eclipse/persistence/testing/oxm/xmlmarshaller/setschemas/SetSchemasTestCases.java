@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,7 @@ public class SetSchemasTestCases extends OXTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() {
         EmployeeProject project = new EmployeeProject();
         xmlContext = getXMLContext(project);
@@ -68,11 +69,14 @@ public class SetSchemasTestCases extends OXTestCase {
      * Error handler implementation for handling parser errors
      */
     class MyErrorHandler implements ErrorHandler {
+        @Override
         public void warning(org.xml.sax.SAXParseException sex) throws org.xml.sax.SAXParseException {
         }
+        @Override
         public void error(org.xml.sax.SAXParseException sex) throws org.xml.sax.SAXParseException {
             throw sex;
         }
+        @Override
         public void fatalError(org.xml.sax.SAXParseException sex) throws org.xml.sax.SAXParseException {
             throw sex;
         }

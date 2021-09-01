@@ -16,6 +16,8 @@ package org.eclipse.persistence.testing.sdo.model.dataobject.xpathpositional;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import junit.framework.TestCase;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
 
@@ -41,7 +43,7 @@ public class SDODataObjectGetListByPositionalPathTest extends SDODataObjectGetBy
         dataObject_a.setList("PName-a/PName-b.0/PName-c", b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setBoolean(property3, true);
 
-        this.assertEquals(bb, dataObject_a.getList("PName-a/PName-b.0/PName-c").get(0));
+        assertEquals(bb, dataObject_a.getList("PName-a/PName-b.0/PName-c").get(0));
 
     }
 
@@ -61,7 +63,7 @@ public class SDODataObjectGetListByPositionalPathTest extends SDODataObjectGetBy
         dataObject_a.setList("PName-a/PName-b[1]/PName-c", b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setString(property + ".0", bb);
 
-        this.assertEquals(bb, dataObject_a.getList("PName-a/PName-b.0/PName-c").get(0));
+        assertEquals(bb, dataObject_a.getList("PName-a/PName-b.0/PName-c").get(0));
 
     }
 

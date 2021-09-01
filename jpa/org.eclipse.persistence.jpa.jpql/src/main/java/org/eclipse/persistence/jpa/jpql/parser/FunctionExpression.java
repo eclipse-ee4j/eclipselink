@@ -93,17 +93,11 @@ public final class FunctionExpression extends AbstractSingleEncapsulatedExpressi
         this.parameterQueryBNFId = parameterQueryBNFId;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedEncapsulatedExpressionTo(List<Expression> children) {
 
@@ -120,9 +114,6 @@ public final class FunctionExpression extends AbstractSingleEncapsulatedExpressi
         super.addOrderedEncapsulatedExpressionTo(children);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getEncapsulatedExpressionQueryBNFId() {
         return parameterQueryBNFId;
@@ -148,9 +139,6 @@ public final class FunctionExpression extends AbstractSingleEncapsulatedExpressi
         return parameterCount;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(FunctionExpressionBNF.ID);
@@ -175,9 +163,6 @@ public final class FunctionExpression extends AbstractSingleEncapsulatedExpressi
         return hasComma;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean hasEncapsulatedExpression() {
         return hasFunctionName() || hasComma || super.hasEncapsulatedExpression();
@@ -201,9 +186,6 @@ public final class FunctionExpression extends AbstractSingleEncapsulatedExpressi
         return hasSpaceAfterComma;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parseEncapsulatedExpression(WordParser wordParser,
                                                int whitespaceCount,
@@ -248,9 +230,6 @@ public final class FunctionExpression extends AbstractSingleEncapsulatedExpressi
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedTextEncapsulatedExpression(StringBuilder writer, boolean actual) {
 

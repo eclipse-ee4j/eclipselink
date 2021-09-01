@@ -45,7 +45,7 @@ public class IncorrectCollectionPolicyTest extends ExceptionTest {
 
         expectedException = DescriptorException.incorrectCollectionPolicy(null, null, null);
 
-        ClassDescriptor descriptor = ((DatabaseSession)getSession()).getDescriptor(org.eclipse.persistence.testing.models.mapping.Employee.class);
+        ClassDescriptor descriptor = getSession().getDescriptor(org.eclipse.persistence.testing.models.mapping.Employee.class);
         //incorrectCollectionPolicy is thrown in CollectionMapping
         mapping = (OneToManyMapping)descriptor.getMappingForAttributeName("managedEmployees");
         //This causes the exception.  managedEmployees is a vector while MapContainerPolicy is used.

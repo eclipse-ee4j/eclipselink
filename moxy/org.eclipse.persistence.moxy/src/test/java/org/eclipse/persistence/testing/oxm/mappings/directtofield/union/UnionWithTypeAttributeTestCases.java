@@ -49,6 +49,7 @@ public class UnionWithTypeAttributeTestCases extends XMLMappingTestCases {
         setProject(p);
     }
 
+    @Override
     protected Object getControlObject() {
         Person person = new Person();
         person.setAge(CONTROL_AGE);

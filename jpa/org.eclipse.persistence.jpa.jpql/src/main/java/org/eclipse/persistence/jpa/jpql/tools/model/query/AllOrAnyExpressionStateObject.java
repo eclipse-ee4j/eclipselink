@@ -113,41 +113,26 @@ public class AllOrAnyExpressionStateObject extends AbstractSingleEncapsulatedExp
         this.identifier = identifier;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AllOrAnyExpression getExpression() {
         return (AllOrAnyExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return identifier;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getQueryBNFId() {
         return SubqueryBNF.ID;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -188,9 +173,6 @@ public class AllOrAnyExpressionStateObject extends AbstractSingleEncapsulatedExp
         firePropertyChanged(IDENTIFIER_PROPERTY, oldIdentifier, identifier);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setStateObject(StateObject stateObject) {
         super.setStateObject(stateObject);

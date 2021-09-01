@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,6 +53,7 @@ public class CollectionReferenceMappingTestCases extends JAXBWithJSONTestCases {
     }
 
 
+    @Override
     public Map getProperties(){
             InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/collectionreference/root-oxm.xml");
 
@@ -77,6 +78,7 @@ public class CollectionReferenceMappingTestCases extends JAXBWithJSONTestCases {
     /**
      * Create the control Root.
      */
+    @Override
     public Object getControlObject() {
         if(ctrlObj == null){
         Root root = new Root();
@@ -110,12 +112,14 @@ public class CollectionReferenceMappingTestCases extends JAXBWithJSONTestCases {
         return ctrlObj;
     }
 
+    @Override
     public void objectToXMLDocumentTest (Document testDocument) throws Exception{
         super.objectToXMLDocumentTest(testDocument);
         assertTrue("Accessor method was not called as expected", ctrlObj.employees.get(0).wasGetCalled);
 
     }
 
+    @Override
     public void testRoundTrip(){
         //accessor method wont get hit with this test as the check is on the ctrlObj but in this
         //case it isn' tthe ctrlObj that gets written.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,10 +26,12 @@ public class SDOCopyHelperOriginalDeepCopyTestCases extends SDOCopyHelperDeepCop
         junit.textui.TestRunner.run(SDOCopyHelperOriginalDeepCopyTestCases.class);
     }
 
+    @Override
     public SDOChangeSummary getChangeSummary() {
-        return(SDOChangeSummary)containedDataObject.getChangeSummary();
+        return containedDataObject.getChangeSummary();
     }
 
+    @Override
     public void assertEqualityHelperEqual(DataObject original, DataObject copy) {
         if (original.getChangeSummary() != null) {
             if (original.getChangeSummary().getChangedDataObjects().size() > 0) {

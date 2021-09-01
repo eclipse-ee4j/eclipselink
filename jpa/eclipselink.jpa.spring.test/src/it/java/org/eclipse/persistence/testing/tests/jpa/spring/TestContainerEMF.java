@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ public class TestContainerEMF extends SpringJunitTestCase {
     private EntityManagerFactory emf;
     private EntityManagerWrapper em;
 
+    @Override
     public void setUp() {
         context = new ClassPathXmlApplicationContext("appContext_ContainerEMF.xml");
         emf = (EntityManagerFactory)context.getBean("entityManagerFactory");
@@ -38,10 +39,12 @@ public class TestContainerEMF extends SpringJunitTestCase {
         super.setEntityManager(em);
     }
 
+    @Override
     public void tearDown(){
         context.close();
     }
 
+    @Override
     public void testDataExceptionTranslation(){
         //Not tested in this class; direction instantiation of emf does not support exception translation
     }

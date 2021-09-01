@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -68,10 +68,12 @@ public class PropOrderTestCases extends JAXBWithJSONTestCases {
         return customer;
     }
 
+     @Override
      public String getWriteControlJSONFormatted(){
          return "org/eclipse/persistence/testing/jaxb/xmlvirtualaccessmethods/proporder/customer_formatted.json";
      }
 
+     @Override
      public boolean shouldRemoveWhitespaceFromControlDocJSON(){
          return false;
      }

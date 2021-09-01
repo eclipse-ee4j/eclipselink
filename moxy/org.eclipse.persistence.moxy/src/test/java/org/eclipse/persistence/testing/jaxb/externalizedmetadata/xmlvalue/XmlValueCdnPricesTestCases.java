@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,6 +43,7 @@ public class XmlValueCdnPricesTestCases extends JAXBWithJSONTestCases{
     }
 
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlvalue/eclipselink-oxm-cdnprices.xml");
 
@@ -68,6 +69,7 @@ public class XmlValueCdnPricesTestCases extends JAXBWithJSONTestCases{
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
 
+    @Override
     protected Object getControlObject() {
         CDNPricesNoAnnotation price = new CDNPricesNoAnnotation();
         price.prices = new ArrayList();
@@ -84,7 +86,7 @@ public class XmlValueCdnPricesTestCases extends JAXBWithJSONTestCases{
             DatabaseMapping mapping = xDesc.getMappingForAttributeName("prices");
             assertNotNull("No mapping exists on CDNPricesNoAnnotation for attribute [prices].", mapping);
             assertTrue("Expected an XMLCompositeDirectCollectionMapping for attribute [prices], but was [" + mapping.toString() +"].", mapping instanceof XMLCompositeDirectCollectionMapping);
-            assertTrue("Expected container class [java.util.LinkedList] but was ["+((XMLCompositeDirectCollectionMapping) mapping).getContainerPolicy().getContainerClassName()+"]", ((XMLCompositeDirectCollectionMapping) mapping).getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
+            assertTrue("Expected container class [java.util.LinkedList] but was ["+ mapping.getContainerPolicy().getContainerClassName()+"]", mapping.getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
         }
 
 }

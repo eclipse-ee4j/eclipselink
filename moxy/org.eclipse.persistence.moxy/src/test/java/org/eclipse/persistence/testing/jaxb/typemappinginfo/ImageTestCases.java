@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -65,6 +65,7 @@ public class ImageTestCases extends TypeMappingInfoWithJSONTestCases {
         return typeMappingInfos;
     }
 
+    @Override
     protected Object getControlObject() {
         Image myImage = new BufferedImage(10, 10, BufferedImage.TYPE_3BYTE_BGR);
 
@@ -76,6 +77,7 @@ public class ImageTestCases extends TypeMappingInfoWithJSONTestCases {
     }
 
 
+    @Override
     public Map<String, InputStream> getControlSchemaFiles(){
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/typemappinginfo/image.xsd");
 

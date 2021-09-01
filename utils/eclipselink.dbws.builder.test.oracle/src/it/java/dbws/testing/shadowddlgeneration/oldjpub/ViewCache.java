@@ -451,6 +451,7 @@ public class ViewCache implements Externalizable {
         return (dir == null ? "" : dir + File.separator) + VIEW_CACHE_PREFIX + user.toLowerCase();
     }
 
+    @Override
     public void readExternal(java.io.ObjectInput in) throws IOException, ClassNotFoundException {
         if (m_viewCacheDebug) {
             System.out.println("viewcache.read.external");
@@ -483,6 +484,7 @@ public class ViewCache implements Externalizable {
         }
     }
 
+    @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         if (m_viewCacheDebug) {
             System.out.println("viewcache.write.external");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -88,20 +88,19 @@ public class XRDynamicEntityTestSuite {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void buildTestEntity() throws InstantiationException, IllegalAccessException,
-        NoSuchFieldException {
+    public void buildTestEntity() throws ReflectiveOperationException {
         XRDynamicClassLoader xrdcl =
             new XRDynamicClassLoader(XRDynamicEntityTestSuite.class.getClassLoader());
         Class<XRDynamicEntity> testClass =
             (Class<XRDynamicEntity>)xrdcl.createDynamicClass(TEST_CLASSNAME);
-        XRDynamicEntity newInstance = testClass.newInstance();
+        XRDynamicEntity newInstance = testClass.getConstructor().newInstance();
         XRDynamicPropertiesManager xrDPM = newInstance.fetchPropertiesManager();
         Set<String> propertyNames = new HashSet<String>();
         propertyNames.add(FIELD_1);
         propertyNames.add(FIELD_2);
         xrDPM.setPropertyNames(propertyNames);
         //build instance
-        XRDynamicEntity newInstance2 = testClass.newInstance();
+        XRDynamicEntity newInstance2 = testClass.getConstructor().newInstance();
         assertNotNull(newInstance2);
     }
 

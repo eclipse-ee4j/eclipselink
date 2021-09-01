@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -59,6 +59,7 @@ public class JAXBSingleObjectIntegerNoXsiTestCases extends JAXBWithJSONTestCases
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
     }
 
+   @Override
    public Map getProperties(){
         Map props = new HashMap();
 
@@ -82,6 +83,7 @@ public class JAXBSingleObjectIntegerNoXsiTestCases extends JAXBWithJSONTestCases
         return null;
     }
 
+    @Override
     protected Object getControlObject() {
         Integer testInteger = 25;
         QName qname = new QName("rootNamespace", "root");
@@ -97,9 +99,11 @@ public class JAXBSingleObjectIntegerNoXsiTestCases extends JAXBWithJSONTestCases
         return XML_RESOURCE;
     }
 
+    @Override
     public void testUnmarshallerHandler() throws Exception {
     }
 
+    @Override
     public Object getWriteControlObject() {
         return getControlObject();
     }

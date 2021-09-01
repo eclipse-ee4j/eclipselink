@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -141,7 +141,7 @@ public class ArrayTestCases extends TestCase {
     public void testWriteComplexArrayWithoutRoot() throws Exception {
         Field complexArrayField = ArrayTestCases.class.getField("COMPLEX_ARRAY_WITH_XML_ROOT_ELEMENT");
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        moxyJsonProvider.writeTo(COMPLEX_ARRAY_WITH_XML_ROOT_ELEMENT, (Class<Object>) complexArrayField.getType(), complexArrayField.getGenericType(), null, null, null, outputStream);
+        moxyJsonProvider.writeTo(COMPLEX_ARRAY_WITH_XML_ROOT_ELEMENT, complexArrayField.getType(), complexArrayField.getGenericType(), null, null, null, outputStream);
         assertEquals(COMPLEX_JSON_ARRAY_WITHOUT_ROOT, new String(outputStream.toByteArray()));
     }
 
@@ -149,7 +149,7 @@ public class ArrayTestCases extends TestCase {
         moxyJsonProvider.setIncludeRoot(true);
         Field complexArrayField = ArrayTestCases.class.getField("COMPLEX_ARRAY_WITH_XML_ROOT_ELEMENT");
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        moxyJsonProvider.writeTo(COMPLEX_ARRAY_WITH_XML_ROOT_ELEMENT, (Class<Object>) complexArrayField.getType(), complexArrayField.getGenericType(), null, null, null, outputStream);
+        moxyJsonProvider.writeTo(COMPLEX_ARRAY_WITH_XML_ROOT_ELEMENT, complexArrayField.getType(), complexArrayField.getGenericType(), null, null, null, outputStream);
         assertEquals(COMPLEX_JSON_ARRAY_WITH_ROOT, new String(outputStream.toByteArray()));
     }
 
@@ -161,7 +161,7 @@ public class ArrayTestCases extends TestCase {
         jaxbElementArray[1] = new JAXBElement(new QName(""), ComplexWithXmlElementDecl.class, new ComplexWithXmlElementDecl(1));
         jaxbElementArray[2] = new JAXBElement(new QName(""), ComplexWithXmlElementDecl.class, new ComplexWithXmlElementDecl(2));
 
-        moxyJsonProvider.writeTo(jaxbElementArray, (Class<Object>) complexArrayField.getType(), complexArrayField.getGenericType(), null, null, null, outputStream);
+        moxyJsonProvider.writeTo(jaxbElementArray, complexArrayField.getType(), complexArrayField.getGenericType(), null, null, null, outputStream);
         assertEquals(COMPLEX_JSON_ARRAY_WITHOUT_ROOT, new String(outputStream.toByteArray()));
     }
 
@@ -174,7 +174,7 @@ public class ArrayTestCases extends TestCase {
         jaxbElementArray[1] = new JAXBElement(new QName("complex"), ComplexWithXmlElementDecl.class, new ComplexWithXmlElementDecl(1));
         jaxbElementArray[2] = new JAXBElement(new QName("complex"), ComplexWithXmlElementDecl.class, new ComplexWithXmlElementDecl(2));
 
-        moxyJsonProvider.writeTo(jaxbElementArray, (Class<Object>) complexArrayField.getType(), complexArrayField.getGenericType(), null, null, null, outputStream);
+        moxyJsonProvider.writeTo(jaxbElementArray, complexArrayField.getType(), complexArrayField.getGenericType(), null, null, null, outputStream);
         assertEquals(COMPLEX_JSON_ARRAY_WITH_ROOT, new String(outputStream.toByteArray()));
     }
 

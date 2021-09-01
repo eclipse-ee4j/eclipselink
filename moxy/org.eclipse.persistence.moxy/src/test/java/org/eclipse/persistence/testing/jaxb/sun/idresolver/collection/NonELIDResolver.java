@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,6 +54,7 @@ public class NonELIDResolver extends org.glassfish.jaxb.runtime.IDResolver {
     public Callable<?> resolve(final String id, Class type) throws SAXException {
         hitResolve = true;
         return new Callable<Object>() {
+            @Override
             public Object call() {
                 Object obj = objects.get(id);
                 ((TestObject) obj).processed = true;

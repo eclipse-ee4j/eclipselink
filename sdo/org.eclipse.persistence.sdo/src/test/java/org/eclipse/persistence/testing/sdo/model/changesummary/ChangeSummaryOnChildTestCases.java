@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,18 +50,22 @@ public abstract class ChangeSummaryOnChildTestCases extends ChangeSummaryRootLoa
     protected ChangeSummary stock3CS2;
     public static final String URINAME = "http://www.example.org";
     public static final String TYPENAME = "corporation";
+    @Override
     protected String getControlRootURI() {
         return URINAME;
     }
 
+    @Override
     protected String getControlRootName() {
         return TYPENAME;
     }
 
+    @Override
     protected String getRootInterfaceName() {
         return "CorporationType";
     }
 
+    @Override
     protected String getControlFileName() {
         // implemented by subclass
         return getControlFileName2();
@@ -73,6 +77,7 @@ public abstract class ChangeSummaryOnChildTestCases extends ChangeSummaryRootLoa
     //    return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/PurchaseOrderDeepWithCS.xml");
     //}
 
+    @Override
     public void testNoSchemaLoadFromInputStreamSaveDataObjectToString() throws Exception {
         //do nothing
         //TODO: need to make this test run
@@ -86,6 +91,7 @@ public abstract class ChangeSummaryOnChildTestCases extends ChangeSummaryRootLoa
         super(name);
     }
 
+    @Override
     public String getSchemaName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/PurchaseOrderDeepWithCSonChild.xsd");
     }
@@ -95,6 +101,7 @@ public abstract class ChangeSummaryOnChildTestCases extends ChangeSummaryRootLoa
         TestRunner.main(arguments);
     }
 
+    @Override
     protected List defineTypes() {
 
         List types =  xsdHelper.define(getSchema(getSchemaName()));
@@ -153,6 +160,7 @@ public abstract class ChangeSummaryOnChildTestCases extends ChangeSummaryRootLoa
         return types;
     }
 
+    @Override
     protected String getControlString(String fileName) {
         try {
             FileInputStream inputStream = new FileInputStream(fileName);
@@ -166,6 +174,7 @@ public abstract class ChangeSummaryOnChildTestCases extends ChangeSummaryRootLoa
         }
     }
 
+    @Override
     protected void verifyAfterLoad(XMLDocument document) {
         assertNull(document.getRootObject().getContainer());
     }

@@ -40,6 +40,7 @@ public class InheritanceWithMultiplePackagesBackwardCompatibilityTestCases exten
         jaxbUnmarshaller.setProperty(JAXBContextProperties.JSON_TYPE_COMPATIBILITY, true);
     }
 
+    @Override
     protected Object getControlObject() {
         RootComplex root = new RootComplex();
         SubType subType = new SubType();

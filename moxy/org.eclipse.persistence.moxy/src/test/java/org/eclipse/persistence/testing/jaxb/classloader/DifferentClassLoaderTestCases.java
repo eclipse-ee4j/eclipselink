@@ -58,6 +58,7 @@ public class DifferentClassLoaderTestCases extends JAXBWithJSONTestCases {
             jaxbUnmarshaller = jaxbContext.createUnmarshaller();
     }
 
+    @Override
     protected Object getControlObject() {
         try{
                     Object classA = rootClass.newInstance();

@@ -40,6 +40,7 @@ public class SDODataObjectOpenContentBug6011530TestCases extends SDOTestCase {
         TestRunner.main(arguments);
     }
 
+    @Override
     public void setUp() {
         super.setUp();
         Type stringType = SDOConstants.SDO_STRING;

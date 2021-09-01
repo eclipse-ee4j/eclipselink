@@ -33,16 +33,19 @@ public class JAXBElementCharacterTestCases extends JAXBElementTestCases {
         setTargetClass(Character.class);
     }
 
+    @Override
     public Class[] getClasses(){
         Class[] classes = new Class[1];
         classes[0] = Character.class;
         return classes;
     }
 
+    @Override
     public Class getUnmarshalClass(){
         return Character.class;
     }
 
+    @Override
     protected Object getControlObject() {
         Character character = Character.valueOf('s');
         JAXBElement<Character> jbe = new JAXBElement<Character>(new QName("a", "b"),Character.class, character);

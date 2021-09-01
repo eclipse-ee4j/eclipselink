@@ -33,6 +33,7 @@ public class DirectCollectionWithoutGroupingElementIdentifiedByNameIntegerTestCa
         setProject(new DirectCollectionWithoutGroupingElementIdentifiedByNameIntegerProject());
   }
 
+  @Override
   protected Object getControlObject() {
         Vector responsibilities = new Vector();
         responsibilities.addElement(CONTROL_RESPONSIBILITY1);

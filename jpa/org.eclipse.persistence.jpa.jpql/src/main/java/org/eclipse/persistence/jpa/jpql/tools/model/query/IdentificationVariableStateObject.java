@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -90,17 +90,11 @@ public class IdentificationVariableStateObject extends SimpleStateObject {
         super(parent, variable);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addProblems(List<Problem> problems) {
         super.addProblems(problems);
@@ -145,9 +139,6 @@ public class IdentificationVariableStateObject extends SimpleStateObject {
         typeDeclaration = null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IdentificationVariable getExpression() {
         return (IdentificationVariable) super.getExpression();
@@ -208,9 +199,6 @@ public class IdentificationVariableStateObject extends SimpleStateObject {
         return typeDeclaration;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -285,9 +273,6 @@ public class IdentificationVariableStateObject extends SimpleStateObject {
         super.setExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setText(String text) {
         checkIntegrity(text);
@@ -305,9 +290,6 @@ public class IdentificationVariableStateObject extends SimpleStateObject {
         this.virtual = virtual;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
         if (!virtual) {

@@ -36,17 +36,11 @@ public final class HavingClause extends AbstractConditionalClause {
         super(parent, HAVING);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(HavingClauseBNF.ID);

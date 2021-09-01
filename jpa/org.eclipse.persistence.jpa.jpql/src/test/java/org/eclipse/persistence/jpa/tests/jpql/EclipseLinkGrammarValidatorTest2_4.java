@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,6 +42,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 
     private JPQLQueryStringFormatter buildStringFormatter_1() {
         return new JPQLQueryStringFormatter() {
+            @Override
             public String format(String jpqlQuery) {
                 return jpqlQuery.replace(",)", ", )");
             }
@@ -50,6 +51,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 
     private JPQLQueryStringFormatter buildStringFormatter_2() {
         return new JPQLQueryStringFormatter() {
+            @Override
             public String format(String query) {
                 return query.replace("firstName)", "firstName )");
             }
@@ -58,6 +60,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 
     private JPQLQueryStringFormatter buildStringFormatter_3() {
         return new JPQLQueryStringFormatter() {
+            @Override
             public String format(String query) {
                 return query.replace(")", " )");
             }
@@ -66,6 +69,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 
     private JPQLQueryStringFormatter buildStringFormatter_4() {
         return new JPQLQueryStringFormatter() {
+            @Override
             public String format(String query) {
                 return query.replace(",", ", ");
             }
@@ -74,23 +78,18 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 
     private JPQLQueryStringFormatter buildStringFormatter_5() {
         return new JPQLQueryStringFormatter() {
+            @Override
             public String format(String query) {
                 return query.replace("(", "( ");
             }
         };
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected AbstractGrammarValidator buildValidator() {
         return new EclipseLinkGrammarValidator(jpqlGrammar);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isJoinFetchIdentifiable() {
         return true;
@@ -101,9 +100,6 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
         return currentVersion.isNewerThanOrEqual(version);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isSubqueryAllowedAnywhere() {
         return isNewerThanOrEqual(EclipseLinkVersion.VERSION_2_4);

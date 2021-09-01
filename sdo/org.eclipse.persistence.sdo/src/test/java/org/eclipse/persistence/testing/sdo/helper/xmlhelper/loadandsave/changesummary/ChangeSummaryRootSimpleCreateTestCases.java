@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,11 +30,13 @@ public class ChangeSummaryRootSimpleCreateTestCases extends ChangeSummaryRootLoa
         TestRunner.main(arguments);
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/team_csroot_create_simple.xml");
     }
 
 
+    @Override
     protected void verifyAfterLoad(XMLDocument document) {
         super.verifyAfterLoad(document);
         ChangeSummary teamCS = document.getRootObject().getChangeSummary();
@@ -44,7 +46,7 @@ public class ChangeSummaryRootSimpleCreateTestCases extends ChangeSummaryRootLoa
         ChangeSummary managerCS = manager.getChangeSummary();
         assertEquals(teamCS, managerCS);
         assertTrue(teamCS.isLogging());
-        assertTrue(((SDOChangeSummary)teamCS).isLogging());
+        assertTrue(teamCS.isLogging());
         assertTrue(teamCS.isCreated(manager));
         assertEquals(0, teamCS.getOldValues(manager).size());
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,6 +57,7 @@ JAXBListOfObjectsNoJSONTestCases {
         setTypes(types);
     }
 
+    @Override
     protected Object getControlObject() {
         ArrayList responsibilities = new ArrayList();
         responsibilities.add(CONTROL_RESPONSIBILITY1);
@@ -98,6 +99,7 @@ JAXBListOfObjectsNoJSONTestCases {
         return jaxbElement;
     }
 
+    @Override
     public List< InputStream> getControlSchemaFiles(){
         InputStream instream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeeCollision2.xsd");
         InputStream instream1 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeeCollision1.xsd");
@@ -109,15 +111,18 @@ JAXBListOfObjectsNoJSONTestCases {
         return controlSchema;
     }
 
+    @Override
     protected Type getTypeToUnmarshalTo() throws Exception {
         Field fld = ListofObjects.class.getField("empList");
         return fld.getGenericType();
     }
 
+    @Override
     protected String getNoXsiTypeControlResourceName() {
         return XML_RESOURCE_NO_XSI_TYPE;
     }
 
+    @Override
     public Map getProperties() {
         Map props = new HashMap();
 

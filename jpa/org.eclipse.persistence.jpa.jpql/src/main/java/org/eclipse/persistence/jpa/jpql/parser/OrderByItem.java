@@ -125,33 +125,21 @@ public final class OrderByItem extends AbstractExpression {
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getExpression().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         children.add(getExpression());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
 
@@ -192,9 +180,6 @@ public final class OrderByItem extends AbstractExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -281,9 +266,6 @@ public final class OrderByItem extends AbstractExpression {
         return ordering;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(OrderByItemBNF.ID);
@@ -397,9 +379,6 @@ public final class OrderByItem extends AbstractExpression {
         return nullOrdering == NullOrdering.NULLS_LAST;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
         return word.equalsIgnoreCase(ASC)     ||
@@ -408,9 +387,6 @@ public final class OrderByItem extends AbstractExpression {
                super.isParsingComplete(wordParser, word, expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -476,9 +452,6 @@ public final class OrderByItem extends AbstractExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
 
@@ -562,9 +535,6 @@ public final class OrderByItem extends AbstractExpression {
             return identifier;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public String toString() {
             return identifier;

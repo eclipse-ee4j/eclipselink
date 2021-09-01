@@ -45,13 +45,13 @@ public final class AsOfClause extends AbstractExpression {
     private AbstractExpression expression;
 
     /**
-     * Determines whether a whitespace was found after either <code><b>SCN</b><code> or
+     * Determines whether a whitespace was found after either <code><b>SCN</b></code> or
      * <code><b>TIMESTAMP</b></code>.
      */
     private boolean hasSpaceAfterCategory;
 
     /**
-     * Determines whether a whitespace was found after <code><b>AS OF</b><code>.
+     * Determines whether a whitespace was found after <code><b>AS OF</b></code>.
      */
     private boolean hasSpaceAfterIdentifier;
 
@@ -81,33 +81,21 @@ public final class AsOfClause extends AbstractExpression {
         super(parent, AS_OF);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         acceptUnknownVisitor(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getExpression().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         children.add(getExpression());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
 
@@ -137,9 +125,6 @@ public final class AsOfClause extends AbstractExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -193,9 +178,6 @@ public final class AsOfClause extends AbstractExpression {
         return expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(AsOfClauseBNF.ID);
@@ -249,9 +231,6 @@ public final class AsOfClause extends AbstractExpression {
         return timestampIdentifier != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -274,9 +253,6 @@ public final class AsOfClause extends AbstractExpression {
         expression = parse(wordParser, ScalarExpressionBNF.ID, tolerant);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
 

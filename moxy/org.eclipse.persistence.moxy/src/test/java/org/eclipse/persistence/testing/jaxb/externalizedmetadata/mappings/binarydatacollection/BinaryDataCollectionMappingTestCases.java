@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,6 +63,7 @@ public class BinaryDataCollectionMappingTestCases extends JAXBWithJSONTestCases 
      *
      * @return
      */
+    @Override
     public MyData getControlObject() {
         // setup control object
         List<byte[]> bytesList = new ArrayList<byte[]>();
@@ -80,6 +81,7 @@ public class BinaryDataCollectionMappingTestCases extends JAXBWithJSONTestCases 
         return ctrlData;
     }
 
+    @Override
     public MyData getWriteControlObject() {
         if(ctrlObject == null){
             // setup control object
@@ -101,6 +103,7 @@ public class BinaryDataCollectionMappingTestCases extends JAXBWithJSONTestCases 
         return ctrlObject;
     }
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/binarydatacollection/mydata-oxm.xml");
 
@@ -112,6 +115,7 @@ public class BinaryDataCollectionMappingTestCases extends JAXBWithJSONTestCases 
         return properties;
     }
 
+    @Override
     public void xmlToObjectTest(Object testObject) throws Exception{
         super.xmlToObjectTest(testObject);
         MyData myObj=(MyData)testObject;
@@ -119,6 +123,7 @@ public class BinaryDataCollectionMappingTestCases extends JAXBWithJSONTestCases 
 
 
     }
+    @Override
     public void objectToXMLDocumentTest(Document testDocument) throws Exception{
           super.objectToXMLDocumentTest(testDocument);
          assertTrue("Accessor method was not called as expected", ctrlObject.wasGetCalled);
@@ -131,6 +136,7 @@ public class BinaryDataCollectionMappingTestCases extends JAXBWithJSONTestCases 
 
            super.testSchemaGen(controlSchemas);
     }
+    @Override
     public void testRoundTrip(){
         //not applicable with write only mappings
     }

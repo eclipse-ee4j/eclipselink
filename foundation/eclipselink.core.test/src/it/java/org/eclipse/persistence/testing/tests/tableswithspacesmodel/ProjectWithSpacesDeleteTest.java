@@ -48,8 +48,8 @@ public class ProjectWithSpacesDeleteTest extends DeleteObjectTest {
         if (appendString.length() != 0) {
             appendString = appendString + ".";
         }
-        String startQuoteChar = ((DatasourcePlatform)getAbstractSession().getPlatform(org.eclipse.persistence.testing.models.employee.domain.Project.class)).getStartDelimiter();
-        String endQuoteChar = ((DatasourcePlatform)getAbstractSession().getPlatform(org.eclipse.persistence.testing.models.employee.domain.Project.class)).getEndDelimiter();
+        String startQuoteChar = getAbstractSession().getPlatform(org.eclipse.persistence.testing.models.employee.domain.Project.class).getStartDelimiter();
+        String endQuoteChar = getAbstractSession().getPlatform(org.eclipse.persistence.testing.models.employee.domain.Project.class).getEndDelimiter();
 
         // Must drop references first to appease constraints.
         Session session = getAbstractSession().getSessionForClass(org.eclipse.persistence.testing.models.employee.domain.Project.class);

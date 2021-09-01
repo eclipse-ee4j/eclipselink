@@ -35,17 +35,11 @@ public final class OrderByClause extends AbstractOrderByClause {
         super(parent, ORDER_BY);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(OrderByClauseBNF.ID);

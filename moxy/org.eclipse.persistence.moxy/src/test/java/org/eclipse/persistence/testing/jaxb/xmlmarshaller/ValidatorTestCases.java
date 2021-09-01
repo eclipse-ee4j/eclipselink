@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,6 +38,7 @@ public class ValidatorTestCases extends TestCase {
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception {
         contextPath = System.getProperty("jaxb.test.contextpath", JAXBSAXTestSuite.CONTEXT_PATH);
 
@@ -299,6 +300,7 @@ public class ValidatorTestCases extends TestCase {
 
     //=============================== Inner class for eventhandler test =================//
     class ValidationEventHandlerImpl implements jakarta.xml.bind.ValidationEventHandler {
+        @Override
         public boolean handleEvent(jakarta.xml.bind.ValidationEvent param1) {
             return true;
         }

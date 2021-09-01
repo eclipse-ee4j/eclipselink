@@ -70,33 +70,21 @@ public class TypeExpressionStateObject extends AbstractSingleEncapsulatedExpress
         super(parent, path);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public TypeExpression getExpression() {
         return (TypeExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return TYPE;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getQueryBNFId() {
         return InternalEntityTypeExpressionBNF.ID;
@@ -114,9 +102,6 @@ public class TypeExpressionStateObject extends AbstractSingleEncapsulatedExpress
         super.setExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setStateObject(StateObject stateObject) {
         super.setStateObject(stateObject);

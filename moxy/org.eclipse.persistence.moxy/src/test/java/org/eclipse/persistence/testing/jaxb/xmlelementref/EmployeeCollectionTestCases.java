@@ -34,6 +34,7 @@ public class EmployeeCollectionTestCases  extends JAXBWithJSONTestCases {
         setClasses(classes);
     }
 
+    @Override
     protected Object getJSONReadControlObject(){
         //same as getReadControl Except order is different
         EmployeeCollection employee = new EmployeeCollection();
@@ -50,6 +51,7 @@ public class EmployeeCollectionTestCases  extends JAXBWithJSONTestCases {
         return employee;
     }
 
+    @Override
     protected Object getControlObject() {
         EmployeeCollection employee = new EmployeeCollection();
         ArrayList choices = new ArrayList();

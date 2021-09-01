@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -70,11 +70,11 @@ public class ComplexType {
         protected final static QName NAME = new QName("", "Local");
 
         public TestLocal(String value) {
-            super(NAME, ((Class) String.class), ComplexType.class, value);
+            super(NAME, String.class, ComplexType.class, value);
         }
 
         public TestLocal() {
-            super(NAME, ((Class) String.class), ComplexType.class, null);
+            super(NAME, String.class, ComplexType.class, null);
         }
 
         @Override

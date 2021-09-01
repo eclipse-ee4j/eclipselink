@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,34 +40,42 @@ public class LoadAndSaveImportsDefaultNamespaceTestCases extends LoadAndSaveTest
         TestRunner.main(arguments);
     }
 
+    @Override
     protected String getSchemaName() {
         return "Dept.xsd";
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/dept.xml");
     }
 
+    @Override
     protected String getControlWriteFileName(){
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/deptWrite.xml");
     }
 
+    @Override
     protected String getNoSchemaControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/deptNoSchema.xml");
     }
 
+    @Override
     protected String getControlRootURI() {
         return "http://sdo.sample.service.types/Dept/";
     }
 
+    @Override
     protected String getControlRootName() {
         return "dept";
     }
 
+    @Override
     protected String getRootInterfaceName() {
         return "Dept";
     }
 
+    @Override
     protected List defineTypes() {
         try {
             URL url = new URL(getSchemaLocation() + getSchemaName());
@@ -79,10 +87,12 @@ public class LoadAndSaveImportsDefaultNamespaceTestCases extends LoadAndSaveTest
         }
     }
 
+    @Override
     protected String getSchemaLocation() {
         return FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xmlhelper/";
     }
 
+    @Override
     protected List getPackages() {
       List packages = new ArrayList();
       packages.add("sdo/sample/service/types/dept");
@@ -91,6 +101,7 @@ public class LoadAndSaveImportsDefaultNamespaceTestCases extends LoadAndSaveTest
       return packages;
     }
 
+    @Override
     protected void generateClasses(String tmpDirName) throws Exception{
 
         URL url = new URL(getSchemaLocation() + getSchemaName());
@@ -104,6 +115,7 @@ public class LoadAndSaveImportsDefaultNamespaceTestCases extends LoadAndSaveTest
         classGenerator.generate(ss, tmpDirName, schemaResolver);
     }
 
+    @Override
     public void registerTypes() {
         SDOType stringType = (SDOType) typeHelper.getType("commonj.sdo", "String");
         SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);

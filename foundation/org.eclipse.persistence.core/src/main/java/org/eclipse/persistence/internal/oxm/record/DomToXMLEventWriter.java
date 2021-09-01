@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,7 +62,7 @@ public class DomToXMLEventWriter{
                 }
             }
         } else if(currentNode.getNodeType() == Node.TEXT_NODE) {
-                xew.add(xmlEventFactory.createCharacters(((Text)currentNode).getNodeValue()));
+                xew.add(xmlEventFactory.createCharacters(currentNode.getNodeValue()));
         }
         if(dom.getNodeType() == Node.DOCUMENT_NODE) {
             xew.add(xmlEventFactory.createEndDocument());
@@ -160,7 +160,7 @@ public class DomToXMLEventWriter{
         for(int i = 0; i < childNodes.getLength(); i++) {
             Node next = childNodes.item(i);
             if(next.getNodeType() == Node.TEXT_NODE) {
-                xew.add(xmlEventFactory.createCharacters(((Text)next).getNodeValue()));
+                xew.add(xmlEventFactory.createCharacters(next.getNodeValue()));
             } else if(next.getNodeType() == Node.CDATA_SECTION_NODE) {
                 xew.add(xmlEventFactory.createCData(next.getNodeValue()));
             } else if(next.getNodeType() == Node.COMMENT_NODE) {

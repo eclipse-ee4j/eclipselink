@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,41 +34,50 @@ public class LoadAndSaveWithTypeBug6522867TestCases extends LoadAndSaveWithOptio
         TestRunner.main(arguments);
     }
 
+    @Override
     protected String getNoSchemaControlFileName() {
        return  "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/purchaseOrderLocallyDeclaredNoSchema.xml";
     }
 
+    @Override
     protected String getNoSchemaControlWriteFileName() {
        return  "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/purchaseOrderLocallyDeclaredNoSchemaWrite.xml";
     }
 
+    @Override
     protected String getControlFileName() {
         return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/purchaseOrderLocallyDeclared.xml";
     }
 
+    @Override
     protected String getControlWriteFileName() {
         return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/purchaseOrderLocallyDeclaredWrite.xml";
     }
 
+    @Override
     protected String getSchemaName() {
         return "./org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderComplex.xsd";
     }
 
+    @Override
     protected String getControlRootURI() {
         return NON_DEFAULT_URI;
     }
 
+    @Override
     protected String getControlRootName() {
         return "items";
     }
 
     // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    @Override
     protected List<String> getPackages() {
         List<String> packages = new ArrayList<String>();
         packages.add(NON_DEFAULT_JAVA_PACKAGE_DIR);
         return packages;
     }
 
+    @Override
     protected Object getOptions() {
         Type theType = typeHelper.getType("http://www.example.org", "Items");
 
@@ -87,6 +96,7 @@ public class LoadAndSaveWithTypeBug6522867TestCases extends LoadAndSaveWithOptio
     public void testClassGenerationLoadAndSave() throws Exception {
     }
 
+    @Override
     protected void registerTypes() {
         Type intType = typeHelper.getType("commonj.sdo", "Int");
         Type stringType = typeHelper.getType("commonj.sdo", "String");

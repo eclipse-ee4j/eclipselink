@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,17 +50,11 @@ public final class CollectionExpressionStateObject extends AbstractStateObject {
         this.items = items;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         acceptUnknownVisitor(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         children.addAll(items);
@@ -94,17 +88,11 @@ public final class CollectionExpressionStateObject extends AbstractStateObject {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public CollectionExpression getExpression() {
         return (CollectionExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -128,9 +116,6 @@ public final class CollectionExpressionStateObject extends AbstractStateObject {
         super.setExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
         toStringItems(writer, items, true);

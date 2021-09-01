@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,6 +40,7 @@ public class XMLFragmentCollectionNSTestCases extends XMLMappingTestCases {
     /**
      * Should be overridden in subclasses
      */
+    @Override
     protected Object getControlObject() {
         return null;
     }
@@ -62,6 +63,7 @@ public class XMLFragmentCollectionNSTestCases extends XMLMappingTestCases {
         return testDocument;
     }
 
+    @Override
     public void testObjectToXMLDocument() throws Exception {
         Object objectToWrite = getWriteControlObject();
         XMLDescriptor desc = null;
@@ -84,6 +86,7 @@ public class XMLFragmentCollectionNSTestCases extends XMLMappingTestCases {
         assertXMLIdentical(getWriteControlDocument(), docToCompare);
     }
 
+    @Override
     public void testObjectToContentHandler() throws Exception {
         SAXDocumentBuilder builder = new SAXDocumentBuilder();
         Object objectToWrite = getWriteControlObject();

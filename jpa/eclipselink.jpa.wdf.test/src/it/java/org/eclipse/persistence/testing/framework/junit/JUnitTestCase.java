@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -184,7 +184,7 @@ public abstract class JUnitTestCase {
         if (isOnServer()) {
             return getServerPlatform().getEntityManagerFactory(persistenceUnitName);
         } else {
-            EntityManagerFactory emfNamedPersistenceUnit = (EntityManagerFactory) emfNamedPersistenceUnits
+            EntityManagerFactory emfNamedPersistenceUnit = emfNamedPersistenceUnits
                     .get(persistenceUnitName);
             if (emfNamedPersistenceUnit == null) {
                 emfNamedPersistenceUnit = Persistence.createEntityManagerFactory(persistenceUnitName, properties);
@@ -207,7 +207,7 @@ public abstract class JUnitTestCase {
     }
 
     public static void closeEntityManagerFactory(String persistenceUnitName) {
-        EntityManagerFactory emfNamedPersistenceUnit = (EntityManagerFactory) emfNamedPersistenceUnits.get(persistenceUnitName);
+        EntityManagerFactory emfNamedPersistenceUnit = emfNamedPersistenceUnits.get(persistenceUnitName);
         if (emfNamedPersistenceUnit != null) {
             if (emfNamedPersistenceUnit.isOpen()) {
                 emfNamedPersistenceUnit.close();

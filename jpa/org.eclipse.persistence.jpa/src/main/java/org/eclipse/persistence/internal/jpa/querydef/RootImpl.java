@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,11 +39,11 @@ import jakarta.persistence.metamodel.Metamodel;
 public class RootImpl<X> extends FromImpl<X, X> implements Root<X> {
 
     public <T> RootImpl(ManagedType managedType, Metamodel metamodel, Class<X> javaClass, org.eclipse.persistence.expressions.Expression expressionNode, Bindable modelArtifact) {
-        super((Path) null, managedType, metamodel, javaClass, expressionNode, modelArtifact);
+        super(null, managedType, metamodel, javaClass, expressionNode, modelArtifact);
     }
 
     public <T> RootImpl(ManagedType managedType, Metamodel metamodel, Class<X> javaClass, org.eclipse.persistence.expressions.Expression expressionNode, Bindable modelArtifact, FromImpl correlatedParent) {
-        super((Path) null, managedType, metamodel, javaClass, expressionNode, modelArtifact, correlatedParent);
+        super(null, managedType, metamodel, javaClass, expressionNode, modelArtifact, correlatedParent);
     }
 
     /**

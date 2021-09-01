@@ -104,9 +104,6 @@ public abstract class AbstractDoubleEncapsulatedExpressionStateObject extends Ab
         parseSecond(secondJpqlFragment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
 
@@ -121,9 +118,6 @@ public abstract class AbstractDoubleEncapsulatedExpressionStateObject extends Ab
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AbstractDoubleEncapsulatedExpression getExpression() {
         return (AbstractDoubleEncapsulatedExpression) super.getExpression();
@@ -185,9 +179,6 @@ public abstract class AbstractDoubleEncapsulatedExpressionStateObject extends Ab
         return secondStateObject != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -246,9 +237,6 @@ public abstract class AbstractDoubleEncapsulatedExpressionStateObject extends Ab
         firePropertyChanged(SECOND_STATE_OBJECT_PROPERTY, oldSecondStateObject, secondStateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextEncapsulatedExpression(Appendable writer) throws IOException {
 

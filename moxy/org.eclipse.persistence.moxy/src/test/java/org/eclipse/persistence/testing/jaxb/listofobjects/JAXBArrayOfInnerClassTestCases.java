@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,6 +47,7 @@ public class JAXBArrayOfInnerClassTestCases extends JAXBListOfObjectsTestCases {
         initXsiType();
     }
 
+    @Override
     protected Type getTypeToUnmarshalTo() throws Exception {
         return getClass().getField("myArray").getType();
     }
@@ -59,6 +60,7 @@ public class JAXBArrayOfInnerClassTestCases extends JAXBListOfObjectsTestCases {
         setTypes(types);
     }
 
+    @Override
     protected Object getControlObject() {
         MyInner myInner1 = new MyInner();
         myInner1.innerName = "aaa";
@@ -76,6 +78,7 @@ public class JAXBArrayOfInnerClassTestCases extends JAXBListOfObjectsTestCases {
         return jaxbElement;
     }
 
+    @Override
     public List<InputStream> getControlSchemaFiles() {
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/innerClassArray.xsd");
         List<InputStream> controlSchema = new ArrayList<InputStream>();
@@ -83,6 +86,7 @@ public class JAXBArrayOfInnerClassTestCases extends JAXBListOfObjectsTestCases {
         return controlSchema;
     }
 
+    @Override
     protected String getNoXsiTypeControlResourceName() {
         return XML_RESOURCE_NO_XSI_TYPE;
     }

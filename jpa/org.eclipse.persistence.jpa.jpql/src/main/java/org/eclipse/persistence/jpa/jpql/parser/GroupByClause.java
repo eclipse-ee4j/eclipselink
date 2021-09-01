@@ -56,33 +56,21 @@ public final class GroupByClause extends AbstractExpression {
         super(parent, GROUP_BY);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getGroupByItems().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         children.add(getGroupByItems());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
 
@@ -116,9 +104,6 @@ public final class GroupByClause extends AbstractExpression {
         return new CollectionExpression(this, children, commas, spaces, true);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -151,9 +136,6 @@ public final class GroupByClause extends AbstractExpression {
         return groupByItems;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(GroupByClauseBNF.ID);
@@ -178,9 +160,6 @@ public final class GroupByClause extends AbstractExpression {
         return hasSpace;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -193,9 +172,6 @@ public final class GroupByClause extends AbstractExpression {
         groupByItems = parse(wordParser, GroupByItemBNF.ID, tolerant);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
 

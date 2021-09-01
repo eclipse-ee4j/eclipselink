@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1980,7 +1980,7 @@ public class SDOTypesGenerator {
     //Since types aren't registered until the end of the define call we need to check type helper
     //and the generatedTypesmap to see if a type already exists
     private SDOType getExisitingType(String uri, String localName) {
-        SDOType type = (SDOType) ((SDOTypeHelper) aHelperContext.getTypeHelper()).getType(uri, localName);
+        SDOType type = (SDOType) aHelperContext.getTypeHelper().getType(uri, localName);
         if (type == null) {
             QName qName = new QName(uri, localName);
             type = (SDOType) getGeneratedTypes().get(qName);

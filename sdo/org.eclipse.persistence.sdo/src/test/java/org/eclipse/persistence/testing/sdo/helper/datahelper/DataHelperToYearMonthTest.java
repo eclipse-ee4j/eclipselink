@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,6 +13,8 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.sdo.helper.datahelper;
+
+import junit.framework.TestCase;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -31,7 +33,7 @@ public class DataHelperToYearMonthTest extends DataHelperTestCases {
         controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Date controlDate = controlCalendar.getTime();
         String tm = dataHelper.toYearMonth(controlDate);
-        this.assertEquals("2001-05", tm);
+        assertEquals("2001-05", tm);
     }
 
     public void testToYearMonthWithDefault() {
@@ -40,12 +42,12 @@ public class DataHelperToYearMonthTest extends DataHelperTestCases {
         controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Date controlDate = controlCalendar.getTime();
         String tm = dataHelper.toYearMonth(controlDate);
-        this.assertEquals("1970-01", tm);
+        assertEquals("1970-01", tm);
     }
 
     public void testToYearMonthWithNullInput() {
         Date controlDate = null;
         String tm = dataHelper.toYearMonth(controlDate);
-        this.assertNull(tm);
+        assertNull(tm);
     }
 }

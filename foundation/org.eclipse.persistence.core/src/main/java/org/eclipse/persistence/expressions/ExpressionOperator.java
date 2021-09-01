@@ -704,9 +704,9 @@ public class ExpressionOperator implements Serializable {
         } else if ((left instanceof String) && (start instanceof String) && (end instanceof String)) {
             return ((((String)left).compareTo(((String)start)) > 0) || (((String)left).compareTo(((String)start)) == 0)) && ((((String)left).compareTo(((String)end)) < 0) || (((String)left).compareTo(((String)end)) == 0));
         } else if ((left instanceof java.util.Date) && (start instanceof java.util.Date) && (end instanceof java.util.Date)) {
-            return (((java.util.Date)left).after(((java.util.Date)start)) || ((java.util.Date)left).equals((start))) && (((java.util.Date)left).before(((java.util.Date)end)) || ((java.util.Date)left).equals((end)));
+            return (((java.util.Date)left).after(((java.util.Date)start)) || left.equals((start))) && (((java.util.Date)left).before(((java.util.Date)end)) || left.equals((end)));
         } else if ((left instanceof java.util.Calendar) && (start instanceof java.util.Calendar) && (end instanceof java.util.Calendar)) {
-            return (((java.util.Calendar)left).after(start) || ((java.util.Calendar)left).equals((start))) && (((java.util.Calendar)left).before(end) || ((java.util.Calendar)left).equals((end)));
+            return (((java.util.Calendar)left).after(start) || left.equals((start))) && (((java.util.Calendar)left).before(end) || left.equals((end)));
         }
 
         throw QueryException.cannotConformExpression();
@@ -982,9 +982,9 @@ public class ExpressionOperator implements Serializable {
                 int compareValue = ((String)left).compareTo(((String)right));
                 return (compareValue < 0) || (compareValue == 0);
             } else if ((left instanceof java.util.Date) && (right instanceof java.util.Date)) {
-                return ((java.util.Date)left).equals((right)) || ((java.util.Date)left).before(((java.util.Date)right));
+                return left.equals((right)) || ((java.util.Date)left).before(((java.util.Date)right));
             } else if ((left instanceof java.util.Calendar) && (right instanceof java.util.Calendar)) {
-                return ((java.util.Calendar)left).equals((right)) || ((java.util.Calendar)left).before(right);
+                return left.equals((right)) || ((java.util.Calendar)left).before(right);
             }
         } else if (this.selector == GreaterThan) {
             if ((left == null) || (right == null)) {
@@ -1012,9 +1012,9 @@ public class ExpressionOperator implements Serializable {
                 int compareValue = ((String)left).compareTo(((String)right));
                 return (compareValue > 0) || (compareValue == 0);
             } else if ((left instanceof java.util.Date) && (right instanceof java.util.Date)) {
-                return ((java.util.Date)left).equals((right)) || ((java.util.Date)left).after(((java.util.Date)right));
+                return left.equals((right)) || ((java.util.Date)left).after(((java.util.Date)right));
             } else if ((left instanceof java.util.Calendar) && (right instanceof java.util.Calendar)) {
-                return ((java.util.Calendar)left).equals((right)) || ((java.util.Calendar)left).after(right);
+                return left.equals((right)) || ((java.util.Calendar)left).after(right);
             }
         }
         // Between
@@ -2202,7 +2202,7 @@ public class ExpressionOperator implements Serializable {
         for (final int index : argumentIndices) {
             Expression item = (Expression)items.get(index);
             if ((this.selector == Ref) || ((this.selector == Deref) && (item.isObjectExpression()))) {
-                DatabaseTable alias = ((ObjectExpression)item).aliasForTable(((ObjectExpression)item).getDescriptor().getTables().firstElement());
+                DatabaseTable alias = item.aliasForTable(((ObjectExpression)item).getDescriptor().getTables().firstElement());
                 printer.printString(alias.getNameDelimited(printer.getPlatform()));
             } else if ((this.selector == Count) && (item.isExpressionBuilder())) {
                 printer.printString("*");

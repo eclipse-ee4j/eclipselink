@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -59,6 +59,7 @@ public class HelperContextTestCases extends SDOTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() {
         try {
             Class[] classes = new Class[1];
@@ -304,6 +305,7 @@ public class HelperContextTestCases extends SDOTestCase {
         assertEquals(0, entities.size());
     }
 
+    @Override
     public void tearDown() {
     }
 
@@ -315,6 +317,7 @@ public class HelperContextTestCases extends SDOTestCase {
             return schemaWriter.toString();
         }
 
+        @Override
         public Result createOutput(String arg0, String arg1) throws IOException {
             schemaWriter = new StringWriter();
             return new StreamResult(schemaWriter);

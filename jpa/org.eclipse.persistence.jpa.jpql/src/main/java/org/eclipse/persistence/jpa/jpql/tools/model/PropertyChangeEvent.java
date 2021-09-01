@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,33 +63,21 @@ public class PropertyChangeEvent<T> implements IPropertyChangeEvent<T> {
         this.newValue     = newValue;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public T getNewValue() {
         return newValue;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public T getOldValue() {
         return oldValue;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getPropertyName() {
         return propertyName;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SuppressWarnings("unchecked")
     public <S extends StateObject> S getSource() {

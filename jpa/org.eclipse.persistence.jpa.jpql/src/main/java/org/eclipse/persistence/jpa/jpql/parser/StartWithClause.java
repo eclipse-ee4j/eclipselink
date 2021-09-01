@@ -39,17 +39,11 @@ public final class StartWithClause extends AbstractConditionalClause {
         super(parent, Expression.START_WITH);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         acceptUnknownVisitor(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(StartWithClauseBNF.ID);

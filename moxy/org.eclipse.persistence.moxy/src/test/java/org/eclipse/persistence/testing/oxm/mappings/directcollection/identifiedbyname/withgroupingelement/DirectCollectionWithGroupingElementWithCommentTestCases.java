@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,6 +35,7 @@ public class DirectCollectionWithGroupingElementWithCommentTestCases extends XML
         setProject(new DirectCollectionWithGroupingElementIdentifiedByNameProject());
     }
 
+    @Override
     protected Object getControlObject() {
         Vector responsibilities = new Vector();
         responsibilities.addElement(CONTROL_RESPONSIBILITY1);
@@ -47,6 +48,7 @@ public class DirectCollectionWithGroupingElementWithCommentTestCases extends XML
         return employee;
     }
 
+    @Override
     protected Document getWriteControlDocument() throws Exception {
         String xmlResource = "org/eclipse/persistence/testing/oxm/mappings/directcollection/identifiedbyname/withgroupingelement/DirectCollectionWithGroupingElementWithCommentWriting.xml";
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(xmlResource);
@@ -60,10 +62,12 @@ public class DirectCollectionWithGroupingElementWithCommentTestCases extends XML
         return writeControlDocument;
     }
 
+    @Override
     public void testUnmarshallerHandler() throws Exception {
         // DO NOTHING BECAUSE UNMARSHALLER HANDLER CAN NOT READ COMMENTS
     }
 
+    @Override
     public void testObjectToContentHandler() throws Exception {
         // DO NOTHING BECAUSE CONTENT HANDLER CAN NOT READ COMMENTS
     }

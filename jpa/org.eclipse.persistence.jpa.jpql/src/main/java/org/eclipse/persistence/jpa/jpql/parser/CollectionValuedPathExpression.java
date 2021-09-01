@@ -65,17 +65,11 @@ public final class CollectionValuedPathExpression extends AbstractPathExpression
         super(parent, paths);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(CollectionValuedPathExpressionBNF.ID);

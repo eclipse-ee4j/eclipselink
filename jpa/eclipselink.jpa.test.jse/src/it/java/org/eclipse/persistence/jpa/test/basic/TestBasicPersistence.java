@@ -509,25 +509,34 @@ public class TestBasicPersistence {
             this.text = text;
         }
 
+        @Override
         public Connection getConnection() throws SQLException {
             RuntimeException exception = new RuntimeException(text);
             throw exception;
         }
 
+        @Override
         public Connection getConnection(String username, String password) throws SQLException {
             return getConnection();
         }
 
         //rest are ignored
+        @Override
         public java.io.PrintWriter getLogWriter() throws SQLException {
             return null;
         }
 
+        @Override
         public void setLogWriter(java.io.PrintWriter out) throws SQLException{}
+        @Override
         public void setLoginTimeout(int seconds) throws SQLException{}
+        @Override
         public int getLoginTimeout() throws SQLException { return 1; }
+        @Override
         public <T> T unwrap(Class<T> iface) throws SQLException { return null; }
+        @Override
         public boolean isWrapperFor(Class<?> iface) throws SQLException { return false; }
+        @Override
         public Logger getParentLogger() { return null; }
     }
 

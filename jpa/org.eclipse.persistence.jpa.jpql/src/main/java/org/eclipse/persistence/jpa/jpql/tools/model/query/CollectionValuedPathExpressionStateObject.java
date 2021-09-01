@@ -59,25 +59,16 @@ public class CollectionValuedPathExpressionStateObject extends AbstractPathExpre
         super(parent, path);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public CollectionValuedPathExpression getExpression() {
         return (CollectionValuedPathExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected IManagedType resolveManagedType() {
 
@@ -107,9 +98,6 @@ public class CollectionValuedPathExpressionStateObject extends AbstractPathExpre
         return getManagedTypeProvider().getManagedType(type);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected IType resolveType() {
 

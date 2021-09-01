@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class XmlAdapterDirectExceptionTestCases extends JAXBWithJSONTestCases {
         setClasses(classes);
     }
 
+    @Override
     protected Object getControlObject() {
         MyCalendarException myCal = new MyCalendarException();
         MyCalendarType myCalType = new MyCalendarType();
@@ -44,27 +45,32 @@ public class XmlAdapterDirectExceptionTestCases extends JAXBWithJSONTestCases {
         return myCal;
     }
 
+    @Override
     public void setUp() throws Exception{
         super.setUp();
         MyCalendarExceptionAdapter.marshalHit = false;
         MyCalendarExceptionAdapter.unmarshalHit = false;
     }
 
+    @Override
     public Object getReadControlObject() {
         MyCalendarException myCal = new MyCalendarException();
         return myCal;
     }
 
+    @Override
     public void xmlToObjectTest(Object testObject) throws Exception{
         super.xmlToObjectTest(testObject);
         assertTrue(MyCalendarExceptionAdapter.unmarshalHit);
     }
 
+    @Override
     public void jsonToObjectTest(Object testObject) throws Exception{
         super.jsonToObjectTest(testObject);
         assertTrue(MyCalendarExceptionAdapter.unmarshalHit);
     }
 
+    @Override
     public void objectToXMLStringWriter(Object objectToWrite) throws Exception{
         super.objectToXMLStringWriter(objectToWrite);
         assertTrue(MyCalendarExceptionAdapter.marshalHit);
@@ -76,6 +82,7 @@ public class XmlAdapterDirectExceptionTestCases extends JAXBWithJSONTestCases {
        // assertTrue("Nested exception should be a ConversionException but was " + nestedException.getClass().getName(), nestedException instanceof ConversionException);
    // }
 
+    @Override
     public void testRoundTrip(){
         //no need to perform this test
     }

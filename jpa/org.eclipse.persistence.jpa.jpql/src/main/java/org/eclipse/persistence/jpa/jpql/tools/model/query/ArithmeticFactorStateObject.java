@@ -78,17 +78,11 @@ public class ArithmeticFactorStateObject extends AbstractStateObject {
         this.stateObject = parent(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
@@ -124,9 +118,6 @@ public class ArithmeticFactorStateObject extends AbstractStateObject {
         return plusSign ? PLUS : MINUS;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ArithmeticFactor getExpression() {
         return (ArithmeticFactor) super.getExpression();
@@ -173,9 +164,6 @@ public class ArithmeticFactorStateObject extends AbstractStateObject {
         return stateObject != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -242,9 +230,6 @@ public class ArithmeticFactorStateObject extends AbstractStateObject {
         setArithmeticSign(!plusSign);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
         writer.append(getArithmeticSign());

@@ -316,14 +316,14 @@ public class QueryFrameworkTestSuite extends TestSuite {
                 ReadAllQuery query = new ReadAllQuery(Employee.class);
                 query.setIsReadOnly(true);
                 List result = (List) uow.executeQuery(query);
-                if (((UnitOfWorkImpl)uow).isObjectRegistered(result.get(0))) {
+                if (uow.isObjectRegistered(result.get(0))) {
                     throwError("Read-only result was registered.");
                 }
                 // Test read objects.
                 ReadObjectQuery objectQuery = new ReadObjectQuery(result.get(0));
                 objectQuery.setIsReadOnly(true);
                 Employee employee = (Employee)uow.executeQuery(objectQuery);
-                if (((UnitOfWorkImpl)uow).isObjectRegistered(employee)) {
+                if (uow.isObjectRegistered(employee)) {
                     throwError("Read-only result was registered.");
                 }
                 if (employee != result.get(0)) {

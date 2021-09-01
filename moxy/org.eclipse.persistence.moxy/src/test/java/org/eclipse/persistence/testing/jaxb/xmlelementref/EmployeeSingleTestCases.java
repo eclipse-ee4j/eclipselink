@@ -32,6 +32,7 @@ public class EmployeeSingleTestCases  extends JAXBWithJSONTestCases {
         setClasses(classes);
     }
 
+    @Override
     protected Object getControlObject() {
         EmployeeSingle employee = new EmployeeSingle();
         employee.intRoot = new JAXBElement(new QName("myns", "integer-root"), Integer.class, Integer.valueOf(21));

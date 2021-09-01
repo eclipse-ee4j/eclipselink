@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -58,6 +58,7 @@ public class XmlElementTestCases extends JAXBWithJSONTestCases {
         setClasses(new Class[] { Employee.class});
     }
 
+     @Override
      public Map getProperties(){
             InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelement/eclipselink-oxm.xml");
 
@@ -179,7 +180,7 @@ public class XmlElementTestCases extends JAXBWithJSONTestCases {
         DatabaseMapping mapping = xDesc.getMappingForAttributeName("myEmployees");
         assertNotNull("No mapping exists on Employee for attribute [myEmployees].", mapping);
         assertTrue("Expected an XMLCompositeCollectionMapping for attribute [myEmployees], but was [" + mapping.toString() +"].", mapping instanceof XMLCompositeCollectionMapping);
-        assertTrue("Expected container class [java.util.LinkedList] but was ["+((XMLCompositeCollectionMapping) mapping).getContainerPolicy().getContainerClassName()+"]", ((XMLCompositeCollectionMapping) mapping).getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
+        assertTrue("Expected container class [java.util.LinkedList] but was ["+ mapping.getContainerPolicy().getContainerClassName()+"]", mapping.getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
     }
 
     @Override
@@ -208,6 +209,7 @@ public class XmlElementTestCases extends JAXBWithJSONTestCases {
                 "}}";
     }
 
+    @Override
     public boolean isUnmarshalTest() {
          return false;
     }

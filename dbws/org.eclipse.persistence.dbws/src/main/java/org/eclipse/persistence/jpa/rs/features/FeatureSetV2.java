@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,9 +49,6 @@ import java.util.List;
  */
 public class FeatureSetV2 implements FeatureSet {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isSupported(Feature feature) {
         switch (feature) {
@@ -64,9 +61,6 @@ public class FeatureSetV2 implements FeatureSet {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public FeatureResponseBuilder getResponseBuilder(Feature feature) {
         switch (feature) {
@@ -77,9 +71,6 @@ public class FeatureSetV2 implements FeatureSet {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public List<MetadataSource> getMetadataSources() {
         final List<MetadataSource> metadataSources = new ArrayList<MetadataSource>();
@@ -104,17 +95,11 @@ public class FeatureSetV2 implements FeatureSet {
         return metadataSources;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public MetadataSource getDynamicMetadataSource(AbstractSession session, String packageName) {
         return new DynamicXmlV2MetadataSource(session, packageName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SessionEventListener getSessionEventListener(AbstractSession session) {
         return new PreLoginMappingAdapterV2();

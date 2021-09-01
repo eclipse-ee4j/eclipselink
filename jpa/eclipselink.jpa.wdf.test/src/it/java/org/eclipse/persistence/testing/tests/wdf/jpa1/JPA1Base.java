@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -41,6 +41,7 @@ public abstract class JPA1Base extends AbstractBaseTest {
         super("jpa1testmodel");
     }
 
+    @Override
     final protected String[] getClearableTableNames() {
         return CLEARABLE_TABLE_NAMES;
     }

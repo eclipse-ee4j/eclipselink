@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,7 @@ public class SerializationOfValueHolderWithTIMESTAMPTZTest extends TestCase {
     public SerializationOfValueHolderWithTIMESTAMPTZTest() {
     }
 
+    @Override
     public void setup() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         uow.registerObject(TIMESTAMPTZOwner.example1());
@@ -44,6 +45,7 @@ public class SerializationOfValueHolderWithTIMESTAMPTZTest extends TestCase {
         getAbstractSession().beginTransaction();
     }
 
+    @Override
     public void reset() {
         if (getAbstractSession().isInTransaction()) {
             getAbstractSession().rollbackTransaction();
@@ -51,6 +53,7 @@ public class SerializationOfValueHolderWithTIMESTAMPTZTest extends TestCase {
         }
     }
 
+    @Override
     public void test() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         try {
@@ -77,6 +80,7 @@ public class SerializationOfValueHolderWithTIMESTAMPTZTest extends TestCase {
         }
     }
 
+     @Override
      public void verify() {
         if (ex != null) {
             if (ex.toString().startsWith("java.io.NotSerializableException: oracle.sql.TIMESTAMPTZ")) {

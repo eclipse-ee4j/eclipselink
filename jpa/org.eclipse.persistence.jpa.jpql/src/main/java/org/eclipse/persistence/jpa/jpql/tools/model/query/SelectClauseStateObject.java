@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -75,17 +75,11 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
@@ -138,9 +132,6 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
         return item;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public <S extends StateObject> S addItem(S item) {
         getChangeSupport().addItem(this, items, SELECT_ITEMS_LIST, parent(item));
@@ -181,17 +172,11 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
         return item;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void addItems(List<? extends StateObject> items) {
         getChangeSupport().addItems(this, this.items, SELECT_ITEMS_LIST, parent(items));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void addListChangeListener(String listName, IListChangeListener<StateObject> listener) {
         getChangeSupport().addListChangeListener(listName, listener);
@@ -225,17 +210,11 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean canMoveDown(StateObject item) {
         return getChangeSupport().canMoveDown(items, item);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean canMoveUp(StateObject item) {
         return getChangeSupport().canMoveUp(items, item);
@@ -256,134 +235,86 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
         return builder;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SelectClause getExpression() {
         return (SelectClause) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public FromClauseStateObject getFromClause() {
         return (FromClauseStateObject) super.getFromClause();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public StateObject getItem(int index) {
         return items.get(index);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SelectStatementStateObject getParent() {
         return (SelectStatementStateObject) super.getParent();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean hasItems() {
         return items.size() > 0;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean hasSelectItem() {
         return hasItems();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();
         items = new ArrayList<StateObject>();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
         return super.isEquivalent(stateObject) &&
                areChildrenEquivalent((SelectClauseStateObject) stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ListIterable<StateObject> items() {
         return new SnapshotCloneListIterable<StateObject>(items);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int itemsSize() {
         return items.size();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public StateObject moveDown(StateObject item) {
         getChangeSupport().moveDown(this, items, SELECT_ITEMS_LIST, item);
         return item;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public StateObject moveUp(StateObject item) {
         getChangeSupport().moveUp(this, items, SELECT_ITEMS_LIST, item);
         return item;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void parse(String jpqlFragment) {
         List<StateObject> stateObjects = buildStateObjects(jpqlFragment, InternalSelectExpressionBNF.ID);
         addItems(stateObjects);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void removeItem(StateObject stateObject) {
         getChangeSupport().removeItem(this, items, SELECT_ITEMS_LIST, stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void removeItems(Collection<StateObject> items) {
         getChangeSupport().removeItems(this, this.items, SELECT_ITEMS_LIST, items);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void removeListChangeListener(String listName, IListChangeListener<StateObject> listener) {
         getChangeSupport().removeListChangeListener(listName, listener);
@@ -412,9 +343,6 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
         getChangeSupport().replaceItems(this, items, SELECT_ITEMS_LIST, stateObjects);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
 

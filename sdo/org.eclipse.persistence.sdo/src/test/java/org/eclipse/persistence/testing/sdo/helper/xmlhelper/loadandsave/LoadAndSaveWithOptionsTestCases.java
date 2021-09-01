@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -175,13 +175,13 @@ public abstract class LoadAndSaveWithOptionsTestCases extends SDOXMLHelperTestCa
         document1 = builder.parse(new File(getControlFileName()));
         document1.toString();
         //source = new DOMSource(document1);
-        XMLDocument document = ((SDOXMLHelper)xmlHelper).load(new FileInputStream(getControlFileName()), null, getOptions());
+        XMLDocument document = xmlHelper.load(new FileInputStream(getControlFileName()), null, getOptions());
         verifyAfterLoad(document);
 
         ByteArrayOutputStream outstream = new ByteArrayOutputStream();
 
         StreamResult result = new StreamResult(outstream);
-        ((SDOXMLHelper)xmlHelper).save(document, result, null);
+        xmlHelper.save(document, result, null);
         compareXML(getControlWriteFileName(), result.getOutputStream().toString());
 
     }
@@ -203,14 +203,14 @@ public abstract class LoadAndSaveWithOptionsTestCases extends SDOXMLHelperTestCa
 
         source = new DOMSource(document1);
 
-        XMLDocument document = ((SDOXMLHelper)xmlHelper).load(source, null, getOptions());
+        XMLDocument document = xmlHelper.load(source, null, getOptions());
         verifyAfterLoad(document);
 
         ByteArrayOutputStream outstream = new ByteArrayOutputStream();
 
         StreamResult result = new StreamResult(outstream);
 
-        ((SDOXMLHelper)xmlHelper).save(document, result, null);
+        xmlHelper.save(document, result, null);
         compareXML(getControlWriteFileName(), result.getOutputStream().toString());
 
     }
@@ -222,13 +222,13 @@ public abstract class LoadAndSaveWithOptionsTestCases extends SDOXMLHelperTestCa
         FileInputStream inputStream = new FileInputStream(getControlFileName());
         source = new SAXSource(new InputSource(inputStream));
 
-        XMLDocument document = ((SDOXMLHelper)xmlHelper).load(source, null, getOptions());
+        XMLDocument document = xmlHelper.load(source, null, getOptions());
         verifyAfterLoad(document);
 
         ByteArrayOutputStream outstream = new ByteArrayOutputStream();
         StreamResult result = new StreamResult(outstream);
 
-        ((SDOXMLHelper)xmlHelper).save(document, result, null);
+        xmlHelper.save(document, result, null);
         compareXML(getControlWriteFileName(), result.getOutputStream().toString());
 
     }
@@ -242,14 +242,14 @@ public abstract class LoadAndSaveWithOptionsTestCases extends SDOXMLHelperTestCa
 
         source = new StreamSource(inputStream);
 
-        XMLDocument document = ((SDOXMLHelper)xmlHelper).load(source, null, getOptions());
+        XMLDocument document = xmlHelper.load(source, null, getOptions());
         verifyAfterLoad(document);
 
         ByteArrayOutputStream outstream = new ByteArrayOutputStream();
 
         StreamResult result = new StreamResult(outstream);
 
-        ((SDOXMLHelper)xmlHelper).save(document, result, null);
+        xmlHelper.save(document, result, null);
         compareXML(getControlWriteFileName(), result.getOutputStream().toString());
 
     }

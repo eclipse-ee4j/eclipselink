@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,6 +42,7 @@ public class CompositeCollectionTestCases extends OXTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception {
         context = this.getXMLContext("DocumentPreservationSession");
         marshaller = context.createMarshaller();
@@ -64,7 +65,7 @@ public class CompositeCollectionTestCases extends OXTestCase {
             newPhones.addElement(pn);
         }
         emp.setPhoneNumbers(newPhones);
-        Document outputDoc = (Document)marshaller.objectToXML(emp);
+        Document outputDoc = marshaller.objectToXML(emp);
         assertXMLIdentical(controlDocument, outputDoc);
 
     }
@@ -77,7 +78,7 @@ public class CompositeCollectionTestCases extends OXTestCase {
         Vector phones = emp.getPhoneNumbers();
         phones.remove(0);
 
-        Document outputDoc = (Document)marshaller.objectToXML(emp);
+        Document outputDoc = marshaller.objectToXML(emp);
         assertXMLIdentical(controlDocument, outputDoc);
 
     }
@@ -95,7 +96,7 @@ public class CompositeCollectionTestCases extends OXTestCase {
         num.setNumber(4321);
         phones.addElement(num);
 
-        Document outputDoc = (Document)marshaller.objectToXML(emp);
+        Document outputDoc = marshaller.objectToXML(emp);
         assertXMLIdentical(controlDocument, outputDoc);
     }
 
@@ -110,7 +111,7 @@ public class CompositeCollectionTestCases extends OXTestCase {
         num.setExchange(456);
         num.setNumber(7890);
         phones.addElement(num);
-        Document outputDoc = (Document)marshaller.objectToXML(emp);
+        Document outputDoc = marshaller.objectToXML(emp);
         assertXMLIdentical(controlDocument, outputDoc);
     }
 
@@ -121,7 +122,7 @@ public class CompositeCollectionTestCases extends OXTestCase {
         Employee emp = (Employee)unmarshaller.unmarshal(sourceDocument);
         emp.setPhoneNumbers(null);
 
-        Document outputDoc = (Document)marshaller.objectToXML(emp);
+        Document outputDoc = marshaller.objectToXML(emp);
         assertXMLIdentical(controlDocument, outputDoc);
     }
 
@@ -132,7 +133,7 @@ public class CompositeCollectionTestCases extends OXTestCase {
         Employee emp = (Employee)unmarshaller.unmarshal(sourceDocument);
         emp.setPhoneNumbers(new Vector());
 
-        Document outputDoc = (Document)marshaller.objectToXML(emp);
+        Document outputDoc = marshaller.objectToXML(emp);
         assertXMLIdentical(controlDocument, outputDoc);
     }
 

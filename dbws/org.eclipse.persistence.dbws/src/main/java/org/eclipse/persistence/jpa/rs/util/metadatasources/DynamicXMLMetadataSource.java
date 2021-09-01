@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -134,14 +134,14 @@ public class DynamicXMLMetadataSource implements MetadataSource {
                 // No way to find out the type of the collection from EIS mappings, currently, so just set the container policy here...
                 // It will be fine for simple collections
                 if (mapping instanceof EISCompositeDirectCollectionMapping) {
-                    xmlElement.setContainerType(((EISCompositeDirectCollectionMapping) mapping).getContainerPolicy().getContainerClassName());
+                    xmlElement.setContainerType(mapping.getContainerPolicy().getContainerClassName());
                 } else if (mapping instanceof EISCompositeCollectionMapping) {
-                    xmlElement.setContainerType(((EISCompositeCollectionMapping) mapping).getContainerPolicy().getContainerClassName());
+                    xmlElement.setContainerType(mapping.getContainerPolicy().getContainerClassName());
                     xmlElement.setType(((EISCompositeCollectionMapping) mapping).getReferenceClassName());
                 }
             } else {
                 xmlElement.setType(((CollectionMapping) mapping).getReferenceClassName());
-                xmlElement.setContainerType(((CollectionMapping) mapping).getContainerPolicy().getContainerClassName());
+                xmlElement.setContainerType(mapping.getContainerPolicy().getContainerClassName());
             }
         } else {
             xmlElement.setType(mapping.getAttributeClassification().getName());

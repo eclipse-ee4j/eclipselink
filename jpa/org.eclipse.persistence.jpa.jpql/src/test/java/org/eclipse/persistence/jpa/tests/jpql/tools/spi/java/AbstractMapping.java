@@ -182,16 +182,12 @@ public abstract class AbstractMapping implements IMapping {
         return BASIC;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public int compareTo(IMapping mapping) {
         return getName().compareTo(mapping.getName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public int getMappingType() {
         if (mappingType == -1) {
             mappingType = calculateMappingType();
@@ -214,23 +210,17 @@ public abstract class AbstractMapping implements IMapping {
 
     protected abstract Class<?> getMemberType();
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public String getName() {
         return member.getName();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public IManagedType getParent() {
         return parent;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public IType getType() {
         if (type == null) {
             type = getTypeRepository().getType(getMemberType());
@@ -238,9 +228,7 @@ public abstract class AbstractMapping implements IMapping {
         return type;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public ITypeDeclaration getTypeDeclaration() {
         if (typeDeclaration == null) {
             typeDeclaration = buildTypeDeclaration();
@@ -274,9 +262,7 @@ public abstract class AbstractMapping implements IMapping {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public boolean isCollection() {
         switch (getMappingType()) {
             case ELEMENT_COLLECTION:
@@ -295,9 +281,7 @@ public abstract class AbstractMapping implements IMapping {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public boolean isProperty() {
         switch (getMappingType()) {
             case BASIC:
@@ -307,9 +291,7 @@ public abstract class AbstractMapping implements IMapping {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public boolean isRelationship() {
         switch (getMappingType()) {
             case ELEMENT_COLLECTION:
@@ -322,16 +304,11 @@ public abstract class AbstractMapping implements IMapping {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public boolean isTransient() {
         return getMappingType() == TRANSIENT;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return getName() + " : " + getTypeDeclaration();

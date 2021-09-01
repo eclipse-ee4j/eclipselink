@@ -154,9 +154,6 @@ public class ConstructorExpressionStateObject extends AbstractListHolderStateObj
         parse(jpqlFragment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
@@ -171,9 +168,6 @@ public class ConstructorExpressionStateObject extends AbstractListHolderStateObj
         return className;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ConstructorExpression getExpression() {
         return (ConstructorExpression) super.getExpression();
@@ -203,9 +197,6 @@ public class ConstructorExpressionStateObject extends AbstractListHolderStateObj
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String listName() {
         return CONSTRUCTOR_ITEMS_LIST;
@@ -287,9 +278,6 @@ public class ConstructorExpressionStateObject extends AbstractListHolderStateObj
         setClassNameInternally((type != null) ? type.getName() : null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
 

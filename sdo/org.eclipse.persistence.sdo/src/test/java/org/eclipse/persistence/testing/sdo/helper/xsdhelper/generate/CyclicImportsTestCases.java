@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,16 +34,19 @@ public class CyclicImportsTestCases extends XSDHelperGenerateTestCases {
         TestRunner.main(arguments);
     }
 
+    @Override
     public Map getMap() {
         HashMap schemaLocationMap = new HashMap();
         schemaLocationMap.put(new QName("my.uri2", "USAddress"), "Cyclic2.xsd");
         return schemaLocationMap;
     }
 
+    @Override
     public String getControlFileName() {
         return "org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/Cyclic1.xsd";
     }
 
+    @Override
     protected List getGenerateAllControlFileNames() {
         ArrayList controlFiles = new ArrayList();
         controlFiles.add("org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/Cyclic1.xsd");
@@ -51,6 +54,7 @@ public class CyclicImportsTestCases extends XSDHelperGenerateTestCases {
         return controlFiles;
     }
 
+    @Override
     public List getTypesToGenerateFrom() {
         //for this test all the types we want generated are in the list of types but some are in different targetnamespaces
         List types = new ArrayList();

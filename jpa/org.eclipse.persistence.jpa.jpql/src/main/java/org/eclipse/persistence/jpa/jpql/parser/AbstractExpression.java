@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -390,9 +390,6 @@ public abstract class AbstractExpression implements Expression {
         throw new RuntimeException("The position of the Expression could not be calculated: " + expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final ListIterable<Expression> children() {
         if (children == null) {
@@ -434,9 +431,6 @@ public abstract class AbstractExpression implements Expression {
         return getExpressionRegistry().getExpressionFactory(fallBackQueryBNF.getFallbackExpressionFactoryId());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
         return getQueryBNF();
@@ -465,9 +459,6 @@ public abstract class AbstractExpression implements Expression {
         return getGrammar().getExpressionRegistry();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLGrammar getGrammar() {
         return getRoot().getGrammar();
@@ -492,17 +483,11 @@ public abstract class AbstractExpression implements Expression {
         return getRoot().getJPAVersion();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final int getLength() {
         return toActualText().length();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final int getOffset() {
         if (offset == -1) {
@@ -511,9 +496,6 @@ public abstract class AbstractExpression implements Expression {
         return offset;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final AbstractExpression getParent() {
         return parent;
@@ -529,9 +511,6 @@ public abstract class AbstractExpression implements Expression {
         return getExpressionRegistry().getQueryBNF(queryBNFID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final JPQLExpression getRoot() {
         return (parent == null) ? (JPQLExpression) this : parent.getRoot();
@@ -573,9 +552,6 @@ public abstract class AbstractExpression implements Expression {
         return queryBNF.handleCollection();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isAncestor(Expression expression) {
 
@@ -668,9 +644,6 @@ public abstract class AbstractExpression implements Expression {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final ListIterable<Expression> orderedChildren() {
         if (orderedChildren == null) {
@@ -1041,9 +1014,6 @@ public abstract class AbstractExpression implements Expression {
         return factory.buildExpression(this, wordParser, word, queryBNF, null, tolerant);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void populatePosition(QueryPosition queryPosition, int position) {
 
@@ -1132,9 +1102,6 @@ public abstract class AbstractExpression implements Expression {
         return (expression != null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toActualText() {
         if (actualText == null) {
@@ -1145,9 +1112,6 @@ public abstract class AbstractExpression implements Expression {
         return actualText;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toParsedText() {
         if (parsedText == null) {
@@ -1169,9 +1133,6 @@ public abstract class AbstractExpression implements Expression {
      */
     protected abstract void toParsedText(StringBuilder writer, boolean actual);
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final String toString() {
         // toString() should only be called during debugging, thus the cached parsed text

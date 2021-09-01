@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -58,6 +58,7 @@ public class AnyObjectAndAnyCollectionUC03NoDefaultRootComplexChildrenTestCases 
 
     }
 
+    @Override
     public Object getControlObject() {
         Customer customer = new Customer();
         Address anAddress1 = new Address();
@@ -95,7 +96,7 @@ public class AnyObjectAndAnyCollectionUC03NoDefaultRootComplexChildrenTestCases 
         // First Mapping
         if (!firstMappingIsAnyCollection) {
             anyMapping1 = new XMLAnyObjectMapping();
-            ((XMLAnyObjectMapping)anyMapping1).setAttributeName("anyObject");
+            anyMapping1.setAttributeName("anyObject");
 
             //((XMLAnyObjectMapping) anyMapping1).setGetMethodName("getAnyObject");
             //((XMLAnyObjectMapping) anyMapping1).setSetMethodName("setAnyObject");
@@ -103,10 +104,10 @@ public class AnyObjectAndAnyCollectionUC03NoDefaultRootComplexChildrenTestCases 
                 // set first mapping XPath
                 ((XMLAnyObjectMapping)anyMapping1).setXPath(MAPPING_XPATH_OBJ);
             }
-            descriptor.addMapping((XMLAnyObjectMapping)anyMapping1);
+            descriptor.addMapping(anyMapping1);
         } else {
             anyMapping1 = new XMLAnyCollectionMapping();
-            ((XMLAnyCollectionMapping)anyMapping1).setAttributeName("contactMethods");
+            anyMapping1.setAttributeName("contactMethods");
 
             //((XMLAnyCollectionMapping) anyMapping1).setGetMethodName("getAnyCollection");
             //((XMLAnyCollectionMapping) anyMapping1).setSetMethodName("setAnyCollection");
@@ -114,14 +115,14 @@ public class AnyObjectAndAnyCollectionUC03NoDefaultRootComplexChildrenTestCases 
                 // set first mapping XPath
                 ((XMLAnyCollectionMapping)anyMapping1).setXPath(MAPPING_XPATH);
             }
-            descriptor.addMapping((XMLAnyCollectionMapping)anyMapping1);
+            descriptor.addMapping(anyMapping1);
         }
 
         // Second Mapping
         DatabaseMapping anyMapping2 = null;
         if (!secondMappingIsAnyCollection) {
             anyMapping2 = new XMLAnyObjectMapping();
-            ((XMLAnyObjectMapping)anyMapping2).setAttributeName("anyObject");
+            anyMapping2.setAttributeName("anyObject");
 
             //((XMLAnyObjectMapping) anyMapping2).setGetMethodName("getAnyObject");
             //((XMLAnyObjectMapping) anyMapping2).setSetMethodName("setAnyObject");
@@ -129,10 +130,10 @@ public class AnyObjectAndAnyCollectionUC03NoDefaultRootComplexChildrenTestCases 
                 // set second mapping XPath
                 ((XMLAnyObjectMapping)anyMapping2).setXPath(MAPPING_XPATH_OBJ);
             }
-            descriptor.addMapping((XMLAnyObjectMapping)anyMapping2);
+            descriptor.addMapping(anyMapping2);
         } else {
             anyMapping2 = new XMLAnyCollectionMapping();
-            ((XMLAnyCollectionMapping)anyMapping2).setAttributeName("contactMethods");
+            anyMapping2.setAttributeName("contactMethods");
 
             //((XMLAnyCollectionMapping) anyMapping2).setGetMethodName("getAnyCollection");
             //((XMLAnyCollectionMapping) anyMapping2).setSetMethodName("setAnyCollection");
@@ -140,7 +141,7 @@ public class AnyObjectAndAnyCollectionUC03NoDefaultRootComplexChildrenTestCases 
                 // set second mapping XPath
                 ((XMLAnyCollectionMapping)anyMapping2).setXPath(MAPPING_XPATH);
             }
-            descriptor.addMapping((XMLAnyCollectionMapping)anyMapping2);
+            descriptor.addMapping(anyMapping2);
         }
         return descriptor;
     }

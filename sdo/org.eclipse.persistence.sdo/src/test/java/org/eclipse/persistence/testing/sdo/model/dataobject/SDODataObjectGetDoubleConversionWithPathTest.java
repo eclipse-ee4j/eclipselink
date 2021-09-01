@@ -19,6 +19,8 @@ import commonj.sdo.Property;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Calendar;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -62,7 +64,7 @@ public class SDODataObjectGetDoubleConversionWithPathTest extends SDODataObjectC
 
         dataObject_a.setByte(propertyPath_a_b_c, by);// add it to instance list
 
-        this.assertEquals((double)by, dataObject_a.getDouble(propertyPath_a_b_c), delta);
+        assertEquals(by, dataObject_a.getDouble(propertyPath_a_b_c), delta);
     }
 
     //3. purpose: getDouble with Undefined Byte Property
@@ -108,7 +110,7 @@ public class SDODataObjectGetDoubleConversionWithPathTest extends SDODataObjectC
         double delta = 0.0;
         dataObject_a.setDouble(propertyPath_a_b_c, db);// add it to instance list
 
-        this.assertEquals((double)db, dataObject_a.getDouble(propertyPath_a_b_c), delta);
+        assertEquals(db, dataObject_a.getDouble(propertyPath_a_b_c), delta);
     }
 
     //6. purpose: getDouble with Undefined Double Property
@@ -139,7 +141,7 @@ public class SDODataObjectGetDoubleConversionWithPathTest extends SDODataObjectC
         double delta = 0.0;
         dataObject_a.setFloat(propertyPath_a_b_c, fl);// add it to instance list
 
-        this.assertEquals((double)fl, dataObject_a.getDouble(propertyPath_a_b_c), delta);
+        assertEquals(fl, dataObject_a.getDouble(propertyPath_a_b_c), delta);
     }
 
     //8. purpose: getDouble with Undefined float Property
@@ -170,7 +172,7 @@ public class SDODataObjectGetDoubleConversionWithPathTest extends SDODataObjectC
         double delta = 0.0;
         dataObject_a.setInt(propertyPath_a_b_c, in);// add it to instance list
 
-        this.assertEquals((double)in, dataObject_a.getDouble(propertyPath_a_b_c), delta);
+        assertEquals(in, dataObject_a.getDouble(propertyPath_a_b_c), delta);
     }
 
     //10. purpose: getDouble with Undefined int Property
@@ -201,7 +203,7 @@ public class SDODataObjectGetDoubleConversionWithPathTest extends SDODataObjectC
         double delta = 0.0;
         dataObject_a.setLong(propertyPath_a_b_c, lg);// add it to instance list
 
-        this.assertEquals((double)lg, dataObject_a.getDouble(propertyPath_a_b_c), delta);
+        assertEquals((double)lg, dataObject_a.getDouble(propertyPath_a_b_c), delta);
     }
 
     //12. purpose: getDouble with Undefined long Property
@@ -232,7 +234,7 @@ public class SDODataObjectGetDoubleConversionWithPathTest extends SDODataObjectC
         double delta = 0.0;
         dataObject_a.setShort(propertyPath_a_b_c, shr);// add it to instance list
 
-        this.assertEquals((double)shr, dataObject_a.getDouble(propertyPath_a_b_c), delta);
+        assertEquals(shr, dataObject_a.getDouble(propertyPath_a_b_c), delta);
     }
 
     //14. purpose: getDouble with Undefined short Property
@@ -264,7 +266,7 @@ public class SDODataObjectGetDoubleConversionWithPathTest extends SDODataObjectC
         double delta = 0.0;
         dataObject_a.setString(propertyPath_a_b_c, str);// add it to instance list
 
-        this.assertEquals(s_d.doubleValue(), dataObject_a.getDouble(propertyPath_a_b_c), delta);
+        assertEquals(s_d.doubleValue(), dataObject_a.getDouble(propertyPath_a_b_c), delta);
     }
 
     //16. purpose: getDouble with Undefined string Property
@@ -311,7 +313,7 @@ public class SDODataObjectGetDoubleConversionWithPathTest extends SDODataObjectC
         double delta = 0.0;
         dataObject_a.setBigDecimal(propertyPath_a_b_c, bd);// add it to instance list
 
-        this.assertEquals(bd.doubleValue(), dataObject_a.getDouble(propertyPath_a_b_c), delta);
+        assertEquals(bd.doubleValue(), dataObject_a.getDouble(propertyPath_a_b_c), delta);
     }
 
     //19. purpose: getDouble with Undefined decimal Property
@@ -342,7 +344,7 @@ public class SDODataObjectGetDoubleConversionWithPathTest extends SDODataObjectC
         double delta = 0.0;
         dataObject_a.setBigInteger(propertyPath_a_b_c, bi);// add it to instance list
 
-        this.assertEquals(bi.doubleValue(), dataObject_a.getDouble(propertyPath_a_b_c), delta);
+        assertEquals(bi.doubleValue(), dataObject_a.getDouble(propertyPath_a_b_c), delta);
     }
 
     //21. purpose: getDouble with Undefined Integer Property

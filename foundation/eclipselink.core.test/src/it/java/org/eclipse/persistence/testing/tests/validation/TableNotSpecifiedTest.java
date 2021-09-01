@@ -35,7 +35,7 @@ public class TableNotSpecifiedTest extends ExceptionTest {
     @Override
     protected void setup() {
         expectedException = DescriptorException.tableNotSpecified(null);
-        orgDescriptor = ((DatabaseSession)getSession()).getDescriptor(org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod.class);
+        orgDescriptor = getSession().getDescriptor(org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod.class);
         orgIntegrityChecker = getSession().getIntegrityChecker();
     }
     ClassDescriptor orgDescriptor;
@@ -43,7 +43,7 @@ public class TableNotSpecifiedTest extends ExceptionTest {
 
     @Override
     public void reset() {
-        ((DatabaseSession)getSession()).getDescriptors().remove(org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod.class);
+        getSession().getDescriptors().remove(org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod.class);
         if (orgDescriptor != null)
             ((DatabaseSession)getSession()).addDescriptor(orgDescriptor);
         if (orgIntegrityChecker != null)

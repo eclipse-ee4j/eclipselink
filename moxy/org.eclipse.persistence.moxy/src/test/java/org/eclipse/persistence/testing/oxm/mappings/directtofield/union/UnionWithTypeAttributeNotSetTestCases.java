@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,7 @@ public class UnionWithTypeAttributeNotSetTestCases extends UnionWithTypeAttribut
         setControlDocument("org/eclipse/persistence/testing/oxm/mappings/directtofield/union/UnionWithTypeAttributeNotSet.xml");
     }
 
+    @Override
     protected Object getControlObject() {
         Person person = new Person();
         person.setAge("10");
@@ -34,6 +35,7 @@ public class UnionWithTypeAttributeNotSetTestCases extends UnionWithTypeAttribut
         return person;
     }
 
+    @Override
     protected Document getWriteControlDocument() throws Exception {
         String xmlResource = "org/eclipse/persistence/testing/oxm/mappings/directtofield/union/UnionWithTypeAttributeNotSetWriting.xml";
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(xmlResource);
@@ -47,6 +49,7 @@ public class UnionWithTypeAttributeNotSetTestCases extends UnionWithTypeAttribut
         return writeControlDocument;
     }
 
+    @Override
     public void testObjectToContentHandler() throws Exception {
         SAXDocumentBuilder builder = new SAXDocumentBuilder();
         xmlMarshaller.marshal(getWriteControlObject(), builder);

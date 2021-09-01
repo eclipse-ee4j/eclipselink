@@ -53,7 +53,7 @@ public class InvalidateAllTest extends AutoVerifyTestCase {
 
     @Override
     public void test() {
-        ((IdentityMapAccessor)m_session.getIdentityMapAccessor()).invalidateAll();
+        m_session.getIdentityMapAccessor().invalidateAll();
     }
 
     @Override

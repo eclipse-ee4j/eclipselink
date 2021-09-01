@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,10 +31,12 @@ public class TestServerPlatform extends ServerPlatformBase {
         this.disableJTA();
     }
 
+    @Override
     public String getServerNameAndVersion() {
         return null;
     }
 
+    @Override
     public Class getExternalTransactionControllerClass() {
         return null;
     }
@@ -42,10 +44,12 @@ public class TestServerPlatform extends ServerPlatformBase {
     public void launchContainerThread(Thread thread) {
     }
 
+    @Override
     public org.eclipse.persistence.logging.SessionLog getServerLog() {
         return new DefaultSessionLog();
     }
 
+    @Override
     public java.sql.Connection unwrapConnection(java.sql.Connection connection){
         if(connection instanceof TestOracleConnection){
             Connection conn = ((TestOracleConnection)connection).getPhysicalConnection();

@@ -55,25 +55,16 @@ public class DerivedPathVariableDeclarationStateObject extends AbstractRangeVari
         super(parent, path);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected StateObject buildRootStateObject() {
         return new CollectionValuedPathExpressionStateObject(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IManagedType getManagedType(StateObject stateObject) {
 
@@ -84,9 +75,6 @@ public class DerivedPathVariableDeclarationStateObject extends AbstractRangeVari
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DerivedPathIdentificationVariableDeclarationStateObject getParent() {
         return (DerivedPathIdentificationVariableDeclarationStateObject) super.getParent();
@@ -102,25 +90,16 @@ public class DerivedPathVariableDeclarationStateObject extends AbstractRangeVari
         return getRootStateObject().getPath();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getRootPath() {
         return getPath();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public CollectionValuedPathExpressionStateObject getRootStateObject() {
         return (CollectionValuedPathExpressionStateObject) super.getRootStateObject();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setRootPath(String path) {
         getRootStateObject().setPath(path);

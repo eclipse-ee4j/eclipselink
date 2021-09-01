@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,6 +49,7 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
      * SqlTypeWithMethods object. Returns an array of length 0 if the SqlTypeWithMethods declares no
      * methods
      */
+    @Override
     public List<ProcedureMethod> getDeclaredMethods() throws SQLException, PublisherException {
         if (m_methods == null) {
             m_methods = reflectMethods(getSqlName());
@@ -56,6 +57,7 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
         return m_methods;
     }
 
+    @Override
     public boolean hasMethods() throws SQLException, PublisherException {
         List<ProcedureMethod> m = getDeclaredMethods();
         return m != null && m.size() > 0;

@@ -148,7 +148,7 @@ public class Menu implements ChangeTracker{
     }
 
     public Collection getItems() {
-        return (Collection)getItemsHolder().getValue();
+        return getItemsHolder().getValue();
     }
 
     public ValueHolderInterface<Collection<MenuItem>> getItemsHolder() {

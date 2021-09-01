@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,6 +56,7 @@ public class RootWithAnyCollectionTestCases extends XMLMappingTestCases {
         expectedUnmarshalEvents.add(UnmarshalListenerImpl.EMPLOYEE_AFTER_UNMARSHAL);
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         unmarshalListener = new UnmarshalListenerImpl();
@@ -70,16 +71,19 @@ public class RootWithAnyCollectionTestCases extends XMLMappingTestCases {
         return marshaller;
     }
 
+    @Override
     public void xmlToObjectTest(Object testObject) throws Exception {
         super.xmlToObjectTest(testObject);
         assertTrue("Expected sequence of Unmarshal events not found", expectedUnmarshalEvents.equals(unmarshalListener.events));
     }
 
+    @Override
     public void objectToXMLDocumentTest(Document testDocument) throws Exception {
         super.objectToXMLDocumentTest(testDocument);
         assertTrue("Expected sequence of Marshal events not found", expectedMarshalEvents.equals(listener.events));
     }
 
+    @Override
     public Object getControlObject() {
         Employee employee = new Employee();
         ArrayList anyCollection = new ArrayList();

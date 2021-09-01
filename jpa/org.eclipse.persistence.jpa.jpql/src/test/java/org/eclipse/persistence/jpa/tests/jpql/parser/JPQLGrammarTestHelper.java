@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,10 +22,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation is used to inject a concrete instance of {@link org.eclipse.persistence.jpa.jpql.
- * parser.JPQLGrammar JPQLGrammar} into the unit-test before it is run. It allows using multiple
+ * This annotation is used to inject a concrete instance of {@link org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar
+ * JPQLGrammar} into the unit-test before it is run. It allows using multiple
  * instances and the unit-tests are run with each of them separately.
- * <p>
  * <ul>
  * <li>Method in a test suite: Request the concrete instances that will be injected into the
  * unit-tests before they are run.</li>

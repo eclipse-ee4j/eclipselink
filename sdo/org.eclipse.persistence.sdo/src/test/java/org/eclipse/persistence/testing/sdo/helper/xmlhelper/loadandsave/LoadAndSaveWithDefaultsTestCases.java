@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,22 +38,27 @@ public class LoadAndSaveWithDefaultsTestCases extends LoadAndSavePurchaseOrderCo
         TestRunner.main(arguments);
     }
 
+    @Override
     protected String getNoSchemaControlFileName() {
         return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/defaultvalue/purchaseOrderComplexDefaultValueNSNoSchema.xml";
     }
 
+    @Override
     protected String getControlDataObjectFileName() {
         return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/defaultvalue/purchaseOrderComplexDefaultValueNSDataObject.xml";
     }
 
+    @Override
     protected String getControlFileName() {
         return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/defaultvalue/purchaseOrderComplexDefaultValueNS.xml";
     }
 
+    @Override
     protected String getSchemaName() {
         return "org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderComplexDefaultValue.xsd";
     }
 
+    @Override
     protected void verifyAfterLoad(XMLDocument doc) {
         // TODO: the noSchema test will continue to fail until attributes are working with IsSetOptionalNodeNullPolicy
         super.verifyAfterLoad(doc);
@@ -111,6 +116,7 @@ public class LoadAndSaveWithDefaultsTestCases extends LoadAndSavePurchaseOrderCo
         address.unset("country");
     }
 
+    @Override
     protected Type registerAddressType() {
         Type stringType = typeHelper.getType("commonj.sdo", "String");
         DataObject addressType = dataFactory.create("commonj.sdo", "Type");
@@ -133,6 +139,7 @@ public class LoadAndSaveWithDefaultsTestCases extends LoadAndSavePurchaseOrderCo
         return typeHelper.define(addressType);
     }
 
+    @Override
     protected Type registerItemType() {
         Type stringType = typeHelper.getType("commonj.sdo", "String");
         //Type intType = typeHelper.getType("commonj.sdo", "Int");
@@ -160,6 +167,7 @@ public class LoadAndSaveWithDefaultsTestCases extends LoadAndSavePurchaseOrderCo
         return typeHelper.define(itemType);
     }
 
+    @Override
     protected Type registerCustomerType() {
         Type stringType = typeHelper.getType("commonj.sdo", "String");
         DataObject customerType = dataFactory.create("commonj.sdo", "Type");
@@ -174,6 +182,7 @@ public class LoadAndSaveWithDefaultsTestCases extends LoadAndSavePurchaseOrderCo
         return typeHelper.define(customerType);
     }
 
+     @Override
      protected Type registerCdnAddressType() {
         Type stringType = typeHelper.getType("commonj.sdo", "String");
         DataObject addressType = dataFactory.create("commonj.sdo", "Type");
@@ -191,6 +200,7 @@ public class LoadAndSaveWithDefaultsTestCases extends LoadAndSavePurchaseOrderCo
         return typeHelper.define(addressType);
     }
 
+     @Override
      protected Type registerUSAddressType() {
         Type stringType = typeHelper.getType("commonj.sdo", "String");
         Type intType = typeHelper.getType("commonj.sdo", "Int");
@@ -208,6 +218,7 @@ public class LoadAndSaveWithDefaultsTestCases extends LoadAndSavePurchaseOrderCo
         return typeHelper.define(addressType);
     }
 
+     @Override
      protected Type registerCdnMailingAddressType() {
         Type stringType = typeHelper.getType("commonj.sdo", "String");
         DataObject addressType = dataFactory.create("commonj.sdo", "Type");
@@ -223,6 +234,7 @@ public class LoadAndSaveWithDefaultsTestCases extends LoadAndSavePurchaseOrderCo
         return typeHelper.define(addressType);
     }
 
+     @Override
      protected void registerTypes() {
         Type intType = typeHelper.getType("commonj.sdo", "Int");
         Type stringType = typeHelper.getType("commonj.sdo", "String");

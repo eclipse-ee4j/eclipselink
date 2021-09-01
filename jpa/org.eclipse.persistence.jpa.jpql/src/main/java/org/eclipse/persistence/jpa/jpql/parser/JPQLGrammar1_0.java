@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -285,41 +285,26 @@ public final class JPQLGrammar1_0 extends AbstractJPQLGrammar {
         return INSTANCE;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected JPQLGrammar buildBaseGrammar() {
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPAVersion getJPAVersion() {
         return JPAVersion.VERSION_1_0;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getProvider() {
         return DefaultJPQLGrammar.PROVIDER_NAME;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getProviderVersion() {
         return ExpressionTools.EMPTY_STRING;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initializeBNFs() {
 
@@ -436,9 +421,6 @@ public final class JPQLGrammar1_0 extends AbstractJPQLGrammar {
         registerBNF(new WhereClauseBNF());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initializeExpressionFactories() {
 
@@ -506,9 +488,6 @@ public final class JPQLGrammar1_0 extends AbstractJPQLGrammar {
         registerFactory(new WhereClauseFactory());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initializeIdentifiers() {
 
@@ -617,9 +596,6 @@ public final class JPQLGrammar1_0 extends AbstractJPQLGrammar {
         registerIdentifierRole("ORDER",               IdentifierRole.CLAUSE);             // Part of ORDERY BY
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return "JPQLGrammar 1.0";

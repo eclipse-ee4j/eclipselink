@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,7 @@ public class EmployeeFactoryClassTestCases extends XmlTypeTestCases {
         super(name);
     }
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltype/employee-factory-class-oxm.xml");
 
@@ -40,6 +41,7 @@ public class EmployeeFactoryClassTestCases extends XmlTypeTestCases {
         return properties;
     }
 
+    @Override
     public void xmlToObjectTest(Object testObject) throws Exception{
         super.xmlToObjectTest(testObject);
         assertNotNull("Unmarshalled object is null.", testObject);

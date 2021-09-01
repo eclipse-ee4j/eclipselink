@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,19 +48,19 @@ public class ChangeSummaryBeginLoggingEndLoggingIsLoggingTest extends ChangeSumm
          * changeSummary counterparts and may not directly return the actual instance variable
          * when not in deleted | modified state
          */
-        SDODataObject anOldContainer = (SDODataObject)((SDOChangeSummary)o.getChangeSummary()).getOldContainer(o);
-        SDODataObject aContainer = (SDODataObject)o.getContainer();
+        SDODataObject anOldContainer = o.getChangeSummary().getOldContainer(o);
+        SDODataObject aContainer = o.getContainer();
         if (o.getChangeSummary().isModified(o) || o.getChangeSummary().isDeleted(o)) {
 
             assertEquals(anOldContainer, aContainer);
             if (aContainer != null) {
                 Property pp = o.getContainer().getInstanceProperty(o._getContainmentPropertyName());
-                assertEquals(((SDOChangeSummary)o.getChangeSummary()).getOldContainmentProperty(o), pp);
+                assertEquals(o.getChangeSummary().getOldContainmentProperty(o), pp);
             }
         }
 
-        assertNotNull(((SDOChangeSummary)o.getChangeSummary()).getOldValues(o));
-        assertTrue(((SDOChangeSummary)o.getChangeSummary()).getOldValues(o).isEmpty());
+        assertNotNull(o.getChangeSummary().getOldValues(o));
+        assertTrue(o.getChangeSummary().getOldValues(o).isEmpty());
         List properties = o.getInstanceProperties();
         Iterator iterProperties = properties.iterator();
         while (iterProperties.hasNext()) {

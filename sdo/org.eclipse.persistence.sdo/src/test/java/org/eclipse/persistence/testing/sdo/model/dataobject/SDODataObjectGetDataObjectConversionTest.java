@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
 import commonj.sdo.Property;
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
@@ -35,28 +36,28 @@ public class SDODataObjectGetDataObjectConversionTest extends SDODataObjectConve
     public void testGetDataObjectConversionFromDefinedProperty() {
         SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
 
-        SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));
+        SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(dataObjectType);
 
         SDODataObject b = new SDODataObject();
 
         dataObject.setDataObject(property, b);// add it to instance list
 
-        this.assertEquals(b, dataObject.getDataObject(property));
+        assertEquals(b, dataObject.getDataObject(property));
     }
 
     public void testGetDataObjectConversionFromDefinedPropertyWithPath() {
         SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
 
         // dataObject's type add boolean property
-        SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));
+        SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(dataObjectType);
 
         SDODataObject b = new SDODataObject();
 
         dataObject.setDataObject(PROPERTY_NAME, b);// add it to instance list
 
-        this.assertEquals(b, dataObject.getDataObject(property));
+        assertEquals(b, dataObject.getDataObject(property));
     }
 
     //2. purpose: getDataObject with Undefined Boolean Property
@@ -79,7 +80,7 @@ public class SDODataObjectGetDataObjectConversionTest extends SDODataObjectConve
         SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
 
         // dataObject's type add boolean property
-        SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));
+        SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(dataObjectType);
         type.setOpen(true);
 
@@ -107,7 +108,7 @@ public class SDODataObjectGetDataObjectConversionTest extends SDODataObjectConve
         SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
 
         // dataObject's type add boolean property
-        SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));
+        SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(dataObjectType);
         type.addDeclaredProperty(property);
         type.setOpen(true);
@@ -116,7 +117,7 @@ public class SDODataObjectGetDataObjectConversionTest extends SDODataObjectConve
 
         dataObject.setDataObject(PROPERTY_INDEX, b);// add it to instance list
 
-        this.assertEquals(b, dataObject.getDataObject(PROPERTY_INDEX));
+        assertEquals(b, dataObject.getDataObject(PROPERTY_INDEX));
     }
 
     //purpose: getDouble with nul value

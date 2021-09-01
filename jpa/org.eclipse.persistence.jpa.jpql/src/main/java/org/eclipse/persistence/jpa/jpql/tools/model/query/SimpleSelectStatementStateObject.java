@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,9 +42,6 @@ public class SimpleSelectStatementStateObject extends AbstractSelectStatementSta
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
@@ -95,33 +92,21 @@ public class SimpleSelectStatementStateObject extends AbstractSelectStatementSta
         return getFromClause().addDerivedPathDeclaration(path, identificationVariable);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected AbstractFromClauseStateObject buildFromClause() {
         return new SimpleFromClauseStateObject(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected AbstractSelectClauseStateObject buildSelectClause() {
         return new SimpleSelectClauseStateObject(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SimpleSelectStatement getExpression() {
         return (SimpleSelectStatement) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SimpleFromClauseStateObject getFromClause() {
         return (SimpleFromClauseStateObject) super.getFromClause();
@@ -139,9 +124,6 @@ public class SimpleSelectStatementStateObject extends AbstractSelectStatementSta
         return getSelectClause().getBuilder();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SimpleSelectClauseStateObject getSelectClause() {
         return (SimpleSelectClauseStateObject) super.getSelectClause();

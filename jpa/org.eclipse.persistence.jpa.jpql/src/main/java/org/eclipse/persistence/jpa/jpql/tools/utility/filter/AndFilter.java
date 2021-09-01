@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -76,25 +76,16 @@ public class AndFilter<T> extends CompoundFilter<T> {
         return filter;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean accept(T value) {
         return filter1.accept(value) && filter2.accept(value);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AndFilter<T> clone() {
         return (AndFilter<T>) super.clone();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String operatorString() {
         return "AND";

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ public class PurchaseOrderWithAnnotationsClassGenTestCases extends SDOClassGenTe
     }
 
     // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    @Override
     protected List<String> getPackages() {
         if(null != packageNames && packageNames.size() > 0) {
             return packageNames;
@@ -42,24 +43,29 @@ public class PurchaseOrderWithAnnotationsClassGenTestCases extends SDOClassGenTe
         return packageNames;
     }
 
+    @Override
     protected String getSchemaName() {
         return "./org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderWithAnnotations.xsd";
     }
 
+    @Override
     protected String getSourceFolder() {
         return "./srcPOAnnotations";
     }
 
+    @Override
     protected String getControlSourceFolder() {
         return "./org/eclipse/persistence/testing/sdo/helper/classgen/srcPOAnnotations";
     }
 
+     @Override
      protected List getFileNamesToCompile(){
         List returnList = getControlFileNames();
         returnList.add("SKU.java");
         return returnList;
     }
 
+    @Override
     protected List getControlFileNames() {
         ArrayList list = new ArrayList();
         list.add("PurchaseOrder.java");

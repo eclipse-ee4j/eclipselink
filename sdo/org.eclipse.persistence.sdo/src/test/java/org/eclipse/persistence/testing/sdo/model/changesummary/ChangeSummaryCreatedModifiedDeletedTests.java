@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,8 +39,8 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
     // Failure condition test cases
     public void testGetFunctionsWithNullParameters() {
         buildTree();
-        changeSummaryB = (SDOChangeSummary)dataObjectB.getChangeSummary();
-        changeSummaryC = (SDOChangeSummary)dataObjectC.getChangeSummary();
+        changeSummaryB = dataObjectB.getChangeSummary();
+        changeSummaryC = dataObjectC.getChangeSummary();
         changeSummaryB.beginLogging();
         changeSummaryC.beginLogging();
 
@@ -82,7 +82,7 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
         rootType.addDeclaredProperty(rootChangeSummaryProperty);
         root = (SDODataObject)dataFactory.create(rootType);
 
-        changeSummaryA = (SDOChangeSummary)root.getChangeSummary();
+        changeSummaryA = root.getChangeSummary();
 
         buildTreeWithoutChildChangeSummaries();
 
@@ -138,8 +138,8 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
 
     public void testIsCreatedAfterMoveDataObjectFromOneOwnerToAnotherDiffChangeSummary() {
         buildTree();
-        changeSummaryB = (SDOChangeSummary)dataObjectB.getChangeSummary();
-        changeSummaryC = (SDOChangeSummary)dataObjectC.getChangeSummary();
+        changeSummaryB = dataObjectB.getChangeSummary();
+        changeSummaryC = dataObjectC.getChangeSummary();
         changeSummaryB.beginLogging();
         changeSummaryC.beginLogging();
 
@@ -190,7 +190,7 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
     // verify recursive delete sets isSet properly
     public void testOldSettingsAfterInternalDeleteOfLevel2of4AfterLoggingOn() {
         buildTreeWith4LevelsOfProperties();
-        changeSummaryB = (SDOChangeSummary)dataObjectB.getChangeSummary();
+        changeSummaryB = dataObjectB.getChangeSummary();
         changeSummaryB.beginLogging();
 
         assertNotNull(dataObjectD.getChangeSummary());
@@ -224,8 +224,8 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
     //public void testOldSettingsAfterMoveCSDataObjectFromOneOwnerToAnotherDiffChangeSummary() {
     public void testDetachCSRoot() {
         buildTree();
-        changeSummaryB = (SDOChangeSummary)dataObjectB.getChangeSummary();
-        changeSummaryC = (SDOChangeSummary)dataObjectC.getChangeSummary();
+        changeSummaryB = dataObjectB.getChangeSummary();
+        changeSummaryC = dataObjectC.getChangeSummary();
         changeSummaryB.beginLogging();
         changeSummaryC.beginLogging();
 
@@ -310,8 +310,8 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
 
      public void testDeleteCSRoot() {
         buildTree();
-        changeSummaryB = (SDOChangeSummary)dataObjectB.getChangeSummary();
-        changeSummaryC = (SDOChangeSummary)dataObjectC.getChangeSummary();
+        changeSummaryB = dataObjectB.getChangeSummary();
+        changeSummaryC = dataObjectC.getChangeSummary();
         changeSummaryB.beginLogging();
         changeSummaryC.beginLogging();
 
@@ -393,8 +393,8 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
     // perform a move of a cs root (delete CCB) to another cs as child  and observe the old* instance variables
     public void testOldSettingsAfterMoveCSDataObjectFromOneOwnerToAnotherDiffChangeSummaryByUnset() {
         buildTree();
-        changeSummaryB = (SDOChangeSummary)dataObjectB.getChangeSummary();
-        changeSummaryC = (SDOChangeSummary)dataObjectC.getChangeSummary();
+        changeSummaryB = dataObjectB.getChangeSummary();
+        changeSummaryC = dataObjectC.getChangeSummary();
         changeSummaryB.beginLogging();
         changeSummaryC.beginLogging();
 
@@ -517,8 +517,8 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
     // perform a move between changeSummaries and observe the old* instance variables
     public void testOldSettingsAfterMoveDataObjectFromOneOwnerToAnotherDiffChangeSummary() {
         buildTree();
-        changeSummaryB = (SDOChangeSummary)dataObjectB.getChangeSummary();
-        changeSummaryC = (SDOChangeSummary)dataObjectC.getChangeSummary();
+        changeSummaryB = dataObjectB.getChangeSummary();
+        changeSummaryC = dataObjectC.getChangeSummary();
         changeSummaryB.beginLogging();
         changeSummaryC.beginLogging();
 
@@ -640,7 +640,7 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
     public void testIsCreatedAfterUseDataFactory() {
         rootType.addDeclaredProperty(rootChangeSummaryProperty);
         root = (SDODataObject)dataFactory.create(rootType);
-        changeSummaryA = (SDOChangeSummary)root.getChangeSummary();
+        changeSummaryA = root.getChangeSummary();
 
         buildTreeWithoutChildChangeSummaries();
 
@@ -667,7 +667,7 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
     public void testUnsetChildOfCS() {
         rootType.addDeclaredProperty(rootChangeSummaryProperty);
         root = (SDODataObject)dataFactory.create(rootType);
-        changeSummaryA = (SDOChangeSummary)root.getChangeSummary();
+        changeSummaryA = root.getChangeSummary();
         buildTreeWithoutChildChangeSummaries();
         changeSummaryA.beginLogging();
 
@@ -690,7 +690,7 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
     public void testIsCreatedAfterUseUnset() {
         rootType.addDeclaredProperty(rootChangeSummaryProperty);
         root = (SDODataObject)dataFactory.create(rootType);
-        changeSummaryA = (SDOChangeSummary)root.getChangeSummary();
+        changeSummaryA = root.getChangeSummary();
         buildTreeWithoutChildChangeSummaries();
         changeSummaryA.beginLogging();
 
@@ -712,11 +712,11 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
 
     public void testIsCreatedAfterUnSetDiffChangeSummary() {
         root = (SDODataObject)dataFactory.create(rootType);
-        changeSummaryA = (SDOChangeSummary)root.getChangeSummary();
+        changeSummaryA = root.getChangeSummary();
         assertNull(changeSummaryA);
         buildTree();
-        changeSummaryB = (SDOChangeSummary)dataObjectB.getChangeSummary();
-        changeSummaryC = (SDOChangeSummary)dataObjectC.getChangeSummary();
+        changeSummaryB = dataObjectB.getChangeSummary();
+        changeSummaryC = dataObjectC.getChangeSummary();
         changeSummaryB.beginLogging();
         changeSummaryC.beginLogging();
 

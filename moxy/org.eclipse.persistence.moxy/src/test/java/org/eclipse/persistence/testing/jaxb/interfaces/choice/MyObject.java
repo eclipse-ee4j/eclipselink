@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,10 +33,12 @@ public class MyObject implements MyInterface{
     private Properties props = new Properties();
     private Properties anothernameproperties = new Properties();
 
+    @Override
     public Properties getProperties() {
         return props;
     }
 
+     @Override
      public void setProperties(Properties properties) {
          this.props = properties;
     }
@@ -51,18 +53,22 @@ public class MyObject implements MyInterface{
         this.test = test;
     }
 
+    @Override
     public Byte getTest2() {
         return test2;
     }
 
+    @Override
     public void setTest2(Byte test2) {
         this.test2 = test2;
     }
 
+    @Override
     public Properties getAnothernameproperties() {
         return anothernameproperties;
     }
 
+    @Override
     public void setAnothernameproperties(Properties anothernameproperties) {
         this.anothernameproperties = anothernameproperties;
     }

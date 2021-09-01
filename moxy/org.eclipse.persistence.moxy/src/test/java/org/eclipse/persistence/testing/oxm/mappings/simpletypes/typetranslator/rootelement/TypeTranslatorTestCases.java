@@ -31,6 +31,7 @@ public class TypeTranslatorTestCases extends XMLMappingTestCases {
         setProject(new ByteHolderProject());
     }
 
+    @Override
     protected Object getControlObject() {
         ByteHolder byteHolder = new ByteHolder();
 

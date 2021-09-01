@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,33 +34,21 @@ import org.junit.Test;
 @SuppressWarnings("nls")
 public final class DefaultSemanticValidatorTest2_1 extends AbstractSemanticValidatorTest {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected JPQLQueryContext buildQueryContext() {
         return new DefaultJPQLQueryContext(jpqlGrammar);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected AbstractSemanticValidator buildValidator() {
         return new DefaultSemanticValidator(buildSemanticValidatorHelper());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isComparisonTypeChecked() {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isPathExpressionToCollectionMappingAllowed() {
         return false;

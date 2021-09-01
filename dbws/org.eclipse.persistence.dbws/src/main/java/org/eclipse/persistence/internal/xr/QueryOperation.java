@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -450,8 +450,8 @@ public class QueryOperation extends Operation {
                         }
                         // handle BLOB types
                         if (value instanceof Blob) {
-                            value = ((XMLConversionManager) xrService.getOXSession().
-                                    getDatasourcePlatform().getConversionManager()).
+                            value = xrService.getOXSession().
+                                    getDatasourcePlatform().getConversionManager().
                                     convertObject(value, ClassConstants.APBYTE);
                         }
                         return AttachmentHelper.buildAttachmentHandler((byte[])value, mimeType);
@@ -506,7 +506,7 @@ public class QueryOperation extends Operation {
                             objs[0] = ((ArrayList<?>)value).get(0);
                             DatabaseRecord dr = new DatabaseRecord();
                             dr.add(new DatabaseField(ITEMS_STR), objs);
-                            populateTargetObjectFromRecord(desc.getMappings(), (AbstractRecord) dr, targetObject, (AbstractSession)xrService.getORSession());
+                            populateTargetObjectFromRecord(desc.getMappings(), dr, targetObject, (AbstractSession)xrService.getORSession());
                         }
                         value = targetObject;
                     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,7 +49,7 @@ public final class JPQLExpression extends AbstractExpression {
     private JPQLGrammar jpqlGrammar;
 
     /**
-     * By default, this is {@link JPQLStatementBNF.ID} but it can be any other unique identifier of
+     * By default, this is {@link JPQLStatementBNF#ID} but it can be any other unique identifier of
      * a {@link JPQLQueryBNF} when a portion of a JPQL query needs to be parsed.
      */
     private String queryBNFId;
@@ -130,35 +130,23 @@ public final class JPQLExpression extends AbstractExpression {
         this.jpqlGrammar = jpqlGrammar;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getQueryStatement().accept(visitor);
         getUnknownEndingStatement().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         children.add(getQueryStatement());
         children.add(getUnknownEndingStatement());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
 
@@ -204,25 +192,16 @@ public final class JPQLExpression extends AbstractExpression {
         return queryPosition.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLGrammar getGrammar() {
         return jpqlGrammar;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPAVersion getJPAVersion() {
         return jpqlGrammar.getJPAVersion();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(queryBNFId);
@@ -276,17 +255,11 @@ public final class JPQLExpression extends AbstractExpression {
               !unknownEndingStatement.isNull();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isTolerant() {
         return tolerant;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -342,9 +315,6 @@ public final class JPQLExpression extends AbstractExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
 

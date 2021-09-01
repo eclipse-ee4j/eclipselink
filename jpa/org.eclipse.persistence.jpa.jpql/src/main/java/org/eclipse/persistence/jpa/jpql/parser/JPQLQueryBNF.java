@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -143,7 +143,7 @@ public abstract class JPQLQueryBNF {
     private JPQLQueryBNF[] nonCompoundChildren;
 
     /**
-     * Only keep one instance of the {@link Filter} used when initializing {@link #childNonCompoundQueryBNFs}.
+     * Only keep one instance of the {@link Filter} used when initializing {@link #nonCompoundChildren} JPQLQueryBNF.
      * This should help with performance since the filter won't be created for each <code>JPQLQueryBNF</code>.
      */
     private static final Filter<JPQLQueryBNF> nonCompoundFilter = buildNonCompoundFilter();
@@ -753,9 +753,6 @@ public abstract class JPQLQueryBNF {
         this.handleSubExpression = handleSubExpression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

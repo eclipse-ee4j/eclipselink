@@ -43,9 +43,9 @@ public class UseCollectionClassOnMappingTest extends ProjectClassGeneratorResult
         mappingToModify = descriptorToModify.getMappingForAttributeName("projects");
 
         if (mappingToModify.isForeignReferenceMapping()) {
-            if (((ForeignReferenceMapping)mappingToModify).isCollectionMapping()) {
+            if (mappingToModify.isCollectionMapping()) {
                 CollectionMapping collectionMapping =
-                    (CollectionMapping)(((ForeignReferenceMapping)mappingToModify));
+                    (CollectionMapping) mappingToModify;
                 collectionMapping.getContainerPolicy().setContainerClass(Employee.class);
             }
         }

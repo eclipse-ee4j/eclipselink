@@ -80,9 +80,6 @@ public abstract class AbstractConditionalClauseStateObject extends AbstractState
         this.conditionalStateObject = parent(conditionalStateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
@@ -170,9 +167,6 @@ public abstract class AbstractConditionalClauseStateObject extends AbstractState
         return conditionalStateObject != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -250,9 +244,6 @@ public abstract class AbstractConditionalClauseStateObject extends AbstractState
         return encapsulate[0];
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
 

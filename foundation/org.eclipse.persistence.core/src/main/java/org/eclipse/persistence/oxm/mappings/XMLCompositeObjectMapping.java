@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -535,7 +535,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
                 toReturn = convertToSimpleTypeIfPresent(toReturn,  nestedRow, executionSession);
                 return toReturn;
             } else {
-                NodeList children =((Element) nestedRow.getDOM()).getChildNodes();
+                NodeList children = nestedRow.getDOM().getChildNodes();
                 for(int i=0, childrenLength=children.getLength(); i<childrenLength ; i++){
                     Node nextNode = children.item(i);
                     if(nextNode.getNodeType() == nextNode.ELEMENT_NODE){
@@ -592,10 +592,10 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
     }
 
     private Object convertToSimpleTypeIfPresent(Object toReturn, XMLRecord nestedRow, AbstractSession executionSession){
-        Node textchild = ((Element) nestedRow.getDOM()).getFirstChild();
+        Node textchild = nestedRow.getDOM().getFirstChild();
         String stringValue = null;
         if ((textchild != null) && (textchild.getNodeType() == Node.TEXT_NODE)) {
-            stringValue = ((Text) textchild).getNodeValue();
+            stringValue = textchild.getNodeValue();
             if(stringValue != null && getKeepAsElementPolicy() != UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT && getKeepAsElementPolicy()!=UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT){
                 toReturn = stringValue;
             }

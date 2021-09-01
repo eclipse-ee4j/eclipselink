@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,17 +37,11 @@ public abstract class LogicalExpression extends CompoundExpression {
         super(parent, identifier);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(ConditionalExpressionBNF.ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
         return wordParser.character() == RIGHT_PARENTHESIS ||
@@ -55,9 +49,6 @@ public abstract class LogicalExpression extends CompoundExpression {
                super.isParsingComplete(wordParser, word, expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String parseIdentifier(WordParser wordParser) {
         return getText();

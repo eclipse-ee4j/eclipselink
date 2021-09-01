@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,9 +27,11 @@ public class ElementTransformer implements AttributeTransformer, FieldTransforme
     private static String XML_INTERMEDIATE = "INTERMEDIATE";
     private static String XML_END = "END";
 
+    @Override
     public void initialize(AbstractTransformationMapping mapping) {
     }
 
+    @Override
     public Object buildAttributeValue(Record record, Object object, Session session) {
         if(null == record) {
             return null;
@@ -46,6 +48,7 @@ public class ElementTransformer implements AttributeTransformer, FieldTransforme
         }
     }
 
+    @Override
     public Object buildFieldValue(Object instance, String fieldName, Session session) {
         Root root = (Root) instance;
         if(fieldName.equals(root.getElement())) {

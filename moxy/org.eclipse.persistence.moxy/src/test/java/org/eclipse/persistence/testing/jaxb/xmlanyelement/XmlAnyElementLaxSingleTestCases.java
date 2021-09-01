@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,6 +49,7 @@ public class XmlAnyElementLaxSingleTestCases extends JAXBWithJSONTestCases {
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
     }
 
+    @Override
     protected Object getControlObject() {
         EmployeeSingle employee = new EmployeeSingle();
         employee.name = "John Doe";
@@ -61,6 +62,7 @@ public class XmlAnyElementLaxSingleTestCases extends JAXBWithJSONTestCases {
         return employee;
     }
 
+    @Override
     public Object getReadControlObject() {
         EmployeeSingle employee = new EmployeeSingle();
         employee.name = "John Doe";
@@ -80,6 +82,7 @@ public class XmlAnyElementLaxSingleTestCases extends JAXBWithJSONTestCases {
 
     }
 
+    @Override
     public Object getJSONReadControlObject() {
         EmployeeSingle employee = new EmployeeSingle();
         employee.name = "John Doe";

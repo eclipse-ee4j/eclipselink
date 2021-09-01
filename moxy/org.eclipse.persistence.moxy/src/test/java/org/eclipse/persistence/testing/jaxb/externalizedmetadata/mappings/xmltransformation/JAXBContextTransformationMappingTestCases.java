@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,7 +56,7 @@ public class JAXBContextTransformationMappingTestCases extends TestCase{
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
         try {
-            JAXBContext jaxbContext = (JAXBContext) JAXBContextFactory.createContext(new Class[]{Employee.class}, properties, Thread.currentThread().getContextClassLoader());
+            JAXBContext jaxbContext = JAXBContextFactory.createContext(new Class[]{Employee.class}, properties, Thread.currentThread().getContextClassLoader());
         } catch (JAXBException e) {
             return;
         }
@@ -78,7 +78,7 @@ public class JAXBContextTransformationMappingTestCases extends TestCase{
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
        try {
-            JAXBContext jaxbContext = (JAXBContext) JAXBContextFactory.createContext(new Class[]{Employee.class}, properties, Thread.currentThread().getContextClassLoader());
+            JAXBContext jaxbContext = JAXBContextFactory.createContext(new Class[]{Employee.class}, properties, Thread.currentThread().getContextClassLoader());
 
         } catch (JAXBException e) {
             return;
@@ -104,7 +104,7 @@ public class JAXBContextTransformationMappingTestCases extends TestCase{
 
         int exceptionCount = 0;
         try {
-            JAXBContext jaxbContext = (JAXBContext) JAXBContextFactory.createContext(new Class[]{Employee.class}, properties, Thread.currentThread().getContextClassLoader());
+            JAXBContext jaxbContext = JAXBContextFactory.createContext(new Class[]{Employee.class}, properties, Thread.currentThread().getContextClassLoader());
 
         } catch (JAXBException e) {
             exceptionCount++;
@@ -141,7 +141,7 @@ public class JAXBContextTransformationMappingTestCases extends TestCase{
         int exceptionCount = 0;
         // test exception from MappingsGenerator
         try {
-            JAXBContext jaxbContext = (JAXBContext) JAXBContextFactory.createContext(new Class[]{Employee.class}, properties, Thread.currentThread().getContextClassLoader());
+            JAXBContext jaxbContext = JAXBContextFactory.createContext(new Class[]{Employee.class}, properties, Thread.currentThread().getContextClassLoader());
 
         } catch (JAXBException e) {
             exceptionCount++;

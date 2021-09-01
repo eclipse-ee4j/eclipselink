@@ -17,6 +17,8 @@ package org.eclipse.persistence.testing.sdo.model.dataobject.xpathquery;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
@@ -35,7 +37,7 @@ public class SDODataObjectGetDateConversionByXPathQueryTest extends SDODataObjec
 
 
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet() {
-        SDOProperty prop = (SDOProperty)dataObject_c0.getType().getProperty("test");
+        SDOProperty prop = dataObject_c0.getType().getProperty("test");
         prop.setType(SDOConstants.SDO_DATE);
 
         //Boolean bb = Boolean.valueOf(true);
@@ -46,12 +48,12 @@ public class SDODataObjectGetDateConversionByXPathQueryTest extends SDODataObjec
         //dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setDate(propertyTest + "test", d);
 
-        this.assertEquals(d, dataObject_a.getDate(propertyTest + "test"));
+        assertEquals(d, dataObject_a.getDate(propertyTest + "test"));
     }
 
     // purpose: opencontent properties
     public void testGetBooleanConversionFromDefinedPropertyWithPath() {
-        SDOProperty property_c1_object = ((SDOProperty)dataObject_c1.getInstanceProperty("PName-c1"));
+        SDOProperty property_c1_object = dataObject_c1.getInstanceProperty("PName-c1");
         property_c1_object.setType(SDOConstants.SDO_DATE);
 
         //type_c0.addDeclaredProperty(property_c1_object);
@@ -65,7 +67,7 @@ public class SDODataObjectGetDateConversionByXPathQueryTest extends SDODataObjec
 
         dataObject_c1.set(property_c1_object, objects);// add it to instance list
 
-        this.assertEquals(bb, dataObject_a.getDate("PName-a0/PName-b0[number='1']/PName-c1.1"));
+        assertEquals(bb, dataObject_a.getDate("PName-a0/PName-b0[number='1']/PName-c1.1"));
     }
 
     //2. purpose: getDataObject with property value is not dataobject
@@ -92,7 +94,7 @@ public class SDODataObjectGetDateConversionByXPathQueryTest extends SDODataObjec
     //3. purpose: getDataObject with property set to boolean value
     public void testGetDataObjectConversionFromProperty() {
         //try {
-        this.assertNull(dataObject_a.getDataObject("PName-a/notExistedTest"));
+        assertNull(dataObject_a.getDataObject("PName-a/notExistedTest"));
 
         //fail("IllegalArgumentException should be thrown.");
         //} catch (IllegalArgumentException e) {
@@ -102,11 +104,11 @@ public class SDODataObjectGetDateConversionByXPathQueryTest extends SDODataObjec
     //purpose: getDataObject with nul value
     public void testGetDataObjectConversionWithNullArgument() {
         String p = null;
-        this.assertNull(dataObject_a.getDataObject(p));
+        assertNull(dataObject_a.getDataObject(p));
     }
 
     public void testSetGetDataObjectWithQueryPath() {
-        SDOProperty property_c1_object = ((SDOProperty)dataObject_c1.getInstanceProperty("PName-c1"));
+        SDOProperty property_c1_object = dataObject_c1.getInstanceProperty("PName-c1");
         property_c1_object.setType(SDOConstants.SDO_DATE);
 
         long l = 12000;
@@ -114,6 +116,6 @@ public class SDODataObjectGetDateConversionByXPathQueryTest extends SDODataObjec
 
         dataObject_a.setDate("PName-a0/PName-b0[number='1']/PName-c1.0", b);
 
-        this.assertEquals(b, dataObject_a.getDate("PName-a0/PName-b0[number='1']/PName-c1.0"));
+        assertEquals(b, dataObject_a.getDate("PName-a0/PName-b0[number='1']/PName-c1.0"));
     }
 }

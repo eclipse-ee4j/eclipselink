@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,6 +50,7 @@ public class ProxyAuthenticationConnectionTestCase extends AutoVerifyTestCase {
     protected void proxySetup() {
     }
 
+    @Override
     public void setup() {
         if (!getSession().getPlatform().isOracle()) {
             throw new TestWarningException("Supports Oracle platform only");
@@ -60,6 +61,7 @@ public class ProxyAuthenticationConnectionTestCase extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void test() {
         ClientSession cs;
         if (connectionPolicy == null) {
@@ -85,6 +87,7 @@ public class ProxyAuthenticationConnectionTestCase extends AutoVerifyTestCase {
         cs.release();
     }
 
+    @Override
     public void verify() {
         String readConnectionSchemaExpected = readConnectionSchemaExpected();
         if (!readConnectionSchema.equals(readConnectionSchemaExpected)) {
@@ -105,6 +108,7 @@ public class ProxyAuthenticationConnectionTestCase extends AutoVerifyTestCase {
         return getServerSession().getLogin().getUserName();
     }
 
+    @Override
     public void reset() {
         if (listener != null) {
             getSession().getEventManager().removeListener(listener);

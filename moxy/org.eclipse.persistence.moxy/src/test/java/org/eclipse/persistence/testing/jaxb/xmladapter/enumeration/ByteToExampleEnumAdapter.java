@@ -19,6 +19,7 @@ import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 public class ByteToExampleEnumAdapter extends XmlAdapter<ExampleEnum, Byte> {
     public ByteToExampleEnumAdapter(){}
 
+    @Override
     public ExampleEnum marshal(Byte v) throws Exception {
         ExampleEnum[] exArray = ExampleEnum.values();
         for(ExampleEnum ex : exArray) {
@@ -29,6 +30,7 @@ public class ByteToExampleEnumAdapter extends XmlAdapter<ExampleEnum, Byte> {
         return null;
     }
 
+    @Override
     public Byte unmarshal(ExampleEnum v) throws Exception {
         return Byte.valueOf((byte)v.getValue());
     }

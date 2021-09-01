@@ -128,33 +128,21 @@ public class TrimExpressionStateObject extends AbstractSingleEncapsulatedExpress
         super(parent, jpqlFragment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public TrimExpression getExpression() {
         return (TrimExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return TRIM;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getQueryBNFId() {
         return StringPrimaryBNF.ID;
@@ -199,9 +187,6 @@ public class TrimExpressionStateObject extends AbstractSingleEncapsulatedExpress
         return trimCharacter != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -214,9 +199,6 @@ public class TrimExpressionStateObject extends AbstractSingleEncapsulatedExpress
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void parse(String jpqlFragment) {
 
@@ -295,9 +277,6 @@ public class TrimExpressionStateObject extends AbstractSingleEncapsulatedExpress
         firePropertyChanged(SPECIFICATION_PROPERTY, oldSpecification, specification);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setStateObject(StateObject stateObject) {
         super.setStateObject(stateObject);
@@ -316,9 +295,6 @@ public class TrimExpressionStateObject extends AbstractSingleEncapsulatedExpress
         firePropertyChanged(TRIM_CHARACTER_PROPERTY, oldTrimCharacter, trimCharacter);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextEncapsulatedExpression(Appendable writer) throws IOException {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,6 +51,7 @@ public class XmlMixedTestCases extends JAXBWithJSONTestCases {
         setControlJSON(JSON_RESOURCE);
     }
 
+     @Override
      public Map getProperties(){
             InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlmixed/eclipselink-oxm.xml");
 
@@ -62,6 +63,7 @@ public class XmlMixedTestCases extends JAXBWithJSONTestCases {
             return properties;
         }
 
+    @Override
     protected Object getControlObject() {
         Employee emp = new Employee();
         emp.a = 1;
@@ -80,6 +82,7 @@ public class XmlMixedTestCases extends JAXBWithJSONTestCases {
 
 
 
+    @Override
     public void xmlToObjectTest(Object testObject) throws Exception {
         assertTrue(testObject instanceof Employee);
         Employee emp = (Employee)testObject;
@@ -92,6 +95,7 @@ public class XmlMixedTestCases extends JAXBWithJSONTestCases {
     }
 
 
+    @Override
     public void jsonToObjectTest(Object testObject) throws Exception {
         assertTrue(testObject instanceof Employee);
         Employee emp = (Employee)testObject;

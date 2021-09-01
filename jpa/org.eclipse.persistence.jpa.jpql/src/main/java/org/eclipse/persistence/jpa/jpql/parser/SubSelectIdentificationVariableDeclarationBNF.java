@@ -42,9 +42,6 @@ public final class SubSelectIdentificationVariableDeclarationBNF extends JPQLQue
         super(ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();

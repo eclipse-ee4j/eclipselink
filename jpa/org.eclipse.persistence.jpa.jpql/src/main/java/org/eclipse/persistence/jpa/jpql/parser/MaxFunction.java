@@ -37,9 +37,6 @@ public final class MaxFunction extends AggregateFunction {
         super(parent, MAX);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);

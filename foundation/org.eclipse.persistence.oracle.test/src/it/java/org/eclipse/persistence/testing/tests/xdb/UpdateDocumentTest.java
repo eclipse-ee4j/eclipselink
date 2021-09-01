@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,12 +26,14 @@ public class UpdateDocumentTest extends TestCase {
         setDescription("Tests updating an XMLType instance");
     }
 
+    @Override
     public void setup() {
         if (!(getSession().getPlatform() instanceof Oracle9Platform)) {
             throw new TestWarningException("This test is intended for the Oracle 9 Platform");
         }
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Employee_XML emp = (Employee_XML)uow.readObject(Employee_XML.class, new ExpressionBuilder().get("firstName").equal("Frank"));
@@ -47,6 +49,7 @@ public class UpdateDocumentTest extends TestCase {
         uow.commit();
     }
 
+    @Override
     public void verify() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         Employee_XML emp = (Employee_XML)getSession().readObject(Employee_XML.class, new ExpressionBuilder().get("firstName").equal("Frank"));

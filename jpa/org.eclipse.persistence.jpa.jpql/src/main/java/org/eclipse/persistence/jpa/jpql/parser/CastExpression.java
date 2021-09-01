@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -74,17 +74,11 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
         shouldParseWithFactoryFirst = true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         acceptUnknownVisitor(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedEncapsulatedExpressionTo(List<Expression> children) {
 
@@ -109,9 +103,6 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getEncapsulatedExpressionQueryBNFId() {
         return ScalarExpressionBNF.ID;
@@ -126,9 +117,6 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
         return databaseType;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(CastExpressionBNF.ID);
@@ -153,9 +141,6 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
               !databaseType.isNull();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean hasEncapsulatedExpression() {
         return super.hasEncapsulatedExpression() || (asIdentifier != null) || hasDatabaseType();
@@ -192,9 +177,6 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
         return hasSpaceAfterExpression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 
@@ -214,9 +196,6 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
                super.isParsingComplete(wordParser, word, expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parseEncapsulatedExpression(WordParser wordParser,
                                                int whitespaceCount,
@@ -246,9 +225,6 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void removeEncapsulatedExpression() {
         super.removeEncapsulatedExpression();
@@ -258,17 +234,11 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
         hasSpaceAfterExpression = false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean shouldParseWithFactoryFirst() {
         return shouldParseWithFactoryFirst;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedTextEncapsulatedExpression(StringBuilder writer, boolean actual) {
 

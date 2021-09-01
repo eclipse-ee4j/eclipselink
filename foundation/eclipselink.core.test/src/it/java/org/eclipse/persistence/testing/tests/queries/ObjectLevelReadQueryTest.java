@@ -183,7 +183,7 @@ public abstract class ObjectLevelReadQueryTest extends TestCase {
             while(execute) {
                 try {
                     isCustomQueryUsed.set(query, Boolean.TRUE);
-                    isCustomQueryUsed.set(query, (Boolean)null);
+                    isCustomQueryUsed.set(query, null);
                 } catch (IllegalArgumentException | IllegalAccessException e) {
                     log.logThrowable(WARNING, e);
                     execute = false;
@@ -220,7 +220,7 @@ public abstract class ObjectLevelReadQueryTest extends TestCase {
     protected DatabaseQuery callCheckForCustomQueryMethod(final Object instance, final Method method) throws Throwable {
         DatabaseQuery databaseQuery;
         try {
-            databaseQuery = (DatabaseQuery)method.invoke(instance, session, (AbstractRecord)null);
+            databaseQuery = (DatabaseQuery)method.invoke(instance, session, null);
         } catch (InvocationTargetException e) {
             if (e.getTargetException() instanceof NullPointerException) {
                 log.log(WARNING, FAIL_NPE);

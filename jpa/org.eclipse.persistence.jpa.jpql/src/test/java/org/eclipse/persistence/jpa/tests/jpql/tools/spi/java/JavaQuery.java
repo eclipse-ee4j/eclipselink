@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,16 +52,12 @@ public class JavaQuery implements IQuery {
         setExpression(jpqlQuery);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public String getExpression() {
         return jpqlQuery;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public IManagedTypeProvider getProvider() {
         return provider;
     }
@@ -75,9 +71,6 @@ public class JavaQuery implements IQuery {
         this.jpqlQuery = (jpqlQuery != null) ? jpqlQuery.toString() : ExpressionTools.EMPTY_STRING;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

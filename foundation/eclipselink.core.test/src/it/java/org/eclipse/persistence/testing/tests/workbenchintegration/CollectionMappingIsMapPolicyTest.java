@@ -51,9 +51,9 @@ public class CollectionMappingIsMapPolicyTest extends ProjectClassGeneratorResul
             mappingToModify = (DatabaseMapping)mappingsEnum.nextElement();
 
             if (mappingToModify.isForeignReferenceMapping()) {
-                if (((ForeignReferenceMapping)mappingToModify).isCollectionMapping()) {
+                if (mappingToModify.isCollectionMapping()) {
                     CollectionMapping collectionMapping =
-                        (CollectionMapping)(((ForeignReferenceMapping)mappingToModify));
+                        (CollectionMapping) mappingToModify;
                     collectionMapping.setContainerPolicy(policy);
                     policy.setKeyName("testMethod");
                     collectionMapping.getContainerPolicy().setContainerClass(Vector.class);

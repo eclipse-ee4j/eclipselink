@@ -45,33 +45,21 @@ public class DeleteClauseStateObject extends AbstractModifyClauseStateObject {
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DeleteClause getExpression() {
         return (DeleteClause) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return DELETE_FROM;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DeleteStatementStateObject getParent() {
         return (DeleteStatementStateObject) super.getParent();

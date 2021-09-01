@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -180,7 +180,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
                     collectionName = collectionMapping.getAttributeClassification().getSimpleName();
                 }
                 if (collectionMapping.getContainerPolicy().isMapPolicy()) {
-                    String mapKeyType = ((MapContainerPolicy) collectionMapping.getContainerPolicy()).getKeyType().getClass().getSimpleName();
+                    String mapKeyType = collectionMapping.getContainerPolicy().getKeyType().getClass().getSimpleName();
                     target = collectionType + "<" + mapKeyType + ", " + collectionName + ">";
                 } else {
                     target = collectionType + "<" + collectionName + ">";
@@ -201,7 +201,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
                     collectionName = collectionMapping.getAttributeClassification().getSimpleName();
                 }
                 if (collectionMapping.getContainerPolicy().isMapPolicy()) {
-                    String mapKeyType = ((MapContainerPolicy) collectionMapping.getContainerPolicy()).getKeyType().getClass().getSimpleName();
+                    String mapKeyType = collectionMapping.getContainerPolicy().getKeyType().getClass().getSimpleName();
                     target = collectionType + "<" + mapKeyType + ", " + collectionName + ">";
                 } else {
                     target = collectionType + "<" + collectionName + ">";
@@ -289,7 +289,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
                         if (((MapEntryExpression) item.getAttributeExpression()).shouldReturnMapEntry()) {
                             returnQuery.getReturnTypes().add(Map.Entry.class.getSimpleName());
                         } else {
-                            returnQuery.getReturnTypes().add(((Class<?>) ((CollectionMapping) item.getMapping()).getContainerPolicy().getKeyType()).getSimpleName());
+                            returnQuery.getReturnTypes().add(((Class<?>) item.getMapping().getContainerPolicy().getKeyType()).getSimpleName());
                         }
                     } else {
                         returnQuery.getReturnTypes().add(item.getMapping().getAttributeClassification().getSimpleName());

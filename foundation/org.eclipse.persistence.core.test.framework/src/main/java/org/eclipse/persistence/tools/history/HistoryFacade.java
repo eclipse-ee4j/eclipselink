@@ -157,7 +157,7 @@ public class HistoryFacade {
                     policy = m2mMapping.getHistoryPolicy();
                     if (policy != null) {
                         String name = m2mMapping.getRelationTableName();
-                        String histName = (String)policy.getHistoryTableNames().get(0);
+                        String histName = policy.getHistoryTableNames().get(0);
                         if (!generatedTables.contains(histName)) {
                             generatedTables.add(histName);
                             TableDefinition def = tableDefinitions.get(name);
@@ -169,7 +169,7 @@ public class HistoryFacade {
                     policy = dcMapping.getHistoryPolicy();
                     if (policy != null) {
                         String name = dcMapping.getReferenceTableName();
-                        String histName = (String)policy.getHistoryTableNames().get(0);
+                        String histName = policy.getHistoryTableNames().get(0);
                         if (!generatedTables.contains(histName)) {
                             generatedTables.add(histName);
                             TableDefinition def = tableDefinitions.get(name);

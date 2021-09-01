@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import junit.framework.TestCase;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
 
@@ -130,7 +132,7 @@ public class SDODataObjectGetDateByPositionalPathTest extends SDODataObjectGetBy
 
         dataObject_c.setLong(property_c, l);// add it to instance list
 
-        this.assertEquals(d, dataObject_a.getDate(propertyPath_a_b_c));
+        assertEquals(d, dataObject_a.getDate(propertyPath_a_b_c));
     }
 
     //9. purpose: getDate with Undefined Boolean Property
@@ -181,7 +183,7 @@ public class SDODataObjectGetDateByPositionalPathTest extends SDODataObjectGetBy
 
         dataObject_c.setString(property_c, "2001-01-01");// add it to instance list
 
-        this.assertEquals(d, dataObject_a.getDate(propertyPath_a_b_c));
+        assertEquals(d, dataObject_a.getDate(propertyPath_a_b_c));
     }
 
     //11. purpose: getDate with Defined String Property
@@ -205,7 +207,7 @@ public class SDODataObjectGetDateByPositionalPathTest extends SDODataObjectGetBy
         objects.add("2001-01-01");
         dataObject_c.set(property_c, objects);// add it to instance list
 
-        this.assertEquals(d, dataObject_a.getDate(propertyPath_a_b_c + ".0"));
+        assertEquals(d, dataObject_a.getDate(propertyPath_a_b_c + ".0"));
     }
 
     //12. purpose: getDate with Undefined string Property
@@ -281,7 +283,7 @@ public class SDODataObjectGetDateByPositionalPathTest extends SDODataObjectGetBy
         Date d = new Date(l);
         dataObject_a.setDate(propertyPath_a_b_c, d);// add it to instance list
 
-        this.assertEquals(d, dataObject_a.getDate(propertyPath_a_b_c));
+        assertEquals(d, dataObject_a.getDate(propertyPath_a_b_c));
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
@@ -302,7 +304,7 @@ public class SDODataObjectGetDateByPositionalPathTest extends SDODataObjectGetBy
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setDate(property3, d);
 
-        this.assertEquals(d, dataObject_a.getDate(property3));
+        assertEquals(d, dataObject_a.getDate(property3));
 
     }
 
@@ -323,7 +325,7 @@ public class SDODataObjectGetDateByPositionalPathTest extends SDODataObjectGetBy
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setDate(property + ".0", d);
 
-        this.assertEquals(d, dataObject_a.getDate(property + ".0"));
+        assertEquals(d, dataObject_a.getDate(property + ".0"));
 
     }
 
@@ -340,7 +342,7 @@ public class SDODataObjectGetDateByPositionalPathTest extends SDODataObjectGetBy
 
         dataObject_a.setDate(property1, d);// c dataobject's a property has value boolean 'true'
 
-        this.assertEquals(d, dataObject_a.getDate(property1));
+        assertEquals(d, dataObject_a.getDate(property1));
     }
 
     /*public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet() {

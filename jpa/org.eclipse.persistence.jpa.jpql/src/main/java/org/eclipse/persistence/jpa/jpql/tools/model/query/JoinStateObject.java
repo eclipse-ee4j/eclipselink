@@ -103,9 +103,6 @@ public class JoinStateObject extends AbstractStateObject {
         this.as = as;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
@@ -123,9 +120,6 @@ public class JoinStateObject extends AbstractStateObject {
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
@@ -143,9 +137,6 @@ public class JoinStateObject extends AbstractStateObject {
         joinAssociationPath.addItems(paths);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Join getExpression() {
         return (Join) super.getExpression();
@@ -199,9 +190,6 @@ public class JoinStateObject extends AbstractStateObject {
         return joinType;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AbstractIdentificationVariableDeclarationStateObject getParent() {
         return (AbstractIdentificationVariableDeclarationStateObject) super.getParent();
@@ -239,9 +227,6 @@ public class JoinStateObject extends AbstractStateObject {
         return identificationVariable.hasText();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();
@@ -249,9 +234,6 @@ public class JoinStateObject extends AbstractStateObject {
         identificationVariable = new IdentificationVariableStateObject(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -386,9 +368,6 @@ public class JoinStateObject extends AbstractStateObject {
         setAs(!as);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
 

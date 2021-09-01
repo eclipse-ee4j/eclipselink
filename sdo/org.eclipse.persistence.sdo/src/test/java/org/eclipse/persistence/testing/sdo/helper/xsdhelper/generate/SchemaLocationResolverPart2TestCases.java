@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,6 +45,7 @@ public class SchemaLocationResolverPart2TestCases extends XSDHelperGenerateTestC
         TestRunner.main(arguments);
     }
 
+    @Override
     public String getControlFileName() {
         return "org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/customerPart2.xsd";
     }
@@ -61,6 +62,7 @@ public class SchemaLocationResolverPart2TestCases extends XSDHelperGenerateTestC
         return "org/eclipse/persistence/testing/sdo/schemas/customerExample4Multiple.xsd";
     }
 
+    @Override
     public java.util.Map getMap() {
         HashMap schemaLocationMap = new HashMap();
         schemaLocationMap.put(new QName("my.uri1", "CustomerType"), "customer.xsd");
@@ -172,6 +174,7 @@ public class SchemaLocationResolverPart2TestCases extends XSDHelperGenerateTestC
         return xsdHelper.define(is, FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/schemas/");
     }
 
+    @Override
     public List getTypesToGenerateFrom() {
         List types = new ArrayList();
         Type stringType = typeHelper.getType("commonj.sdo", "String");

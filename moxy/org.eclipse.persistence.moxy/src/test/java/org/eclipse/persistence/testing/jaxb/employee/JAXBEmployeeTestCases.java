@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,6 +62,7 @@ public class JAXBEmployeeTestCases extends JAXBWithJSONTestCases {
         return namespaces;
     }
 
+    @Override
     protected Object getControlObject() {
         ArrayList responsibilities = new ArrayList();
         responsibilities.add(CONTROL_RESPONSIBILITY1);
@@ -87,10 +88,12 @@ public class JAXBEmployeeTestCases extends JAXBWithJSONTestCases {
         return employee;
     }
 
+    @Override
     public String getWriteControlJSONFormatted(){
         return JSON_RESOURCE_FORMATTED;
     }
 
+    @Override
     public boolean shouldRemoveWhitespaceFromControlDocJSON(){
         return false;
     }

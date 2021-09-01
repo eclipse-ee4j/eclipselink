@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,42 +48,27 @@ public final class FullyQualifyPathExpressionVisitor extends AbstractTraverseChi
         return visitor;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AbstractSchemaName expression) {
         // The "virtual" variable name will be the entity name
         variableName = expression.toActualText().toLowerCase(Locale.ROOT);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CollectionMemberDeclaration expression) {
         // Do nothing, prevent to do anything for invalid queries
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CollectionValuedPathExpression expression) {
         visitAbstractPathExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(DeleteClause expression) {
         expression.getRangeVariableDeclaration().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(DeleteStatement expression) {
 
@@ -95,9 +80,6 @@ public final class FullyQualifyPathExpressionVisitor extends AbstractTraverseChi
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(IdentificationVariable expression) {
 
@@ -106,17 +88,11 @@ public final class FullyQualifyPathExpressionVisitor extends AbstractTraverseChi
         expression.setVirtualIdentificationVariable(variableName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(Join expression) {
         // Do nothing, prevent to do anything for invalid queries
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(RangeVariableDeclaration expression) {
 
@@ -128,34 +104,22 @@ public final class FullyQualifyPathExpressionVisitor extends AbstractTraverseChi
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SelectStatement expression) {
         // Nothing to do because a SELECT query has to have its path expressions fully qualified
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SimpleSelectStatement expression) {
         // Nothing to do because a subquery query has to have its path expressions fully qualified
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(StateFieldPathExpression expression) {
         // A null check is required because the query could be invalid/incomplete
         visitAbstractPathExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UpdateClause expression) {
 
@@ -167,9 +131,6 @@ public final class FullyQualifyPathExpressionVisitor extends AbstractTraverseChi
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UpdateStatement expression) {
 
@@ -205,25 +166,16 @@ public final class FullyQualifyPathExpressionVisitor extends AbstractTraverseChi
          */
         private Expression expression;
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(EntryExpression expression) {
             this.expression = expression;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(KeyExpression expression) {
             this.expression = expression;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(ValueExpression expression) {
             this.expression = expression;

@@ -39,17 +39,11 @@ public final class CountFunction extends AggregateFunction {
         super(parent, COUNT);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected AbstractExpression buildEncapsulatedExpression(WordParser wordParser, String word) {
 
@@ -70,9 +64,6 @@ public final class CountFunction extends AggregateFunction {
         return super.buildEncapsulatedExpression(wordParser, word);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getEncapsulatedExpressionQueryBNFId() {
         return InternalCountBNF.ID;

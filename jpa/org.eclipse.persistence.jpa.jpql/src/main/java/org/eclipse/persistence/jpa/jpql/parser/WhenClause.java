@@ -79,35 +79,23 @@ public final class WhenClause extends AbstractExpression {
         super(parent, WHEN);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getWhenExpression().accept(visitor);
         getThenExpression().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         children.add(getWhenExpression());
         children.add(getThenExpression());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
 
@@ -162,9 +150,6 @@ public final class WhenClause extends AbstractExpression {
         return new CollectionExpression(this, children, commas, spaces, true);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -199,9 +184,6 @@ public final class WhenClause extends AbstractExpression {
         return whenIdentifier;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(WhenClauseBNF.ID);
@@ -290,9 +272,6 @@ public final class WhenClause extends AbstractExpression {
               !whenExpression.isNull();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
         return word.equalsIgnoreCase(WHEN) ||
@@ -302,9 +281,6 @@ public final class WhenClause extends AbstractExpression {
                super.isParsingComplete(wordParser, word, expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -326,9 +302,6 @@ public final class WhenClause extends AbstractExpression {
         thenExpression = parse(wordParser, ScalarExpressionBNF.ID, tolerant);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
 

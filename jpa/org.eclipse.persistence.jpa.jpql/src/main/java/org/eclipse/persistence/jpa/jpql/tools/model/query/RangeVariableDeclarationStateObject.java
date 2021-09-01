@@ -68,25 +68,16 @@ public class RangeVariableDeclarationStateObject extends AbstractRangeVariableDe
         super(parent, entityName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public RangeVariableDeclarationStateObject addAs() {
         return (RangeVariableDeclarationStateObject) super.addAs();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected StateObject buildRootStateObject() {
         return new AbstractSchemaNameStateObject(this);
@@ -110,9 +101,6 @@ public class RangeVariableDeclarationStateObject extends AbstractRangeVariableDe
         return getRootStateObject().getText();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IManagedType getManagedType(StateObject stateObject) {
 
@@ -123,17 +111,11 @@ public class RangeVariableDeclarationStateObject extends AbstractRangeVariableDe
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getRootPath() {
         return getEntityName();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AbstractSchemaNameStateObject getRootStateObject() {
         return (AbstractSchemaNameStateObject) super.getRootStateObject();
@@ -191,9 +173,6 @@ public class RangeVariableDeclarationStateObject extends AbstractRangeVariableDe
         getRootStateObject().setText(abstractSchemaName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setRootPath(String root) {
         setEntityName(root);

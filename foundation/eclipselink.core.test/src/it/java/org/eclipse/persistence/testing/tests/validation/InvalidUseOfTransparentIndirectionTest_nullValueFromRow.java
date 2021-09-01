@@ -46,7 +46,7 @@ public class InvalidUseOfTransparentIndirectionTest_nullValueFromRow extends Exc
         employee = (Employee)getSession().readObject(Employee.class);
 
         expectedException = DescriptorException.invalidUseOfTransparentIndirection(null);
-        descriptor = ((DatabaseSession)getSession()).getDescriptor(Employee.class);
+        descriptor = getSession().getDescriptor(Employee.class);
         //nullValueFromRow is used in OneToOneMapping
         mapping = (OneToOneMapping)descriptor.getMappingForAttributeName("address");
         orgIndirectionPolicy = mapping.getIndirectionPolicy();
