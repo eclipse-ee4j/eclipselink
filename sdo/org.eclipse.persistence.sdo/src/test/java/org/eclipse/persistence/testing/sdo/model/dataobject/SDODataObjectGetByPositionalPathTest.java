@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -31,17 +32,17 @@ public class SDODataObjectGetByPositionalPathTest extends SDODataObjectGetByPosi
 
     // normal test: a/b.0/c as path
     public void testGetByPositionalPathString() {
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_STRING);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_STRING);
 
         dataObject_c.set(property_c, "test");
 
-        this.assertEquals("test", dataObject_a.get(property));
+        assertEquals("test", dataObject_a.get(property));
 
     }
 
     // normal test: a/b.0/c as path
     public void testGetByPositionalPathStringObj() {
-        this.assertEquals(dataObject_c, dataObject_a.get("PName-a/PName-b.0"));
+        assertEquals(dataObject_c, dataObject_a.get("PName-a/PName-b.0"));
 
     }
 
@@ -56,13 +57,13 @@ public class SDODataObjectGetByPositionalPathTest extends SDODataObjectGetByPosi
         */
         dataObject_a.set(property4, "test");
 
-        this.assertEquals("test", dataObject_a.get(property4));
+        assertEquals("test", dataObject_a.get(property4));
 
     }
 
     // purpose: test a nonexisted dataobject in the path
     public void testGetByPositionalPathStringWithDataObjectNotInPosition() {
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_STRING);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_STRING);
 
         dataObject_c.set(property_c, "test");
 
@@ -78,19 +79,19 @@ public class SDODataObjectGetByPositionalPathTest extends SDODataObjectGetByPosi
 
     // purpose: test one of properties is not existed in path
     public void testGetByPositionalPathStringWithDataObjectNotExistedProperty() {
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_STRING);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_STRING);
 
         dataObject_c.set(property_c, "test");
 
-        this.assertNull(dataObject_a.get("PName-a/PName-f.0/PName-c"));
+        assertNull(dataObject_a.get("PName-a/PName-f.0/PName-c"));
     }
 
     // purpose: test one of properties is not existed in path
     public void testGetByPositionalPathStringWithPropertyNameContainingDot() {
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_STRING);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_STRING);
         dataObject_c.set(property_c, "test");
 
-        this.assertNull(dataObject_a.get(UNDEFINED_PATH));
+        assertNull(dataObject_a.get(UNDEFINED_PATH));
         //this.assertNull(dataObject_a.get(property));
 
         /*try{
@@ -101,21 +102,21 @@ public class SDODataObjectGetByPositionalPathTest extends SDODataObjectGetByPosi
 
     // purpose: test path as ".."
     public void testGetByPositionalPathStringWithContainerPath() {
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_STRING);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_STRING);
 
         dataObject_c.set(property_c, "test");
 
-        this.assertTrue(dataObject_a == dataObject_b.get(".."));
+        assertTrue(dataObject_a == dataObject_b.get(".."));
 
     }
 
     // purpose: test path as "/"
     public void testGetByPositionalPathStringWithRootPath() {
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_STRING);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_STRING);
 
         dataObject_c.set(property_c, "test");
 
-        this.assertTrue(dataObject_a == dataObject_c.get("/"));
+        assertTrue(dataObject_a == dataObject_c.get("/"));
 
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +17,8 @@ package org.eclipse.persistence.testing.sdo.model.dataobject;
 import commonj.sdo.Property;
 import java.util.ArrayList;
 import java.util.List;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
@@ -42,7 +44,7 @@ public class SDODataObjectGetListConversionTest extends SDODataObjectConversionW
 
         dataObject_a_pathLength_1.setList("PName-a-length-1", b);
 
-        this.assertEquals(b, dataObject_a_pathLength_1.getList("PName-a-length-1"));
+        assertEquals(b, dataObject_a_pathLength_1.getList("PName-a-length-1"));
     }
 
     //6. purpose: getList(Path) with path length 1: "a"
@@ -67,7 +69,7 @@ public class SDODataObjectGetListConversionTest extends SDODataObjectConversionW
 
         dataObject_a_pathLength_1.setList(property_a_pathLength_1, b);
 
-        this.assertEquals(b, dataObject_a_pathLength_1.getList(property_a_pathLength_1));
+        assertEquals(b, dataObject_a_pathLength_1.getList(property_a_pathLength_1));
     }
 
     //6. purpose: getList(Path) with defined property
@@ -80,7 +82,7 @@ public class SDODataObjectGetListConversionTest extends SDODataObjectConversionW
         dataObject_a_pathLength_1.setList(property_a_pathLength_1, b);
         dataObject_a_pathLength_1.set(PROPERTY_NAME_A_LENGTH_1 + ".0", "test");
 
-        this.assertEquals(1, dataObject_a_pathLength_1.getList(property_a_pathLength_1).size());
+        assertEquals(1, dataObject_a_pathLength_1.getList(property_a_pathLength_1).size());
     }
 
     //6. purpose: getList(Path) with defined property
@@ -93,8 +95,8 @@ public class SDODataObjectGetListConversionTest extends SDODataObjectConversionW
         dataObject_a_pathLength_1.setList(property_a_pathLength_1, b);
         dataObject_a_pathLength_1.set(PROPERTY_NAME_A_LENGTH_1 + "[1]", "test");
 
-        this.assertEquals(1, dataObject_a_pathLength_1.getList(property_a_pathLength_1).size());
-        this.assertEquals("test", dataObject_a_pathLength_1.getList(property_a_pathLength_1).get(0));
+        assertEquals(1, dataObject_a_pathLength_1.getList(property_a_pathLength_1).size());
+        assertEquals("test", dataObject_a_pathLength_1.getList(property_a_pathLength_1).get(0));
     }
 
     //6. purpose: getList(Path) with defined property value null
@@ -105,7 +107,7 @@ public class SDODataObjectGetListConversionTest extends SDODataObjectConversionW
 
         dataObject_a_pathLength_1.setList(property_a_pathLength_1, b);
 
-        this.assertNotNull(dataObject_a_pathLength_1.getList(property_a_pathLength_1));
+        assertNotNull(dataObject_a_pathLength_1.getList(property_a_pathLength_1));
     }
 
     //6. purpose: getList(Path) with path length 1: "a"
@@ -131,7 +133,7 @@ public class SDODataObjectGetListConversionTest extends SDODataObjectConversionW
 
         dataObject_a_pathLength_1.setList(0, b);
 
-        this.assertEquals(b, dataObject_a_pathLength_1.getList(0));
+        assertEquals(b, dataObject_a_pathLength_1.getList(0));
     }
 
     //6. purpose: getBoolean with Undefined Boolean Property
@@ -168,7 +170,7 @@ public class SDODataObjectGetListConversionTest extends SDODataObjectConversionW
         property_a_pathLength_1.setMany(true);
 
         List value = dataObject_a_pathLength_1.getList("PName-a-length-1");
-        this.assertEquals(new ArrayList(), value);
+        assertEquals(new ArrayList(), value);
     }
 
     public void testGetListConversionWithNullValueByProperty() {
@@ -176,7 +178,7 @@ public class SDODataObjectGetListConversionTest extends SDODataObjectConversionW
         property_a_pathLength_1.setMany(true);
 
         List value = dataObject_a_pathLength_1.getList(PROPERTY_NAME_A_LENGTH_1);
-        this.assertEquals(new ArrayList(), value);
+        assertEquals(new ArrayList(), value);
     }
 
     public void testSameListObject() {

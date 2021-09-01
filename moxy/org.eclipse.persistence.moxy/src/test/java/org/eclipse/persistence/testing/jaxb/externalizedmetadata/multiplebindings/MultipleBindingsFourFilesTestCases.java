@@ -159,7 +159,7 @@ public class MultipleBindingsFourFilesTestCases extends JAXBWithJSONTestCases {
             // verify values
             assertTrue("Expected property value [" + PROPVAL_1 + "] for key [" + PROPKEY_1 + "] but was [" + props.get(PROPKEY_1) + "]", PROPVAL_1.equals(props.get(PROPKEY_1)));
             assertTrue("Expected property value [" + PROPVAL_2 + "] for key [" + PROPKEY_2 + "] but was [" + props.get(PROPKEY_2) + "]", PROPVAL_2.equals(props.get(PROPKEY_2)));
-            assertTrue("Expected property value [" + PROPVAL_3 + "] for key [" + PROPKEY_3 + "] but was [" + props.get(PROPKEY_3) + "]", PROPVAL_3 == (Boolean) props.get(PROPKEY_3));
+            assertTrue("Expected property value [" + PROPVAL_3 + "] for key [" + PROPKEY_3 + "] but was [" + props.get(PROPKEY_3) + "]", PROPVAL_3 == props.get(PROPKEY_3));
 
         }
 

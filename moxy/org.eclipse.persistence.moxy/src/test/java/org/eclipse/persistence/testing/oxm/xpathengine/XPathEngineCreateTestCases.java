@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import junit.framework.TestCase;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -55,7 +56,7 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
         DocumentBuilder parser = builderFactory.newDocumentBuilder();
         controlDocument = parser.parse(inputStream);
 
-        searchNode = (Element) controlDocument.getDocumentElement();
+        searchNode = controlDocument.getDocumentElement();
 
         XMLContext ctx = new XMLContext(new org.eclipse.persistence.testing.oxm.xmlmarshaller.XMLMarshallerTestProject());
         session = (AbstractSession) ctx.getSession(0);
@@ -142,8 +143,8 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         Document document = builderFactory.newDocumentBuilder().newDocument();
 
-        Element elementValue = (Element) document.createElement("newChildWithElementValue");
-        Element elementValueChild = (Element) document.createElement("newChildElementValue");
+        Element elementValue = document.createElement("newChildWithElementValue");
+        Element elementValueChild = document.createElement("newChildElementValue");
 
         Text textNode = document.createTextNode("theValue");
         elementValueChild.appendChild(textNode);
@@ -172,7 +173,7 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
         PrintWriter writer2 = new PrintWriter(stringWriter2);
         try {
             XMLTransformer xmlTransformer = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer();
-            xmlTransformer.transform((Element) verifyNodes.item(0), writer2);
+            xmlTransformer.transform(verifyNodes.item(0), writer2);
         } catch (XMLPlatformException exception) {
             fail("An XMLPlatformException was thrown");
             return;
@@ -362,7 +363,7 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
             assertTrue("An unexpected XMLMarshalException was caught. " + validationException.getMessage(), validationException.getErrorCode() == XMLMarshalException.INVALID_XPATH_INDEX_STRING);
             return;
         } catch (Exception e) {
-            this.fail("An unexpected Exception was caught. " + e.getMessage());
+            fail("An unexpected Exception was caught. " + e.getMessage());
             return;
         }
         searchNode = backupNode;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,6 +16,8 @@ package org.eclipse.persistence.testing.sdo.model.dataobject;
 
 import commonj.sdo.Property;
 import java.lang.System;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -34,46 +36,46 @@ public class SDODataObjectUnsetIsSetTest extends SDODataObjectTestCases {
     //purpose: if dataObject just been new and property has not been set, iset() return false
     public void testIsSetWithNotYetSetDefinedProperty_SingleValue() {
         Property test = dataObject.getInstanceProperty(DEFINED_PROPERTY_NAME);
-        this.assertFalse(dataObject.isSet(test));
+        assertFalse(dataObject.isSet(test));
     }
 
     //purpose: if dataObject just been new and property has not been set, iset() return false
     public void testIsSetWithNotYetSetDefinedProperty_SingleValue_Path() {
-        this.assertFalse(dataObject.isSet(DEFINED_PROPERTY_NAME));
+        assertFalse(dataObject.isSet(DEFINED_PROPERTY_NAME));
     }
 
     //purpose: if dataObject just been new and property has not been set, iset() return false
     public void testIsSetWithNotYetSetDefinedProperty_SingleValue_Index() {
-        this.assertFalse(dataObject.isSet(0));
+        assertFalse(dataObject.isSet(0));
     }
 
     //purpose: if dataObject just been new and property has not been set, iset() return false
     public void testIsSetWithNotYetSetDefinedProperty_SingleValue_Path_a_b() {
-        this.assertFalse(dataObject_Path_a_b.isSet(DEFINED_PROPERTY_NAME_A_B));
+        assertFalse(dataObject_Path_a_b.isSet(DEFINED_PROPERTY_NAME_A_B));
     }
 
     //purpose: if property has not been unSet, iset() return false
     public void testIsSetWithUnSetDefinedProperty_SingleValue() {
         Property test = dataObject.getInstanceProperty(DEFINED_PROPERTY_NAME);
         dataObject.unset(test);
-        this.assertFalse(dataObject.isSet(test));
+        assertFalse(dataObject.isSet(test));
     }
 
     //purpose: if property has been set and then unSet, isSet() return true first and false later
     public void testIsSetWithSetThenUnSetDefinedProperty_SingleValue() {
         Property test = dataObject.getInstanceProperty(DEFINED_PROPERTY_NAME);
         dataObject.set(test, CONTROL_STRING_1);
-        this.assertTrue(dataObject.isSet(test));
+        assertTrue(dataObject.isSet(test));
         dataObject.unset(test);
-        this.assertFalse(dataObject.isSet(test));
+        assertFalse(dataObject.isSet(test));
     }
 
     //purpose: if current value isn't default value, iset() return false
     public void testIsSetWithCurrentAsDefinedPropertyDefault_SingleValue() {
         Property test = dataObject.getInstanceProperty(DEFINED_PROPERTY_NAME);
         dataObject.set(test, CONTROL_STRING_2);
-        this.assertFalse(((String)dataObject.get(test)).equals(DEFAULT_VALUE));
-        this.assertTrue(dataObject.isSet(test));
+        assertFalse(dataObject.get(test).equals(DEFAULT_VALUE));
+        assertTrue(dataObject.isSet(test));
     }
 
     //purpose: if property has been set to default value, iset() return true.
@@ -82,7 +84,7 @@ public class SDODataObjectUnsetIsSetTest extends SDODataObjectTestCases {
     public void testIsSetWithSetDefinedPropertyAsDefault_SingleValue() {
         Property test = dataObject.getInstanceProperty(DEFINED_PROPERTY_NAME);
         dataObject.set(test, test.getDefault());
-        assertTrue(((String)dataObject.get(test)).equals(DEFAULT_VALUE));
+        assertTrue(dataObject.get(test).equals(DEFAULT_VALUE));
         assertTrue(dataObject.isSet(test));
     }
 
@@ -92,7 +94,7 @@ public class SDODataObjectUnsetIsSetTest extends SDODataObjectTestCases {
 
         dataObject.set(test, CONTROL_STRING_1);
 
-        this.assertTrue(dataObject.isSet(test));
+        assertTrue(dataObject.isSet(test));
     }
 
     //purpose: set a property's value, then unset it, get its value should now return defaule value.
@@ -121,14 +123,14 @@ public class SDODataObjectUnsetIsSetTest extends SDODataObjectTestCases {
 
         dataObject.unset(0);
 
-        this.assertEquals(DEFAULT_VALUE, (String)dataObject.get(DEFINED_PROPERTY_NAME));
+        assertEquals(DEFAULT_VALUE, (String)dataObject.get(DEFINED_PROPERTY_NAME));
     }
 
     //purpose: set a property's value, then unset it, get its value should now return defaule value.
     public void testUnSetWithDefinedProperty_SingleValue_Path_a_b() {
         dataObject_Path_a_b.unset(DEFINED_PROPERTY_NAME_A_B);
 
-        this.assertEquals(DEFAULT_VALUE, (String)dataObject_Path_a_b.get(DEFINED_PROPERTY_NAME_A_B));
+        assertEquals(DEFAULT_VALUE, (String)dataObject_Path_a_b.get(DEFINED_PROPERTY_NAME_A_B));
     }
 
     //purpose: unset  undefined property should cause exception

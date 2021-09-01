@@ -60,7 +60,7 @@ public class LoadAndSaveNestedSchemaTypeTestCases extends LoadAndSaveUnknownTest
         assertNotNull(prop);
         assertEquals(SDOConstants.SDO_INT, prop.getType());
         assertTrue(value instanceof Integer);
-        assertEquals(Integer.valueOf(10), ((Integer)value));
+        assertEquals(Integer.valueOf(10), value);
 
     }
 }

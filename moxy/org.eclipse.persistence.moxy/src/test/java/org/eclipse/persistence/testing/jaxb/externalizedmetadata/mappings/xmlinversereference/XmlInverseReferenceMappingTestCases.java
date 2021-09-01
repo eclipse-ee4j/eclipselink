@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -170,6 +170,6 @@ public class XmlInverseReferenceMappingTestCases extends JAXBWithJSONTestCases {
         DatabaseMapping mapping = xDesc.getMappingForAttributeName("emp");
         assertNotNull("No mapping exists on Address for attribute [emp].", mapping);
         assertTrue("Expected an XMLInverseReferenceMapping for attribute [emp], but was [" + mapping.toString() +"].", mapping instanceof XMLInverseReferenceMapping);
-        assertTrue("Expected container class [java.util.LinkedList] but was ["+((XMLInverseReferenceMapping) mapping).getContainerPolicy().getContainerClassName()+"]", ((XMLInverseReferenceMapping) mapping).getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
+        assertTrue("Expected container class [java.util.LinkedList] but was ["+ mapping.getContainerPolicy().getContainerClassName()+"]", mapping.getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
     }
 }

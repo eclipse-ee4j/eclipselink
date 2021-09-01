@@ -487,7 +487,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         if(XML_OUTPUT_FACTORY != null && staxResultClass != null) {
             StringWriter writer = new StringWriter();
             XMLOutputFactory factory = XMLOutputFactory.newInstance();
-            factory.setProperty(factory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(false));
+            factory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(false));
             XMLStreamWriter streamWriter= factory.createXMLStreamWriter(writer);
 
             Object objectToWrite = getWriteControlObject();
@@ -532,7 +532,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         if(XML_OUTPUT_FACTORY != null && staxResultClass != null) {
             StringWriter writer = new StringWriter();
             XMLOutputFactory factory = XMLOutputFactory.newInstance();
-            factory.setProperty(factory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(false));
+            factory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(false));
             XMLEventWriter eventWriter= factory.createXMLEventWriter(writer);
 
             Object objectToWrite = getWriteControlObject();

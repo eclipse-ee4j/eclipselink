@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -437,14 +437,14 @@ public class SDOTestCase extends junit.framework.TestCase {
         assertFalse(changeSummary.isCreated(dataObject));
         assertFalse(changeSummary.isModified(dataObject));
         if (!isReAttached) {
-            assertTrue(((SDOChangeSummary) changeSummary).isDeleted(dataObject));
+            assertTrue(changeSummary.isDeleted(dataObject));
             if (dataObject.getSequence() != null) {
                 assertNotNull(changeSummary.getOldSequence(dataObject));
             } else {
                 assertNull(changeSummary.getOldSequence(dataObject));
             }
         } else {
-            assertFalse(((SDOChangeSummary) changeSummary).isDeleted(dataObject));
+            assertFalse(changeSummary.isDeleted(dataObject));
         }
 
         int propertySize = dataObject.getType().getProperties().size();
@@ -488,9 +488,9 @@ public class SDOTestCase extends junit.framework.TestCase {
         assertFalse(changeSummary.isCreated(dataobject));
         assertFalse(changeSummary.isModified(dataobject));
         if (!isReAttached) {
-            assertTrue(((SDOChangeSummary) changeSummary).isDeleted(dataobject));
+            assertTrue(changeSummary.isDeleted(dataobject));
         } else {
-            assertFalse(((SDOChangeSummary) changeSummary).isDeleted(dataobject));
+            assertFalse(changeSummary.isDeleted(dataobject));
         }
 
         int propertySize = dataobject.getType().getProperties().size();
@@ -672,7 +672,7 @@ public class SDOTestCase extends junit.framework.TestCase {
         // verify logging is on
         assertTrue(aRootObject.getChangeSummary().isLogging());
         SDOSequence anOriginalSequenceAfterUndo = (SDOSequence) ((SDOChangeSummary) aRootObject.getChangeSummary()).getOriginalSequences().get(aRootObject);
-        SDOSequence aCurrentSequenceAfterUndo = (SDOSequence) ((SDODataObject) aRootObject).getSequence();
+        SDOSequence aCurrentSequenceAfterUndo = ((SDODataObject) aRootObject).getSequence();
         assertNull(anOriginalSequenceAfterUndo);
         assertNotNull(aCurrentSequenceAfterUndo);
         // we return the sequence back to the current VS

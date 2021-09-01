@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -151,7 +151,7 @@ public abstract class SDOXMLHelperDatatypeTestCase extends SDOTestCase {
         ByteArrayOutputStream outstream = new ByteArrayOutputStream();
 
         StreamResult result = new StreamResult(outstream);
-        ((SDOXMLHelper) xmlHelper).save(document, result, null);
+        xmlHelper.save(document, result, null);
 
         // Uncomment to print out document during test
         //((SDOXMLHelper) xmlHelper).save(document, System.out, null);
@@ -169,7 +169,7 @@ public abstract class SDOXMLHelperDatatypeTestCase extends SDOTestCase {
         ByteArrayOutputStream outstream = new ByteArrayOutputStream();
 
         StreamResult result = new StreamResult(outstream);
-        ((SDOXMLHelper) xmlHelper).save(document, result, null);
+        xmlHelper.save(document, result, null);
 
         // Uncomment to print out document during test
         //((SDOXMLHelper) xmlHelper).save(document, System.out, null);
@@ -187,7 +187,7 @@ public abstract class SDOXMLHelperDatatypeTestCase extends SDOTestCase {
         ByteArrayOutputStream outstream = new ByteArrayOutputStream();
 
         StreamResult result = new StreamResult(outstream);
-        ((SDOXMLHelper) xmlHelper).save(document, result, null);
+        xmlHelper.save(document, result, null);
 
         // Uncomment to print out document during test
         //((SDOXMLHelper) xmlHelper).save(document, System.out, null);

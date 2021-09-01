@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -357,11 +357,11 @@ public class DynamicJAXBContextFactory {
     private static void fixDateTimeConversion(DynamicJAXBContext ctx) {
         XMLConversionManager conversionManager = (XMLConversionManager) ctx.getXMLContext().getSession().getDatasourcePlatform().getConversionManager();
 
-        Map defaultXmlTypes = conversionManager.getDefaultXMLTypes();
+        Map defaultXmlTypes = XMLConversionManager.getDefaultXMLTypes();
         defaultXmlTypes.remove(Constants.DATE_TIME_QNAME);
         defaultXmlTypes.put(Constants.DATE_TIME_QNAME, CoreClassConstants.XML_GREGORIAN_CALENDAR);
 
-        Map defaultJavaTypes = conversionManager.getDefaultJavaTypes();
+        Map defaultJavaTypes = XMLConversionManager.getDefaultJavaTypes();
         defaultJavaTypes.remove(CoreClassConstants.CALENDAR);
         defaultJavaTypes.put(CoreClassConstants.XML_GREGORIAN_CALENDAR, Constants.DATE_TIME_QNAME);
     }

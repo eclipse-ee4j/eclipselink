@@ -63,7 +63,7 @@ public class BinaryDataByteObjectArrayTestCases extends XMLWithJSONMappingTestCa
             attachmentUnmarshaller = new MyAttachmentUnmarshaller();
             DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");
 
-            attachmentUnmarshaller.attachments.put(attachmentUnmarshaller.ATTACHMENT_TEST_ID, data);
+            attachmentUnmarshaller.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, data);
             xmlUnmarshaller.setAttachmentUnmarshaller(attachmentUnmarshaller);
 
         }

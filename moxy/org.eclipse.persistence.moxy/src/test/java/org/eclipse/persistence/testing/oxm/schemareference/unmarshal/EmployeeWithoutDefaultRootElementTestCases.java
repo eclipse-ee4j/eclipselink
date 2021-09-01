@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.schemareference.unmarshal;
 
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
@@ -69,8 +70,8 @@ public class EmployeeWithoutDefaultRootElementTestCases extends XMLMappingTestCa
         XMLRoot controlObj = (XMLRoot) getReadControlObject();
         XMLRoot testObj = (XMLRoot) testObject;
 
-        this.assertEquals(controlObj.getLocalName(), testObj.getLocalName());
-        this.assertEquals(controlObj.getNamespaceURI(), testObj.getNamespaceURI());
-        this.assertEquals(controlObj.getObject(), testObj.getObject());
+        assertEquals(controlObj.getLocalName(), testObj.getLocalName());
+        assertEquals(controlObj.getNamespaceURI(), testObj.getNamespaceURI());
+        assertEquals(controlObj.getObject(), testObj.getObject());
     }
 }

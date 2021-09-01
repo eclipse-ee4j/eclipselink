@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -96,7 +96,7 @@ public class SDOEqualityHelperBidirectionalTest extends SDOCopyEqualityHelperTes
         assertNotNull(oppositePropertySrc);
         // Spec 8.4 "Properties that are bi-directional require type.dataType=false"
         assertFalse(oppositePropertySrc.getType().isDataType());
-        SDOProperty oppositePropertyDest = (SDOProperty)oppositePropertySrc.getOpposite();
+        SDOProperty oppositePropertyDest = oppositePropertySrc.getOpposite();
         assertNotNull(oppositePropertyDest);
         // Spec 8.4 "Properties that are bi-directional require type.dataType=false"
         assertFalse(oppositePropertyDest.getType().isDataType());

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -90,7 +90,7 @@ public class MimeTypeOnOtherPropertyDefineTestCases extends CustomerDefineTestCa
         byte[] bytes = null;
         customer.set("base64Name", bytes);
 
-        Property prop = (SDOProperty)typeHelper.getOpenContentProperty("org.eclipse.persistence.sdo", "mimeTypeProperty");
+        Property prop = typeHelper.getOpenContentProperty("org.eclipse.persistence.sdo", "mimeTypeProperty");
 
         //customer.set(prop, "testMimeType");//needs type to be open
         customer.set("testMimeType", "Image");

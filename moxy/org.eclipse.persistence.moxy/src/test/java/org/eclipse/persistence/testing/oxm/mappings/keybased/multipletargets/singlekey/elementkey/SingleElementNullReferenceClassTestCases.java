@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,7 +38,7 @@ public class SingleElementNullReferenceClassTestCases extends OXTestCase {
         try{
             super.getXMLContext(p);
         }catch(IntegrityException e){
-            Exception internalException = (Exception)((IntegrityException)e).getIntegrityChecker().getCaughtExceptions().get(0);
+            Exception internalException = (Exception) e.getIntegrityChecker().getCaughtExceptions().get(0);
             if (internalException instanceof DescriptorException) {
                 assertTrue("An incorrect DescriptorException exception occurred.", ((DescriptorException)internalException).getErrorCode() == DescriptorException.REFERENCE_CLASS_NOT_SPECIFIED);
                 return;

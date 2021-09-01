@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +17,8 @@ package org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyn
 import java.io.InputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
+import junit.framework.TestCase;
 import org.w3c.dom.Document;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
@@ -46,7 +48,7 @@ public class DirectToXMLElementIdentifiedByNameNullTestCases extends XMLMappingT
             removeEmptyTextNodes(comparisonControlDocument);
         } catch (Exception e) {
             e.printStackTrace();
-            this.fail("An exception occurred during setup");
+            fail("An exception occurred during setup");
         }
     }
 

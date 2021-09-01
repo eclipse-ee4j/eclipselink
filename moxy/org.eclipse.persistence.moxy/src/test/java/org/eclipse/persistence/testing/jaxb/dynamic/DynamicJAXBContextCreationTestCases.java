@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -137,7 +137,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         docFactory.setNamespaceAware(true);
 
-        InputStream xsdStream = classLoader.getSystemResourceAsStream(EXAMPLE_XSD);
+        InputStream xsdStream = ClassLoader.getSystemResourceAsStream(EXAMPLE_XSD);
         Source xsdSource = new StreamSource(xsdStream);
         // Set SYSTEM_ID to the filename part of the fully qualified EXAMPLE_XSD
         xsdSource.setSystemId(EXAMPLE_XSD.substring(EXAMPLE_XSD.lastIndexOf('/') + 1));
@@ -221,7 +221,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         // To use schema imports, schemas must be given as Sources
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
-        InputStream inputStream = classLoader.getSystemResourceAsStream(EXAMPLE_XSD);
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream(EXAMPLE_XSD);
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         docFactory.setNamespaceAware(true);
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -278,7 +278,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         docFactory.setNamespaceAware(true);
 
-        InputStream xsdStream = classLoader.getSystemResourceAsStream(EXAMPLE_XSD);
+        InputStream xsdStream = ClassLoader.getSystemResourceAsStream(EXAMPLE_XSD);
         Source xsdSource = new StreamSource(xsdStream);
         // Set SYSTEM_ID to the filename part of the fully qualified EXAMPLE_XSD
         xsdSource.setSystemId(EXAMPLE_XSD.substring(EXAMPLE_XSD.lastIndexOf('/') + 1));

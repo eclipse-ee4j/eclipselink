@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,7 +57,7 @@ public class CompositeCollectionWithGroupingByNamespaceNoRefClassTestCases exten
 
         QName qname = new QName("www.example.com/some-dir/mailing.xsd", "addressType");
 
-        ((XMLField)((XMLCompositeCollectionMapping)p.getDescriptor(Employee.class).getMappingForAttributeName("mailingAddresses")).getField()).setLeafElementType(qname);
+        ((XMLField) p.getDescriptor(Employee.class).getMappingForAttributeName("mailingAddresses").getField()).setLeafElementType(qname);
         ((XMLDescriptor)p.getDescriptor(Employee.class)).getNonNullNamespaceResolver().put("xsi", javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
 
         setProject(p);

@@ -1428,7 +1428,7 @@ public class MappingsGenerator {
                 }else if(nestedMapping instanceof BinaryDataCollectionMapping){
                     nullPolicy =  ((BinaryDataCollectionMapping)nestedMapping).getNullPolicy();
                     if(element.isList()){
-                        ((XMLField)((BinaryDataCollectionMapping)nestedMapping).getField()).setUsesSingleNode(true);
+                        ((XMLField) nestedMapping.getField()).setUsesSingleNode(true);
                     }
                 }
 
@@ -2090,7 +2090,7 @@ public class MappingsGenerator {
             ((CompositeObjectMapping)mapping).setXPath(attributeName);
             if(typeIsObject){
                 ((CompositeObjectMapping)mapping).setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
-                setTypedTextField((Field)((CompositeObjectMapping)mapping).getField());
+                setTypedTextField((Field) mapping.getField());
             }else{
                 ((CompositeObjectMapping)mapping).setReferenceClassName(theType.getQualifiedName());
             }
@@ -2108,7 +2108,7 @@ public class MappingsGenerator {
                     accessor.setComponentClass(primitiveClass);
                     directCollectionMapping.setAttributeAccessor(accessor);
 
-                    Class declaredClass = XMLConversionManager.getDefaultManager().getObjectClass(primitiveClass);
+                    Class declaredClass = XMLConversionManager.getObjectClass(primitiveClass);
                     directCollectionMapping.setAttributeElementClass(declaredClass);
                 } else {
                     accessor.setComponentClassName(componentClassName);
@@ -2168,7 +2168,7 @@ public class MappingsGenerator {
             if (schemaType == null) {
                 schemaType = (QName) helper.getXMLToJavaTypeMap().get(theType);
             }
-            ((Field)((DirectMapping)mapping).getField()).setSchemaType(schemaType);
+            ((Field) mapping.getField()).setSchemaType(schemaType);
             if(info != null && info.isEnumerationType()) {
                 ((DirectMapping)mapping).setConverter(buildJAXBEnumTypeConverter(mapping, (EnumTypeInfo)info));
             }
@@ -2282,7 +2282,7 @@ public class MappingsGenerator {
                 accessor.setComponentClass(primitiveClass);
                 mapping.setAttributeAccessor(accessor);
 
-                Class declaredClass = XMLConversionManager.getDefaultManager().getObjectClass(primitiveClass);
+                Class declaredClass = XMLConversionManager.getObjectClass(primitiveClass);
                 mapping.setAttributeElementClass(declaredClass);
             } else {
                 accessor.setComponentClassName(componentClassName);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@
 package org.eclipse.persistence.testing.sdo.helper.equalityhelper;
 
 import commonj.sdo.DataObject;
+import junit.framework.TestCase;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -40,30 +41,30 @@ public class SDOEqualityHelperTest extends SDOEqualityHelperEqualTestCases {
 
     // compare a DataObject with another DataObject with the same contents --- true
     public void testDeepEqualWithADataObjectToItsSameContentObject() {
-        this.assertTrue(equalityHelper.equal(root, root1));
+        assertTrue(equalityHelper.equal(root, root1));
     }
 
     // comapre a DataObject with its Shallow copy by deep equal --- false
     public void testDeepEqualWithADataObjectToItsShallowCopy() {
         DataObject shallowCopy = copyHelper.copyShallow(root);
-        this.assertFalse(equalityHelper.equal(root, shallowCopy));
+        assertFalse(equalityHelper.equal(root, shallowCopy));
     }
 
     // comapre a DataObject with its Shallow copy by deep equal --- false
     public void testDeepEqualWithADataObjectToItsChild() {
-        this.assertFalse(equalityHelper.equal(root, containedDataObject));
+        assertFalse(equalityHelper.equal(root, containedDataObject));
     }
 
     // compare a DataObject with another different DataObject --- false
     public void testDeepEqualWithADataObjectToAnotherDataObject() {
-        this.assertFalse(equalityHelper.equal(root, containedDataObject));
+        assertFalse(equalityHelper.equal(root, containedDataObject));
     }
 
     // !! this test case base on the following and Now its meaning is still not sure     !!
     // Note that properties to a containing DataObject are not compared which
     // means two DataObject trees can be equal even if their containers are not equal.
     public void testDeepEqualWithADataObjectToAnotherDataObjectWithDifferentParents() {
-        this.assertTrue(equalityHelper.equal(containedDataObject, containedDataObject_1));
+        assertTrue(equalityHelper.equal(containedDataObject, containedDataObject_1));
     }
 
     // purpose: one has open content datatype property while another doesn't
@@ -75,7 +76,7 @@ public class SDOEqualityHelperTest extends SDOEqualityHelperEqualTestCases {
         openP.setType(SDOConstants.SDO_STRING);
         containedType.setOpen(true);
         containedDataObject.set(openP, "test");
-        this.assertFalse(equalityHelper.equal(root, root1));
+        assertFalse(equalityHelper.equal(root, root1));
     }
 
     // purpose: one has open content datatype property while another does too
@@ -88,10 +89,10 @@ public class SDOEqualityHelperTest extends SDOEqualityHelperEqualTestCases {
         containedType.setOpen(true);
         containedDataObject.set(openP, "test");
         containedDataObject_1.set(openP, "test");
-        this.assertTrue(equalityHelper.equal(root, root1));
+        assertTrue(equalityHelper.equal(root, root1));
         containedDataObject.set(openP, "test");
         containedDataObject_1.set(openP, "test1");
-        this.assertFalse(equalityHelper.equal(root, root1));
+        assertFalse(equalityHelper.equal(root, root1));
     }
 
     // purpose: one has open content datatype property while another doesn't
@@ -105,7 +106,7 @@ public class SDOEqualityHelperTest extends SDOEqualityHelperEqualTestCases {
         SDOType mockType = new SDOType("uri", "name");
         DataObject d1 = dataFactory.create(mockType);
         containedDataObject.set(openP, d1);
-        this.assertFalse(equalityHelper.equal(root, root1));
+        assertFalse(equalityHelper.equal(root, root1));
     }
 
     // purpose: one has open content datatype property while another doesn't
@@ -121,7 +122,7 @@ public class SDOEqualityHelperTest extends SDOEqualityHelperEqualTestCases {
         DataObject d2 = dataFactory.create(mockType);
         containedDataObject.set(openP, d1);
         containedDataObject_1.set(openP, d2);
-        this.assertTrue(equalityHelper.equal(root, root1));
+        assertTrue(equalityHelper.equal(root, root1));
     }
 
     // compare DataObject with properties as many
@@ -132,7 +133,7 @@ public class SDOEqualityHelperTest extends SDOEqualityHelperEqualTestCases {
         objects1.add("test");
         root.set(rootProperty4, objects);
         root1.set(rootProperty4, objects1);
-        this.assertTrue(equalityHelper.equal(root, root1));
+        assertTrue(equalityHelper.equal(root, root1));
     }
 
     // compare DataObject with properties as many
@@ -148,7 +149,7 @@ public class SDOEqualityHelperTest extends SDOEqualityHelperEqualTestCases {
         rootProperty4.setMany(true);
         root.set(rootProperty4, objects);
         root1.set(rootProperty4, objects1);
-        this.assertTrue(equalityHelper.equal(root, root1));
+        assertTrue(equalityHelper.equal(root, root1));
     }
 
     // compare DataObject with properties as many
@@ -176,7 +177,7 @@ public class SDOEqualityHelperTest extends SDOEqualityHelperEqualTestCases {
         rootProperty4.setMany(true);
         root.set(rootProperty4, objects);
         root1.set(rootProperty4, objects1);
-        this.assertFalse(equalityHelper.equal(root, root1));
+        assertFalse(equalityHelper.equal(root, root1));
     }
 
     // compare DataObject with properties as many
@@ -204,7 +205,7 @@ public class SDOEqualityHelperTest extends SDOEqualityHelperEqualTestCases {
         rootProperty4.setMany(true);
         root.set(rootProperty4, objects);
         root1.set(rootProperty4, objects1);
-        this.assertFalse(equalityHelper.equal(root, root1));
+        assertFalse(equalityHelper.equal(root, root1));
     }
 
     // compare DataObject with properties as many
@@ -232,7 +233,7 @@ public class SDOEqualityHelperTest extends SDOEqualityHelperEqualTestCases {
         rootProperty4.setMany(true);
         root.set(rootProperty4, objects);
         //root1.set(rootProperty4, objects1);
-        this.assertFalse(equalityHelper.equal(root, root1));
+        assertFalse(equalityHelper.equal(root, root1));
     }
 
     /**
@@ -286,49 +287,49 @@ public class SDOEqualityHelperTest extends SDOEqualityHelperEqualTestCases {
         rootProperty4.setType(SDOConstants.SDO_STRING);
         root.set(rootProperty4, objects);
         root1.set(rootProperty4, objects1);
-        this.assertTrue(equalityHelper.equal(root, root1));
+        assertTrue(equalityHelper.equal(root, root1));
     }
 
     // compare a DataObject with itself by shallow equal --- true
     public void testShallowEqualWithDataObjectToItself() {
-        this.assertTrue(equalityHelper.equalShallow(root, root));
+        assertTrue(equalityHelper.equalShallow(root, root));
     }
 
     // compare a DataObject with its Deep copy by shallow equal --- true
     public void testShallowEqualWithADataObjectToItsDeepCopy() {
         DataObject deepCopy = copyHelper.copy(root);
-        this.assertTrue(equalityHelper.equalShallow(root, deepCopy));
+        assertTrue(equalityHelper.equalShallow(root, deepCopy));
     }
 
     // compare a DataObject with its Shallow copy by shallow equal --- true
     public void testShallowEqualWithADataObjectToItsShallowCopy() {
         DataObject shallowCopy = copyHelper.copyShallow(root);
-        this.assertTrue(equalityHelper.equalShallow(root, shallowCopy));
+        assertTrue(equalityHelper.equalShallow(root, shallowCopy));
     }
 
     // compare a DataObject with another different DataObject  by shallow equal --- false
     public void testShallowEqualWithADataObjectToAnotherDataObject() {
-        this.assertFalse(equalityHelper.equalShallow(root, containedDataObject));
+        assertFalse(equalityHelper.equalShallow(root, containedDataObject));
     }
 
     // compare null with null by deep equal --- true
     public void testDeepEqualWithNullToNull() {
-        this.assertTrue(equalityHelper.equal(null, null));
+        assertTrue(equalityHelper.equal(null, null));
     }
 
     // compare a DataObject with null by deep equal --- false
     public void testDeepEqualWithADataObjectToNull() {
-        this.assertFalse(equalityHelper.equal(root, null));
+        assertFalse(equalityHelper.equal(root, null));
     }
 
     // compare null with null by shallow equal --- true
     public void testShallowEqualWithNullToNull() {
-        this.assertTrue(equalityHelper.equalShallow(null, null));
+        assertTrue(equalityHelper.equalShallow(null, null));
     }
 
     // compare a DataObject with shallow null --- false
     public void testShallowEqualWithADataObjectToNull() {
-        this.assertFalse(equalityHelper.equalShallow(root, null));
+        assertFalse(equalityHelper.equalShallow(root, null));
     }
 
     // compare DataObject with properties as many
@@ -346,7 +347,7 @@ public class SDOEqualityHelperTest extends SDOEqualityHelperEqualTestCases {
         rootProperty5.setMany(true);
         root.set(rootProperty5, objects);
         root1.set(rootProperty5, objects1);
-        this.assertFalse(equalityHelper.equalShallow(root, root1));
+        assertFalse(equalityHelper.equalShallow(root, root1));
     }
 
     // compare DataObject with properties as many
@@ -367,6 +368,6 @@ public class SDOEqualityHelperTest extends SDOEqualityHelperEqualTestCases {
         rootProperty5.setMany(true);
         root.set(rootProperty5, objects);
         //root1.set(rootProperty5, objects1);
-        this.assertFalse(equalityHelper.equalShallow(root, root1));
+        assertFalse(equalityHelper.equalShallow(root, root1));
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -117,9 +117,9 @@ public class ChangeSummaryCreatedModifiedDeletedTestCase extends SDOTestCase {
         propertyD = setUpProperty("propertyD", false, SDOConstants.SDO_STRING, type_D);
 
         root = (SDODataObject)dataFactory.create(rootType);
-        dataObjectB = (SDODataObject)root.createDataObject(rootContainingPropertyB, type_B);
-        dataObjectC = (SDODataObject)root.createDataObject(rootContainingPropertyC, type_C);
-        dataObjectD = (SDODataObject)dataObjectB.createDataObject(propertyB, type_D);
+        dataObjectB = root.createDataObject(rootContainingPropertyB, type_B);
+        dataObjectC = root.createDataObject(rootContainingPropertyC, type_C);
+        dataObjectD = dataObjectB.createDataObject(propertyB, type_D);
     }
 
     protected void checkOldSettingsSizeTree(String values, SDOChangeSummary aCS,//
@@ -135,10 +135,10 @@ public class ChangeSummaryCreatedModifiedDeletedTestCase extends SDOTestCase {
                                      SDODataObject aDO2, Object anObject2,//
                                      SDODataObject aDO3, Object anObject3,//
                                      SDODataObject aDO4, Object anObject4) {
-        assertEquals(anObject1, (SDODataObject)aCS.getOldContainer(aDO1));
-        assertEquals(anObject2, (SDODataObject)aCS.getOldContainer(aDO2));
-        assertEquals(anObject3, (SDODataObject)aCS.getOldContainer(aDO3));
-        assertEquals(anObject4, (SDODataObject)aCS.getOldContainer(aDO4));
+        assertEquals(anObject1, aCS.getOldContainer(aDO1));
+        assertEquals(anObject2, aCS.getOldContainer(aDO2));
+        assertEquals(anObject3, aCS.getOldContainer(aDO3));
+        assertEquals(anObject4, aCS.getOldContainer(aDO4));
     }
 
     /*
@@ -177,10 +177,10 @@ public class ChangeSummaryCreatedModifiedDeletedTestCase extends SDOTestCase {
         propertyE = setUpProperty("propertyE", false, SDOConstants.SDO_STRING, type_E);
 
         root = (SDODataObject)dataFactory.create(rootType);
-        dataObjectB = (SDODataObject)root.createDataObject(rootContainingPropertyB, type_B);
-        dataObjectC = (SDODataObject)root.createDataObject(rootContainingPropertyC, type_C);
-        dataObjectD = (SDODataObject)dataObjectB.createDataObject(propertyB, type_D);
-        dataObjectE = (SDODataObject)dataObjectD.createDataObject(propertyD, type_E);
+        dataObjectB = root.createDataObject(rootContainingPropertyB, type_B);
+        dataObjectC = root.createDataObject(rootContainingPropertyC, type_C);
+        dataObjectD = dataObjectB.createDataObject(propertyB, type_D);
+        dataObjectE = dataObjectD.createDataObject(propertyD, type_E);
 
     }
 
@@ -201,7 +201,7 @@ public class ChangeSummaryCreatedModifiedDeletedTestCase extends SDOTestCase {
                           aDO2, anObject2,//
                           aDO3, anObject3,//
                           aDO4, anObject4);
-        assertEquals(anObject5, (SDODataObject)aCS.getOldContainer(aDO5));
+        assertEquals(anObject5, aCS.getOldContainer(aDO5));
     }
 
     protected void buildTreeWithoutChildChangeSummaries() {
@@ -220,9 +220,9 @@ public class ChangeSummaryCreatedModifiedDeletedTestCase extends SDOTestCase {
         type_D = (SDOType)typeHelper.define(type_DDO);
         propertyD = setUpProperty("propertyD", false, SDOConstants.SDO_STRING, type_D);
 
-        dataObjectB = (SDODataObject)root.createDataObject(rootContainingPropertyB, type_B);
-        dataObjectC = (SDODataObject)root.createDataObject(rootContainingPropertyC, type_C);
-        dataObjectD = (SDODataObject)dataObjectB.createDataObject(propertyB, type_D);
+        dataObjectB = root.createDataObject(rootContainingPropertyB, type_B);
+        dataObjectC = root.createDataObject(rootContainingPropertyC, type_C);
+        dataObjectD = dataObjectB.createDataObject(propertyB, type_D);
     }
 
     protected void buildTreeWithoutChangeSummary() {
@@ -238,7 +238,7 @@ public class ChangeSummaryCreatedModifiedDeletedTestCase extends SDOTestCase {
         type_F = (SDOType)typeHelper.define(type_FDO);
 
         p_F = setUpProperty("p_F", false, SDOConstants.SDO_STRING, type_F);
-        dataObjectF = (SDODataObject)root1.createDataObject(p_root1, type_F);
+        dataObjectF = root1.createDataObject(p_root1, type_F);
         dataObjectF.set(p_F, "test");
     }
 }

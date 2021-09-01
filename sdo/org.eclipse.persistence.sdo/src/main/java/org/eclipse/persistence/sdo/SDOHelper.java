@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -325,31 +325,31 @@ public class SDOHelper {
         }
         try {
             if (clazz == SDOTypeType.class) {
-                return (T) ((SDOTypeType) type);
+                return (T) type;
             }
             if (clazz == SDOPropertyType.class) {
-                return (T) ((SDOPropertyType) type);
+                return (T) type;
             }
             if (clazz == SDOChangeSummaryType.class) {
-                return (T) ((SDOChangeSummaryType) type);
+                return (T) type;
             }
             if (clazz == SDODataObjectType.class) {
-                return (T) ((SDODataObjectType) type);
+                return (T) type;
             }
             if (clazz == SDODataType.class) {
-                return (T) ((SDODataType) type);
+                return (T) type;
             }
             if (clazz == SDOOpenSequencedType.class) {
-                return (T) ((SDOOpenSequencedType) type);
+                return (T) type;
             }
             if (clazz == SDOWrapperType.class) {
-                return (T) ((SDOWrapperType) type);
+                return (T) type;
             }
             if (clazz == SDOXMLHelperLoadOptionsType.class) {
-                return (T) ((SDOXMLHelperLoadOptionsType) type);
+                return (T) type;
             }
             if (clazz == SDOObjectType.class) {
-                return (T) ((SDOObjectType) type);
+                return (T) type;
             }
             throw new IllegalArgumentException(ExceptionLocalization
                     .buildMessage("sdo_helper_invalid_target_for_type", new Object[] { clazz }));

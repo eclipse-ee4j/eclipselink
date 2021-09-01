@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -76,8 +76,8 @@ public class RootWithCompositeCollectionTestCases extends JAXBWithJSONTestCases 
         listener = new JAXBMarshalListenerImpl();
         unmarshalListener = new JAXBUnmarshalListenerImpl();
 
-        this.getJAXBMarshaller().setListener((Marshaller.Listener)listener);
-        this.getJAXBUnmarshaller().setListener((Unmarshaller.Listener)unmarshalListener);
+        this.getJAXBMarshaller().setListener(listener);
+        this.getJAXBUnmarshaller().setListener(unmarshalListener);
     }
     public void xmlToObjectTest(Object testObject) throws Exception {
         super.xmlToObjectTest(testObject);

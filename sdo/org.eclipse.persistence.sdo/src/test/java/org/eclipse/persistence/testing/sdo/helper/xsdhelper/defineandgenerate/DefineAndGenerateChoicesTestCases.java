@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -93,14 +93,14 @@ public class DefineAndGenerateChoicesTestCases extends XSDHelperDefineAndGenerat
         POType.addDeclaredProperty(commentProp);
         POType.addDeclaredProperty(poIDProp);
 
-        ((SDOProperty)POType.getProperty("poId")).setXsd(true);
-        ((SDOProperty)POType.getProperty("poId")).setXsdLocalName("poId");
-        ((SDOProperty)POType.getProperty("shipTo")).setXsd(true);
-        ((SDOProperty)POType.getProperty("shipTo")).setXsdLocalName("shipTo");
-        ((SDOProperty)POType.getProperty("billTo")).setXsd(true);
-        ((SDOProperty)POType.getProperty("billTo")).setXsdLocalName("billTo");
-        ((SDOProperty)POType.getProperty("comment")).setXsd(true);
-        ((SDOProperty)POType.getProperty("comment")).setXsdLocalName("comment");
+        POType.getProperty("poId").setXsd(true);
+        POType.getProperty("poId").setXsdLocalName("poId");
+        POType.getProperty("shipTo").setXsd(true);
+        POType.getProperty("shipTo").setXsdLocalName("shipTo");
+        POType.getProperty("billTo").setXsd(true);
+        POType.getProperty("billTo").setXsdLocalName("billTo");
+        POType.getProperty("comment").setXsd(true);
+        POType.getProperty("comment").setXsdLocalName("comment");
 
         types.add(POType);
         types.add(addressType);
@@ -224,39 +224,39 @@ public class DefineAndGenerateChoicesTestCases extends XSDHelperDefineAndGenerat
         addressSDOType.addDeclaredProperty(postalCodeProp);
         addressSDOType.addDeclaredProperty(countryProp);
 
-        ((SDOProperty)addressSDOType.getProperty("name")).setXsd(true);
-        ((SDOProperty)addressSDOType.getProperty("name")).setXsdLocalName("name");
-        ((SDOProperty)addressSDOType.getProperty("street")).setXsd(true);
-        ((SDOProperty)addressSDOType.getProperty("street")).setXsdLocalName("street");
-        ((SDOProperty)addressSDOType.getProperty("USPrice")).setXsd(true);
-        ((SDOProperty)addressSDOType.getProperty("USPrice")).setXsdLocalName("USPrice");
-        ((SDOProperty)addressSDOType.getProperty("CDNPrice")).setXsd(true);
-        ((SDOProperty)addressSDOType.getProperty("CDNPrice")).setXsdLocalName("CDNPrice");
-        ((SDOProperty)addressSDOType.getProperty("exchangeRate")).setXsd(true);
-        ((SDOProperty)addressSDOType.getProperty("exchangeRate")).setXsdLocalName("exchangeRate");
-        ((SDOProperty)addressSDOType.getProperty("city")).setXsd(true);
-        ((SDOProperty)addressSDOType.getProperty("city")).setXsdLocalName("city");
-        ((SDOProperty)addressSDOType.getProperty("country")).setXsd(true);
-        ((SDOProperty)addressSDOType.getProperty("country")).setXsdLocalName("country");
-        ((SDOProperty)addressSDOType.getProperty("state")).setXsd(true);
-        ((SDOProperty)addressSDOType.getProperty("state")).setXsdLocalName("state");
-        ((SDOProperty)addressSDOType.getProperty("one")).setXsd(true);
-        ((SDOProperty)addressSDOType.getProperty("one")).setXsdLocalName("one");
-        ((SDOProperty)addressSDOType.getProperty("two")).setXsd(true);
-        ((SDOProperty)addressSDOType.getProperty("two")).setXsdLocalName("two");
-        ((SDOProperty)addressSDOType.getProperty("three")).setXsd(true);
-        ((SDOProperty)addressSDOType.getProperty("three")).setXsdLocalName("three");
-        ((SDOProperty)addressSDOType.getProperty("four")).setXsd(true);
-        ((SDOProperty)addressSDOType.getProperty("four")).setXsdLocalName("four");
-        ((SDOProperty)addressSDOType.getProperty("five")).setXsd(true);
-        ((SDOProperty)addressSDOType.getProperty("five")).setXsdLocalName("five");
-        ((SDOProperty)addressSDOType.getProperty("province")).setXsd(true);
-        ((SDOProperty)addressSDOType.getProperty("province")).setXsdLocalName("province");
+        addressSDOType.getProperty("name").setXsd(true);
+        addressSDOType.getProperty("name").setXsdLocalName("name");
+        addressSDOType.getProperty("street").setXsd(true);
+        addressSDOType.getProperty("street").setXsdLocalName("street");
+        addressSDOType.getProperty("USPrice").setXsd(true);
+        addressSDOType.getProperty("USPrice").setXsdLocalName("USPrice");
+        addressSDOType.getProperty("CDNPrice").setXsd(true);
+        addressSDOType.getProperty("CDNPrice").setXsdLocalName("CDNPrice");
+        addressSDOType.getProperty("exchangeRate").setXsd(true);
+        addressSDOType.getProperty("exchangeRate").setXsdLocalName("exchangeRate");
+        addressSDOType.getProperty("city").setXsd(true);
+        addressSDOType.getProperty("city").setXsdLocalName("city");
+        addressSDOType.getProperty("country").setXsd(true);
+        addressSDOType.getProperty("country").setXsdLocalName("country");
+        addressSDOType.getProperty("state").setXsd(true);
+        addressSDOType.getProperty("state").setXsdLocalName("state");
+        addressSDOType.getProperty("one").setXsd(true);
+        addressSDOType.getProperty("one").setXsdLocalName("one");
+        addressSDOType.getProperty("two").setXsd(true);
+        addressSDOType.getProperty("two").setXsdLocalName("two");
+        addressSDOType.getProperty("three").setXsd(true);
+        addressSDOType.getProperty("three").setXsdLocalName("three");
+        addressSDOType.getProperty("four").setXsd(true);
+        addressSDOType.getProperty("four").setXsdLocalName("four");
+        addressSDOType.getProperty("five").setXsd(true);
+        addressSDOType.getProperty("five").setXsdLocalName("five");
+        addressSDOType.getProperty("province").setXsd(true);
+        addressSDOType.getProperty("province").setXsdLocalName("province");
 
-        ((SDOProperty)addressSDOType.getProperty("zip")).setXsd(true);
-        ((SDOProperty)addressSDOType.getProperty("zip")).setXsdLocalName("zip");
-        ((SDOProperty)addressSDOType.getProperty("postalCode")).setXsd(true);
-        ((SDOProperty)addressSDOType.getProperty("postalCode")).setXsdLocalName("postalCode");
+        addressSDOType.getProperty("zip").setXsd(true);
+        addressSDOType.getProperty("zip").setXsdLocalName("zip");
+        addressSDOType.getProperty("postalCode").setXsd(true);
+        addressSDOType.getProperty("postalCode").setXsdLocalName("postalCode");
 
         return addressSDOType;
     }

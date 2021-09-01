@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -75,7 +75,7 @@ public class BinaryDataIdentifiedByNameEmptyNSRNillableTestCases extends XMLWith
         MyAttachmentUnmarshaller attachmentUnmarshaller = new MyAttachmentUnmarshaller();
         byte[] bytes = MyAttachmentUnmarshaller.PHOTO_BASE64.getBytes();
 
-        attachmentUnmarshaller.attachments.put(attachmentUnmarshaller.ATTACHMENT_TEST_ID, bytes);
+        attachmentUnmarshaller.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, bytes);
         xmlUnmarshaller.setAttachmentUnmarshaller(attachmentUnmarshaller);
 
     }

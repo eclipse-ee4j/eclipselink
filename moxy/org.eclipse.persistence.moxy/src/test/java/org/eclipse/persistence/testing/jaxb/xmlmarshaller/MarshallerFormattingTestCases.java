@@ -18,6 +18,7 @@ import java.io.StringWriter;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.PropertyException;
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 
@@ -74,7 +75,7 @@ public class MarshallerFormattingTestCases extends OXTestCase {
             Object value = Integer.valueOf(10);
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, value);
         } catch (PropertyException e) {
-            this.assertTrue(true);
+            assertTrue(true);
             return;
         } catch (Exception e) {
             fail("The wrong exception occurred, should have been a PropertyException" + e.getMessage());

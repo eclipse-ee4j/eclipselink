@@ -31,7 +31,7 @@ public class AnyCollectionWithoutGroupingWithXMLRootTestCases extends XMLMapping
         super(name);
         Project project = new AnyCollectionWithGroupingElementProject();
 
-        ((XMLAnyCollectionMapping)((XMLDescriptor)project.getDescriptor(Root.class)).getMappingForAttributeName("any")).setUseXMLRoot(true);
+        ((XMLAnyCollectionMapping) project.getDescriptor(Root.class).getMappingForAttributeName("any")).setUseXMLRoot(true);
 
         XMLSchemaClassPathReference schemaRef = new XMLSchemaClassPathReference();
         schemaRef.setSchemaContext("/childType");

@@ -33,7 +33,7 @@ public class AnyCollectionWithGroupingWithXMLRootTestCases extends XMLWithJSONMa
     public AnyCollectionWithGroupingWithXMLRootTestCases(String name) throws Exception {
         super(name);
         Project project = new AnyCollectionWithGroupingElementProjectNS();
-        ((XMLAnyCollectionMapping)((XMLDescriptor)project.getDescriptor(Root.class)).getMappingForAttributeName("any")).setUseXMLRoot(true);
+        ((XMLAnyCollectionMapping) project.getDescriptor(Root.class).getMappingForAttributeName("any")).setUseXMLRoot(true);
 
         XMLSchemaClassPathReference schemaRef = new XMLSchemaClassPathReference();
         schemaRef.setSchemaContext("/myns:childType");

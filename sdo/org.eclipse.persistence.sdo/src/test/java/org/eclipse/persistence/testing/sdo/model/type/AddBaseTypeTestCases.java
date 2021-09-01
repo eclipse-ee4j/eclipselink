@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -98,16 +98,16 @@ public class AddBaseTypeTestCases extends SDOTestCase {
         assertEquals(3, child3SDOType.getDeclaredProperties().size());
         assertEquals(12, child3SDOType.getProperties().size());
 
-        int child2Prop2Index = ((SDOProperty)child2SDOType.getProperty("child2Prop2")).getIndexInType();
+        int child2Prop2Index = child2SDOType.getProperty("child2Prop2").getIndexInType();
         assertEquals(7, child2Prop2Index);
 
-        int child3Prop2Index = ((SDOProperty)child3SDOType.getProperty("child3Prop2")).getIndexInType();
+        int child3Prop2Index = child3SDOType.getProperty("child3Prop2").getIndexInType();
         assertEquals(10, child3Prop2Index);
 
-        int child1Prop2Index = ((SDOProperty)child1SDOType.getProperty("child1Prop2")).getIndexInType();
+        int child1Prop2Index = child1SDOType.getProperty("child1Prop2").getIndexInType();
         assertEquals(4, child1Prop2Index);
 
-        int rootProp2Index = ((SDOProperty)rootSDOType.getProperty("rootProp2")).getIndexInType();
+        int rootProp2Index = rootSDOType.getProperty("rootProp2").getIndexInType();
         assertEquals(1, rootProp2Index);
     }
 

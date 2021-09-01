@@ -122,7 +122,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
             }
         }
 
-        jaxbContext  = new org.eclipse.persistence.jaxb.JAXBContextFactory().createContext(newTypes, props, Thread.currentThread().getContextClassLoader());
+        jaxbContext  = org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(newTypes, props, Thread.currentThread().getContextClassLoader());
         jaxbMarshaller = jaxbContext.createMarshaller();
         jaxbUnmarshaller = jaxbContext.createUnmarshaller();
      }
@@ -200,7 +200,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
             StringWriter writer = new StringWriter();
 
             XMLOutputFactory factory = XMLOutputFactory.newInstance();
-            factory.setProperty(factory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(false));
+            factory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(false));
             XMLStreamWriter streamWriter= factory.createXMLStreamWriter(writer);
 
             Object objectToWrite = getWriteControlObject();
@@ -233,7 +233,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
             StringWriter writer = new StringWriter();
 
             XMLOutputFactory factory = XMLOutputFactory.newInstance();
-            factory.setProperty(factory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(false));
+            factory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(false));
             XMLEventWriter eventWriter= factory.createXMLEventWriter(writer);
 
             Object objectToWrite = getWriteControlObject();

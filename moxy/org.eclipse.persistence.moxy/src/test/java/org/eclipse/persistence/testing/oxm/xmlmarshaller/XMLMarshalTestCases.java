@@ -29,6 +29,7 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamResult;
 
+import junit.framework.TestCase;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.oxm.CharacterEscapeHandler;
 import org.eclipse.persistence.oxm.XMLContext;
@@ -436,7 +437,7 @@ public class XMLMarshalTestCases extends OXTestCase {
             marshaller.setFormattedOutput(false);
             marshaller.setFragment(true);
             marshaller.marshal(emailAddress, writer);
-            this.assertEquals("<user-id>user</user-id><domain>domain</domain>", writer.toString());
+            assertEquals("<user-id>user</user-id><domain>domain</domain>", writer.toString());
         }
 
         /**
@@ -454,7 +455,7 @@ public class XMLMarshalTestCases extends OXTestCase {
             CharacterEscapeHandler characterEscapeHandler = new CustomCharacterEscapeHandler();
             marshaller.setCharacterEscapeHandler(characterEscapeHandler);
             marshaller.marshal(emailAddress, record);
-            this.assertEquals("<user-id>*user***</user-id><domain>*domain***</domain>", removeWhiteSpaceFromString(byteArrayOutputStream.toString()));
+            assertEquals("<user-id>*user***</user-id><domain>*domain***</domain>", removeWhiteSpaceFromString(byteArrayOutputStream.toString()));
     }
 
         //Null Test Cases=========================================================================================

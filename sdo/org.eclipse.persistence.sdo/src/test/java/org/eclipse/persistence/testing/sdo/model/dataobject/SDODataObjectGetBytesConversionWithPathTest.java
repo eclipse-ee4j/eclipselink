@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +18,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Calendar;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -187,7 +189,7 @@ public class SDODataObjectGetBytesConversionWithPathTest extends SDODataObjectCo
 
         dataObject_a.setBytes(propertyPath_a_b_c, b);// add it to instance list
 
-        this.assertTrue(Arrays.equals(b, dataObject_a.getBytes(propertyPath_a_b_c)));
+        assertTrue(Arrays.equals(b, dataObject_a.getBytes(propertyPath_a_b_c)));
     }
 
     //11. purpose: getBytes with Undefined Bytes Property
@@ -235,7 +237,7 @@ public class SDODataObjectGetBytesConversionWithPathTest extends SDODataObjectCo
 
         dataObject_a.setBigInteger(propertyPath_a_b_c, bin);// add it to instance list
         byte[] b1 = dataObject_a.getBytes(propertyPath_a_b_c);
-        this.assertTrue(Arrays.equals(b, b1));
+        assertTrue(Arrays.equals(b, b1));
     }
 
     //11. purpose: getBytes with Undefined Integer Property

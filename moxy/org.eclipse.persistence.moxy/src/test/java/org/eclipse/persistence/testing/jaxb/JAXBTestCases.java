@@ -353,7 +353,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             jaxbUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, getXMLUnmarshalMediaType());
             Object testObject = null;
             if(getUnmarshalClass() != null){
-               testObject = ((JAXBUnmarshaller)jaxbUnmarshaller).unmarshal(new StreamSource(instream), getUnmarshalClass());
+               testObject = jaxbUnmarshaller.unmarshal(new StreamSource(instream), getUnmarshalClass());
             }else{
                testObject = jaxbUnmarshaller.unmarshal(instream);
             }
@@ -371,7 +371,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
                     log("************test with JSON bindings*********");
                     InputStream instream2 = ClassLoader.getSystemResourceAsStream(resourceName);
                     if(getUnmarshalClass() != null){
-                     testObject2 = ((JAXBUnmarshaller)jaxbUnmarshallerFromJSONBindings).unmarshal(new StreamSource(instream2), getUnmarshalClass());
+                     testObject2 = jaxbUnmarshallerFromJSONBindings.unmarshal(new StreamSource(instream2), getUnmarshalClass());
                  }else{
                      testObject2 = jaxbUnmarshallerFromJSONBindings.unmarshal(instream2);
                  }
@@ -578,7 +578,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             StringWriter writer = new StringWriter();
 
             XMLOutputFactory factory = XMLOutputFactory.newInstance();
-            factory.setProperty(factory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(false));
+            factory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(false));
             XMLStreamWriter streamWriter= factory.createXMLStreamWriter(writer);
 
             Object objectToWrite = getWriteControlObject();
@@ -618,7 +618,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             StringWriter writer = new StringWriter();
 
             XMLOutputFactory factory = XMLOutputFactory.newInstance();
-            factory.setProperty(factory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(false));
+            factory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(false));
             XMLStreamWriter streamWriter= factory.createXMLStreamWriter(writer);
 
             Object objectToWrite = getWriteControlObject();
@@ -660,7 +660,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             StringWriter writer = new StringWriter();
 
             XMLOutputFactory factory = XMLOutputFactory.newInstance();
-            factory.setProperty(factory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(false));
+            factory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(false));
             XMLEventWriter eventWriter= factory.createXMLEventWriter(writer);
 
             Object objectToWrite = getWriteControlObject();
@@ -742,7 +742,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
 
             Object testObject = null;
             if(getUnmarshalClass() != null){
-               testObject = ((JAXBUnmarshaller)jaxbUnmarshaller).unmarshal(new StreamSource(url.openStream()), getUnmarshalClass());
+               testObject = jaxbUnmarshaller.unmarshal(new StreamSource(url.openStream()), getUnmarshalClass());
             }else{
                 testObject = jaxbUnmarshaller.unmarshal(url);
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +17,8 @@ package org.eclipse.persistence.testing.sdo.model.dataobject;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Calendar;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -96,7 +98,7 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
         BigInteger bd = new BigInteger(String.valueOf(il));
         dataObject_a.setDouble(propertyPath_a_b_c, db);// add it to instance list
 
-        this.assertEquals(bd, dataObject_a.getBigInteger(property));
+        assertEquals(bd, dataObject_a.getBigInteger(property));
     }
 
     //6. purpose: getBigInteger with Undefined Double Property
@@ -128,7 +130,7 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
         BigInteger bd = new BigInteger(String.valueOf(il));
         dataObject_a.setFloat(propertyPath_a_b_c, fl);// add it to instance list
 
-        this.assertEquals(bd, dataObject_a.getBigInteger(property));
+        assertEquals(bd, dataObject_a.getBigInteger(property));
     }
 
     //8. purpose: getBigInteger with Undefined float Property
@@ -159,7 +161,7 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
         BigInteger bd = new BigInteger(String.valueOf(in));
         dataObject_a.setInt(propertyPath_a_b_c, in);// add it to instance list
 
-        this.assertEquals(bd, dataObject_a.getBigInteger(propertyPath_a_b_c));
+        assertEquals(bd, dataObject_a.getBigInteger(propertyPath_a_b_c));
     }
 
     //10. purpose: getBigInteger with Undefined int Property
@@ -190,7 +192,7 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
         BigInteger bd = new BigInteger(String.valueOf(lg));
         dataObject_a.setLong(propertyPath_a_b_c, lg);// add it to instance list
 
-        this.assertEquals(bd, dataObject_a.getBigInteger(propertyPath_a_b_c));
+        assertEquals(bd, dataObject_a.getBigInteger(propertyPath_a_b_c));
     }
 
     //12. purpose: getBigInteger with Undefined long Property
@@ -237,7 +239,7 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
         BigInteger bd = new BigInteger(str);
         dataObject_a.setString(propertyPath_a_b_c, str);// add it to instance list
 
-        this.assertEquals(bd, dataObject_a.getBigInteger(propertyPath_a_b_c));
+        assertEquals(bd, dataObject_a.getBigInteger(propertyPath_a_b_c));
     }
 
     //15. purpose: getBigInteger with Undefined string Property
@@ -269,7 +271,7 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
 
         dataObject_a.setBytes(propertyPath_a_b_c, b);// add it to instance list
 
-        this.assertEquals(bin, dataObject_a.getBigInteger(propertyPath_a_b_c));
+        assertEquals(bin, dataObject_a.getBigInteger(propertyPath_a_b_c));
     }
 
     //17. purpose: getBigInteger with Undefined Bytes Property
@@ -301,7 +303,7 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
         BigInteger bd_ = new BigInteger(String.valueOf(bd));
         dataObject_a.setBigDecimal(propertyPath_a_b_c, bd);// add it to instance list
 
-        this.assertEquals(bd_, dataObject_a.getBigInteger(property));
+        assertEquals(bd_, dataObject_a.getBigInteger(property));
     }
 
     //19. purpose: getBigInteger with Undefined decimal Property
@@ -331,7 +333,7 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
         BigInteger bi = new BigInteger("12");
         dataObject_a.setBigInteger(propertyPath_a_b_c, bi);// add it to instance list
 
-        this.assertEquals(bi, dataObject_a.getBigInteger(propertyPath_a_b_c));
+        assertEquals(bi, dataObject_a.getBigInteger(propertyPath_a_b_c));
     }
 
     //21. purpose: getBigInteger with Undefined Integer Property

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ public class StringStringToIntegerIntegerMapAdapter extends XmlAdapter<Map<Integ
         Map<Integer, Integer> theMap = new HashMap<Integer, Integer>();
         Iterator<Map.Entry<String, String>> iter = v.entrySet().iterator();
         while(iter.hasNext()){
-            Map.Entry<String, String> entry = (Map.Entry<String, String>) iter.next();
+            Map.Entry<String, String> entry = iter.next();
             String key = entry.getKey();
             String value = entry.getValue();
 
@@ -42,7 +42,7 @@ public class StringStringToIntegerIntegerMapAdapter extends XmlAdapter<Map<Integ
         Map<String, String> theMap = new HashMap<String, String>();
         Iterator<Map.Entry<Integer, Integer>> iter = v.entrySet().iterator();
         while(iter.hasNext()){
-            Map.Entry<Integer, Integer> entry = (Map.Entry<Integer, Integer>) iter.next();
+            Map.Entry<Integer, Integer> entry = iter.next();
             Integer key = entry.getKey();
             Integer value = entry.getValue();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -656,7 +656,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
     // TODO: 20060906 bidirectional
     public void testListWrapperIterator() {
         //log("SDODataObjectListWrapperTest.testListWrapperIterator()");
-        List aList1 = (List)aRoot5.getList("items/item");
+        List aList1 = aRoot5.getList("items/item");
 
         // Test step:
         // start at index 2 in the bidirectional iterator
@@ -669,7 +669,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
     // int lastIndexOf(Object item)
     public void testListWrapperLastIndexOfInternalNoDupl() {
         //log("SDODataObjectListWrapperTest.testListWrapperLastIndexOfInternalNoDupl()");
-        List aList1 = (List)aRoot5.getList("items/item");
+        List aList1 = aRoot5.getList("items/item");
         SDODataObject anItem = (SDODataObject)aRoot5.get("items/item[2]");
         int anIndex = aList1.lastIndexOf(anItem);
         assertTrue(anIndex == (2 - 1));
@@ -678,7 +678,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
     // int lastIndexOf(Object item)
     public void testListWrapperLastIndexOfNotExisting() {
         //log("SDODataObjectListWrapperTest.testListWrapperLastIndexOfNotExisting()");
-        List aList1 = (List)aRoot5.getList("items/item");
+        List aList1 = aRoot5.getList("items/item");
         try {
             SDODataObject anItem = (SDODataObject)aRoot.get("items/item[4]");
         } catch (IndexOutOfBoundsException e) {
@@ -694,8 +694,8 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
     // ListIterator listIterator()
     public void testListWrapperListIteratorIndirect() {
         //log("SDODataObjectListWrapperTest.testListWrapperListIteratorIndirect()");
-        List aList1 = (List)aRoot5.getList("items/item");
-        List aList2 = (List)aRoot5.getList("items/item");
+        List aList1 = aRoot5.getList("items/item");
+        List aList2 = aRoot5.getList("items/item");
 
         // testing equality will invoke the ListWrapper.listIterator() function
         assertEquals(aList2, aList1);
@@ -705,7 +705,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
     // TODO: 20060906 bidirectional
     public void testListWrapperListIteratorDirect() {
         //log("SDODataObjectListWrapperTest.testListWrapperListIteratorDirect()");
-        List aList1 = (List)aRoot5.getList("items/item");
+        List aList1 = aRoot5.getList("items/item");
 
         // Test step:
         // start at index 0 in the bidirectional iterator
@@ -719,7 +719,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
     // TODO: 20060906 bidirectional
     public void testListWrapperListIteratorIndex() {
         //log("SDODataObjectListWrapperTest.testListWrapperListIteratorIndex()");
-        List aList1 = (List)aRoot5.getList("items/item");
+        List aList1 = aRoot5.getList("items/item");
 
         // Test step:
         // start at index 2 in the bidirectional iterator

@@ -269,8 +269,8 @@ public class DynamicJAXBFromSessionsXMLTestCases extends JAXBTestCases {
                     Text text2 = (Text) controlElement;
                     equal = equal && text1.getNodeValue().equals(text2.getNodeValue());
                 } else if (testElement.getNodeType() == controlElement.ELEMENT_NODE && controlElement.getNodeType() == controlElement.ELEMENT_NODE) {
-                    Element elem1 = (Element) testElement;
-                    Element elem2 = (Element) controlElement;
+                    Element elem1 = testElement;
+                    Element elem2 = controlElement;
                     equal = equal && elem1.getNodeName().equals(elem2.getNodeName());
                     equal = equal && (elem1.getChildNodes().getLength() == elem2.getChildNodes().getLength());
                     compareObjects(elem1.getFirstChild().getNodeValue(), elem2.getFirstChild().getNodeValue());

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -79,7 +79,7 @@ public class SDOResolvableTest extends SDOResolvableTestCases {
             FileInputStream inStream = new FileInputStream("org/eclipse/persistence/testing/sdo/helper/xmlhelper/PurchaseOrderNSDeep.xml");
 
             XMLDocument document = xmlHelper.load(inStream);
-            root = (DataObject)document.getRootObject();
+            root = document.getRootObject();
             inStream.close();
 
         } catch (Exception e) {
@@ -124,7 +124,7 @@ public class SDOResolvableTest extends SDOResolvableTestCases {
 
         serialize(root, SERIALIZATION_FILE_NAME);
         // deserialize the binary file representation
-        DataObject aDeserializedDataObject = (DataObject)deserialize(SERIALIZATION_FILE_NAME);
+        DataObject aDeserializedDataObject = deserialize(SERIALIZATION_FILE_NAME);
 
         // the original and deserialized objects should be the same
         assertTrue(equalityHelper.equal(root, aDeserializedDataObject));

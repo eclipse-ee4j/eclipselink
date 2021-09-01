@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -85,7 +85,7 @@ public class XmlAnyElementListTestCases extends JAXBWithJSONTestCases{
         DatabaseMapping mapping = xDesc.getMappingForAttributeName("stuff");
         assertNotNull("No mapping exists on EmployeeWithList for attribute [stuff].", mapping);
         assertTrue("Expected an XMLAnyCollectionMapping for attribute [stuff], but was [" + mapping.toString() +"].", mapping instanceof XMLAnyCollectionMapping);
-        assertTrue("Expected container class [java.util.LinkedList] but was ["+((XMLAnyCollectionMapping) mapping).getContainerPolicy().getContainerClassName()+"]", ((XMLAnyCollectionMapping) mapping).getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
+        assertTrue("Expected container class [java.util.LinkedList] but was ["+ mapping.getContainerPolicy().getContainerClassName()+"]", mapping.getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
     }
 
     public void testSchemaGen() throws Exception{

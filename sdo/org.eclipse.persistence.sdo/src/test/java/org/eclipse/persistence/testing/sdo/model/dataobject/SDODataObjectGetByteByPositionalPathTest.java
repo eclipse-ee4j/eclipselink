@@ -20,6 +20,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -37,7 +39,7 @@ public class SDODataObjectGetByteByPositionalPathTest extends SDODataObjectGetBy
 
     //1. purpose: getByte with boolean property
     public void testGetByteFromBoolean() {
-        SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_BOOLEAN);
         dataObject_c.set(property, true);
         try {
@@ -49,20 +51,20 @@ public class SDODataObjectGetByteByPositionalPathTest extends SDODataObjectGetBy
 
     //2. purpose: getByte with Defined Byte Property
     public void testGetByteConversionFromDefinedByteProperty() {
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_BYTE);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_BYTE);
 
         byte by = 12;
 
         dataObject_a.setByte(propertyPath_a_b_c, by);// add it to instance list
 
-        this.assertEquals(by, dataObject_a.getByte(propertyPath_a_b_c));
+        assertEquals(by, dataObject_a.getByte(propertyPath_a_b_c));
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyBracketPositionalSet() {
         // dataObject's type add boolean property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_BYTE);
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setMany(true);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_BYTE);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setMany(true);
 
         byte by = 12;
         List b = new ArrayList();
@@ -71,15 +73,15 @@ public class SDODataObjectGetByteByPositionalPathTest extends SDODataObjectGetBy
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setByte(property3, by);
 
-        this.assertEquals(by, dataObject_a.getByte(property3));
+        assertEquals(by, dataObject_a.getByte(property3));
 
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyDotPositionalSet() {
         // dataObject's type add boolean property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_BYTE);
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setMany(true);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_BYTE);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setMany(true);
 
         byte by = 12;
         List b = new ArrayList();
@@ -87,18 +89,18 @@ public class SDODataObjectGetByteByPositionalPathTest extends SDODataObjectGetBy
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setByte(property + ".0", by);
 
-        this.assertEquals(by, dataObject_a.getByte(property + ".0"));
+        assertEquals(by, dataObject_a.getByte(property + ".0"));
 
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyBracketInPathMiddle() {
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_BYTE);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_BYTE);
         byte by = 12;
 
         dataObject_a.setByte(property1, by);// c dataobject's a property has value boolean 'true'
 
-        this.assertEquals(by, dataObject_a.getByte(property1));
+        assertEquals(by, dataObject_a.getByte(property1));
     }
 
     /*public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet() {
@@ -130,7 +132,7 @@ public class SDODataObjectGetByteByPositionalPathTest extends SDODataObjectGetBy
 
     //4. purpose: getByte with character property
     public void testGetByteFromCharacter() {
-        SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_CHARACTER);
         char theValue = 'e';
         dataObject_c.set(property, theValue);
@@ -143,35 +145,35 @@ public class SDODataObjectGetByteByPositionalPathTest extends SDODataObjectGetBy
 
     //5. purpose: getByte with Defined Double Property
     public void testGetByteConversionFromDefinedDoubleProperty() {
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_DOUBLE);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_DOUBLE);
 
         double db = 12;
         dataObject_a.setDouble(propertyPath_a_b_c, db);// add it to instance list
 
-        this.assertEquals((byte)db, dataObject_a.getByte(propertyPath_a_b_c));
+        assertEquals((byte)db, dataObject_a.getByte(propertyPath_a_b_c));
     }
 
 
     //7. purpose: getByte with Defined float Property
     public void testGetByteConversionFromDefinedFloatProperty() {
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_FLOAT);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_FLOAT);
 
         float fl = 12;
         dataObject_a.setFloat(propertyPath_a_b_c, fl);// add it to instance list
 
-        this.assertEquals((byte)fl, dataObject_a.getByte(propertyPath_a_b_c));
+        assertEquals((byte)fl, dataObject_a.getByte(propertyPath_a_b_c));
     }
 
 
     //9. purpose: getByte with Defined int Property
     public void testGetByteConversionFromDefinedIntProperty() {
         // dataObject's type add int property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_INT);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_INT);
 
         int in = 12;
         dataObject_a.setInt(propertyPath_a_b_c, in);// add it to instance list
 
-        this.assertEquals((byte)in, dataObject_a.getByte(propertyPath_a_b_c));
+        assertEquals((byte)in, dataObject_a.getByte(propertyPath_a_b_c));
     }
 
 
@@ -179,42 +181,42 @@ public class SDODataObjectGetByteByPositionalPathTest extends SDODataObjectGetBy
     //11. purpose: getByte with Defined long Property
     public void testGetByteConversionFromDefinedLongProperty() {
         // dataObject's type add short property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_LONG);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_LONG);
 
         long lg = 12;
         dataObject_a.setLong(propertyPath_a_b_c, lg);// add it to instance list
 
-        this.assertEquals((byte)lg, dataObject_a.getByte(propertyPath_a_b_c));
+        assertEquals((byte)lg, dataObject_a.getByte(propertyPath_a_b_c));
     }
 
 
     //13. purpose: getByte with Defined short Property
     public void testGetByteConversionFromDefinedShortProperty() {
         // dataObject's type add short property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_SHORT);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_SHORT);
 
         short shr = 12;
         dataObject_a.setShort(propertyPath_a_b_c, shr);// add it to instance list
 
-        this.assertEquals((byte)shr, dataObject_a.getByte(propertyPath_a_b_c));
+        assertEquals((byte)shr, dataObject_a.getByte(propertyPath_a_b_c));
     }
 
 
     //15. purpose: getByte with Defined String Property
     public void testGetByteConversionFromDefinedStringProperty() {
         // dataObject's type add int property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_STRING);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_STRING);
 
         String str = "12";
         Byte s_d = Byte.valueOf(str);
         dataObject_a.setString(propertyPath_a_b_c, str);// add it to instance list
 
-        this.assertEquals(s_d.byteValue(), dataObject_a.getByte(property));
+        assertEquals(s_d.byteValue(), dataObject_a.getByte(property));
     }
 
     //17. purpose: getByte with bytes property
     public void testGetByteFromBytes() {
-        SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_BYTES);
 
         dataObject_c.set(property, new byte[]{10, 100});
@@ -227,7 +229,7 @@ public class SDODataObjectGetByteByPositionalPathTest extends SDODataObjectGetBy
 
     //18. purpose: getByte with decimal property
     public void testGetByteFromDecimal() {
-        SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_DECIMAL);
         BigDecimal theValue =new BigDecimal(10);
         dataObject_c.set(property, theValue);
@@ -242,7 +244,7 @@ public class SDODataObjectGetByteByPositionalPathTest extends SDODataObjectGetBy
 
     //19. purpose: getByte with decimal property
     public void testGetByteFromInteger() {
-        SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_INTEGER);
         BigInteger theValue =new BigInteger("10");
         dataObject_c.set(property, theValue);
@@ -258,7 +260,7 @@ public class SDODataObjectGetByteByPositionalPathTest extends SDODataObjectGetBy
 
     //20. purpose: getByte with date property
     public void testGetByteFromDate() {
-        SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_DATE);
         dataObject_c.set(property, Calendar.getInstance().getTime());
         try {

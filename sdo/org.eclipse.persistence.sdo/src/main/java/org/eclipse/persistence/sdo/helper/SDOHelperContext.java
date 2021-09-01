@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -246,7 +246,7 @@ public class SDOHelperContext implements HelperContext {
      */
     public SDOHelperContext(ClassLoader aClassLoader) {
         super();
-        this.identifier = this.GLOBAL_HELPER_IDENTIFIER;
+        this.identifier = GLOBAL_HELPER_IDENTIFIER;
         initialize(aClassLoader);
     }
 
@@ -943,7 +943,7 @@ public class SDOHelperContext implements HelperContext {
      * care about "destroy", "start" etc.
      *
      */
-    public static class MyNotificationFilter extends NotificationFilterSupport {
+    static class MyNotificationFilter extends NotificationFilterSupport {
         MyNotificationFilter() {
             super.enableType(JBOSS_TYPE_STOP);
         }

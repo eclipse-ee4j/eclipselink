@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -406,7 +406,7 @@ public class SDOSequenceTest extends SDOSequenceTestCases {
         SDODataObject po = (SDODataObject)root.get(PO_SEQUENCE_PATH);
         assertNotNull(po);
         assertTrue(po.getType().isSequenced());
-        SDOSequence aSequence = (SDOSequence)po.getSequence();
+        SDOSequence aSequence = po.getSequence();
         assertNotNull(aSequence);
 //        assertEquals(4, aSequence.size());
     }
@@ -436,7 +436,7 @@ public class SDOSequenceTest extends SDOSequenceTestCases {
         SDODataObject po = (SDODataObject)root.get(PO_SEQUENCE_PATH);
         assertNotNull(po);
         assertTrue(po.getType().isSequenced());
-        SDOSequence aSequence = (SDOSequence)po.getSequence();
+        SDOSequence aSequence = po.getSequence();
 
 
         // move 2 sequenced objects
@@ -455,7 +455,7 @@ public class SDOSequenceTest extends SDOSequenceTestCases {
         SDODataObject po = (SDODataObject)root.get(PO_SEQUENCE_PATH);
         assertNotNull(po);
         assertTrue(po.getType().isSequenced());
-        SDOSequence aSequence = (SDOSequence)po.getSequence();
+        SDOSequence aSequence = po.getSequence();
 
         // move 2 sequenced objects
         Property beforeMoveProp0 = aSequence.getProperty(0);

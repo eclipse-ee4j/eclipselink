@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import commonj.sdo.Property;
 import org.eclipse.persistence.sdo.SDOConstants;
@@ -42,7 +43,7 @@ public class SDODataObjectSetGetWithPropertyTest extends SDODataObjectTestCases 
         Property definedProperty = dataObject.getInstanceProperty(DEFINED_PROPERTY_NAME);
 
         // check it is in the list
-        this.assertTrue(dataObject.getInstanceProperties().contains(definedProperty));
+        assertTrue(dataObject.getInstanceProperties().contains(definedProperty));
     }
 
     //required conditions: none
@@ -53,7 +54,7 @@ public class SDODataObjectSetGetWithPropertyTest extends SDODataObjectTestCases 
         dataObject.set(definedProperty, CONTROL_STRING_1);// set defined Property value
 
         String testValue = (String)dataObject.get(definedProperty);
-        this.assertEquals(CONTROL_STRING_1, testValue);// check value is set as we want
+        assertEquals(CONTROL_STRING_1, testValue);// check value is set as we want
     }
 
     //purpose:  Confirm that the undefined property is not in instance properties.
@@ -62,7 +63,7 @@ public class SDODataObjectSetGetWithPropertyTest extends SDODataObjectTestCases 
         undefinedProperty.setName(UNDEFINED_PROPERTY_NAME);
 
         // check it is not in the list
-        this.assertFalse(dataObject.getInstanceProperties().contains(undefinedProperty));
+        assertFalse(dataObject.getInstanceProperties().contains(undefinedProperty));
     }
 
     //required conditions: 1) DataObject is open
@@ -96,7 +97,7 @@ public class SDODataObjectSetGetWithPropertyTest extends SDODataObjectTestCases 
         dataObject.set(undefinedProperty, CONTROL_STRING_1);// set undefined Property value
 
         Object testValue = dataObject.get(undefinedProperty);// check it is in
-        this.assertEquals(CONTROL_STRING_1, testValue);// also verify its value
+        assertEquals(CONTROL_STRING_1, testValue);// also verify its value
     }
 
     //required conditions: 1) DataObject is open
@@ -110,7 +111,7 @@ public class SDODataObjectSetGetWithPropertyTest extends SDODataObjectTestCases 
         dataObject.set(undefinedProperty, CONTROL_STRING_1);// set undefined Property value
 
         // check it is in the list
-        this.assertTrue(dataObject.getInstanceProperties().contains(undefinedProperty));
+        assertTrue(dataObject.getInstanceProperties().contains(undefinedProperty));
     }
 
     //required conditions: 1) DataObject is not open
@@ -119,10 +120,10 @@ public class SDODataObjectSetGetWithPropertyTest extends SDODataObjectTestCases 
         SDOProperty undefinedProperty = new SDOProperty(aHelperContext);// make a undefined Property
         undefinedProperty.setName(UNDEFINED_PROPERTY_NAME);
 
-        this.assertFalse(dataObject_Not_Open.getType().isOpen());// check if DataObject is not Opened
+        assertFalse(dataObject_Not_Open.getType().isOpen());// check if DataObject is not Opened
 
         // check if it is undefined
-        this.assertFalse(dataObject_Not_Open.getInstanceProperties().contains(undefinedProperty));
+        assertFalse(dataObject_Not_Open.getInstanceProperties().contains(undefinedProperty));
 
         try {
             dataObject_Not_Open.set(undefinedProperty, CONTROL_STRING_1);// set undefined Property value
@@ -137,10 +138,10 @@ public class SDODataObjectSetGetWithPropertyTest extends SDODataObjectTestCases 
         SDOProperty undefinedProperty = new SDOProperty(aHelperContext);// make a undefined Property
         undefinedProperty.setName(UNDEFINED_PROPERTY_NAME);
 
-        this.assertFalse(dataObject_Not_Open.getType().isOpen());// check if DataObject is not Opened
+        assertFalse(dataObject_Not_Open.getType().isOpen());// check if DataObject is not Opened
 
         // check if it is undefined
-        this.assertFalse(dataObject_Not_Open.getInstanceProperties().contains(undefinedProperty));
+        assertFalse(dataObject_Not_Open.getInstanceProperties().contains(undefinedProperty));
 
         try {
             dataObject_Not_Open.get(undefinedProperty);// get undefined Property value
@@ -171,7 +172,7 @@ public class SDODataObjectSetGetWithPropertyTest extends SDODataObjectTestCases 
         Property ReadOnlyProperty = dataObject_WithReadOnlyProperty.getInstanceProperty(DEFINED_PROPERTY_READONLY_NAME);// make a undefined Property
 
         // check if it is undefined
-        this.assertTrue(dataObject_WithReadOnlyProperty.getInstanceProperties().contains(ReadOnlyProperty));
+        assertTrue(dataObject_WithReadOnlyProperty.getInstanceProperties().contains(ReadOnlyProperty));
 
         try {
             dataObject_WithReadOnlyProperty.set(ReadOnlyProperty, CONTROL_STRING_1);// set undefined Property value

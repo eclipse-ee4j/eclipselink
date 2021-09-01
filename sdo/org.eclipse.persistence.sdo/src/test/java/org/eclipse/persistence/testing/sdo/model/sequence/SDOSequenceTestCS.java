@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1048,6 +1048,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
      * @see #get(String)
      * @deprecated in 2.1.0.
      */
+    @Deprecated
     public void test_SequenceReturnFrom_SDODataObject_getSequence_StringFails() {
         defineAndLoadRoot(false, false);
         assertNotNull(root);
@@ -1082,6 +1083,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
      * @see #get(int)
      * @deprecated in 2.1.0.
      */
+    @Deprecated
     public void test_SequenceReturnFrom_SDODataObject_getSequence_index_type_complex_many() {
         defineAndLoadRoot(false, false);
         assertNotNull(root);
@@ -1165,6 +1167,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
      * @see #get(Property)
      * @deprecated in 2.1.0.
      */
+    @Deprecated
     public void test_SequenceReturnFrom_SDODataObject_getSequence_Property_type_single_many() {
         defineAndLoadRoot(false, false);
         assertNotNull(root);
@@ -1585,7 +1588,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
         // copy po
-        DataObject rootCopy = (DataObject)copyHelper.copy(root);
+        DataObject rootCopy = copyHelper.copy(root);
         // check sequence was copied
         SDOSequence aSequenceCopy = getSequence(rootCopy, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         assertNotNull(aSequenceCopy);
@@ -1702,7 +1705,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
         // copy po
-        DataObject rootCopy = (DataObject)copyHelper.copy(root);
+        DataObject rootCopy = copyHelper.copy(root);
         // check sequence was copied
         SDOSequence aSequenceCopy = getSequence(rootCopy, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         assertNotNull(aSequenceCopy);
@@ -1719,7 +1722,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
         // copy po
-        DataObject rootCopy = (DataObject)copyHelper.copy(root);
+        DataObject rootCopy = copyHelper.copy(root);
         // check sequence was copied
         SDOSequence aSequenceCopy = getSequence(rootCopy, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         assertNotNull(aSequenceCopy);
@@ -1754,7 +1757,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         Sequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
         // copy po
-        DataObject rootCopy = (DataObject)copyHelper.copy(root);
+        DataObject rootCopy = copyHelper.copy(root);
         // check sequence was copied
         Sequence aSequenceCopy = getSequence(rootCopy, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         assertNotNull(aSequenceCopy);
@@ -3279,6 +3282,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
     /**
     * @deprecated replaced by {@link #addText(String)} in 2.1.0
     */
+    @Deprecated
     public void test_voidReturnFrom_add_String() {
         // String text) {
         defineAndLoadRoot(false, false);
@@ -3303,6 +3307,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
     /**
      * @deprecated replaced by {@link #addText(int, String)} in 2.1.0
      */
+    @Deprecated
     public void test_voidReturnFrom_add_int_String() {
         defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
@@ -3507,7 +3512,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
 
     public void test_getValue_whereSettingIsNull() {
         registerCustomerType(true, null);
-        DataObject cust1 = (DataObject)dataFactory.create(typeHelper.getType(URINAME, CUSTOMER_TYPENAME));
+        DataObject cust1 = dataFactory.create(typeHelper.getType(URINAME, CUSTOMER_TYPENAME));
         cust1.set("custID", 5);
         List emails = new ArrayList();
         emails.add("email1-DF@myCompany.com");

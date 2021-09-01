@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +18,8 @@ import java.io.InputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.util.ArrayList;
+
+import junit.framework.TestCase;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLMarshaller;
@@ -133,7 +135,7 @@ public class TwoProjectsTestSuite extends OXTestCase {
         this.assertXMLIdentical(controlDocument, testDocument);
 
         int numSessions = xmlContext.getSessions().size();
-        this.assertEquals(3, numSessions);
+        assertEquals(3, numSessions);
     }
 
     public void testMarshalCustomerSAX() throws Exception {
@@ -189,7 +191,7 @@ public class TwoProjectsTestSuite extends OXTestCase {
         log(testCustomer.toString());
         log("");
 
-        this.assertEquals(controlCustomer, testCustomer);
+        assertEquals(controlCustomer, testCustomer);
     }
 
     public void testUnmarshalCustomerCollectionConstructor() throws Exception {
@@ -209,7 +211,7 @@ public class TwoProjectsTestSuite extends OXTestCase {
         log(testCustomer.toString());
         log("");
 
-        this.assertEquals(controlCustomer, testCustomer);
+        assertEquals(controlCustomer, testCustomer);
     }
 
     public void testMarshalEmployeeSAX() throws Exception {
@@ -265,7 +267,7 @@ public class TwoProjectsTestSuite extends OXTestCase {
         log(testEmployee.toString());
         log("");
 
-        this.assertEquals(controlEmployee, testEmployee);
+        assertEquals(controlEmployee, testEmployee);
     }
 
     public void testUnmarshalEmployeeCollectionConstructor() throws Exception {
@@ -286,7 +288,7 @@ public class TwoProjectsTestSuite extends OXTestCase {
         log(testEmployee.toString());
         log("");
 
-        this.assertEquals(controlEmployee, testEmployee);
+        assertEquals(controlEmployee, testEmployee);
     }
 
     public void testMarshalCustomerDOM() throws Exception {
@@ -321,7 +323,7 @@ public class TwoProjectsTestSuite extends OXTestCase {
         log(testCustomer.toString());
         log("");
 
-        this.assertEquals(controlCustomer, testCustomer);
+        assertEquals(controlCustomer, testCustomer);
     }
 
     public void testMarshalEmployeeDOM() throws Exception {
@@ -356,7 +358,7 @@ public class TwoProjectsTestSuite extends OXTestCase {
         log(testEmployee.toString());
         log("");
 
-        this.assertEquals(controlEmployee, testEmployee);
+        assertEquals(controlEmployee, testEmployee);
     }
 
     private Document getControlDocument(String resourceName) throws Exception {

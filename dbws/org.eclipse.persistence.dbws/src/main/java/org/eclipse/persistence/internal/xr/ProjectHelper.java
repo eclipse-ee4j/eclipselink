@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,7 +62,7 @@ public class ProjectHelper {
             XRDynamicPropertiesManager xrDPM = null;
             if (!clz.getName().endsWith(COLLECTION_WRAPPER_SUFFIX)) {
                 try {
-                    XRDynamicEntity newInstance = (XRDynamicEntity)clz.newInstance();
+                    XRDynamicEntity newInstance = (XRDynamicEntity)clz.getConstructor().newInstance();
                     xrDPM = newInstance.fetchPropertiesManager();
                 }
                 catch (Exception e) {

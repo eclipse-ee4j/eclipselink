@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,11 +24,11 @@ public class Foo
     protected final static QName NAME = new QName("", "foo");
 
     public Foo(Object value) {
-        super(NAME, ((Class) Object.class), null, value);
+        super(NAME, Object.class, null, value);
     }
 
     public Foo() {
-        super(NAME, ((Class) Object.class), null, null);
+        super(NAME, Object.class, null, null);
     }
 
 }

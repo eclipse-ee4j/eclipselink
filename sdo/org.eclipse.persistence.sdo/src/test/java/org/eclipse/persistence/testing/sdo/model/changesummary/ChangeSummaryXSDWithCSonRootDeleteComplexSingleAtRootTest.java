@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -92,7 +92,7 @@ public class ChangeSummaryXSDWithCSonRootDeleteComplexSingleAtRootTest extends C
             assertNull(shipToDO.get("street"));
             DataObject oldContainer = ((SDOChangeSummary)cs).getOldContainer(shipToDO);
             Property shipToProp = oldContainer.getInstanceProperty("shipTo");
-            ChangeSummary.Setting oldSetting = ((SDOChangeSummary)cs).getOldValue(oldContainer, shipToProp);
+            ChangeSummary.Setting oldSetting = cs.getOldValue(oldContainer, shipToProp);
             DataObject deepCopyShipTo = (DataObject)oldSetting.getValue();
 
             assertEquals("123 Maple Street", deepCopyShipTo.get("street"));

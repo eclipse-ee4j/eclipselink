@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -147,16 +147,16 @@ public class ChangeSummaryXSDWithCSonChildProject extends SDOTestCase {
         Property sfProp = yardDO.getInstanceProperty("squarefootage");
         Property widthProp = yardDO.getInstanceProperty("width");
         Property lengthProp = yardDO.getInstanceProperty("length");
-        ChangeSummary.Setting yardSFsetting = (ChangeSummary.Setting)cs.getOldValue(yardDO, sfProp);
+        ChangeSummary.Setting yardSFsetting = cs.getOldValue(yardDO, sfProp);
         assertEquals(yardSFsetting.getValue(), null);
 
         //TODO: uncomment this line.  Will fail unless Node Null policy stuff is fixed
         //assertEquals(false, yardSFsetting.isSet());
-        ChangeSummary.Setting yardWidthsetting = (ChangeSummary.Setting)cs.getOldValue(yardDO, widthProp);
+        ChangeSummary.Setting yardWidthsetting = cs.getOldValue(yardDO, widthProp);
         assertEquals("65", yardWidthsetting.getValue());
         assertEquals(true, yardWidthsetting.isSet());
 
-        ChangeSummary.Setting yardLengththsetting = (ChangeSummary.Setting)cs.getOldValue(yardDO, lengthProp);
+        ChangeSummary.Setting yardLengththsetting = cs.getOldValue(yardDO, lengthProp);
         assertEquals("45", yardLengththsetting.getValue());
         assertEquals(true, yardLengththsetting.isSet());
 
@@ -170,16 +170,16 @@ public class ChangeSummaryXSDWithCSonChildProject extends SDOTestCase {
         Property sfProp = yardDO.getInstanceProperty("squarefootage");
         Property widthProp = yardDO.getInstanceProperty("width");
         Property lengthProp = yardDO.getInstanceProperty("length");
-        ChangeSummary.Setting yardSFsetting = (ChangeSummary.Setting)cs.getOldValue(yardDO, sfProp);
+        ChangeSummary.Setting yardSFsetting = cs.getOldValue(yardDO, sfProp);
         assertEquals(yardSFsetting.getValue(), null);
 
         //TODO: uncomment this line.  Will fail unless Node Null policy stuff is fixed
         //assertEquals(false, yardSFsetting.isSet());
-        ChangeSummary.Setting yardWidthsetting = (ChangeSummary.Setting)cs.getOldValue(yardDO, widthProp);
+        ChangeSummary.Setting yardWidthsetting = cs.getOldValue(yardDO, widthProp);
         assertEquals("65", yardWidthsetting.getValue());
         assertEquals(true, yardWidthsetting.isSet());
 
-        ChangeSummary.Setting yardLengththsetting = (ChangeSummary.Setting)cs.getOldValue(yardDO, lengthProp);
+        ChangeSummary.Setting yardLengththsetting = cs.getOldValue(yardDO, lengthProp);
         assertEquals("45", yardLengththsetting.getValue());
         assertEquals(true, yardLengththsetting.isSet());
     }

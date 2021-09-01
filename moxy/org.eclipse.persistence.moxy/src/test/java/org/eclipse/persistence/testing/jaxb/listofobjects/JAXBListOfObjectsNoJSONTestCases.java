@@ -55,7 +55,7 @@ public abstract class JAXBListOfObjectsNoJSONTestCases extends JAXBTestCases{
         classLoader = new JaxbClassLoader(Thread.currentThread()
                 .getContextClassLoader());
         JAXBContextFactory factory = new JAXBContextFactory();
-        jaxbContext = factory.createContext(newClasses, null, classLoader);
+        jaxbContext = JAXBContextFactory.createContext(newClasses, null, classLoader);
         jaxbMarshaller = jaxbContext.createMarshaller();
         jaxbUnmarshaller = jaxbContext.createUnmarshaller();
     }
@@ -78,7 +78,7 @@ public abstract class JAXBListOfObjectsNoJSONTestCases extends JAXBTestCases{
         }
 
         types = newTypes;
-        jaxbContext = factory.createContext(newTypes, props, classLoader);
+        jaxbContext = JAXBContextFactory.createContext(newTypes, props, classLoader);
         jaxbMarshaller = jaxbContext.createMarshaller();
         jaxbUnmarshaller = jaxbContext.createUnmarshaller();
     }
@@ -127,7 +127,7 @@ public abstract class JAXBListOfObjectsNoJSONTestCases extends JAXBTestCases{
         if(null != XML_INPUT_FACTORY) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
             XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(instream);
-            Object testObject = ((JAXBUnmarshaller)jaxbUnmarshaller).unmarshal(xmlStreamReader, getClassForDeclaredTypeOnUnmarshal());
+            Object testObject = jaxbUnmarshaller.unmarshal(xmlStreamReader, getClassForDeclaredTypeOnUnmarshal());
             instream.close();
 
             JAXBElement controlObj = (JAXBElement)getControlObject();
@@ -175,7 +175,7 @@ public abstract class JAXBListOfObjectsNoJSONTestCases extends JAXBTestCases{
         if(null != XML_INPUT_FACTORY) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
             javax.xml.stream.XMLEventReader reader = XML_INPUT_FACTORY.createXMLEventReader(instream);
-            Object obj = ((JAXBUnmarshaller)jaxbUnmarshaller).unmarshal(reader, getClassForDeclaredTypeOnUnmarshal());
+            Object obj = jaxbUnmarshaller.unmarshal(reader, getClassForDeclaredTypeOnUnmarshal());
 
             JAXBElement controlObj = (JAXBElement)getControlObject();
             JAXBElement newControlObj = new JAXBElement(controlObj.getName(), getClassForDeclaredTypeOnUnmarshal(), controlObj.getScope(), controlObj.getValue());
@@ -198,7 +198,7 @@ public abstract class JAXBListOfObjectsNoJSONTestCases extends JAXBTestCases{
         if(isUnmarshalTest()) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
             Node node  = parser.parse(instream);
-            Object obj = ((JAXBUnmarshaller)jaxbUnmarshaller).unmarshal(node, getClassForDeclaredTypeOnUnmarshal());
+            Object obj = jaxbUnmarshaller.unmarshal(node, getClassForDeclaredTypeOnUnmarshal());
 
             JAXBElement controlObj = (JAXBElement)getControlObject();
             JAXBElement newControlObj = new JAXBElement(controlObj.getName(), getClassForDeclaredTypeOnUnmarshal(), controlObj.getScope(), controlObj.getValue());

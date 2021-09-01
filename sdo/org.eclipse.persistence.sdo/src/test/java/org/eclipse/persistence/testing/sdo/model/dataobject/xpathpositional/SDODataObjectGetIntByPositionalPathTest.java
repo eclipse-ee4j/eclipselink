@@ -18,6 +18,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+
+import junit.framework.TestCase;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
 
@@ -54,7 +56,7 @@ public class SDODataObjectGetIntByPositionalPathTest extends SDODataObjectGetByP
 
         dataObject_a.setByte(propertyPath_a_b_c, by);// add it to instance list
 
-        this.assertEquals((int)by, dataObject_a.getInt(propertyPath_a_b_c));
+        assertEquals(by, dataObject_a.getInt(propertyPath_a_b_c));
     }
 
     //3. purpose: getInt with Undefined Byte Property
@@ -99,7 +101,7 @@ public class SDODataObjectGetIntByPositionalPathTest extends SDODataObjectGetByP
         double db = 12;
         dataObject_a.setDouble(propertyPath_a_b_c, db);// add it to instance list
 
-        this.assertEquals((int)db, dataObject_a.getInt(propertyPath_a_b_c));
+        assertEquals((int)db, dataObject_a.getInt(propertyPath_a_b_c));
     }
 
     //6. purpose: getInt with Undefined Double Property
@@ -129,7 +131,7 @@ public class SDODataObjectGetIntByPositionalPathTest extends SDODataObjectGetByP
         float fl = 12;
         dataObject_a.setFloat(propertyPath_a_b_c, fl);// add it to instance list
 
-        this.assertEquals((int)fl, dataObject_a.getInt(propertyPath_a_b_c));
+        assertEquals((int)fl, dataObject_a.getInt(propertyPath_a_b_c));
     }
 
     //8. purpose: getInt with Undefined float Property
@@ -159,7 +161,7 @@ public class SDODataObjectGetIntByPositionalPathTest extends SDODataObjectGetByP
         int in = 12;
         dataObject_a.setInt(propertyPath_a_b_c, in);// add it to instance list
 
-        this.assertEquals((int)in, dataObject_a.getInt(propertyPath_a_b_c));
+        assertEquals(in, dataObject_a.getInt(propertyPath_a_b_c));
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
@@ -179,7 +181,7 @@ public class SDODataObjectGetIntByPositionalPathTest extends SDODataObjectGetByP
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setInt(property3, in);
 
-        this.assertEquals(in, dataObject_a.getInt(property3));
+        assertEquals(in, dataObject_a.getInt(property3));
 
     }
 
@@ -199,7 +201,7 @@ public class SDODataObjectGetIntByPositionalPathTest extends SDODataObjectGetByP
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setInt(property + ".0", in);
 
-        this.assertEquals(in, dataObject_a.getInt(property + ".0"));
+        assertEquals(in, dataObject_a.getInt(property + ".0"));
 
     }
 
@@ -215,7 +217,7 @@ public class SDODataObjectGetIntByPositionalPathTest extends SDODataObjectGetByP
 
         dataObject_a.setInt(property1, in);// c dataobject's a property has value boolean 'true'
 
-        this.assertEquals(in, dataObject_a.getInt(property1));
+        assertEquals(in, dataObject_a.getInt(property1));
     }
 
     /* public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet() {
@@ -263,7 +265,7 @@ public class SDODataObjectGetIntByPositionalPathTest extends SDODataObjectGetByP
         long lg = 12;
         dataObject_a.setLong(propertyPath_a_b_c, lg);// add it to instance list
 
-        this.assertEquals((int)lg, dataObject_a.getInt(propertyPath_a_b_c));
+        assertEquals((int)lg, dataObject_a.getInt(propertyPath_a_b_c));
     }
 
     //12. purpose: getInt with Undefined long Property
@@ -293,7 +295,7 @@ public class SDODataObjectGetIntByPositionalPathTest extends SDODataObjectGetByP
         short shr = 12;
         dataObject_a.setShort(propertyPath_a_b_c, shr);// add it to instance list
 
-        this.assertEquals((int)shr, dataObject_a.getInt(propertyPath_a_b_c));
+        assertEquals(shr, dataObject_a.getInt(propertyPath_a_b_c));
     }
 
     //14. purpose: getInt with Undefined short Property
@@ -324,7 +326,7 @@ public class SDODataObjectGetIntByPositionalPathTest extends SDODataObjectGetByP
         Integer s_d = Integer.valueOf(str);
         dataObject_a.setString(propertyPath_a_b_c, str);// add it to instance list
 
-        this.assertEquals(s_d.intValue(), dataObject_a.getInt(propertyPath_a_b_c));
+        assertEquals(s_d.intValue(), dataObject_a.getInt(propertyPath_a_b_c));
     }
 
     //16. purpose: getInt with Undefined string Property
@@ -370,7 +372,7 @@ public class SDODataObjectGetIntByPositionalPathTest extends SDODataObjectGetByP
         BigDecimal bd = new BigDecimal(db);
         dataObject_a.setBigDecimal(propertyPath_a_b_c, bd);// add it to instance list
 
-        this.assertEquals(bd.intValue(), dataObject_a.getInt(property));
+        assertEquals(bd.intValue(), dataObject_a.getInt(property));
     }
 
     //19. purpose: getInt with Undefined decimal Property
@@ -400,7 +402,7 @@ public class SDODataObjectGetIntByPositionalPathTest extends SDODataObjectGetByP
         BigInteger bi = new BigInteger("12");
         dataObject_a.setBigInteger(propertyPath_a_b_c, bi);// add it to instance list
 
-        this.assertEquals(bi.intValue(), dataObject_a.getInt(propertyPath_a_b_c));
+        assertEquals(bi.intValue(), dataObject_a.getInt(propertyPath_a_b_c));
     }
 
     //21. purpose: getInt with Undefined Integer Property

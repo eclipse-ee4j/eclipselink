@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -68,7 +68,7 @@ public class ComplexType {
      protected final static QName NAME = new QName("", "Local");
 
      public TestLocal(BigDecimal value) {
-         super(NAME, ((Class) BigDecimal.class), ComplexType.class, value);
+         super(NAME, BigDecimal.class, ComplexType.class, value);
      }
 
      public boolean equals(Object theObject){

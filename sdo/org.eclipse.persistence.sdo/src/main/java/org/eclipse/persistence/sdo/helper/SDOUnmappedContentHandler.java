@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -278,7 +278,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
                     value = ((SDODataHelper)aHelperContext.getDataHelper()).convertFromStringValue((String)value, currentProperty.getType(), currentSchemaType);
                 }
                 currentSchemaType = null;
-            } else if ((currentProperty.getType() != null) && ((SDOType)currentProperty.getType()).isDataType()) {
+            } else if ((currentProperty.getType() != null) && currentProperty.getType().isDataType()) {
                 value = ((SDODataHelper)aHelperContext.getDataHelper()).convertFromStringValue((String)value, currentProperty.getType());
             }
 
@@ -309,7 +309,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
             currentProperties.push(globalProperty);
             SDOType theType = ((SDOType)globalProperty.getType());
 
-            if (((SDOType)globalProperty.getType()).isDataType()) {
+            if (globalProperty.getType().isDataType()) {
                 depth++;
             } else {
                 XMLDescriptor xmlDescriptor = theType.getXmlDescriptor();
@@ -413,7 +413,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
         SDOProperty property = new SDOProperty(aHelperContext);
         property.setName(localName);
         property.setMany(isElement);
-        property.setContainment(!((SDOType)type).isDataType());
+        property.setContainment(!type.isDataType());
         property.setType(type);
         property.setUri(uri);
         property.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, isElement);
