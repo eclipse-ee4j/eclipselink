@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,24 +14,29 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.xdb;
 
-import org.w3c.dom.*;
-
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.platform.database.oracle.Oracle9Platform;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.platform.database.oracle.Oracle11Platform;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class UpdateDocumentTest extends TestCase {
     public UpdateDocumentTest() {
         setDescription("Tests updating an XMLType instance");
     }
 
+    @Override
     public void setup() {
-        if (!(getSession().getPlatform() instanceof Oracle9Platform)) {
+        if (!(getSession().getPlatform() instanceof Oracle11Platform)) {
             throw new TestWarningException("This test is intended for the Oracle 9 Platform");
         }
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Employee_XML emp = (Employee_XML)uow.readObject(Employee_XML.class, new ExpressionBuilder().get("firstName").equal("Frank"));
@@ -47,6 +52,7 @@ public class UpdateDocumentTest extends TestCase {
         uow.commit();
     }
 
+    @Override
     public void verify() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         Employee_XML emp = (Employee_XML)getSession().readObject(Employee_XML.class, new ExpressionBuilder().get("firstName").equal("Frank"));

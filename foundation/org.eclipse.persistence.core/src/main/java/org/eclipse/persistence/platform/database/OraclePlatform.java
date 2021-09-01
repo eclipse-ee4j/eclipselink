@@ -32,6 +32,8 @@ import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.sql.Blob;
+import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -51,6 +53,8 @@ import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.internal.databaseaccess.Platform;
+import org.eclipse.persistence.internal.databaseaccess.SimpleAppendCallCustomParameter;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.RelationExpression;
@@ -63,6 +67,8 @@ import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -178,9 +184,9 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     @Override
     protected void appendTimestamp(java.sql.Timestamp timestamp, Writer writer) throws IOException {
         if (usesNativeSQL()) {
-            writer.write("to_date('");
-            writer.write(Helper.printTimestampWithoutNanos(timestamp));
-            writer.write("','yyyy-mm-dd hh24:mi:ss')");
+            writer.write("to_timestamp('");
+            writer.write(Helper.printTimestamp(timestamp));
+            writer.write("','yyyy-mm-dd HH24:MI:SS.FF')");
         } else {
             super.appendTimestamp(timestamp, writer);
         }
@@ -215,7 +221,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      */
     @Override
     protected Hashtable buildFieldTypes() {
-        Hashtable fieldTypeMapping;
+        Hashtable fieldTypeMapping = super.buildFieldTypes();
 
         fieldTypeMapping = new Hashtable();
         fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("NUMBER(1) default 0", false));
@@ -251,18 +257,13 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         fieldTypeMapping.put(java.util.Calendar.class, new FieldTypeDefinition("TIMESTAMP"));
         fieldTypeMapping.put(java.util.Date.class, new FieldTypeDefinition("TIMESTAMP"));
 
-        return fieldTypeMapping;
-    }
+        fieldTypeMapping.put(java.time.LocalDate.class, new FieldTypeDefinition("DATE"));
+        fieldTypeMapping.put(java.time.LocalDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
+        fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIMESTAMP"));
+        fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP")); //TIMESTAMP WITH TIME ZONE ???
+        fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIMESTAMP")); //TIMESTAMP WITH TIME ZONE ???
 
-    /**
-     * Build the hint string used for first rows.
-     *
-     * Allows it to be overridden
-     * @param max
-     * @return
-     */
-    protected String buildFirstRowsHint(int max){
-        return HINT_START + HINT_END;
+        return fieldTypeMapping;
     }
 
     /**
@@ -950,8 +951,6 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
 
     //Oracle Rownum support
     protected String SELECT = "SELECT * FROM (SELECT ";
-    protected String HINT_START = "/*+ FIRST_ROWS";
-    protected String HINT_END = " */ ";
     protected String FROM = "a.*, ROWNUM rnum  FROM (";
     protected String END_FROM = ") a ";
     protected String MAX_ROW = "WHERE ROWNUM <= ";
@@ -965,6 +964,10 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     protected String FROM_ID = ", ROWNUM rnum  FROM (";
     protected String END_FROM_ID = ") ";
     protected String ORDER_BY_ID = " ORDER BY ";
+    /** Locator is required for Oracle thin driver to write LOB value exceeds the limits */
+    protected boolean usesLocatorForLOBWrite = false;
+    /** The LOB value limits when the Locator is required for the writing */
+    protected int lobValueLimits = 0;
 
     /**
      * INTERNAL:
@@ -1019,7 +1022,6 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
                     printer.printString(SELECT_ID_PREFIX);
                     printer.printString(primaryKeyFields);
                     printer.printString(SELECT_ID_SUFFIX);
-                    printer.printString(buildFirstRowsHint(max));
                     printer.printString(primaryKeyFields);
                     printer.printString(FROM_ID);
                     printer.printString(queryString);
@@ -1037,7 +1039,6 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
             } else {
                 if (max > 0) {
                     printer.printString(SELECT);
-                    printer.printString(buildFirstRowsHint(max));
                     printer.printString(FROM);
 
                     call.setFields(statement.printSQL(printer));
@@ -1224,6 +1225,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * @param suppressLogging whether to suppress logging during query execution
      * @return value of {@code true} if given table exists or {@code false} otherwise
      */
+    @Override
     public boolean checkTableExists(final DatabaseSessionImpl session,
             final TableDefinition table, final boolean suppressLogging) {
         try {
@@ -1239,4 +1241,185 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     public int getINClauseLimit() {
         return 1000;
     }
+    /**
+     * INTERNAL:
+     * Return if the LOB value size is larger than the limit, i.e. 4k.
+     */
+    protected boolean lobValueExceedsLimit(Object value) {
+        if (value == null) {
+            return false;
+        }
+        int limit = getLobValueLimits();
+        if (value instanceof byte[]) {//blob
+            return ((byte[])value).length >= limit;
+        } else if (value instanceof String) {//clob
+            return ((String)value).length() >= limit;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * PUBLIC:
+     * Return if the locator is required for the LOB write. The default is true.
+     * For Oracle thin driver, the locator is recommended for large size
+     * ( &gt;4k for Oracle8, &gt;5.9K for Oracle9) BLOB/CLOB value write.
+     */
+    public boolean shouldUseLocatorForLOBWrite() {
+        return usesLocatorForLOBWrite;
+    }
+
+    /**
+     * PUBLIC:
+     * Return the BLOB/CLOB value limits on thin driver. The default value is 0.
+     * If usesLocatorForLOBWrite is true, locator will be used in case the
+     * lob's size is larger than lobValueLimit.
+     */
+    public int getLobValueLimits() {
+        return lobValueLimits;
+    }
+
+    /**
+     * PUBLIC:
+     * Set the BLOB/CLOB value limits on thin driver. The default value is 0.
+     * If usesLocatorForLOBWrite is true, locator will be used in case the
+     * lob's size is larger than lobValueLimit.
+     */
+    public void setLobValueLimits(int lobValueLimits) {
+        this.lobValueLimits = lobValueLimits;
+    }
+
+    /**
+     * INTERNAL:
+     * Write LOB value - works on Oracle 10 and newer
+     */
+    @Override
+    public void writeLOB(DatabaseField field, Object value, ResultSet resultSet, AbstractSession session) throws SQLException {
+        if (isBlob(field.getType())) {
+            //change for 338585 to use getName instead of getNameDelimited
+            Blob blob = (Blob) resultSet.getObject(field.getName());
+            blob.setBytes(1, (byte[]) value);
+            //impose the localization
+            session.log(SessionLog.FINEST, SessionLog.SQL, "write_BLOB", Long.valueOf(blob.length()), field.getName());
+        } else if (isClob(field.getType())) {
+            //change for 338585 to use getName instead of getNameDelimited
+            Clob clob = (Clob) resultSet.getObject(field.getName());
+            clob.setString(1, (String) value);
+            //impose the localization
+            session.log(SessionLog.FINEST, SessionLog.SQL, "write_CLOB", Long.valueOf(clob.length()), field.getName());
+        } else {
+            //do nothing for now, open to BFILE or NCLOB types
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Used in writeLOB method only to identify a BLOB
+     */
+    protected boolean isBlob(Class type) {
+        return ClassConstants.BLOB.equals(type);
+    }
+
+    /**
+     * INTERNAL:
+     * Used in writeLOB method only to identify a CLOB
+     */
+    protected boolean isClob(Class type) {
+        return ClassConstants.CLOB.equals(type);
+    }
+
+    /**
+     * PUBLIC:
+     * Set if the locator is required for the LOB write. The default is true.
+     * For Oracle thin driver, the locator is recommended for large size
+     * ( &gt;4k for Oracle8, &gt;5.9K for Oracle9) BLOB/CLOB value write.
+     */
+    public void setShouldUseLocatorForLOBWrite(boolean usesLocatorForLOBWrite) {
+        this.usesLocatorForLOBWrite = usesLocatorForLOBWrite;
+    }
+
+    /**
+     * INTERNAL
+     * Used by SQLCall.translate(..)
+     * Typically there is no field translation (and this is default implementation).
+     * However on different platforms (Oracle) there are cases such that the values for
+     * binding and appending may be different (BLOB, CLOB).
+     * In these special cases the method returns a wrapper object
+     * which knows whether it should be bound or appended and knows how to do that.
+     */
+    @Override
+    public Object getCustomModifyValueForCall(Call call, Object value, DatabaseField field, boolean shouldBind) {
+        Class type = field.getType();
+        if (isBlob(type) || isClob(type)) {
+            if(value == null) {
+                return null;
+            }
+            value = convertToDatabaseType(value);
+            if (shouldUseLocatorForLOBWrite()) {
+                if (lobValueExceedsLimit(value)) {
+                    ((DatabaseCall)call).addContext(field, value);
+                    if (isBlob(type)) {
+                        if (shouldBind) {
+                            value = new byte[1];
+                        } else {
+                            value = new SimpleAppendCallCustomParameter("empty_blob()");
+                        }
+                    } else {
+                        if (shouldBind) {
+                            value = new String(" ");
+                        } else {
+                            value = new SimpleAppendCallCustomParameter("empty_clob()");
+                        }
+                    }
+                }
+            }
+            return value;
+        }
+        return super.getCustomModifyValueForCall(call, value, field, shouldBind);
+    }
+
+    /**
+     * INTERNAL
+     * Used by SQLCall.appendModify(..)
+     * If the field should be passed to customModifyInDatabaseCall, retun true,
+     * otherwise false.
+     * Methods shouldCustomModifyInDatabaseCall and customModifyInDatabaseCall should be
+     * kept in sync: shouldCustomModifyInDatabaseCall should return true if and only if the field
+     * is handled by customModifyInDatabaseCall.
+     */
+    @Override
+    public boolean shouldUseCustomModifyForCall(DatabaseField field) {
+        if (shouldUseLocatorForLOBWrite()) {
+            Class type = field.getType();
+            if (isBlob(type) || isClob(type)) {
+                return true;
+            }
+        }
+        return super.shouldUseCustomModifyForCall(field);
+    }
+
+    /**
+     * INTERNAL:
+     * Allow for conversion from the Oralce type to the Java type.
+     */
+    @Override
+    public void copyInto(Platform platform) {
+        super.copyInto(platform);
+        if (!(platform instanceof OraclePlatform)) {
+            return;
+        }
+        OraclePlatform oraclePlatform = (OraclePlatform)platform;
+        oraclePlatform.setShouldUseLocatorForLOBWrite(shouldUseLocatorForLOBWrite());
+        oraclePlatform.setLobValueLimits(getLobValueLimits());
+    }
+
+    /**
+     * INTERNAL:
+     * Supports Batch Writing with Optimistic Locking.
+     */
+    @Override
+    public boolean canBatchWriteWithOptimisticLocking(DatabaseCall call){
+        return true;//usesNativeBatchWriting || !call.hasParameters();
+    }
+
 }

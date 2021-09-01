@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,7 +45,7 @@ import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLTransformationMapping;
 import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
-import org.eclipse.persistence.platform.database.oracle.Oracle10Platform;
+import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCollection;
 import org.eclipse.persistence.platform.xml.XMLComparer;
@@ -273,7 +273,7 @@ public class PLSQLcollectionTestSuite {
         login.setPassword(password);
         ((DatabaseLogin)login).setConnectionString(url);
         ((DatabaseLogin)login).setDriverClassName("oracle.jdbc.OracleDriver");
-        Platform platform = new Oracle10Platform();
+        Platform platform = new OraclePlatform();
         ConversionManager cm = platform.getConversionManager();
         cm.setLoader(xrdecl);
         login.setDatasourcePlatform(platform);

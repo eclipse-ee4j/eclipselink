@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.tests.conversion;
 import java.util.Vector;
 
 import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.platform.database.oracle.Oracle9Platform;
+import org.eclipse.persistence.platform.database.oracle.Oracle11Platform;
 
 // This works as a wrapper for CM and Oracle9Platform.  It is used in DataTypesConvertedXX tests.
 public class CMAndPlatformWrapper {
@@ -30,8 +30,8 @@ public class CMAndPlatformWrapper {
     public Vector getDataTypesConvertedFrom(Class aClass) {
         if (wrappedObj instanceof ConversionManager) {
             return ((ConversionManager)wrappedObj).getDataTypesConvertedFrom(aClass);
-        } else if (wrappedObj instanceof Oracle9Platform) {
-            return ((Oracle9Platform)wrappedObj).getDataTypesConvertedFrom(aClass);
+        } else if (wrappedObj instanceof Oracle11Platform) {
+            return ((Oracle11Platform)wrappedObj).getDataTypesConvertedFrom(aClass);
         }
         return new Vector();
     }
@@ -39,8 +39,8 @@ public class CMAndPlatformWrapper {
     public Vector getDataTypesConvertedTo(Class aClass) {
         if (wrappedObj instanceof ConversionManager) {
             return ((ConversionManager)wrappedObj).getDataTypesConvertedTo(aClass);
-        } else if (wrappedObj instanceof Oracle9Platform) {
-            return ((Oracle9Platform)wrappedObj).getDataTypesConvertedTo(aClass);
+        } else if (wrappedObj instanceof Oracle11Platform) {
+            return ((Oracle11Platform)wrappedObj).getDataTypesConvertedTo(aClass);
         }
         return new Vector();
     }
@@ -48,8 +48,8 @@ public class CMAndPlatformWrapper {
     public Object convertObject(Object object, Class aClass) {
         if (wrappedObj instanceof ConversionManager) {
             return ((ConversionManager)wrappedObj).convertObject(object, aClass);
-        } else if (wrappedObj instanceof Oracle9Platform) {
-            return ((Oracle9Platform)wrappedObj).convertObject(object, aClass);
+        } else if (wrappedObj instanceof Oracle11Platform) {
+            return ((Oracle11Platform)wrappedObj).convertObject(object, aClass);
         }
         return null;
     }

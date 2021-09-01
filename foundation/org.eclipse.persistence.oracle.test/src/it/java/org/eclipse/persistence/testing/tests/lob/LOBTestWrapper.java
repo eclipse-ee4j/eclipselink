@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.lob;
 
-import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.platform.database.oracle.Oracle8Platform;
+import org.eclipse.persistence.platform.database.OraclePlatform;
+import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
+import org.eclipse.persistence.testing.framework.TestProblemException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
+import org.eclipse.persistence.testing.framework.TestWrapper;
 
 public class LOBTestWrapper extends TestWrapper {
     protected boolean shouldSetUseLocatorForLOBWriteIntoPlatform;
@@ -36,13 +39,14 @@ public class LOBTestWrapper extends TestWrapper {
         setName(getName() + " platform forced to "+(shouldUseLocatorForLOBWrite ? "use" : "NOT use")+" lob locators)");
     }
 
+    @Override
     protected void setup() throws Throwable {
         DatabasePlatform platform = getSession().getPlatform();
         if (!platform.isOracle()) {
             throw new TestWarningException("This test case works on Oracle only");
         }
-        if(platform instanceof Oracle8Platform) {
-            Oracle8Platform platform8 = (Oracle8Platform)platform;
+        if(platform instanceof OraclePlatform) {
+            OraclePlatform platform8 = (OraclePlatform)platform;
             shouldUseLocatorForLOBWriteOriginal = platform8.shouldUseLocatorForLOBWrite();
             if(shouldSetUseLocatorForLOBWriteIntoPlatform) {
                 platform8.setShouldUseLocatorForLOBWrite(shouldUseLocatorForLOBWrite);
@@ -65,14 +69,15 @@ public class LOBTestWrapper extends TestWrapper {
         super.setup();
     }
 
+    @Override
     public void reset() throws Throwable {
         super.reset();
         DatabasePlatform platform = getSession().getPlatform();
         if(!shouldUseLocatorForLOBWrite) {
             platform.setUsesStringBinding(usesStringBindingOriginal);
         }
-        if(platform instanceof Oracle8Platform) {
-            Oracle8Platform platform8 = (Oracle8Platform)platform;
+        if(platform instanceof OraclePlatform) {
+            OraclePlatform platform8 = (OraclePlatform)platform;
             if(shouldSetUseLocatorForLOBWriteIntoPlatform) {
                 platform8.setShouldUseLocatorForLOBWrite(shouldUseLocatorForLOBWriteOriginal);
             }
