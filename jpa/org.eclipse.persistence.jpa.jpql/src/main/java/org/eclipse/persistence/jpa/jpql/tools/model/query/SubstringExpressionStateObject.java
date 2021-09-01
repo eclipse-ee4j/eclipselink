@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -117,49 +117,31 @@ public class SubstringExpressionStateObject extends AbstractTripleEncapsulatedEx
         super(parent, firstJpqlFragment, secondJpqlFragment, thirdJpqlFragment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SubstringExpression getExpression() {
         return (SubstringExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getFirstQueryBNFId() {
         return StringPrimaryBNF.ID;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return SUBSTRING;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getSecondQueryBNFId() {
         return SimpleArithmeticExpressionBNF.ID;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getThirdQueryBNFId() {
         return SimpleArithmeticExpressionBNF.ID;

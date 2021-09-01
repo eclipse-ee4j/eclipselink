@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -327,10 +327,10 @@ public abstract class Sequence implements Serializable, Cloneable {
     protected void verifyPlatform(Platform otherPlatform) {
         if (getDatasourcePlatform() != otherPlatform) {
             String hashCode1 = Integer.toString(System.identityHashCode(getDatasourcePlatform()));
-            String name1 = ((DatasourcePlatform)getDatasourcePlatform()).toString() + '(' + hashCode1 + ')';
+            String name1 = getDatasourcePlatform().toString() + '(' + hashCode1 + ')';
 
             String hashCode2 = Integer.toString(System.identityHashCode(otherPlatform));
-            String name2 = ((DatasourcePlatform)otherPlatform).toString() + '(' + hashCode2 + ')';
+            String name2 = otherPlatform.toString() + '(' + hashCode2 + ')';
 
             throw ValidationException.sequenceCannotBeConnectedToTwoPlatforms(getName(), name1, name2);
         }

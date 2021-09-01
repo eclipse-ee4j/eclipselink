@@ -33,6 +33,7 @@ public class WithoutGroupingElementIdentifiedByNameIntegerTestCases extends XMLM
         setProject(new WithoutGroupingElementIdentifiedByNameProject());
   }
 
+  @Override
   protected Object getControlObject() {
         Vector responsibilities = new Vector();
         responsibilities.addElement(CONTROL_RESPONSIBILITY1);

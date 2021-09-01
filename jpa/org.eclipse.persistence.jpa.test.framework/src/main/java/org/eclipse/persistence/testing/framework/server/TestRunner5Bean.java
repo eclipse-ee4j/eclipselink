@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,6 +54,7 @@ public class TestRunner5Bean implements TestRunner5 {
      * Execute a test case method. The test class is loaded dynamically and
      * must therefore be visible to the TestRunnerBean classloader.
      */
+    @Override
     public Throwable runTest(String className, String test, Properties props) {
         // load the test class and create an instance
         TestCase testInstance = null;

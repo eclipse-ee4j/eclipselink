@@ -44,33 +44,21 @@ public final class SubExpression extends AbstractSingleEncapsulatedExpression {
         this.queryBNF = queryBNF;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean areLogicalIdentifiersSupported() {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getEncapsulatedExpressionQueryBNFId() {
         return queryBNF.getId();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -81,17 +69,11 @@ public final class SubExpression extends AbstractSingleEncapsulatedExpression {
         return getParent().findQueryBNF(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return queryBNF;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean handleCollection(JPQLQueryBNF queryBNF) {
         return true;

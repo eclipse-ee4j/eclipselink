@@ -83,35 +83,23 @@ public final class UpdateClause extends AbstractExpression {
         super(parent, UPDATE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getRangeVariableDeclaration().accept(visitor);
         getUpdateItems().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         children.add(getRangeVariableDeclaration());
         children.add(getUpdateItems());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
 
@@ -165,9 +153,6 @@ public final class UpdateClause extends AbstractExpression {
         return new CollectionExpression(this, children, commas, spaces, true);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -202,9 +187,6 @@ public final class UpdateClause extends AbstractExpression {
         return updateIdentifier;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(UpdateClauseBNF.ID);
@@ -293,18 +275,12 @@ public final class UpdateClause extends AbstractExpression {
               !updateItems.isNull();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
         return word.equalsIgnoreCase(SET)   ||
                super.isParsingComplete(wordParser, word, expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -338,9 +314,6 @@ public final class UpdateClause extends AbstractExpression {
         updateItems = parse(wordParser, InternalUpdateClauseBNF.ID, tolerant);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
 

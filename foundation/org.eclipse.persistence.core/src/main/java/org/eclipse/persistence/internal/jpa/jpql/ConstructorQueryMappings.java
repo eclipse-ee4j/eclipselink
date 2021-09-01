@@ -150,25 +150,16 @@ public final class ConstructorQueryMappings {
             this.queryContext = queryContext;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CollectionExpression expression) {
             expression.acceptChildren(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CollectionValuedPathExpression expression) {
             visitPathExpression(expression);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(StateFieldPathExpression expression) {
             visitPathExpression(expression);
@@ -200,9 +191,6 @@ public final class ConstructorQueryMappings {
             return (DynamicClassLoader) queryContext.getSession().getProperty(PersistenceUnitProperties.CLASSLOADER);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(ConstructorExpression expression) {
 
@@ -213,25 +201,16 @@ public final class ConstructorQueryMappings {
             expression.getConstructorItems().accept(visitor);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(JPQLExpression expression) {
             expression.getQueryStatement().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SelectClause expression) {
             expression.getSelectExpression().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SelectStatement expression) {
             expression.getSelectClause().accept(this);

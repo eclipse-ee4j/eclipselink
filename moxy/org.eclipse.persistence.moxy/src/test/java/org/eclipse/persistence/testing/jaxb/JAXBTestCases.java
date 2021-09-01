@@ -102,10 +102,12 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         super(name);
     }
 
+    @Override
     public XMLContext getXMLContext(Project project) {
         return new XMLContext(project, classLoader);
     }
 
+    @Override
     public void setUp() throws Exception {
         setupParser();
         setupControlDocs();
@@ -120,6 +122,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         bindingsFileXSDSource = new StreamSource(bindingsFileXSDInputStream);
     }
 
+    @Override
     public void tearDown() {
         super.tearDown();
         jaxbContext = null;
@@ -129,6 +132,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         bindingsFileXSDSource = null;
     }
 
+    @Override
     protected void setProject(Project project) {
         this.project = project;
     }
@@ -346,6 +350,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         return null;
     }
 
+    @Override
     public void testXMLToObjectFromInputStream() throws Exception {
 
         if(isUnmarshalTest()) {
@@ -353,7 +358,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             jaxbUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, getXMLUnmarshalMediaType());
             Object testObject = null;
             if(getUnmarshalClass() != null){
-               testObject = ((JAXBUnmarshaller)jaxbUnmarshaller).unmarshal(new StreamSource(instream), getUnmarshalClass());
+               testObject = jaxbUnmarshaller.unmarshal(new StreamSource(instream), getUnmarshalClass());
             }else{
                testObject = jaxbUnmarshaller.unmarshal(instream);
             }
@@ -371,7 +376,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
                     log("************test with JSON bindings*********");
                     InputStream instream2 = ClassLoader.getSystemResourceAsStream(resourceName);
                     if(getUnmarshalClass() != null){
-                     testObject2 = ((JAXBUnmarshaller)jaxbUnmarshallerFromJSONBindings).unmarshal(new StreamSource(instream2), getUnmarshalClass());
+                     testObject2 = jaxbUnmarshallerFromJSONBindings.unmarshal(new StreamSource(instream2), getUnmarshalClass());
                  }else{
                      testObject2 = jaxbUnmarshallerFromJSONBindings.unmarshal(instream2);
                  }
@@ -420,6 +425,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         }
     }
 
+    @Override
     public void testObjectToOutputStream() throws Exception {
         Object objectToWrite = getWriteControlObject();
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -479,6 +485,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         }
     }
 
+    @Override
     public void testObjectToOutputStreamASCIIEncoding() throws Exception {
         Object objectToWrite = getWriteControlObject();
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -530,6 +537,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         return doc;
     }
 
+    @Override
     public void testObjectToXMLStringWriter() throws Exception {
         objectToXMLStringWriter(getWriteControlObject());
     }
@@ -573,12 +581,13 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         objectToXMLDocumentTest(testDocument);
     }
 
+    @Override
     public void testObjectToXMLStreamWriter() throws Exception {
         if(XML_OUTPUT_FACTORY != null) {
             StringWriter writer = new StringWriter();
 
             XMLOutputFactory factory = XMLOutputFactory.newInstance();
-            factory.setProperty(factory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(false));
+            factory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(false));
             XMLStreamWriter streamWriter= factory.createXMLStreamWriter(writer);
 
             Object objectToWrite = getWriteControlObject();
@@ -618,7 +627,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             StringWriter writer = new StringWriter();
 
             XMLOutputFactory factory = XMLOutputFactory.newInstance();
-            factory.setProperty(factory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(false));
+            factory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(false));
             XMLStreamWriter streamWriter= factory.createXMLStreamWriter(writer);
 
             Object objectToWrite = getWriteControlObject();
@@ -655,12 +664,13 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     }
 
 
+    @Override
     public void testObjectToXMLEventWriter() throws Exception {
         if(XML_OUTPUT_FACTORY != null) {
             StringWriter writer = new StringWriter();
 
             XMLOutputFactory factory = XMLOutputFactory.newInstance();
-            factory.setProperty(factory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(false));
+            factory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(false));
             XMLEventWriter eventWriter= factory.createXMLEventWriter(writer);
 
             Object objectToWrite = getWriteControlObject();
@@ -694,6 +704,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         }
     }
 
+    @Override
     public void testObjectToContentHandler() throws Exception {
         SAXDocumentBuilder builder = new SAXDocumentBuilder();
         Object objectToWrite = getWriteControlObject();
@@ -735,6 +746,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         assertXMLIdentical(controlDocument, testDocument);
     }
 
+    @Override
     public void testXMLToObjectFromURL() throws Exception {
         if(isUnmarshalTest()) {
             java.net.URL url = ClassLoader.getSystemResource(resourceName);
@@ -742,7 +754,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
 
             Object testObject = null;
             if(getUnmarshalClass() != null){
-               testObject = ((JAXBUnmarshaller)jaxbUnmarshaller).unmarshal(new StreamSource(url.openStream()), getUnmarshalClass());
+               testObject = jaxbUnmarshaller.unmarshal(new StreamSource(url.openStream()), getUnmarshalClass());
             }else{
                 testObject = jaxbUnmarshaller.unmarshal(url);
             }
@@ -750,6 +762,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         }
     }
 
+    @Override
     public void testXMLToObjectFromXMLStreamReader() throws Exception {
         if(null != XML_INPUT_FACTORY && isUnmarshalTest()) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -766,6 +779,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             xmlToObjectTest(testObject);
         }
     }
+    @Override
     public void testXMLToObjectFromNode() throws Exception {
         if(isUnmarshalTest()) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -805,6 +819,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         }
     }
 
+    @Override
     public void testXMLToObjectFromXMLEventReader() throws Exception {
         if(null != XML_INPUT_FACTORY && isUnmarshalTest()) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -821,6 +836,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         }
     }
 
+    @Override
     public void testObjectToXMLDocument() throws Exception {
         Object objectToWrite = getWriteControlObject();
         XMLDescriptor desc = null;
@@ -850,6 +866,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     }
 
 
+    @Override
     public void xmlToObjectTest(Object testObject) throws Exception {
         xmlToObjectTest(testObject, getReadControlObject());
     }
@@ -869,6 +886,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             super.xmlToObjectTest(testObject);
         }
     }
+    @Override
     public void testUnmarshallerHandler() throws Exception {
         if(isUnmarshalTest()) {
             SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
@@ -950,6 +968,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             schemaFiles = new ArrayList<File>();
         }
 
+        @Override
         public Result createOutput(String namespaceURI, String suggestedFileName)throws IOException {
             File schemaFile = new File(suggestedFileName);
             if(namespaceURI == null){
@@ -977,6 +996,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             schemaFiles = new ArrayList<Writer>();
         }
 
+        @Override
         public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
             if (namespaceURI == null) {
                 namespaceURI = "";
@@ -1002,6 +1022,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             schemaFiles = new HashMap<String, Writer>();
         }
 
+        @Override
         public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
             //return new StreamResult(System.out);
             if (namespaceURI == null) {
@@ -1093,6 +1114,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         public ResourceResolver(MyMapStreamSchemaOutputResolver resolver) {
             oResolver = resolver;
         }
+        @Override
         public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseUri) {
             return new MyLSInput(namespaceURI, oResolver);
         }
@@ -1111,23 +1133,39 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             sValue = value;
             oResolver = resolver;
         }
+        @Override
         public void setSystemId(String arg0) {}
+        @Override
         public void setStringData(String arg0) {}
+        @Override
         public void setPublicId(String arg0) {}
+        @Override
         public void setEncoding(String arg0) {}
+        @Override
         public void setCharacterStream(Reader arg0) {}
+        @Override
         public void setCertifiedText(boolean arg0) {}
+        @Override
         public void setByteStream(InputStream arg0) {}
+        @Override
         public void setBaseURI(String arg0) {}
+        @Override
         public String getSystemId() {return null;}
+        @Override
         public String getStringData() {
             return oResolver.schemaFiles.get(sValue).toString();
         }
+        @Override
         public String getPublicId() {return null;}
+        @Override
         public String getEncoding() {return null;}
+        @Override
         public Reader getCharacterStream() {return null;}
+        @Override
         public boolean getCertifiedText() {return false;}
+        @Override
         public InputStream getByteStream() {return null;}
+        @Override
         public String getBaseURI() {return null;}
     }
 

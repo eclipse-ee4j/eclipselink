@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -102,6 +102,7 @@ public class PlsqlCursorMethod extends PlsqlMethod implements CursorMethod {
         m_returnType = new JavaArrayType(m_returnEleType, m_reflector, SqlReflector.REF_CURSOR_TYPE);
     }
 
+    @Override
     public TypeClass getReturnEleType() {
         return m_returnEleType;
     }
@@ -111,18 +112,22 @@ public class PlsqlCursorMethod extends PlsqlMethod implements CursorMethod {
         return m_returnColCount;
     }
 
+    @Override
     public boolean isSingleCol() {
         return m_singleColName != null;
     }
 
+    @Override
     public String singleColName() {
         return m_singleColName;
     }
 
+    @Override
     public boolean returnBeans() {
         return m_returnBeans;
     }
 
+    @Override
     public boolean returnResultSet() {
         return !m_returnBeans;
     }

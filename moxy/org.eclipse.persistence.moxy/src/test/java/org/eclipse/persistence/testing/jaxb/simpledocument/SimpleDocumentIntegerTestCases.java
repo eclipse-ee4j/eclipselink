@@ -40,12 +40,14 @@ public class SimpleDocumentIntegerTestCases extends JAXBWithJSONTestCases {
             setClasses(classes);
         }
 
+        @Override
         protected Object getControlObject() {
             JAXBElement value = new IntegerObjectFactory().createIntegerRoot();
             value.setValue(Integer.valueOf(27));
             return value;
         }
 
+        @Override
         public Map getProperties(){
             Map props = new HashMap();
 

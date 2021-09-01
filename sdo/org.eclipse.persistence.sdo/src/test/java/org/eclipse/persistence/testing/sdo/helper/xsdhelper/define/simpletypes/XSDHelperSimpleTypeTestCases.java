@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +17,8 @@ package org.eclipse.persistence.testing.sdo.helper.xsdhelper.define.simpletypes;
 import commonj.sdo.Type;
 import java.math.BigInteger;
 import java.util.List;
+
+import junit.framework.TestCase;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
@@ -34,27 +36,27 @@ public class XSDHelperSimpleTypeTestCases extends XSDHelperTestCases {
 
         List types = xsdHelper.define(xmlSchema);
 
-        this.assertEquals(types.size(), 1);
+        assertEquals(types.size(), 1);
 
         Type type = (Type)types.get(0);
 
         // Name
-        this.assertEquals(type.getName(), "my-int");
+        assertEquals(type.getName(), "my-int");
 
         //abstract
-        this.assertFalse(type.isAbstract());
+        assertFalse(type.isAbstract());
 
         // Base
-        this.assertEquals(type.getBaseTypes().size(), 1);
+        assertEquals(type.getBaseTypes().size(), 1);
         Type baseType = (Type)type.getBaseTypes().get(0);
-        this.assertEquals(baseType, SDOConstants.SDO_INT);
+        assertEquals(baseType, SDOConstants.SDO_INT);
         //this.assertEquals(baseType.getName(), "int");
         //this.assertEquals(baseType.getURI(), "commonj.sdo");
         // dataType
-        this.assertTrue(type.isDataType());
+        assertTrue(type.isDataType());
 
         // Uri
-        this.assertEquals(type.getURI(), "http://www.example.org");
+        assertEquals(type.getURI(), "http://www.example.org");
     }
 
     public void testSimpleTypeAnonymous() {
@@ -63,28 +65,28 @@ public class XSDHelperSimpleTypeTestCases extends XSDHelperTestCases {
 
         List types = xsdHelper.define(xmlSchema);
 
-        this.assertEquals(types.size(), 1);
+        assertEquals(types.size(), 1);
 
         Type type = (Type)types.get(0);
 
         // Name
-        this.assertEquals(type.getName(), "myElement");
+        assertEquals(type.getName(), "myElement");
 
         //abstract
-        this.assertFalse(type.isAbstract());
+        assertFalse(type.isAbstract());
 
         // Base
-        this.assertEquals(type.getBaseTypes().size(), 1);
+        assertEquals(type.getBaseTypes().size(), 1);
         Type baseType = (Type)type.getBaseTypes().get(0);
-        this.assertEquals(baseType, SDOConstants.SDO_INT);
+        assertEquals(baseType, SDOConstants.SDO_INT);
         assertEquals(((SDOType)baseType).getSubTypes().size(), 0);
         //this.assertEquals(baseType.getName(), "int");
         //this.assertEquals(baseType.getURI(), "commonj.sdo");
         // dataType
-        this.assertTrue(type.isDataType());
+        assertTrue(type.isDataType());
 
         // Uri
-        this.assertEquals(type.getURI(), "http://www.example.org");
+        assertEquals(type.getURI(), "http://www.example.org");
     }
 
     public void testSimpleTypeWithSDO_Name() {
@@ -93,28 +95,28 @@ public class XSDHelperSimpleTypeTestCases extends XSDHelperTestCases {
 
         List types = xsdHelper.define(xmlSchema);
 
-        this.assertEquals(types.size(), 1);
+        assertEquals(types.size(), 1);
 
         Type type = (Type)types.get(0);
 
         // Name
-        this.assertEquals(type.getName(), "SDO_NAME");
+        assertEquals(type.getName(), "SDO_NAME");
 
         //abstract
-        this.assertFalse(type.isAbstract());
+        assertFalse(type.isAbstract());
 
         // Base
-        this.assertEquals(type.getBaseTypes().size(), 1);
+        assertEquals(type.getBaseTypes().size(), 1);
         Type baseType = (Type)type.getBaseTypes().get(0);
-        this.assertEquals(baseType, SDOConstants.SDO_INT);
+        assertEquals(baseType, SDOConstants.SDO_INT);
         assertEquals(((SDOType)baseType).getSubTypes().size(), 0);
         // this.assertEquals(baseType.getName(), "int");
         //this.assertEquals(baseType.getURI(), "commonj.sdo");
         // dataType
-        this.assertTrue(type.isDataType());
+        assertTrue(type.isDataType());
 
         // Uri
-        this.assertEquals(type.getURI(), "http://www.example.org");
+        assertEquals(type.getURI(), "http://www.example.org");
     }
 
     public void testSimpleTypeWithAbstract() {
@@ -123,28 +125,28 @@ public class XSDHelperSimpleTypeTestCases extends XSDHelperTestCases {
 
         List types = xsdHelper.define(xmlSchema);
 
-        this.assertEquals(types.size(), 1);
+        assertEquals(types.size(), 1);
 
         Type type = (Type)types.get(0);
 
         // Name
-        this.assertEquals(type.getName(), "my-int");
+        assertEquals(type.getName(), "my-int");
 
         //abstract
-        this.assertFalse(type.isAbstract());
+        assertFalse(type.isAbstract());
 
         // Base
-        this.assertEquals(type.getBaseTypes().size(), 1);
+        assertEquals(type.getBaseTypes().size(), 1);
         Type baseType = (Type)type.getBaseTypes().get(0);
-        this.assertEquals(baseType, SDOConstants.SDO_INT);
+        assertEquals(baseType, SDOConstants.SDO_INT);
         assertEquals(((SDOType)baseType).getSubTypes().size(), 0);
         //this.assertEquals(baseType.getName(), "int");
         //this.assertEquals(baseType.getURI(), "commonj.sdo");
         // dataType
-        this.assertTrue(type.isDataType());
+        assertTrue(type.isDataType());
 
         // Uri
-        this.assertEquals(type.getURI(), "http://www.example.org");
+        assertEquals(type.getURI(), "http://www.example.org");
     }
 
     //commonj.sdo/java
@@ -154,26 +156,26 @@ public class XSDHelperSimpleTypeTestCases extends XSDHelperTestCases {
 
         List types = xsdHelper.define(xmlSchema);
 
-        this.assertEquals(types.size(), 1);
+        assertEquals(types.size(), 1);
 
         Type type = (Type)types.get(0);
 
         // Name
-        this.assertEquals("my-int", type.getName());
+        assertEquals("my-int", type.getName());
 
         //abstract
-        this.assertFalse(type.isAbstract());
+        assertFalse(type.isAbstract());
 
         // Base
-        this.assertEquals(type.getBaseTypes().size(), 0);
+        assertEquals(type.getBaseTypes().size(), 0);
 
         // dataType
-        this.assertTrue(type.isDataType());
+        assertTrue(type.isDataType());
 
         // Uri
-        this.assertEquals(type.getURI(), "http://www.example.org");
+        assertEquals(type.getURI(), "http://www.example.org");
 
-        this.assertEquals("INSTANCE_CLASS", ((SDOType)type).getInstanceClassName());
+        assertEquals("INSTANCE_CLASS", ((SDOType)type).getInstanceClassName());
     }
 
     public void testSimpleTypeWithSDO_JAVA_ExtendedInstanceClass() {
@@ -182,30 +184,30 @@ public class XSDHelperSimpleTypeTestCases extends XSDHelperTestCases {
 
         List types = xsdHelper.define(xmlSchema);
 
-        this.assertEquals(types.size(), 1);
+        assertEquals(types.size(), 1);
 
         Type type = (Type)types.get(0);
 
         // Name
-        this.assertEquals("my-int", type.getName());
+        assertEquals("my-int", type.getName());
 
         //abstract
-        this.assertFalse(type.isAbstract());
+        assertFalse(type.isAbstract());
 
         // Base
-        this.assertEquals(type.getBaseTypes().size(), 1);
+        assertEquals(type.getBaseTypes().size(), 1);
         Type baseType = (Type)type.getBaseTypes().get(0);
-        this.assertEquals(baseType, SDOConstants.SDO_INT);
+        assertEquals(baseType, SDOConstants.SDO_INT);
         assertEquals(((SDOType)baseType).getSubTypes().size(), 0);
         //this.assertEquals(baseType.getName(), "int");
         //this.assertEquals(baseType.getURI(), "commonj.sdo");
         // dataType
-        this.assertTrue(type.isDataType());
+        assertTrue(type.isDataType());
 
         // Uri
-        this.assertEquals(type.getURI(), "http://www.example.org");
+        assertEquals(type.getURI(), "http://www.example.org");
 
-        this.assertEquals("EXTENDED_INSTANCE_CLASS", ((SDOType)type).getInstanceClassName());
+        assertEquals("EXTENDED_INSTANCE_CLASS", ((SDOType)type).getInstanceClassName());
     }
 
     public void testSimpleTypeWithListItemTypes() {
@@ -214,7 +216,7 @@ public class XSDHelperSimpleTypeTestCases extends XSDHelperTestCases {
 
         List types = xsdHelper.define(xmlSchema);
 
-        this.assertEquals(2, types.size());
+        assertEquals(2, types.size());
 
         for (int i = 0; i < types.size(); i++) {
             Type type = (Type)types.get(i);
@@ -248,7 +250,7 @@ public class XSDHelperSimpleTypeTestCases extends XSDHelperTestCases {
 
         List types = xsdHelper.define(xmlSchema);
 
-        this.assertEquals(3, types.size());
+        assertEquals(3, types.size());
 
         for (int i = 0; i < types.size(); i++) {
             Type type = (Type)types.get(i);

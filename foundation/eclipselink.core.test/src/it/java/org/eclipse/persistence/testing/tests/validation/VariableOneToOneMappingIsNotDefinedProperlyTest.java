@@ -62,7 +62,7 @@ public class VariableOneToOneMappingIsNotDefinedProperlyTest extends ExceptionTe
     @Override
     protected void setup() {
 
-        descriptor = ((DatabaseSession)getSession()).getDescriptor(Actor.class);
+        descriptor = getSession().getDescriptor(Actor.class);
         mapping = (VariableOneToOneMapping)descriptor.getMappingForAttributeName("program");
 
         sourceField = new DatabaseField("ACTOR.PROGRAM_ID");
@@ -100,7 +100,7 @@ public class VariableOneToOneMappingIsNotDefinedProperlyTest extends ExceptionTe
             if (testMode == 0) {
                 mapping.writeFromObjectIntoRow(actor, databaseRow, (AbstractSession)getSession(), WriteType.UNDEFINED); //test one
             } else if (testMode == 1) {
-                mapping.writeFromObjectIntoRowWithChangeRecord((org.eclipse.persistence.internal.sessions.ChangeRecord)changeRecord, databaseRow, (AbstractSession)getSession(), WriteType.UNDEFINED); //test two
+                mapping.writeFromObjectIntoRowWithChangeRecord(changeRecord, databaseRow, (AbstractSession)getSession(), WriteType.UNDEFINED); //test two
             } else if (testMode == 2) {
                 mapping.writeFromObjectIntoRowForWhereClause(deleteObjectQuery, databaseRow); //test three
             } else {

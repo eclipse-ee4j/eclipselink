@@ -100,7 +100,7 @@ public abstract class DistributedCacheMergeTest extends TestCase {
         cm.setUrl("rmi://localhost:41099");
         // turn on cache sync with RCM
         session.setShouldPropagateChanges(true);
-        cm.setServerPlatform(((org.eclipse.persistence.sessions.DatabaseSession)getSession()).getServerPlatform());
+        cm.setServerPlatform(getSession().getServerPlatform());
         cm.initialize();
 
         // Sleep to allow RCM to startup and find each session.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,11 +22,12 @@ import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 public class StringStringToIntegerIntegerMapAdapter extends XmlAdapter<Map<Integer, Integer>, Map<String, String>>{
 
+    @Override
     public Map<Integer, Integer> marshal(Map<String, String> v) throws Exception {
         Map<Integer, Integer> theMap = new HashMap<Integer, Integer>();
         Iterator<Map.Entry<String, String>> iter = v.entrySet().iterator();
         while(iter.hasNext()){
-            Map.Entry<String, String> entry = (Map.Entry<String, String>) iter.next();
+            Map.Entry<String, String> entry = iter.next();
             String key = entry.getKey();
             String value = entry.getValue();
 
@@ -38,11 +39,12 @@ public class StringStringToIntegerIntegerMapAdapter extends XmlAdapter<Map<Integ
         return theMap;
     }
 
+    @Override
     public Map<String, String>unmarshal(Map<Integer, Integer> v) throws Exception {
         Map<String, String> theMap = new HashMap<String, String>();
         Iterator<Map.Entry<Integer, Integer>> iter = v.entrySet().iterator();
         while(iter.hasNext()){
-            Map.Entry<Integer, Integer> entry = (Map.Entry<Integer, Integer>) iter.next();
+            Map.Entry<Integer, Integer> entry = iter.next();
             Integer key = entry.getKey();
             Integer value = entry.getValue();
 

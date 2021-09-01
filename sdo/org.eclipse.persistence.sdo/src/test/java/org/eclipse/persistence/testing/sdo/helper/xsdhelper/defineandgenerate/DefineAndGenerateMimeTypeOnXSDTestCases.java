@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,6 +46,7 @@ public class DefineAndGenerateMimeTypeOnXSDTestCases extends XSDHelperDefineAndG
         super(name);
     }
 
+    @Override
     public List getControlTypes() {
         List types = new ArrayList();
         String uri = "http://www.example.org";
@@ -96,10 +97,12 @@ public class DefineAndGenerateMimeTypeOnXSDTestCases extends XSDHelperDefineAndG
 
     // note the generated.xsd contains the header attribute  elementFormDefault="qualified"
     // the non-generated.xsd is used by cases in xsd/xmlhelper - modify with care
+    @Override
     public String getControlGeneratedFileName() {
         return "org/eclipse/persistence/testing/sdo/schemas/EmployeeWithMimeTypeOnXSDGenerated.xsd";
     }
 
+    @Override
     public String getSchemaToDefine() {
         return "org/eclipse/persistence/testing/sdo/schemas/EmployeeWithMimeTypeOnXSD.xsd";
     }

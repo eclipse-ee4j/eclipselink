@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -162,18 +162,12 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
         return constructorExpressionVisitor;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AbsExpression expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AdditionExpression expression) {
 
@@ -186,18 +180,12 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
         addAttribute("plus", queryExpression, type[0]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ArithmeticFactor expression) {
         // TODO: Anything to do other than the default behavior?
         super.visit(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AvgFunction expression) {
         String name = queryContext.literal(expression.getExpression(), PATH_EXPRESSION_LAST_PATH);
@@ -205,36 +193,24 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
         addAttribute(name, queryExpression, type[0]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CaseExpression expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute("Case", queryExpression, type[0]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CastExpression expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CoalesceExpression expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute("Coalesce", queryExpression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CollectionExpression expression) {
 
@@ -246,18 +222,12 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ConcatExpression expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ConstructorExpression expression) {
 
@@ -268,9 +238,6 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
         query.endAddingToConstructorItem();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CountFunction expression) {
 
@@ -286,9 +253,6 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
         addAttribute(name, queryExpression, type[0]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(DateTime expression) {
 
@@ -302,9 +266,6 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(DivisionExpression expression) {
 
@@ -317,36 +278,24 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
         addAttribute("divide", queryExpression, type[0]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(EntryExpression expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute(" MapEntry", queryExpression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ExtractExpression expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(FunctionExpression expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute(ExpressionTools.EMPTY_STRING, queryExpression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(IdentificationVariable expression) {
 
@@ -391,63 +340,42 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(IndexExpression expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute("Index", queryExpression, type[0]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(KeyExpression expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute("MapKey", queryExpression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(KeywordExpression expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute("CONSTANT", queryExpression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(LengthExpression expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(LocateExpression expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(LowerExpression expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(MaxFunction expression) {
         String name = queryContext.literal(expression.getExpression(), PATH_EXPRESSION_LAST_PATH);
@@ -455,9 +383,6 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
         addAttribute(name, queryExpression, type[0]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(MinFunction expression) {
         String name = queryContext.literal(expression.getExpression(), PATH_EXPRESSION_LAST_PATH);
@@ -465,18 +390,12 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
         addAttribute(name, queryExpression, type[0]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ModExpression expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(MultiplicationExpression expression) {
 
@@ -489,44 +408,29 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
         addAttribute("multiply", queryExpression, type[0]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(NullIfExpression expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute(NullIfExpression.NULLIF, queryExpression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(NumericLiteral expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute("CONSTANT", queryExpression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ObjectExpression expression) {
         expression.getExpression().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void visit(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute(ExpressionTools.EMPTY_STRING, queryExpression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ResultVariable expression) {
 
@@ -540,25 +444,16 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
         resultVariable = null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SelectClause expression) {
         visitAbstractSelectClause(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SimpleSelectClause expression) {
         visitAbstractSelectClause(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SizeExpression expression) {
 
@@ -572,18 +467,12 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
         query.addGrouping(queryExpression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SqrtExpression expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(StateFieldPathExpression expression) {
 
@@ -596,35 +485,23 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
         query.dontRetrievePrimaryKeys();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(StringLiteral expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute("CONSTANT", queryExpression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SubExpression expression) {
         expression.getExpression().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SubstringExpression expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SubtractionExpression expression) {
 
@@ -637,9 +514,6 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
         addAttribute("minus", queryExpression, type[0]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SumFunction expression) {
         String name = queryContext.literal(expression.getExpression(), PATH_EXPRESSION_LAST_PATH);
@@ -647,44 +521,29 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
         addAttribute(name, queryExpression, type[0]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(TreatExpression expression) {
         // Nothing to do
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(TrimExpression expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(TypeExpression expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute(ExpressionTools.EMPTY_STRING, queryExpression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UpperExpression expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ValueExpression expression) {
         IdentificationVariable identificationVariable = (IdentificationVariable) expression.getExpression();
@@ -711,25 +570,16 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
      */
     private class ConstructorExpressionVisitor extends EclipseLinkAnonymousExpressionVisitor {
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CollectionExpression expression) {
             expression.acceptChildren(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(ConstructorExpression expression) {
             expression.getConstructorItems().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         protected void visit(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
             expression.accept(ReportItemBuilder.this);

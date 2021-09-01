@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@ public final class ComputerAdapter extends XmlAdapter<String, Computer> {
 
     private final String DELIM = "::";
 
+    @Override
     public String marshal(Computer arg0) throws Exception {
         String marshalString = "";
 
@@ -37,6 +38,7 @@ public final class ComputerAdapter extends XmlAdapter<String, Computer> {
         return marshalString;
     }
 
+    @Override
     public Computer unmarshal(String arg0) throws Exception {
         Computer c = new Computer();
 

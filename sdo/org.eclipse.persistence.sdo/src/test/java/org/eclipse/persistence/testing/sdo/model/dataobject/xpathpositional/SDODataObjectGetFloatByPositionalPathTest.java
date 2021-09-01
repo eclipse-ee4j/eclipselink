@@ -19,6 +19,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -62,7 +64,7 @@ public class SDODataObjectGetFloatByPositionalPathTest extends SDODataObjectGetB
 
         dataObject_a.setByte(propertyPath_a_b_c, by);// add it to instance list
 
-        this.assertEquals((float)by, dataObject_a.getFloat(propertyPath_a_b_c), delta);
+        assertEquals(by, dataObject_a.getFloat(propertyPath_a_b_c), delta);
     }
 
     //3. purpose: getFloat with Undefined Byte Property
@@ -108,7 +110,7 @@ public class SDODataObjectGetFloatByPositionalPathTest extends SDODataObjectGetB
         float delta = 0;
         dataObject_a.setDouble(propertyPath_a_b_c, db);// add it to instance list
 
-        this.assertEquals((float)db, dataObject_a.getFloat(propertyPath_a_b_c), delta);
+        assertEquals((float)db, dataObject_a.getFloat(propertyPath_a_b_c), delta);
     }
 
     //6. purpose: getFloat with Undefined Double Property
@@ -139,7 +141,7 @@ public class SDODataObjectGetFloatByPositionalPathTest extends SDODataObjectGetB
         float delta = 0;
         dataObject_a.setFloat(propertyPath_a_b_c, fl);// add it to instance list
 
-        this.assertEquals((float)fl, dataObject_a.getFloat(propertyPath_a_b_c), delta);
+        assertEquals(fl, dataObject_a.getFloat(propertyPath_a_b_c), delta);
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
@@ -160,7 +162,7 @@ public class SDODataObjectGetFloatByPositionalPathTest extends SDODataObjectGetB
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setFloat(property3, fl);
 
-        this.assertEquals(fl, dataObject_a.getFloat(property3), delta);
+        assertEquals(fl, dataObject_a.getFloat(property3), delta);
 
     }
 
@@ -181,7 +183,7 @@ public class SDODataObjectGetFloatByPositionalPathTest extends SDODataObjectGetB
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setFloat(property + ".0", fl);
 
-        this.assertEquals(fl, dataObject_a.getFloat(property + ".0"), delta);
+        assertEquals(fl, dataObject_a.getFloat(property + ".0"), delta);
 
     }
 
@@ -198,7 +200,7 @@ public class SDODataObjectGetFloatByPositionalPathTest extends SDODataObjectGetB
 
         dataObject_a.setFloat(property1, fl);// c dataobject's a property has value boolean 'true'
 
-        this.assertEquals(fl, dataObject_a.getFloat(property1), delta);
+        assertEquals(fl, dataObject_a.getFloat(property1), delta);
     }
 
     /* public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet() {
@@ -248,7 +250,7 @@ public class SDODataObjectGetFloatByPositionalPathTest extends SDODataObjectGetB
         float delta = 0;
         dataObject_a.setInt(propertyPath_a_b_c, in);// add it to instance list
 
-        this.assertEquals((float)in, dataObject_a.getFloat(propertyPath_a_b_c), delta);
+        assertEquals((float)in, dataObject_a.getFloat(propertyPath_a_b_c), delta);
     }
 
     //10. purpose: getFloat with Undefined int Property
@@ -279,7 +281,7 @@ public class SDODataObjectGetFloatByPositionalPathTest extends SDODataObjectGetB
         float delta = 0;
         dataObject_a.setLong(propertyPath_a_b_c, lg);// add it to instance list
 
-        this.assertEquals((float)lg, dataObject_a.getFloat(propertyPath_a_b_c), delta);
+        assertEquals((float)lg, dataObject_a.getFloat(propertyPath_a_b_c), delta);
     }
 
     //12. purpose: getFloat with Undefined long Property
@@ -310,7 +312,7 @@ public class SDODataObjectGetFloatByPositionalPathTest extends SDODataObjectGetB
         float delta = 0;
         dataObject_a.setShort(propertyPath_a_b_c, shr);// add it to instance list
 
-        this.assertEquals((float)shr, dataObject_a.getFloat(propertyPath_a_b_c), delta);
+        assertEquals(shr, dataObject_a.getFloat(propertyPath_a_b_c), delta);
     }
 
     //14. purpose: getFloat with Undefined short Property
@@ -342,7 +344,7 @@ public class SDODataObjectGetFloatByPositionalPathTest extends SDODataObjectGetB
         float delta = 0;
         dataObject_a.setString(propertyPath_a_b_c, str);// add it to instance list
 
-        this.assertEquals(s_d.doubleValue(), dataObject_a.getFloat(propertyPath_a_b_c), delta);
+        assertEquals(s_d.doubleValue(), dataObject_a.getFloat(propertyPath_a_b_c), delta);
     }
 
     //16. purpose: getFloat with Undefined string Property
@@ -390,7 +392,7 @@ public class SDODataObjectGetFloatByPositionalPathTest extends SDODataObjectGetB
         float delta = 0;
         dataObject_a.setBigDecimal(propertyPath_a_b_c, bd);// add it to instance list
 
-        this.assertEquals(bd.floatValue(), dataObject_a.getFloat(propertyPath_a_b_c), delta);
+        assertEquals(bd.floatValue(), dataObject_a.getFloat(propertyPath_a_b_c), delta);
     }
 
     //19. purpose: getFloat with Undefined decimal Property
@@ -421,7 +423,7 @@ public class SDODataObjectGetFloatByPositionalPathTest extends SDODataObjectGetB
         float delta = 0;
         dataObject_a.setBigInteger(propertyPath_a_b_c, bi);// add it to instance list
 
-        this.assertEquals(bi.floatValue(), dataObject_a.getFloat(propertyPath_a_b_c), delta);
+        assertEquals(bi.floatValue(), dataObject_a.getFloat(propertyPath_a_b_c), delta);
     }
 
     //21. purpose: getFloat with Undefined Integer Property

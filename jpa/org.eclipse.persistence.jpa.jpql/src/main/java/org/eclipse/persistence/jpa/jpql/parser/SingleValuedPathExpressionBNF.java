@@ -46,9 +46,6 @@ public final class SingleValuedPathExpressionBNF extends JPQLQueryBNF {
         super(ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();

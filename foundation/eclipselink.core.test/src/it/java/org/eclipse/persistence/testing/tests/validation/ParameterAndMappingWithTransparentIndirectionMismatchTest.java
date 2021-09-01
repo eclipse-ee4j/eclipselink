@@ -73,7 +73,7 @@ public class ParameterAndMappingWithTransparentIndirectionMismatchTest extends E
         idMapping.setFieldName("EMPLOYEE.EMP_ID");
         idMapping.setGetMethodName("getId");
         idMapping.setSetMethodName("setId");
-        ((MethodAttributeAccessor)idMapping.getAttributeAccessor()).initializeAttributes(PersonWithValueHolder.class);
+        idMapping.getAttributeAccessor().initializeAttributes(PersonWithValueHolder.class);
         descriptor.addMapping(idMapping);
 
         OneToManyMapping phoneNumbersMapping = new OneToManyMapping();
@@ -84,7 +84,7 @@ public class ParameterAndMappingWithTransparentIndirectionMismatchTest extends E
         phoneNumbersMapping.setSetMethodName("setPhones");
         phoneNumbersMapping.setGetMethodName("getPhones");
         phoneNumbersMapping.addTargetForeignKeyFieldName("PHONE.EMP_ID", "EMPLOYEE.EMP_ID");
-        ((MethodAttributeAccessor)phoneNumbersMapping.getAttributeAccessor()).initializeAttributes(PersonWithValueHolder.class);
+        phoneNumbersMapping.getAttributeAccessor().initializeAttributes(PersonWithValueHolder.class);
         descriptor.addMapping(phoneNumbersMapping);
 
         return descriptor;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -376,7 +376,7 @@ public class SDOSchemaGenerator {
     }
 
     private void buildElementsAndAttributes(Object owner, Type type) {
-        List properties = ((SDOType) type).getDeclaredProperties();
+        List properties = type.getDeclaredProperties();
         NestedParticle nestedParticle = null;
 
         if ((properties == null) || (properties.size() == 0)) {
@@ -597,7 +597,7 @@ public class SDOSchemaGenerator {
         Type schemaSDOType = null;
         QName schemaType = sdoProperty.getXsdType();
         if (schemaType != null) {
-            schemaSDOType = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getType(schemaType.getNamespaceURI(), schemaType.getLocalPart());
+            schemaSDOType = aHelperContext.getTypeHelper().getType(schemaType.getNamespaceURI(), schemaType.getLocalPart());
 
             if ((sdoProperty.getType() == SDOConstants.SDO_STRING) && (schemaSDOType != SDOConstants.SDO_STRING)) {
                 String sdoXmlPrefix = getPrefixForURI(SDOConstants.SDOXML_URL);
@@ -676,7 +676,7 @@ public class SDOSchemaGenerator {
 
         // process default values that are defined in the schema (not via primitive numeric Object wrapped pseudo defaults)
         if (((SDOProperty)property).isDefaultSet()) {
-            if (!property.isMany() && ((SDOType)property.getType()).isDataType()) {
+            if (!property.isMany() && property.getType().isDataType()) {
                 XMLConversionManager xmlConversionManager = ((SDOXMLHelper)aHelperContext.getXMLHelper()).getXmlConversionManager();
                 attr.setDefaultValue((String)xmlConversionManager.convertObject(property.getDefault(), ClassConstants.STRING, ((SDOProperty)property).getXsdType()));
             }
@@ -687,7 +687,7 @@ public class SDOSchemaGenerator {
         QName schemaType = ((SDOProperty)property).getXsdType();
 
         if (schemaType != null) {
-            Type schemaSDOType = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getType(schemaType.getNamespaceURI(), schemaType.getLocalPart());
+            Type schemaSDOType = aHelperContext.getTypeHelper().getType(schemaType.getNamespaceURI(), schemaType.getLocalPart());
 
             if ((property.getType() == SDOConstants.SDO_STRING) && (schemaSDOType != SDOConstants.SDO_STRING)) {
                 String sdoXmlPrefix = getPrefixForURI(SDOConstants.SDOXML_URL);
@@ -696,7 +696,7 @@ public class SDOSchemaGenerator {
             }
         }
 
-        if (!((SDOType)property.getType()).isDataType()) {
+        if (!property.getType().isDataType()) {
             schemaType = SDOConstants.ANY_URI_QNAME;
         }
 

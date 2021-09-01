@@ -18,6 +18,7 @@ import commonj.sdo.Property;
 import commonj.sdo.Type;
 import java.util.List;
 
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 
 import org.eclipse.persistence.sdo.SDOConstants;
@@ -41,7 +42,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
         List types = xsdHelper.define(xsdSchema);
 
         // check list has 2 types
-        this.assertEquals(types.size(), 2);
+        assertEquals(types.size(), 2);
         Type aType = null;
         for (int i = 0; i < types.size(); i++) {
             Type nextType = (Type)types.get(i);
@@ -49,36 +50,36 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
                 aType = nextType;
             }
         }
-        this.assertNotNull(aType);
+        assertNotNull(aType);
 
         List properties = aType.getDeclaredProperties();
 
         // check  the type has one Property
-        this.assertEquals(properties.size(), 1);
-        this.assertEquals(aType.getProperties().size(), 1);
+        assertEquals(properties.size(), 1);
+        assertEquals(aType.getProperties().size(), 1);
 
         Property p = (Property)properties.get(0);
 
         // check if Property name is as schema
-        this.assertEquals(p.getName(), "myTest1");
+        assertEquals(p.getName(), "myTest1");
 
         // check if Property's Type is as schema
-        this.assertEquals(p.getType().getName(), "elementTest");
+        assertEquals(p.getType().getName(), "elementTest");
 
         // check alias name
         //this.assertNull(p.getAliasNames());
         // check containing type
-        this.assertEquals(p.getContainingType().getName(), "myTestType");
+        assertEquals(p.getContainingType().getName(), "myTestType");
 
         // check default value
-        this.assertNull(p.getDefault());
+        assertNull(p.getDefault());
 
         // check opposite Property
-        this.assertNull(p.getOpposite());
+        assertNull(p.getOpposite());
 
-        this.assertTrue(p.isContainment());
+        assertTrue(p.isContainment());
         // check if it many
-        this.assertFalse(p.isMany());
+        assertFalse(p.isMany());
 
     }
 
@@ -88,7 +89,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
         List types = xsdHelper.define(xsdSchema);
 
         // check list has 2 types
-        this.assertEquals(2, types.size());
+        assertEquals(2, types.size());
         Type aType = null;
         for (int i = 0; i < types.size(); i++) {
             Type nextType = (Type)types.get(i);
@@ -96,35 +97,35 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
                 aType = nextType;
             }
         }
-        this.assertNotNull(aType);
+        assertNotNull(aType);
 
         List properties = aType.getDeclaredProperties();
 
         // check  the type has one Property
-        this.assertEquals(properties.size(), 1);
+        assertEquals(properties.size(), 1);
 
         Property p = (Property)properties.get(0);
 
         // check if Property name is as schema
-        this.assertEquals(p.getName(), "SDO_NAME");
+        assertEquals(p.getName(), "SDO_NAME");
 
         // check if Property's Type is as schema
-        this.assertEquals(p.getType().getName(), "elementTest");
+        assertEquals(p.getType().getName(), "elementTest");
 
         // check alias name
         //this.assertNull(p.getAliasNames());
         // check containing type
-        this.assertEquals(p.getContainingType().getName(), "myTestType");
+        assertEquals(p.getContainingType().getName(), "myTestType");
 
         // check default value
-        this.assertNull(p.getDefault());
+        assertNull(p.getDefault());
 
         // check opposite Property
-        this.assertNull(p.getOpposite());
+        assertNull(p.getOpposite());
 
-        this.assertTrue(p.isContainment());
+        assertTrue(p.isContainment());
         // check if it many
-        this.assertFalse(p.isMany());
+        assertFalse(p.isMany());
 
     }
 
@@ -134,7 +135,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
         List types = xsdHelper.define(xsdSchema);
 
         // check list has 2 types
-        this.assertEquals(types.size(), 2);
+        assertEquals(types.size(), 2);
         Type aType = null;
         for (int i = 0; i < types.size(); i++) {
             Type nextType = (Type)types.get(i);
@@ -142,43 +143,43 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
                 aType = nextType;
             }
         }
-        this.assertNotNull(aType);
+        assertNotNull(aType);
 
         List properties = aType.getDeclaredProperties();
 
         // check  the type has one Property
-        this.assertEquals(properties.size(), 1);
+        assertEquals(properties.size(), 1);
 
         Property p = (Property)properties.get(0);
 
         // check if Property name is as schema
-        this.assertEquals(p.getName(), "myTest1");
+        assertEquals(p.getName(), "myTest1");
 
         // check if Property's Type is as schema
-        this.assertEquals(p.getType().getName(), "elementTest");
+        assertEquals(p.getType().getName(), "elementTest");
 
         // check alias name
-        this.assertEquals(1, p.getAliasNames().size());
-        this.assertEquals(p.getAliasNames().get(0), "ALIAS_NAME");
+        assertEquals(1, p.getAliasNames().size());
+        assertEquals(p.getAliasNames().get(0), "ALIAS_NAME");
 
         // check containing type
-        this.assertEquals(p.getContainingType().getName(), "myTestType");
+        assertEquals(p.getContainingType().getName(), "myTestType");
 
         // check default value
-        this.assertNull(p.getDefault());
+        assertNull(p.getDefault());
 
         // check opposite Property
-        this.assertNull(p.getOpposite());
+        assertNull(p.getOpposite());
 
-        this.assertTrue(p.isContainment());
+        assertTrue(p.isContainment());
         // check if it many
-        this.assertFalse(p.isMany());
+        assertFalse(p.isMany());
 
     }
      public void testElementWithNameCollisions() {
         String xsdSchema = getSchema("org/eclipse/persistence/testing/sdo/helper/xsdhelper/define/elements/ElementWithNameCollisions.xsd");
         List types = xsdHelper.define(xsdSchema);
-        this.assertEquals(4, types.size());
+        assertEquals(4, types.size());
 
         for (int i = 0; i < types.size(); i++) {
             SDOType nextType = (SDOType)types.get(i);
@@ -210,7 +211,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
         List types = xsdHelper.define(xsdSchema);
 
         // check list has one type
-        this.assertEquals(2, types.size());
+        assertEquals(2, types.size());
         Type aType = null;
         for (int i = 0; i < types.size(); i++) {
             Type nextType = (Type)types.get(i);
@@ -218,38 +219,38 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
                 aType = nextType;
             }
         }
-        this.assertNotNull(aType);
+        assertNotNull(aType);
 
         List properties = aType.getDeclaredProperties();
 
         // check  the type has one Property
-        this.assertEquals(properties.size(), 1);
-        this.assertEquals(aType.getProperties().size(), 1);
+        assertEquals(properties.size(), 1);
+        assertEquals(aType.getProperties().size(), 1);
 
         Property p = (Property)properties.get(0);
 
         // check if Property name is as schema
-        this.assertEquals(p.getName(), "myElement");
+        assertEquals(p.getName(), "myElement");
 
         // check if Property's Type is as schema
         //TODO: myElement or my-int
-        this.assertEquals(p.getType().getName(), "myElement");
+        assertEquals(p.getType().getName(), "myElement");
 
         // check alias name
         //this.assertNull(p.getAliasNames());
         // check containing type
-        this.assertEquals(p.getContainingType().getName(), "myTestType");
+        assertEquals(p.getContainingType().getName(), "myTestType");
 
         // check default value !! facing same problem as attribute's test !!
-        this.assertEquals((Integer)p.getDefault(), Integer.valueOf(3));
+        assertEquals(p.getDefault(), Integer.valueOf(3));
 
         // check opposite Property
-        this.assertNull(p.getOpposite());
+        assertNull(p.getOpposite());
 
-        this.assertFalse(p.isContainment());
+        assertFalse(p.isContainment());
 
         // check if it many
-        this.assertFalse(p.isMany());
+        assertFalse(p.isMany());
 
     }
 
@@ -263,7 +264,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
         Property p = (Property)myTestType.getDeclaredProperties().get(0);
 
         // check if it many
-        this.assertTrue(p.isMany());
+        assertTrue(p.isMany());
     }
 
     public void testElementWithMaxOccurance() {
@@ -272,7 +273,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
         List types = xsdHelper.define(xsdSchema);
 
         // check list has 2 types
-        this.assertEquals(types.size(), 2);
+        assertEquals(types.size(), 2);
         Type aType = null;
         for (int i = 0; i < types.size(); i++) {
             Type nextType = (Type)types.get(i);
@@ -280,36 +281,36 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
                 aType = nextType;
             }
         }
-        this.assertNotNull(aType);
+        assertNotNull(aType);
 
         List properties = aType.getDeclaredProperties();
 
         // check  the type has one Property
-        this.assertEquals(properties.size(), 1);
-        this.assertEquals(1, aType.getProperties().size());
+        assertEquals(properties.size(), 1);
+        assertEquals(1, aType.getProperties().size());
         Property p = (Property)properties.get(0);
 
         // check if Property name is as schema
-        this.assertEquals(p.getName(), "myTest1");
+        assertEquals(p.getName(), "myTest1");
 
         // check if Property's Type is as schema
-        this.assertEquals(p.getType().getName(), "elementTest");
+        assertEquals(p.getType().getName(), "elementTest");
 
         // check alias name
         //this.assertNull(p.getAliasNames());
         // check containing type
-        this.assertEquals(p.getContainingType().getName(), "myTestType");
+        assertEquals(p.getContainingType().getName(), "myTestType");
 
         // check default value
-        this.assertNull(p.getDefault());
+        assertNull(p.getDefault());
 
         // check opposite Property
-        this.assertNull(p.getOpposite());
+        assertNull(p.getOpposite());
 
         //TODO: what should containment be
         //this.assertFalse(p.isContainment());
         // check if it many
-        this.assertTrue(p.isMany());
+        assertTrue(p.isMany());
 
     }
 
@@ -319,7 +320,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
         List types = xsdHelper.define(xsdSchema);
 
         // check list has 2 types
-        this.assertEquals(types.size(), 2);
+        assertEquals(types.size(), 2);
         Type aType = null;
         for (int i = 0; i < types.size(); i++) {
             Type nextType = (Type)types.get(i);
@@ -327,36 +328,36 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
                 aType = nextType;
             }
         }
-        this.assertNotNull(aType);
+        assertNotNull(aType);
 
         List properties = aType.getDeclaredProperties();
 
         // check  the type has one Property
-        this.assertEquals(properties.size(), 1);
-        this.assertEquals(1, aType.getProperties().size());
+        assertEquals(properties.size(), 1);
+        assertEquals(1, aType.getProperties().size());
         Property p = (Property)properties.get(0);
 
         // check if Property name is as schema
-        this.assertEquals(p.getName(), "myTest1");
+        assertEquals(p.getName(), "myTest1");
 
         // check if Property's Type is as schema
-        this.assertEquals(p.getType().getName(), "elementTest");
+        assertEquals(p.getType().getName(), "elementTest");
 
         // check alias name
         //this.assertNull(p.getAliasNames());
         // check containing type
-        this.assertEquals(p.getContainingType().getName(), "myTestType");
+        assertEquals(p.getContainingType().getName(), "myTestType");
 
         // check default value
-        this.assertNull(p.getDefault());
+        assertNull(p.getDefault());
 
         // check opposite Property
-        this.assertNull(p.getOpposite());
+        assertNull(p.getOpposite());
 
         //TODO: what should containment be
         //this.assertFalse(p.isContainment());
         // check if it many
-        this.assertFalse(p.isMany());
+        assertFalse(p.isMany());
 
     }
 
@@ -366,7 +367,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
         List types = xsdHelper.define(xsdSchema);
 
         // check list has one type
-        this.assertEquals(types.size(), 3);
+        assertEquals(types.size(), 3);
         //Type aType = (Type)types.get(0);
         Type aType = null;
         for (int i = 0; i < types.size(); i++) {
@@ -379,31 +380,31 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
         List properties = aType.getDeclaredProperties();
 
         // check  the type has one Property
-        this.assertEquals(properties.size(), 1);
+        assertEquals(properties.size(), 1);
 
         Property p = (Property)properties.get(0);
 
         // check if Property name is as schema
-        this.assertEquals(p.getName(), "otherTest");
+        assertEquals(p.getName(), "otherTest");
 
         // check if Property's Type is as schema
-        this.assertEquals(p.getType().getName(), "myTestType");
+        assertEquals(p.getType().getName(), "myTestType");
 
         // check alias name
         //this.assertNull(p.getAliasNames());
         // check containing type
-        this.assertEquals(p.getContainingType().getName(), "mySubstitute");
+        assertEquals(p.getContainingType().getName(), "mySubstitute");
 
         // check default value
-        this.assertNull(p.getDefault());
+        assertNull(p.getDefault());
 
         // check opposite Property
-        this.assertNull(p.getOpposite());
+        assertNull(p.getOpposite());
 
         //TODO: what should containment be
         //this.assertFalse(p.isContainment());
         // check if it many
-        this.assertFalse(p.isMany());
+        assertFalse(p.isMany());
 
     }
 
@@ -413,7 +414,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
         List types = xsdHelper.define(xsdSchema);
 
         // check list has 2 types
-        this.assertEquals(types.size(), 2);
+        assertEquals(types.size(), 2);
         Type aType = null;
         for (int i = 0; i < types.size(); i++) {
             Type nextType = (Type)types.get(i);
@@ -421,36 +422,36 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
                 aType = nextType;
             }
         }
-        this.assertNotNull(aType);
+        assertNotNull(aType);
 
         List properties = aType.getDeclaredProperties();
 
         // check  the type has one Property
-        this.assertEquals(properties.size(), 1);
-        this.assertEquals(aType.getProperties().size(), 1);
+        assertEquals(properties.size(), 1);
+        assertEquals(aType.getProperties().size(), 1);
         Property p = (Property)properties.get(0);
 
         // check if Property name is as schema
-        this.assertEquals(p.getName(), "myTest1");
+        assertEquals(p.getName(), "myTest1");
 
         // check if Property's Type is as schema
-        this.assertEquals(p.getType().getName(), "my-int");
+        assertEquals(p.getType().getName(), "my-int");
 
         // check alias name
         //this.assertNull(p.getAliasNames());
         // check containing type
-        this.assertEquals(p.getContainingType().getName(), "myTestType");
+        assertEquals(p.getContainingType().getName(), "myTestType");
 
         // check default value
-        this.assertNull(p.getDefault());
+        assertNull(p.getDefault());
 
         // check opposite Property
-        this.assertNull(p.getOpposite());
+        assertNull(p.getOpposite());
 
         //TODO: should this be true or false
         //this.assertFalse(p.isContainment());
         // check if it many
-        this.assertFalse(p.isMany());
+        assertFalse(p.isMany());
 
     }
 
@@ -460,7 +461,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
         List types = xsdHelper.define(xsdSchema);
 
         // check list has 2 types
-        this.assertEquals(types.size(), 2);
+        assertEquals(types.size(), 2);
         Type aType = null;
         for (int i = 0; i < types.size(); i++) {
             Type nextType = (Type)types.get(i);
@@ -468,35 +469,35 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
                 aType = nextType;
             }
         }
-        this.assertNotNull(aType);
+        assertNotNull(aType);
         List properties = aType.getDeclaredProperties();
 
         // check  the type has one Property
-        this.assertEquals(properties.size(), 1);
-        this.assertEquals(1, aType.getProperties().size());
+        assertEquals(properties.size(), 1);
+        assertEquals(1, aType.getProperties().size());
         Property p = (Property)properties.get(0);
 
         // check if Property name is as schema
-        this.assertEquals(p.getName(), "myTest1");
+        assertEquals(p.getName(), "myTest1");
 
         // check if Property's Type is as schema
-        this.assertEquals(p.getType().getName(), "my-int");
+        assertEquals(p.getType().getName(), "my-int");
 
         // check alias name
         //this.assertNull(p.getAliasNames());
         // check containing type
-        this.assertEquals(p.getContainingType().getName(), "myTestType");
+        assertEquals(p.getContainingType().getName(), "myTestType");
 
         // check default value !! may have the problem as in attriutes' test !!
-        this.assertEquals((Integer)p.getDefault(), Integer.valueOf(3));
+        assertEquals(p.getDefault(), Integer.valueOf(3));
 
         // check opposite Property
-        this.assertNull(p.getOpposite());
+        assertNull(p.getOpposite());
 
         //TODO: what should containment be
         //this.assertFalse(p.isContainment());
         // check if it many
-        this.assertFalse(p.isMany());
+        assertFalse(p.isMany());
 
     }
 
@@ -506,7 +507,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
         List types = xsdHelper.define(xsdSchema);
 
         // check list has 2 types
-        this.assertEquals(types.size(), 2);
+        assertEquals(types.size(), 2);
         Type aType = null;
         for (int i = 0; i < types.size(); i++) {
             Type nextType = (Type)types.get(i);
@@ -514,35 +515,35 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
                 aType = nextType;
             }
         }
-        this.assertNotNull(aType);
+        assertNotNull(aType);
         List properties = aType.getDeclaredProperties();
 
         // check  the type has one Property
-        this.assertEquals(properties.size(), 1);
-        this.assertEquals(1, aType.getProperties().size());
+        assertEquals(properties.size(), 1);
+        assertEquals(1, aType.getProperties().size());
         Property p = (Property)properties.get(0);
 
         // check if Property name is as schema
-        this.assertEquals(p.getName(), "myTest1");
+        assertEquals(p.getName(), "myTest1");
 
         // check if Property's Type is as schema
-        this.assertEquals(p.getType().getName(), "my-int");
+        assertEquals(p.getType().getName(), "my-int");
 
         // check alias name
         //this.assertNull(p.getAliasNames());
         // check containing type
-        this.assertEquals(p.getContainingType().getName(), "myTestType");
+        assertEquals(p.getContainingType().getName(), "myTestType");
 
         // check default value !! may have the problem as in attriutes' test !!
-        this.assertEquals((Integer)p.getDefault(), Integer.valueOf(3));
+        assertEquals(p.getDefault(), Integer.valueOf(3));
 
         // check opposite Property
-        this.assertNull(p.getOpposite());
+        assertNull(p.getOpposite());
 
         //TODO: what should containment be
         //this.assertFalse(p.isContainment());
         // check if it many
-        this.assertFalse(p.isMany());
+        assertFalse(p.isMany());
 
     }
 
@@ -552,7 +553,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
         List types = xsdHelper.define(xsdSchema);
 
         // check list has 2 types
-        this.assertEquals(types.size(), 2);
+        assertEquals(types.size(), 2);
         Type aType = null;
         for (int i = 0; i < types.size(); i++) {
             Type nextType = (Type)types.get(i);
@@ -560,36 +561,36 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
                 aType = nextType;
             }
         }
-        this.assertNotNull(aType);
+        assertNotNull(aType);
         List properties = aType.getDeclaredProperties();
 
         // check  the type has one Property
-        this.assertEquals(properties.size(), 1);
+        assertEquals(properties.size(), 1);
 
         Property p = (Property)properties.get(0);
 
         // check if Property name is as schema
-        this.assertEquals(p.getName(), "myTest1");
+        assertEquals(p.getName(), "myTest1");
 
         // check if Property's Type is as schema
         //this.assertEquals(p.getType().getName(), "string");
-        this.assertEquals(SDOConstants.SDO_STRING, p.getType());
+        assertEquals(SDOConstants.SDO_STRING, p.getType());
 
         // check alias name
         //this.assertNull(p.getAliasNames());
         // check containing type
-        this.assertEquals(p.getContainingType().getName(), "myTestType");
+        assertEquals(p.getContainingType().getName(), "myTestType");
 
         // check default value !! may have the problem as in attriutes' test !!
-        this.assertNull((Integer)p.getDefault());
+        assertNull(p.getDefault());
 
         // check opposite Property
-        this.assertNull(p.getOpposite());
+        assertNull(p.getOpposite());
 
         //TODO: what should containment be
         //this.assertFalse(p.isContainment());
         // check if it many
-        this.assertFalse(p.isMany());
+        assertFalse(p.isMany());
 
     }
 
@@ -599,7 +600,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
         List types = xsdHelper.define(xsdSchema);
 
         // check list has 2 types
-        this.assertEquals(3, types.size());
+        assertEquals(3, types.size());
         Type aType = null;
         for (int i = 0; i < types.size(); i++) {
             Type nextType = (Type)types.get(i);
@@ -607,36 +608,36 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
                 aType = nextType;
             }
         }
-        this.assertNotNull(aType);
+        assertNotNull(aType);
 
         List properties = aType.getDeclaredProperties();
 
         // check  the type has one Property
-        this.assertEquals(properties.size(), 1);
+        assertEquals(properties.size(), 1);
 
         Property p = (Property)properties.get(0);
 
         // check if Property name is as schema
-        this.assertEquals(p.getName(), "myTest1");
+        assertEquals(p.getName(), "myTest1");
 
         // check if Property's Type is as schema
-        this.assertEquals(p.getType().getName(), "P_TYPE");
+        assertEquals(p.getType().getName(), "P_TYPE");
 
         // check alias name
         //this.assertNull(p.getAliasNames());
         // check containing type
-        this.assertEquals(p.getContainingType().getName(), "myTestType");
+        assertEquals(p.getContainingType().getName(), "myTestType");
 
         // check default value !! may have the problem as in attriutes' test !!
-        this.assertNull((Integer)p.getDefault());
+        assertNull(p.getDefault());
 
         // check opposite Property
-        this.assertNull(p.getOpposite());
+        assertNull(p.getOpposite());
 
         //TODO: what should containment be
-        this.assertFalse(p.isContainment());
+        assertFalse(p.isContainment());
         // check if it many
-        this.assertFalse(p.isMany());
+        assertFalse(p.isMany());
 
     }
 
@@ -701,7 +702,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
         List types = xsdHelper.define(xsdSchema);
 
         // check list has 2 types
-        this.assertEquals(types.size(), 2);
+        assertEquals(types.size(), 2);
         Type aType = null;
         for (int i = 0; i < types.size(); i++) {
             Type nextType = (Type)types.get(i);
@@ -709,35 +710,35 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
                 aType = nextType;
             }
         }
-        this.assertNotNull(aType);
+        assertNotNull(aType);
 
         List properties = aType.getDeclaredProperties();
 
         // check  the type has one Property
-        this.assertEquals(properties.size(), 1);
+        assertEquals(properties.size(), 1);
 
         Property p = (Property)properties.get(0);
 
         // check if Property name is as schema
-        this.assertEquals(p.getName(), "myTest1");
+        assertEquals(p.getName(), "myTest1");
 
         // check if Property's Type is as schema
-        this.assertEquals(p.getType().getName(), "String");
+        assertEquals(p.getType().getName(), "String");
 
         // check alias name
         //this.assertNull(p.getAliasNames());
         // check containing type
-        this.assertEquals(p.getContainingType().getName(), "myTestType");
+        assertEquals(p.getContainingType().getName(), "myTestType");
 
         // check default value !! may have the problem as in attriutes' test !!
-        this.assertNull((Integer)p.getDefault());
+        assertNull(p.getDefault());
 
         // check opposite Property
-        this.assertNull(p.getOpposite());
+        assertNull(p.getOpposite());
 
-        this.assertFalse(p.isContainment());
+        assertFalse(p.isContainment());
         // check if it many
-        this.assertFalse(p.isMany());
+        assertFalse(p.isMany());
 
     }
 
@@ -747,40 +748,40 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
         List types = xsdHelper.define(xsdSchema);
 
         // check list has one type
-        this.assertEquals(types.size(), 1);
+        assertEquals(types.size(), 1);
 
         Type aType = (Type)types.get(0);
         List properties = aType.getDeclaredProperties();
 
         // check  the type has one Property
-        this.assertEquals(properties.size(), 1);
+        assertEquals(properties.size(), 1);
 
         Property p = (Property)properties.get(0);
 
         // check if Property name is as schema
-        this.assertEquals(p.getName(), "myTest1");
+        assertEquals(p.getName(), "myTest1");
 
         // check if Property's Type is as schema
-        this.assertEquals(p.getType().getName(), "ChangeSummaryType");
+        assertEquals(p.getType().getName(), "ChangeSummaryType");
 
         // check alias name
         //this.assertNull(p.getAliasNames());
         // check containing type
-        this.assertEquals(p.getContainingType().getName(), "myTestType");
+        assertEquals(p.getContainingType().getName(), "myTestType");
 
         // check default value !! may have the problem as in attriutes' test !!
-        this.assertNull((Integer)p.getDefault());
+        assertNull(p.getDefault());
 
         // check opposite Property
-        this.assertNull(p.getOpposite());
+        assertNull(p.getOpposite());
 
-        this.assertFalse(p.isContainment());
+        assertFalse(p.isContainment());
         // check if it many
-        this.assertFalse(p.isMany());
+        assertFalse(p.isMany());
 
         // TODO: sdo spec p30 requires r/o state but 200606_cs changes set it to true for now
         //assertFalse(p.isReadOnly());
-        this.assertTrue(p.isReadOnly());
+        assertTrue(p.isReadOnly());
 
     }
 }

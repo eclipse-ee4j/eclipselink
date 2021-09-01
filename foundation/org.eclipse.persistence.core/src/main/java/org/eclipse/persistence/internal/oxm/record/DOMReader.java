@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -283,10 +283,10 @@ public class DOMReader extends XMLReaderAdapter {
         }
         while(nextChild != null) {
             if(nextChild.getNodeType() == Node.TEXT_NODE) {
-                char[] value = ((Text)nextChild).getNodeValue().toCharArray();
+                char[] value = nextChild.getNodeValue().toCharArray();
                 contentHandler.characters(value, 0, value.length);
             } else if(nextChild.getNodeType() == Node.COMMENT_NODE) {
-                char[] value = ((Comment)nextChild).getNodeValue().toCharArray();
+                char[] value = nextChild.getNodeValue().toCharArray();
                 if (lexicalHandler != null) {
                     lexicalHandler.comment(value, 0, value.length);
                 }

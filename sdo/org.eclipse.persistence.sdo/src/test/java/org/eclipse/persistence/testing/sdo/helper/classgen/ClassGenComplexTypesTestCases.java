@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ public class ClassGenComplexTypesTestCases extends SDOClassGenTestCases {
         TestRunner.main(arguments);
     }
 
+    @Override
     public void setUp() {
         super.setUp();
         classGenerator = new SDOClassGenerator(aHelperContext);
@@ -202,14 +203,17 @@ public class ClassGenComplexTypesTestCases extends SDOClassGenTestCases {
         runClassGenTest(xsdSchemaName, 1);
     }
 
+    @Override
     protected String getControlSourceFolder() {
         return controlSourceFolder;
     }
 
+    @Override
     protected String getSourceFolder() {
         return "complextypes";
     }
 
+    @Override
     protected List<String> getControlFileNames() {
         return controlFileNames;
     }
@@ -229,9 +233,11 @@ public class ClassGenComplexTypesTestCases extends SDOClassGenTestCases {
 
     }
 
+    @Override
     public void testClassGen() throws Exception {
     }
 
+    @Override
     protected String getSchemaName() {
         return null;
     }

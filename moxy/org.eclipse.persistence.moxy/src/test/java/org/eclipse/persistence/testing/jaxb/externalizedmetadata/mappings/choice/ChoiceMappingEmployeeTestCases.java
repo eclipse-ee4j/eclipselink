@@ -46,6 +46,7 @@ public class ChoiceMappingEmployeeTestCases extends JAXBWithJSONTestCases{
         setContextPath("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choice");
     }
 
+    @Override
     public Object getWriteControlObject() {
         if(ctrlObject ==null){
             Employee emp = new Employee();
@@ -57,6 +58,7 @@ public class ChoiceMappingEmployeeTestCases extends JAXBWithJSONTestCases{
         return ctrlObject;
     }
 
+    @Override
     public Object getControlObject() {
         if(ctrlObject ==null){
             Employee emp = new Employee();
@@ -67,6 +69,7 @@ public class ChoiceMappingEmployeeTestCases extends JAXBWithJSONTestCases{
         return ctrlObject;
     }
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/choice/employee-oxm.xml");
 
@@ -79,11 +82,13 @@ public class ChoiceMappingEmployeeTestCases extends JAXBWithJSONTestCases{
         return properties;
     }
 
+    @Override
     public void objectToXMLDocumentTest(Document testDocument) throws Exception {
         super.objectToXMLDocumentTest(testDocument);
         assertTrue("Accessor method was not called as expected", ctrlObject.wasGetCalled);
     }
 
+    @Override
     public void testRoundTrip() throws Exception{
         //doesn't apply since read and write only mappings are present
     }

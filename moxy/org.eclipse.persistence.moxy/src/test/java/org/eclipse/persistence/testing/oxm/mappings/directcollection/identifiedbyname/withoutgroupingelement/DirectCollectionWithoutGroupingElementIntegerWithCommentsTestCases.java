@@ -37,6 +37,7 @@ public class DirectCollectionWithoutGroupingElementIntegerWithCommentsTestCases 
         setProject(new DirectCollectionWithoutGroupingElementIdentifiedByNameIntegerProject());
     }
 
+    @Override
     protected Object getControlObject() {
         Vector responsibilities = new Vector();
         responsibilities.addElement(CONTROL_RESPONSIBILITY1);
@@ -49,6 +50,7 @@ public class DirectCollectionWithoutGroupingElementIntegerWithCommentsTestCases 
         return employee;
     }
 
+         @Override
          protected Document getWriteControlDocument() throws Exception {
 
         String xmlResource = "org/eclipse/persistence/testing/oxm/mappings/directcollection/identifiedbyname/withoutgroupingelement/DirectCollectionWithoutGroupingElementIntegerWithCommentWriting.xml";
@@ -63,6 +65,7 @@ public class DirectCollectionWithoutGroupingElementIntegerWithCommentsTestCases 
         return writeControlDocument;
     }
 
+    @Override
     public void testObjectToContentHandler() throws Exception {
         // DO NOTHING BECAUSE CONTENT HANDLER CAN NOT READ COMMENTS
     }

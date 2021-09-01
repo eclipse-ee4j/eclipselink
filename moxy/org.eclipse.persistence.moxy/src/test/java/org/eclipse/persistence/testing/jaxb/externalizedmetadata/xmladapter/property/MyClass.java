@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,6 @@ public class MyClass {
             return false;
         }
         //return (this.cal.YEAR == sc.cal.YEAR && this.cal.MONTH == sc.cal.MONTH && this.cal.DATE == sc.cal.DATE);
-        return (this.cal.get(cal.YEAR) == sc.cal.get(cal.YEAR) && this.cal.get(cal.MONTH) == sc.cal.get(cal.MONTH) && cal.get(cal.DATE) == sc.cal.get(cal.DATE));
+        return (this.cal.get(Calendar.YEAR) == sc.cal.get(Calendar.YEAR) && this.cal.get(Calendar.MONTH) == sc.cal.get(Calendar.MONTH) && cal.get(Calendar.DATE) == sc.cal.get(Calendar.DATE));
     }
 }

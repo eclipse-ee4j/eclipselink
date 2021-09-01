@@ -38,17 +38,11 @@ public final class OrderSiblingsByClause extends AbstractOrderByClause {
         super(parent, ORDER_SIBLINGS_BY);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         acceptUnknownVisitor(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(OrderSiblingsByClauseBNF.ID);

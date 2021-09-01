@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import junit.framework.TestCase;
 import org.eclipse.persistence.testing.sdo.SDOTestCase;
 
 import commonj.sdo.DataObject;
@@ -40,6 +41,7 @@ public class OppositePropertyTestCases extends SDOTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() {
         OppositeProject project = new OppositeProject();
         XMLContext xmlContext = new XMLContext(project);
@@ -57,10 +59,10 @@ public class OppositePropertyTestCases extends SDOTestCase {
 
         Property child2Property = child1DO.getType().getProperty("child2");
         child1DO.set(child2Property, child2DO);
-        this.assertEquals(child1DO, child2DO.get("child1"));
+        assertEquals(child1DO, child2DO.get("child1"));
 
         Child2 child2 = (Child2) jaxbHelperContext.unwrap(child2DO);
-        this.assertNotNull(child2.getChild1());
+        assertNotNull(child2.getChild1());
     }
 
     public void testOppositePropertyCleared1() {
@@ -73,14 +75,14 @@ public class OppositePropertyTestCases extends SDOTestCase {
         child1DO.set(child2Property, child2DO);
         child1DO.set(child2Property, newChild2DO);
 
-        this.assertNull(child2DO.get("child1"));
-        this.assertEquals(child1DO, newChild2DO.get("child1"));
+        assertNull(child2DO.get("child1"));
+        assertEquals(child1DO, newChild2DO.get("child1"));
 
         Child2 child2 = (Child2) jaxbHelperContext.unwrap(child2DO);
-        this.assertNull(child2.getChild1());
+        assertNull(child2.getChild1());
 
         Child2 newChild2 = (Child2) jaxbHelperContext.unwrap(newChild2DO);
-        this.assertNotNull(newChild2.getChild1());
+        assertNotNull(newChild2.getChild1());
     }
 
     public void testOppositePropertyCleared2() {
@@ -93,14 +95,14 @@ public class OppositePropertyTestCases extends SDOTestCase {
         child1DO.set(child2Property, child2DO);
         child1DO.set(child2Property, newChild2DO);
 
-        this.assertNull(child2DO.get("child1"));
-        this.assertEquals(child1DO, newChild2DO.get("child1"));
+        assertNull(child2DO.get("child1"));
+        assertEquals(child1DO, newChild2DO.get("child1"));
 
         Child2 child2 = (Child2) jaxbHelperContext.unwrap(child2DO);
-        this.assertNull(child2.getChild1());
+        assertNull(child2.getChild1());
 
         Child2 newChild2 = (Child2) jaxbHelperContext.unwrap(newChild2DO);
-        this.assertNotNull(newChild2.getChild1());
+        assertNotNull(newChild2.getChild1());
     }
 
     public void testOppositePropertySetCollectionCaseAdd() {
@@ -111,10 +113,10 @@ public class OppositePropertyTestCases extends SDOTestCase {
         Property child2CollectionProperty = child1DO.getType().getProperty("child2collection");
         List list = child1DO.getList(child2CollectionProperty);
         list.add(child2DO);
-        this.assertEquals(child1DO, child2DO.get("child1"));
+        assertEquals(child1DO, child2DO.get("child1"));
 
         Child2 child2 = (Child2) jaxbHelperContext.unwrap(child2DO);
-        this.assertNotNull(child2.getChild1());
+        assertNotNull(child2.getChild1());
     }
 
     public void testOppositePropertySetCollectionCaseSet() {
@@ -127,12 +129,13 @@ public class OppositePropertyTestCases extends SDOTestCase {
         child2Collection.add(child2DO);
         child1DO.setList(child2CollectionProperty, child2Collection);
 
-        this.assertEquals(child1DO, child2DO.get("child1"));
+        assertEquals(child1DO, child2DO.get("child1"));
 
         Child2 child2 = (Child2) jaxbHelperContext.unwrap(child2DO);
-        this.assertNotNull(child2.getChild1());
+        assertNotNull(child2.getChild1());
     }
 
+    @Override
     public void tearDown() {
     }
 }

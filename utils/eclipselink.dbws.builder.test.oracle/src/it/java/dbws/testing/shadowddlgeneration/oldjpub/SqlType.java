@@ -243,6 +243,7 @@ public class SqlType extends TypeClass {
         return false;
     }
 
+    @Override
     public boolean hasConversion() {
         // For SqlRefType, getSqlName()==null
         if (getSqlName() == null) {
@@ -274,6 +275,7 @@ public class SqlType extends TypeClass {
      */
     //static Hashtable m_convFuns = new Hashtable();
 
+    @Override
     public String getOutOfConversion() {
         // For SqlRefType, getSqlName()==null
         if (getSqlName() == null) {
@@ -287,6 +289,7 @@ public class SqlType extends TypeClass {
      * <p/>
      * Returns null if this is not a PL/SQL type or if it does not have user-defined conversions.
      */
+    @Override
     public String getIntoConversion() {
         // For SqlRefType, getSqlName()==null
         if (getSqlName() == null) {
@@ -298,6 +301,7 @@ public class SqlType extends TypeClass {
     // Return the conversion function name
     // prefixed with package name,
     // if the conversion function is a generated one
+    @Override
     public String getOutOfConversionQualified() {
         // For SqlRefType, getSqlName()==null
         if (getSqlName() == null) {
@@ -309,6 +313,7 @@ public class SqlType extends TypeClass {
     // Return the conversion function name
     // prefixed with package name,
     // if the conversion function is a generated one
+    @Override
     public String getIntoConversionQualified() {
         // For SqlRefType, getSqlName()==null
         if (getSqlName() == null) {

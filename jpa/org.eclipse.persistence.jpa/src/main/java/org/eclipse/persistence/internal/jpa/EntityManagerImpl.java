@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2019 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1202,7 +1202,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * Check if the instance belongs to the current persistence context.
      */
     protected boolean contains(Object entity, UnitOfWork uow) {
-        return ((UnitOfWorkImpl) uow).isObjectRegistered(entity) && !((UnitOfWorkImpl) uow).isObjectDeleted(entity);
+        return uow.isObjectRegistered(entity) && !((UnitOfWorkImpl) uow).isObjectDeleted(entity);
     }
 
     @Override
@@ -1606,7 +1606,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     @Override
     public DatabaseSessionImpl getMemberDatabaseSession(Class cls) {
         if(this.databaseSession.isBroker()) {
-            return (DatabaseSessionImpl)((SessionBroker)this.databaseSession).getSessionForClass(cls);
+            return (DatabaseSessionImpl) this.databaseSession.getSessionForClass(cls);
         } else {
             return null;
         }
@@ -1620,7 +1620,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     @Override
     public ServerSession getMemberServerSession(Class cls) {
         if(this.databaseSession.isBroker()) {
-            return (ServerSession)((SessionBroker)this.databaseSession).getSessionForClass(cls);
+            return (ServerSession) this.databaseSession.getSessionForClass(cls);
         } else {
             return null;
         }
@@ -1634,7 +1634,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     @Override
     public String getMemberSessionName(Class cls) {
         if(this.databaseSession.isBroker()) {
-            return ((SessionBroker)this.databaseSession).getSessionForClass(cls).getName();
+            return this.databaseSession.getSessionForClass(cls).getName();
         } else {
             return null;
         }

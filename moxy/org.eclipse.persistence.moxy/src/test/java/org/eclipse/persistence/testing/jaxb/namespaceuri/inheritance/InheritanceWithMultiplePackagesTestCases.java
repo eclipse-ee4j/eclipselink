@@ -46,6 +46,7 @@ public class InheritanceWithMultiplePackagesTestCases extends JAXBWithJSONTestCa
         return namespaces;
     }
 
+    @Override
     protected Object getControlObject() {
         RootComplex root = new RootComplex();
         SubType subType = new SubType();

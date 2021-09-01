@@ -43,6 +43,7 @@ public class JAXBIntegerLinkedListTestCases extends JAXBIntegerArrayTestCases {
         initXsiType();
     }
 
+    @Override
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
@@ -52,11 +53,13 @@ public class JAXBIntegerLinkedListTestCases extends JAXBIntegerArrayTestCases {
         setTypes(types);
     }
 
+    @Override
     protected Type getTypeToUnmarshalTo() throws Exception {
         Field fld = ListofObjects.class.getField("integerLinkedList");
         return fld.getGenericType();
     }
 
+    @Override
     protected Object getControlObject() {
         LinkedList<Integer> integers = new LinkedList<Integer>();
         integers.add(Integer.valueOf("10"));
@@ -71,6 +74,7 @@ public class JAXBIntegerLinkedListTestCases extends JAXBIntegerArrayTestCases {
         return jaxbElement;
     }
 
+    @Override
     public  List<InputStream> getControlSchemaFiles(){
 
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/linkedListInteger.xsd");
@@ -81,6 +85,7 @@ public class JAXBIntegerLinkedListTestCases extends JAXBIntegerArrayTestCases {
         }
 
 
+    @Override
     protected String getNoXsiTypeControlResourceName() {
         return XML_RESOURCE_NO_XSI_TYPE;
     }

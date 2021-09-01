@@ -108,9 +108,6 @@ public abstract class EncapsulatedIdentificationVariableExpressionStateObject ex
         typeDeclaration = null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public EncapsulatedIdentificationVariableExpression getExpression() {
         return (EncapsulatedIdentificationVariableExpression) super.getExpression();
@@ -149,17 +146,11 @@ public abstract class EncapsulatedIdentificationVariableExpressionStateObject ex
         return managedType;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getQueryBNFId() {
         return IdentificationVariableBNF.ID;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IdentificationVariableStateObject getStateObject() {
         return (IdentificationVariableStateObject) super.getStateObject();
@@ -213,9 +204,6 @@ public abstract class EncapsulatedIdentificationVariableExpressionStateObject ex
         return ExpressionTools.stringIsNotEmpty(getIdentificationVariable());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +17,8 @@ package org.eclipse.persistence.testing.oxm.mappings.directtofield.singleattribu
 import java.io.InputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
+import junit.framework.TestCase;
 import org.w3c.dom.Document;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
@@ -34,12 +36,14 @@ public class DirectToXMLElementWithWhitespaceTestCases extends XMLMappingTestCas
         setProject(new DirectToXMLElementWithWhitespaceProject());
     }
 
+    @Override
     protected Object getControlObject() {
         Employee employee = new Employee();
         employee.setID(CONTROL_ID);
         return employee;
     }
 
+    @Override
     public void setUp() {
         try {
             super.setUp();
@@ -51,14 +55,16 @@ public class DirectToXMLElementWithWhitespaceTestCases extends XMLMappingTestCas
             removeEmptyTextNodes(comparisonControlDocument);
         } catch (Exception e) {
             e.printStackTrace();
-            this.fail("An exception occurred during setup");
+            fail("An exception occurred during setup");
         }
     }
 
+    @Override
     protected Document getWriteControlDocument() throws Exception {
         return comparisonControlDocument;
     }
 
+    @Override
     public void testObjectToContentHandler() throws Exception {
         SAXDocumentBuilder builder = new SAXDocumentBuilder();
         xmlMarshaller.marshal(getWriteControlObject(), builder);

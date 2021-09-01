@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,12 +48,14 @@ public class XMLGregorianCalendarTestCases extends XMLMappingTestCases {
         setControlDocument("org/eclipse/persistence/testing/oxm/xmlconversionmanager/emp.xml");
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         getXmlConversionManager().setTimeZoneQualified(true);
         getXmlConversionManager().setTimeZone(TimeZone.getTimeZone("GMT+3"));
     }
 
+    @Override
     public Object getControlObject() {
         try {
             Calendar cal = Calendar.getInstance();
@@ -87,6 +89,7 @@ public class XMLGregorianCalendarTestCases extends XMLMappingTestCases {
         }
     }
 
+    @Override
     public Document getWriteControlDocument() throws Exception {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/oxm/xmlconversionmanager/emp-write.xml");
         Document doc = parser.parse(inputStream);
@@ -193,7 +196,7 @@ public class XMLGregorianCalendarTestCases extends XMLMappingTestCases {
     public void testConversionFromStringWithSchemaType() throws Exception {
         String aString = "2009-02-17T07:30:00.000+03:00";
 
-        XMLGregorianCalendar c = (XMLGregorianCalendar) getXmlConversionManager().convertStringToXMLGregorianCalendar(aString, XMLConstants.DATE_QNAME);
+        XMLGregorianCalendar c = getXmlConversionManager().convertStringToXMLGregorianCalendar(aString, XMLConstants.DATE_QNAME);
 
         assertEquals("Calendar's 'hour' field was not cleared.", c.getHour(), DatatypeConstants.FIELD_UNDEFINED);
         assertEquals("Calendar's 'minute' field was not cleared.", c.getMinute(), DatatypeConstants.FIELD_UNDEFINED);
@@ -208,7 +211,7 @@ public class XMLGregorianCalendarTestCases extends XMLMappingTestCases {
     public void testConversionFromEmptyString() throws Exception {
         String aString = "";
         try {
-            XMLGregorianCalendar c = (XMLGregorianCalendar) getXmlConversionManager().convertStringToXMLGregorianCalendar(aString);
+            XMLGregorianCalendar c = getXmlConversionManager().convertStringToXMLGregorianCalendar(aString);
         } catch(Exception ex) {
             fail("An unexpect exception was thrown when coverting empty string to Gregorian Calendar");
         }

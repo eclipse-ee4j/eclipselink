@@ -42,25 +42,16 @@ public final class ModExpression extends AbstractDoubleEncapsulatedExpression {
         super(parent, MOD);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(FunctionsReturningNumericsBNF.ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String parameterExpressionBNF(int index) {
         return InternalModExpressionBNF.ID;

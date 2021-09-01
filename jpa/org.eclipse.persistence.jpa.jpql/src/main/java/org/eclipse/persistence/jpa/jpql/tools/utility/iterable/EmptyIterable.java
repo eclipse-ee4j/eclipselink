@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,9 +62,6 @@ public final class EmptyIterable<E> implements Iterable<E>, Serializable {
         return (Iterable<T>) INSTANCE;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Iterator<E> iterator() {
         return EmptyIterator.instance();
@@ -75,9 +72,6 @@ public final class EmptyIterable<E> implements Iterable<E>, Serializable {
         return INSTANCE;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return "[]";

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,25 +43,16 @@ public class ClassResolver extends Resolver {
         this.javaType = javaType;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected IType buildType() {
         return getType(javaType);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected ITypeDeclaration buildTypeDeclaration() {
         return getType().getTypeDeclaration();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return javaType.getName();

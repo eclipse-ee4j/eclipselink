@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -147,9 +147,9 @@ public abstract class XMLAbstractAnyMapping extends DatabaseMapping {
      */
     protected XMLRoot buildXMLRootForText(Node node, QName schemaTypeQName, XMLConverter converter, AbstractSession session, DOMRecord record) {
         XMLRoot rootValue = null;
-        Node textchild = ((Element) node).getFirstChild();
+        Node textchild = node.getFirstChild();
         if ((textchild != null) && (textchild.getNodeType() == Node.TEXT_NODE)) {
-            String stringValue = ((Text) textchild).getNodeValue();
+            String stringValue = textchild.getNodeValue();
             if ((stringValue != null) && stringValue.length() > 0) {
                 Object convertedValue = stringValue;
                 if (schemaTypeQName != null) {

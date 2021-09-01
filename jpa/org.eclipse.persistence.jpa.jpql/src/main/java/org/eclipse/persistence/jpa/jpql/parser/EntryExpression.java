@@ -42,9 +42,6 @@ public final class EntryExpression extends EncapsulatedIdentificationVariableExp
         super(parent, ENTRY);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);

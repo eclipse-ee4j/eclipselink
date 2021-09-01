@@ -26,6 +26,7 @@ public class ChildSchemaGenerator extends SchemaGenerator{
         super(helper);
     }
 
+    @Override
     public TransformerPropertyBuilder getTransformerPropertyBuilder(Property property, TypeInfo typeInfo) {
         return super.getTransformerPropertyBuilder(property, typeInfo);
     }

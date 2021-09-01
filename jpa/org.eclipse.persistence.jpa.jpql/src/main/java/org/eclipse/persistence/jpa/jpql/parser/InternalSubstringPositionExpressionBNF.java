@@ -47,9 +47,6 @@ public final class InternalSubstringPositionExpressionBNF extends JPQLQueryBNF {
         super(ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();

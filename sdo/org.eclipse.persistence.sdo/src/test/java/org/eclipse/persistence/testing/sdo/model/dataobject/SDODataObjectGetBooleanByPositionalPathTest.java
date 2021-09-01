@@ -19,6 +19,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -36,8 +38,8 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyBracketPositionalSet() {
         // dataObject's type add boolean property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_BOOLEAN);
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setMany(true);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_BOOLEAN);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setMany(true);
 
         Boolean bb = Boolean.valueOf(true);
         List b = new ArrayList();
@@ -46,16 +48,16 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setBoolean(property3, true);
         boolean value = dataObject_a.getBoolean(property3);
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setMany(false);
-        this.assertEquals(bb.booleanValue(), value);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setMany(false);
+        assertEquals(bb.booleanValue(), value);
 
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyDotPositionalSet() {
         // dataObject's type add boolean property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_BOOLEAN);
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setMany(true);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_BOOLEAN);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setMany(true);
 
         Boolean bb = Boolean.valueOf(true);
         List b = new ArrayList();
@@ -64,21 +66,21 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         dataObject_a.setBoolean(property + ".0", true);
 
         boolean value = dataObject_a.getBoolean(property + ".0");
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setMany(false);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setMany(false);
 
-        this.assertEquals(true, value);
+        assertEquals(true, value);
 
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyBracketInPathMiddle() {
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_BOOLEAN);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_BOOLEAN);
 
         Boolean b = Boolean.valueOf(true);
 
         dataObject_a.setBoolean(property1, true);// c dataobject's a property has value boolean 'true'
 
-        this.assertEquals(true, dataObject_a.getBoolean(property1));
+        assertEquals(true, dataObject_a.getBoolean(property1));
     }
 
     /*public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet() {
@@ -110,7 +112,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
 
     //3. purpose: getBoolean with Byte property
     public void testGetBooleanFromByte() {
-        SDOProperty prop = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty prop = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         prop.setType(SDOConstants.SDO_BYTE);
         byte theByte = 0;
         dataObject_c.set(prop, theByte);
@@ -222,20 +224,20 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
 
     //10. purpose: getBoolean with Defined String Property
     public void testGetBooleanConversionFromDefinedStringProperty() {
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_STRING);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_STRING);
 
         String str = "true";
         Boolean B_STR = Boolean.valueOf(str);
         dataObject_c.setString(property_c, str);// add it to instance list
 
-        this.assertEquals(B_STR.booleanValue(), dataObject_a.getBoolean(property));
+        assertEquals(B_STR.booleanValue(), dataObject_a.getBoolean(property));
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetBooleanConversionWithPathFromDefinedBooleanStringBracketPositionalSet() {
         // dataObject's type add boolean property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_BOOLEAN);
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setMany(true);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_BOOLEAN);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setMany(true);
 
         String str = "true";
         Boolean bb = Boolean.valueOf(str);
@@ -246,16 +248,16 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         dataObject_a.set(property3, bb);
 
         boolean value = dataObject_a.getBoolean(property3);
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setMany(false);
-        this.assertEquals(bb.booleanValue(), value);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setMany(false);
+        assertEquals(bb.booleanValue(), value);
 
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetBooleanConversionWithPathFromDefinedStringPropertyDotPositionalSet() {
         // dataObject's type add boolean property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_STRING);
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setMany(true);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_STRING);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setMany(true);
 
         String str = "true";
         Boolean bb = Boolean.valueOf(str);
@@ -264,21 +266,21 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.set(property + ".0", bb);
         boolean value = dataObject_a.getBoolean(property + ".0");
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setMany(false);
-        this.assertEquals(true, value);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setMany(false);
+        assertEquals(true, value);
 
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetBooleanConversionWithPathFromDefinedStringPropertyBracketInPathMiddle() {
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_BOOLEAN);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_BOOLEAN);
 
         String str = "true";
         Boolean b = Boolean.valueOf(str);
 
         dataObject_a.set(property1, b);// c dataobject's a property has value boolean 'true'
 
-        this.assertEquals(true, dataObject_a.getBoolean(property1));
+        assertEquals(true, dataObject_a.getBoolean(property1));
     }
 
     /* public void testGetBooleanConversionWithPathFromDefinedStringPropertyEqualSignBracketInPathDotSet() {
@@ -302,7 +304,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
 
     //12. purpose: getBoolean with bytes property
     public void testGetBooleanFromBytes() {
-        SDOProperty prop = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty prop = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         prop.setType(SDOConstants.SDO_BYTES);
         dataObject_c.set(prop, new String("eee").getBytes());
         try {
@@ -314,7 +316,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
 
     //13. purpose: getBoolean with decimal property
     public void testGetBooleanFromDecimal() {
-        SDOProperty prop = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty prop = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         prop.setType(SDOConstants.SDO_DECIMAL);
         dataObject_c.set(prop, new BigDecimal("3"));
         try {
@@ -328,7 +330,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
 
     //14. purpose: getBoolean with integer property
     public void testGetBooleanFromInteger() {
-        SDOProperty prop = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty prop = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         prop.setType(SDOConstants.SDO_INTEGER);
         dataObject_c.set(prop, new BigInteger("0"));
         try {
@@ -342,7 +344,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
 
     //22. purpose: getBoolean with date property
     public void testGetBooleanFromDate() {
-        SDOProperty prop = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty prop = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         prop.setType(SDOConstants.SDO_DATE);
         dataObject_c.set(prop, Calendar.getInstance().getTime());
         try {

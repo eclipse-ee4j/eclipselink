@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -81,9 +81,6 @@ public class DefaultJPQLQueryHelper extends AbstractJPQLQueryHelper {
         super(queryContext);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public BasicRefactoringTool buildBasicRefactoringTool() {
         return new DefaultBasicRefactoringTool(
@@ -93,25 +90,16 @@ public class DefaultJPQLQueryHelper extends AbstractJPQLQueryHelper {
         );
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected AbstractContentAssistVisitor buildContentAssistVisitor(JPQLQueryContext queryContext) {
         return new DefaultContentAssistVisitor(queryContext);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected DefaultGrammarValidator buildGrammarValidator(JPQLGrammar jpqlGrammar) {
         return new DefaultGrammarValidator(jpqlGrammar);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected JPQLQueryContext buildJPQLQueryContext(JPQLGrammar jpqlGrammar) {
         return new DefaultJPQLQueryContext(jpqlGrammar);
@@ -130,9 +118,6 @@ public class DefaultJPQLQueryHelper extends AbstractJPQLQueryHelper {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public RefactoringTool buildRefactoringTool() {
 
@@ -145,9 +130,6 @@ public class DefaultJPQLQueryHelper extends AbstractJPQLQueryHelper {
         );
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected DefaultSemanticValidator buildSemanticValidator(JPQLQueryContext queryContext) {
         return new DefaultSemanticValidator(queryContext);

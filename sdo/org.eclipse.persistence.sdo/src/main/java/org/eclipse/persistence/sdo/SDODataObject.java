@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -939,7 +939,7 @@ public class SDODataObject implements DataObject, SequencedObject {
             throw SDOException.cannotPerformOperationOnNullArgument("unset");
         }
 
-        if (((SDOProperty)property).isReadOnly()) {
+        if (property.isReadOnly()) {
             throw new UnsupportedOperationException("Property is Readonly." + property.getName() + "  " + getType().getName());
         }
 
@@ -2807,8 +2807,8 @@ public class SDODataObject implements DataObject, SequencedObject {
             theList.add(property);
             getInstanceProperties().add(property);
             if (((SDOProperty)property).hasAliasNames()) {
-                for (int i = 0, size = ((SDOProperty)property).getAliasNames().size(); i < size; i++) {
-                    _getOpenContentAliasNamesMap().put((String)((SDOProperty)property).getAliasNames().get(i), property);
+                for (int i = 0, size = property.getAliasNames().size(); i < size; i++) {
+                    _getOpenContentAliasNamesMap().put((String) property.getAliasNames().get(i), property);
                 }
             }
         }
@@ -2832,8 +2832,8 @@ public class SDODataObject implements DataObject, SequencedObject {
         _getOpenContentPropertiesAttributes().remove(property);
         getInstanceProperties().remove(property);
         if (((SDOProperty)property).hasAliasNames()) {
-            for (int i = 0, size = ((SDOProperty)property).getAliasNames().size(); i < size; i++) {
-               _getOpenContentAliasNamesMap().remove(((SDOProperty)property).getAliasNames().get(i));
+            for (int i = 0, size = property.getAliasNames().size(); i < size; i++) {
+               _getOpenContentAliasNamesMap().remove(property.getAliasNames().get(i));
             }
         }
     }

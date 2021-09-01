@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,12 +40,14 @@ public class BinaryDataSelfTestCases extends XMLMappingTestCases{ //XMLWithJSONM
         setProject(p);
     }
 
+    @Override
     protected Object getControlObject() {
         Employee emp = new Employee(123);
         emp.setPhoto(new byte[] { 0, 1, 2, 3});
         return emp;
     }
 
+    @Override
     public Object getReadControlObject() {
         Employee emp = new Employee(123);
         byte[] bytes = new byte[] { 0, 1, 2, 3};
@@ -58,6 +60,7 @@ public class BinaryDataSelfTestCases extends XMLMappingTestCases{ //XMLWithJSONM
         return emp;
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
 

@@ -41,9 +41,6 @@ public final class InternalOrderByItemBNF extends JPQLQueryBNF {
         super(ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,7 @@ public class XMLSchemaModelTestCases extends JAXBWithJSONTestCases{
         setControlJSON(JSON_RESOURCE);
     }
 
+    @Override
     protected Object getControlObject() {
         Schema xmlschema = new Schema();
 
@@ -41,6 +42,7 @@ public class XMLSchemaModelTestCases extends JAXBWithJSONTestCases{
         return xmlschema;
     }
 
+    @Override
     public void xmlToObjectTest(Object testObject) throws Exception {
         log("\n**xmlToObjectTest**");
         log("Expected:");
@@ -58,6 +60,7 @@ public class XMLSchemaModelTestCases extends JAXBWithJSONTestCases{
         assertEquals("testComplexType", ((TopLevelComplexType)item).getName());
     }
 
+    @Override
     public void jsonToObjectTest(Object testObject) throws Exception {
         log("\n**xmlToObjectTest**");
         log("Expected:");

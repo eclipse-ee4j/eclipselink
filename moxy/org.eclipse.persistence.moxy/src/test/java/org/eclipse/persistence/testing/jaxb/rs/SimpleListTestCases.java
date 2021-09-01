@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -126,7 +126,7 @@ public class SimpleListTestCases extends TestCase {
 
     public void testReadArrayOfInt() throws Exception {
         Field field = SimpleListTestCases.class.getField("arrayOfInt");
-        boolean test = moxyJsonProvider.isReadable((Class<Object>) field.getType(), field.getGenericType(), null, null);
+        boolean test = moxyJsonProvider.isReadable(field.getType(), field.getGenericType(), null, null);
         assertFalse(test);
     }
 
@@ -136,13 +136,13 @@ public class SimpleListTestCases extends TestCase {
 
     public void testReadArrayOfInt3D() throws Exception {
         Field field = SimpleListTestCases.class.getField("arrayOfInt3D");
-        boolean test = moxyJsonProvider.isReadable((Class<Object>) field.getType(), field.getGenericType(), null, null);
+        boolean test = moxyJsonProvider.isReadable(field.getType(), field.getGenericType(), null, null);
         assertFalse(test);
     }
 
     public void testWriteArrayOfInt3D() throws Exception {
         Field field = SimpleListTestCases.class.getField("arrayOfInt3D");
-        boolean test = moxyJsonProvider.isWriteable((Class<Object>) field.getType(), field.getGenericType(), null, null);
+        boolean test = moxyJsonProvider.isWriteable(field.getType(), field.getGenericType(), null, null);
         assertFalse(test);
     }
 

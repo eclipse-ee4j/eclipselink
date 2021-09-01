@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2017 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -60,10 +60,10 @@ public class TestSequenceStartAtNextValue {
                     //Expect (nextVal + size), not (nextVal + size) - size
                     Assert.assertEquals("Expected " + seqNum + " == " + nextVal + " + " + seq.getPreallocationSize() + "(Size)", nextVal + seq.getPreallocationSize(), seqNum);
                 } else {
-                   Assert.fail((DatasourcePlatform)seq.getDatasourcePlatform() + " does support SequenceObjects, but SelectQuery is null.");
+                   Assert.fail(seq.getDatasourcePlatform() + " does support SequenceObjects, but SelectQuery is null.");
                 }
             } else {
-                System.out.println((DatasourcePlatform)seq.getDatasourcePlatform() + " does not support SequenceObjects. Test is not valid.");
+                System.out.println(seq.getDatasourcePlatform() + " does not support SequenceObjects. Test is not valid.");
             }
         } else {
             Assert.fail("Expected sequence for " + SequenceEntity.class + " to be of type QuerySequence, but was " + seq);

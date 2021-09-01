@@ -86,35 +86,23 @@ public final class CollectionMemberExpression extends AbstractExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getEntityExpression().accept(visitor);
         getCollectionValuedPathExpression().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         children.add(getEntityExpression());
         children.add(getCollectionValuedPathExpression());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
 
@@ -158,9 +146,6 @@ public final class CollectionMemberExpression extends AbstractExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -253,9 +238,6 @@ public final class CollectionMemberExpression extends AbstractExpression {
         return MEMBER;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(CollectionMemberExpressionBNF.ID);
@@ -318,9 +300,6 @@ public final class CollectionMemberExpression extends AbstractExpression {
         return hasSpaceAfterOf;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -349,9 +328,6 @@ public final class CollectionMemberExpression extends AbstractExpression {
         );
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
 

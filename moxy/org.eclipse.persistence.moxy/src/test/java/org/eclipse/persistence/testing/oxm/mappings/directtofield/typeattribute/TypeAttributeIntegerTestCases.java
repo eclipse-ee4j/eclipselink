@@ -28,6 +28,7 @@ public class TypeAttributeIntegerTestCases extends XMLMappingTestCases {
         setProject(new TypeAttributeProject());
     }
 
+    @Override
     protected Object getControlObject() {
         Employee employee = new Employee();
         employee.setIdentifier(CONTROL_ID);

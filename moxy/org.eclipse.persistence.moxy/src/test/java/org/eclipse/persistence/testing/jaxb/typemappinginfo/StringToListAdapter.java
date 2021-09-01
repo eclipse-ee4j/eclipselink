@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,7 @@ import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 public class StringToListAdapter extends XmlAdapter<List<String>, String> {
 
+    @Override
     public List<String> marshal(String v) throws Exception {
         ArrayList<String> list = new ArrayList<String>();
         list.add("string1");
@@ -28,6 +29,7 @@ public class StringToListAdapter extends XmlAdapter<List<String>, String> {
         return list;
     }
 
+    @Override
     public String unmarshal(List<String> v) throws Exception {
         return "unmarshalled string";
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,35 +40,43 @@ public class ChangeSummaryCreateBug6120161TestCases extends LoadAndSaveTestCases
         TestRunner.main(arguments);
     }
 
+    @Override
     protected String getSchemaName() {
         return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/bug6120161/HRAppService.xsd";
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/bug6120161/bug6120161.xml");
     }
 
+    @Override
     protected String getControlWriteFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/bug6120161/bug6120161Write.xml");
     }
 
 
+    @Override
     protected String getSchemaLocation() {
         return (FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/bug6120161/");
     }
 
+    @Override
     protected String getControlRootName() {
         return "processCSDeptElement";
     }
 
+    @Override
     protected String getControlRootURI() {
         return "http://example.com/app/";
     }
 
+    @Override
     protected String getRootInterfaceName() {
         return "ProcessCSDeptElement";
     }
 
+    @Override
     protected List<String> getPackages() {
         List<String> packages = new ArrayList<String>();
         packages.add("com/example/app");
@@ -77,6 +85,7 @@ public class ChangeSummaryCreateBug6120161TestCases extends LoadAndSaveTestCases
         return packages;
     }
 
+    @Override
     protected void generateClasses(String tmpDirName) throws Exception {
         String xsdString = getSchema(getSchemaName());
         StringReader reader = new StringReader(xsdString);
@@ -89,10 +98,11 @@ public class ChangeSummaryCreateBug6120161TestCases extends LoadAndSaveTestCases
         classGenerator.generate(reader, cw, sr, true);
     }
 
+    @Override
     protected void verifyAfterLoad(XMLDocument doc) {
         super.verifyAfterLoad(doc);
         DataObject root = doc.getRootObject();
-        DataObject data = (DataObject)root.getDataObject("processData");
+        DataObject data = root.getDataObject("processData");
 
         List dataObjects = data.getList("Value");
         ChangeSummary changeSummary = data.getChangeSummary();
@@ -146,6 +156,7 @@ public class ChangeSummaryCreateBug6120161TestCases extends LoadAndSaveTestCases
                 */
     }
 
+    @Override
     public void registerTypes() {
     }
 
@@ -169,6 +180,7 @@ public class ChangeSummaryCreateBug6120161TestCases extends LoadAndSaveTestCases
         fail("DOESNT CONTAIN: " + empName);
     }
 
+    @Override
     protected List defineTypes() {
         try {
             FileInputStream inputStream = new FileInputStream(getSchemaName());
@@ -215,6 +227,7 @@ public class ChangeSummaryCreateBug6120161TestCases extends LoadAndSaveTestCases
         }
     }
 
+    @Override
     public void testNoSchemaLoadFromInputStreamSaveDataObjectToString() {
         //do nothing
     }

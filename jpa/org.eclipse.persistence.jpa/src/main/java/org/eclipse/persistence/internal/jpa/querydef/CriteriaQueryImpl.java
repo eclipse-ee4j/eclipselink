@@ -533,7 +533,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 for (Selection nested : this.selection.getCompoundSelectionItems()) {
                     if (((SelectionImpl) nested).isConstructor()) {
                         reportQuery.addConstructorReportItem(((ConstructorSelectionImpl) nested).translate());
-                    } else if (((SelectionImpl) nested).isCompoundSelection()) {
+                    } else if (nested.isCompoundSelection()) {
                         throw new IllegalStateException(ExceptionLocalization.buildMessage("NESTED_COMPOUND_SELECTION_OTHER_THAN_CONSTRUCTOR_NOT_SUPPORTED"));
                     } else {
                         if (((InternalSelection) nested).isFrom()) {
@@ -631,7 +631,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
 
                 } else {
                     query = new ReportQuery();
-                    query.setReferenceClass(((SelectionImpl) this.selection).getCurrentNode().getBuilder().getQueryClass());
+                    query.setReferenceClass(this.selection.getCurrentNode().getBuilder().getQueryClass());
                     if (!this.selection.isCompoundSelection() && ((InternalExpression) this.selection).isCompoundExpression()) {
                         if (((FunctionExpressionImpl) this.selection).getOperation() == CriteriaBuilderImpl.SIZE) {
                             //selecting size not all databases support subselect in select clause so convert to count/groupby
@@ -640,10 +640,10 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                             ((ReportQuery) query).addAttribute(this.selection.getAlias(), collectionExpression.getCurrentNode().count(), ClassConstants.INTEGER);
                             ((ReportQuery) query).addGrouping(fromExpression.getCurrentNode());
                         }
-                        ((ReportQuery) query).addAttribute(this.selection.getAlias(), ((FunctionExpressionImpl) this.selection).getCurrentNode(), this.selection.getJavaType());
+                        ((ReportQuery) query).addAttribute(this.selection.getAlias(), this.selection.getCurrentNode(), this.selection.getJavaType());
 
                     } else {
-                        ((ReportQuery) query).addItem(this.selection.getAlias(), ((SelectionImpl) this.selection).getCurrentNode());
+                        ((ReportQuery) query).addItem(this.selection.getAlias(), this.selection.getCurrentNode());
                         ((ReportQuery) query).setShouldReturnSingleAttribute(true);
                     }
                 }
@@ -653,7 +653,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             if (this.selection != null && (!((InternalSelection) this.selection).isRoot())) {
                 query = new ReportQuery();
                 query.setReferenceClass(this.queryType);
-                ((ReportQuery) query).addItem(this.selection.getAlias(), ((SelectionImpl) this.selection).getCurrentNode(), ((FromImpl) this.selection).findJoinFetches());
+                ((ReportQuery) query).addItem(this.selection.getAlias(), this.selection.getCurrentNode(), ((FromImpl) this.selection).findJoinFetches());
                 ((ReportQuery) query).setShouldReturnSingleAttribute(true);
             } else {
                 query = new ReadAllQuery(this.queryType);
@@ -689,13 +689,13 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                     reportQuery.addAttribute(this.selection.getAlias(), collectionExpression.getCurrentNode().count(), ClassConstants.INTEGER);
                     reportQuery.addGrouping(fromExpression.getCurrentNode());
                 }else{
-                    reportQuery.addAttribute(this.selection.getAlias(), ((FunctionExpressionImpl)this.selection).getCurrentNode(), this.selection.getJavaType());
+                    reportQuery.addAttribute(this.selection.getAlias(), this.selection.getCurrentNode(), this.selection.getJavaType());
 
                 }}else{
                 if (((InternalSelection) selection).isFrom()) {
-                    reportQuery.addItem(selection.getAlias(), ((SelectionImpl) selection).getCurrentNode(), ((FromImpl) selection).findJoinFetches());
+                    reportQuery.addItem(selection.getAlias(), selection.getCurrentNode(), ((FromImpl) selection).findJoinFetches());
                 } else {
-                    reportQuery.addAttribute(selection.getAlias(), ((SelectionImpl) selection).getCurrentNode(), selection.getJavaType());
+                    reportQuery.addAttribute(selection.getAlias(), selection.getCurrentNode(), selection.getJavaType());
                 }}
                 reportQuery.setReferenceClass(((InternalSelection) this.selection).getCurrentNode().getBuilder().getQueryClass());
                 reportQuery.setExpressionBuilder(((InternalSelection) this.selection).getCurrentNode().getBuilder());

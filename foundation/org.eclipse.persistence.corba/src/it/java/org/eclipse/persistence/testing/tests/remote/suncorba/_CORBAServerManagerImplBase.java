@@ -39,13 +39,15 @@ public abstract class _CORBAServerManagerImplBase extends org.omg.CORBA.portable
   public _CORBAServerManagerImplBase ()
   {
   }
+  @Override
   public String[] _ids ()
   {
     return __ids;
   }
+  @Override
   public org.omg.CORBA.portable.OutputStream _invoke (String method,
-                                org.omg.CORBA.portable.InputStream in,
-                                org.omg.CORBA.portable.ResponseHandler rh)
+                                                      org.omg.CORBA.portable.InputStream in,
+                                                      org.omg.CORBA.portable.ResponseHandler rh)
   {
     org.omg.CORBA.portable.OutputStream out = rh.createReply();
     java.lang.Integer __method = (java.lang.Integer)_methods.get (method);

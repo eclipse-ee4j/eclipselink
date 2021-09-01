@@ -39,6 +39,7 @@ public class XMLChoiceCollectionMappingMixedTestCases extends XMLWithJSONMapping
   }
 
 
+  @Override
   public Object getReadControlObject() {
           Employee employee = new Employee();
         employee.name = "Jane Doe";
@@ -59,6 +60,7 @@ public class XMLChoiceCollectionMappingMixedTestCases extends XMLWithJSONMapping
         return employee;
   }
 
+  @Override
   protected Object getControlObject() {
     Employee employee = new Employee();
     employee.name = "Jane Doe";
@@ -82,6 +84,7 @@ public class XMLChoiceCollectionMappingMixedTestCases extends XMLWithJSONMapping
     return employee;
   }
 
+  @Override
   public  Object getJSONReadControlObject() {
         Employee employee = new Employee();
         employee.name = "Jane Doe";
@@ -103,6 +106,7 @@ public class XMLChoiceCollectionMappingMixedTestCases extends XMLWithJSONMapping
         return employee;
       }
 
+  @Override
   public Project getNewProject(Project originalProject, ClassLoader classLoader) {
       Project project = super.getNewProject(originalProject, classLoader);
       //project.getDatasourceLogin().setPlatform(new SAXPlatform());

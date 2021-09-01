@@ -42,33 +42,21 @@ public final class TypeExpression extends AbstractSingleEncapsulatedExpression {
         super(parent, TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getEncapsulatedExpressionQueryBNFId() {
         return InternalEntityTypeExpressionBNF.ID;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(TypeExpressionBNF.ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected AbstractExpression parse(WordParser wordParser, String queryBNFId, boolean tolerant) {
 

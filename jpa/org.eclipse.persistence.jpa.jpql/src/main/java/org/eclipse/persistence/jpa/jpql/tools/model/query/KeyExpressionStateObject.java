@@ -56,33 +56,21 @@ public class KeyExpressionStateObject extends EncapsulatedIdentificationVariable
         super(parent, identificationVariable);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public KeyExpression getExpression() {
         return (KeyExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return KEY;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected IType resolveType() {
 

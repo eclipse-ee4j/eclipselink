@@ -41,25 +41,16 @@ public abstract class EncapsulatedIdentificationVariableExpression extends Abstr
         super(parent, identifier);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final String getEncapsulatedExpressionQueryBNFId() {
         return IdentificationVariableBNF.ID;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(GeneralIdentificationVariableBNF.ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected AbstractExpression parse(WordParser wordParser, String queryBNFId, boolean tolerant) {
 

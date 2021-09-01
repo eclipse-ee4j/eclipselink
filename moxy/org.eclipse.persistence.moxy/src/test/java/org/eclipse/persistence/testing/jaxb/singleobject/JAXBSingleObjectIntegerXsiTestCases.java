@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -67,10 +67,12 @@ public class JAXBSingleObjectIntegerXsiTestCases extends JAXBWithJSONTestCases {
         //not applicable for this test since we override testSchemaGen
         return null;
     }
+    @Override
     public Object getWriteControlObject() {
         return getControlObject();
     }
 
+    @Override
     protected Object getControlObject() {
         Integer testInteger = 25;
         QName qname = new QName("rootNamespace", "root");
@@ -78,6 +80,7 @@ public class JAXBSingleObjectIntegerXsiTestCases extends JAXBWithJSONTestCases {
         return jaxbElement;
     }
 
+    @Override
     public void testXMLToObjectFromXMLStreamReader() throws Exception {
         if(null != XML_INPUT_FACTORY) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -88,6 +91,7 @@ public class JAXBSingleObjectIntegerXsiTestCases extends JAXBWithJSONTestCases {
         }
     }
 
+    @Override
     public void testXMLToObjectFromURL() throws Exception {
         java.net.URL url = ClassLoader.getSystemResource(resourceName);
         Object testObject = jaxbUnmarshaller.unmarshal(url);
@@ -95,6 +99,7 @@ public class JAXBSingleObjectIntegerXsiTestCases extends JAXBWithJSONTestCases {
     }
 
 
+    @Override
     public void testUnmarshallerHandler() throws Exception {
         SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
         saxParserFactory.setNamespaceAware(true);
@@ -112,6 +117,7 @@ public class JAXBSingleObjectIntegerXsiTestCases extends JAXBWithJSONTestCases {
     }
 
 
+    @Override
     public void testXMLToObjectFromInputStream() throws Exception {
         InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
         Object testObject = jaxbUnmarshaller.unmarshal(instream);

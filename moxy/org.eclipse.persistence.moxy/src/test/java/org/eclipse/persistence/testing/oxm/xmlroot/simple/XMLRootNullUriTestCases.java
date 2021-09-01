@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ public class XMLRootNullUriTestCases extends XMLRootSimpleTestCases {
         super(name);
     }
 
+    @Override
     public Object getControlObject() {
         XMLRoot xmlRoot = new XMLRoot();
         xmlRoot.setLocalName(CONTROL_ELEMENT_NAME);
@@ -36,14 +37,17 @@ public class XMLRootNullUriTestCases extends XMLRootSimpleTestCases {
         return xmlRoot;
     }
 
+    @Override
     public Object getWriteControlObject() {
         return getControlObject();
     }
 
+    @Override
     public Document getWriteControlDocument() {
         return getControlDocument();
     }
 
+    @Override
     public String getXMLResource() {
         return XML_RESOURCE;
     }

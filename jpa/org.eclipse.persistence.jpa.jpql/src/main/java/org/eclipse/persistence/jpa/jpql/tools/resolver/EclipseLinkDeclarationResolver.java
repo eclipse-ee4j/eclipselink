@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,9 +44,6 @@ public class EclipseLinkDeclarationResolver extends DeclarationResolver {
         super(parent, queryContext);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected DeclarationVisitor buildDeclarationVisitor() {
         return new DeclarationVisitor();
@@ -54,9 +51,6 @@ public class EclipseLinkDeclarationResolver extends DeclarationResolver {
 
     protected class DeclarationVisitor extends DeclarationResolver.DeclarationVisitor {
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SimpleSelectStatement expression) {
 
@@ -73,17 +67,11 @@ public class EclipseLinkDeclarationResolver extends DeclarationResolver {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SubExpression expression) {
             expression.getExpression().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         public void visit(TableVariableDeclaration expression) {
 
             currentDeclaration = new TableDeclaration();

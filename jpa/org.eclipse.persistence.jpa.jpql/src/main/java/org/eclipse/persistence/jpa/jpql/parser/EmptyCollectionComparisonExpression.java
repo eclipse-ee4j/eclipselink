@@ -85,33 +85,21 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
         updateExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getExpression().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         children.add(getExpression());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
 
@@ -146,9 +134,6 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
         return new StateFieldPathToCollectionValuedPathConverter(this, expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -228,9 +213,6 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
         return EMPTY;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(EmptyCollectionComparisonExpressionBNF.ID);
@@ -264,9 +246,6 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
         return hasSpaceAfterIs;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -308,9 +287,6 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
 
@@ -381,9 +357,6 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
             this.expression = expression;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(StateFieldPathExpression expression) {
             this.expression = new CollectionValuedPathExpression(parent, expression.getText());

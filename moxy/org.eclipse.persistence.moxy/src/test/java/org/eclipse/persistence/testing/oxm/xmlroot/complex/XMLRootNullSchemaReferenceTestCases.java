@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,7 @@ import java.io.InputStream;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamReader;
 
+import junit.framework.TestCase;
 import org.eclipse.persistence.internal.oxm.record.XMLEventReaderInputSource;
 import org.eclipse.persistence.internal.oxm.record.XMLEventReaderReader;
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource;
@@ -49,6 +50,7 @@ public class XMLRootNullSchemaReferenceTestCases extends XMLMappingTestCases {
         return p;
     }
 
+    @Override
     public Document getWriteControlDocument() throws Exception {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/oxm/xmlroot/complex/employee-null-schemaref-write.xml");
         Document doc = parser.parse(inputStream);
@@ -57,6 +59,7 @@ public class XMLRootNullSchemaReferenceTestCases extends XMLMappingTestCases {
         return doc;
     }
 
+    @Override
     protected Object getControlObject() {
         Person peep = new Person();
         peep.setName(CONTROL_PERSON_NAME);
@@ -69,6 +72,7 @@ public class XMLRootNullSchemaReferenceTestCases extends XMLMappingTestCases {
     }
 
     // Unmarshal tests
+    @Override
     public void testXMLToObjectFromInputStream() throws Exception {
         InputStream instream = ClassLoader.getSystemResourceAsStream(getXMLResource());
         Object testObject = xmlUnmarshaller.unmarshal(instream, Person.class);
@@ -76,17 +80,20 @@ public class XMLRootNullSchemaReferenceTestCases extends XMLMappingTestCases {
         xmlToObjectTest(testObject);
     }
 
+    @Override
     public void testXMLToObjectFromNode() throws Exception {
         Object testObject = xmlUnmarshaller.unmarshal(getControlDocument(), Person.class);
         xmlToObjectTest(testObject);
     }
 
+    @Override
     public void testXMLToObjectFromURL() throws Exception {
         java.net.URL url = ClassLoader.getSystemResource(getXMLResource());
         Object testObject = xmlUnmarshaller.unmarshal(url, Person.class);
         xmlToObjectTest(testObject);
     }
 
+    @Override
     public void testXMLToObjectFromXMLStreamReader() throws Exception {
         if(null != XML_INPUT_FACTORY) {
                 InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -102,6 +109,7 @@ public class XMLRootNullSchemaReferenceTestCases extends XMLMappingTestCases {
         }
     }
 
+    @Override
     public void testXMLToObjectFromXMLEventReader() throws Exception {
         if(null != XML_INPUT_FACTORY) {
                 InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -117,6 +125,7 @@ public class XMLRootNullSchemaReferenceTestCases extends XMLMappingTestCases {
         }
     }
 
+    @Override
     public void xmlToObjectTest(Object testObject) throws Exception {
         log("\n**testXMLDocumentToObject**");
         log("Expected:");
@@ -128,15 +137,16 @@ public class XMLRootNullSchemaReferenceTestCases extends XMLMappingTestCases {
             XMLRoot controlObj = (XMLRoot)getReadControlObject();
             XMLRoot testObj = (XMLRoot)testObject;
 
-            this.assertEquals(controlObj.getLocalName(), testObj.getLocalName());
-            this.assertEquals(controlObj.getNamespaceURI(), testObj.getNamespaceURI());
-            this.assertEquals(controlObj.getObject(), testObj.getObject());
+            assertEquals(controlObj.getLocalName(), testObj.getLocalName());
+            assertEquals(controlObj.getNamespaceURI(), testObj.getNamespaceURI());
+            assertEquals(controlObj.getObject(), testObj.getObject());
         } else {
-            this.assertEquals(getReadControlObject(), testObject);
+            assertEquals(getReadControlObject(), testObject);
         }
     }
 
     // DOES NOT APPLY
+    @Override
     public void testUnmarshallerHandler() throws Exception {
     }
 

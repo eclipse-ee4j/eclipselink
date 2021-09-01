@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -59,6 +59,7 @@ public class XmlNullPolicyTestCases extends JAXBTestCases {
         setWriteControlDocument(XML_WRITE_RESOURCE);
     }
 
+    @Override
     public Object getControlObject() {
         Employee ctrlEmp = new Employee();
         ctrlEmp.firstName = FNAME;
@@ -81,6 +82,7 @@ public class XmlNullPolicyTestCases extends JAXBTestCases {
         return ctrlEmp;
     }
 
+    @Override
     public Object getWriteControlObject() {
         if(ctrlEmp == null){
         ctrlEmp = new Employee();
@@ -108,6 +110,7 @@ public class XmlNullPolicyTestCases extends JAXBTestCases {
            super.testSchemaGen(controlSchemas);
     }
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/annotations/xmlnullpolicy/eclipselink-oxm.xml");
 
@@ -119,12 +122,14 @@ public class XmlNullPolicyTestCases extends JAXBTestCases {
         return properties;
     }
 
+    @Override
     public void objectToXMLDocumentTest(Document testDocument) throws Exception{
         super.objectToXMLDocumentTest(testDocument);
         assertTrue("Accessor method was not called as expected", ctrlEmp.wasGetCalled);
 
     }
 
+    @Override
     public void xmlToObjectTest(Object testObject) throws Exception{
         super.xmlToObjectTest(testObject);
         Employee empObj = (Employee)testObject;
@@ -134,10 +139,12 @@ public class XmlNullPolicyTestCases extends JAXBTestCases {
 
     }
 
+    @Override
     public void testRoundTrip(){
         //not applicable with write only mappings
     }
 
+     @Override
      public void testObjectToContentHandler() throws Exception {
            //See Bug 355143
 

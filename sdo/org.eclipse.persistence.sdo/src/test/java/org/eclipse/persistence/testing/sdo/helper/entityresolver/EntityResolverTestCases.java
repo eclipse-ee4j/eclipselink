@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -70,10 +70,12 @@ public class EntityResolverTestCases extends TestCase {
      * This resolver will handle entity resolution.
      */
     private class SchemaEntityResolver implements SchemaResolver {
+        @Override
         public Source resolveSchema(Source sourceXSD, String namespace, String schemaLocation) {
             return null;
         }
 
+        @Override
         public InputSource resolveEntity(String publicId, String systemId) {
             try {
                 if (systemId.endsWith("SomeSchema.dtd")) {

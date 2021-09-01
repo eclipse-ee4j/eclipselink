@@ -38,7 +38,7 @@ public class CloseConnAfterDatabaseSessionTxnTest extends AutoVerifyTestCase {
     @Override
     public void setup() {
         org.eclipse.persistence.sessions.Project project = new org.eclipse.persistence.testing.models.employee.relational.EmployeeProject();
-        DatasourceLogin clonedLogin = (DatasourceLogin)((org.eclipse.persistence.sessions.DatabaseSession)getSession()).getProject().getDatasourceLogin().clone();
+        DatasourceLogin clonedLogin = (DatasourceLogin) getSession().getProject().getDatasourceLogin().clone();
         project.setLogin(clonedLogin);
         clonedLogin.useExternalConnectionPooling();
         session=project.createDatabaseSession();

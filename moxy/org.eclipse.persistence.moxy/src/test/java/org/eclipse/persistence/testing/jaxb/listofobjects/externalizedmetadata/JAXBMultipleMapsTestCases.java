@@ -51,32 +51,44 @@ public class JAXBMultipleMapsTestCases extends JAXBListOfObjectsTestCases {
 
         Type mapType2 = new ParameterizedType() {
         Type[] typeArgs = { Calendar.class, Float.class };
+         @Override
          public Type[] getActualTypeArguments() { return typeArgs;}
+         @Override
          public Type getOwnerType() { return null; }
+         @Override
          public Type getRawType() { return Map.class; }
         };
         types[1] = mapType2;
 
         Type mapType3 = new ParameterizedType() {
             Type[] typeArgs = { Person.class, Job.class };
+             @Override
              public Type[] getActualTypeArguments() { return typeArgs;}
+             @Override
              public Type getOwnerType() { return null; }
+             @Override
              public Type getRawType() { return Map.class; }
             };
             types[2] = mapType3;
 
             Type listType = new ParameterizedType() {
                 Type[] typeArgs = { Person.class};
+                 @Override
                  public Type[] getActualTypeArguments() { return typeArgs;}
+                 @Override
                  public Type getOwnerType() { return null; }
+                 @Override
                  public Type getRawType() { return List.class; }
                 };
                 types[3] = listType;
 
             Type listType2 = new ParameterizedType() {
                 Type[] typeArgs = { String.class};
+                 @Override
                  public Type[] getActualTypeArguments() { return typeArgs;}
+                 @Override
                  public Type getOwnerType() { return null; }
+                 @Override
                  public Type getRawType() { return List.class; }
                 };
             types[4] = listType2;
@@ -85,16 +97,19 @@ public class JAXBMultipleMapsTestCases extends JAXBListOfObjectsTestCases {
         initXsiType();
     }
 
+    @Override
     public void setUp() throws Exception{
         super.setUp();
         getXMLComparer().setIgnoreOrder(true);
     }
 
+    @Override
     public void tearDown(){
         super.tearDown();
         getXMLComparer().setIgnoreOrder(false);
     }
 
+    @Override
     public List<InputStream> getControlSchemaFiles() {
         InputStream instream1 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/multipleMaps.xsd");
         InputStream instream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/multipleMaps2.xsd");
@@ -107,6 +122,7 @@ public class JAXBMultipleMapsTestCases extends JAXBListOfObjectsTestCases {
     }
 
 
+    @Override
     protected Object getControlObject() {
 
         Map<String, Integer> theMap = new HashMap<String, Integer>();
@@ -119,12 +135,14 @@ public class JAXBMultipleMapsTestCases extends JAXBListOfObjectsTestCases {
         return jaxbElement;
     }
 
+    @Override
     protected Type getTypeToUnmarshalTo() throws Exception {
         Field fld = getClass().getField("mapField1");
         Type fieldType =  fld.getGenericType();
         return fieldType;
     }
 
+    @Override
     protected String getNoXsiTypeControlResourceName() {
         return XML_RESOURCE;
     }

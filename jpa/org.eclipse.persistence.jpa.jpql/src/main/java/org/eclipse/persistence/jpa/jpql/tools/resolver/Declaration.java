@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -68,17 +68,11 @@ public abstract class Declaration implements JPQLQueryDeclaration {
         super();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Expression getBaseExpression() {
         return baseExpression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Expression getDeclarationExpression() {
         return declarationExpression;
@@ -93,9 +87,6 @@ public abstract class Declaration implements JPQLQueryDeclaration {
         return identificationVariable;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public List<Join> getJoins() {
         return Collections.emptyList();
@@ -114,9 +105,6 @@ public abstract class Declaration implements JPQLQueryDeclaration {
         return rootPath;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getVariableName() {
         if (identificationVariable == null) {
@@ -125,17 +113,11 @@ public abstract class Declaration implements JPQLQueryDeclaration {
         return identificationVariable.getVariableName();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean hasJoins() {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
 

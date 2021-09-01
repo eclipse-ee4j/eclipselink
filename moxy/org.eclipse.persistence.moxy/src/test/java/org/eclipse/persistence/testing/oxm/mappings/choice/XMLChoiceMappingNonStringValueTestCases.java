@@ -30,6 +30,7 @@ public class XMLChoiceMappingNonStringValueTestCases extends XMLWithJSONMappingT
     setProject(new EmployeeProject());
   }
 
+  @Override
   protected Object getControlObject() {
     Employee employee = new Employee();
     employee.name = "Jane Doe";
@@ -42,6 +43,7 @@ public class XMLChoiceMappingNonStringValueTestCases extends XMLWithJSONMappingT
 
   }
 
+  @Override
   public Project getNewProject(Project originalProject, ClassLoader classLoader) {
       Project project = super.getNewProject(originalProject, classLoader);
       //project.getDatasourceLogin().setPlatform(new SAXPlatform());

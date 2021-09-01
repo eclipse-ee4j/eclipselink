@@ -73,25 +73,16 @@ public class DivisionExpressionStateObject extends ArithmeticExpressionStateObje
         super(parent, leftJpqlFragment, rightJpqlFragment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DivisionExpression getExpression() {
         return (DivisionExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return DIVISION;

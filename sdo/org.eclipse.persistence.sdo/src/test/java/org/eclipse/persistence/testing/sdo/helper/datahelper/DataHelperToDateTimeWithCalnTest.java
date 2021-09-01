@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,6 +13,8 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.sdo.helper.datahelper;
+
+import junit.framework.TestCase;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -34,7 +36,7 @@ public class DataHelperToDateTimeWithCalnTest extends DataHelperTestCases {
         controlCalendar.set(Calendar.MILLISECOND, 1);
         controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         String tm = dataHelper.toDateTime(controlCalendar);
-        this.assertEquals("2001-04-01T11:23:11.001Z", tm);
+        assertEquals("2001-04-01T11:23:11.001Z", tm);
     }
 
     public void testToDateTimeWithDefault() {
@@ -42,12 +44,12 @@ public class DataHelperToDateTimeWithCalnTest extends DataHelperTestCases {
         controlCalendar.clear();
         controlCalendar.set(Calendar.ZONE_OFFSET, 0);
         String tm = dataHelper.toDateTime(controlCalendar);
-        this.assertEquals("1970-01-01T00:00:00Z", tm);
+        assertEquals("1970-01-01T00:00:00Z", tm);
     }
 
     public void testToDateTimeWithNullInput() {
         Calendar controlCalendar = null;
         String tm = dataHelper.toDateTime(controlCalendar);
-        this.assertNull(tm);
+        assertNull(tm);
     }
 }

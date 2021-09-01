@@ -29,6 +29,7 @@ public class InheritanceWithMultiplePackagesXMLTestCases extends JAXBTestCases {
         setClasses(new Class[] {RootComplex.class});
     }
 
+    @Override
     protected Object getControlObject() {
         RootComplex root = new RootComplex();
         SubType subType = new SubType();

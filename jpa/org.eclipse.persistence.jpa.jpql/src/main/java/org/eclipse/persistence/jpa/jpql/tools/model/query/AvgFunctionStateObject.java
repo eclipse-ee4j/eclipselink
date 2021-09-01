@@ -91,33 +91,21 @@ public class AvgFunctionStateObject extends AggregateFunctionStateObject {
         super(parent, path);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AvgFunction getExpression() {
         return (AvgFunction) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return AVG;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getQueryBNFId() {
         return StateFieldPathExpressionBNF.ID;

@@ -1664,10 +1664,10 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     ((DatabaseLogin)pool.getLogin()).useDataSource((String)entry.getValue());
                 } else if (attribute.equals(PersistenceUnitProperties.CONNECTION_POOL_USER)) {
                     pool.setLogin(pool.getLogin().clone());
-                    ((DatabaseLogin)pool.getLogin()).setUserName((String)entry.getValue());
+                    pool.getLogin().setUserName((String)entry.getValue());
                 } else if (attribute.equals(PersistenceUnitProperties.CONNECTION_POOL_PASSWORD)) {
                     pool.setLogin(pool.getLogin().clone());
-                    ((DatabaseLogin)pool.getLogin()).setPassword((String)entry.getValue());
+                    pool.getLogin().setPassword((String)entry.getValue());
                 } else if (attribute.equals(PersistenceUnitProperties.CONNECTION_POOL_WAIT)) {
                     pool.setWaitTimeout(Integer.parseInt((String)entry.getValue()));
                 } else if (attribute.equals(PersistenceUnitProperties.CONNECTION_POOL_FAILOVER)) {
@@ -1828,7 +1828,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         // predeploy is used for static weaving
                         Writer writer = this.staticWeaveInfo.getLogWriter();
                         if (writer != null) {
-                            ((DefaultSessionLog)session.getSessionLog()).setWriter(writer);
+                            session.getSessionLog().setWriter(writer);
                         }
                         session.setLogLevel(this.staticWeaveInfo.getLogLevel());
                     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class ConverterTestCases extends XMLWithJSONMappingTestCases {
         setProject(new EmployeeProject());
     }
 
+    @Override
     protected Object getControlObject() {
         Employee employee = new Employee();
         employee.name = "Jane Doe";
@@ -50,6 +51,7 @@ public class ConverterTestCases extends XMLWithJSONMappingTestCases {
         return employee;
     }
 
+    @Override
     public Project getNewProject(Project originalProject, ClassLoader classLoader) {
         Project project = super.getNewProject(originalProject, classLoader);
         //project.setDatasourceLogin(new XMLLogin());

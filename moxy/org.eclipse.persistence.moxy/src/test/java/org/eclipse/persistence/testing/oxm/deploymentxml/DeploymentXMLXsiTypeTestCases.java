@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,10 +44,10 @@ public class DeploymentXMLXsiTypeTestCases extends XMLTestCase {
        XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
        XMLParser parser = xmlPlatform.newXMLParser();
        InputStream stream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/oxm/deploymentxml/db-adapter-toplink-mapping-file.xml");
-       Project proj = reader.read(new InputStreamReader(stream));
+       Project proj = XMLProjectReader.read(new InputStreamReader(stream));
 
        StringWriter writer = new StringWriter();
-       new XMLProjectWriter().write(proj, writer);
+       XMLProjectWriter.write(proj, writer);
 
 
        parser.setNamespaceAware(true);
@@ -57,6 +57,7 @@ public class DeploymentXMLXsiTypeTestCases extends XMLTestCase {
        URL eclipselinkSchemaURL = getClass().getClassLoader().getResource(schema);
        parser.setEntityResolver(new EntityResolver() {
 
+           @Override
            public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
                if (XMLProjectReader.OPM_SCHEMA.equals(systemId)) {
                    URL url = getClass().getClassLoader().getResource(XMLProjectReader.SCHEMA_DIR + XMLProjectReader.OPM_SCHEMA);

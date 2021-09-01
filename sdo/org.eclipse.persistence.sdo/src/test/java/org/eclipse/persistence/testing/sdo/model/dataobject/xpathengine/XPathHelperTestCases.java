@@ -37,6 +37,7 @@ public class XPathHelperTestCases extends SDOTestCase {
         TestRunner.main(arguments);
     }
 
+    @Override
     public void setUp() {
         super.setUp();
         try {

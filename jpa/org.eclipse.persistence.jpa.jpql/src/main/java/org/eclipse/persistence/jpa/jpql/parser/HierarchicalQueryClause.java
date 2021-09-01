@@ -74,17 +74,11 @@ public final class HierarchicalQueryClause extends AbstractExpression {
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         acceptUnknownVisitor(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getStartWithClause().accept(visitor);
@@ -92,9 +86,6 @@ public final class HierarchicalQueryClause extends AbstractExpression {
         getOrderSiblingsByClause().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         super.addChildrenTo(children);
@@ -103,9 +94,6 @@ public final class HierarchicalQueryClause extends AbstractExpression {
         children.add(getOrderSiblingsByClause());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
 
@@ -133,9 +121,6 @@ public final class HierarchicalQueryClause extends AbstractExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -178,9 +163,6 @@ public final class HierarchicalQueryClause extends AbstractExpression {
         return orderSiblingsByClause;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(HierarchicalQueryClauseBNF.ID);
@@ -250,9 +232,6 @@ public final class HierarchicalQueryClause extends AbstractExpression {
               !startWithClause.isNull();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -298,9 +277,6 @@ public final class HierarchicalQueryClause extends AbstractExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,6 +49,7 @@ public class UnmappedElementsWarningTestCases extends OXTestCase{
         TestRunner.run(UnmappedElementsWarningTestCases.class);
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         Class[] classes = new Class[1];
@@ -98,7 +99,7 @@ public class UnmappedElementsWarningTestCases extends OXTestCase{
        // default is not to warn on unmapped element with all defaults
        try {
            inputStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
-           XMLUnmarshaller xmlUnmarshaller = (XMLUnmarshaller) unm.getXMLUnmarshaller();
+           XMLUnmarshaller xmlUnmarshaller = unm.getXMLUnmarshaller();
            boolean shouldWarnOnUnmapped = xmlUnmarshaller.shouldWarnOnUnmappedElement();
            BulkUnmapped unmarshalledObject = (BulkUnmapped) unm.unmarshal(inputStream);
 
@@ -113,7 +114,7 @@ public class UnmappedElementsWarningTestCases extends OXTestCase{
        // 2 Unmarshal with validation (same unmarshaller)
        try {
            inputStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
-           XMLUnmarshaller xmlUnmarshaller = (XMLUnmarshaller) unm.getXMLUnmarshaller();
+           XMLUnmarshaller xmlUnmarshaller = unm.getXMLUnmarshaller();
            CustomValidationEventHandler handler = new CustomValidationEventHandler();
            unm.setEventHandler(handler);
            boolean shouldWarnOnUnmapped = xmlUnmarshaller.shouldWarnOnUnmappedElement();
@@ -132,7 +133,7 @@ public class UnmappedElementsWarningTestCases extends OXTestCase{
        try {
            inputStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
            unm.setEventHandler(null);
-           XMLUnmarshaller xmlUnmarshaller = (XMLUnmarshaller) unm.getXMLUnmarshaller();
+           XMLUnmarshaller xmlUnmarshaller = unm.getXMLUnmarshaller();
            boolean shouldWarnOnUnmapped = xmlUnmarshaller.shouldWarnOnUnmappedElement();
            BulkUnmapped unmarshalledObject = (BulkUnmapped) unm.unmarshal(inputStream);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -77,9 +77,6 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
         return new GenericSemanticValidatorHelper(queryContext);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected abstract AbstractSemanticValidator buildValidator();
 
@@ -87,9 +84,6 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
         return queryContext;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected AbstractSemanticValidator getValidator() {
         return (AbstractSemanticValidator) super.getValidator();
@@ -99,27 +93,18 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
     protected abstract boolean isPathExpressionToCollectionMappingAllowed();
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void setUpClass() throws Exception {
         queryContext = buildQueryContext();
         super.setUpClass();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void tearDown() throws Exception {
         queryContext.dispose();
         super.tearDown();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void tearDownClass() throws Exception {
         queryContext = null;
@@ -1838,9 +1823,6 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
         testHasNoProblems(problems);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected List<JPQLQueryProblem> validate(String jpqlQuery, JPQLExpression jpqlExpression) throws Exception {
 

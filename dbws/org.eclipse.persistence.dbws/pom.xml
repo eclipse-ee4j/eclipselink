@@ -31,6 +31,8 @@
     </parent>
 
     <properties>
+        <!-- disable warnings for exports for now -->
+        <comp.xlint>-Xlint:all,-rawtypes,-unchecked,-serial,-exports</comp.xlint>
         <test-skip-dbws>${skipTests}</test-skip-dbws>
     </properties>
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,6 +52,7 @@ public class XmlDiscriminatorTestCases extends JAXBWithJSONTestCases {
         setClasses(new Class[] { Car.class, Vehicle.class });
     }
 
+    @Override
     public Object getReadControlObject() {
           Car car = new Car();
           car.numberOfDoors = 2;
@@ -62,6 +63,7 @@ public class XmlDiscriminatorTestCases extends JAXBWithJSONTestCases {
           return car;
 }
 
+    @Override
     public Object getControlObject() {
         Car car = new Car();
         car.numberOfDoors = 2;
@@ -73,6 +75,7 @@ public class XmlDiscriminatorTestCases extends JAXBWithJSONTestCases {
     }
 
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmldiscriminator/vehicle-oxm.xml");
 
@@ -93,6 +96,7 @@ public class XmlDiscriminatorTestCases extends JAXBWithJSONTestCases {
         super.testSchemaGen(controlSchemas);
     }
 
+    @Override
     public void testRoundTrip(){};
 
 }

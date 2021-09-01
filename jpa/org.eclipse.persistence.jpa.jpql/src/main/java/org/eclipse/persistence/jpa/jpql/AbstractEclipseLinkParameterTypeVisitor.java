@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,65 +52,41 @@ public abstract class AbstractEclipseLinkParameterTypeVisitor extends ParameterT
         super();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AsOfClause expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CastExpression expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ConnectByClause expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(DatabaseType expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ExtractExpression expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(HierarchicalQueryClause expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(OrderSiblingsByClause expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(RegexpExpression expression) {
 
@@ -125,33 +101,21 @@ public abstract class AbstractEclipseLinkParameterTypeVisitor extends ParameterT
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(StartWithClause expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(TableExpression expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(TableVariableDeclaration expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UnionClause expression) {
         type = Object.class;

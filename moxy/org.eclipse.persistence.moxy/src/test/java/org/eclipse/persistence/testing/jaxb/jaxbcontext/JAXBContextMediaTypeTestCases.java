@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -90,10 +90,10 @@ public class JAXBContextMediaTypeTestCases extends TestCase{
         JAXBContext ctx = JAXBContextFactory.createContext(classes, null);
         JAXBMarshaller m = (JAXBMarshaller)ctx.createMarshaller();
         assertEquals(MediaType.APPLICATION_XML, m.getProperty(MarshallerProperties.MEDIA_TYPE));
-        assertEquals(MediaType.APPLICATION_XML,((JAXBMarshaller)m).getXMLMarshaller().getMediaType());
+        assertEquals(MediaType.APPLICATION_XML, m.getXMLMarshaller().getMediaType());
         JAXBUnmarshaller u = (JAXBUnmarshaller)ctx.createUnmarshaller();
         assertEquals(MediaType.APPLICATION_XML, u.getProperty(UnmarshallerProperties.MEDIA_TYPE));
-        assertEquals(MediaType.APPLICATION_XML,((JAXBUnmarshaller)u).getXMLUnmarshaller().getMediaType());
+        assertEquals(MediaType.APPLICATION_XML, u.getXMLUnmarshaller().getMediaType());
     }
 
     public void testCreateContextWithNullMediaType() throws JAXBException {
@@ -106,10 +106,10 @@ public class JAXBContextMediaTypeTestCases extends TestCase{
 
         JAXBMarshaller m = (JAXBMarshaller)ctx.createMarshaller();
         assertEquals(MediaType.APPLICATION_XML, m.getProperty(MarshallerProperties.MEDIA_TYPE));
-        assertEquals(MediaType.APPLICATION_XML,((JAXBMarshaller)m).getXMLMarshaller().getMediaType());
+        assertEquals(MediaType.APPLICATION_XML, m.getXMLMarshaller().getMediaType());
         JAXBUnmarshaller u = (JAXBUnmarshaller)ctx.createUnmarshaller();
         assertEquals(MediaType.APPLICATION_XML, u.getProperty(UnmarshallerProperties.MEDIA_TYPE));
-        assertEquals(MediaType.APPLICATION_XML,((JAXBUnmarshaller)u).getXMLUnmarshaller().getMediaType());
+        assertEquals(MediaType.APPLICATION_XML, u.getXMLUnmarshaller().getMediaType());
 
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -92,9 +92,6 @@ public abstract class AbstractSelectStatementStateObject extends AbstractStateOb
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
 
@@ -282,25 +279,16 @@ public abstract class AbstractSelectStatementStateObject extends AbstractStateOb
         return fromClause.items();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IdentificationVariableStateObject findIdentificationVariable(String identificationVariable) {
         return fromClause.findIdentificationVariable(identificationVariable);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DeclarationStateObject getDeclaration() {
         return fromClause;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AbstractSelectStatement getExpression() {
         return (AbstractSelectStatement) super.getExpression();
@@ -404,9 +392,6 @@ public abstract class AbstractSelectStatementStateObject extends AbstractStateOb
         return fromClause.identificationVariables();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();
@@ -414,9 +399,6 @@ public abstract class AbstractSelectStatementStateObject extends AbstractStateOb
         fromClause   = buildFromClause();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -518,9 +500,6 @@ public abstract class AbstractSelectStatementStateObject extends AbstractStateOb
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
 

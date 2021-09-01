@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,8 @@ import commonj.sdo.DataObject;
 import commonj.sdo.Property;
 import java.util.ArrayList;
 import java.util.List;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
@@ -47,8 +49,8 @@ public class ChangeSummaryGetOldValueTest extends ChangeSummaryTestCases {
         assertNotNull(oldValues);
         assertEquals(0, oldValues.size());
         root.set(rootProperty1, "test");
-        this.assertNull(changeSummary.getOldValue(root, rootProperty));// no old value for this unmodified property
-        this.assertNull(changeSummary.getOldValue(root, rootProperty1).getValue());// old value has value null for this modified property
+        assertNull(changeSummary.getOldValue(root, rootProperty));// no old value for this unmodified property
+        assertNull(changeSummary.getOldValue(root, rootProperty1).getValue());// old value has value null for this modified property
     }
 
     // purpose: modified DataObject and nonmodified property, get(DataObject, Property)
@@ -173,15 +175,15 @@ public class ChangeSummaryGetOldValueTest extends ChangeSummaryTestCases {
         changeSummary.beginLogging();
         root.set(rootProperty1, "test2");
         root.set(rootProperty1, "test3");
-        this.assertNull(changeSummary.getOldValue(root, rootProperty));// no old value for this unmodified property
+        assertNull(changeSummary.getOldValue(root, rootProperty));// no old value for this unmodified property
         ChangeSummary.Setting setting = changeSummary.getOldValue(root, rootProperty1);
-        this.assertEquals("test", setting.getValue());// specific original old value for this modified property
+        assertEquals("test", setting.getValue());// specific original old value for this modified property
     }
 
     // purpose: unmodified DataObject
     public void testGetOldValueReturnSettingWithUnmodifiedDataObject() {
         changeSummary.beginLogging();
-        this.assertNull(changeSummary.getOldValue(root, rootProperty));// no old setting for this unmodified dataobject
+        assertNull(changeSummary.getOldValue(root, rootProperty));// no old setting for this unmodified dataobject
     }
 
     // purpose: modified DataObject's modified property
@@ -193,13 +195,13 @@ public class ChangeSummaryGetOldValueTest extends ChangeSummaryTestCases {
         Object o = changeSummary.getOldValue(root, rootProperty).getValue();
         Object deepCopy = changeSummary.getDeepCopies().get(containedDataObject);
 
-        this.assertEquals(deepCopy, o);
+        assertEquals(deepCopy, o);
     }
 
     // purpose: unmodified DataObject
     public void testGetOldValueReturnListWithUnmodifiedProperty() {
         changeSummary.beginLogging();
-        this.assertTrue(0 == changeSummary.getOldValues(root).size());
+        assertTrue(0 == changeSummary.getOldValues(root).size());
     }
 
     // purpose: modified DataObject
@@ -210,9 +212,9 @@ public class ChangeSummaryGetOldValueTest extends ChangeSummaryTestCases {
         root.set(rootProperty, p);
         Object o = changeSummary.getOldValue(root, rootProperty).getValue();
         List l = changeSummary.getOldValues(root);
-        this.assertTrue(1 == l.size());
+        assertTrue(1 == l.size());
         Object deepCopy = changeSummary.getDeepCopies().get(containedDataObject);
-        this.assertEquals(deepCopy, (SDODataObject)((ChangeSummary.Setting)l.get(0)).getValue());
+        assertEquals(deepCopy, ((ChangeSummary.Setting)l.get(0)).getValue());
     }
 
     // purpose: test an open content property's value can be recorded in old setting list
@@ -231,7 +233,7 @@ public class ChangeSummaryGetOldValueTest extends ChangeSummaryTestCases {
         changeSummary.beginLogging();
         root.set(openRootProperty, "openTest1");
         ChangeSummary.Setting setting = changeSummary.getOldValue(root, openRootProperty);
-        this.assertEquals("openTest", setting.getValue());
+        assertEquals("openTest", setting.getValue());
     }
 
     // purpose: after a dataobject detach itself, check the changed dataobject lists
@@ -239,8 +241,8 @@ public class ChangeSummaryGetOldValueTest extends ChangeSummaryTestCases {
         containedDataObject.set("containedProperty", "aaa");
         changeSummary.beginLogging();
         containedDataObject.detach();
-        this.assertTrue(changeSummary.isModified(root));
-        this.assertTrue(changeSummary.isDeleted(containedDataObject));
+        assertTrue(changeSummary.isModified(root));
+        assertTrue(changeSummary.isDeleted(containedDataObject));
 
         //TODO: is this the right check?
         //List rootOldValues = changeSummary.getOldValues(root);
@@ -254,12 +256,12 @@ public class ChangeSummaryGetOldValueTest extends ChangeSummaryTestCases {
         containedDataObject.set("containedProperty", "aaa");
         changeSummary.beginLogging();
         containedDataObject.delete();
-        this.assertTrue(changeSummary.isModified(root));
-        this.assertTrue(changeSummary.isDeleted(containedDataObject));
+        assertTrue(changeSummary.isModified(root));
+        assertTrue(changeSummary.isDeleted(containedDataObject));
         List rootOldValues = changeSummary.getOldValues(root);
         List containedOldValues = changeSummary.getOldValues(containedDataObject);
-        this.assertEquals(1, rootOldValues.size());
-        this.assertEquals(1, containedOldValues.size());
+        assertEquals(1, rootOldValues.size());
+        assertEquals(1, containedOldValues.size());
     }
 
     // test open content detach

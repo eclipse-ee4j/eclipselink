@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,19 +25,23 @@ public class MyAttachmentMarshaller extends AttachmentMarshaller {
     public static final String BYTES_ID = "c_id0";
     public static final String DATA_ID = "c_id1";
 
+    @Override
     public boolean isXOPPackage() {
         return true;
     }
 
     // SATISFY INTERFACE IMPLEMENTATION
+    @Override
     public String addSwaRefAttachment(DataHandler data) { return DATA_ID; }
     public String addSwaRefAttachment(byte[] data, int offset, int length) { return BYTES_ID; }
+    @Override
     public String addMtomAttachment(byte[] bytes, int start, int offset, String mimeType, String elemtnName, String namespaceURI) {
         String id = BYTES_ID;
         count++;
         attachments.put(id, bytes);
         return id;
     }
+    @Override
     public String addMtomAttachment(DataHandler data, String namespaceURI, String elementName) {
         String id = DATA_ID;
         count++;

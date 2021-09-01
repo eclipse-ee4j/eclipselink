@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ import org.w3c.dom.Document;
 import junit.framework.TestCase;
 
 public class PackageLevelTestCases extends JAXBWithJSONTestCases {
+    @Override
     protected Map getProperties() {
 
         InputStream inStream = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/unmappable/package1/package-adapter.xml");
@@ -60,6 +61,7 @@ public class PackageLevelTestCases extends JAXBWithJSONTestCases {
         setControlJSON("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/unmappable/container.json");
     }
 
+    @Override
     public Object getControlObject() {
         Container container = new Container();
         container.setContainerProperty(Unmappable.getInstance("aaa"));

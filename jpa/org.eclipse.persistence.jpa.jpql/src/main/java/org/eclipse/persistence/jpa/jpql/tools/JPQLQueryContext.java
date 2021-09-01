@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -897,9 +897,6 @@ public abstract class JPQLQueryContext {
         this.contexts.put(currentQuery, this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -930,9 +927,6 @@ public abstract class JPQLQueryContext {
          */
         protected String parameterName;
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(InputParameter expression) {
             if (parameterName.equals(expression.getParameter())) {
@@ -940,9 +934,6 @@ public abstract class JPQLQueryContext {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SimpleSelectStatement expression) {
             newSubqueryContext(expression);
@@ -967,17 +958,11 @@ public abstract class JPQLQueryContext {
          */
         protected Expression expression;
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(JPQLExpression expression) {
             this.expression = expression;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SimpleSelectStatement expression) {
             this.expression = expression;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -604,7 +604,7 @@ public class ServerEmployeeTest extends BaseJparsTest {
         employee1.setFirstName("Miles");
         employee1.setLastName("Davis");
         employee1.setGender(Gender.Male);
-        employee1.setSalary((double) 20000);
+        employee1.setSalary(20000);
 
         employee1 = RestUtils.restUpdate(context, employee1, Employee.class, null, mediaType, true);
         assertNotNull("Employee1 create failed.", employee1);
@@ -614,7 +614,7 @@ public class ServerEmployeeTest extends BaseJparsTest {
         employee2.setFirstName("Charlie");
         employee2.setLastName("Parker");
         employee2.setGender(Gender.Male);
-        employee2.setSalary((double) 30000);
+        employee2.setSalary(30000);
 
         employee2 = RestUtils.restUpdate(context, employee2, Employee.class, null, mediaType, true);
         assertNotNull("Employee2 create failed.", employee2);
@@ -648,7 +648,7 @@ public class ServerEmployeeTest extends BaseJparsTest {
         employee.setFirstName("Miles");
         employee.setLastName("Davis");
         employee.setGender(Gender.Male);
-        employee.setSalary((double) 20000);
+        employee.setSalary(20000);
 
         employee = RestUtils.restUpdate(context, employee, Employee.class, null, mediaType, true);
         assertNotNull("Employee create failed.", employee);

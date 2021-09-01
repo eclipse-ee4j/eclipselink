@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,6 +38,7 @@ public class ChangeSummaryCopyTestCases extends SDOTestCase {
     private DataObject dataObjectD;
     private DataObject dataObjectE;
 
+    @Override
     public void setUp() {
         super.setUp();
         DataObject rootTypeDO = defineType(URINAME, TYPENAME);
@@ -65,14 +66,15 @@ public class ChangeSummaryCopyTestCases extends SDOTestCase {
         // String types are containment == false
         SDOProperty propertyE = setUpProperty("propertyE", false, SDOConstants.SDO_STRING, type_E);
 
-        root = (SDODataObject)dataFactory.create(rootType);
-        dataObjectB = (SDODataObject)root.createDataObject(rootContainingPropertyB, type_B);
-        dataObjectD = (SDODataObject)dataObjectB.createDataObject(propertyB, type_D);
-        dataObjectE = (SDODataObject)dataObjectD.createDataObject(propertyD, type_E);
+        root = dataFactory.create(rootType);
+        dataObjectB = root.createDataObject(rootContainingPropertyB, type_B);
+        dataObjectD = dataObjectB.createDataObject(propertyB, type_D);
+        dataObjectE = dataObjectD.createDataObject(propertyD, type_E);
         dataObjectB.getChangeSummary().beginLogging();
 
     }
 
+    @Override
     public void tearDown() {
         dataObjectB.getChangeSummary().beginLogging();
     }

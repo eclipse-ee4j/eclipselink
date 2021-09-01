@@ -18,6 +18,8 @@ import commonj.sdo.Property;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Calendar;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOConstants;
@@ -36,14 +38,14 @@ public class SDODataObjectGetBooleanWithIndexConversionTest extends SDODataObjec
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetBooleanConversionFromDefinedBooleanProperty() {
         // dataObject's type add boolean property
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BOOLEAN);
 
         boolean b = true;
 
         dataObject.setBoolean(PROPERTY_INDEX, b);// add it to instance list
 
-        this.assertEquals(b, dataObject.getBoolean(PROPERTY_INDEX));
+        assertEquals(b, dataObject.getBoolean(PROPERTY_INDEX));
     }
 
     //2. purpose: getBoolean with Undefined  Property
@@ -60,7 +62,7 @@ public class SDODataObjectGetBooleanWithIndexConversionTest extends SDODataObjec
 
     //3. purpose: getBoolean with Byte property
     public void testGetBooleanFromByte() {
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BYTE);
         byte theValue= 0;
         dataObject.set(property, theValue);
@@ -76,14 +78,14 @@ public class SDODataObjectGetBooleanWithIndexConversionTest extends SDODataObjec
 
     //4. purpose: getBoolean with character property
     public void testGetBooleanFromCharacter() {
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_CHARACTER);
 
         Character b = Character.valueOf('0');
 
         dataObject.setChar(PROPERTY_INDEX, b.charValue());// add it to instance list
 
-        this.assertEquals(false, dataObject.getBoolean(PROPERTY_INDEX));
+        assertEquals(false, dataObject.getBoolean(PROPERTY_INDEX));
 
         /*SDOProperty property = new SDOProperty();
 property.setName(PROPERTY_NAME);
@@ -99,14 +101,14 @@ try {
 
     //5. purpose: getBoolean with Double Property
     public void testGetBooleanFromDouble() {
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_DOUBLE);
 
         Double b = Double.valueOf(0);
 
         dataObject.setDouble(PROPERTY_INDEX, b.doubleValue());// add it to instance list
 
-        this.assertEquals(false, dataObject.getBoolean(PROPERTY_INDEX));
+        assertEquals(false, dataObject.getBoolean(PROPERTY_INDEX));
 
         /*SDOProperty property = new SDOProperty();
 property.setName(PROPERTY_NAME);
@@ -122,14 +124,14 @@ try {
 
     //6. purpose: getBoolean with float Property
     public void testGetBooleanFromFloat() {
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_FLOAT);
 
         Float b = Float.valueOf(1.01f);
 
         dataObject.setFloat(PROPERTY_INDEX, b.floatValue());// add it to instance list
 
-        this.assertEquals(true, dataObject.getBoolean(PROPERTY_INDEX));
+        assertEquals(true, dataObject.getBoolean(PROPERTY_INDEX));
 
         /*SDOProperty property = new SDOProperty();
 property.setName(PROPERTY_NAME);
@@ -145,14 +147,14 @@ try {
 
     //7. purpose: getBooleab with int Property
     public void testGetBooleanFromInt() {
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_INT);
 
         Integer b = Integer.valueOf(1);
 
         dataObject.setLong(PROPERTY_INDEX, b.intValue());// add it to instance list
 
-        this.assertEquals(true, dataObject.getBoolean(PROPERTY_INDEX));
+        assertEquals(true, dataObject.getBoolean(PROPERTY_INDEX));
 
         /*SDOProperty property = new SDOProperty();
 property.setName(PROPERTY_NAME);
@@ -168,14 +170,14 @@ try {
 
     //8. purpose: getBoolea with long Property
     public void testGetBooleanFromLong() {
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_LONG);
 
         Long b = Long.valueOf(1);
 
         dataObject.setLong(PROPERTY_INDEX, b.longValue());// add it to instance list
 
-        this.assertEquals(true, dataObject.getBoolean(PROPERTY_INDEX));
+        assertEquals(true, dataObject.getBoolean(PROPERTY_INDEX));
 
         /*SDOProperty property = new SDOProperty();
 property.setName(PROPERTY_NAME);
@@ -207,20 +209,20 @@ try {
     //10. purpose: getDouble with Defined String Property
     public void testGetBooleanConversionFromDefinedStringProperty() {
         // dataObject's type add int property
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_STRING);
 
         String str = "true";
         Boolean B_STR = Boolean.valueOf(str);
         dataObject.setString(PROPERTY_INDEX, str);// add it to instance list
 
-        this.assertEquals(B_STR.booleanValue(), dataObject.getBoolean(PROPERTY_INDEX));
+        assertEquals(B_STR.booleanValue(), dataObject.getBoolean(PROPERTY_INDEX));
     }
 
 
     //12. purpose: getBoolean with bytes property
     public void testGetBooleanFromBytes() {
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BYTES);
         dataObject.set(property, new byte[]{10, 100});
 
@@ -233,7 +235,7 @@ try {
 
     //13. purpose: getBoolean with decimal property
     public void testGetBooleanFromDecimal() {
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_DECIMAL);
         dataObject.set(property, new BigDecimal(10));
 
@@ -248,7 +250,7 @@ try {
 
     //14. purpose: getBoolean with integer property
     public void testGetBooleanFromInteger() {
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_INTEGER);
         dataObject.set(property, new BigInteger("0"));
 
@@ -263,7 +265,7 @@ try {
 
     //22. purpose: getDouble with date property
     public void testGetBooleanFromDate() {
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_DATE);
         dataObject.set(property, Calendar.getInstance().getTime());
         try {

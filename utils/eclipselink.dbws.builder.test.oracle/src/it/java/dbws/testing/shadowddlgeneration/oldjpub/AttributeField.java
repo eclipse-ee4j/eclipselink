@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -103,6 +103,7 @@ public class AttributeField implements Comparable<AttributeField> {
         return m_type.toString() + " " + m_name;
     }
 
+    @Override
     public int compareTo(AttributeField o) {
         return m_name.compareTo(o.getName());
     }

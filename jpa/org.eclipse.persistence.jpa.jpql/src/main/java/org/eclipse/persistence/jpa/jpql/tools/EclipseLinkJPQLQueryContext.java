@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -65,17 +65,11 @@ public class EclipseLinkJPQLQueryContext extends JPQLQueryContext {
         super(parent, currentQuery);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected DeclarationResolver buildDeclarationResolver(DeclarationResolver parent) {
         return new EclipseLinkDeclarationResolver(parent, this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected JPQLQueryContext buildJPQLQueryContext(JPQLQueryContext currentContext,
                                                      Expression currentQuery) {
@@ -83,33 +77,21 @@ public class EclipseLinkJPQLQueryContext extends JPQLQueryContext {
         return new EclipseLinkJPQLQueryContext(currentContext, currentQuery);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected LiteralVisitor buildLiteralVisitor() {
         return new EclipseLinkLiteralVisitor();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected EclipseLinkParameterTypeVisitor buildParameterTypeVisitor() {
         return new EclipseLinkParameterTypeVisitor(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected ResolverBuilder buildResolverBuilder() {
         return new EclipseLinkResolverBuilder(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public EclipseLinkJPQLQueryContext getParent() {
         return (EclipseLinkJPQLQueryContext) super.getParent();

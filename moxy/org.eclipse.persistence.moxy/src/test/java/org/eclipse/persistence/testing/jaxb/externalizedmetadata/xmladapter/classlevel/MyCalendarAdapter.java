@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,7 @@ import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 public final class MyCalendarAdapter extends XmlAdapter<Calendar, MyCalendar> {
     public MyCalendarAdapter() {}
 
+    @Override
     public MyCalendar unmarshal(Calendar arg0) throws Exception {
         MyCalendar cType = new MyCalendar();
         cType.day = arg0.get(Calendar.DATE);
@@ -29,6 +30,7 @@ public final class MyCalendarAdapter extends XmlAdapter<Calendar, MyCalendar> {
         return cType;
     }
 
+    @Override
     public Calendar marshal(MyCalendar arg0) throws Exception {
         return new GregorianCalendar(arg0.year, arg0.month, arg0.day);
     }

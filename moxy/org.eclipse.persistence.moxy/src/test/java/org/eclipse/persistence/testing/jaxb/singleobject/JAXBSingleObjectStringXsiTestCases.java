@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -80,9 +80,11 @@ public class JAXBSingleObjectStringXsiTestCases extends JAXBWithJSONTestCases {
         return null;
     }
 
+    @Override
     public Object getWriteControlObject() {
         return getControlObject();
     }
+    @Override
     protected Object getControlObject() {
         String testString = "25";
         QName qname = new QName("rootNamespace", "root");
@@ -166,38 +168,47 @@ public class JAXBSingleObjectStringXsiTestCases extends JAXBWithJSONTestCases {
               this.rdr = rdr;
             }
 
+            @Override
             public void setFeature(String name, boolean value)
                 throws SAXNotRecognizedException, SAXNotSupportedException {
             }
 
+            @Override
             public boolean getFeature(String name) throws SAXNotRecognizedException,
                 SAXNotSupportedException {
               return false;
             }
 
+            @Override
             public Object getProperty(String name) throws SAXNotRecognizedException,
                 SAXNotSupportedException {
               return null;
             }
 
+            @Override
             public void setProperty(String name, Object value)
                 throws SAXNotRecognizedException, SAXNotSupportedException {
             }
 
+            @Override
             public void setEntityResolver(EntityResolver resolver) {
             }
 
+            @Override
             public EntityResolver getEntityResolver() {
               return null;
             }
 
+            @Override
             public void setDTDHandler(DTDHandler handler) {
             }
 
+            @Override
             public DTDHandler getDTDHandler() {
               return null;
             }
 
+            @Override
             public void setContentHandler(ContentHandler handler) {
               try {
                 this.contentHandler = handler;
@@ -210,21 +221,26 @@ public class JAXBSingleObjectStringXsiTestCases extends JAXBWithJSONTestCases {
               }
             }
 
+            @Override
             public ContentHandler getContentHandler() {
               return contentHandler;
             }
 
+            @Override
             public void setErrorHandler(ErrorHandler handler) {
             }
 
+            @Override
             public ErrorHandler getErrorHandler() {
               return null;
             }
 
+            @Override
             public void parse(InputSource input) throws IOException, SAXException {
               doParse();
             }
 
+            @Override
             public void parse(String systemId) throws IOException, SAXException {
               doParse();
             }

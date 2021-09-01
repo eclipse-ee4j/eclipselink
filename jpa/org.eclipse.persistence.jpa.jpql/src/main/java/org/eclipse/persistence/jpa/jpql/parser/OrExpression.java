@@ -51,25 +51,16 @@ public final class OrExpression extends LogicalExpression {
         super(parent, OR);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getLeftExpressionQueryBNFId() {
         return ConditionalExpressionBNF.ID;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getRightExpressionQueryBNFId() {
         return ConditionalTermBNF.ID;

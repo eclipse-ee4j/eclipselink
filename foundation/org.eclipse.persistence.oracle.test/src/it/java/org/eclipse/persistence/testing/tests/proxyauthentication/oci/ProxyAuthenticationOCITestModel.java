@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,6 +49,7 @@ public class ProxyAuthenticationOCITestModel extends TestModel {
     protected String proxyTestHelperClassName;
     protected ProxyTestHelper proxyTestHelper;
 
+    @Override
     public void addTests() {
         Properties prop = proxyTestHelper.createProxyProperties(proxyUser);
         //        Properties prop = proxyTestHelper.createProxyProperties(proxyUser, proxyPassword);
@@ -60,6 +61,7 @@ public class ProxyAuthenticationOCITestModel extends TestModel {
         addTest(new MainLoginTestCase(prop));
     }
 
+    @Override
     public void addRequiredSystems() {
         setupUser();
 
@@ -131,6 +133,7 @@ public class ProxyAuthenticationOCITestModel extends TestModel {
         }
     }
 
+    @Override
     public void reset() {
         if (oldSession != getExecutor().getSession()) {
             ((DatabaseSession)getSession()).logout();

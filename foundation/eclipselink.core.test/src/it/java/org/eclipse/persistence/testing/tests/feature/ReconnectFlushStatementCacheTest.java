@@ -67,9 +67,9 @@ public class ReconnectFlushStatementCacheTest extends AutoVerifyTestCase {
         params.addElement("Bob");
         Vector result = (Vector)session.executeQuery(query, params);
 
-        ((DatabaseAccessor)((AbstractSession)session).getAccessor()).closeConnection();
+        ((AbstractSession)session).getAccessor().closeConnection();
 
-        ((DatabaseAccessor)((AbstractSession)session).getAccessor()).reestablishConnection((AbstractSession)session);
+        ((AbstractSession)session).getAccessor().reestablishConnection((AbstractSession)session);
 
         try {
             // this query will fail if the cache is not flushed

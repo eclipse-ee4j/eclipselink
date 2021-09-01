@@ -73,34 +73,22 @@ public class ConcatExpressionStateObject extends AbstractListHolderStateObject<S
         super(parent, stateObjects);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ConcatExpression getExpression() {
         return (ConcatExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
         return super.isEquivalent(stateObject) &&
                areChildrenEquivalent((ConcatExpressionStateObject) stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String listName() {
         return STRING_PRIMARY_STATE_OBJECT_LIST;
@@ -118,9 +106,6 @@ public class ConcatExpressionStateObject extends AbstractListHolderStateObject<S
         super.setExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
         writer.append(CONCAT);

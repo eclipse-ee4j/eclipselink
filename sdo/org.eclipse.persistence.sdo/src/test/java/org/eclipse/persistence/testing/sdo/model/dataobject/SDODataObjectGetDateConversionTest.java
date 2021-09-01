@@ -20,6 +20,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOConstants;
@@ -38,7 +39,7 @@ public class SDODataObjectGetDateConversionTest extends SDODataObjectConversionT
 
     //1. purpose: getDate with Boolean property
     public void testGetDateFromBoolean() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
+        SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BOOLEAN);
         dataObject.set(property, true);
         try {
@@ -50,7 +51,7 @@ public class SDODataObjectGetDateConversionTest extends SDODataObjectConversionT
 
     //2. purpose: getDate with Byte property
     public void testGetDateFromByte() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
+        SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BYTE);
         dataObject.set(property, new String("Abc").getBytes()[0]);
         try {
@@ -62,7 +63,7 @@ public class SDODataObjectGetDateConversionTest extends SDODataObjectConversionT
 
     //3. purpose: getDate with character property
     public void testGetDateFromCharacter() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
+        SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BOOLEAN);
         dataObject.set(property, 'c');
         try {
@@ -74,7 +75,7 @@ public class SDODataObjectGetDateConversionTest extends SDODataObjectConversionT
 
     //4. purpose: getDate with Double Property
     public void testGetDateFromDouble() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
+        SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_DOUBLE);
         double doubleValue = 2;
         dataObject.set(property, doubleValue);
@@ -87,7 +88,7 @@ public class SDODataObjectGetDateConversionTest extends SDODataObjectConversionT
 
     //5. purpose: getDate with float Property
     public void testGetDateFromFloat() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
+        SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_FLOAT);
         float floatValue = 2;
         dataObject.set(property, floatValue);
@@ -100,7 +101,7 @@ public class SDODataObjectGetDateConversionTest extends SDODataObjectConversionT
 
     //7. purpose: getDate with int Property
     public void testGetDateFromInt() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
+        SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_INT);
         int intValue = 2;
         dataObject.set(property, intValue);
@@ -114,7 +115,7 @@ public class SDODataObjectGetDateConversionTest extends SDODataObjectConversionT
     //8. purpose: getDate with Defined long Property
     public void testGetDateConversionFromDefinedLongProperty() {
         // dataObject's type add boolean property
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_LONG);
 
         long l = 12;
@@ -122,7 +123,7 @@ public class SDODataObjectGetDateConversionTest extends SDODataObjectConversionT
 
         dataObject.setLong(property, l);// add it to instance list
 
-        this.assertEquals(d, dataObject.getDate(property));
+        assertEquals(d, dataObject.getDate(property));
     }
 
     //9. purpose: getDate with Undefined Boolean Property
@@ -130,7 +131,7 @@ public class SDODataObjectGetDateConversionTest extends SDODataObjectConversionT
         SDOProperty property = new SDOProperty(aHelperContext);
         property.setName(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BOOLEAN);
-        ((SDOType)dataObject.getType()).setOpen(true);
+        dataObject.getType().setOpen(true);
         try {
             Date value = dataObject.getDate(property);
             assertEquals(null, value);
@@ -140,7 +141,7 @@ public class SDODataObjectGetDateConversionTest extends SDODataObjectConversionT
 
     //10. purpose: getDate with short Property
     public void testGetDateFromShort() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
+        SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_SHORT);
         short shortValue = 2;
         dataObject.set(property, shortValue);
@@ -154,7 +155,7 @@ public class SDODataObjectGetDateConversionTest extends SDODataObjectConversionT
     //11. purpose: getDate with Defined String Property
     public void testGetDateConversionFromDefinedStringProperty() {
         // dataObject's type add int property
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_STRING);
 
         Calendar controlCalendar = Calendar.getInstance();
@@ -167,7 +168,7 @@ public class SDODataObjectGetDateConversionTest extends SDODataObjectConversionT
 
         dataObject.setString(property, "2001-01-01");// add it to instance list
 
-        this.assertEquals(d, dataObject.getDate(property));
+        assertEquals(d, dataObject.getDate(property));
     }
 
     //12. purpose: getDate with Undefined string Property
@@ -185,7 +186,7 @@ public class SDODataObjectGetDateConversionTest extends SDODataObjectConversionT
 
     //13. purpose: getDate with bytes property
     public void testGetDateFromBytes() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
+        SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BYTES);
         dataObject.set(property, new String("abcd").getBytes());
         try {
@@ -197,7 +198,7 @@ public class SDODataObjectGetDateConversionTest extends SDODataObjectConversionT
 
     //14. purpose: getBoolean with decimal property
     public void testGetDateFromDecimal() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
+        SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_DECIMAL);
         dataObject.set(property, new BigDecimal(2));
         try {
@@ -209,7 +210,7 @@ public class SDODataObjectGetDateConversionTest extends SDODataObjectConversionT
 
     //15. purpose: getDate with integer property
     public void testGetDateFromInteger() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
+        SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_INTEGER);
         dataObject.set(property, Integer.valueOf(2));
         try {
@@ -222,14 +223,14 @@ public class SDODataObjectGetDateConversionTest extends SDODataObjectConversionT
     //16. purpose: getDate with Defined Date Property
     public void testGetDateConversionFromDefinedDateProperty() {
         // dataObject's type add int property
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_DATE);
 
         long l = 12000;
         Date d = new Date(l);
         dataObject.setDate(property, d);// add it to instance list
 
-        this.assertEquals(d, dataObject.getDate(property));
+        assertEquals(d, dataObject.getDate(property));
     }
 
     //12. purpose: getDate with Undefined string Property

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -324,7 +324,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
 
                 if(classLoaderOrString instanceof ClassLoader) {
                     // If we are running a version of WebLogic 10.3 that does not support ExecuteThreadRuntime (from 10.3+) then use the ClassLoader
-                    String jpaModuleNameRoot = ((ClassLoader)classLoaderOrString).toString();
+                    String jpaModuleNameRoot = classLoaderOrString.toString();
                     if(null != jpaModuleNameRoot) {
                         int startIndex = jpaModuleNameRoot.indexOf(
                             WLS_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX);

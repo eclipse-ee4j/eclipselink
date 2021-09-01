@@ -38,17 +38,11 @@ public final class MultiplicationExpression extends ArithmeticExpression {
         super(parent, MULTIPLICATION);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 

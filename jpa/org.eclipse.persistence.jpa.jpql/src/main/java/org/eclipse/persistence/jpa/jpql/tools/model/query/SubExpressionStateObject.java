@@ -75,33 +75,21 @@ public class SubExpressionStateObject extends AbstractSingleEncapsulatedExpressi
         parse(jpqlFragment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SubExpression getExpression() {
         return (SubExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return ExpressionTools.EMPTY_STRING;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getQueryBNFId() {
         return queryBNFId;
@@ -131,9 +119,6 @@ public class SubExpressionStateObject extends AbstractSingleEncapsulatedExpressi
         this.queryBNFId = queryBNFId;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setStateObject(StateObject stateObject) {
         super.setStateObject(stateObject);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -147,6 +147,7 @@ protected void initialize(String jarFileName) {
 /**
  * Return the class for the specified name, resolving it if necessary.
  */
+@Override
 protected Class loadClass(String className, boolean resolve) throws ClassNotFoundException {
     Class c = this.loadUnresolvedClass(className);
     if (resolve) {

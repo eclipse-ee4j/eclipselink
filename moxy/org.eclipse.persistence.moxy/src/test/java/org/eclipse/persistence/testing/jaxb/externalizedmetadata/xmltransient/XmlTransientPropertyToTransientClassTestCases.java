@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ public class XmlTransientPropertyToTransientClassTestCases extends JAXBWithJSONT
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception {
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
@@ -46,12 +47,14 @@ public class XmlTransientPropertyToTransientClassTestCases extends JAXBWithJSONT
         setTypes(types);
     }
 
+    @Override
     protected Object getControlObject() {
         ContactInfo info = new ContactInfo();
         info.phoneNumber = "1234567";
         return info;
     }
 
+    @Override
     public Object getWriteControlObject() {
         ContactInfo info = new ContactInfo();
         info.phoneNumber = "1234567";
@@ -72,6 +75,7 @@ public class XmlTransientPropertyToTransientClassTestCases extends JAXBWithJSONT
         this.testSchemaGen(controlSchemas);
     }
 
+    @Override
     protected Map getProperties() {
 
             Map overrides = new HashMap();

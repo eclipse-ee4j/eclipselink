@@ -46,7 +46,7 @@ public class InvalidIndirectionContainerClassTest extends ExceptionTest {
 
         expectedException = DescriptorException.invalidIndirectionContainerClass(new ContainerIndirectionPolicy(), null);
 
-        descriptor = ((DatabaseSession)getSession()).getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
+        descriptor = getSession().getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
         mapping = (OneToManyMapping)descriptor.getMappingForAttributeName("phoneNumbers");
         orgIndirectionPolicy = mapping.getIndirectionPolicy();
         //An invalid indirection container class

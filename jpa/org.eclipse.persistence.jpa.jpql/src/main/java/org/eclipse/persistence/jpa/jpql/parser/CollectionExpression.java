@@ -94,9 +94,6 @@ public final class CollectionExpression extends AbstractExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
@@ -114,9 +111,6 @@ public final class CollectionExpression extends AbstractExpression {
         getChild(index).accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         for (Expression child : children()) {
@@ -124,9 +118,6 @@ public final class CollectionExpression extends AbstractExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
 
@@ -138,9 +129,6 @@ public final class CollectionExpression extends AbstractExpression {
         children.addAll(this.children);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
 
@@ -208,9 +196,6 @@ public final class CollectionExpression extends AbstractExpression {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
         return getParent().findQueryBNF(expression);
@@ -238,9 +223,6 @@ public final class CollectionExpression extends AbstractExpression {
         return child;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getParent().getQueryBNF();
@@ -285,9 +267,6 @@ public final class CollectionExpression extends AbstractExpression {
         return children.indexOf(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
         throw new IllegalAccessError("This method shouln't be invoked, text=" + wordParser);
@@ -321,9 +300,6 @@ public final class CollectionExpression extends AbstractExpression {
         return writer.toString();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
         toParsedText(writer, childrenSize(), actual);

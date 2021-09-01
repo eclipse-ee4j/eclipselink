@@ -46,17 +46,11 @@ public final class SubstringExpression extends AbstractTripleEncapsulatedExpress
         super(parent, SUBSTRING);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getParameterQueryBNFId(int index) {
         switch (index) {
@@ -65,17 +59,11 @@ public final class SubstringExpression extends AbstractTripleEncapsulatedExpress
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(FunctionsReturningStringsBNF.ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isThirdExpressionOptional() {
         return true;

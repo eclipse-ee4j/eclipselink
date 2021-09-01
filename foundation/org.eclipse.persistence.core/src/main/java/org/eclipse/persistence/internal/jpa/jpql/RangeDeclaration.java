@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -58,9 +58,6 @@ final class RangeDeclaration extends AbstractRangeDeclaration {
         super(queryContext);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     void addJoin(Join join) {
         super.addJoin(join);
@@ -77,9 +74,6 @@ final class RangeDeclaration extends AbstractRangeDeclaration {
         joinFetches.add(join);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     Expression buildQueryExpression() {
 
@@ -131,9 +125,6 @@ final class RangeDeclaration extends AbstractRangeDeclaration {
         return (joinFetches == null) ? Collections.<Join>emptyList() : joinFetches;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Type getType() {
         return (type != null) ? Type.CLASS_NAME : Type.RANGE;
@@ -150,9 +141,6 @@ final class RangeDeclaration extends AbstractRangeDeclaration {
         return type != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     ClassDescriptor resolveDescriptor() {
 
@@ -163,9 +151,6 @@ final class RangeDeclaration extends AbstractRangeDeclaration {
         return queryContext.getDescriptor(rootPath);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     DatabaseMapping resolveMapping() {
         // A range declaration does not have a mapping, only a descriptor

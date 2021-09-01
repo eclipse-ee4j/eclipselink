@@ -48,6 +48,7 @@ public class InheritanceRootChoiceOnlyTestCases extends JAXBWithJSONTestCases {
         jaxbMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
     }
 
+    @Override
     protected Object getControlObject() {
         RootChoiceOnly root = new RootChoiceOnly();
         SubType subType = new SubType();

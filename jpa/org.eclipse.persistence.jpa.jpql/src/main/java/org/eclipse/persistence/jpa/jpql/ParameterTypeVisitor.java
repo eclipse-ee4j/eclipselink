@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -152,68 +152,44 @@ public abstract class ParameterTypeVisitor extends AbstractTraverseParentVisitor
      */
     public abstract Object getType();
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AbsExpression expression) {
         // The absolute function always have a return type
         this.expression = expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AbstractSchemaName expression) {
         // An abstract schema type always have a type
         this.expression = expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AdditionExpression expression) {
         visitCompoundExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AllOrAnyExpression expression) {
         super.visit(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AndExpression expression) {
         visitCompoundExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ArithmeticFactor expression) {
         super.visit(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AvgFunction expression) {
         // The average function always have a return type
         this.expression = expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(BetweenExpression expression) {
 
@@ -277,25 +253,16 @@ public abstract class ParameterTypeVisitor extends AbstractTraverseParentVisitor
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CaseExpression expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CoalesceExpression expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CollectionMemberExpression expression) {
 
@@ -309,26 +276,17 @@ public abstract class ParameterTypeVisitor extends AbstractTraverseParentVisitor
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CollectionValuedPathExpression expression) {
         // A collection-valued path expression always have a return type
         this.expression = expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ComparisonExpression expression) {
         visitCompoundExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ConcatExpression expression) {
         if (expression.getExpression().isAncestor(inputParameter)) {
@@ -336,43 +294,28 @@ public abstract class ParameterTypeVisitor extends AbstractTraverseParentVisitor
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ConstructorExpression expression) {
         typeName = expression.getClassName();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CountFunction expression) {
         // The count function always have a return type
         this.expression = expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(DateTime expression) {
         // A date/time always have a type
         this.expression = expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(DivisionExpression expression) {
         visitCompoundExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(EmptyCollectionComparisonExpression expression) {
 
@@ -385,59 +328,38 @@ public abstract class ParameterTypeVisitor extends AbstractTraverseParentVisitor
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(EntityTypeLiteral expression) {
         this.expression = expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(EntryExpression expression) {
         this.expression = expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ExistsExpression expression) {
         // The exist function always have a return type
         this.expression = expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(FunctionExpression expression) {
         type = Object.class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(IdentificationVariable expression) {
         // The identification variable always have a return type
         this.expression = expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(IndexExpression expression) {
         this.expression = expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(InExpression expression) {
 
@@ -454,9 +376,6 @@ public abstract class ParameterTypeVisitor extends AbstractTraverseParentVisitor
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(InputParameter expression) {
         if (inputParameter == null) {
@@ -465,26 +384,17 @@ public abstract class ParameterTypeVisitor extends AbstractTraverseParentVisitor
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(KeyExpression expression) {
         // KEY() always have a type
         this.expression = expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(KeywordExpression expression) {
         this.expression = expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(LengthExpression expression) {
 
@@ -498,9 +408,6 @@ public abstract class ParameterTypeVisitor extends AbstractTraverseParentVisitor
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(LikeExpression expression) {
 
@@ -520,9 +427,6 @@ public abstract class ParameterTypeVisitor extends AbstractTraverseParentVisitor
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(LocateExpression expression) {
 
@@ -541,60 +445,39 @@ public abstract class ParameterTypeVisitor extends AbstractTraverseParentVisitor
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(LowerExpression expression) {
         // The lower function always have a return type
         this.expression = expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(MaxFunction expression) {
         // The maximum function always have a return type
         this.expression = expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(MinFunction expression) {
         // The minimum function always have a return type
         this.expression = expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ModExpression expression) {
         visitDoubleEncapsulatedExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(MultiplicationExpression expression) {
         visitCompoundExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(NotExpression expression) {
         super.visit(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(NullComparisonExpression expression) {
 
@@ -608,51 +491,33 @@ public abstract class ParameterTypeVisitor extends AbstractTraverseParentVisitor
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(NullIfExpression expression) {
         visitDoubleEncapsulatedExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(NumericLiteral expression) {
         // A numerical expression always have a return type
         this.expression = expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ObjectExpression expression) {
         super.visit(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(OrExpression expression) {
         visitCompoundExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SizeExpression expression) {
         // The modulo function always have a return type
         this.expression = expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SqrtExpression expression) {
         if (expression.isAncestor(inputParameter)) {
@@ -663,26 +528,17 @@ public abstract class ParameterTypeVisitor extends AbstractTraverseParentVisitor
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(StateFieldPathExpression expression) {
         // A state field path expression always have a return type
         this.expression = expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(StringLiteral expression) {
         this.expression = expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SubstringExpression expression) {
 
@@ -698,26 +554,17 @@ public abstract class ParameterTypeVisitor extends AbstractTraverseParentVisitor
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SubtractionExpression expression) {
         visitCompoundExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SumFunction expression) {
         // The sum function always have a return type
         this.expression = expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(TrimExpression expression) {
 
@@ -729,9 +576,6 @@ public abstract class ParameterTypeVisitor extends AbstractTraverseParentVisitor
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(TypeExpression expression) {
         if (expression.getExpression() != inputParameter) {
@@ -739,34 +583,22 @@ public abstract class ParameterTypeVisitor extends AbstractTraverseParentVisitor
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UpdateItem expression) {
         expression.getStateFieldPathExpression().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UpperExpression expression) {
         this.expression = expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ValueExpression expression) {
         // VALUE() always have a type
         this.expression = expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(WhenClause expression) {
         super.visit(expression);

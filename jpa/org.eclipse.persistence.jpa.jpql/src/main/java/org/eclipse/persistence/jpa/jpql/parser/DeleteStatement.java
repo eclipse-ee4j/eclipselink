@@ -55,26 +55,17 @@ public final class DeleteStatement extends AbstractExpression {
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getDeleteClause().accept(visitor);
         getWhereClause().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         children.add(getDeleteClause());
@@ -88,9 +79,6 @@ public final class DeleteStatement extends AbstractExpression {
         return deleteClause = new DeleteClause(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
 
@@ -103,9 +91,6 @@ public final class DeleteStatement extends AbstractExpression {
         children.add(whereClause);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -129,9 +114,6 @@ public final class DeleteStatement extends AbstractExpression {
         return deleteClause;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(DeleteStatementBNF.ID);
@@ -170,9 +152,6 @@ public final class DeleteStatement extends AbstractExpression {
               !whereClause.isNull();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -192,9 +171,6 @@ public final class DeleteStatement extends AbstractExpression {
         accept(new FullyQualifyPathExpressionVisitor());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
 

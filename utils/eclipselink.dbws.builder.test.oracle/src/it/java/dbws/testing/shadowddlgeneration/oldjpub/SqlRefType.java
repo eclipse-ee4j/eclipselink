@@ -38,10 +38,12 @@ public class SqlRefType extends SqlType {
     /**
      * Returns the fully-qualified name of the type represented by this Type object, as a String.
      */
+    @Override
     public String getName() {
         return "REF " + m_refeeType.getName();
     }
 
+    @Override
     public String getTargetTypeName() {
         if (m_refeeType instanceof SqlType) {
             return "REF " + m_refeeType.getTargetTypeName();
@@ -51,6 +53,7 @@ public class SqlRefType extends SqlType {
         }
     }
 
+    @Override
     public String getTypeName() {
         if (m_refeeType instanceof SqlType) {
             return "REF " + m_refeeType.getTypeName();
@@ -64,6 +67,7 @@ public class SqlRefType extends SqlType {
      * If this Type has a component type, return the Type object that represents the component type;
      * otherwise returns null.
      */
+    @Override
     public TypeClass getComponentType() {
         return m_refeeType;
     }

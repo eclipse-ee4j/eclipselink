@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,6 +39,7 @@ public class AdapterHexBinaryTestCases extends JAXBWithJSONTestCases{
         setControlJSON(JSON_RESOURCE);
     }
 
+    @Override
     protected Object getControlObject() {
         byte[] bytes = new byte[] {30,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4};
         Customer customer = new Customer();
@@ -47,6 +48,7 @@ public class AdapterHexBinaryTestCases extends JAXBWithJSONTestCases{
         return customer;
     }
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/hexbinary/hexbinary-oxm.xml");
         HashMap<String, Source> properties = new HashMap<String, Source>();

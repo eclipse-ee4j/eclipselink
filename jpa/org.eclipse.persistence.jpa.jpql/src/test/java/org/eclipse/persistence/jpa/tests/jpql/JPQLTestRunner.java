@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -125,7 +125,7 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
      * Creates a new <code>JPQLTestRunner</code>.
      *
      * @param testClass The class that is either a test suite or a unit-tests
-     * @param suiteHelper The parent {@link SuiteHelper} or {@link null} if none was defined yet
+     * @param suiteHelper The parent {@link SuiteHelper} or {@code null} if none was defined yet
      * @throws InitializationError If the given test class is malformed
      */
     public JPQLTestRunner(Class<?> testClass, SuiteHelper suiteHelper) throws InitializationError {
@@ -253,7 +253,7 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
             }
 
             // Create the default runner
-            return new AllDefaultPossibilitiesBuilder(true).runnerForClass(testClass);
+            return new AllDefaultPossibilitiesBuilder().runnerForClass(testClass);
         }
         catch (Throwable e) {
             return new ErrorReportingRunner(testClass, e);
@@ -326,18 +326,12 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
         return suiteHelpers;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void collectInitializationErrors(List<Throwable> errors) {
         super.collectInitializationErrors(errors);
         initializeDescriptionHelper(errors);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Description describeChild(Runner child) {
         return child.getDescription();
@@ -358,9 +352,6 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
         return findSuiteClasses(testClass.getSuperclass());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected List<Runner> getChildren() {
         // Cache the Description since JUnit always recreate it, this will increase performance
@@ -370,9 +361,6 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
         return runners;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Description getDescription() {
         // Cache the Description since JUnit always recreate it, this will increase performance
@@ -382,9 +370,6 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
         return description;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getName() {
         // Cache the Description since JUnit always recreate it, this will increase performance and
@@ -445,9 +430,6 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
         return keys;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void runChild(Runner child, RunNotifier notifier) {
         child.run(notifier);
@@ -525,9 +507,6 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
             };
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         protected Statement classBlock(RunNotifier notifier) {
             Statement statement = new CreateTestStatement();
@@ -537,9 +516,6 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
             return statement;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         protected Object createTest() throws Exception {
             return test;
@@ -552,9 +528,6 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
             return methods;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public Description getDescription() {
             if (description == null) {
@@ -576,9 +549,6 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         protected Statement methodBlock(FrameworkMethod method) {
             Statement statement = new SetUpStatement();
@@ -587,18 +557,12 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
             return statement;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         protected Statement methodInvoker(FrameworkMethod method, Object test) {
             this.test = (JPQLBasicTest) test;
             return super.methodInvoker(method, test);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         protected String testName(FrameworkMethod method) {
 
@@ -631,9 +595,7 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
                 this.statement2 = statement2;
             }
 
-            /**
-             * {@inheritDoc}
-             */
+
             @Override
             public void evaluate() throws Throwable {
                 statement1.evaluate();
@@ -665,9 +627,7 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
                 this.statement = statement;
             }
 
-            /**
-             * {@inheritDoc}
-             */
+
             @Override
             public void evaluate() throws Throwable {
                 statement.evaluate();
@@ -699,9 +659,7 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
                 this.statement = statement;
             }
 
-            /**
-             * {@inheritDoc}
-             */
+
             @Override
             public void evaluate() throws Throwable {
                 try {
@@ -728,9 +686,7 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
                 this.statement = statement;
             }
 
-            /**
-             * {@inheritDoc}
-             */
+
             @Override
             public void evaluate() throws Throwable {
                 try {

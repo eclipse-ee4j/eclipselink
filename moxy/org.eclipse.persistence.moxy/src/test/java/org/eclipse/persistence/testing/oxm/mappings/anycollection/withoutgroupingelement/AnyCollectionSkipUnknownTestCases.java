@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,11 +28,12 @@ public class AnyCollectionSkipUnknownTestCases extends XMLMappingTestCases {
     public AnyCollectionSkipUnknownTestCases(String name) throws Exception {
         super(name);
         Project project = new AnyCollectionWithGroupingElementProject();
-        ((XMLAnyCollectionMapping)((XMLDescriptor)project.getDescriptor(Root.class)).getMappingForAttributeName("any")).setUseXMLRoot(true);
+        ((XMLAnyCollectionMapping) project.getDescriptor(Root.class).getMappingForAttributeName("any")).setUseXMLRoot(true);
         setProject(project);
         setControlDocument("org/eclipse/persistence/testing/oxm/mappings/anycollection/withoutgroupingelement/skip_unknown_children.xml");
     }
 
+    @Override
     public Object getControlObject() {
         Root root = new Root();
         Vector any = new Vector();
@@ -53,6 +54,7 @@ public class AnyCollectionSkipUnknownTestCases extends XMLMappingTestCases {
         return root;
     }
 
+    @Override
     protected Document getWriteControlDocument() throws Exception {
         String resource = "org/eclipse/persistence/testing/oxm/mappings/anycollection/withoutgroupingelement/skip_unknown_children_write.xml";
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(resource);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,18 +27,21 @@ public class EntityManagerTransactionWrapper extends EntityManagerWrapper {
         super(emf);
     }
 
+    @Override
     public void persist(Object obj) {
         em.getTransaction().begin();
         em.persist(obj);
         em.getTransaction().commit();
     }
 
+    @Override
     public void remove(Object obj) {
         em.getTransaction().begin();
         em.remove(obj);
         em.getTransaction().commit();
     }
 
+    @Override
     public void flush() {
         em.getTransaction().begin();
         em.flush();
@@ -46,6 +49,7 @@ public class EntityManagerTransactionWrapper extends EntityManagerWrapper {
     }
 
 
+    @Override
     public int executeNativeQuery(String string) {
         em.getTransaction().begin();
         int count = em.createNativeQuery(string).executeUpdate();

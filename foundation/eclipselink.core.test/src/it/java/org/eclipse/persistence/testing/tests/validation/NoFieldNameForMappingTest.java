@@ -38,7 +38,7 @@ public class NoFieldNameForMappingTest extends ExceptionTest {
         expectedException = DescriptorException.attributeNameNotSpecified();
         expectedException.setErrorCode(50); //work around to avoid 7012 error
 
-        orgDescriptor = ((DatabaseSession)getSession()).getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
+        orgDescriptor = getSession().getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
         orgIntegrityChecker = getSession().getIntegrityChecker();
         getSession().setIntegrityChecker(new IntegrityChecker());
         getSession().getIntegrityChecker().dontCatchExceptions();
@@ -49,7 +49,7 @@ public class NoFieldNameForMappingTest extends ExceptionTest {
 
     @Override
     public void reset() {
-        ((DatabaseSession)getSession()).getDescriptors().remove(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
+        getSession().getDescriptors().remove(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
         if (orgDescriptor != null) {
             ((DatabaseSession)getSession()).addDescriptor(orgDescriptor);
         }

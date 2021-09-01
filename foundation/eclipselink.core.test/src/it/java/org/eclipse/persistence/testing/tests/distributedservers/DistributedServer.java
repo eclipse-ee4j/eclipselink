@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -60,11 +60,11 @@ public abstract class DistributedServer {
                 String name = (String)enumtr.next();
                 Session oldMemberSession = ((SessionBroker)testSssion).getSessionForName(name);
                 Session newMemberSession = ((SessionBroker)this.session).getSessionForName(name);
-                ((DatabaseAccessor)((AbstractSession)newMemberSession).getAccessor()).closeConnection();
+                ((AbstractSession)newMemberSession).getAccessor().closeConnection();
                 ((AbstractSession)newMemberSession).setAccessor(((AbstractSession)oldMemberSession).getAccessor());
             }
         } else {
-            ((DatabaseAccessor)((AbstractSession)this.session).getAccessor()).closeConnection();
+            ((AbstractSession)this.session).getAccessor().closeConnection();
             ((AbstractSession)this.session).setAccessor(((AbstractSession)testSssion).getAccessor());
         }
     }

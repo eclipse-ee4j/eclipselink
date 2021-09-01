@@ -40,6 +40,7 @@ public class JAXBInheritanceNSSeparatorTestCases extends JAXBInheritanceNSTestCa
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR, '*');
     }
 
+    @Override
     public JAXBMarshaller getJSONMarshaller() throws Exception{
         JAXBMarshaller m = super.getJSONMarshaller();
         m.setProperty(MarshallerProperties.JSON_NAMESPACE_SEPARATOR, '*');
@@ -58,7 +59,7 @@ public class JAXBInheritanceNSSeparatorTestCases extends JAXBInheritanceNSTestCa
                 StringWriter writer = new StringWriter();
 
                 XMLOutputFactory factory = XMLOutputFactory.newInstance();
-                factory.setProperty(factory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(false));
+                factory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(false));
                 XMLStreamWriter streamWriter= factory.createXMLStreamWriter(writer);
 
                 Object objectToWrite = getWriteControlObject();

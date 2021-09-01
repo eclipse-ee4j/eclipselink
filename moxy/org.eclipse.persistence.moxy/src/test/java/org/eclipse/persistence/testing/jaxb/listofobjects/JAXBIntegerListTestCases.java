@@ -34,6 +34,7 @@ public class JAXBIntegerListTestCases extends JAXBIntegerArrayTestCases {
         super(name);
     }
 
+    @Override
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
@@ -51,11 +52,13 @@ public class JAXBIntegerListTestCases extends JAXBIntegerArrayTestCases {
         return namespaces;
     }
 
+    @Override
     protected Type getTypeToUnmarshalTo() throws Exception {
         Field fld = ListofObjects.class.getField("integerList");
         return fld.getGenericType();
     }
 
+    @Override
     protected Object getControlObject() {
         ArrayList<Integer> integers = new ArrayList<Integer>();
         integers.add(Integer.valueOf("10"));
@@ -70,6 +73,7 @@ public class JAXBIntegerListTestCases extends JAXBIntegerArrayTestCases {
         return jaxbElement;
     }
 
+    @Override
     public  List<InputStream> getControlSchemaFiles(){
 
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/listInteger.xsd");
@@ -80,6 +84,7 @@ public class JAXBIntegerListTestCases extends JAXBIntegerArrayTestCases {
         }
 
 
+    @Override
     protected String getNoXsiTypeControlResourceName() {
         return XML_RESOURCE_NO_XSI_TYPE;
     }

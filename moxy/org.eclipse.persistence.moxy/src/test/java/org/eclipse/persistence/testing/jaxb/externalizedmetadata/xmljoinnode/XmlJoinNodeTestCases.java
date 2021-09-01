@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -67,6 +67,7 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
     }
 
+    @Override
     protected Marshaller getJSONMarshaller() throws Exception{
         Marshaller m = jaxbContext.createMarshaller();
         Map<String, String> namespaces = new HashMap<String, String>();
@@ -80,6 +81,7 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
     /**
      * Return the control Company object.
      */
+    @Override
     public Object getControlObject() {
         Address ottawa100 = new Address("a100", "45 O'Connor St.", "400", "Kanata", "K1P1A4");
         Address ottawa200 = new Address("a200", "1 Anystreet Rd.", "9", "Ottawa", "K4P1A2");
@@ -97,6 +99,7 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
     }
 
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(OXM_DOC);
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
@@ -228,7 +231,7 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
         DatabaseMapping mapping = xDesc.getMappingForAttributeName("employees");
         assertNotNull("No mapping exists on Customer for attribute [employees].", mapping);
         assertTrue("Expected an XMLCollectionReferenceMapping for attribute [employees], but was [" + mapping.toString() +"].", mapping instanceof XMLCollectionReferenceMapping);
-        assertTrue("Expected container class [java.util.LinkedList] but was ["+((XMLCollectionReferenceMapping) mapping).getContainerPolicy().getContainerClassName()+"]", ((XMLCollectionReferenceMapping) mapping).getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
+        assertTrue("Expected container class [java.util.LinkedList] but was ["+ mapping.getContainerPolicy().getContainerClassName()+"]", mapping.getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
     }
 
 

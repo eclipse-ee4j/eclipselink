@@ -47,7 +47,7 @@ public class InvalidUseOfTransparentIndirectionTest_valueFromMethod extends Exce
 
         expectedException = DescriptorException.invalidUseOfTransparentIndirection(null);
 
-        descriptor = ((DatabaseSession)getSession()).getDescriptor(Employee.class);
+        descriptor = getSession().getDescriptor(Employee.class);
         //valueFromMethod is used in TransformationMapping
         mapping = (TransformationMapping)descriptor.getMappingForAttributeName("normalHours");
         orgIndirectionPolicy = mapping.getIndirectionPolicy();

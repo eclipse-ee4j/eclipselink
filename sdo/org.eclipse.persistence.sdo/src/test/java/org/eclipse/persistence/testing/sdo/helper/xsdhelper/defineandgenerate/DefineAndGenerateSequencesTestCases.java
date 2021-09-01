@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,7 @@ public class DefineAndGenerateSequencesTestCases extends XSDHelperDefineAndGener
         super(name);
     }
 
+    @Override
     public String getSchemaToDefine() {
         return "org/eclipse/persistence/testing/sdo/helper/xsdhelper/define/complextypes/ComplexTypeWithMultipleOpenContent.xsd";
     }
@@ -38,14 +39,17 @@ public class DefineAndGenerateSequencesTestCases extends XSDHelperDefineAndGener
         TestRunner.main(arguments);
     }
 
+    @Override
     public String getControlGeneratedFileName() {
         return "org/eclipse/persistence/testing/sdo/helper/xsdhelper/define/complextypes/ComplexTypeWithMultipleOpenContentGenerated.xsd";
     }
 
+    @Override
     public List<Type> getTypesToGenerateFrom () {
         return getControlTypes();
     }
 
+    @Override
     public List<Type> getControlTypes() {
         List<Type> types = new ArrayList<Type>();
         ((SDOTypeHelper)typeHelper).reset();

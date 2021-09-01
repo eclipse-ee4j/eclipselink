@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1085,9 +1085,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         return helper;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void dispose() {
         inputParameters.clear();
@@ -1162,9 +1159,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         return visitor;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected JPQLGrammar getGrammar() {
         return jpqlGrammar;
@@ -1191,9 +1185,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         return helper;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();
@@ -2530,34 +2521,22 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         return helper;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AbsExpression expression) {
         validateAbstractSingleEncapsulatedExpression(expression, absExpressionHelper());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AbstractSchemaName expression) {
         // Nothing to validate
         super.visit(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AdditionExpression expression) {
         validateArithmeticExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AllOrAnyExpression expression) {
 
@@ -2569,17 +2548,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AndExpression expression) {
         validateLogicalExpression(expression, ConditionalExpressionBNF.ID, ConditionalExpressionBNF.ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ArithmeticFactor expression) {
 
@@ -2602,17 +2575,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AvgFunction expression) {
         validateAggregateFunctionLocation(expression, avgFunctionHelper());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(BadExpression expression) {
         int startPosition = position(expression);
@@ -2620,9 +2587,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         addProblem(expression, startPosition, endPosition, BadExpression_InvalidExpression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(BetweenExpression expression) {
 
@@ -2675,9 +2639,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         super.visit(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CaseExpression expression) {
 
@@ -2759,9 +2720,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CoalesceExpression expression) {
 
@@ -2774,9 +2732,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CollectionExpression expression) {
         // Nothing to validate, it's done by the parent expression
@@ -2784,9 +2739,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         super.visit(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CollectionMemberDeclaration expression) {
 
@@ -2885,9 +2837,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         super.visit(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CollectionMemberExpression expression) {
 
@@ -2941,17 +2890,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         super.visit(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CollectionValuedPathExpression expression) {
         validatePathExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ComparisonExpression expression) {
 
@@ -2976,9 +2919,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         super.visit(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ConcatExpression expression) {
 
@@ -3003,9 +2943,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ConstructorExpression expression) {
 
@@ -3072,17 +3009,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CountFunction expression) {
         validateAggregateFunctionLocation(expression, countFunctionHelper());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(DateTime expression) {
 
@@ -3145,9 +3076,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(DeleteClause expression) {
 
@@ -3202,26 +3130,17 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(DeleteStatement expression) {
         // Nothing to validate, done directly by DeleteClause and WhereClause
         super.visit(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(DivisionExpression expression) {
         validateArithmeticExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(EmptyCollectionComparisonExpression expression) {
 
@@ -3253,9 +3172,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(EntityTypeLiteral expression) {
 
@@ -3264,9 +3180,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(EntryExpression expression) {
 
@@ -3279,25 +3192,16 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ExistsExpression expression) {
         validateAbstractSingleEncapsulatedExpression(expression, existsExpressionHelper());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(FromClause expression) {
         validateAbstractFromClause(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(FunctionExpression expression) {
 
@@ -3326,9 +3230,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(GroupByClause expression) {
 
@@ -3353,9 +3254,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(HavingClause expression) {
         validateAbstractConditionalClause(
@@ -3365,9 +3263,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         );
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(IdentificationVariable expression) {
 
@@ -3384,17 +3279,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(IdentificationVariableDeclaration expression) {
         validateIdentificationVariableDeclaration(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(IndexExpression expression) {
 
@@ -3407,9 +3296,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(InExpression expression) {
 
@@ -3543,9 +3429,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(InputParameter expression) {
 
@@ -3599,9 +3482,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         validateOwningClause(expression, parameter);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(Join expression) {
 
@@ -3714,9 +3594,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         expression.getOnClause().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(JPQLExpression expression) {
 
@@ -3752,9 +3629,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(KeyExpression expression) {
 
@@ -3767,25 +3641,16 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(KeywordExpression expression) {
         // Nothing to validate
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(LengthExpression expression) {
         validateAbstractSingleEncapsulatedExpression(expression, lengthExpressionHelper());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(LikeExpression expression) {
 
@@ -3835,57 +3700,36 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         super.visit(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(LocateExpression expression) {
         validateAbstractTripleEncapsulatedExpression(expression, locateExpressionHelper());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(LowerExpression expression) {
         validateAbstractSingleEncapsulatedExpression(expression, lowerExpressionHelper());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(MaxFunction expression) {
         validateAggregateFunctionLocation(expression, maxFunctionHelper());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(MinFunction expression) {
         validateAggregateFunctionLocation(expression, minFunctionHelper());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ModExpression expression) {
         validateAbstractDoubleEncapsulatedExpression(expression, modExpressionHelper());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(MultiplicationExpression expression) {
         validateArithmeticExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(NotExpression expression) {
 
@@ -3903,9 +3747,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(NullComparisonExpression expression) {
 
@@ -3919,17 +3760,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(NullExpression expression) {
         // Nothing to validate
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(NullIfExpression expression) {
 
@@ -3942,9 +3777,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(NumericLiteral expression) {
 
@@ -3963,17 +3795,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ObjectExpression expression) {
         validateAbstractSingleEncapsulatedExpression(expression, objectExpressionHelper());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(OnClause expression) {
 
@@ -4007,9 +3833,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(OrderByClause expression) {
 
@@ -4029,9 +3852,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         super.visit(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(OrderByItem expression) {
 
@@ -4055,9 +3875,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(OrExpression expression) {
         validateLogicalExpression(
@@ -4067,9 +3884,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         );
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(RangeVariableDeclaration expression) {
 
@@ -4111,9 +3925,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ResultVariable expression) {
 
@@ -4160,9 +3971,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SelectClause expression) {
 
@@ -4178,67 +3986,43 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SelectStatement expression) {
         validateAbstractSelectStatement(expression);
         super.visit(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SimpleFromClause expression) {
         validateAbstractFromClause(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SimpleSelectClause expression) {
         validateAbstractSelectClause(expression, isMultipleSubquerySelectItemsAllowed(expression));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SimpleSelectStatement expression) {
         validateSimpleSelectStatement(expression);
         super.visit(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SizeExpression expression) {
         validateAbstractSingleEncapsulatedExpression(expression, sizeExpressionHelper());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SqrtExpression expression) {
         validateAbstractSingleEncapsulatedExpression(expression, sqrtExpressionHelper());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(StateFieldPathExpression expression) {
         validatePathExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(StringLiteral expression) {
         if (!expression.hasCloseQuote()) {
@@ -4246,9 +4030,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SubExpression expression) {
 
@@ -4273,33 +4054,21 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SubstringExpression expression) {
         validateAbstractTripleEncapsulatedExpression(expression, substringExpressionHelper());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SubtractionExpression expression) {
         validateArithmeticExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SumFunction expression) {
         validateAggregateFunctionLocation(expression, sumFunctionHelper());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(TreatExpression expression) {
 
@@ -4313,9 +4082,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(TrimExpression expression) {
 
@@ -4387,9 +4153,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(TypeExpression expression) {
 
@@ -4402,17 +4165,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UnknownExpression expression) {
         // Nothing to validate and we don't want to validate its encapsulated expression
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UpdateClause expression) {
 
@@ -4461,9 +4218,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         super.visit(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UpdateItem expression) {
 
@@ -4506,26 +4260,17 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         super.visit(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UpdateStatement expression) {
         // Done directly by UpdateClause and WhereClause
         super.visit(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UpperExpression expression) {
         validateAbstractSingleEncapsulatedExpression(expression, upperExpressionHelper());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ValueExpression expression) {
 
@@ -4538,9 +4283,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(WhenClause expression) {
 
@@ -4585,9 +4327,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         super.visit(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(WhereClause expression) {
         validateAbstractConditionalClause(
@@ -4700,9 +4439,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
          */
         abstract boolean validateSeparator(CollectionExpression expression, int index);
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CollectionExpression expression) {
             validateSeparation(expression);
@@ -4718,9 +4454,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             super(validator);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public String[] arguments(T expression) {
             return ExpressionTools.EMPTY_STRING_ARRAY;
@@ -4743,17 +4476,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             return expression.hasFirstExpression();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public boolean hasLeftParenthesis(T expression) {
             return expression.hasLeftParenthesis();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public boolean hasRightParenthesis(T expression) {
             // If the second encapsulated expression is missing, then no need
@@ -4768,9 +4495,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                     expression.hasSecondExpression();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public String identifier(T expression) {
             return expression.getIdentifier();
@@ -4867,9 +4591,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             super(validator);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public String[] arguments(T expression) {
             return ExpressionTools.EMPTY_STRING_ARRAY;
@@ -4901,17 +4622,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
          */
         protected abstract String encapsulatedExpressionMissingKey(T expression);
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public boolean hasLeftParenthesis(T expression) {
             return expression.hasLeftParenthesis();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public boolean hasRightParenthesis(T expression) {
             // If the encapsulated expression is missing, then no need to
@@ -4921,9 +4636,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                     expression.hasRightParenthesis();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public final String identifier(T expression) {
             return expression.getIdentifier();
@@ -4973,9 +4685,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             super(validator);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public String[] arguments(T expression) {
             return ExpressionTools.EMPTY_STRING_ARRAY;
@@ -4995,17 +4704,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             return expression.hasFirstExpression();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public boolean hasLeftParenthesis(T expression) {
             return expression.hasLeftParenthesis();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public boolean hasRightParenthesis(T expression) {
             return !isRightParenthesisMissing(expression);
@@ -5112,9 +4815,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             super();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CollectionExpression expression) {
             this.expression = expression;
@@ -5132,9 +4832,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             super(validator);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         boolean validateSeparator(CollectionExpression expression, int index) {
             return expression.hasComma(index);
@@ -5152,9 +4849,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             super(validator);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         boolean validateSeparator(CollectionExpression expression, int index) {
             return !expression.hasComma(index);
@@ -5169,9 +4863,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
          */
         ComparisonExpression expression;
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(ComparisonExpression expression) {
             this.expression = expression;
@@ -5186,9 +4877,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
          */
         public boolean dateTime;
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(DateTime expression) {
             dateTime = true;
@@ -5213,9 +4901,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             super();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(NullExpression expression) {
             this.expression = expression;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,12 +23,15 @@ public class InsertWithNullTest extends TestCase {
         setDescription("Tests inserting an object with NULL XMLType fields.");
     }
 
+    @Override
     public void setup() {
     }
 
+    @Override
     public void reset() {
     }
 
+    @Override
     public void test() {
         Employee_XML emp = new Employee_XML();
         emp.firstName = "Fred";
@@ -40,6 +43,7 @@ public class InsertWithNullTest extends TestCase {
         uow.commit();
     }
 
+    @Override
     public void verify() {
     }
 }

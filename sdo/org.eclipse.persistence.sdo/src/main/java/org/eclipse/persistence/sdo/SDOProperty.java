@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -935,7 +935,7 @@ public class SDOProperty implements Property, Serializable {
      * @return id Property or null
      */
     private SDOProperty getIDProp(Type aType) {
-        return (SDOProperty)aType.getProperty((String)((SDOType)aType).get(SDOConstants.ID_PROPERTY));
+        return (SDOProperty)aType.getProperty((String) aType.get(SDOConstants.ID_PROPERTY));
     }
 
     private DatabaseMapping buildXMLCollectionReferenceMapping(String mappingUri) {

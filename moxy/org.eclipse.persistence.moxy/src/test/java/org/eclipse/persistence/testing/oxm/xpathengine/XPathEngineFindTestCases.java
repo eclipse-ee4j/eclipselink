@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,6 +40,7 @@ public class XPathEngineFindTestCases extends TestCase {
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/oxm/xpathengine/AddressBook.xml");
 
@@ -47,7 +48,7 @@ public class XPathEngineFindTestCases extends TestCase {
         builderFactory.setIgnoringElementContentWhitespace(true);
         DocumentBuilder parser = builderFactory.newDocumentBuilder();
         controlDocument = parser.parse(inputStream);
-        searchNode = (Element)controlDocument.getDocumentElement();
+        searchNode = controlDocument.getDocumentElement();
     }
 
     // ==========================================================================================
@@ -185,7 +186,7 @@ public class XPathEngineFindTestCases extends TestCase {
         builderFactory.setIgnoringElementContentWhitespace(true);
         DocumentBuilder parser = builderFactory.newDocumentBuilder();
         Document controlDocumentNS = parser.parse(inputStreamNS);
-        Element searchNodeNS = (Element)controlDocumentNS.getDocumentElement();
+        Element searchNodeNS = controlDocumentNS.getDocumentElement();
 
         XMLField field = new XMLField("address/addressee/@testns:test");
         NamespaceResolver resolver = new NamespaceResolver();

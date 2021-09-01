@@ -62,17 +62,11 @@ public class SimpleSelectClauseStateObject extends AbstractSelectClauseStateObje
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
@@ -96,25 +90,16 @@ public class SimpleSelectClauseStateObject extends AbstractSelectClauseStateObje
         return builder;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SimpleSelectClause getExpression() {
         return (SimpleSelectClause) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SimpleFromClauseStateObject getFromClause() {
         return (SimpleFromClauseStateObject) super.getFromClause();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SimpleSelectStatementStateObject getParent() {
         return (SimpleSelectStatementStateObject) super.getParent();
@@ -129,17 +114,11 @@ public class SimpleSelectClauseStateObject extends AbstractSelectClauseStateObje
         return stateObject;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean hasSelectItem() {
         return stateObject != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -151,9 +130,6 @@ public class SimpleSelectClauseStateObject extends AbstractSelectClauseStateObje
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void parse(String jpqlFragment) {
         StateObject stateObject = buildStateObject(jpqlFragment, SimpleSelectExpressionBNF.ID);
@@ -183,9 +159,6 @@ public class SimpleSelectClauseStateObject extends AbstractSelectClauseStateObje
         firePropertyChanged(SELECT_ITEM_PROPERTY, oldStateObject, stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
 

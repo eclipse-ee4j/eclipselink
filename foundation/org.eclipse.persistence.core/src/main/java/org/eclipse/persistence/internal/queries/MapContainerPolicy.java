@@ -283,7 +283,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      */
     @Override
     public boolean compareKeys(Object sourceValue, AbstractSession session) {
-        if (((UnitOfWorkImpl)session).isClassReadOnly(sourceValue.getClass())) {
+        if (session.isClassReadOnly(sourceValue.getClass())) {
             return true;
         }
         Object backUpVersion = ((UnitOfWorkImpl)session).getBackupClone(sourceValue, getElementDescriptor());

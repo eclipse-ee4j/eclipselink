@@ -37,7 +37,7 @@ public class NoSuchMethodWhileConvertingToMethodTest extends ExceptionTest {
     @Override
     protected void setup() {
         expectedException = DescriptorException.noSuchMethodWhileConvertingToMethod(null, null, null);
-        orgDescriptor = ((DatabaseSession)getSession()).getDescriptor(org.eclipse.persistence.testing.tests.validation.EmployeeWithProblems.class);
+        orgDescriptor = getSession().getDescriptor(org.eclipse.persistence.testing.tests.validation.EmployeeWithProblems.class);
         orgIntegrityChecker = getSession().getIntegrityChecker();
         getSession().setIntegrityChecker(new IntegrityChecker());
         getSession().getIntegrityChecker().dontCatchExceptions();
@@ -48,7 +48,7 @@ public class NoSuchMethodWhileConvertingToMethodTest extends ExceptionTest {
 
     @Override
     public void reset() {
-        ((DatabaseSession)getSession()).getDescriptors().remove(org.eclipse.persistence.testing.tests.validation.EmployeeWithProblems.class);
+        getSession().getDescriptors().remove(org.eclipse.persistence.testing.tests.validation.EmployeeWithProblems.class);
         if (orgDescriptor != null) {
             ((DatabaseSession)getSession()).addDescriptor(orgDescriptor);
         }

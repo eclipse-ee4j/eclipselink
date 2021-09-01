@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,7 @@ public class ClassGenWithInvalidClassNameFormatTestCases extends SDOClassGenTest
         TestRunner.main(arguments);
     }
 
+    @Override
     protected List getControlFileNames() {
         ArrayList<String> controlFileNames = new ArrayList<String>();
         controlFileNames.add("Company.java");
@@ -48,15 +49,18 @@ public class ClassGenWithInvalidClassNameFormatTestCases extends SDOClassGenTest
         return controlFileNames;
     }
 
+    @Override
     protected String getSourceFolder() {
         // 20070710: generate at root instead of internal folder
         return "./invalidtypename";
     }
 
+    @Override
     protected String getControlSourceFolder() {
         return "org/eclipse/persistence/testing/sdo/helper/classgen/invalidtypename/";
     }
 
+    @Override
     public void testClassGen() throws Exception {
         //compileFiles(getControlSourceFolder() + "/" + getPackageDir());
         compileFiles();
@@ -71,6 +75,7 @@ public class ClassGenWithInvalidClassNameFormatTestCases extends SDOClassGenTest
         //compareFiles(getControlFiles(), getGeneratedFiles(classGenerator.getGeneratedBuffers()));
     }
 
+    @Override
     protected String getSchemaName() {
         return "org/eclipse/persistence/testing/sdo/schemas/classgen/CompanyWithSequenceCSWithDuplicateInvalidClassName.xsd";
     }

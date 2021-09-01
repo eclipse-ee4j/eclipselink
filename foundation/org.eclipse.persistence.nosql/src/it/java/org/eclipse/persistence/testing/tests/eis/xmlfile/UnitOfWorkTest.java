@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ public class UnitOfWorkTest extends TestCase {
         setDescription("Testing unit of work with the XML file adapter.");
     }
 
+    @Override
     public void setup() {
         // Reset the databse (delete xml file).
         XMLInteraction deleteCall = new XMLInteraction();
@@ -42,6 +43,7 @@ public class UnitOfWorkTest extends TestCase {
         getSession().executeNonSelectingCall(deleteCall);
     }
 
+    @Override
     public void test() throws Exception {
         Session session = getSession();
         session.getIdentityMapAccessor().initializeIdentityMaps();

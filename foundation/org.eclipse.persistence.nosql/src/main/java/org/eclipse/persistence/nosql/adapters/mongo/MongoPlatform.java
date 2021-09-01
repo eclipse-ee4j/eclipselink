@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -468,11 +468,11 @@ public class MongoPlatform extends EISPlatform {
                         || ((QueryKeyExpression)queryKeyExpression.getBaseExpression()).getMapping().isAbstractCompositeDirectCollectionMapping())) {
                     queryKeyExpression = (QueryKeyExpression)queryKeyExpression.getBaseExpression();
                     if (queryKeyExpression.getMapping().isAbstractCompositeObjectMapping()) {
-                        name = ((AbstractCompositeObjectMapping)queryKeyExpression.getMapping()).getField().getName() + "." + name;
+                        name = queryKeyExpression.getMapping().getField().getName() + "." + name;
                     } else if (queryKeyExpression.getMapping().isAbstractCompositeCollectionMapping()) {
-                        name = ((AbstractCompositeCollectionMapping)queryKeyExpression.getMapping()).getField().getName() + "." + name;
+                        name = queryKeyExpression.getMapping().getField().getName() + "." + name;
                     } else if (queryKeyExpression.getMapping().isAbstractCompositeDirectCollectionMapping()) {
-                        name = ((AbstractCompositeDirectCollectionMapping)queryKeyExpression.getMapping()).getField().getName() + "." + name;
+                        name = queryKeyExpression.getMapping().getField().getName() + "." + name;
                     }
                 }
                 DatabaseField field = new DatabaseField();

@@ -19,6 +19,8 @@ import commonj.sdo.Property;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Calendar;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -61,7 +63,7 @@ public class SDODataObjectGetShortConversionWithPathTest extends SDODataObjectCo
 
         dataObject_a.setByte(propertyPath_a_b_c, by);// add it to instance list
 
-        this.assertEquals((short)by, dataObject_a.getShort(propertyPath_a_b_c));
+        assertEquals(by, dataObject_a.getShort(propertyPath_a_b_c));
     }
 
     //3. purpose: getShort with Undefined Byte Property
@@ -106,7 +108,7 @@ public class SDODataObjectGetShortConversionWithPathTest extends SDODataObjectCo
         double db = 12;
         dataObject_a.setDouble(propertyPath_a_b_c, db);// add it to instance list
 
-        this.assertEquals((short)db, dataObject_a.getShort(propertyPath_a_b_c));
+        assertEquals((short)db, dataObject_a.getShort(propertyPath_a_b_c));
     }
 
     //6. purpose: getShort with Undefined Double Property
@@ -136,7 +138,7 @@ public class SDODataObjectGetShortConversionWithPathTest extends SDODataObjectCo
         float fl = 12;
         dataObject_a.setFloat(propertyPath_a_b_c, fl);// add it to instance list
 
-        this.assertEquals((short)fl, dataObject_a.getShort(propertyPath_a_b_c));
+        assertEquals((short)fl, dataObject_a.getShort(propertyPath_a_b_c));
     }
 
     //8. purpose: getShort with Undefined float Property
@@ -166,7 +168,7 @@ public class SDODataObjectGetShortConversionWithPathTest extends SDODataObjectCo
         int in = 12;
         dataObject_a.setInt(propertyPath_a_b_c, in);// add it to instance list
 
-        this.assertEquals((short)in, dataObject_a.getShort(propertyPath_a_b_c));
+        assertEquals((short)in, dataObject_a.getShort(propertyPath_a_b_c));
     }
 
     //10. purpose: getShort with Undefined int Property
@@ -196,7 +198,7 @@ public class SDODataObjectGetShortConversionWithPathTest extends SDODataObjectCo
         long lg = 12;
         dataObject_a.setLong(propertyPath_a_b_c, lg);// add it to instance list
 
-        this.assertEquals((short)lg, dataObject_a.getShort(propertyPath_a_b_c));
+        assertEquals((short)lg, dataObject_a.getShort(propertyPath_a_b_c));
     }
 
     //12. purpose: getShort with Undefined long Property
@@ -226,7 +228,7 @@ public class SDODataObjectGetShortConversionWithPathTest extends SDODataObjectCo
         short shr = 12;
         dataObject_a.setShort(propertyPath_a_b_c, shr);// add it to instance list
 
-        this.assertEquals(shr, dataObject_a.getShort(propertyPath_a_b_c));
+        assertEquals(shr, dataObject_a.getShort(propertyPath_a_b_c));
     }
 
     //14. purpose: getShort with Undefined short Property
@@ -257,7 +259,7 @@ public class SDODataObjectGetShortConversionWithPathTest extends SDODataObjectCo
         Short s_d = Short.valueOf(str);
         dataObject_a.setString(propertyPath_a_b_c, str);// add it to instance list
 
-        this.assertEquals(s_d.shortValue(), dataObject_a.getShort(propertyPath_a_b_c));
+        assertEquals(s_d.shortValue(), dataObject_a.getShort(propertyPath_a_b_c));
     }
 
     //16. purpose: getShort with Undefined string Property

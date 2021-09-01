@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +17,8 @@ package org.eclipse.persistence.testing.oxm.xmlmarshaller;
 import java.io.StringWriter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.oxm.XMLContext;
@@ -45,6 +47,7 @@ public class XMLContextConstructorUsingXMLSessionConfigLoader extends OXTestCase
         super(name);
     }
 
+    @Override
     public void setUp()
     {
       SessionManager.setManager(new SessionManager());
@@ -107,7 +110,7 @@ public class XMLContextConstructorUsingXMLSessionConfigLoader extends OXTestCase
         try {
             //XMLSessionConfigLoader loader = new XMLSessionConfigLoader(XML_RESOURCE_INVALID);
             XMLContext context = new XMLContext(sessionName, XML_RESOURCE_INVALID);
-            this.fail("ValidationException should be thrown.");
+            fail("ValidationException should be thrown.");
         } catch (ValidationException e) {
             //e.printStackTrace();
         }

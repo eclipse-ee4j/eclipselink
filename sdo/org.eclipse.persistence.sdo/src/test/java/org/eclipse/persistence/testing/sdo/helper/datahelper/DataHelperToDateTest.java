@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,7 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import junit.framework.TestCase;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.oxm.XMLConstants;
 
@@ -45,7 +46,7 @@ public class DataHelperToDateTest extends DataHelperTestCases {
         controlCalendar.set(Calendar.MONTH, Calendar.MAY);
         Date controlDate = controlCalendar.getTime();
         Date aDate = dataHelper.toDate("2001-05");
-        this.assertEquals(controlDate, aDate);
+        assertEquals(controlDate, aDate);
     }
 
     public void testToDateWithGYear() {
@@ -55,7 +56,7 @@ public class DataHelperToDateTest extends DataHelperTestCases {
         controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Date controlDate = controlCalendar.getTime();
         Date aDate = dataHelper.toDate("2000");
-        this.assertEquals(controlDate, aDate);
+        assertEquals(controlDate, aDate);
     }
 
     public void testToDateWithGMonthDay() {
@@ -66,7 +67,7 @@ public class DataHelperToDateTest extends DataHelperTestCases {
         controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Date controlDate = controlCalendar.getTime();
         Date aDate = dataHelper.toDate("--07-04");
-        this.assertEquals(controlDate, aDate);
+        assertEquals(controlDate, aDate);
     }
 
     public void testToDateWithGMonth() {
@@ -76,7 +77,7 @@ public class DataHelperToDateTest extends DataHelperTestCases {
         controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Date controlDate = controlCalendar.getTime();
         Date aDate = dataHelper.toDate("--11");
-        this.assertEquals(controlDate, aDate);
+        assertEquals(controlDate, aDate);
     }
 
     public void testToDateWithGDay() {
@@ -86,7 +87,7 @@ public class DataHelperToDateTest extends DataHelperTestCases {
         controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Date controlDate = controlCalendar.getTime();
         Date aDate = dataHelper.toDate("---15");
-        this.assertEquals(controlDate, aDate);
+        assertEquals(controlDate, aDate);
     }
 
     public void testToDateWithTime() {
@@ -99,7 +100,7 @@ public class DataHelperToDateTest extends DataHelperTestCases {
         controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Date controlDate = controlCalendar.getTime();
         Date aDate = dataHelper.toDate("01:21:12.037");
-        this.assertEquals(controlDate, aDate);
+        assertEquals(controlDate, aDate);
     }
 
     public void testToDateWithDate() {
@@ -111,7 +112,7 @@ public class DataHelperToDateTest extends DataHelperTestCases {
         controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Date controlDate = controlCalendar.getTime();
         Date aDate = dataHelper.toDate("2001-01-01");
-        this.assertEquals(controlDate, aDate);
+        assertEquals(controlDate, aDate);
     }
 
     public void testToDateWithDateTime() {
@@ -127,7 +128,7 @@ public class DataHelperToDateTest extends DataHelperTestCases {
         controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Date controlDate = controlCalendar.getTime();
         Date aDate = dataHelper.toDate("2001-10-01T00:00:01.001");
-        this.assertEquals(controlDate, aDate);
+        assertEquals(controlDate, aDate);
     }
 
     public void testToDateWithDuration() {
@@ -143,7 +144,7 @@ public class DataHelperToDateTest extends DataHelperTestCases {
         controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Date controlDate = controlCalendar.getTime();
         Date aDate = dataHelper.toDate("P12Y10M2DT0H40M27.087S");
-        this.assertEquals(controlDate, aDate);
+        assertEquals(controlDate, aDate);
     }
 
     public void testToDateBeforeGregorianChange() {
@@ -187,7 +188,7 @@ public class DataHelperToDateTest extends DataHelperTestCases {
     public void testToCalendaWithInvalidInput() {
         try {
             Date aCalendar = dataHelper.toDate("--2000");
-            this.fail();
+            fail();
         } catch (IllegalArgumentException e) {
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -66,7 +66,7 @@ public class ChangeSummaryUndoChangeTest extends ChangeSummaryTestCases {
         assertNotNull(containedDataObject.getChangeSummary());
         root.unset(rootProperty);// unset property
         // verify CS is null on removed trees
-        assertChangeSummaryStatusIfClearedIfCSIsAncestor((DataObject)containedDataObject, true);
+        assertChangeSummaryStatusIfClearedIfCSIsAncestor(containedDataObject, true);
 
         assertNotNull(aCurrentValueStore);
         ValueStore anOriginalValueStoreAfterOperation =(ValueStore)changeSummary.getOriginalValueStores().get(root);
@@ -76,7 +76,7 @@ public class ChangeSummaryUndoChangeTest extends ChangeSummaryTestCases {
         assertTrue(anOriginalValueStoreAfterOperation == aCurrentValueStore);
 
         assertFalse(root.isSet(rootProperty));
-        assertNull((SDODataObject)containedDataObject.getContainer());// make sure it is changed
+        assertNull(containedDataObject.getContainer());// make sure it is changed
         // undo and verify equality
         assertUndoChangesEqualToOriginal(changeSummary, root, original);
 
@@ -109,7 +109,7 @@ public class ChangeSummaryUndoChangeTest extends ChangeSummaryTestCases {
         // operation on complex child of root
         aChild.detach();
         // verify CS is null on removed trees
-        assertChangeSummaryStatusIfClearedIfCSIsAncestor((DataObject)aChild, true);
+        assertChangeSummaryStatusIfClearedIfCSIsAncestor(aChild, true);
 
 
         assertNotNull(aCurrentValueStore);
@@ -120,7 +120,7 @@ public class ChangeSummaryUndoChangeTest extends ChangeSummaryTestCases {
         assertTrue(anOriginalValueStoreAfterOperation == aCurrentValueStore);
 
         assertFalse(root.isSet(rootProperty));
-        assertNull((SDODataObject)containedDataObject.getContainer());// make sure it is changed
+        assertNull(containedDataObject.getContainer());// make sure it is changed
 
         // undo and verify equality
         assertUndoChangesEqualToOriginal(changeSummary, root, original);

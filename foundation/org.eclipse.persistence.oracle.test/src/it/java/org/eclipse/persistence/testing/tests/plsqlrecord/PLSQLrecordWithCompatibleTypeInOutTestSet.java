@@ -103,7 +103,7 @@ public class PLSQLrecordWithCompatibleTypeInOutTestSet  {
 
         project.getDescriptor(PLSQLEmployeeType.class).getQueryManager().
             addQuery("PLSQLrecordWithCompatibleTypeInOut", query);
-        Project projectToXml = (Project)project.clone();
+        Project projectToXml = project.clone();
         // trim off login 'cause it changes under test - this way, a comparison
         // can be done to a control document
         projectToXml.setDatasourceLogin(null);
@@ -277,7 +277,7 @@ public class PLSQLrecordWithCompatibleTypeInOutTestSet  {
         };
         Struct struct = null;
         try {
-            struct = ((Oracle8Platform)s.getPlatform()).createStruct(
+            struct = s.getPlatform().createStruct(
                 "EMP_TYPE", attributes, ((DatabaseSessionImpl)s).getAccessor().getConnection());
         }
         catch (SQLException e1) {

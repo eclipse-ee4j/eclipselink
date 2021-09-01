@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,6 +57,7 @@ public class JMSSetupHelper extends BroadcastSetupHelper {
     // however in Oc4jJGroups case the only (local and external) connection is not removed
     // unless message sending fails.
 
+    @Override
     public boolean isLocalConnectionRemovedOnListeningError() {
         return true;
     }
@@ -64,6 +65,7 @@ public class JMSSetupHelper extends BroadcastSetupHelper {
     // Returns errorCode of RemoteCommandManagerException thrown in case
     // creation of localConnection has failed.
 
+    @Override
     public int getRcmExceptionErrorCodeOnFailureToCreateLocalConnection() {
         return RemoteCommandManagerException.ERROR_CREATING_LOCAL_JMS_CONNECTION;
     }
@@ -71,6 +73,7 @@ public class JMSSetupHelper extends BroadcastSetupHelper {
     // JMSTopicTransportManager has separate connection for sending (external) and receiving (local) messages.
     // Oc4jJGroups uses a single connection for both sending and receiving messages.
 
+    @Override
     public boolean isLocalConnectionAlsoExternalConnection() {
         return false;
     }
@@ -99,6 +102,7 @@ public class JMSSetupHelper extends BroadcastSetupHelper {
 
     // returns array of two objects: the first is factory, the second is topic
 
+    @Override
     protected Object[] internalCreateFactory() throws Exception {
         updateDbSettings();
         if (oracleDataSource != null) {
@@ -125,14 +129,17 @@ public class JMSSetupHelper extends BroadcastSetupHelper {
         return new Object[] { topicConnectionFactory, topic };
     }
 
+    @Override
     protected void internalStartFactory() throws Exception {
         startInDb();
     }
 
+    @Override
     protected void internalStopFactory() throws Exception {
         stopInDb();
     }
 
+    @Override
     protected void internalDestroyFactory() throws Exception {
         try {
             stopInDb();
@@ -148,6 +155,7 @@ public class JMSSetupHelper extends BroadcastSetupHelper {
         }
     }
 
+    @Override
     protected void createTransportManager(RemoteCommandManager rcm) {
         JMSTopicTransportManager tm = new JMSTopicTransportManager(rcm);
         Properties props = new Properties();
@@ -220,6 +228,7 @@ public class JMSSetupHelper extends BroadcastSetupHelper {
 
     // Sends an arbitrary message to speed up shut down of listening threads.
 
+    @Override
     protected void sendMessageToStopListenerThreads() throws Exception {
         Context context = new InitialContext(CONTEXT_PROPERTIES);
         TopicConnectionFactory topicConnectionFactory = (TopicConnectionFactory)context.lookup(this.factoryJndiName);
@@ -235,6 +244,7 @@ public class JMSSetupHelper extends BroadcastSetupHelper {
         }
     }
 
+    @Override
     protected void createExternalConnection(AbstractSession session) {
         ((JMSTopicTransportManager)session.getCommandManager().getTransportManager()).createExternalConnection();
     }

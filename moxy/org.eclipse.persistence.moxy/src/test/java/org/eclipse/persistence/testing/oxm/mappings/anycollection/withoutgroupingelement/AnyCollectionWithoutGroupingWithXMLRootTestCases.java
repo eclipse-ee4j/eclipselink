@@ -31,7 +31,7 @@ public class AnyCollectionWithoutGroupingWithXMLRootTestCases extends XMLMapping
         super(name);
         Project project = new AnyCollectionWithGroupingElementProject();
 
-        ((XMLAnyCollectionMapping)((XMLDescriptor)project.getDescriptor(Root.class)).getMappingForAttributeName("any")).setUseXMLRoot(true);
+        ((XMLAnyCollectionMapping) project.getDescriptor(Root.class).getMappingForAttributeName("any")).setUseXMLRoot(true);
 
         XMLSchemaClassPathReference schemaRef = new XMLSchemaClassPathReference();
         schemaRef.setSchemaContext("/childType");
@@ -45,6 +45,7 @@ public class AnyCollectionWithoutGroupingWithXMLRootTestCases extends XMLMapping
         setControlDocument("org/eclipse/persistence/testing/oxm/mappings/anycollection/withoutgroupingelement/complex_children_xmlroot.xml");
     }
 
+    @Override
     public Object getControlObject() {
         Root root = new Root();
         Vector any = new Vector();

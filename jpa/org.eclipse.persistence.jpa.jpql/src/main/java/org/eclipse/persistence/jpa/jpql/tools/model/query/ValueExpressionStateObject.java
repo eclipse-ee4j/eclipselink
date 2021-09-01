@@ -56,33 +56,21 @@ public class ValueExpressionStateObject extends EncapsulatedIdentificationVariab
         super(parent, identificationVariable);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ValueExpression getExpression() {
         return (ValueExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return VALUE;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected IType resolveType() {
 

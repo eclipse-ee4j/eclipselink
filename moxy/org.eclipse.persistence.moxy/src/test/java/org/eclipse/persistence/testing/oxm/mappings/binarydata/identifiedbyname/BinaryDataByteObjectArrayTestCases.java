@@ -44,6 +44,7 @@ public class BinaryDataByteObjectArrayTestCases extends XMLWithJSONMappingTestCa
         setProject(new BinaryDataByteObjectArrayProject(namespaceResolver));
     }
 
+     @Override
      protected Object getControlObject() {
             EmployeeWithByteObjectArray emp = EmployeeWithByteObjectArray.example1();
             String s = "THISISATEXTSTRINGFORTHISDATAHANDLER";
@@ -58,12 +59,13 @@ public class BinaryDataByteObjectArrayTestCases extends XMLWithJSONMappingTestCa
             return emp;
         }
 
+      @Override
       public void setUp() throws Exception {
             super.setUp();
             attachmentUnmarshaller = new MyAttachmentUnmarshaller();
             DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");
 
-            attachmentUnmarshaller.attachments.put(attachmentUnmarshaller.ATTACHMENT_TEST_ID, data);
+            attachmentUnmarshaller.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, data);
             xmlUnmarshaller.setAttachmentUnmarshaller(attachmentUnmarshaller);
 
         }
@@ -75,6 +77,7 @@ public class BinaryDataByteObjectArrayTestCases extends XMLWithJSONMappingTestCa
         return marshaller;
     }
 
+        @Override
         public void xmlToObjectTest(Object testObject) throws Exception {
             super.xmlToObjectTest(testObject);
 

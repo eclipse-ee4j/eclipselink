@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,10 +28,12 @@ public class DefineAndGenerateAppInfoTNSTestCases extends DefineAndGenerateAppIn
         super(name);
     }
 
+    @Override
     public String getControlGeneratedFileName() {
         return "org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderAppInfoWTNSGenerated.xsd";
     }
 
+    @Override
     public String getSchemaToDefine() {
         return "org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderAppInfoWTNS.xsd";
     }
@@ -40,6 +42,7 @@ public class DefineAndGenerateAppInfoTNSTestCases extends DefineAndGenerateAppIn
         TestRunner.run(DefineAndGenerateAppInfoTNSTestCases.class);
     }
 
+    @Override
     public List getControlTypes() {
         List types = new ArrayList();
         String uri = "theTNS";
@@ -230,10 +233,12 @@ public class DefineAndGenerateAppInfoTNSTestCases extends DefineAndGenerateAppIn
         return types;
     }
 
+    @Override
     protected String getUri() {
         return "theTNS";
     }
 
+    @Override
     protected String getTestControlString() {
         String controlString = "<xsd:appinfo source=\"itemTest\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" + "\n" + "   <someTag xmlns=\"theTNS\">blah blah itemTest</someTag>" + "\n" + "</xsd:appinfo>" + "\n" + "<xsd:appinfo source=\"itemTest\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" + "\n" + "   <anotherTag xmlns=\"theTNS\">blah blah itemTest</anotherTag>" + "\n" + "</xsd:appinfo>";
         return controlString;

@@ -471,7 +471,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
             if(Double.NEGATIVE_INFINITY == ((Double)sourceObject)){
                 return Constants.NEGATIVE_INFINITY;
             }
-            return ((Double)sourceObject).toString();
+            return sourceObject.toString();
         }
         if(sourceObject instanceof Float){
             if(Float.POSITIVE_INFINITY == ((Float)sourceObject)){
@@ -480,7 +480,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
             if(Float.NEGATIVE_INFINITY == ((Float)sourceObject)){
                 return Constants.NEGATIVE_INFINITY;
             }
-            return ((Float)sourceObject).toString();
+            return sourceObject.toString();
         }
         // Bug 21561562 - use plain, non-scientific notation for BigDecimal->String conversion
         if (sourceObject instanceof java.math.BigDecimal) {
@@ -533,7 +533,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
             if(Double.NEGATIVE_INFINITY == ((Double)sourceObject)){
                 return Constants.NEGATIVE_INFINITY;
             }
-            return ((Double)sourceObject).toString();
+            return sourceObject.toString();
         }
         if(sourceObject instanceof Float){
             if(Float.POSITIVE_INFINITY == ((Float)sourceObject)){
@@ -542,7 +542,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
             if(Float.NEGATIVE_INFINITY == ((Float)sourceObject)){
                 return Constants.NEGATIVE_INFINITY;
             }
-            return ((Float)sourceObject).toString();
+            return sourceObject.toString();
         }
         // Bug 21561562 - use plain, non-scientific notation for BigDecimal->String conversion
         if (sourceObject instanceof java.math.BigDecimal) {

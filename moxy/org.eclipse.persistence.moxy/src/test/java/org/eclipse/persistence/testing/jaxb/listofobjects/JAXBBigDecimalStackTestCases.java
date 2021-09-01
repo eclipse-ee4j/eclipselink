@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,6 +38,7 @@ public class JAXBBigDecimalStackTestCases extends JAXBListOfObjectsTestCases {
         init();
     }
 
+    @Override
     protected Type getTypeToUnmarshalTo() throws Exception {
         Field fld = getClass().getField("test");
         return fld.getGenericType();
@@ -59,6 +60,7 @@ public class JAXBBigDecimalStackTestCases extends JAXBListOfObjectsTestCases {
         return namespaces;
     }
 
+    @Override
     protected Object getControlObject() {
         Stack<BigDecimal> bigDecimals = new Stack<BigDecimal>();
         bigDecimals.push(new BigDecimal("2"));
@@ -74,6 +76,7 @@ public class JAXBBigDecimalStackTestCases extends JAXBListOfObjectsTestCases {
     }
 
 
+    @Override
     public List< InputStream> getControlSchemaFiles(){
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/bigDecimalStack.xsd");
 
@@ -82,6 +85,7 @@ public class JAXBBigDecimalStackTestCases extends JAXBListOfObjectsTestCases {
         return controlSchema;
     }
 
+    @Override
     protected String getNoXsiTypeControlResourceName() {
         return XML_RESOURCE_NO_XSI_TYPE;
     }

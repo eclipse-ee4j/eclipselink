@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class InheritanceOverrideTestCases extends JAXBWithJSONTestCases {
         setControlJSON("org/eclipse/persistence/testing/jaxb/inheritance/override.json");
     }
 
+    @Override
     public Object getControlObject() {
         Root r = new Root();
         Subclass s = new Subclass();

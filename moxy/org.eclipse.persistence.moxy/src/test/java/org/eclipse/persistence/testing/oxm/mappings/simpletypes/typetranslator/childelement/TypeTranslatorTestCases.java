@@ -34,6 +34,7 @@ public class TypeTranslatorTestCases extends XMLMappingTestCases {
         setProject(new EmployeeProject());
     }
 
+    @Override
     protected Object getControlObject() {
         Employee employee = new Employee();
         employee.setName(CONTROL_EMPLOYEE_NAME);

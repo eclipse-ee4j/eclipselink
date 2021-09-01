@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -597,7 +597,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
 
     /**
      * Build list of name patterns separated by vertical bar.
-     * @param namePatterns {@see List} of name patterns.
+     * @param namePatterns {@link List} of name patterns.
      * @return String containing list of name patterns separated by vertical bar.
      */
     private static String buildNamePatternsList(List<String> namePatterns) {

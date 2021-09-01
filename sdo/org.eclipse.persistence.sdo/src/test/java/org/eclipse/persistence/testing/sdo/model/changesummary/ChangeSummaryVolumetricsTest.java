@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -79,8 +79,8 @@ public class ChangeSummaryVolumetricsTest extends ChangeSummaryTestCases {
     // perform a move of a cs root (delete CCB) to another cs as child  and observe the old* instance variables
     public void testOldSettingsAfterMoveCSDeepDataObjectFromOneOwnerToAnotherDiffChangeSummary() {
         buildDeepTree();
-        changeSummaryB = (SDOChangeSummary)dataObjectB.getChangeSummary();
-        changeSummaryC = (SDOChangeSummary)dataObjectC.getChangeSummary();
+        changeSummaryB = dataObjectB.getChangeSummary();
+        changeSummaryC = dataObjectC.getChangeSummary();
         changeSummaryB.beginLogging();
         changeSummaryC.beginLogging();
 
@@ -97,6 +97,7 @@ public class ChangeSummaryVolumetricsTest extends ChangeSummaryTestCases {
         }
     }
 
+    @Override
     public void setUp() {
         super.setUp();
         SDOType changeSummaryType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY);
@@ -153,8 +154,8 @@ public class ChangeSummaryVolumetricsTest extends ChangeSummaryTestCases {
         propertyB_children = new SDOProperty[NUM_B_LEVELS];
         dataObjectB_children = new SDODataObject[NUM_B_LEVELS];
 
-        dataObjectB = (SDODataObject)root.createDataObject(rootContainingPropertyB, type_B);
-        dataObjectC = (SDODataObject)root.createDataObject(rootContainingPropertyC, type_C);
+        dataObjectB = root.createDataObject(rootContainingPropertyB, type_B);
+        dataObjectC = root.createDataObject(rootContainingPropertyC, type_C);
 
         // setup object array
         for (int i = 0; i < NUM_B_LEVELS; i++) {
@@ -166,10 +167,10 @@ public class ChangeSummaryVolumetricsTest extends ChangeSummaryTestCases {
             propertyB_children[i] = (SDOProperty)typeB_children[i].getDeclaredPropertiesMap().get("propertyD" + String.valueOf(i));
         }
 
-        dataObjectB_children[0] = (SDODataObject)dataObjectB.createDataObject(propertyB, typeB_children[0]);
+        dataObjectB_children[0] = dataObjectB.createDataObject(propertyB, typeB_children[0]);
 
         for (int i = 1; i < NUM_B_LEVELS; i++) {
-            dataObjectB_children[i] = (SDODataObject)dataObjectB_children[i - 1].createDataObject(propertyB_children[i - 1], typeB_children[i]);
+            dataObjectB_children[i] = dataObjectB_children[i - 1].createDataObject(propertyB_children[i - 1], typeB_children[i]);
         }
 
         //dataObjectD = (SDODataObject)dataObjectB.createDataObject(propertyB, type_D);

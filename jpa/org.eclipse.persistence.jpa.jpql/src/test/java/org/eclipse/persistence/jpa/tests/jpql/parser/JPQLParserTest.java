@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -203,7 +203,6 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
      * @param expressionTester The tester used to verify the parsed tree is correctly representing the
      * JPQL query
      * @param jpqlGrammar The {@link JPQLGrammar} used to determine how to parse the JPQL query
-     * @param formatter This formatter is used to personalized the formatting of the JPQL query
      * before it is used to test the generated string
      */
     protected void testInvalidQuery(String jpqlQuery,
@@ -241,7 +240,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
      * @param jpqlQuery The JPQL query to parse and to test the parsed tree representation
      * @param expressionTester The tester used to verify the parsed tree is correctly representing the
      * JPQL query
-     * @param queryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.parser.
+     * @param jpqlQueryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.parser.
      * JPQLQueryBNF JPQLQueryBNF}
      */
     protected void testInvalidQuery(String jpqlQuery,
@@ -260,7 +259,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
      * @param jpqlQuery The JPQL query to parse and to test the parsed tree representation
      * @param expressionTester The tester used to verify the parsed tree is correctly representing the
      * JPQL query
-     * @param queryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.parser.
+     * @param jpqlQueryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.parser.
      * JPQLQueryBNF JPQLQueryBNF}
      * @param formatter This formatter is used to personalized the formatting of the JPQL query
      * before it is used to test the generated string
@@ -352,7 +351,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
      * @param jpqlQuery The JPQL query to parse and to test the parsed tree representation
      * @param expressionTester The tester used to verify the parsed tree is correctly representing the
      * JPQL query
-     * @param queryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.parser.
+     * @param jpqlQueryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.parser.
      * JPQLQueryBNF JPQLQueryBNF}
      * @param formatter This formatter is used to personalized the formatting of the JPQL query
      * before it is used to test the generated string
@@ -375,7 +374,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
      * @param expressionTester The tester used to verify the parsed tree is correctly representing the
      * JPQL query
      * @param jpqlGrammar The {@link JPQLGrammar} used to determine how to parse the JPQL query
-     * @param queryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.parser.
+     * @param jpqlQueryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.parser.
      * JPQLQueryBNF JPQLQueryBNF}
      * @param formatter This formatter is used to personalized the formatting of the JPQL query
      * before it is used to test the generated string
@@ -433,8 +432,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
      * @param jpqlQuery The JPQL query to parse and to test the parsed tree representation
      * @param expressionTester The tester used to verify the parsed tree is correctly representing the
      * JPQL query
-     * @param queryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.parser.
-     * JPQLQueryBNF JPQLQueryBNF}
+     * @param jpqlQueryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF JPQLQueryBNF}
      */
     protected void testQuery(String jpqlQuery,
                              ExpressionTester expressionTester,
@@ -456,8 +454,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
      * @param jpqlQuery The JPQL query to parse and to test the parsed tree representation
      * @param expressionTester The tester used to verify the parsed tree is correctly representing the
      * JPQL query
-     * @param queryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.parser.
-     * JPQLQueryBNF JPQLQueryBNF}
+     * @param jpqlQueryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF JPQLQueryBNF}
      * @param formatter This formatter is used to personalized the formatting of the JPQL query
      * before it is used to test the generated string
      */
@@ -477,7 +474,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
      * @param jpqlQuery The JPQL query to parse and to test the parsed tree representation
      * @param expressionTester The tester used to verify the parsed tree is correctly representing the
      * JPQL query
-     * @param queryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.parser.
+     * @param jpqlQueryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.parser.
      * JPQLQueryBNF JPQLQueryBNF}
      * @param formatter This formatter is used to personalized the formatting of the JPQL query
      * before it is used to test the generated string
@@ -535,7 +532,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
      * @param jpqlQuery The JPQL query to parse and to test the parsed tree representation
      * @param expressionTester The tester used to verify the parsed tree is correctly representing the
      * JPQL query
-     * @param queryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.parser.
+     * @param jpqlQueryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.parser.
      * JPQLQueryBNF JPQLQueryBNF}
      */
     protected void testValidQuery(String jpqlQuery,
@@ -554,7 +551,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
      * @param jpqlQuery The JPQL query to parse and to test the parsed tree representation
      * @param expressionTester The tester used to verify the parsed tree is correctly representing the
      * JPQL query
-     * @param queryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.parser.
+     * @param jpqlQueryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.parser.
      * JPQLQueryBNF JPQLQueryBNF}
      * @param formatter This formatter is used to personalized the formatting of the JPQL query
      * before it is used to test the generated string
@@ -599,6 +596,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
         protected abstract String identifier();
 
+        @Override
         public void test(Expression expression) {
 
             assertInstance(expression, expressionType());
@@ -692,6 +690,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
         protected abstract String identifier();
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, expressionType());
 
@@ -727,10 +726,12 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
      */
     public static abstract class AbstractExpressionTester implements ExpressionTester {
 
+        @Override
         public final AdditionExpressionTester add(ExpressionTester expression) {
             return JPQLParserTester.add(this, expression);
         }
 
+        @Override
         public final AndExpressionTester and(ExpressionTester expression) {
             return JPQLParserTester.and(this, expression);
         }
@@ -756,32 +757,39 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             }
         }
 
+        @Override
         public final BetweenExpressionTester between(ExpressionTester lowerBoundExpression,
                                                      ExpressionTester upperBoundExpression) {
 
             return JPQLParserTester.between(this, lowerBoundExpression, upperBoundExpression);
         }
 
+        @Override
         public final ComparisonExpressionTester different(ExpressionTester expression) {
             return JPQLParserTester.different(this, expression);
         }
 
+        @Override
         public final DivisionExpressionTester divide(ExpressionTester expression) {
             return JPQLParserTester.division(this, expression);
         }
 
+        @Override
         public final ComparisonExpressionTester equal(ExpressionTester expression) {
             return JPQLParserTester.equal(this, expression);
         }
 
+        @Override
         public final ComparisonExpressionTester greaterThan(ExpressionTester expression) {
             return JPQLParserTester.greaterThan(this, expression);
         }
 
+        @Override
         public final ComparisonExpressionTester greaterThanOrEqual(ExpressionTester expression) {
             return JPQLParserTester.greaterThanOrEqual(this, expression);
         }
 
+        @Override
         public final InExpressionTester in(ExpressionTester... inItems) {
             if (inItems.length == 1) {
                 return JPQLParserTester.in(this, inItems[0]);
@@ -789,62 +797,76 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             return JPQLParserTester.in(this, inItems);
         }
 
+        @Override
         public final InExpressionTester in(String inputParameter) {
             return JPQLParserTester.in(this, inputParameter);
         }
 
+        @Override
         public final EmptyCollectionComparisonExpressionTester isEmpty() {
             return JPQLParserTester.isEmpty(this);
         }
 
+        @Override
         public final EmptyCollectionComparisonExpressionTester isNotEmpty() {
             return JPQLParserTester.isNotEmpty(this);
         }
 
+        @Override
         public boolean isNull() {
             return false;
         }
 
+        @Override
         public final LikeExpressionTester like(ExpressionTester patternValue) {
             return JPQLParserTester.like(this, patternValue);
         }
 
+        @Override
         public final LikeExpressionTester like(ExpressionTester patternValue,
                                                ExpressionTester escapeCharacter) {
 
             return JPQLParserTester.like(this, patternValue, escapeCharacter);
         }
 
+        @Override
         public final ComparisonExpressionTester lowerThan(ExpressionTester expression) {
             return JPQLParserTester.lowerThan(this, expression);
         }
 
+        @Override
         public final ComparisonExpressionTester lowerThanOrEqual(ExpressionTester expression) {
             return JPQLParserTester.lowerThanOrEqual(this, expression);
         }
 
+        @Override
         public final CollectionMemberExpressionTester member(ExpressionTester collectionPath) {
             return JPQLParserTester.member(this, collectionPath);
         }
 
+        @Override
         public final CollectionMemberExpressionTester memberOf(ExpressionTester collectionPath) {
             return JPQLParserTester.memberOf(this, collectionPath);
         }
 
+        @Override
         public final MultiplicationExpressionTester multiply(ExpressionTester expression) {
             return JPQLParserTester.multiplication(this, expression);
         }
 
+        @Override
         public final BetweenExpressionTester notBetween(ExpressionTester lowerBoundExpression,
                                                         ExpressionTester upperBoundExpression) {
 
             return JPQLParserTester.notBetween(this, lowerBoundExpression, upperBoundExpression);
         }
 
+        @Override
         public final ComparisonExpressionTester notEqual(ExpressionTester expression) {
             return JPQLParserTester.notEqual(this, expression);
         }
 
+        @Override
         public final InExpressionTester notIn(ExpressionTester... inItems) {
             if (inItems.length == 1) {
                 return JPQLParserTester.notIn(this, inItems[0]);
@@ -852,36 +874,44 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             return JPQLParserTester.notIn(this, inItems);
         }
 
+        @Override
         public final InExpressionTester notIn(String inputParameter) {
             return JPQLParserTester.notIn(this, inputParameter);
         }
 
+        @Override
         public final LikeExpressionTester notLike(ExpressionTester expression) {
             return JPQLParserTester.notLike(this, expression);
         }
 
+        @Override
         public final LikeExpressionTester notLike(ExpressionTester expression,
                                                   ExpressionTester escapeCharacter) {
 
             return JPQLParserTester.notLike(this, expression, escapeCharacter);
         }
 
+        @Override
         public final ExpressionTester notMember(ExpressionTester collectionPath) {
             return JPQLParserTester.notMember(this, collectionPath);
         }
 
+        @Override
         public final ExpressionTester notMemberOf(ExpressionTester collectionPath) {
             return JPQLParserTester.notMemberOf(this, collectionPath);
         }
 
+        @Override
         public final OrExpressionTester or(ExpressionTester expression) {
             return JPQLParserTester.or(this, expression);
         }
 
+        @Override
         public final RegexpExpressionTester regexp(StringLiteralTester patternValue) {
             return JPQLParserTester.regexp(this, patternValue);
         }
 
+        @Override
         public final SubtractionExpressionTester subtract(ExpressionTester expression) {
             return JPQLParserTester.subtract(this, expression);
         }
@@ -908,6 +938,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.hasSpaceAfterHierarchicalQueryClause = !hierarchicalQueryClause.isNull() && !asOfClause.isNull();
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, AbstractFromClause.class);
 
@@ -958,6 +989,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
         protected abstract String identifier();
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, AbstractOrderByClause.class);
 
@@ -1001,6 +1033,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             }
         }
 
+        @Override
         public void test(Expression expression) {
 
             assertInstance(expression, AbstractPathExpression.class);
@@ -1035,6 +1068,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.abstractSchemaName = abstractSchemaName;
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, AbstractSchemaName.class);
 
@@ -1063,6 +1097,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.selectExpression      = selectExpression;
         }
 
+        @Override
         public void test(Expression expression) {
 
             assertInstance(expression, AbstractSelectClause.class);
@@ -1129,6 +1164,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
         protected abstract Class<? extends AbstractSelectStatement> expressionType();
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, expressionType());
 
@@ -1391,6 +1427,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.expression = expression;
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, ArithmeticFactor.class);
 
@@ -1426,6 +1463,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.hasSpaceAfterCategory   = (category != null) && !expression.isNull();
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, AsOfClause.class);
 
@@ -1482,6 +1520,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.expression = expression;
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, BadExpression.class);
 
@@ -1525,6 +1564,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.upperBoundExpression    = upperBoundExpression;
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, BetweenExpression.class);
 
@@ -1604,6 +1644,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.hasSpaceAfterWhenClauses    = !whenClauses.isNull();
         }
 
+        @Override
         public void test(Expression expression) {
 
             assertInstance(expression, CaseExpression.class);
@@ -1739,6 +1780,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.commas            = commas;
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, CollectionExpression.class);
 
@@ -1818,6 +1860,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.hasSpaceAfterRightParenthesis = hasAs || !identificationVariable.isNull();
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, CollectionMemberDeclaration.class);
 
@@ -1887,6 +1930,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.collectionPath = collectionPath;
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, CollectionMemberExpression.class);
 
@@ -1964,6 +2008,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.hasSpaceAfterIdentifier = true;
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, ComparisonExpression.class);
 
@@ -2012,6 +2057,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
         protected abstract String identifier();
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, expressionType());
 
@@ -2076,6 +2122,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.hasSpaceAfterConnectBy = !expression.isNull();
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, ConnectByClause.class);
 
@@ -2116,6 +2163,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.hasRightParenthesis = true;
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, ConstructorExpression.class);
 
@@ -2197,6 +2245,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.dateTime = dateTime;
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, DateTime.class);
 
@@ -2228,6 +2277,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.rangeVariableDeclaration = rangeVariableDeclaration;
         }
 
+        @Override
         public void test(Expression expression) {
 
             assertInstance(expression, DeleteClause.class);
@@ -2273,6 +2323,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.hasSpaceAfterDeleteClause = !whereClause.isNull();
         }
 
+        @Override
         public void test(Expression expression) {
 
             assertInstance(expression, DeleteStatement.class);
@@ -2332,6 +2383,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.collectionPath = collectionPath;
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, EmptyCollectionComparisonExpression.class);
 
@@ -2373,6 +2425,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.entityType = entityType;
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, EntityTypeLiteral.class);
 
@@ -2636,6 +2689,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.hasSpaceAfterGroupBy = !groupByItems.isNull();
         }
 
+        @Override
         public void test(Expression expression) {
 
             assertInstance(expression, GroupByClause.class);
@@ -2696,6 +2750,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.hasSpaceAfterConnectByClause = !connectByClause.isNull() && !orderSiblingsByClause.isNull();
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, HierarchicalQueryClause.class);
 
@@ -2743,6 +2798,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.joins                    = joins;
         }
 
+        @Override
         public void test(Expression expression) {
 
             assertInstance(expression, IdentificationVariableDeclaration.class);
@@ -2789,6 +2845,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             return virtual && virtualPathExpression.isNull();
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, IdentificationVariable.class);
 
@@ -2850,6 +2907,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.hasSpaceAfterIn          = !hasLeftParenthesis && !inItems.isNull();
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, InExpression.class);
 
@@ -2896,6 +2954,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.inputParameter = inputParameter;
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, InputParameter.class);
 
@@ -2942,6 +3001,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.joinCondition                       = joinCondition;
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, Join.class);
 
@@ -3001,6 +3061,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.unknownExpression = unknownExpression;
         }
 
+        @Override
         public void test(Expression expression) {
 
             JPQLExpression jpqlExpression = (JPQLExpression) expression;
@@ -3031,6 +3092,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.keyword = keyword;
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, KeywordExpression.class);
 
@@ -3088,6 +3150,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.hasSpaceAfterPatternValue = !patternValue.isNull() && hasEscape;
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, LikeExpression.class);
 
@@ -3265,6 +3328,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.hasSpaceAfterNot = true;
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, NotExpression.class);
 
@@ -3299,6 +3363,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.expression = expression;
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, NullComparisonExpression.class);
 
@@ -3329,6 +3394,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             return true;
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, NullExpression.class);
         }
@@ -3367,6 +3433,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.number = number;
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, NumericLiteral.class);
 
@@ -3455,6 +3522,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
                                          nullOrdering != NullOrdering.DEFAULT;
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, OrderByItem.class);
 
@@ -3570,6 +3638,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             }
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, RangeVariableDeclaration.class);
 
@@ -3617,6 +3686,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.hasSpaceAfterIdentifier = !patternValue.isNull();
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, RegexpExpression.class);
 
@@ -3665,6 +3735,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.resultVariable   = resultVariable;
         }
 
+        @Override
         public void test(Expression expression) {
 
             assertInstance(expression, ResultVariable.class);
@@ -3906,6 +3977,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             }
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, StringLiteral.class);
 
@@ -4030,6 +4102,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.hasSpaceAfterAs              = hasAs && !identificationVariable.isNull();
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, Expression.class);
 
@@ -4216,6 +4289,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.hasSpaceAfterAll        = hasAll && !subquery.isNull();
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, UnionClause.class);
 
@@ -4257,6 +4331,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.unknownText = unknownText;
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, UnknownExpression.class);
 
@@ -4291,6 +4366,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.hasSpaceAfterRangeVariableDeclaration = !rangeVariableDeclaration.isNull();
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, UpdateClause.class);
 
@@ -4348,6 +4424,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.hasEqualSign = true;
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, UpdateItem.class);
 
@@ -4394,6 +4471,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.hasSpaceAfterUpdateClause = !whereClause.isNull();
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, UpdateStatement.class);
 
@@ -4456,6 +4534,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             this.whenExpression              = whenExpression;
         }
 
+        @Override
         public void test(Expression expression) {
             assertInstance(expression, WhenClause.class);
 

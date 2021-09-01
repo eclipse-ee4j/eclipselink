@@ -19,6 +19,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -35,7 +37,7 @@ public class SDODataObjectGetShortByPositionalPathTest extends SDODataObjectGetB
 
     //1. purpose: getShort with boolean property
     public void testGetShortFromBoolean() {
-        SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_BOOLEAN);
         dataObject_c.set(property, true);
         try {
@@ -48,14 +50,14 @@ public class SDODataObjectGetShortByPositionalPathTest extends SDODataObjectGetB
     //2. purpose: getShort with Defined Byte Property
     public void testGetShortConversionFromDefinedByteProperty() {
         // dataObject's type add boolean property
-        SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_BYTE);
 
         byte by = 12;
 
         dataObject_a.setByte(propertyPath_a_b_c, by);// add it to instance list
 
-        this.assertEquals((short)by, dataObject_a.getShort(propertyPath_a_b_c));
+        assertEquals(by, dataObject_a.getShort(propertyPath_a_b_c));
     }
 
     //3. purpose: getShort with Undefined Byte Property
@@ -70,7 +72,7 @@ public class SDODataObjectGetShortByPositionalPathTest extends SDODataObjectGetB
 
     //4. purpose: getShort with character property
     public void testGetShortFromCharacter() {
-        SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_CHARACTER);
         dataObject_c.set(property, 'e');
         try {
@@ -83,25 +85,25 @@ public class SDODataObjectGetShortByPositionalPathTest extends SDODataObjectGetB
     //5. purpose: getShort with Defined Double Property
     public void testGetShortConversionFromDefinedDoubleProperty() {
         // dataObject's type add boolean property
-        SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_DOUBLE);
 
         double db = 12;
         dataObject_a.setDouble(propertyPath_a_b_c, db);// add it to instance list
 
-        this.assertEquals((short)db, dataObject_a.getShort(propertyPath_a_b_c));
+        assertEquals((short)db, dataObject_a.getShort(propertyPath_a_b_c));
     }
 
       //7. purpose: getShort with Defined float Property
     public void testGetShortConversionFromDefinedFloatProperty() {
         // dataObject's type add float property
-        SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_FLOAT);
 
         float fl = 12;
         dataObject_a.setFloat(propertyPath_a_b_c, fl);// add it to instance list
 
-        this.assertEquals((short)fl, dataObject_a.getShort(propertyPath_a_b_c));
+        assertEquals((short)fl, dataObject_a.getShort(propertyPath_a_b_c));
     }
 
 
@@ -109,13 +111,13 @@ public class SDODataObjectGetShortByPositionalPathTest extends SDODataObjectGetB
     //9. purpose: getShort with Defined int Property
     public void testGetShortConversionFromDefinedIntProperty() {
         // dataObject's type add int property
-        SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_INT);
 
         int in = 12;
         dataObject_a.setInt(propertyPath_a_b_c, in);// add it to instance list
 
-        this.assertEquals((short)in, dataObject_a.getShort(propertyPath_a_b_c));
+        assertEquals((short)in, dataObject_a.getShort(propertyPath_a_b_c));
     }
 
 
@@ -123,33 +125,33 @@ public class SDODataObjectGetShortByPositionalPathTest extends SDODataObjectGetB
     //11. purpose: getShort with Defined long Property
     public void testGetShortConversionFromDefinedLongProperty() {
         // dataObject's type add short property
-        SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_LONG);
 
         long lg = 12;
         dataObject_a.setLong(propertyPath_a_b_c, lg);// add it to instance list
 
-        this.assertEquals((short)lg, dataObject_a.getShort(propertyPath_a_b_c));
+        assertEquals((short)lg, dataObject_a.getShort(propertyPath_a_b_c));
     }
 
 
     //13. purpose: getShort with Defined short Property
     public void testGetShortConversionFromDefinedShortProperty() {
         // dataObject's type add short property
-       SDOProperty property =  ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+       SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
        property.setType(SDOConstants.SDO_SHORT);
 
         short shr = 12;
         dataObject_a.setShort(propertyPath_a_b_c, shr);// add it to instance list
 
-        this.assertEquals(shr, dataObject_a.getShort(propertyPath_a_b_c));
+        assertEquals(shr, dataObject_a.getShort(propertyPath_a_b_c));
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyBracketPositionalSet() {
         // dataObject's type add boolean property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_SHORT);
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setMany(true);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_SHORT);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setMany(true);
 
         short shr = 12;
         List b = new ArrayList();
@@ -158,15 +160,15 @@ public class SDODataObjectGetShortByPositionalPathTest extends SDODataObjectGetB
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setShort(property3, shr);
 
-        this.assertEquals(shr, dataObject_a.getShort(property3));
+        assertEquals(shr, dataObject_a.getShort(property3));
 
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyDotPositionalSet() {
         // dataObject's type add boolean property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_SHORT);
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setMany(true);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_SHORT);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setMany(true);
 
         short shr = 12;
         List b = new ArrayList();
@@ -174,19 +176,19 @@ public class SDODataObjectGetShortByPositionalPathTest extends SDODataObjectGetB
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setShort(property + ".0", shr);
 
-        this.assertEquals(shr, dataObject_a.getShort(property + ".0"));
+        assertEquals(shr, dataObject_a.getShort(property + ".0"));
 
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyBracketInPathMiddle() {
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_SHORT);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_SHORT);
 
         short shr = 12;
 
         dataObject_a.setShort(property1, shr);// c dataobject's a property has value boolean 'true'
 
-        this.assertEquals(shr, dataObject_a.getShort(property1));
+        assertEquals(shr, dataObject_a.getShort(property1));
     }
 
     /*public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet() {
@@ -211,20 +213,20 @@ public class SDODataObjectGetShortByPositionalPathTest extends SDODataObjectGetB
     //15. purpose: getShort with Defined String Property
     public void testGetShortConversionFromDefinedStringProperty() {
         // dataObject's type add int property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_STRING);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_STRING);
 
         String str = "12";
         Short s_d = Short.valueOf(str);
         dataObject_a.setString(propertyPath_a_b_c, str);// add it to instance list
 
-        this.assertEquals(s_d.shortValue(), dataObject_a.getShort(propertyPath_a_b_c));
+        assertEquals(s_d.shortValue(), dataObject_a.getShort(propertyPath_a_b_c));
     }
 
 
 
     //17. purpose: getShort with bytes property
     public void testGetShortFromBytes() {
-        SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_BYTES);
         dataObject_c.set(property, new String("eee").getBytes());
         try {
@@ -236,7 +238,7 @@ public class SDODataObjectGetShortByPositionalPathTest extends SDODataObjectGetB
 
     //18. purpose: getShort with decimal property
     public void testGetShortFromDecimal() {
-       SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+       SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
        property.setType(SDOConstants.SDO_DECIMAL);
         dataObject_c.set(property, new BigDecimal(2));
         try {
@@ -250,7 +252,7 @@ public class SDODataObjectGetShortByPositionalPathTest extends SDODataObjectGetB
 
     //19. purpose: getShort with integer property
     public void testGetShortFromInteger() {
-        SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_INTEGER);
         dataObject_c.set(property, new BigInteger("3"));
         try {
@@ -264,7 +266,7 @@ public class SDODataObjectGetShortByPositionalPathTest extends SDODataObjectGetB
 
     //22. purpose: getShort with date property
     public void testGetShortFromDate() {
-        SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_DATE);
         dataObject_c.set(property, Calendar.getInstance().getTime());
         try {

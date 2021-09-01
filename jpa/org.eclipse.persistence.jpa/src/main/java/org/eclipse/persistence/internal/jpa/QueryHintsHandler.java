@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -843,6 +843,7 @@ public class QueryHintsHandler {
             super(QueryHints.PESSIMISTIC_LOCK_TIMEOUT_UNIT, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
                 TimeUnit unit = TimeUnit.valueOf((String)valueToApply);
@@ -869,8 +870,8 @@ public class QueryHintsHandler {
             if (query.isObjectBuildingQuery()) {
                 ((ObjectBuildingQuery)query).setShouldRefreshIdentityMapResult(((Boolean)valueToApply).booleanValue());
                 // Set default cascade to be by mapping.
-                if (!((ObjectBuildingQuery)query).shouldCascadeParts()) {
-                    ((ObjectBuildingQuery)query).cascadeByMapping();
+                if (!query.shouldCascadeParts()) {
+                    query.cascadeByMapping();
                 }
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
@@ -1606,7 +1607,7 @@ public class QueryHintsHandler {
                         while (mapping.isAggregateObjectMapping() && tokenizer.hasMoreTokens()){
                             expression = expression.get(token);
                             token = tokenizer.nextToken();
-                            descriptor = ((org.eclipse.persistence.mappings.AggregateObjectMapping)mapping).getReferenceDescriptor();
+                            descriptor = mapping.getReferenceDescriptor();
                             mapping = descriptor.getObjectBuilder().getMappingForAttributeName(token);
                         }
                         if (!mapping.isForeignReferenceMapping()){
@@ -1659,7 +1660,7 @@ public class QueryHintsHandler {
                         while (mapping.isAggregateObjectMapping() && tokenizer.hasMoreTokens()){
                             expression = expression.get(token);
                             token = tokenizer.nextToken();
-                            descriptor = ((org.eclipse.persistence.mappings.AggregateObjectMapping)mapping).getReferenceDescriptor();
+                            descriptor = mapping.getReferenceDescriptor();
                             mapping = descriptor.getObjectBuilder().getMappingForAttributeName(token);
                         }
                         if (!mapping.isForeignReferenceMapping()){

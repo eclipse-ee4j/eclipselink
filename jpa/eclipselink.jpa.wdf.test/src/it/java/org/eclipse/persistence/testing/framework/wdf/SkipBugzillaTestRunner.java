@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -123,7 +123,7 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
             databasePlatformClass = null; // FIXME
         }
 
-        String testBugzillaRun = (String) testProperties.get(TEST_BUGZILLA_RUN);
+        String testBugzillaRun = testProperties.get(TEST_BUGZILLA_RUN);
         if ("all".equals(testBugzillaRun)) {
             runAllBugzilla = true;
             bugid = -1;
@@ -136,7 +136,7 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
             }
         }
 
-        String testIssueRun = (String) testProperties.get(TEST_ISSUE_RUN);
+        String testIssueRun = testProperties.get(TEST_ISSUE_RUN);
         if ("all".equals(testIssueRun)) {
             runAllIssues = true;
             issueid = -1;
@@ -149,7 +149,7 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
             }
         }
 
-        String testToBeInvestigatedRun = (String) testProperties.get(TEST_TO_BE_INVESTIGATED_RUN);
+        String testToBeInvestigatedRun = testProperties.get(TEST_TO_BE_INVESTIGATED_RUN);
         if ("all".equals(testToBeInvestigatedRun)) {
             runAllUnknown = true;
             runOnlyUnknown = false;

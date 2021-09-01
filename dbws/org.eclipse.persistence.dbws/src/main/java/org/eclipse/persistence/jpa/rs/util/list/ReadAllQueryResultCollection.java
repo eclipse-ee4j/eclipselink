@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,105 +38,66 @@ public class ReadAllQueryResultCollection implements PageableCollection<Object> 
     private Integer count = null;
     private List<LinkV2> links;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public List<Object> getItems() {
         return items;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setItems(List<Object> items) {
         this.items = items;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setHasMore(Boolean hasMore) {
         this.hasMore = hasMore;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Boolean getHasMore() {
         return hasMore;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Integer getCount() {
         return count;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setCount(Integer count) {
         this.count = count;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Integer getLimit() {
         return limit;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setLimit(Integer limit) {
         this.limit = limit;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setOffset(Integer offset) {
         this.offset = offset;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Integer getOffset() {
         return this.offset;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public List<LinkV2> getLinks() {
         return this.links;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setLinks(List<LinkV2> links) {
         this.links = links;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void addLink(LinkV2 link) {
         if (this.links == null) {

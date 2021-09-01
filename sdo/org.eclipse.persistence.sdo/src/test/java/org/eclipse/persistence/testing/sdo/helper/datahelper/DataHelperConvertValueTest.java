@@ -14,6 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.sdo.helper.datahelper;
 
+import junit.framework.TestCase;
+
 public class DataHelperConvertValueTest extends DataHelperTestCases {
     public DataHelperConvertValueTest(String name) {
         super(name);
@@ -22,6 +24,6 @@ public class DataHelperConvertValueTest extends DataHelperTestCases {
     public void testToCalendarWithGYearMonth() {
         String b = "true";
         Boolean B = Boolean.valueOf(b);
-        this.assertEquals(B, (Boolean)dataHelper.convertValue(b, Boolean.class, null));
+        assertEquals(B, dataHelper.convertValue(b, Boolean.class, null));
     }
 }

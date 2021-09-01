@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,10 +41,12 @@ public class DataTypesConvertedToAClassTest extends AutoVerifyTestCase {
         setDescription("Test getDataTypesConvertedTo() in ConversionManager.");
     }
 
+    @Override
     public void setup() {
         cm = ConversionManager.getDefaultManager();
     }
 
+    @Override
     public void test() {
         Vector vec;
         int x;
@@ -84,6 +86,7 @@ public class DataTypesConvertedToAClassTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (exception1 != null) {
             throw (new TestErrorException(exception1.toString()));

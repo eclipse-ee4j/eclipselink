@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,14 +35,17 @@ public class ChangeSummaryChildSimpleDeleteTestCases extends ChangeSummaryChildL
         TestRunner.main(arguments);
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/team_cschild_delete_simple.xml");
     }
 
+    @Override
     protected String getNoSchemaControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/team_cschild_delete_simple_noschema.xml");
     }
 
+    @Override
     protected void verifyAfterLoad(XMLDocument document) {
         super.verifyAfterLoad(document);
         ChangeSummary teamCS = document.getRootObject().getChangeSummary();
@@ -52,7 +55,7 @@ public class ChangeSummaryChildSimpleDeleteTestCases extends ChangeSummaryChildL
         ChangeSummary managerCS = manager.getChangeSummary();
         assertNotNull(managerCS);
         assertTrue(managerCS.isLogging());
-        assertTrue(((SDOChangeSummary)managerCS).isLogging());
+        assertTrue(managerCS.isLogging());
 
         int deletedSize = ((SDOChangeSummary)managerCS).getDeleted().size();
         assertEquals(3, deletedSize);
@@ -61,10 +64,10 @@ public class ChangeSummaryChildSimpleDeleteTestCases extends ChangeSummaryChildL
         Iterator iter = ((SDOChangeSummary)managerCS).getDeleted().iterator();
         while (iter.hasNext()) {
             SDODataObject nextDeleted = (SDODataObject)iter.next();
-            assertEquals(nextDeleted.getInstanceProperties().size(), ((SDOChangeSummary)managerCS).getOldValues(nextDeleted).size());
+            assertEquals(nextDeleted.getInstanceProperties().size(), managerCS.getOldValues(nextDeleted).size());
         }
 
-        assertEquals(2, ((SDOChangeSummary)managerCS).getOldValues(manager).size());
+        assertEquals(2, managerCS.getOldValues(manager).size());
 
         List teamOldValues = managerCS.getOldValues(manager);
 

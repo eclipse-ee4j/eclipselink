@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,22 +39,26 @@ public class SimpleBeanAttrNullTestCases extends JAXBWithJSONTestCases {
         jaxbMarshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
     }
 
+    @Override
     public Class getUnmarshalClass(){
         return SimpleBean.class;
     }
 
 
+    @Override
     public Object getReadControlObject() {
         JAXBElement jbe = new JAXBElement<SimpleBean>(new QName("simpleBean"), SimpleBean.class, new SimpleBean());
         return jbe;
     }
 
 
+    @Override
     protected Object getJSONReadControlObject() {
         JAXBElement jbe = new JAXBElement<SimpleBean>(new QName(""), SimpleBean.class,  new SimpleBean());
         return jbe;
     }
 
+    @Override
     protected Object getControlObject() {
         SimpleBean sb = new SimpleBean();
         sb.setAttr2("");
@@ -62,6 +66,7 @@ public class SimpleBeanAttrNullTestCases extends JAXBWithJSONTestCases {
         return sb;
     }
 
+    @Override
     public void testUnmarshallerHandler() throws Exception {}
 
 }

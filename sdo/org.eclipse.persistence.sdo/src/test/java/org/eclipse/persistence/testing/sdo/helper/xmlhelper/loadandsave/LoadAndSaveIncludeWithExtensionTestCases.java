@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,6 +39,7 @@ public class LoadAndSaveIncludeWithExtensionTestCases extends LoadAndSaveTestCas
         super(name);
     }
 
+    @Override
     protected List defineTypes() {
         try {
 
@@ -54,50 +55,61 @@ public class LoadAndSaveIncludeWithExtensionTestCases extends LoadAndSaveTestCas
         }
     }
 
+    @Override
     protected String getUnrelatedSchemaName() {
         return "./org/eclipse/persistence/testing/sdo/schemas/OrderBookingPO.xsd";
     }
 
+    @Override
     protected String getSchemaLocation() {
         return FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xmlhelper/includeWithExtension/";
     }
 
+    @Override
     protected String getSchemaName() {
         return "WithInclude.xsd";
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/includeWithExtension/withInclude.xml");
     }
 
+    @Override
     protected String getNoSchemaControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/includeWithExtension/withIncludeNoTypes.xml");
     }
 
+     @Override
      protected String getControlWriteFileName() {
 
        return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/includeWithExtension/withInclude.xml");
     }
 
+    @Override
     protected String getControlRootURI() {
         return "my.uri";
     }
 
+    @Override
     protected String getControlRootName() {
         return "root";
     }
 
+    @Override
     protected String getRootInterfaceName() {
         return "ChildType";
     }
 
     // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    @Override
     protected List<String> getPackages() {
         List<String> packages = new ArrayList<String>();
         packages.add("uri/my");
         return packages;
     }
 
+    @Override
     protected void generateClasses(String tmpDirName) throws Exception{
 
         String xsd = FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xmlhelper/includeWithExtension/WithInclude.xsd";
@@ -116,6 +128,7 @@ public class LoadAndSaveIncludeWithExtensionTestCases extends LoadAndSaveTestCas
 
 
 
+    @Override
     public void registerTypes() {
 
         Type stringType = typeHelper.getType("commonj.sdo", "String");
@@ -142,6 +155,7 @@ public class LoadAndSaveIncludeWithExtensionTestCases extends LoadAndSaveTestCas
         typeHelper.defineOpenContentProperty(getControlRootURI(), rootPropDO);
     }
 
+    @Override
     public void verifyAfterLoad(XMLDocument doc){
         DataObject rootDO = doc.getRootObject();
         rootDO.getType();

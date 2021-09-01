@@ -42,9 +42,6 @@ public class UpdateStatementStateObject extends AbstractModifyStatementStateObje
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
@@ -83,17 +80,11 @@ public class UpdateStatementStateObject extends AbstractModifyStatementStateObje
         return getModifyClause().addItem(path, newValue);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected AbstractModifyClauseStateObject buildModifyClause() {
         return new UpdateClauseStateObject(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public UpdateStatement getExpression() {
         return (UpdateStatement) super.getExpression();

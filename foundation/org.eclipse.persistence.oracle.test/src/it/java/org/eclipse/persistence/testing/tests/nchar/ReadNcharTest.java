@@ -29,6 +29,7 @@ public class ReadNcharTest extends BaseNcharTest {
         setDescription("Tests reading NCHAR, NVARCHAR2, NCLOB from Oracle database.");
     }
 
+    @Override
     @SuppressWarnings("deprecation")
     protected void setup() {
         super.setup();
@@ -155,6 +156,7 @@ public class ReadNcharTest extends BaseNcharTest {
     ((AbstractSession)getSession()).getAccessor().decrementCallCount();
     }
 
+    @Override
     protected void test() {
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression exp = (builder.get("id").equal(controlObject.getId()));

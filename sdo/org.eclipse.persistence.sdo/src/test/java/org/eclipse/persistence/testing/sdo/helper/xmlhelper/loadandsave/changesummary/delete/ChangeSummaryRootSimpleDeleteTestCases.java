@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,11 +35,13 @@ public class ChangeSummaryRootSimpleDeleteTestCases extends ChangeSummaryRootLoa
         TestRunner.main(arguments);
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/team_csroot_delete_simple.xml");
     }
 
 
+    @Override
     protected void verifyAfterLoad(XMLDocument document) {
         super.verifyAfterLoad(document);
         ChangeSummary teamCS = document.getRootObject().getChangeSummary();
@@ -53,7 +55,7 @@ public class ChangeSummaryRootSimpleDeleteTestCases extends ChangeSummaryRootLoa
         ChangeSummary managerCS = manager.getChangeSummary();
         assertEquals(teamCS, managerCS);
         assertTrue(teamCS.isLogging());
-        assertTrue(((SDOChangeSummary)teamCS).isLogging());
+        assertTrue(teamCS.isLogging());
 
         assertEquals(3, ((SDOChangeSummary)teamCS).getDeleted().size());
         assertTrue(teamCS.isModified(manager));
@@ -61,9 +63,9 @@ public class ChangeSummaryRootSimpleDeleteTestCases extends ChangeSummaryRootLoa
         Iterator iter = ((SDOChangeSummary)managerCS).getDeleted().iterator();
         while (iter.hasNext()) {
             SDODataObject nextDeleted = (SDODataObject)iter.next();
-            assertEquals(nextDeleted.getInstanceProperties().size(), ((SDOChangeSummary)managerCS).getOldValues(nextDeleted).size());
+            assertEquals(nextDeleted.getInstanceProperties().size(), managerCS.getOldValues(nextDeleted).size());
         }
-        assertEquals(2, ((SDOChangeSummary)managerCS).getOldValues(manager).size());
+        assertEquals(2, managerCS.getOldValues(manager).size());
 
         List teamOldValues = teamCS.getOldValues(manager);
 

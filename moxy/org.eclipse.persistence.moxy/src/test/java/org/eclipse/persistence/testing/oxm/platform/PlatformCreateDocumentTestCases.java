@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,8 @@
 package org.eclipse.persistence.testing.oxm.platform;
 
 import java.io.InputStream;
+
+import junit.framework.TestCase;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.platform.xml.XMLPlatformException;
@@ -51,10 +53,10 @@ public class PlatformCreateDocumentTestCases extends OXTestCase {
         log(systemDocument);
         log(controlDocument);
 
-        this.assertEquals(controlDocType.getName(), systemDocType.getName());
-        this.assertEquals(controlDocType.getNamespaceURI(), systemDocType.getNamespaceURI());
-        this.assertEquals(controlDocType.getPublicId(), systemDocType.getPublicId());
-        this.assertEquals(controlDocType.getSystemId(), systemDocType.getSystemId());
+        assertEquals(controlDocType.getName(), systemDocType.getName());
+        assertEquals(controlDocType.getNamespaceURI(), systemDocType.getNamespaceURI());
+        assertEquals(controlDocType.getPublicId(), systemDocType.getPublicId());
+        assertEquals(controlDocType.getSystemId(), systemDocType.getSystemId());
 
         assertXMLIdentical(controlDocument, systemDocument);
 
@@ -103,10 +105,10 @@ public class PlatformCreateDocumentTestCases extends OXTestCase {
         log(publicDocument);
         log(controlDocument);
 
-        this.assertEquals(controlDocType.getName(), publicDocType.getName());
-        this.assertEquals(controlDocType.getNamespaceURI(), publicDocType.getNamespaceURI());
-        this.assertEquals(controlDocType.getPublicId(), publicDocType.getPublicId());
-        this.assertEquals(controlDocType.getSystemId(), publicDocType.getSystemId());
+        assertEquals(controlDocType.getName(), publicDocType.getName());
+        assertEquals(controlDocType.getNamespaceURI(), publicDocType.getNamespaceURI());
+        assertEquals(controlDocType.getPublicId(), publicDocType.getPublicId());
+        assertEquals(controlDocType.getSystemId(), publicDocType.getSystemId());
 
         assertXMLIdentical(controlDocument, publicDocument);
     }
@@ -121,10 +123,10 @@ public class PlatformCreateDocumentTestCases extends OXTestCase {
         log(publicDocument);
         log(controlDocument);
 
-        this.assertEquals(controlDocType.getName(), publicDocType.getName());
-        this.assertEquals(controlDocType.getNamespaceURI(), publicDocType.getNamespaceURI());
-        this.assertEquals(controlDocType.getPublicId(), publicDocType.getPublicId());
-        this.assertEquals(controlDocType.getSystemId(), publicDocType.getSystemId());
+        assertEquals(controlDocType.getName(), publicDocType.getName());
+        assertEquals(controlDocType.getNamespaceURI(), publicDocType.getNamespaceURI());
+        assertEquals(controlDocType.getPublicId(), publicDocType.getPublicId());
+        assertEquals(controlDocType.getSystemId(), publicDocType.getSystemId());
 
         assertXMLIdentical(controlDocument, publicDocument);
 
@@ -227,6 +229,7 @@ public class PlatformCreateDocumentTestCases extends OXTestCase {
     }
 
     public class MyEntityResolver implements EntityResolver {
+        @Override
         public InputSource resolveEntity(String string, String string2) {
             try {
                 InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/oxm/platform/manual.dtd");

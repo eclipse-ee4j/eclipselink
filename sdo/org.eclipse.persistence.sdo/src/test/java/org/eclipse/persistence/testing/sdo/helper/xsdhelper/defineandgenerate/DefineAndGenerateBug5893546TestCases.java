@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,10 +36,12 @@ public class DefineAndGenerateBug5893546TestCases extends XSDHelperDefineAndGene
         TestRunner.run(DefineAndGenerateBug5893546TestCases.class);
     }
 
+    @Override
     public String getSchemaToDefine() {
         return "org/eclipse/persistence/testing/sdo/helper/xsdhelper/Bug5893546Emp.xsd";
     }
 
+    @Override
     public List getControlTypes() {
         List types = new ArrayList();
         String uri = "http://example.com/emp/";

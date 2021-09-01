@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -483,10 +483,8 @@ public class XMLProcessor {
                  throw JAXBException.exceptionWithNameTransformerClass(transformerClassName, ex);
              }
              try {
-                 transformer = (XMLNameTransformer) nameTransformerClass.newInstance();
-             } catch (InstantiationException ex) {
-                 throw JAXBException.exceptionWithNameTransformerClass(transformerClassName, ex);
-             } catch (IllegalAccessException ex) {
+                 transformer = (XMLNameTransformer) nameTransformerClass.getConstructor().newInstance();
+             } catch (ReflectiveOperationException ex) {
                  throw JAXBException.exceptionWithNameTransformerClass(transformerClassName, ex);
              }
          }
@@ -1601,9 +1599,9 @@ public class XMLProcessor {
         }
         // process XmlSchema
         XmlNsForm form = schema.getAttributeFormDefault();
-        nsInfo.setAttributeFormQualified(form.equals(form.QUALIFIED));
+        nsInfo.setAttributeFormQualified(form.equals(XmlNsForm.QUALIFIED));
         form = schema.getElementFormDefault();
-        nsInfo.setElementFormQualified(form.equals(form.QUALIFIED));
+        nsInfo.setElementFormQualified(form.equals(XmlNsForm.QUALIFIED));
 
 
         if (!nsInfo.isElementFormQualified() || nsInfo.isAttributeFormQualified()) {

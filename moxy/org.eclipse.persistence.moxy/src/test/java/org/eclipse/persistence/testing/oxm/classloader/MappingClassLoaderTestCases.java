@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,6 +49,7 @@ public class MappingClassLoaderTestCases extends OXTestCase {
         TestRunner.main(arguments);
     }
 
+    @Override
     public void setUp() throws Exception {
         classLoader = new JARClassLoader("org/eclipse/persistence/testing/oxm/classloader/MappingTests.jar");
         xmlContext = getXMLContext(new MappingTestProject(classLoader, platform, metadata), classLoader);
@@ -96,7 +97,7 @@ public class MappingClassLoaderTestCases extends OXTestCase {
                     unmarshalDoc = parse(MAPPING_TEST_RESOURCE_NO_CHOICE);
                 }
             } else {
-                if(platform == OXTestCase.platform.SAX) {
+                if(platform == Platform.SAX) {
                     unmarshalDoc = parse(MAPPING_TEST_RESOURCE_NO_BINARY);
                 } else {
                     unmarshalDoc = parse(MAPPING_TEST_RESOURCE_NO_CHOICE_OR_BINARY);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,19 +27,23 @@ public class PurchaseOrderGenerateWithAnnotationsTNSTestCases extends PurchaseOr
         TestRunner.run(PurchaseOrderGenerateWithAnnotationsTNSTestCases.class);
     }
 
+    @Override
     public String getControlFileName() {
         return "org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderWithAnnotationsGeneratedTNS.xsd";
     }
 
+    @Override
     public String getControlFileNameDifferentOrder() {
         return "org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderWithAnnotationsGeneratedTNSRoundTrip.xsd";
     }
 
+    @Override
     public java.util.List defineTypesFromSchema() {
         InputStream is = getSchemaInputStream("org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderWithAnnotationsTNS.xsd");
-        return ((SDOXSDHelper)xsdHelper).define(is, null);
+        return xsdHelper.define(is, null);
     }
 
+    @Override
     public String getControlUri() {
         return "my.uri";
     }

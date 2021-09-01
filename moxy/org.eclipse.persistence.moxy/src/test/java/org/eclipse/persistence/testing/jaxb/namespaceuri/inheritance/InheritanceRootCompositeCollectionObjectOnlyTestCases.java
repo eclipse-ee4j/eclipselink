@@ -46,6 +46,7 @@ public class InheritanceRootCompositeCollectionObjectOnlyTestCases extends JAXBW
         return namespaces;
     }
 
+    @Override
     protected Object getControlObject() {
         RootCompositeCollectionObjectOnly root = new RootCompositeCollectionObjectOnly();
         SubType subType = new SubType();

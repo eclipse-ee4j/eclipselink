@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -75,7 +75,7 @@ public abstract class XSDHelperDefineTestCases extends XSDHelperTestCases {
             List controlProps = control.getDeclaredProperties();
             for (int j = 0; j < controlProps.size(); j++) {
                 SDOProperty controlProp = (SDOProperty)controlProps.get(j);
-                SDOProperty generatedProp = (SDOProperty)generated.getProperty(controlProp.getName());
+                SDOProperty generatedProp = generated.getProperty(controlProp.getName());
 
                 assertEquals(controlProp.isMany(), generatedProp.isMany());
                 //assertEquals(controlProp.isAttribute(), generatedProp.isAttribute());

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
+import junit.framework.TestCase;
+
 public class SDODataObjectContainerContainmentPropertyTest extends SDODataObjectContainerContainmentPropertyTestCases {
     public SDODataObjectContainerContainmentPropertyTest(String name) {
         super(name);
@@ -23,17 +25,17 @@ public class SDODataObjectContainerContainmentPropertyTest extends SDODataObject
     // reset its containment property's value to this dataobject, e.g.
     // Before, b contains c, then
     public void testContainerContainmentPropertyAfterReset() {
-        this.assertEquals(dataObject_b, dataObject_c.getContainer());
+        assertEquals(dataObject_b, dataObject_c.getContainer());
         dataObject_a.set(property_a, dataObject_c);
-        this.assertFalse(dataObject_c.getContainer().equals(dataObject_b));
+        assertFalse(dataObject_c.getContainer().equals(dataObject_b));
     }
 
     // purpose: test if a dataobject's cotainer is changed if other dataobject
     // reset its containment property's value to this dataobject, e.g.
     // Before, b contains c, then
     public void testContainerContainmentPropertyAfterUnset() {
-        this.assertEquals(dataObject_a, dataObject_b.getContainer());
+        assertEquals(dataObject_a, dataObject_b.getContainer());
         dataObject_a.unset(property_a);
-        this.assertNull(dataObject_b.getContainer());
+        assertNull(dataObject_b.getContainer());
     }
 }

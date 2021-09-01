@@ -16,6 +16,8 @@ package org.eclipse.persistence.testing.sdo.model.dataobject.xpathquery;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import junit.framework.TestCase;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -27,7 +29,7 @@ public class SDODataObjectGetShortConversionByXPathQueryTest extends SDODataObje
     }
 
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet() {
-        SDOProperty prop = (SDOProperty)dataObject_c0.getType().getProperty("test");
+        SDOProperty prop = dataObject_c0.getType().getProperty("test");
         prop.setType(SDOConstants.SDO_SHORT);
 
         short s = 12;
@@ -37,12 +39,12 @@ public class SDODataObjectGetShortConversionByXPathQueryTest extends SDODataObje
         //dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setShort(propertyTest + "test", bb.shortValue());
 
-        this.assertEquals(bb.shortValue(), dataObject_a.getShort(propertyTest + "test"));
+        assertEquals(bb.shortValue(), dataObject_a.getShort(propertyTest + "test"));
     }
 
     // purpose: opencontent properties
     public void testGetShortConversionFromDefinedPropertyWithPath() {
-        SDOProperty property_c1_object = ((SDOProperty)dataObject_c1.getInstanceProperty("PName-c1"));
+        SDOProperty property_c1_object = dataObject_c1.getInstanceProperty("PName-c1");
         property_c1_object.setType(SDOConstants.SDO_SHORT);
 
         List objects = new ArrayList();
@@ -55,7 +57,7 @@ public class SDODataObjectGetShortConversionByXPathQueryTest extends SDODataObje
 
         dataObject_c1.set(property_c1_object, objects);// add it to instance list
 
-        this.assertEquals(bb.shortValue(), dataObject_a.getShort("PName-a0/PName-b0[number='1']/PName-c1.1"));
+        assertEquals(bb.shortValue(), dataObject_a.getShort("PName-a0/PName-b0[number='1']/PName-c1.1"));
     }
 
     //2. purpose: getDataObject with property value is not dataobject
@@ -82,7 +84,7 @@ public class SDODataObjectGetShortConversionByXPathQueryTest extends SDODataObje
     //3. purpose: getDataObject with property set to boolean value
     public void testGetDataObjectConversionFromProperty() {
         //try {
-        this.assertNull(dataObject_a.getDataObject("PName-a/notExistedTest"));
+        assertNull(dataObject_a.getDataObject("PName-a/notExistedTest"));
 
         //fail("IllegalArgumentException should be thrown.");
         //} catch (IllegalArgumentException e) {
@@ -92,11 +94,11 @@ public class SDODataObjectGetShortConversionByXPathQueryTest extends SDODataObje
     //purpose: getDataObject with nul value
     public void testGetDataObjectConversionWithNullArgument() {
         String p = null;
-        this.assertNull(dataObject_a.getDataObject(p));
+        assertNull(dataObject_a.getDataObject(p));
     }
 
     public void testSetGetDataObjectWithQueryPath() {
-        SDOProperty property_c1_object = ((SDOProperty)dataObject_c1.getInstanceProperty("PName-c1"));
+        SDOProperty property_c1_object = dataObject_c1.getInstanceProperty("PName-c1");
         property_c1_object.setType(SDOConstants.SDO_SHORT);
 
         short s = 12;
@@ -104,6 +106,6 @@ public class SDODataObjectGetShortConversionByXPathQueryTest extends SDODataObje
 
         dataObject_a.setShort("PName-a0/PName-b0[number='1']/PName-c1.0", bb.shortValue());
 
-        this.assertEquals(bb.shortValue(), dataObject_a.getShort("PName-a0/PName-b0[number='1']/PName-c1.0"));
+        assertEquals(bb.shortValue(), dataObject_a.getShort("PName-a0/PName-b0[number='1']/PName-c1.0"));
     }
 }

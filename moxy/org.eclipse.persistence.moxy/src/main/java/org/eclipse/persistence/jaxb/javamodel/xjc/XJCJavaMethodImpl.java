@@ -243,7 +243,7 @@ public class XJCJavaMethodImpl implements JavaMethod {
 
             for (JavaClass type : allParams) {
                 Class<?> paramClass = Class.forName(type.getPackageName() + "." + type.getName());
-                if (paramClass.newInstance() instanceof ParameterizedType) {
+                if (paramClass.getConstructor().newInstance() instanceof ParameterizedType) {
                     return true;
                 }
             }

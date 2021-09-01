@@ -60,7 +60,7 @@ public class IllegalAccessWhileGettingValueThruInstanceVariableAccessorTest exte
             DatabaseMapping dMapping = descriptor().getMappingForAttributeName("illegalAccess");
             //   DatabaseMapping idMapping = descriptor().getMappingForAttributeName("id");
             //InstanceVariableAttributeAccessor    MethodAttributeAccessor
-            ((MethodAttributeAccessor)dMapping.getAttributeAccessor()).initializeAttributes(org.eclipse.persistence.testing.tests.validation.EmployeeWithProblems.class);
+            dMapping.getAttributeAccessor().initializeAttributes(org.eclipse.persistence.testing.tests.validation.EmployeeWithProblems.class);
             //    ((InstanceVariableAttributeAccessor)dMapping.getAttributeAccessor()).initializeAttributes(org.eclipse.persistence.testing.tests.validation.EmployeeWithProblems.class);
             address = (String)dMapping.getAttributeValueFromObject(person);
 

@@ -4671,7 +4671,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         if (!shouldLog(level, category)) {
             return;
         }
-        log(level, category, message, (Object[])null);
+        log(level, category, message, null);
     }
 
     /**

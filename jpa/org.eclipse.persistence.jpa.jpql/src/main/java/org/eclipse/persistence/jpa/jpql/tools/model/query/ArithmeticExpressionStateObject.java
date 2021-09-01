@@ -80,25 +80,16 @@ public abstract class ArithmeticExpressionStateObject extends CompoundExpression
         super(parent, leftJpqlFragment, rightJpqlFragment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ArithmeticExpression getExpression() {
         return (ArithmeticExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getLeftQueryBNFId() {
         return ArithmeticExpressionBNF.ID;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getRightQueryBNFId() {
         return ArithmeticTermBNF.ID;

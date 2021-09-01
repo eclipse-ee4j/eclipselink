@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,12 +35,14 @@ public class MainLoginTestCase extends ProxyAuthenticationConnectionTestCase {
         super(proxyProperties);
     }
 
+    @Override
     protected void proxySetup() {
         originalWriteProperties = (Properties)getServerSession().getLogin().getProperties().clone();
         originalReadProperties = (Properties)((DatabaseLogin)getServerSession().getReadConnectionPool().getLogin()).getProperties().clone();
         // To handle preLogin event relog the session
         getServerSession().logout();
         listener = new SessionEventAdapter() {
+                    @Override
                     public void preLogin(SessionEvent event) {
                         ServerSession ss = (ServerSession)event.getSession();
                         addProxyPropertiesToLogin(ss.getLogin());
@@ -55,6 +57,7 @@ public class MainLoginTestCase extends ProxyAuthenticationConnectionTestCase {
         getServerSession().getEventManager().getListeners().remove(listener);
     }
 
+    @Override
     public void reset() {
         super.reset();
         // restore the original properties
@@ -66,6 +69,7 @@ public class MainLoginTestCase extends ProxyAuthenticationConnectionTestCase {
 
     // both read and write connections are expected to use proxy user
 
+    @Override
     protected String readConnectionSchemaExpected() {
         return writeConnectionSchemaExpected();
     }

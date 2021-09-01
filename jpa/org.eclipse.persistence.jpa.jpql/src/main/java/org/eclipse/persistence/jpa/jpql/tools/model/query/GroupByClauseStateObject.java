@@ -52,9 +52,6 @@ public class GroupByClauseStateObject extends AbstractListHolderStateObject<Stat
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
@@ -73,34 +70,22 @@ public class GroupByClauseStateObject extends AbstractListHolderStateObject<Stat
         return stateObject;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public GroupByClause getExpression() {
         return (GroupByClause) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AbstractSelectStatementStateObject getParent() {
         return (AbstractSelectStatementStateObject) super.getParent();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
         return super.isEquivalent(stateObject) &&
                areChildrenEquivalent((GroupByClauseStateObject) stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String listName() {
         return GROUP_BY_ITEMS_LIST;
@@ -129,9 +114,6 @@ public class GroupByClauseStateObject extends AbstractListHolderStateObject<Stat
         super.setExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
         writer.append(GROUP_BY);

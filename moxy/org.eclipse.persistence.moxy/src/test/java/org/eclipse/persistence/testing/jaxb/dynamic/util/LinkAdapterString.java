@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,14 +33,14 @@ public class LinkAdapterString extends XmlAdapter<String, DynamicEntity> {
     }
 
     public LinkAdapterString(DynamicJAXBContext jc) {
-        this.jc = jc;
+        LinkAdapterString.jc = jc;
     }
 
     @Override
     public DynamicEntity unmarshal(String v) throws Exception {
         DynamicEntity address = jc.newDynamicEntity("mynamespace.Address");
 
-        StringTokenizer tokenizer = new StringTokenizer((String) v, "|");
+        StringTokenizer tokenizer = new StringTokenizer(v, "|");
 
         String street = tokenizer.nextToken();
         street = street.replace('_', ' ');

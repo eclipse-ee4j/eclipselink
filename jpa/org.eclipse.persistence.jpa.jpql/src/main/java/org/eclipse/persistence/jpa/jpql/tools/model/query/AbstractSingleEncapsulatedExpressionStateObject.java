@@ -82,9 +82,6 @@ public abstract class AbstractSingleEncapsulatedExpressionStateObject extends Ab
         parse(jpqlFragment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
@@ -93,9 +90,6 @@ public abstract class AbstractSingleEncapsulatedExpressionStateObject extends Ab
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AbstractSingleEncapsulatedExpression getExpression() {
         return (AbstractSingleEncapsulatedExpression) super.getExpression();
@@ -129,9 +123,6 @@ public abstract class AbstractSingleEncapsulatedExpressionStateObject extends Ab
         return getStateObject() != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -165,9 +156,6 @@ public abstract class AbstractSingleEncapsulatedExpressionStateObject extends Ab
         firePropertyChanged(STATE_OBJECT_PROPERTY, oldStateObject, stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextEncapsulatedExpression(Appendable writer) throws IOException {
         if (stateObject != null) {

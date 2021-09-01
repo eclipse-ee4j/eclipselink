@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,10 +25,12 @@ public class XDBTestModelMWIntegration extends TestModel {
         setDescription("Tests Oracle XDB Specific features");
     }
 
+    @Override
     public void addTests() {
         addTest(getXDBTestSuite());
     }
 
+    @Override
     public void reset() {
         this.getSession().getLogin().setPlatform(oldPlatform);
         getDatabaseSession().logout();
@@ -49,6 +51,7 @@ public class XDBTestModelMWIntegration extends TestModel {
         return testSuite;
     }
 
+    @Override
     public void addForcedRequiredSystems() {
         addForcedRequiredSystem(new XMLTypeEmployeeSystemXML());
         oldPlatform = getSession().getPlatform();

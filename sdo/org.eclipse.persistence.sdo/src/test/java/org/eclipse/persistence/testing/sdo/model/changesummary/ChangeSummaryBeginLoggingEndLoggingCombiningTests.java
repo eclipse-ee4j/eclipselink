@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,8 +30,8 @@ public class ChangeSummaryBeginLoggingEndLoggingCombiningTests extends ChangeSum
     // verify recursive delete sets isSet properly
     public void testBehaviorsAfterLoginThenLogoff() {
         buildTree();
-        changeSummaryB = (SDOChangeSummary)dataObjectB.getChangeSummary();
-        changeSummaryC = (SDOChangeSummary)dataObjectC.getChangeSummary();
+        changeSummaryB = dataObjectB.getChangeSummary();
+        changeSummaryC = dataObjectC.getChangeSummary();
 
         // two ChangeSummary logon now.
         changeSummaryB.beginLogging();

@@ -68,6 +68,7 @@ public class XmlSchemaTypesTestCases extends JAXBWithJSONTestCases {
         TimeZone.setDefault(currentTimeZone);
     }
 
+    @Override
     protected Object getControlObject() {
         Employee emp = new Employee();
 
@@ -82,6 +83,7 @@ public class XmlSchemaTypesTestCases extends JAXBWithJSONTestCases {
         return emp;
     }
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlschematypes/eclipselink-oxm.xml");
 

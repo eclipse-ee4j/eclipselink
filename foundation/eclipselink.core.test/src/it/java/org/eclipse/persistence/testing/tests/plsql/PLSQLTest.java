@@ -84,8 +84,8 @@ public class PLSQLTest extends TestCase {
                 Object queryValue = queryRecord.get(field);
                 if (value instanceof Number) {
                     // Avoid Java number type in-equality.
-                    value = ((Number)value).toString();
-                    queryValue = ((Number)queryValue).toString();
+                    value = value.toString();
+                    queryValue = queryValue.toString();
                 }
                 if (!value.equals(queryValue)) {
                     throwError("Results do not match: " + queryValue + " expected: " + value);

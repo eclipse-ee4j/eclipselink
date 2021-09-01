@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -200,7 +202,7 @@ public class SDODataObjectGetBytesByPositionalPathTest extends SDODataObjectGetB
 
         dataObject_a.setBytes(propertyPath_a_b_c, b);// add it to instance list
 
-        this.assertTrue(Arrays.equals(b, dataObject_a.getBytes(propertyPath_a_b_c)));
+        assertTrue(Arrays.equals(b, dataObject_a.getBytes(propertyPath_a_b_c)));
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
@@ -220,7 +222,7 @@ public class SDODataObjectGetBytesByPositionalPathTest extends SDODataObjectGetB
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setBytes(property3, bb);
 
-        this.assertTrue(Arrays.equals(bb, dataObject_a.getBytes(property3)));
+        assertTrue(Arrays.equals(bb, dataObject_a.getBytes(property3)));
 
     }
 
@@ -240,7 +242,7 @@ public class SDODataObjectGetBytesByPositionalPathTest extends SDODataObjectGetB
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setBytes(property + ".0", bb);
 
-        this.assertTrue(Arrays.equals(bb, dataObject_a.getBytes(property + ".0")));
+        assertTrue(Arrays.equals(bb, dataObject_a.getBytes(property + ".0")));
 
     }
 
@@ -256,7 +258,7 @@ public class SDODataObjectGetBytesByPositionalPathTest extends SDODataObjectGetB
 
         dataObject_a.setBytes(property1, bb);// c dataobject's a property has value boolean 'true'
 
-        this.assertTrue(Arrays.equals(bb, dataObject_a.getBytes(property1)));
+        assertTrue(Arrays.equals(bb, dataObject_a.getBytes(property1)));
     }
 
     /*   public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet() {

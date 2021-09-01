@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -67,17 +67,11 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
         super(parent, EXTRACT);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         acceptUnknownVisitor(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedEncapsulatedExpressionTo(List<Expression> children) {
 
@@ -103,9 +97,6 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
         super.addOrderedEncapsulatedExpressionTo(children);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getEncapsulatedExpressionQueryBNFId() {
         return ScalarExpressionBNF.ID;
@@ -132,9 +123,6 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
         return datePart;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(ExtractExpressionBNF.ID);
@@ -149,9 +137,6 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
         return ExpressionTools.stringIsNotEmpty(datePart);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean hasEncapsulatedExpression() {
         return hasDatePart() || (fromIdentifier != null) || hasExpression();
@@ -185,18 +170,12 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
         return hasSpaceAfterFrom;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
         return word.equalsIgnoreCase(FROM) ||
                super.isParsingComplete(wordParser, word, expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parseEncapsulatedExpression(WordParser wordParser,
                                                int whitespaceCount,
@@ -236,9 +215,6 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
         super.parseEncapsulatedExpression(wordParser, whitespaceCount, tolerant);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void removeEncapsulatedExpression() {
         super.removeEncapsulatedExpression();
@@ -248,9 +224,6 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
         hasSpaceAfterDatePart = false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedTextEncapsulatedExpression(StringBuilder writer, boolean actual) {
 

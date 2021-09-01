@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -147,9 +147,9 @@ public class CacheIdTest {
 			newCacheId("any"), newCacheId((Object)null));
 
 		smaller("many primaryKey - smaller",
-			newCacheId("ab", (Object)null), newCacheId("ab", "any"));
+			newCacheId("ab", null), newCacheId("ab", "any"));
 		greater("many primaryKey - greater",
-			newCacheId("bc", "any"), newCacheId("bc", (Object)null));
+			newCacheId("bc", "any"), newCacheId("bc", null));
 	}
 
 	@Test

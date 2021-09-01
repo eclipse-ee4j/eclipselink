@@ -54,24 +54,15 @@ public final class DateTime extends AbstractExpression {
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
         children.add(buildStringExpression(getText()));
@@ -87,17 +78,11 @@ public final class DateTime extends AbstractExpression {
         return identifier;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(FunctionsReturningDatetimeBNF.ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getText() {
         return super.getText();
@@ -148,9 +133,6 @@ public final class DateTime extends AbstractExpression {
         return getText().charAt(0) == LEFT_CURLY_BRACKET;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -204,25 +186,16 @@ public final class DateTime extends AbstractExpression {
         wordParser.moveForward(stopIndex - startIndex);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toActualText() {
         return getText();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toParsedText() {
         return getText();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
         writer.append(actual && !isJDBCDate() ? identifier : getText());

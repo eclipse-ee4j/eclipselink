@@ -16,6 +16,8 @@ package org.eclipse.persistence.testing.sdo.model.dataobject.xpathquery;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import junit.framework.TestCase;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -27,7 +29,7 @@ public class SDODataObjectGetFloatConversionByXPathQueryTest extends SDODataObje
     }
 
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet() {
-        SDOProperty prop = (SDOProperty)dataObject_c0.getType().getProperty("test");
+        SDOProperty prop = dataObject_c0.getType().getProperty("test");
         prop.setType(SDOConstants.SDO_FLOAT);
 
         Float bb = Float.valueOf(1.2f);
@@ -41,7 +43,7 @@ public class SDODataObjectGetFloatConversionByXPathQueryTest extends SDODataObje
 
     // purpose: opencontent properties
     public void testGetFloatConversionFromDefinedPropertyWithPath() {
-        SDOProperty property_c1_object = ((SDOProperty)dataObject_c1.getInstanceProperty("PName-c1"));
+        SDOProperty property_c1_object = dataObject_c1.getInstanceProperty("PName-c1");
         property_c1_object.setType(SDOConstants.SDO_FLOAT);
         List objects = new ArrayList();
         Float b = Float.valueOf(2f);
@@ -78,7 +80,7 @@ public class SDODataObjectGetFloatConversionByXPathQueryTest extends SDODataObje
     //3. purpose: getDataObject with property set to boolean value
     public void testGetDataObjectConversionFromProperty() {
         //try {
-        this.assertNull(dataObject_a.getDataObject("PName-a/notExistedTest"));
+        assertNull(dataObject_a.getDataObject("PName-a/notExistedTest"));
 
         //fail("IllegalArgumentException should be thrown.");
         //} catch (IllegalArgumentException e) {
@@ -88,7 +90,7 @@ public class SDODataObjectGetFloatConversionByXPathQueryTest extends SDODataObje
     //purpose: getDataObject with nul value
     public void testGetDataObjectConversionWithNullArgument() {
         String p = null;
-        this.assertNull(dataObject_a.getDataObject(p));
+        assertNull(dataObject_a.getDataObject(p));
     }
 
     public void testSetGetDataObjectWithQueryPath() {
@@ -104,6 +106,6 @@ public class SDODataObjectGetFloatConversionByXPathQueryTest extends SDODataObje
 
         dataObject_a.setFloat("PName-a0/PName-b0[number='1']/PName-c1.0", b.floatValue());
 
-        this.assertEquals("testSetGetDataObjectWithQueryPath failed", b.floatValue(), dataObject_a.getFloat("PName-a0/PName-b0[number='1']/PName-c1.0"), (float)0.0);
+        assertEquals("testSetGetDataObjectWithQueryPath failed", b.floatValue(), dataObject_a.getFloat("PName-a0/PName-b0[number='1']/PName-c1.0"), (float)0.0);
     }
 }

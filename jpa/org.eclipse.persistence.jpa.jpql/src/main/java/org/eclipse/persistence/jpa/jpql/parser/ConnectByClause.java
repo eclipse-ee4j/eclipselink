@@ -56,33 +56,21 @@ public final class ConnectByClause extends AbstractExpression {
         super(parent, CONNECT_BY);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         acceptUnknownVisitor(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getExpression().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         children.add(getExpression());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
 
@@ -99,9 +87,6 @@ public final class ConnectByClause extends AbstractExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -135,9 +120,6 @@ public final class ConnectByClause extends AbstractExpression {
         return expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(ConnectByClauseBNF.ID);
@@ -164,9 +146,6 @@ public final class ConnectByClause extends AbstractExpression {
         return hasSpaceAfterConnectBy;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -179,9 +158,6 @@ public final class ConnectByClause extends AbstractExpression {
         expression = parse(wordParser, InternalConnectByClauseBNF.ID, tolerant);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
 

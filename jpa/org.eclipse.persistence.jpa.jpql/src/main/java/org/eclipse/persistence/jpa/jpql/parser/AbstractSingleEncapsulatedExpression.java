@@ -48,25 +48,16 @@ public abstract class AbstractSingleEncapsulatedExpression extends AbstractEncap
         super(parent, identifier);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getExpression().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected final void addChildrenTo(Collection<Expression> children) {
         children.add(getExpression());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedEncapsulatedExpressionTo(List<Expression> children) {
         if (expression != null) {
@@ -74,9 +65,6 @@ public abstract class AbstractSingleEncapsulatedExpression extends AbstractEncap
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -106,9 +94,6 @@ public abstract class AbstractSingleEncapsulatedExpression extends AbstractEncap
         return expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean hasEncapsulatedExpression() {
         return hasExpression();
@@ -125,9 +110,6 @@ public abstract class AbstractSingleEncapsulatedExpression extends AbstractEncap
               !expression.isNull();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parseEncapsulatedExpression(WordParser wordParser,
                                                int whitespaceCount,
@@ -136,9 +118,6 @@ public abstract class AbstractSingleEncapsulatedExpression extends AbstractEncap
         expression = parse(wordParser, getEncapsulatedExpressionQueryBNFId(), tolerant);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void removeEncapsulatedExpression() {
         expression = null;
@@ -156,9 +135,6 @@ public abstract class AbstractSingleEncapsulatedExpression extends AbstractEncap
         this.expression.setParent(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedTextEncapsulatedExpression(StringBuilder writer, boolean actual) {
         if (expression != null) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,10 +28,12 @@ public class AttributeGroupTestCases  extends XSDHelperDefineTestCases {
         TestRunner.run(AttributeGroupTestCases.class);
     }
 
+    @Override
     public String getSchemaToDefine() {
         return "org/eclipse/persistence/testing/sdo/helper/xsdhelper/define/soap_encoding_1.1.xsd";
     }
 
+      @Override
       public void testDefine() {
         //String xsdSchema = getSchema(getSchemaToDefine());
         InputStream is = getSchemaInputStream(getSchemaToDefine());
@@ -48,6 +50,7 @@ public class AttributeGroupTestCases  extends XSDHelperDefineTestCases {
         //compare(getControlTypes(), types);
     }
 
+    @Override
     public List getControlTypes()
     {
       return new ArrayList();
