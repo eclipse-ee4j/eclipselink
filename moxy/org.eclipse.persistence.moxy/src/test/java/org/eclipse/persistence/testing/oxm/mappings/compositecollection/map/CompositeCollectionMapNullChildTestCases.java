@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ public class CompositeCollectionMapNullChildTestCases extends XMLMappingTestCase
         setProject(new CompositeCollectionMapProject());
     }
 
+    @Override
     protected Object getControlObject() {
         Employee employee = new Employee();
         employee.setID(CONTROL_EMPLOYEE_ID);
@@ -53,6 +54,7 @@ public class CompositeCollectionMapNullChildTestCases extends XMLMappingTestCase
         return employee;
     }
 
+    @Override
     protected Document getWriteControlDocument() throws Exception {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(XML_WRITE_RESOURCE);
         Document writeControlDocument = parser.parse(inputStream);

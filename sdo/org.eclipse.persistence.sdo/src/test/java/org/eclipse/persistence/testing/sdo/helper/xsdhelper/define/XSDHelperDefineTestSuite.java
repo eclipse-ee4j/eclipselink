@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,11 +33,11 @@ public class XSDHelperDefineTestSuite {
     public static Test suite() {
         TestSuite suite = new TestSuite("All XSDHelper Define Tests");
 
-        suite.addTest(new SDOSimpleTypeXSDTestSuite().suite());
-        suite.addTest(new SDOComplexTypeXSDTestSuite().suite());
-        suite.addTest(new SDOAttributeXSDTestSuite().suite());
-        suite.addTest(new SDOElementXSDTestSuite().suite());
-        suite.addTest(new ComplexDefineTestSuite().suite());
+        suite.addTest(SDOSimpleTypeXSDTestSuite.suite());
+        suite.addTest(SDOComplexTypeXSDTestSuite.suite());
+        suite.addTest(SDOAttributeXSDTestSuite.suite());
+        suite.addTest(SDOElementXSDTestSuite.suite());
+        suite.addTest(ComplexDefineTestSuite.suite());
         suite.addTestSuite(ImportTypeWithSameNameAsElementTestSuite.class);
         suite.addTestSuite(ExtendTypeWithSimpleContentTest.class);
         suite.addTestSuite(RedefineTestCases.class);

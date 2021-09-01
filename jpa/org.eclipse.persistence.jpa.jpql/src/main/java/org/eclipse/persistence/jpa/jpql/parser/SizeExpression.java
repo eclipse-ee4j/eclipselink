@@ -38,33 +38,21 @@ public final class SizeExpression extends AbstractSingleEncapsulatedExpression {
         super(parent, SIZE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getEncapsulatedExpressionQueryBNFId() {
         return CollectionValuedPathExpressionBNF.ID;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(FunctionsReturningNumericsBNF.ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected AbstractExpression parse(WordParser wordParser, String queryBNFId, boolean tolerant) {
 

@@ -60,6 +60,7 @@ public class ChoiceCollectionMappingTestCases extends JAXBWithJSONTestCases {
      *
      * @return
      */
+    @Override
     public Object getWriteControlObject() {
         if(writeCtrlObject == null){
             List<Object> things = new ArrayList<Object>();
@@ -80,6 +81,7 @@ public class ChoiceCollectionMappingTestCases extends JAXBWithJSONTestCases {
         return writeCtrlObject;
     }
 
+    @Override
     public Object getControlObject() {
 
         List<Object> things = new ArrayList<Object>();
@@ -96,6 +98,7 @@ public class ChoiceCollectionMappingTestCases extends JAXBWithJSONTestCases {
         return emp;
     }
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/choicecollection/employee-oxm.xml");
 
@@ -133,23 +136,28 @@ public class ChoiceCollectionMappingTestCases extends JAXBWithJSONTestCases {
         assertTrue("Instance doc validation (write-employee) failed unxepectedly: " + result, result == null);
     }
 
+    @Override
     public void xmlToObjectTest(Object testObject) throws Exception {
         super.xmlToObjectTest(testObject);
         assertTrue("Accessor method was not called as expected", ((Employee)testObject).wasSetCalled);
     }
 
+    @Override
     public void testRoundTrip() throws Exception{
         //doesn't apply since read and write only mappings are present
     }
 
+    @Override
     public void objectToXMLDocumentTest(Document testDocument) throws Exception {
         super.objectToXMLDocumentTest(testDocument);
         assertTrue("Accessor method was not called as expected", writeCtrlObject.wasGetCalled);
     }
 
+    @Override
     public void testJSONMarshalToBuilderResult() throws Exception{
         //Currently not supported, 101.1 will get written as 101.0999984741211
     }
+    @Override
     public void testJSONMarshalToGeneratorResult() throws Exception{
         //Currently not supported, 101.1 will get written as 101.0999984741211
     }

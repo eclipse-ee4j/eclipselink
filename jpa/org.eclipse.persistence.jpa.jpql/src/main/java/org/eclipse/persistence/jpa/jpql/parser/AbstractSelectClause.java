@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -76,25 +76,16 @@ public abstract class AbstractSelectClause extends AbstractExpression {
         super(parent, SELECT);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getSelectExpression().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         children.add(getSelectExpression());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
 
@@ -139,9 +130,6 @@ public abstract class AbstractSelectClause extends AbstractExpression {
         return new CollectionExpression(this, children, commas, spaces, true);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -234,9 +222,6 @@ public abstract class AbstractSelectClause extends AbstractExpression {
         return hasSpaceAfterSelect;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -255,17 +240,11 @@ public abstract class AbstractSelectClause extends AbstractExpression {
         selectExpression = parse(wordParser, getSelectItemQueryBNFId(), tolerant);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean shouldSkipLiteral(AbstractExpression expression) {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
 

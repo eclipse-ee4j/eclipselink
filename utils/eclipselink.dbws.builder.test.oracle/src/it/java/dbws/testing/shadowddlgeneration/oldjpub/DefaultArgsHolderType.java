@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,15 +42,18 @@ public class DefaultArgsHolderType extends SqlTypeWithFields {
      * Returns an array of Field objects reflecting all the accessible fields of this Type object.
      * Returns an array of length 0 if this Type object has no accesible fields.
      */
+    @Override
     public List<AttributeField> getDeclaredFields(boolean publishedOnly) {
         return m_fields;
     }
 
+    @Override
     public List<AttributeField> getFields(boolean publishedOnly) throws SecurityException,
         SQLException, PublisherException {
         return m_fields;
     }
 
+    @Override
     protected List<FieldInfo> getFieldInfo() throws SQLException {
         throw new SQLException("DefaultArgsHolderType#getFieldInfo not supported");
     }

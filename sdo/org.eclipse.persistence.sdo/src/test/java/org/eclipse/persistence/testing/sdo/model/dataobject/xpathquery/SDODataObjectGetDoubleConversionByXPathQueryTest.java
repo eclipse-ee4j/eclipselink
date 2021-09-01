@@ -27,7 +27,7 @@ public class SDODataObjectGetDoubleConversionByXPathQueryTest extends SDODataObj
     }
 
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet() {
-        SDOProperty prop = (SDOProperty)dataObject_c0.getType().getProperty("test");
+        SDOProperty prop = dataObject_c0.getType().getProperty("test");
         prop.setType(SDOConstants.SDO_DOUBLE);
 
         double bb = 12.0;
@@ -41,7 +41,7 @@ public class SDODataObjectGetDoubleConversionByXPathQueryTest extends SDODataObj
 
     // purpose: opencontent properties
     public void testGetBooleanConversionFromDefinedPropertyWithPath() {
-        SDOProperty property_c1_object = ((SDOProperty)dataObject_c1.getInstanceProperty("PName-c1"));
+        SDOProperty property_c1_object = dataObject_c1.getInstanceProperty("PName-c1");
         property_c1_object.setType(SDOConstants.SDO_DOUBLE);
         List objects = new ArrayList();
         Double b = Double.valueOf(12);

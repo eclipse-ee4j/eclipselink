@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class AnyObjectKeepAllAsElementTestCases extends XMLWithJSONMappingTestCa
         setControlJSON("org/eclipse/persistence/testing/oxm/mappings/anyobject/withoutgroupingelement/keep_all_as_element.json");
     }
 
+    @Override
     public Object getControlObject() {
         RootKeepAsElement root = new RootKeepAsElement();
         try {
@@ -53,6 +54,7 @@ public class AnyObjectKeepAllAsElementTestCases extends XMLWithJSONMappingTestCa
         return root;
     }
 
+    @Override
     public Object getWriteControlObject() {
         Child child = new Child();
         child.setContent(TEXT);

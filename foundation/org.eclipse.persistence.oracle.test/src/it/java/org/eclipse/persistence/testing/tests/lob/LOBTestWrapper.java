@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ public class LOBTestWrapper extends TestWrapper {
         setName(getName() + " platform forced to "+(shouldUseLocatorForLOBWrite ? "use" : "NOT use")+" lob locators)");
     }
 
+    @Override
     protected void setup() throws Throwable {
         DatabasePlatform platform = getSession().getPlatform();
         if (!platform.isOracle()) {
@@ -65,6 +66,7 @@ public class LOBTestWrapper extends TestWrapper {
         super.setup();
     }
 
+    @Override
     public void reset() throws Throwable {
         super.reset();
         DatabasePlatform platform = getSession().getPlatform();

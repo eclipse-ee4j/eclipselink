@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -183,18 +183,22 @@ public class VectorUtils {
             super(vector);
         }
 
+        @Override
         public E set(int index, E element) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void add(int index, E element) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public E remove(int index) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public boolean addAll(int index, Collection<? extends E> c) {
             throw new UnsupportedOperationException();
         }
@@ -204,31 +208,41 @@ public class VectorUtils {
             return Collections.unmodifiableList(super.subList(fromIndex, toIndex));
         }
 
+        @Override
         public ListIterator<E> listIterator(final int index) {
             return new ListIterator<E>() {
                 private final ListIterator<? extends E> i
                     = listIterator(index);
 
+                @Override
                 public boolean hasNext() {return i.hasNext();}
 
+                @Override
                 public E next() {return i.next();}
 
+                @Override
                 public boolean hasPrevious() {return i.hasPrevious();}
 
+                @Override
                 public E previous() {return i.previous();}
 
+                @Override
                 public int nextIndex() {return i.nextIndex();}
 
+                @Override
                 public int previousIndex() {return i.previousIndex();}
 
+                @Override
                 public void remove() {
                     throw new UnsupportedOperationException();
                 }
 
+                @Override
                 public void set(E e) {
                     throw new UnsupportedOperationException();
                 }
 
+                @Override
                 public void add(E e) {
                     throw new UnsupportedOperationException();
                 }
@@ -240,6 +254,7 @@ public class VectorUtils {
             };
         }
 
+        @Override
         public ListIterator<E> listIterator() {return listIterator(0);}
 
         @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,6 +42,7 @@ public class XMLFragmentElementTestCases extends XMLMappingTestCases {
     setProject(new XMLFragmentElementProject());
   }
 
+  @Override
   protected Object getControlObject() {
     Employee employee = new Employee();
     employee.firstName = "Jane";
@@ -63,21 +64,27 @@ public class XMLFragmentElementTestCases extends XMLMappingTestCases {
       try {
           xmlMarshaller.marshal(obj, new ContentHandler() {
 
+              @Override
               public void setDocumentLocator(Locator locator) {
               }
 
+              @Override
               public void startDocument() throws SAXException {
               }
 
+              @Override
               public void endDocument() throws SAXException {
               }
 
+              @Override
               public void startPrefixMapping(String prefix, String uri) throws SAXException {
               }
 
+              @Override
               public void endPrefixMapping(String prefix) throws SAXException {
               }
 
+              @Override
               public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
                   if(atts.getLength() > 0) {
                       for(int i = 0; i < atts.getLength(); i++) {
@@ -88,18 +95,23 @@ public class XMLFragmentElementTestCases extends XMLMappingTestCases {
                   }
               }
 
+              @Override
               public void endElement(String uri, String localName, String qName) throws SAXException {
               }
 
+              @Override
               public void characters(char[] ch, int start, int length) throws SAXException {
               }
 
+              @Override
               public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
               }
 
+              @Override
               public void processingInstruction(String target, String data) throws SAXException {
               }
 
+              @Override
               public void skippedEntity(String name) throws SAXException {
               }
           });

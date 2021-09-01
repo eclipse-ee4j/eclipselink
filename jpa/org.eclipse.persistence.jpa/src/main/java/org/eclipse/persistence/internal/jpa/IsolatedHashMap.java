@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2015, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -119,73 +119,73 @@ public final class IsolatedHashMap<K, V> implements Map<K, V> {
     }
 
     // All Map interface methods are delegated to Map mapped to current partition.
-    /** {@inheritDoc} */
+
     @Override
     public int size() {
         return getMap().size();
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public boolean isEmpty() {
         return getMap().isEmpty();
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public boolean containsKey(Object key) {
         return getMap().containsKey(key);
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public boolean containsValue(Object value) {
         return getMap().containsValue(value);
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public V get(Object key) {
         return getMap().get(key);
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public V put(K key, V value) {
         return getMap().put(key, value);
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public V remove(Object key) {
         return getMap().remove(key);
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public void putAll(Map<? extends K, ? extends V> m) {
         getMap().putAll(m);
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public void clear() {
         getMap().clear();
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public Set<K> keySet() {
         return getMap().keySet();
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public Collection<V> values() {
         return getMap().values();
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public Set<java.util.Map.Entry<K, V>> entrySet() {
         return getMap().entrySet();

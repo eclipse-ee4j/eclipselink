@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,22 +30,27 @@ public class LoadAndSaveWithDataObjectDataTypeTestCases extends LoadAndSaveTestC
         super(name);
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/dataObjectDataType.xml");
     }
 
+    @Override
     protected String getSchemaName() {
         return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/DataObjectDataType.xsd";
     }
 
+    @Override
     protected String getControlRootURI() {
         return NON_DEFAULT_URI;
     }
 
+    @Override
     protected String getControlRootName() {
         return "rootType";
     }
 
+     @Override
      protected String getRootInterfaceName() {
         return "RootType";
     }
@@ -56,12 +61,14 @@ public class LoadAndSaveWithDataObjectDataTypeTestCases extends LoadAndSaveTestC
     }
 
     // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    @Override
     protected List<String> getPackages() {
         List<String> packages = new ArrayList<String>();
         packages.add(NON_DEFAULT_JAVA_PACKAGE_DIR);
         return packages;
     }
 
+    @Override
     protected void registerTypes() {
         ((SDOTypeHelper)typeHelper).reset();
 

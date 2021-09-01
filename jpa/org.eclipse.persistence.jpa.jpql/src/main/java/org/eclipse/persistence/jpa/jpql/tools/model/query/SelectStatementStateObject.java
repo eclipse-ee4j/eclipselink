@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,17 +63,11 @@ public class SelectStatementStateObject extends AbstractSelectStatementStateObje
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
@@ -172,33 +166,21 @@ public class SelectStatementStateObject extends AbstractSelectStatementStateObje
         return getSelectClause().addItemAs(jpqlFragment, resultVariable);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected AbstractFromClauseStateObject buildFromClause() {
         return new FromClauseStateObject(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected AbstractSelectClauseStateObject buildSelectClause() {
         return new SelectClauseStateObject(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SelectStatement getExpression() {
         return (SelectStatement) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public FromClauseStateObject getFromClause() {
         return (FromClauseStateObject) super.getFromClause();
@@ -214,9 +196,6 @@ public class SelectStatementStateObject extends AbstractSelectStatementStateObje
         return orderByClause;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryStateObject getParent() {
         return (JPQLQueryStateObject) super.getParent();
@@ -234,9 +213,6 @@ public class SelectStatementStateObject extends AbstractSelectStatementStateObje
         return getSelectClause().getBuilder();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SelectClauseStateObject getSelectClause() {
         return (SelectClauseStateObject) super.getSelectClause();
@@ -252,9 +228,6 @@ public class SelectStatementStateObject extends AbstractSelectStatementStateObje
         return orderByClause != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -303,9 +276,6 @@ public class SelectStatementStateObject extends AbstractSelectStatementStateObje
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
 

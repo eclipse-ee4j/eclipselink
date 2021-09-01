@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,23 +33,27 @@ public class JAXBElementByteArrayAttachmentTestCases  extends JAXBElementTestCas
     }
 
 
+    @Override
     public Class getUnmarshalClass(){
         return byte[].class;
     }
 
 
+    @Override
     public void setUp() throws Exception{
         super.setUp();
         jaxbMarshaller.setAttachmentMarshaller(new MyJAXBAttachmentMarshaller(new byte[] {0, 1, 2, 3}));
         jaxbUnmarshaller.setAttachmentUnmarshaller(new MyJAXBAttachmentUnmarshaller());
     }
 
+    @Override
     public Class[] getClasses(){
         Class[] classes = new Class[1];
         classes[0] = byte[].class;
         return classes;
     }
 
+    @Override
     protected Object getControlObject() {
         JAXBElement<byte[]> jbe = new JAXBElement<byte[]>(new QName("a", "b"),byte[].class, new byte[] { 0, 1, 2, 3});
         return jbe;

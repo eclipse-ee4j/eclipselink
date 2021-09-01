@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,49 +44,31 @@ final class CollectionDeclaration extends Declaration {
         super(queryContext);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     Expression buildQueryExpression() {
         return queryContext.buildExpression(baseExpression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public CollectionValuedPathExpression getBaseExpression() {
         return (CollectionValuedPathExpression) super.getBaseExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public CollectionMemberDeclaration getDeclarationExpression() {
         return (CollectionMemberDeclaration) super.getDeclarationExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Type getType() {
         return Type.COLLECTION;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     ClassDescriptor resolveDescriptor() {
         return queryContext.resolveDescriptor(baseExpression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     DatabaseMapping resolveMapping() {
         return queryContext.resolveMapping(baseExpression);

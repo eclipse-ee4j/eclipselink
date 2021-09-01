@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -503,7 +503,7 @@ public abstract class DatasourceAccessor implements Accessor {
      */
     @Override
     public void disconnect(AbstractSession session) throws DatabaseException {
-        session.log(SessionLog.FINE, SessionLog.CONNECTION, "disconnect", (Object[])null, this);
+        session.log(SessionLog.FINE, SessionLog.CONNECTION, "disconnect", null, this);
 
         if (this.datasourceConnection == null) {
             return;
@@ -596,7 +596,7 @@ public abstract class DatasourceAccessor implements Accessor {
      * Note: Connections that are participating in transactions will not be refreshed.^M
      */
     protected void reconnect(AbstractSession session) throws DatabaseException {
-        session.log(SessionLog.FINEST, SessionLog.CONNECTION, "reconnecting_to_external_connection_pool", (Object[])null, this);
+        session.log(SessionLog.FINEST, SessionLog.CONNECTION, "reconnecting_to_external_connection_pool", null, this);
         session.startOperationProfile(SessionProfiler.ConnectionManagement);
         try {
             connectInternal(this.login, session);

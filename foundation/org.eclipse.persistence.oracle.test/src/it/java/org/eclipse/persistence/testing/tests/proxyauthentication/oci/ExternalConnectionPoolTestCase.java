@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,11 +50,13 @@ public class ExternalConnectionPoolTestCase extends ProxyAuthenticationConnectio
         setName(getName() + suffix);
     }
 
+    @Override
     protected void proxySetup() {
         if (useEvent) {
             // Use this approach if ClientSession created with default connection policy:
             // cs = serverSession.acquireClientSession();
             listener = new SessionEventAdapter() {
+                        @Override
                         public void postAcquireClientSession(SessionEvent event) {
                             ClientSession cs = (ClientSession)event.getSession();
                             ConnectionPolicy policy = (ConnectionPolicy)cs.getConnectionPolicy().clone();
@@ -92,6 +94,7 @@ public class ExternalConnectionPoolTestCase extends ProxyAuthenticationConnectio
         }
     }
 
+    @Override
     public void reset() {
         super.reset();
         String proxyUser = proxyProperties.getProperty("PROXY_USER_NAME");

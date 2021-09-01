@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.sdo.helper.datahelper;
 
+import junit.framework.TestCase;
+
 import java.util.Calendar;
 
 public class DataHelperToMonthWithCalnTest extends DataHelperTestCases {
@@ -26,19 +28,19 @@ public class DataHelperToMonthWithCalnTest extends DataHelperTestCases {
         controlCalendar.clear();
         controlCalendar.set(Calendar.MONTH, 10);
         String tm = dataHelper.toMonth(controlCalendar);
-        this.assertEquals("--11", tm);
+        assertEquals("--11", tm);
     }
 
     public void testToMonthWithDefault() {
         Calendar controlCalendar = Calendar.getInstance();
         controlCalendar.clear();
         String tm = dataHelper.toMonth(controlCalendar);
-        this.assertEquals("--01", tm);
+        assertEquals("--01", tm);
     }
 
     public void testToMonthWithNullInput() {
         Calendar controlCalendar = null;
         String tm = dataHelper.toMonth(controlCalendar);
-        this.assertNull(tm);
+        assertNull(tm);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,14 +57,17 @@ public class EmployeeIsSetParams extends Employee {
         }
     }
 
+    @Override
     public String getFirstName() {
         return firstName;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
 
+    @Override
     public String getLastName() {
         return lastName;
     }
@@ -88,16 +91,19 @@ public class EmployeeIsSetParams extends Employee {
            return isSetFirstName;
     }*/
 
+    @Override
     public void setFirstName(String firstName) {
         // no unset for now
         isSetFirstName = true;
         this.firstName = firstName;
     }
 
+    @Override
     public void setId(Integer id) {
         this.id = id;
     }
 
+    @Override
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }

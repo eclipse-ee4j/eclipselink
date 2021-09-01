@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Calendar;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -35,7 +37,7 @@ public class SDODataObjectGetBytesConversionTest extends SDODataObjectConversion
 
     //1. purpose: getBytes with Boolean property
     public void testGetBytesFromBoolean() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
+        SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BOOLEAN);
         dataObject.set(property, true);
         try {
@@ -47,7 +49,7 @@ public class SDODataObjectGetBytesConversionTest extends SDODataObjectConversion
 
     //2. purpose: getBytes with Byte property
     public void testGetBytesFromByte() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
+        SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BYTE);
         byte theByte = new String("abc").getBytes()[0];
         dataObject.set(property, theByte);
@@ -60,7 +62,7 @@ public class SDODataObjectGetBytesConversionTest extends SDODataObjectConversion
 
     //3. purpose: getBytes with character property
     public void testGetBytesFromCharacter() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
+        SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_CHARACTER);
         dataObject.set(property, 'c');
         try {
@@ -72,7 +74,7 @@ public class SDODataObjectGetBytesConversionTest extends SDODataObjectConversion
 
     //4. purpose: getBytes with Double Property
     public void testGetBytesFromDouble() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
+        SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_DOUBLE);
         double doubleValue = 2.0;
         dataObject.set(property, doubleValue);
@@ -85,7 +87,7 @@ public class SDODataObjectGetBytesConversionTest extends SDODataObjectConversion
 
     //5. purpose: getBytes with float Property
     public void testGetBytesFromFloat() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
+        SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_FLOAT);
         float floatValue= 123;
         dataObject.set(property, floatValue);
@@ -99,7 +101,7 @@ public class SDODataObjectGetBytesConversionTest extends SDODataObjectConversion
 
     //6. purpose: getBytes with int Property
     public void testGetBytesFromInt() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
+        SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_INT);
         int intValue= 123;
         dataObject.set(property, intValue);
@@ -112,7 +114,7 @@ public class SDODataObjectGetBytesConversionTest extends SDODataObjectConversion
 
     //7. purpose: getBytes with long Property
     public void testGetBytesFromLong() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
+        SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_LONG);
         long longValue = 123;
         dataObject.set(property, longValue);
@@ -125,7 +127,7 @@ public class SDODataObjectGetBytesConversionTest extends SDODataObjectConversion
 
     //8. purpose: getBytes with short Property
     public void testGetBytesFromShort() {
-       SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
+       SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_SHORT);
         short shortValue = 123;
         dataObject.set(property, shortValue);
@@ -138,7 +140,7 @@ public class SDODataObjectGetBytesConversionTest extends SDODataObjectConversion
 
     //9. purpose: getBytes with string Property
     public void testGetBytesFromString() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
+        SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_STRING);
         dataObject.set(property, ")A64");
         try {
@@ -152,14 +154,14 @@ public class SDODataObjectGetBytesConversionTest extends SDODataObjectConversion
     //10. purpose: getBytes with Defined Bytes Property
     public void testGetBytesConversionFromDefinedBytesProperty() {
         // dataObject's type add boolean property
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BYTES);
 
         byte[] b = { 12, 13 };
 
         dataObject.setBytes(property, b);// add it to instance list
 
-        this.assertTrue(Arrays.equals(b, dataObject.getBytes(property)));
+        assertTrue(Arrays.equals(b, dataObject.getBytes(property)));
     }
 
     //11. purpose: getBytes with Undefined Bytes Property
@@ -177,7 +179,7 @@ public class SDODataObjectGetBytesConversionTest extends SDODataObjectConversion
 
     //12. purpose: getBytes with decimal property
     public void testGetBytesFromDecimal() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
+        SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_DECIMAL);
         dataObject.set(property, new BigDecimal(2));
         try {
@@ -190,7 +192,7 @@ public class SDODataObjectGetBytesConversionTest extends SDODataObjectConversion
     //13. purpose: getBytes with Defined Bytes Property   !!   OX PRO     !!
     public void testGetBytesConversionFromDefinedIntegerProperty() {
         // dataObject's type add boolean property
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_INTEGER);
 
         BigInteger bin = new BigInteger("12");
@@ -198,7 +200,7 @@ public class SDODataObjectGetBytesConversionTest extends SDODataObjectConversion
 
         dataObject.setBigInteger(property, bin);// add it to instance list
         byte[] b1 = dataObject.getBytes(property);
-        this.assertTrue(Arrays.equals(b, b1));
+        assertTrue(Arrays.equals(b, b1));
     }
 
     //11. purpose: getBytes with Undefined Integer Property
@@ -216,7 +218,7 @@ public class SDODataObjectGetBytesConversionTest extends SDODataObjectConversion
 
     //22. purpose: getBytes with date property
     public void testGetBytesFromDate() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
+        SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_DATE);
         dataObject.set(property, Calendar.getInstance().getTime());
         try {

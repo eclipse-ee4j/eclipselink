@@ -44,17 +44,11 @@ public final class ExistsExpression extends AbstractSingleEncapsulatedExpression
         super(parent, EXISTS);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getEncapsulatedExpressionQueryBNFId() {
         return SubqueryBNF.ID;
@@ -71,9 +65,6 @@ public final class ExistsExpression extends AbstractSingleEncapsulatedExpression
         return (notIdentifier != null) ? notIdentifier : ExpressionTools.EMPTY_STRING;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(ExistsExpressionBNF.ID);
@@ -88,9 +79,6 @@ public final class ExistsExpression extends AbstractSingleEncapsulatedExpression
         return (notIdentifier != null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -104,9 +92,6 @@ public final class ExistsExpression extends AbstractSingleEncapsulatedExpression
         super.parse(wordParser, tolerant);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected AbstractExpression parse(WordParser wordParser, String queryBNFId, boolean tolerant) {
 

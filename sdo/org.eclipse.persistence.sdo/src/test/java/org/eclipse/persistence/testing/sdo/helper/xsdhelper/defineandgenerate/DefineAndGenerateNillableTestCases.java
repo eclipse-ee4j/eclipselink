@@ -28,6 +28,7 @@ public class DefineAndGenerateNillableTestCases extends XSDHelperDefineAndGenera
         super(name);
     }
 
+    @Override
     public String getSchemaToDefine() {
         return "org/eclipse/persistence/testing/sdo/schemas/CustomerWithNillable.xsd";
     }
@@ -37,10 +38,12 @@ public class DefineAndGenerateNillableTestCases extends XSDHelperDefineAndGenera
         TestRunner.main(arguments);
     }
 
+    @Override
     public String getControlGeneratedFileName() {
         return "org/eclipse/persistence/testing/sdo/schemas/CustomerWithNillableGenerated.xsd";
     }
 
+    @Override
     public List<Type> getControlTypes() {
         List<Type> types = new ArrayList<Type>();
         String uri = NON_DEFAULT_URI;

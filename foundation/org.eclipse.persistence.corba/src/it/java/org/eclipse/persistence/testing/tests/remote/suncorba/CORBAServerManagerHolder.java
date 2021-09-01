@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,14 +32,17 @@ public final class CORBAServerManagerHolder implements org.omg.CORBA.portable.St
   {
     value = initialValue;
   }
+  @Override
   public void _read (org.omg.CORBA.portable.InputStream i)
   {
     value = org.eclipse.persistence.testing.tests.remote.suncorba.CORBAServerManagerHelper.read (i);
   }
+  @Override
   public org.omg.CORBA.TypeCode _type ()
   {
     return org.eclipse.persistence.testing.tests.remote.suncorba.CORBAServerManagerHelper.type ();
   }
+  @Override
   public void _write (org.omg.CORBA.portable.OutputStream o)
   {
     org.eclipse.persistence.testing.tests.remote.suncorba.CORBAServerManagerHelper.write (o, value);

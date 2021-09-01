@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -58,6 +58,7 @@ public class CollectionHolderELTestCases extends JAXBWithJSONTestCases{
         return ch;
     }
 
+    @Override
     public Object getReadControlObject(){
         CollectionHolder ch =  new CollectionHolder();
         ch.collection2 = new ArrayList();
@@ -65,6 +66,7 @@ public class CollectionHolderELTestCases extends JAXBWithJSONTestCases{
         return ch;
     }
 
+    @Override
     public Object getJSONReadControlObject(){
         CollectionHolder ch =  new CollectionHolder();
         ch.collection1 = new ArrayList();

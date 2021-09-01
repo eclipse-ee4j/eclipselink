@@ -44,8 +44,8 @@ public class TextAreaOutputStream extends OutputStream {
         if (shouldAutoScroll()) {
             if (getText().getParent() instanceof JViewport) {
                 int max =
-                    ((JScrollPane)(((JViewport)getText().getParent()).getParent())).getVerticalScrollBar().getMaximum();
-                ((JScrollPane)(((JViewport)getText().getParent()).getParent())).getVerticalScrollBar().setValue(max);
+                    ((JScrollPane)(getText().getParent().getParent())).getVerticalScrollBar().getMaximum();
+                ((JScrollPane)(getText().getParent().getParent())).getVerticalScrollBar().setValue(max);
             }
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -86,9 +86,6 @@ public abstract class LiteralVisitor extends AnonymousExpressionVisitor {
         this.literal = ExpressionTools.EMPTY_STRING;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AbstractSchemaName expression) {
         if (type == LiteralType.ABSTRACT_SCHEMA_NAME) {
@@ -96,9 +93,6 @@ public abstract class LiteralVisitor extends AnonymousExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CollectionMemberDeclaration expression) {
 
@@ -113,17 +107,11 @@ public abstract class LiteralVisitor extends AnonymousExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CollectionValuedPathExpression expression) {
         visitAbstractPathExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(EntityTypeLiteral expression) {
         if (type == LiteralType.ENTITY_TYPE) {
@@ -131,9 +119,6 @@ public abstract class LiteralVisitor extends AnonymousExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(FunctionExpression expression) {
         if (type == LiteralType.STRING_LITERAL) {
@@ -141,9 +126,6 @@ public abstract class LiteralVisitor extends AnonymousExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(IdentificationVariable expression) {
 
@@ -155,9 +137,6 @@ public abstract class LiteralVisitor extends AnonymousExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(InputParameter expression) {
         if (type == LiteralType.INPUT_PARAMETER) {
@@ -165,9 +144,6 @@ public abstract class LiteralVisitor extends AnonymousExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(Join expression) {
         if (type == LiteralType.IDENTIFICATION_VARIABLE) {
@@ -178,9 +154,6 @@ public abstract class LiteralVisitor extends AnonymousExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(RangeVariableDeclaration expression) {
         if (type == LiteralType.ABSTRACT_SCHEMA_NAME) {
@@ -191,9 +164,6 @@ public abstract class LiteralVisitor extends AnonymousExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ResultVariable expression) {
         if (type == LiteralType.RESULT_VARIABLE) {
@@ -201,17 +171,11 @@ public abstract class LiteralVisitor extends AnonymousExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(StateFieldPathExpression expression) {
         visitAbstractPathExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(StringLiteral expression) {
         if (type == LiteralType.STRING_LITERAL) {
@@ -219,9 +183,6 @@ public abstract class LiteralVisitor extends AnonymousExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(TreatExpression expression) {
         expression.getCollectionValuedPathExpression().accept(this);

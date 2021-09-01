@@ -35,17 +35,20 @@ public class PostBuildEventTestCases extends XMLMappingTestCases {
         setControlDocument("org/eclipse/persistence/testing/oxm/events/composite_object.xml");
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         project.setup();
     }
 
+    @Override
     public void xmlToObjectTest(Object testObject) throws Exception {
         super.xmlToObjectTest(testObject);
         assertTrue("Employee post build event did not occur as expected", project.events.contains(EMPLOYEE_POST_BUILD));
         assertTrue("Address  post build event did not occur as expected", project.events.contains(ADDRESS_POST_BUILD));
     }
 
+    @Override
     public Object getControlObject() {
         Employee employee = new Employee();
         Address address = new Address();

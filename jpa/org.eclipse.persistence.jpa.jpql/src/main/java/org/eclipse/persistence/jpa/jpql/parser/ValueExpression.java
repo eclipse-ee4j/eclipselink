@@ -42,9 +42,6 @@ public final class ValueExpression extends EncapsulatedIdentificationVariableExp
         super(parent, VALUE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);

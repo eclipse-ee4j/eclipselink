@@ -38,25 +38,16 @@ public final class SimpleSelectClause extends AbstractSelectClause {
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(SimpleSelectClauseBNF.ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getSelectItemQueryBNFId() {
         return InternalSimpleSelectExpressionBNF.ID;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,6 +49,7 @@ public class XmlElementRefTestCases extends JAXBWithJSONTestCases {
         setClasses(new Class[] { Foo.class });
     }
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementref/eclipselink-oxm.xml");
 
@@ -70,11 +71,13 @@ public class XmlElementRefTestCases extends JAXBWithJSONTestCases {
 
     }
 
+    @Override
     public Object getControlObject() {
         Foo foo = new Foo();
         return foo;
     }
 
+    @Override
     public Object getWriteControlObject() {
         if(writeObject == null){
             Foo foo = new Foo();
@@ -87,11 +90,13 @@ public class XmlElementRefTestCases extends JAXBWithJSONTestCases {
     }
 
 
+    @Override
     public void objectToXMLDocumentTest(Document testDocument) throws Exception {
         super.objectToXMLDocumentTest(testDocument);
         assertTrue("Method accessor was not called as expected.", ((Foo) writeObject).accessedViaMethod);
     }
 
+    @Override
     public void testRoundTrip(){
         //not applicable with write only mappings.
     }

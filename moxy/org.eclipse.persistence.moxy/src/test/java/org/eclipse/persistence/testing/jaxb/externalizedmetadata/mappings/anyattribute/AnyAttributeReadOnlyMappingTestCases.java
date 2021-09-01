@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,6 +55,7 @@ public class AnyAttributeReadOnlyMappingTestCases extends JAXBWithJSONTestCases{
     }
 
 
+      @Override
       public JAXBMarshaller getJSONMarshaller() throws Exception{
             JAXBMarshaller jsonMarshaller = (JAXBMarshaller) jaxbContext.createMarshaller();
             jsonMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
@@ -65,6 +66,7 @@ public class AnyAttributeReadOnlyMappingTestCases extends JAXBWithJSONTestCases{
             return jsonMarshaller;
 
         }
+     @Override
      public Map getProperties(){
             InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyattribute/read-only-employee-oxm.xml");
 
@@ -79,6 +81,7 @@ public class AnyAttributeReadOnlyMappingTestCases extends JAXBWithJSONTestCases{
        /**
          * Create the control Employee.
          */
+        @Override
         public Object getControlObject() {
               Employee ctrlEmp = new Employee();
               HashMap stuff = new HashMap();
@@ -96,6 +99,7 @@ public class AnyAttributeReadOnlyMappingTestCases extends JAXBWithJSONTestCases{
 
                super.testSchemaGen(controlSchemas);
         }
+        @Override
         public void testRoundTrip(){
             //not applicable with write only mappings
         }

@@ -27,6 +27,7 @@ public class TypeAttributeNullTestCases extends XMLMappingTestCases {
         setProject(new TypeAttributeProject());
     }
 
+    @Override
     protected Object getControlObject() {
         Employee employee = new Employee();
         Identifier id = new Identifier();
@@ -38,6 +39,7 @@ public class TypeAttributeNullTestCases extends XMLMappingTestCases {
         return employee;
     }
 
+    @Override
     public Object getReadControlObject() {
         Employee employee = new Employee();
         String id = new String("123#AAA");

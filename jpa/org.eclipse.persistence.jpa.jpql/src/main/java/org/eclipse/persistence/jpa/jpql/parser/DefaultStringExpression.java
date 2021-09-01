@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,49 +42,31 @@ public final class DefaultStringExpression extends AbstractExpression {
         this.value = value;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         // This object should not be visited
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         // This object does not have children
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
         // Nothing to parse
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void populatePosition(QueryPosition queryPosition, int position) {
         queryPosition.setExpression(getParent());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
         writer.append(value);

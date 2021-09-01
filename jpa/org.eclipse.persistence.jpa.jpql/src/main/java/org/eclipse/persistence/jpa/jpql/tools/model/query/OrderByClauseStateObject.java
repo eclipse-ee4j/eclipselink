@@ -53,9 +53,6 @@ public class OrderByClauseStateObject extends AbstractListHolderStateObject<Orde
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
@@ -151,34 +148,22 @@ public class OrderByClauseStateObject extends AbstractListHolderStateObject<Orde
         return updateItem;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public OrderByClause getExpression() {
         return (OrderByClause) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SelectStatementStateObject getParent() {
         return (SelectStatementStateObject) super.getParent();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
         return super.isEquivalent(stateObject) &&
                areChildrenEquivalent((OrderByClauseStateObject) stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String listName() {
         return ORDER_BY_ITEMS_LIST;
@@ -207,9 +192,6 @@ public class OrderByClauseStateObject extends AbstractListHolderStateObject<Orde
         super.setExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
         writer.append(ORDER_BY);

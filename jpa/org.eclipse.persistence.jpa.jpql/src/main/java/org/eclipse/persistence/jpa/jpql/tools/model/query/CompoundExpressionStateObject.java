@@ -99,9 +99,6 @@ public abstract class CompoundExpressionStateObject extends AbstractStateObject 
         parseRight(rightJpqlFragment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
@@ -113,9 +110,6 @@ public abstract class CompoundExpressionStateObject extends AbstractStateObject 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public CompoundExpression getExpression() {
         return (CompoundExpression) super.getExpression();
@@ -182,9 +176,6 @@ public abstract class CompoundExpressionStateObject extends AbstractStateObject 
         return rightStateObject != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -239,9 +230,6 @@ public abstract class CompoundExpressionStateObject extends AbstractStateObject 
         firePropertyChanged(RIGHT_STATE_OBJECT_PROPERTY, oldRightStateObject, rightStateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
 

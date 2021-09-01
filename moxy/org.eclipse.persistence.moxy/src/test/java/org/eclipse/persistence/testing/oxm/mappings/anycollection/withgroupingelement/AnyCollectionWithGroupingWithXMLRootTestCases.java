@@ -33,7 +33,7 @@ public class AnyCollectionWithGroupingWithXMLRootTestCases extends XMLWithJSONMa
     public AnyCollectionWithGroupingWithXMLRootTestCases(String name) throws Exception {
         super(name);
         Project project = new AnyCollectionWithGroupingElementProjectNS();
-        ((XMLAnyCollectionMapping)((XMLDescriptor)project.getDescriptor(Root.class)).getMappingForAttributeName("any")).setUseXMLRoot(true);
+        ((XMLAnyCollectionMapping) project.getDescriptor(Root.class).getMappingForAttributeName("any")).setUseXMLRoot(true);
 
         XMLSchemaClassPathReference schemaRef = new XMLSchemaClassPathReference();
         schemaRef.setSchemaContext("/myns:childType");
@@ -52,6 +52,7 @@ public class AnyCollectionWithGroupingWithXMLRootTestCases extends XMLWithJSONMa
         return namespaces;
     }
 
+    @Override
     public Object getControlObject() {
         Root root = new Root();
         Vector any = new Vector();
@@ -133,6 +134,7 @@ public class AnyCollectionWithGroupingWithXMLRootTestCases extends XMLWithJSONMa
         return root;
     }
 
+    @Override
     public Object getJSONReadControlObject(){
         //different order - mixed always last and same qnames grouped together, no namespaces
 

@@ -63,25 +63,16 @@ public class StateFieldPathExpressionStateObject extends AbstractPathExpressionS
         super(parent, path);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public StateFieldPathExpression getExpression() {
         return (StateFieldPathExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected IManagedType resolveManagedType() {
 
@@ -116,9 +107,6 @@ public class StateFieldPathExpressionStateObject extends AbstractPathExpressionS
         return getManagedTypeProvider().getManagedType(type);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected IType resolveType() {
         return getTypeHelper().convertPrimitive(getTypeDeclaration().getType());
@@ -147,56 +135,35 @@ public class StateFieldPathExpressionStateObject extends AbstractPathExpressionS
             this.provider = provider;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void accept(IManagedTypeVisitor visitor) {
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public int compareTo(IManagedType managedType) {
             return getType().getName().compareTo(managedType.getType().getName());
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public IMapping getMappingNamed(String name) {
             return null;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public IManagedTypeProvider getProvider() {
             return provider;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public IType getType() {
             return mapType;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public Iterable<IMapping> mappings() {
             return EmptyIterable.instance();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public String toString() {
             return getType().getName();

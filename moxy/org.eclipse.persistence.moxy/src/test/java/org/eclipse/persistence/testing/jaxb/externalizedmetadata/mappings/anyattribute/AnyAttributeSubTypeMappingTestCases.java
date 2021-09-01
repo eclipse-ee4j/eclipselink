@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,6 +63,7 @@ public class AnyAttributeSubTypeMappingTestCases extends JAXBWithJSONTestCases {
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
     }
 
+    @Override
     public JAXBMarshaller getJSONMarshaller() throws Exception{
         JAXBMarshaller jsonMarshaller = (JAXBMarshaller) jaxbContext.createMarshaller();
         jsonMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
@@ -77,6 +78,7 @@ public class AnyAttributeSubTypeMappingTestCases extends JAXBWithJSONTestCases {
     /**
      * Create the control XmlAnyAttributeSubTypeMapModel.
      */
+    @Override
     public Object getControlObject() {
         XmlAnyAttributeSubTypeMapModel anyAttributeSubTypeMapModel = new XmlAnyAttributeSubTypeMapModel();
         LinkedHashMap children = new LinkedHashMap();
@@ -88,6 +90,7 @@ public class AnyAttributeSubTypeMappingTestCases extends JAXBWithJSONTestCases {
         return anyAttributeSubTypeMapModel;
     }
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyattribute/subtype-map-oxm.xml");
 

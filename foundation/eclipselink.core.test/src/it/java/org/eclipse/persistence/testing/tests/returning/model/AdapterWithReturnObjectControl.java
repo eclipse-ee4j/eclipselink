@@ -90,7 +90,7 @@ public abstract class AdapterWithReturnObjectControl implements ProjectAndDataba
                     mapping.writeFromObjectIntoRow(object2, (DatabaseRecord)row, (AbstractSession)session, writeType);
                 }
             } else if (aggregate1 != null && aggregate2 != null && aggregate1.getClass().equals(aggregate2.getClass())) {
-                ClassDescriptor desc = ((AggregateObjectMapping)mapping).getReferenceDescriptor();
+                ClassDescriptor desc = mapping.getReferenceDescriptor();
                 getChange(row, session, aggregate1, aggregate2, desc, useUOW, writeType);
             } else {
                 mapping.writeFromObjectIntoRow(object2, (DatabaseRecord)row, (AbstractSession)session, writeType);

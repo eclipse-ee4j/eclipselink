@@ -108,47 +108,89 @@ public class SchemaGeneratorTestCase {
         JavaModelInputImpl jModelInput = new JavaModelInputImpl(DOMAIN_CLASSES, new JavaModelImpl(new JaxbClassLoader(Thread.currentThread().getContextClassLoader(), DOMAIN_CLASSES)));
         Helper helper = new Helper(jModelInput.getJavaModel());
 
-        assertFalse(helper.isBuiltInJavaType(new JavaClass() { public String getRawName() { return "javax.xml.rpc.StringHolder";}
+        assertFalse(helper.isBuiltInJavaType(new JavaClass() { @Override
+        public String getRawName() { return "javax.xml.rpc.StringHolder";}
+            @Override
             public JavaClassInstanceOf instanceOf() { return null; }
+            @Override
             public boolean isSynthetic() { return false; }
+            @Override
             public Collection getActualTypeArguments() { return null; }
+            @Override
             public JavaClass getComponentType() { return null; }
+            @Override
             public String getQualifiedName() { return null; }
+            @Override
             public boolean hasActualTypeArguments() { return false; }
+            @Override
             public Collection getDeclaredClasses() { return null; }
+            @Override
             public JavaField getDeclaredField(String arg0) { return null; }
+            @Override
             public Collection getDeclaredFields() { return null; }
+            @Override
             public JavaMethod getDeclaredMethod(String arg0, JavaClass[] arg1) { return null; }
+            @Override
             public Collection getDeclaredMethods() { return null; }
+            @Override
             public JavaMethod getMethod(String arg0, JavaClass[] arg1) { return null; }
+            @Override
             public Collection getMethods() { return null ;}
+            @Override
             public JavaConstructor getConstructor(JavaClass[] parameterTypes) { return null; }
+            @Override
             public Collection getConstructors() { return null; }
+            @Override
             public JavaConstructor getDeclaredConstructor(JavaClass[] parameterTypes) { return null; }
+            @Override
             public Collection getDeclaredConstructors() { return null; }
+            @Override
             public int getModifiers() { return 0; }
+            @Override
             public String getName() { return null; }
+            @Override
             public JavaPackage getPackage() { return null; }
+            @Override
             public String getPackageName() { return null; }
+            @Override
             public JavaClass getSuperclass() { return null; }
+            @Override
             public Type[] getGenericInterfaces() { return null; }
+            @Override
             public Type getGenericSuperclass() { return null; }
+            @Override
             public boolean isAbstract() { return false; }
+            @Override
             public boolean isAnnotation() { return false; }
+            @Override
             public boolean isArray() { return false; }
+            @Override
             public boolean isAssignableFrom(JavaClass arg0) { return false; }
+            @Override
             public boolean isEnum() { return false; }
+            @Override
             public boolean isFinal() { return false; }
+            @Override
             public boolean isInterface() { return false; }
+            @Override
             public boolean isMemberClass() { return false; }
+            @Override
             public boolean isPrimitive() { return false; }
+            @Override
             public boolean isPrivate() { return false; }
+            @Override
             public boolean isProtected() { return false; }
+            @Override
             public boolean isPublic() { return false; }
+            @Override
             public boolean isStatic() { return false; }
+            @Override
             public JavaAnnotation getAnnotation(JavaClass arg0) { return null; }
+            @Override
             public Collection getAnnotations() { return null; }
+            @Override
             public JavaAnnotation getDeclaredAnnotation(JavaClass arg0) { return null; }
+            @Override
             public Collection getDeclaredAnnotations() { return null; }
         }));
     }

@@ -34,6 +34,7 @@ public class DirectCollectionWithGroupingElementIdentifiedByNameIntegerTestCases
         setProject(new DirectCollectionWithGroupingElementIdentifiedByNameIntegerProject());
   }
 
+  @Override
   protected Object getControlObject() {
         Vector responsibilities = new Vector();
         responsibilities.addElement(CONTROL_RESPONSIBILITY1);

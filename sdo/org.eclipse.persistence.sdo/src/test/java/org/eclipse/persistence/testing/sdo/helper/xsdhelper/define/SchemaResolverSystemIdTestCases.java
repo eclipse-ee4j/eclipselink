@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,10 +46,12 @@ public class SchemaResolverSystemIdTestCases extends XSDHelperDefineTestCases {
         TestRunner.run(SchemaResolverSystemIdTestCases.class);
     }
 
+    @Override
     public String getSchemaToDefine() {
         return "";
     }
 
+    @Override
     public void testDefine() {
         StreamSource source = new StreamSource("xyz:zxy");
         List types = ((SDOXSDHelper)xsdHelper).define(source, new MySchemaResolver());
@@ -115,10 +117,12 @@ public class SchemaResolverSystemIdTestCases extends XSDHelperDefineTestCases {
 
     public static class MySchemaResolver implements SchemaResolver {
 
+        @Override
         public Source resolveSchema(Source sourceXSD, String namespace, String schemaLocation) {
             return null;
         }
 
+        @Override
         public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
             String schema = "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
             "<xsd:complexType name=\"employee-type\">" +
@@ -138,16 +142,19 @@ public class SchemaResolverSystemIdTestCases extends XSDHelperDefineTestCases {
 
         private String systemId;
 
+        @Override
         public String getSystemId() {
             return systemId;
         }
 
+        @Override
         public void setSystemId(String systemId) {
             this.systemId = systemId;
         }
 
     }
 
+    @Override
     public List getControlTypes()
     {
       return new ArrayList();

@@ -77,9 +77,6 @@ final class EclipseLinkSemanticValidatorHelper implements SemanticValidatorHelpe
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void collectAllDeclarationIdentificationVariables(Map<String, List<IdentificationVariable>> identificationVariables) {
 
@@ -108,25 +105,16 @@ final class EclipseLinkSemanticValidatorHelper implements SemanticValidatorHelpe
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void collectLocalDeclarationIdentificationVariables(Map<String, List<IdentificationVariable>> identificationVariables) {
         collectLocalDeclarationIdentificationVariables(queryContext, identificationVariables);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void disposeSubqueryContext() {
         queryContext.disposeSubqueryContext();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String[] entityNames() {
 
@@ -145,9 +133,6 @@ final class EclipseLinkSemanticValidatorHelper implements SemanticValidatorHelpe
         return names.toArray(new String[names.size()]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public List<JPQLQueryDeclaration> getAllDeclarations() {
 
@@ -162,26 +147,17 @@ final class EclipseLinkSemanticValidatorHelper implements SemanticValidatorHelpe
         return declarations;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object[] getConstructors(Object type) {
         return (type != null) ? ((Class<?>) type).getDeclaredConstructors() : ExpressionTools.EMPTY_ARRAY;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public List getDeclarations() {
         return queryContext.getDeclarations();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ClassDescriptor getEmbeddable(Object type) {
 
@@ -194,17 +170,11 @@ final class EclipseLinkSemanticValidatorHelper implements SemanticValidatorHelpe
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ClassDescriptor getEntityNamed(String entityName) {
         return queryContext.getDescriptor(entityName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SuppressWarnings("unchecked")
     public String[] getEnumConstants(Object type) {
@@ -219,25 +189,16 @@ final class EclipseLinkSemanticValidatorHelper implements SemanticValidatorHelpe
         return names;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLGrammar getGrammar() {
         return queryContext.getGrammar();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object getManagedType(Expression expression) {
         return queryContext.resolveDescriptor(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object getReferenceManagedType(Object mapping) {
 
@@ -248,9 +209,6 @@ final class EclipseLinkSemanticValidatorHelper implements SemanticValidatorHelpe
         return ((DatabaseMapping) mapping).getReferenceDescriptor();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object getMappingNamed(Object entity, String name) {
 
@@ -264,9 +222,6 @@ final class EclipseLinkSemanticValidatorHelper implements SemanticValidatorHelpe
         return mapping;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Class<?> getMappingType(Object mapping) {
 
@@ -284,84 +239,54 @@ final class EclipseLinkSemanticValidatorHelper implements SemanticValidatorHelpe
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Type[] getMethodParameterTypeDeclarations(Object constructor) {
         return ((Constructor<?>) constructor).getGenericParameterTypes();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Class<?> getType(Expression expression) {
         return queryContext.getType(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object getType(Object typeDeclaration) {
         // Not used
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Class<?> getType(String className) {
         return queryContext.getType(className);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object getTypeDeclaration(Expression expression) {
         // Not used
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ITypeHelper getTypeHelper() {
         // Not used
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getTypeName(Object type) {
         return ((Class<?>) type).getName();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isAssignableTo(Object type1, Object type2) {
         return ((Class<?>) type2).isAssignableFrom((Class<?>) type1) ;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isCollectionIdentificationVariable(String variableName) {
         return queryContext.isCollectionIdentificationVariable(variableName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isCollectionMapping(Object mapping) {
 
@@ -384,17 +309,11 @@ final class EclipseLinkSemanticValidatorHelper implements SemanticValidatorHelpe
         return (mapping instanceof org.eclipse.persistence.mappings.EmbeddableMapping);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEnumType(Object type) {
         return (type != null) && ((Class<?>) type).isEnum();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isIdentificationVariableValidInComparison(IdentificationVariable expression) {
 
@@ -415,17 +334,11 @@ final class EclipseLinkSemanticValidatorHelper implements SemanticValidatorHelpe
                mapping.isAbstractCompositeDirectCollectionMapping();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isManagedTypeResolvable(Object managedType) {
         return managedType != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isPropertyMapping(Object mapping) {
 
@@ -443,9 +356,6 @@ final class EclipseLinkSemanticValidatorHelper implements SemanticValidatorHelpe
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isRelationshipMapping(Object mapping) {
 
@@ -465,58 +375,37 @@ final class EclipseLinkSemanticValidatorHelper implements SemanticValidatorHelpe
         return ((QueryKey) mapping).isForeignReferenceQueryKey();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isResultVariable(String variableName) {
         return queryContext.isResultVariable(variableName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isTransient(Object mapping) {
         return mapping == null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isTypeDeclarationAssignableTo(Object typeDeclaration1, Object typeDeclaration2) {
         // Not used
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isTypeResolvable(Object type) {
         return type != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void newSubqueryContext(SimpleSelectStatement expression) {
         queryContext.newSubQueryContext(expression, null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object resolveMapping(Expression expression) {
         return queryContext.resolveMappingObject(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object resolveMapping(String variableName, String name) {
 

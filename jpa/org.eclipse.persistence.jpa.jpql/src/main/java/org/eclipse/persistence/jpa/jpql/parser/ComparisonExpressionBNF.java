@@ -55,9 +55,6 @@ public final class ComparisonExpressionBNF extends JPQLQueryBNF {
         super(ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();

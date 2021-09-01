@@ -73,25 +73,16 @@ public class SubtractionExpressionStateObject extends ArithmeticExpressionStateO
         super(parent, leftJpqlFragment, rightJpqlFragment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SubtractionExpression getExpression() {
         return (SubtractionExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return MINUS;

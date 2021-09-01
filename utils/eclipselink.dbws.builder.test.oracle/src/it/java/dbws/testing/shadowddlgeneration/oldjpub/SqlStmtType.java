@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,6 +48,7 @@ public class SqlStmtType extends SqlType {
      * SqlTypeWithMethods object. Returns an array of length 0 if the SqlTypeWithMethods declares no
      * methods
      */
+    @Override
     public List<ProcedureMethod> getDeclaredMethods() {
         List<ProcedureMethod> methods = new ArrayList<ProcedureMethod>(m_methods);
         return methods;
@@ -63,6 +64,7 @@ public class SqlStmtType extends SqlType {
      * methods of java.lang.reflect.Modifier. If we ever need additional modifiers for C++, we can
      * subclass this.
      */
+    @Override
     public int getModifiers() throws SQLException {
         return Modifier.PUBLIC;
     }
@@ -90,6 +92,7 @@ public class SqlStmtType extends SqlType {
         }
     }
 
+    @Override
     public boolean hasMethods() throws SQLException, PublisherException {
         /* subclasses with methods override this */
         return m_methods != null && m_methods.size() > 0;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,10 +42,12 @@ public class CyclicImportsDefineTestCases extends XSDHelperDefineTestCases {
         TestRunner.run(CyclicImportsDefineTestCases.class);
     }
 
+    @Override
     public String getSchemaToDefine() {
         return FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/Cyclic1.xsd";
     }
 
+    @Override
     protected String getSchemaLocation() {
         return FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/";
     }
@@ -119,6 +121,7 @@ public class CyclicImportsDefineTestCases extends XSDHelperDefineTestCases {
      * Success case - all types should be defined successfully with no infinite
      * looping or multiple schema processing.
      */
+    @Override
     public void testDefine() {
         testDefine(new StreamSource(getSchemaToDefine()), new DefaultSchemaResolver());
     }
@@ -155,6 +158,7 @@ public class CyclicImportsDefineTestCases extends XSDHelperDefineTestCases {
         }
     }
 
+    @Override
     public List<Type> getControlTypes() {
         SDOType intType = (SDOType) typeHelper.getType("commonj.sdo", "Int");
         SDOType stringType = (SDOType) typeHelper.getType("commonj.sdo", "String");

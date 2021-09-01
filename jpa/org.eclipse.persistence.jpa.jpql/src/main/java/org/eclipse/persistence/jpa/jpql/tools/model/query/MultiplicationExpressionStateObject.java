@@ -73,25 +73,16 @@ public class MultiplicationExpressionStateObject extends ArithmeticExpressionSta
         super(parent, leftJpqlFragment, rightJpqlFragment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public MultiplicationExpression getExpression() {
         return (MultiplicationExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return MULTIPLICATION;

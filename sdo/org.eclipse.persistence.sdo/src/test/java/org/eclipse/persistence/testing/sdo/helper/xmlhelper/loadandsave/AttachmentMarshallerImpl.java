@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,22 +30,27 @@ public class AttachmentMarshallerImpl implements XMLAttachmentMarshaller {
     }
 
     // maintain a global counter
+    @Override
     public String addMtomAttachment(byte[] bytes, int start, int offset, String namespaceURI, String elemtnName, String mimeType) {
         return id;
     }
 
+    @Override
     public String addSwaRefAttachment(byte[] bytes, int start, int offset) {
         throw new UnsupportedOperationException("addSwaRefAttachment not supported");
     }
 
+    @Override
     public String addMtomAttachment(DataHandler data, String elementName, String namespace) {
         throw new UnsupportedOperationException("addMtomAttachment not supported");
     }
 
+    @Override
     public String addSwaRefAttachment(DataHandler data) {
         throw new UnsupportedOperationException("addSwaRefAttachment not supported");
     }
 
+    @Override
     public boolean isXOPPackage() {
         // force attachment usage
         return true;

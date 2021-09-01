@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ public class DirectToFieldCDATATestCases extends XMLMappingTestCases {
         setProject(new DirectToFieldCDATAProject());
     }
 
+    @Override
     protected Object getControlObject() {
         Employee emp = new Employee();
         emp.firstName = CONTROL_FIRST_NAME;
@@ -41,6 +42,7 @@ public class DirectToFieldCDATATestCases extends XMLMappingTestCases {
         return emp;
     }
 
+    @Override
     public void testObjectToContentHandler() throws Exception {
         //CDATA not supported by content handlers
     }

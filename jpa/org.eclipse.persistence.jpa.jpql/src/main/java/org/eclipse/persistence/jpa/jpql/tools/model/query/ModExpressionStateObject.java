@@ -76,41 +76,26 @@ public class ModExpressionStateObject extends AbstractDoubleEncapsulatedExpressi
         super(parent, firstJpqlFragment, secondJpqlFragment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ModExpression getExpression() {
         return (ModExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getFirstQueryBNFId() {
         return SimpleArithmeticExpressionBNF.ID;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return MOD;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getSecondQueryBNFId() {
         return SimpleArithmeticExpressionBNF.ID;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,12 +25,13 @@ public class AnyObjectWithoutGroupingWithXMLRootSimpleTestCases extends XMLWithJ
     public AnyObjectWithoutGroupingWithXMLRootSimpleTestCases(String name) throws Exception {
         super(name);
         Project project = new AnyObjectWithoutGroupingElementProject();
-        ((XMLAnyObjectMapping)((XMLDescriptor)project.getDescriptor(Root.class)).getMappingForAttributeName("any")).setUseXMLRoot(true);
+        ((XMLAnyObjectMapping) project.getDescriptor(Root.class).getMappingForAttributeName("any")).setUseXMLRoot(true);
         setProject(project);
         setControlDocument("org/eclipse/persistence/testing/oxm/mappings/anyobject/withoutgroupingelement/simple_xmlroot.xml");
         setControlJSON("org/eclipse/persistence/testing/oxm/mappings/anyobject/withoutgroupingelement/simple_xmlroot.json");
     }
 
+    @Override
     public Object getControlObject() {
         Root root = new Root();
 

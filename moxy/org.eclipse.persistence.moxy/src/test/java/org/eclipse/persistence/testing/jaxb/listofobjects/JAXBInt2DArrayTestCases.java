@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,6 +52,7 @@ public class JAXBInt2DArrayTestCases extends JAXBListOfObjectsTestCases {
         return namespaces;
     }
 
+    @Override
     public List< InputStream> getControlSchemaFiles(){
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/int2DArray.xsd");
 
@@ -60,10 +61,12 @@ public class JAXBInt2DArrayTestCases extends JAXBListOfObjectsTestCases {
         return controlSchema;
     }
 
+    @Override
     protected Type getTypeToUnmarshalTo() {
         return int[][].class;
     }
 
+    @Override
     protected Object getControlObject() {
         int[][] my2DArray = new int[2][];
         my2DArray[0] = new int[] {1,2,3};
@@ -74,6 +77,7 @@ public class JAXBInt2DArrayTestCases extends JAXBListOfObjectsTestCases {
         return jaxbElement;
     }
 
+    @Override
     protected String getNoXsiTypeControlResourceName() {
         return XML_RESOURCE_NO_XSI_TYPE;
     }

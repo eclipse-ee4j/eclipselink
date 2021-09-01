@@ -40,25 +40,16 @@ public final class UpperExpression extends AbstractSingleEncapsulatedExpression 
         super(parent, UPPER);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getEncapsulatedExpressionQueryBNFId() {
         return InternalUpperExpressionBNF.ID;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(FunctionsReturningStringsBNF.ID);

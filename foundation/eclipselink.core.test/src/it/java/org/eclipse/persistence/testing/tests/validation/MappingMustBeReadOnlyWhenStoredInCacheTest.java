@@ -42,7 +42,7 @@ public class MappingMustBeReadOnlyWhenStoredInCacheTest extends ExceptionTest {
     @Override
     protected void setup() {
 
-        descriptor = ((DatabaseSession)getSession()).getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
+        descriptor = getSession().getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
         mapping = (DirectToFieldMapping)descriptor.getMappingForAttributeName("firstName");
         orgReadOnly = mapping.isReadOnly();
         mapping.readWrite();

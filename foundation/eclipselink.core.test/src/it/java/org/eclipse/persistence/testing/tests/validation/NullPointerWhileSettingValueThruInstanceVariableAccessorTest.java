@@ -36,7 +36,7 @@ public class NullPointerWhileSettingValueThruInstanceVariableAccessorTest extend
     protected void setup() {
         expectedException = DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(null, null, null);
 
-        ClassDescriptor descriptor = ((DatabaseSession)getSession()).getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
+        ClassDescriptor descriptor = getSession().getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
         mapping = descriptor.getMappingForAttributeName("salary");
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -37,7 +38,7 @@ public class SDODataObjectGetDateByPositionalPathTest extends SDODataObjectGetBy
 
     //1. purpose: getDate with Boolean property
     public void testGetDateFromBooleane() {
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_BOOLEAN);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_BOOLEAN);
         dataObject_c.set(property_c, "true");
         try {
             dataObject_a.getDate(propertyPath_a_b_c);
@@ -104,14 +105,14 @@ public class SDODataObjectGetDateByPositionalPathTest extends SDODataObjectGetBy
     //8. purpose: getDate with Defined long Property
     public void testGetDateConversionFromDefinedLongProperty() {
         // dataObject's type add boolean property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_LONG);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_LONG);
 
         long l = 12;
         Date d = new Date(l);
 
         dataObject_c.setLong(property_c, l);// add it to instance list
 
-        this.assertEquals(d, dataObject_a.getDate(propertyPath_a_b_c));
+        assertEquals(d, dataObject_a.getDate(propertyPath_a_b_c));
     }
 
     //10. purpose: getDate with short Property
@@ -128,7 +129,7 @@ public class SDODataObjectGetDateByPositionalPathTest extends SDODataObjectGetBy
     //11. purpose: getDate with Defined String Property
     public void testGetDateConversionFromDefinedStringProperty() {
         // dataObject's type add int property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_STRING);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_STRING);
         ;
         Calendar controlCalendar = Calendar.getInstance();
         controlCalendar.clear();
@@ -140,14 +141,14 @@ public class SDODataObjectGetDateByPositionalPathTest extends SDODataObjectGetBy
 
         dataObject_c.setString(property_c, "2001-01-01");// add it to instance list
 
-        this.assertEquals(d, dataObject_a.getDate(propertyPath_a_b_c));
+        assertEquals(d, dataObject_a.getDate(propertyPath_a_b_c));
     }
 
     //11. purpose: getDate with Defined String Property
     public void testGetDateConversionFromDefinedStringPropertyList() {
         // dataObject's type add int property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_STRING);
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setMany(true);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_STRING);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setMany(true);
 
         Calendar controlCalendar = Calendar.getInstance();
         controlCalendar.clear();
@@ -161,7 +162,7 @@ public class SDODataObjectGetDateByPositionalPathTest extends SDODataObjectGetBy
         objects.add("2001-01-01");
         dataObject_c.set(property_c, objects);// add it to instance list
 
-        this.assertEquals(d, dataObject_a.getDate(propertyPath_a_b_c + ".0"));
+        assertEquals(d, dataObject_a.getDate(propertyPath_a_b_c + ".0"));
     }
 
     //13. purpose: getDate with bytes property
@@ -177,7 +178,7 @@ public class SDODataObjectGetDateByPositionalPathTest extends SDODataObjectGetBy
 
     //14. purpose: getBoolean with decimal property
     public void testGetBooleanFromDecimal() {
-        SDOProperty prop = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty prop = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         prop.setType(SDOConstants.SDO_DECIMAL);
         dataObject_c.set(property_c, new BigDecimal(15));
         try {
@@ -203,20 +204,20 @@ public class SDODataObjectGetDateByPositionalPathTest extends SDODataObjectGetBy
     //16. purpose: getDate with Defined Date Property
     public void testGetDateConversionFromDefinedDateProperty() {
         // dataObject's type add int property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_DATE);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_DATE);
 
         long l = 12000;
         Date d = new Date(l);
         dataObject_a.setDate(propertyPath_a_b_c, d);// add it to instance list
 
-        this.assertEquals(d, dataObject_a.getDate(propertyPath_a_b_c));
+        assertEquals(d, dataObject_a.getDate(propertyPath_a_b_c));
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetDateConversionWithPathFromDefinedBooleanPropertyBracketPositionalSet() {
         // dataObject's type add boolean property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_DATE);
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setMany(true);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_DATE);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setMany(true);
 
         long l = 12000;
         Date d = new Date(l);
@@ -226,15 +227,15 @@ public class SDODataObjectGetDateByPositionalPathTest extends SDODataObjectGetBy
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setDate(property3, d);
 
-        this.assertEquals(d, dataObject_a.getDate(property3));
+        assertEquals(d, dataObject_a.getDate(property3));
 
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetDateConversionWithPathFromDefinedBooleanPropertyDotPositionalSet() {
         // dataObject's type add boolean property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_DATE);
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setMany(true);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_DATE);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setMany(true);
 
         long l = 12000;
         Date d = new Date(l);
@@ -243,20 +244,20 @@ public class SDODataObjectGetDateByPositionalPathTest extends SDODataObjectGetBy
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setDate(property + ".0", d);
 
-        this.assertEquals(d, dataObject_a.getDate(property + ".0"));
+        assertEquals(d, dataObject_a.getDate(property + ".0"));
 
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyBracketInPathMiddle() {
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_DATE);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_DATE);
 
         long l = 12000;
         Date d = new Date(l);
 
         dataObject_a.setDate(property1, d);// c dataobject's a property has value boolean 'true'
 
-        this.assertEquals(d, dataObject_a.getDate(property1));
+        assertEquals(d, dataObject_a.getDate(property1));
     }
 
     /*public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet() {

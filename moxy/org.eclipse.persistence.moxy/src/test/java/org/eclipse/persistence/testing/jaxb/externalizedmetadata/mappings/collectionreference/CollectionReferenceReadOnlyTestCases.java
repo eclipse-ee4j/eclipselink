@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,6 +49,7 @@ public class CollectionReferenceReadOnlyTestCases extends JAXBWithJSONTestCases{
     /**
      * Create the control Root.
      */
+     @Override
      public Object getControlObject() {
             Root root = new Root();
             List<Employee> emps = new ArrayList<Employee>();
@@ -80,6 +81,7 @@ public class CollectionReferenceReadOnlyTestCases extends JAXBWithJSONTestCases{
 
         }
 
+    @Override
     public Map getProperties(){
             InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/collectionreference/read-only-oxm.xml");
 
@@ -102,6 +104,7 @@ public class CollectionReferenceReadOnlyTestCases extends JAXBWithJSONTestCases{
         }
 
 
+        @Override
         public void testRoundTrip(){
             //not applicable since read and write docs are different
         }

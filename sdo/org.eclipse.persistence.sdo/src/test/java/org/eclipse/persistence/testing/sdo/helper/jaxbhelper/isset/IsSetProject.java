@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -71,14 +71,14 @@ public class IsSetProject extends Project {
 
         XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
         mapping.setReferenceClass(Child.class);
-        mapping.setContainerAttributeName("container");
+        mapping.getInverseReferenceMapping().setAttributeName("container");
         mapping.setAttributeName("childProperty");
         mapping.setXPath("tns:child");
         xmlDescriptor.addMapping(mapping);
 
         XMLCompositeCollectionMapping mapping2 = new XMLCompositeCollectionMapping();
         mapping2.setReferenceClass(Child.class);
-        mapping2.setContainerAttributeName("container");
+        mapping2.getInverseReferenceMapping().setAttributeName("container");
         mapping2.setAttributeName("childCollectionProperty");
         mapping2.setXPath("tns:child-many");
         mapping2.getContainerPolicy().setContainerClass(ArrayList.class);

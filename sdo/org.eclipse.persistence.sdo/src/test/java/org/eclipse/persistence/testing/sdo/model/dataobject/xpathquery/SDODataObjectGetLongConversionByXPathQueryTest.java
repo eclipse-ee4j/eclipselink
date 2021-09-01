@@ -27,7 +27,7 @@ public class SDODataObjectGetLongConversionByXPathQueryTest extends SDODataObjec
     }
 
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet() {
-        SDOProperty prop = (SDOProperty)dataObject_c0.getType().getProperty("test");
+        SDOProperty prop = dataObject_c0.getType().getProperty("test");
         prop.setType(SDOConstants.SDO_LONG);
 
         Long bb = Long.valueOf(12);
@@ -41,7 +41,7 @@ public class SDODataObjectGetLongConversionByXPathQueryTest extends SDODataObjec
 
     // purpose: opencontent properties
     public void testGetLongConversionFromDefinedPropertyWithPath() {
-        SDOProperty property_c1_object = ((SDOProperty)dataObject_c1.getInstanceProperty("PName-c1"));
+        SDOProperty property_c1_object = dataObject_c1.getInstanceProperty("PName-c1");
         property_c1_object.setType(SDOConstants.SDO_LONG);
         List objects = new ArrayList();
         Long b = Long.valueOf(12);

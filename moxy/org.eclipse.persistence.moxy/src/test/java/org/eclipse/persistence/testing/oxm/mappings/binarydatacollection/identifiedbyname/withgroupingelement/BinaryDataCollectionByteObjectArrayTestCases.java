@@ -40,6 +40,7 @@ public class BinaryDataCollectionByteObjectArrayTestCases extends XMLWithJSONMap
             setProject(new BinaryDataCollectionByteObjectArrayProject(namespaceResolver));
         }
 
+        @Override
         protected Object getControlObject() {
             EmployeeWithByteArrayObject employee = null;
 
@@ -62,6 +63,7 @@ public class BinaryDataCollectionByteObjectArrayTestCases extends XMLWithJSONMap
             return employee;
         }
 
+        @Override
         public void setUp() throws Exception {
             super.setUp();
             MyAttachmentMarshaller marshaller = new MyAttachmentMarshaller();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,14 +29,15 @@ public class CustomEntityResolver implements EntityResolver {
     private static boolean withExtension = false;
 
     public CustomEntityResolver(boolean withExtension) {
-        this.withExtension = withExtension;
+        CustomEntityResolver.withExtension = withExtension;
     }
 
+    @Override
     public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
         // Grab only the filename part from the full path
         File f = new File(systemId);
 
-        String correctedId = RESOURCE_DIR + f.getName() + (this.withExtension ? "" : ".xsd");
+        String correctedId = RESOURCE_DIR + f.getName() + (withExtension ? "" : ".xsd");
 
         InputSource is = new InputSource(ClassLoader.getSystemResourceAsStream(correctedId));
         is.setSystemId(correctedId);

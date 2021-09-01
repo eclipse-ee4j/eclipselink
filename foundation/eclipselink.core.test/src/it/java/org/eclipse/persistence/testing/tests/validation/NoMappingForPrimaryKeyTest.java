@@ -35,7 +35,7 @@ public class NoMappingForPrimaryKeyTest extends ExceptionTest {
     @Override
     protected void setup() {
         expectedException = DescriptorException.noMappingForPrimaryKey(null, null);
-        orgDescriptor = ((DatabaseSession)getSession()).getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
+        orgDescriptor = getSession().getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
         orgIntegrityChecker = getSession().getIntegrityChecker();
     }
     ClassDescriptor orgDescriptor;
@@ -43,7 +43,7 @@ public class NoMappingForPrimaryKeyTest extends ExceptionTest {
 
     @Override
     public void reset() {
-        ((DatabaseSession)getSession()).getDescriptors().remove(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
+        getSession().getDescriptors().remove(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
         if (orgDescriptor != null)
             ((DatabaseSession)getSession()).addDescriptor(orgDescriptor);
         if (orgIntegrityChecker != null)

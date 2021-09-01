@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,10 +19,12 @@ import jakarta.activation.DataHandler;
 import jakarta.xml.bind.attachment.AttachmentUnmarshaller;
 
 public class MyAttachmentUnmarshaller extends AttachmentUnmarshaller {
+    @Override
     public boolean isXOPPackage() {
         return true;
     }
 
+    @Override
     public byte[] getAttachmentAsByteArray(String cid) {
         Object obj = MyAttachmentMarshaller.attachments.get(cid);
         if(obj instanceof byte[]){
@@ -36,6 +38,7 @@ public class MyAttachmentUnmarshaller extends AttachmentUnmarshaller {
             return null;
         }
     }
+    @Override
     public DataHandler getAttachmentAsDataHandler(String cid) {
         Object obj = MyAttachmentMarshaller.attachments.get(cid);
         if (obj instanceof DataHandler) {

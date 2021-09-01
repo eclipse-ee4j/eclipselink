@@ -15,7 +15,7 @@ module org.eclipse.persistence.sdo {
     requires java.naming;
 
     requires org.eclipse.persistence.asm;
-    requires org.eclipse.persistence.core;
+    requires transitive org.eclipse.persistence.core;
     requires org.eclipse.persistence.moxy;
     requires jakarta.activation;
     requires jakarta.mail;
@@ -23,6 +23,7 @@ module org.eclipse.persistence.sdo {
 
     exports org.eclipse.persistence.sdo;
     exports org.eclipse.persistence.sdo.helper;
+    exports org.eclipse.persistence.sdo.helper.delegates;
     exports org.eclipse.persistence.sdo.types;
 
     exports commonj.sdo;

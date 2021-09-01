@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,7 +55,7 @@ public class CompoundSelectionImpl extends SelectionImpl implements CompoundSele
         java.util.Map tempMap = new java.util.TreeMap();
         for (Selection sel : subSelections) {
             if (validate) {
-                if (((SelectionImpl)sel).isCompoundSelection() && !((SelectionImpl)sel).isConstructor()) {
+                if (sel.isCompoundSelection() && !((SelectionImpl)sel).isConstructor()) {
                     throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_criteriaapi_illegal_tuple_or_array_value", new Object[] { sel }));
                 }
             }

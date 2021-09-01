@@ -443,7 +443,7 @@ public class QueryImpl {
         entityManager.verifyOpen();
 
         if (!getDatabaseQueryInternal().isObjectLevelReadQuery()) {
-            throw new IllegalStateException(ExceptionLocalization.buildMessage("invalid_lock_query", (Object[]) null));
+            throw new IllegalStateException(ExceptionLocalization.buildMessage("invalid_lock_query", null));
         }
 
         return this.lockMode;
@@ -532,16 +532,16 @@ public class QueryImpl {
                 List results = (List) result;
                 if (results.isEmpty()) {
                     rollbackOnException = false;
-                    throwNoResultException(ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_single_result", (Object[]) null));
+                    throwNoResultException(ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_single_result", null));
                 } else if (results.size() > 1) {
                     rollbackOnException = false;
-                    throwNonUniqueResultException(ExceptionLocalization.buildMessage("too_many_results_for_get_single_result", (Object[]) null));
+                    throwNonUniqueResultException(ExceptionLocalization.buildMessage("too_many_results_for_get_single_result", null));
                 }
                 return results.get(0);
             } else {
                 if (result == null) {
                     rollbackOnException = false;
-                    throwNoResultException(ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_single_result", (Object[]) null));
+                    throwNoResultException(ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_single_result", null));
                 }
                 return result;
             }
@@ -661,7 +661,7 @@ public class QueryImpl {
      */
     protected void setFirstResultInternal(int startPosition) {
         if (startPosition < 0) {
-            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("negative_start_position", (Object[]) null));
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("negative_start_position", null));
         }
         // bug 362804
         firstResultIndex = startPosition;
@@ -791,7 +791,7 @@ public class QueryImpl {
             entityManager.verifyOpen();
 
             if (!getDatabaseQueryInternal().isObjectLevelReadQuery()) {
-                throw new IllegalStateException(ExceptionLocalization.buildMessage("invalid_lock_query", (Object[]) null));
+                throw new IllegalStateException(ExceptionLocalization.buildMessage("invalid_lock_query", null));
             }
 
             this.lockMode = lockMode;
@@ -824,7 +824,7 @@ public class QueryImpl {
      * @return an object representing the given TemporalType.
      */
     protected Object convertTemporalType(Object value, TemporalType type) {
-        ConversionManager conversionManager = ((org.eclipse.persistence.internal.sessions.AbstractSession) getEntityManager().getActiveSession()).getDatasourcePlatform().getConversionManager();
+        ConversionManager conversionManager = getEntityManager().getActiveSession().getDatasourcePlatform().getConversionManager();
         if (type == TemporalType.TIME) {
             return conversionManager.convertObject(value, ClassConstants.TIME);
         } else if (type == TemporalType.TIMESTAMP) {
@@ -879,7 +879,7 @@ public class QueryImpl {
      */
     public void setMaxResultsInternal(int maxResult) {
         if (maxResult < 0) {
-            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("negative_max_result", (Object[]) null));
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("negative_max_result", null));
         }
         if (maxResult == Integer.MAX_VALUE) {
             this.maxResults = UNDEFINED;

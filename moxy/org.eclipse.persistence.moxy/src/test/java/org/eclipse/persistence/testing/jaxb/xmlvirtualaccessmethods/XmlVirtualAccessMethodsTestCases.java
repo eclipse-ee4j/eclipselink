@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,6 +52,7 @@ public class XmlVirtualAccessMethodsTestCases extends XMLTestCase {
         super(name);
     }
 
+    @Override
     public String getName() {
         return "XML Virtual Access Methods: " + super.getName();
     }
@@ -364,6 +365,7 @@ public class XmlVirtualAccessMethodsTestCases extends XMLTestCase {
     private class LogErrorHandler implements ErrorHandler {
         private int errorCount = 0;
 
+        @Override
         public void warning(SAXParseException exception) throws SAXException {
             errorCount++;
             if (DEBUG) {
@@ -373,6 +375,7 @@ public class XmlVirtualAccessMethodsTestCases extends XMLTestCase {
             if (THROW_VALIDATION_ERRORS) throw exception;
         }
 
+        @Override
         public void error(SAXParseException exception) throws SAXException {
             errorCount++;
             if (DEBUG) {
@@ -382,6 +385,7 @@ public class XmlVirtualAccessMethodsTestCases extends XMLTestCase {
             if (THROW_VALIDATION_ERRORS) throw exception;
         }
 
+        @Override
         public void fatalError(SAXParseException exception) throws SAXException {
             errorCount++;
             if (DEBUG) {

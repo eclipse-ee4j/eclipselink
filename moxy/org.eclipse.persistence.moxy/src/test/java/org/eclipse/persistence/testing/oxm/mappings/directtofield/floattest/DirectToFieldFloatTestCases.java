@@ -30,6 +30,7 @@ public class DirectToFieldFloatTestCases extends XMLMappingTestCases {
         setProject(new DirectToFieldFloatProject());
     }
 
+  @Override
   protected Object getControlObject() {
     Employee employee = new Employee();
     employee.setID(CONTROL_ID);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,9 +46,6 @@ import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultListItem;
  */
 public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object buildReadAllQueryResponse(PersistenceContext context, Map<String, Object> queryParams, List<Object> items, UriInfo uriInfo) {
         ReadAllQueryResultCollection response = new ReadAllQueryResultCollection();
@@ -59,17 +56,11 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
         return populatePagedCollectionLinks(queryParams, uriInfo, response);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object buildReportQueryResponse(PersistenceContext context, Map<String, Object> queryParams, List<Object[]> results, List<ReportItem> items, UriInfo uriInfo) {
         return populatePagedReportQueryCollectionLinks(queryParams, results, items, uriInfo);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object buildAttributeResponse(PersistenceContext context, Map<String, Object> queryParams, String attribute, Object results, UriInfo uriInfo) {
         if (results instanceof List) {

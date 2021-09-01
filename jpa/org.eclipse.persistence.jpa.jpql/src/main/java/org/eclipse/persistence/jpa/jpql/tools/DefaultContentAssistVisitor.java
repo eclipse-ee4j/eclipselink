@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -84,25 +84,16 @@ public class DefaultContentAssistVisitor extends AbstractContentAssistVisitor {
         super(queryContext);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected AcceptableTypeVisitor buildAcceptableTypeVisitor() {
         return new AcceptableTypeVisitor();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected JPQLGrammar getLatestGrammar() {
         return DefaultJPQLGrammar.instance();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isJoinFetchIdentifiable() {
         // Generic JPA does not support identifying a JOIN FETCH with an identification variable
@@ -114,108 +105,69 @@ public class DefaultContentAssistVisitor extends AbstractContentAssistVisitor {
      */
     protected class AcceptableTypeVisitor extends AbstractContentAssistVisitor.AcceptableTypeVisitor {
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(AbsExpression expression) {
             type = queryContext.getType(Number.class);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(ArithmeticFactor expression) {
             type = queryContext.getType(Number.class);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(AvgFunction expression) {
             type = queryContext.getType(Number.class);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(ConcatExpression expression) {
             type = queryContext.getType(CharSequence.class);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(LengthExpression expression) {
             type = queryContext.getType(CharSequence.class);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(LocateExpression expression) {
             // TODO: Handle the position
             type = queryContext.getType(CharSequence.class);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(LowerExpression expression) {
             type = queryContext.getType(CharSequence.class);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(ModExpression expression) {
             // In theory we would only allow Long and Integer
             type = queryContext.getType(Number.class);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SqrtExpression expression) {
             type = queryContext.getType(Number.class);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SubstringExpression expression) {
             // TODO: Handle the position
             type = queryContext.getType(CharSequence.class);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SumFunction expression) {
             type = queryContext.getType(Number.class);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(TrimExpression expression) {
             type = queryContext.getType(CharSequence.class);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(UpperExpression expression) {
             type = queryContext.getType(CharSequence.class);

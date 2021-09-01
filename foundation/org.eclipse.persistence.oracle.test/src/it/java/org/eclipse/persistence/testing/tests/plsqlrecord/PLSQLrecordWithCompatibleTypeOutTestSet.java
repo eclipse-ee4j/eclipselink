@@ -95,7 +95,7 @@ public class PLSQLrecordWithCompatibleTypeOutTestSet  {
 
         project.getDescriptor(PLSQLEmployeeType.class).getQueryManager().
             addQuery("PLSQLrecordWithCompatibleTypeOut", query);
-        Project projectToXml = (Project)project.clone();
+        Project projectToXml = project.clone();
         // trim off login 'cause it changes under test - this way, a comparison
         // can be done to a control document
         projectToXml.setDatasourceLogin(null);

@@ -37,25 +37,16 @@ public final class SelectClause extends AbstractSelectClause {
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(SelectClauseBNF.ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getSelectItemQueryBNFId() {
         return InternalSelectExpressionBNF.ID;

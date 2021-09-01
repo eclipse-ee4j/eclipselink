@@ -36,7 +36,7 @@ public class ParentDescriptorNotSpecifiedTest extends ExceptionTest {
     @Override
     protected void setup() {
         expectedException = DescriptorException.parentDescriptorNotSpecified(null, null);
-        orgDescriptor = ((DatabaseSession)getSession()).getDescriptor(org.eclipse.persistence.testing.models.employee.domain.LargeProject.class);
+        orgDescriptor = getSession().getDescriptor(org.eclipse.persistence.testing.models.employee.domain.LargeProject.class);
         orgIntegrityChecker = getSession().getIntegrityChecker();
     }
     ClassDescriptor orgDescriptor;
@@ -44,7 +44,7 @@ public class ParentDescriptorNotSpecifiedTest extends ExceptionTest {
 
     @Override
     public void reset() {
-        ((DatabaseSession)getSession()).getDescriptors().remove(org.eclipse.persistence.testing.models.employee.domain.LargeProject.class);
+        getSession().getDescriptors().remove(org.eclipse.persistence.testing.models.employee.domain.LargeProject.class);
         if (orgDescriptor != null)
             ((DatabaseSession)getSession()).addDescriptor(orgDescriptor);
         if (orgIntegrityChecker != null)

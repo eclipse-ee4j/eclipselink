@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +18,8 @@ import commonj.sdo.DataObject;
 import commonj.sdo.Type;
 import java.util.ArrayList;
 import java.util.List;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
@@ -47,13 +49,13 @@ public class SDODataObjectGetByPositionalPathTest extends SDODataObjectGetByPosi
 
         dataObject_c.set(property_c, "test");
 
-        this.assertEquals("test", dataObject_a.get(property));
+        assertEquals("test", dataObject_a.get(property));
 
     }
 
     // normal test: a/b.0/c as path
     public void testGetByPositionalPathStringObj() {
-        this.assertEquals(dataObject_c, dataObject_a.get("PName-a/PName-b.0"));
+        assertEquals(dataObject_c, dataObject_a.get("PName-a/PName-b.0"));
 
     }
 
@@ -67,7 +69,7 @@ public class SDODataObjectGetByPositionalPathTest extends SDODataObjectGetByPosi
 
         dataObject_a.set(property4, "test");
 
-        this.assertEquals("test", dataObject_a.get(property4));
+        assertEquals("test", dataObject_a.get(property4));
 
     }
 
@@ -97,7 +99,7 @@ public class SDODataObjectGetByPositionalPathTest extends SDODataObjectGetByPosi
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
 
-        this.assertNull(dataObject_a.get("PName-a/PName-f.0/PName-c"));
+        assertNull(dataObject_a.get("PName-a/PName-f.0/PName-c"));
 
         /*try
         {
@@ -162,7 +164,7 @@ public class SDODataObjectGetByPositionalPathTest extends SDODataObjectGetByPosi
 
         dataObject_c.set(property_c, "test");
 
-        this.assertTrue(dataObject_a == dataObject_b.get(".."));
+        assertTrue(dataObject_a == dataObject_b.get(".."));
 
     }
 
@@ -176,19 +178,19 @@ public class SDODataObjectGetByPositionalPathTest extends SDODataObjectGetByPosi
 
         dataObject_c.set(property_c, "test");
 
-        this.assertTrue(dataObject_a == dataObject_c.get("/"));
+        assertTrue(dataObject_a == dataObject_c.get("/"));
 
     }
 
     // purpose: test path as "/"
     public void testGetByPositionalPathStringWithShortDotPath() {
-        this.assertEquals(dataObject_c, dataObject_b.get("PName-b.0"));
+        assertEquals(dataObject_c, dataObject_b.get("PName-b.0"));
 
     }
 
     // purpose: test path as "/"
     public void testGetByPositionalPathStringWithShortBracketPath() {
-        this.assertEquals(dataObject_c, dataObject_b.get("PName-b[1]"));
+        assertEquals(dataObject_c, dataObject_b.get("PName-b[1]"));
 
     }
 }

@@ -92,33 +92,21 @@ public class MinFunctionStateObject extends AggregateFunctionStateObject {
         super(parent, path);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public MinFunction getExpression() {
         return (MinFunction) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return MIN;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getQueryBNFId() {
         return StateFieldPathExpressionBNF.ID;

@@ -705,7 +705,7 @@ public abstract class Expression implements Serializable, Cloneable {
     }
 
     public Expression between(Expression leftExpression, Expression rightExpression) {
-        return between((Object)leftExpression, (Object)rightExpression);
+        return between(leftExpression, (Object)rightExpression);
 
     }
 

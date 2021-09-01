@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,9 +24,11 @@ import org.eclipse.persistence.sessions.Record;
 
 public class NormalHours2Transformer implements FieldTransformer, AttributeTransformer
 {
+    @Override
     public void initialize(AbstractTransformationMapping mapping)
     {
     }
+  @Override
   public Object buildFieldValue(Object instance, String fieldName, Session session)
   {
     if(fieldName.equals("normal-hours/start-time/text()"))
@@ -35,6 +37,7 @@ public class NormalHours2Transformer implements FieldTransformer, AttributeTrans
         }
         return ((Employee)instance).normalHours2.elementAt(1);
   }
+  @Override
   public Object buildAttributeValue(Record record, Object instance, Session session)
   {
     Vector normalHours = new Vector(2);

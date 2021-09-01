@@ -29,6 +29,7 @@ public class InheritanceRootCompositeCollectionObjectOnlyXMLTestCases extends JA
         setClasses(new Class[] {RootCompositeCollectionObjectOnly.class, BaseType.class});
     }
 
+    @Override
     protected Object getControlObject() {
     RootCompositeCollectionObjectOnly root = new RootCompositeCollectionObjectOnly();
         SubType subType = new SubType();

@@ -825,20 +825,16 @@ public final class AnnotationsProcessor {
                     XmlNameTransformer xmlNameTransformer = (XmlNameTransformer) helper.getAnnotation(javaClass, XmlNameTransformer.class);
                     Class nameTransformerClass = xmlNameTransformer.value();
                     try {
-                        info.setXmlNameTransformer((XMLNameTransformer) nameTransformerClass.newInstance());
-                    } catch (InstantiationException ex) {
-                        throw JAXBException.exceptionWithNameTransformerClass(nameTransformerClass.getName(), ex);
-                    } catch (IllegalAccessException ex) {
+                        info.setXmlNameTransformer((XMLNameTransformer) nameTransformerClass.getConstructor().newInstance());
+                    } catch (ReflectiveOperationException ex) {
                         throw JAXBException.exceptionWithNameTransformerClass(nameTransformerClass.getName(), ex);
                     }
                 } else if (helper.isAnnotationPresent(javaClass.getPackage(), XmlNameTransformer.class)) {
                     XmlNameTransformer xmlNameTransformer = (XmlNameTransformer) helper.getAnnotation(javaClass.getPackage(), XmlNameTransformer.class);
                     Class nameTransformerClass = xmlNameTransformer.value();
                     try {
-                        info.setXmlNameTransformer((XMLNameTransformer) nameTransformerClass.newInstance());
-                    } catch (InstantiationException ex) {
-                        throw JAXBException.exceptionWithNameTransformerClass(nameTransformerClass.getName(), ex);
-                    } catch (IllegalAccessException ex) {
+                        info.setXmlNameTransformer((XMLNameTransformer) nameTransformerClass.getConstructor().newInstance());
+                    } catch (ReflectiveOperationException ex) {
                         throw JAXBException.exceptionWithNameTransformerClass(nameTransformerClass.getName(), ex);
                     }
                 }
@@ -4334,7 +4330,7 @@ public final class AnnotationsProcessor {
 
         MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
         mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "org/eclipse/persistence/internal/jaxb/many/MapValue", "<init>", "()V");
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "org/eclipse/persistence/internal/jaxb/many/MapValue", "<init>", "()V", false);
         mv.visitInsn(Opcodes.RETURN);
         mv.visitMaxs(1, 1);
         mv.visitEnd();
@@ -4665,7 +4661,7 @@ public final class AnnotationsProcessor {
             mv.visitVarInsn(Opcodes.ALOAD, 0);
             mv.visitFieldInsn(Opcodes.GETFIELD, classNameSeparatedBySlash, "adaptedValue", "Ljava/util/Collection;");
             mv.visitVarInsn(Opcodes.ALOAD, 2);
-            mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Collection", "toArray", "([Ljava/lang/Object;)[Ljava/lang/Object;");
+            mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Collection", "toArray", "([Ljava/lang/Object;)[Ljava/lang/Object;", true);
             mv.visitInsn(Opcodes.POP);
 
             mv.visitVarInsn(Opcodes.ALOAD, 2);
@@ -4848,7 +4844,7 @@ public final class AnnotationsProcessor {
     }
 
     private Class getObjectClass(Class primitiveClass) {
-        return ConversionManager.getDefaultManager().getObjectClass(primitiveClass);
+        return ConversionManager.getObjectClass(primitiveClass);
     }
 
     public Map<java.lang.reflect.Type, Class> getCollectionClassesToGeneratedClasses() {

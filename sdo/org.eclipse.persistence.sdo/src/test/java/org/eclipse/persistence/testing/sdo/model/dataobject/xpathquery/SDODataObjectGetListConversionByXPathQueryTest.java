@@ -16,6 +16,8 @@ package org.eclipse.persistence.testing.sdo.model.dataobject.xpathquery;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import junit.framework.TestCase;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -28,7 +30,7 @@ public class SDODataObjectGetListConversionByXPathQueryTest extends SDODataObjec
 
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet() {
 
-        SDOProperty prop = (SDOProperty)dataObject_c0.getType().getProperty("test");
+        SDOProperty prop = dataObject_c0.getType().getProperty("test");
         prop.setType(SDOConstants.SDO_BOOLEAN);
         prop.setMany(true);
 
@@ -41,7 +43,7 @@ public class SDODataObjectGetListConversionByXPathQueryTest extends SDODataObjec
         List lista = dataObject_a.getList(propertyTest + "test");
         prop.setMany(false);
 
-        this.assertEquals(b, lista );
+        assertEquals(b, lista );
 
     }
 
@@ -49,7 +51,7 @@ public class SDODataObjectGetListConversionByXPathQueryTest extends SDODataObjec
     public void testGetDataObjectConversionFromUndefinedProperty() {
         SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
 
-        SDOProperty prop = (SDOProperty)dataObject_c0.getType().getProperty("test");
+        SDOProperty prop = dataObject_c0.getType().getProperty("test");
         prop.setType(dataObjectType);
 
         dataObject_c0.set("test", new SDODataObject());
@@ -64,7 +66,7 @@ public class SDODataObjectGetListConversionByXPathQueryTest extends SDODataObjec
     //3. purpose: getDataObject with property set to boolean value
     public void testGetDataObjectConversionFromProperty() {
         //try {
-        this.assertNull(dataObject_a.getDataObject("PName-a/notExistedTest"));
+        assertNull(dataObject_a.getDataObject("PName-a/notExistedTest"));
 
         //fail("IllegalArgumentException should be thrown.");
         //} catch (IllegalArgumentException e) {
@@ -74,7 +76,7 @@ public class SDODataObjectGetListConversionByXPathQueryTest extends SDODataObjec
     //purpose: getDataObject with nul value
     public void testGetDataObjectConversionWithNullArgument() {
         String p = null;
-        this.assertNull(dataObject_a.getDataObject(p));
+        assertNull(dataObject_a.getDataObject(p));
     }
 
     /* public void testSetGetDataObjectWithQueryPath(){

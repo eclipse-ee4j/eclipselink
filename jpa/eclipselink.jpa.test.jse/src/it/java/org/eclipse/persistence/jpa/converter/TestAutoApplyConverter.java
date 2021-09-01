@@ -565,8 +565,8 @@ public class TestAutoApplyConverter {
         
         EntityManager em = emfAutoApplyConverters.createEntityManager();
         long id = System.currentTimeMillis();
-        Long valueConvert = Long.valueOf((long) 42);
-        Long valueNoConvert = Long.valueOf((long) 100);
+        Long valueConvert = Long.valueOf(42);
+        Long valueNoConvert = Long.valueOf(100);
         try {
             LongToStringAutoApplyConverter.reset();
             ConvertEntityLW2S entity = new ConvertEntityLW2S(id, valueConvert, valueNoConvert);

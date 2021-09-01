@@ -37,6 +37,7 @@ public class XMLChoiceCollectionWithGroupingElementTestCases extends XMLWithJSON
     setProject(new EmployeeWithGroupingElementProject());
   }
 
+  @Override
   protected Object getControlObject() {
     Employee employee = new Employee();
     employee.name = "Jane Doe";
@@ -56,6 +57,7 @@ public class XMLChoiceCollectionWithGroupingElementTestCases extends XMLWithJSON
   }
 
 
+  @Override
   public Object getJSONReadControlObject() {
         Employee employee = new Employee();
         employee.name = "Jane Doe";
@@ -74,6 +76,7 @@ public class XMLChoiceCollectionWithGroupingElementTestCases extends XMLWithJSON
         return employee;
       }
 
+  @Override
   public Project getNewProject(Project originalProject, ClassLoader classLoader) {
       Project project = super.getNewProject(originalProject, classLoader);
       //project.getDatasourceLogin().setPlatform(new SAXPlatform());

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,33 +49,21 @@ public class DefaultGrammarValidator extends AbstractGrammarValidator {
         super(jpqlGrammar);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected LiteralVisitor buildLiteralVisitor() {
         return new DefaultLiteralVisitor();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected OwningClauseVisitor buildOwningClauseVisitor() {
         return new OwningClauseVisitor();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isJoinFetchIdentifiable() {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isSubqueryAllowedAnywhere() {
         return getJPAVersion().isNewerThanOrEqual(JPAVersion.VERSION_2_1);

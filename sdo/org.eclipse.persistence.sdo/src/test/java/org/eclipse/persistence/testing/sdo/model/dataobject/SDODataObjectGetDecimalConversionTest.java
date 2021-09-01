@@ -18,6 +18,8 @@ import commonj.sdo.Property;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Calendar;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOConstants;
@@ -35,7 +37,7 @@ public class SDODataObjectGetDecimalConversionTest extends SDODataObjectConversi
 
     //1. purpose: getBigDecimal with boolean property
     public void testGetDecimalFromBoolean() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
+        SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BOOLEAN);
         dataObject.set(property, true);
         try {
@@ -47,7 +49,7 @@ public class SDODataObjectGetDecimalConversionTest extends SDODataObjectConversi
 
     //2. purpose: getBigDecimal with byte property
     public void testGetDecimalFromByte() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
+        SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BYTE);
         byte theByte = 10;
         dataObject.set(property, theByte);
@@ -62,7 +64,7 @@ public class SDODataObjectGetDecimalConversionTest extends SDODataObjectConversi
 
     //3. purpose: getBigDecimal with character property
     public void testGetDecimalFromCharacter() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
+        SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_CHARACTER);
         dataObject.set(property, Character.valueOf('y'));
         try {
@@ -75,14 +77,14 @@ public class SDODataObjectGetDecimalConversionTest extends SDODataObjectConversi
     //5. purpose: getBigDecimal with Defined Double Property
     public void testGetDecimalConversionFromDefinedDoubleProperty() {
         // dataObject's type add boolean property
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_DOUBLE);
 
         double db = 12;
         BigDecimal bd = new BigDecimal(db);
         dataObject.setDouble(property, db);// add it to instance list
 
-        this.assertEquals(bd, dataObject.getBigDecimal(property));
+        assertEquals(bd, dataObject.getBigDecimal(property));
     }
 
     //6. purpose: getBigDecimal with Undefined Double Property
@@ -101,14 +103,14 @@ public class SDODataObjectGetDecimalConversionTest extends SDODataObjectConversi
     //7. purpose: getBigDecimal with Defined float Property
     public void testGetIntConversionFromDefinedFloatProperty() {
         // dataObject's type add float property
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_FLOAT);
 
         float fl = 12;
         BigDecimal bd = new BigDecimal(fl);
         dataObject.setFloat(property, fl);// add it to instance list
 
-        this.assertEquals(bd, dataObject.getBigDecimal(property));
+        assertEquals(bd, dataObject.getBigDecimal(property));
     }
 
     //8. purpose: getBigDecimal with Undefined float Property
@@ -127,14 +129,14 @@ public class SDODataObjectGetDecimalConversionTest extends SDODataObjectConversi
     //9. purpose: getBigDecimal with Defined int Property
     public void testGetDecimalConversionFromDefinedIntProperty() {
         // dataObject's type add int property
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_INT);
 
         int in = 12;
         BigDecimal bd = new BigDecimal(in);
         dataObject.setInt(property, in);// add it to instance list
 
-        this.assertEquals(bd, dataObject.getBigDecimal(property));
+        assertEquals(bd, dataObject.getBigDecimal(property));
     }
 
     //10. purpose: getBigDecimal with Undefined int Property
@@ -153,14 +155,14 @@ public class SDODataObjectGetDecimalConversionTest extends SDODataObjectConversi
     //11. purpose: getBigDecimal with Defined long Property
     public void testGetDecimalConversionFromDefinedLongProperty() {
         // dataObject's type add short property
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_LONG);
 
         long lg = 12;
         BigDecimal bd = new BigDecimal(lg);
         dataObject.setLong(property, lg);// add it to instance list
 
-        this.assertEquals(bd, dataObject.getBigDecimal(property));
+        assertEquals(bd, dataObject.getBigDecimal(property));
     }
 
     //12. purpose: getBigDecimal with Undefined long Property
@@ -178,7 +180,7 @@ public class SDODataObjectGetDecimalConversionTest extends SDODataObjectConversi
 
     //13. purpose: getBigDecimal with Undefined short Property
     public void testGetDecimalConversionFromUnDefinedShortProperty() {
-        ((SDOType)dataObject.getType()).setOpen(true);
+        dataObject.getType().setOpen(true);
         SDOProperty property = new SDOProperty(aHelperContext);
         property.setName(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_SHORT);
@@ -196,14 +198,14 @@ public class SDODataObjectGetDecimalConversionTest extends SDODataObjectConversi
     //14. purpose: getBigDecimal with Defined String Property
     public void testGetDecimalConversionFromDefinedStringProperty() {
         // dataObject's type add int property
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_STRING);
 
         String str = "12";
         BigDecimal bd = new BigDecimal(str);
         dataObject.setString(property, str);// add it to instance list
 
-        this.assertEquals(bd, dataObject.getBigDecimal(property));
+        assertEquals(bd, dataObject.getBigDecimal(property));
     }
 
     //15. purpose: getBigDecimal with Undefined string Property
@@ -221,7 +223,7 @@ public class SDODataObjectGetDecimalConversionTest extends SDODataObjectConversi
 
     //17. purpose: getBigDecimal with bytes property
     public void testGetDecimalFromBytes() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
+        SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BYTES);
         dataObject.set(property, new String("rty").getBytes());
         try {
@@ -234,14 +236,14 @@ public class SDODataObjectGetDecimalConversionTest extends SDODataObjectConversi
     //18. purpose: getBigDecimal with Defined Decimal Property
     public void testGetDecimalConversionFromDefinedDecimalProperty() {
         // dataObject's type add int property
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_DECIMAL);
 
         int db = 12;
         BigDecimal bd = new BigDecimal(db);
         dataObject.setBigDecimal(property, bd);// add it to instance list
 
-        this.assertEquals(bd, dataObject.getBigDecimal(property));
+        assertEquals(bd, dataObject.getBigDecimal(property));
     }
 
     //19. purpose: getBigDecimal with Undefined decimal Property
@@ -260,14 +262,14 @@ public class SDODataObjectGetDecimalConversionTest extends SDODataObjectConversi
     //20. purpose: getDecimal with Defined integer Property
     public void testGetDecimalConversionFromDefinedIntegerProperty() {
         // dataObject's type add int property
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_INTEGER);
 
         BigInteger bi = new BigInteger("12");
         BigDecimal bd = new BigDecimal(bi);
         dataObject.setBigInteger(property, bi);// add it to instance list
 
-        this.assertEquals(bd, dataObject.getBigDecimal(property));
+        assertEquals(bd, dataObject.getBigDecimal(property));
     }
 
     //21. purpose: getBigDecimal with Undefined Integer Property
@@ -285,7 +287,7 @@ public class SDODataObjectGetDecimalConversionTest extends SDODataObjectConversi
 
     //22. purpose: getBigDecimal with date property
     public void testGetDecimalFromDate() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
+        SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_DATE);
         dataObject.set(property, Calendar.getInstance().getTime());
         try {

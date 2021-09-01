@@ -81,41 +81,26 @@ public class NullIfExpressionStateObject extends AbstractDoubleEncapsulatedExpre
         super(parent, firstJpqlFragment, secondJpqlFragment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public NullIfExpression getExpression() {
         return (NullIfExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getFirstQueryBNFId() {
         return ScalarExpressionBNF.ID;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return NULLIF;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getSecondQueryBNFId() {
         return ScalarExpressionBNF.ID;

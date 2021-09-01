@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ public class NonStringKeyTypeTestCases extends KeyBasedMappingTestCases {
         setProject(new NonStringKeyTypeProject());
     }
 
+    @Override
     protected Object getControlObject() {
         Address address = new Address();
         address.id = INT_CONTROL_ADD_ID_1;
@@ -46,6 +47,7 @@ public class NonStringKeyTypeTestCases extends KeyBasedMappingTestCases {
         return root;
     }
 
+    @Override
     public Object getWriteControlObject() {
         ArrayList rootAddresses = new ArrayList();
 

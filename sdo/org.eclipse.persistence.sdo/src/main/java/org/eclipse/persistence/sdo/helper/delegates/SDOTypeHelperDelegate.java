@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -961,7 +961,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
 
     private boolean isBaseTypeBytes(Type theType) {
         if (((SDOType) theType).isSubType()) {
-            List baseTypes = ((SDOType)theType).getBaseTypes();
+            List baseTypes = theType.getBaseTypes();
             Type nextType = (Type)baseTypes.get(0);
             if (nextType == SDOConstants.SDO_BYTES) {
                 return true;
@@ -998,7 +998,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         if (typeValue != null) {
             if (typeValue == SDOConstants.SDO_BYTES) {
                 newProperty.setXsdType(XMLConstants.BASE_64_BINARY_QNAME);
-            } else if (((SDOType)typeValue).isDataType()) {
+            } else if (typeValue.isDataType()) {
                 if (isBaseTypeBytes(typeValue)) {
                     newProperty.setXsdType(XMLConstants.BASE_64_BINARY_QNAME);
                 }
@@ -1011,7 +1011,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             newProperty.setContainment(dataObject.getBoolean("containment"));
         } else {
             if (typeValue != null) {
-                newProperty.setContainment(!((SDOType)typeValue).isDataType());
+                newProperty.setContainment(!typeValue.isDataType());
             }
         }
 
@@ -1237,7 +1237,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             ((SDOProperty)property).setUri(propertyUri);
 
             XMLDescriptor aDescriptor;
-            if (((SDOType)property.getType()).isDataType()) {
+            if (property.getType().isDataType()) {
                 // RICK: Types from DataObjects: isDataType() == true so:
                 //   - find the SDOWrapperType from TypeHelper's WrappersHashMap
                 //   - add the descriptor to XMLContext's DescriptorsByQName map

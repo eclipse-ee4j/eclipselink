@@ -16,6 +16,8 @@ package org.eclipse.persistence.testing.sdo.model.dataobject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import junit.framework.TestCase;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
 
@@ -27,8 +29,8 @@ public class SDODataObjectGetListByPositionalPathTest extends SDODataObjectGetBy
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyBracketPositionalSet() {
         // dataObject's type add boolean property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_BOOLEAN);
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setMany(true);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_BOOLEAN);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setMany(true);
 
         Boolean bb = Boolean.valueOf(true);
         List b = new ArrayList();
@@ -37,15 +39,15 @@ public class SDODataObjectGetListByPositionalPathTest extends SDODataObjectGetBy
         dataObject_a.setList("PName-a/PName-b.0/PName-c", b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setBoolean(property3, true);
 
-        this.assertEquals(bb, dataObject_a.getList("PName-a/PName-b.0/PName-c").get(0));
+        assertEquals(bb, dataObject_a.getList("PName-a/PName-b.0/PName-c").get(0));
 
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyDotPositionalSet() {
         // dataObject's type add boolean property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_STRING);
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setMany(true);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_STRING);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setMany(true);
 
         String bb = "test";
         List b = new ArrayList();
@@ -53,7 +55,7 @@ public class SDODataObjectGetListByPositionalPathTest extends SDODataObjectGetBy
         dataObject_a.setList("PName-a/PName-b[1]/PName-c", b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setString(property + ".0", bb);
 
-        this.assertEquals(bb, dataObject_a.getList("PName-a/PName-b.0/PName-c").get(0));
+        assertEquals(bb, dataObject_a.getList("PName-a/PName-b.0/PName-c").get(0));
 
     }
 

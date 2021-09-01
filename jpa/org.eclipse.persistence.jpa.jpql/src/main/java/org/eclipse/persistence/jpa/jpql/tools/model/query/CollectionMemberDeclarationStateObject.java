@@ -139,9 +139,6 @@ public class CollectionMemberDeclarationStateObject extends AbstractStateObject
         setPath(collectionValuedPath);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
@@ -159,9 +156,6 @@ public class CollectionMemberDeclarationStateObject extends AbstractStateObject
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
@@ -180,9 +174,6 @@ public class CollectionMemberDeclarationStateObject extends AbstractStateObject
         return collectionValuedPath;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public CollectionMemberDeclaration getExpression() {
         return (CollectionMemberDeclaration) super.getExpression();
@@ -199,9 +190,6 @@ public class CollectionMemberDeclarationStateObject extends AbstractStateObject
         return identificationVariable;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IManagedType getManagedType(StateObject stateObject) {
 
@@ -212,9 +200,6 @@ public class CollectionMemberDeclarationStateObject extends AbstractStateObject
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AbstractFromClauseStateObject getParent() {
         return (AbstractFromClauseStateObject) super.getParent();
@@ -239,17 +224,11 @@ public class CollectionMemberDeclarationStateObject extends AbstractStateObject
         return identificationVariable.hasText();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ListIterable<IdentificationVariableStateObject> identificationVariables() {
         return new SingleElementListIterable<IdentificationVariableStateObject>(identificationVariable);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();
@@ -270,9 +249,6 @@ public class CollectionMemberDeclarationStateObject extends AbstractStateObject
         return derived;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -390,9 +366,6 @@ public class CollectionMemberDeclarationStateObject extends AbstractStateObject
         setAs(!as);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
 

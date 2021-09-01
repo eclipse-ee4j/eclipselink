@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,10 +35,12 @@ public class MyDomHandler implements DomHandler {
         theHandler = new W3CDomHandler();
     }
 
+    @Override
     public Result createUnmarshaller(ValidationEventHandler errorHandler) {
         return theHandler.createUnmarshaller(errorHandler);
     }
 
+    @Override
     public Object getElement(Result rt) {
         if (rt instanceof DOMResult) {
             return theHandler.getElement((DOMResult) rt);
@@ -46,6 +48,7 @@ public class MyDomHandler implements DomHandler {
         return null;
     }
 
+    @Override
     public Source marshal(Object n, ValidationEventHandler errorHandler) {
         if (n instanceof Element) {
             return theHandler.marshal((Element) n, errorHandler);

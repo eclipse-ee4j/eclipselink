@@ -99,17 +99,11 @@ public class WhenClauseStateObject extends AbstractConditionalClauseStateObject 
         parseThen(thenJpqlFragment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
@@ -118,9 +112,6 @@ public class WhenClauseStateObject extends AbstractConditionalClauseStateObject 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addProblems(List<Problem> problems) {
 
@@ -135,25 +126,16 @@ public class WhenClauseStateObject extends AbstractConditionalClauseStateObject 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public WhenClause getExpression() {
         return (WhenClause) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return WHEN;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public CaseExpressionStateObject getParent() {
         return (CaseExpressionStateObject) super.getParent();
@@ -179,9 +161,6 @@ public class WhenClauseStateObject extends AbstractConditionalClauseStateObject 
         return thenStateObject != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -240,9 +219,6 @@ public class WhenClauseStateObject extends AbstractConditionalClauseStateObject 
         firePropertyChanged(THEN_STATE_OBJECT_PROPERTY, oldThenStateObject, thenStateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void toTextInternal(Appendable writer) throws IOException {
 

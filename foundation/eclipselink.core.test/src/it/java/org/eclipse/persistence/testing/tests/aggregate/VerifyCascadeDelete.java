@@ -41,7 +41,7 @@ public class VerifyCascadeDelete extends TransactionalTestCase {
         super.setup();
         // AggregateCollectionMapping descriptors now cloned - should be obtained from the parent descriptor (Agent or Builder).
         ClassDescriptor parentDescriptor = getSession().getDescriptor(cls);
-        ClassDescriptor customerDescriptor = ((AggregateCollectionMapping)parentDescriptor.getMappingForAttributeName("customers")).getReferenceDescriptor();
+        ClassDescriptor customerDescriptor = parentDescriptor.getMappingForAttributeName("customers").getReferenceDescriptor();
         companyMapping = (OneToOneMapping)customerDescriptor.getMappingForAttributeName("company");
         privateOwnedValue = companyMapping.isPrivateOwned();
         companyMapping.setIsPrivateOwned(false);

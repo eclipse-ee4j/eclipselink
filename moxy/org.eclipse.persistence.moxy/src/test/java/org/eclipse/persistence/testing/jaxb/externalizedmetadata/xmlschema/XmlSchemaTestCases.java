@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -64,6 +64,7 @@ public class XmlSchemaTestCases extends JAXBWithJSONTestCases {
         setClasses(new Class[]{Employee.class});
     }
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlschema/eclipselink-oxm.xml");
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
@@ -105,6 +106,7 @@ public class XmlSchemaTestCases extends JAXBWithJSONTestCases {
 
     }
 
+    @Override
     protected Object getControlObject() {
         Employee emp = new Employee();
         emp.firstName ="firstName";

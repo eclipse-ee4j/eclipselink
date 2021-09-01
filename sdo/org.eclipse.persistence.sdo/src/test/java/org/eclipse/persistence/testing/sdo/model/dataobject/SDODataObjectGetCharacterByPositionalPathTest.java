@@ -20,6 +20,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -36,7 +38,7 @@ public class SDODataObjectGetCharacterByPositionalPathTest extends SDODataObject
 
     //1. purpose: getChar with Boolean property
     public void testGetCharacterFromBoolean() {
-        SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_BOOLEAN);
         dataObject_c.set(property, true);
 
@@ -49,7 +51,7 @@ public class SDODataObjectGetCharacterByPositionalPathTest extends SDODataObject
 
     //2. purpose: getChar with Byte property
     public void testGetCharacterFromByte() {
-        SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_BYTE);
         byte theValue = 10;
         dataObject_c.set(property, theValue);
@@ -65,20 +67,20 @@ public class SDODataObjectGetCharacterByPositionalPathTest extends SDODataObject
     //3. purpose: getChar with Defined Character Property
     public void testGetCharacterConversionFromDefinedCharacterProperty() {
         // dataObject's type add boolean property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_CHARACTER);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_CHARACTER);
 
         char b = '1';
 
         dataObject_a.setChar(propertyPath_a_b_c, b);// add it to instance list
 
-        this.assertEquals(b, dataObject_a.getChar(propertyPath_a_b_c));
+        assertEquals(b, dataObject_a.getChar(propertyPath_a_b_c));
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetCharacterConversionWithPathFromDefinedBooleanPropertyBracketPositionalSet() {
         // dataObject's type add boolean property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_CHARACTER);
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setMany(true);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_CHARACTER);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setMany(true);
 
         char bb = '1';
         List b = new ArrayList();
@@ -87,15 +89,15 @@ public class SDODataObjectGetCharacterByPositionalPathTest extends SDODataObject
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setChar(property3, bb);
 
-        this.assertEquals(bb, dataObject_a.getChar(property3));
+        assertEquals(bb, dataObject_a.getChar(property3));
 
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetCharacterConversionWithPathFromDefinedBooleanPropertyDotPositionalSet() {
         // dataObject's type add boolean property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_CHARACTER);
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setMany(true);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_CHARACTER);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setMany(true);
 
         char bb = '1';
         List b = new ArrayList();
@@ -103,19 +105,19 @@ public class SDODataObjectGetCharacterByPositionalPathTest extends SDODataObject
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setChar(property + ".0", bb);
 
-        this.assertEquals(bb, dataObject_a.getChar(property + ".0"));
+        assertEquals(bb, dataObject_a.getChar(property + ".0"));
 
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetCharacterConversionWithPathFromDefinedBooleanPropertyBracketInPathMiddle() {
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_CHARACTER);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_CHARACTER);
 
         char bb = '1';
 
         dataObject_a.setChar(property1, bb);// c dataobject's a property has value boolean 'true'
 
-        this.assertEquals(bb, dataObject_a.getChar(property1));
+        assertEquals(bb, dataObject_a.getChar(property1));
     }
 
     /* public void testGetCharacterConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet() {
@@ -147,7 +149,7 @@ public class SDODataObjectGetCharacterByPositionalPathTest extends SDODataObject
 
     //5. purpose: getChar with Double Property
     public void testGetCharacterFromDouble() {
-        SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_DOUBLE);
         double theValue = 10;
         dataObject_c.set(property, theValue);
@@ -163,7 +165,7 @@ public class SDODataObjectGetCharacterByPositionalPathTest extends SDODataObject
 
     //6. purpose: getChar with float Property
     public void testGetCharacterFromFloat() {
-        SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_FLOAT);
         float theValue = 10;
         dataObject_c.set(property, theValue);
@@ -179,7 +181,7 @@ public class SDODataObjectGetCharacterByPositionalPathTest extends SDODataObject
 
     //7. purpose: getChar with int Property
     public void testGetCharacterFromInt() {
-        SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_INT);
         int theValue = 10;
         dataObject_c.set(property, theValue);
@@ -195,7 +197,7 @@ public class SDODataObjectGetCharacterByPositionalPathTest extends SDODataObject
 
     //8. purpose: getChar with long Property
     public void testGetCharacterFromLong() {
-        SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_LONG);
         long theValue = 10;
         dataObject_c.set(property, theValue);
@@ -210,7 +212,7 @@ public class SDODataObjectGetCharacterByPositionalPathTest extends SDODataObject
 
     //9. purpose: getChar with short Property
     public void testGetCharacterFromShort() {
-        SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_SHORT);
         short theValue = 10;
         dataObject_c.set(property, theValue);
@@ -227,20 +229,20 @@ public class SDODataObjectGetCharacterByPositionalPathTest extends SDODataObject
     //10. purpose: getChar with Defined String Property
     public void testGetCharacterConversionFromDefinedStringProperty() {
         // dataObject's type add int property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_STRING);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_STRING);
 
         char str = 'c';
         Character B_STR = Character.valueOf(str);
         dataObject_a.setString(propertyPath_a_b_c, B_STR.toString());// add it to instance list
 
-        this.assertEquals(str, dataObject_a.getChar(property));
+        assertEquals(str, dataObject_a.getChar(property));
     }
 
 
 
     //12. purpose: getChar with bytes property
     public void testGetCharacterFromBytes() {
-        SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_BYTES);
         dataObject_c.set(property, new byte[]{10, 100});;
 
@@ -253,7 +255,7 @@ public class SDODataObjectGetCharacterByPositionalPathTest extends SDODataObject
 
     //13. purpose: getChar with decimal property
     public void testGetCharacterFromDecimal() {
-        SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_DECIMAL);
         BigDecimal theValue = new BigDecimal(10);
         dataObject_c.set(property, theValue);
@@ -269,7 +271,7 @@ public class SDODataObjectGetCharacterByPositionalPathTest extends SDODataObject
 
     //14. purpose: getChar with integer property
     public void testGetCharacterFromInteger() {
-        SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_INTEGER);
         BigInteger theValue = new BigInteger("10");
         dataObject_c.set(property, theValue);
@@ -285,7 +287,7 @@ public class SDODataObjectGetCharacterByPositionalPathTest extends SDODataObject
 
     //22. purpose: getChar with date property
     public void testGetCharacterFromDate() {
-        SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_DATE);
         dataObject_c.set(property, Calendar.getInstance().getTime());
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -651,7 +651,7 @@ public abstract class AbstractBaseTest {
         if (ServerInfoHolder.isOnServer()) {
             return getServerPlatform().getEntityManagerFactory(persistenceUnitName);
         } else {
-            EntityManagerFactory emfNamedPersistenceUnit = (EntityManagerFactory) emfNamedPersistenceUnits.get(persistenceUnitName);
+            EntityManagerFactory emfNamedPersistenceUnit = emfNamedPersistenceUnits.get(persistenceUnitName);
             if (emfNamedPersistenceUnit == null) {
                 emfNamedPersistenceUnit = Persistence.createEntityManagerFactory(persistenceUnitName, properties);
                 emfNamedPersistenceUnits.put(persistenceUnitName, emfNamedPersistenceUnit);
@@ -669,7 +669,7 @@ public abstract class AbstractBaseTest {
     }
 
     public static void closeEntityManagerFactory(String persistenceUnitName) {
-        EntityManagerFactory emfNamedPersistenceUnit = (EntityManagerFactory) emfNamedPersistenceUnits.get(persistenceUnitName);
+        EntityManagerFactory emfNamedPersistenceUnit = emfNamedPersistenceUnits.get(persistenceUnitName);
         if (emfNamedPersistenceUnit != null) {
             if (emfNamedPersistenceUnit.isOpen()) {
                 emfNamedPersistenceUnit.close();

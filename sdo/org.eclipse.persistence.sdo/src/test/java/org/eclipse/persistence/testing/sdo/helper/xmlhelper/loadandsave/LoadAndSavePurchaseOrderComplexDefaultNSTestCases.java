@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ public class LoadAndSavePurchaseOrderComplexDefaultNSTestCases extends LoadAndSa
         TestRunner.main(arguments);
     }
 
+    @Override
     protected void verifyAfterLoad(XMLDocument document){
       super.verifyAfterLoad(document);
       DataObject rootDO = document.getRootObject();
@@ -45,6 +46,7 @@ public class LoadAndSavePurchaseOrderComplexDefaultNSTestCases extends LoadAndSa
     }
 
    //override here to use a different verify after load method in this case
+   @Override
    public void testNoSchemaLoadFromInputStreamSaveDataObjectToString() throws Exception {
         registerTypes();
         FileInputStream inputStream = new FileInputStream(getNoSchemaControlFileName());
@@ -60,41 +62,50 @@ public class LoadAndSavePurchaseOrderComplexDefaultNSTestCases extends LoadAndSa
       super.verifyAfterLoad(document);
     }
 
+    @Override
     protected String getNoSchemaControlFileName() {
         return "./org/eclipse/persistence/testing/sdo/schemas/purchaseOrderComplexNSNoSchema.xml";
     }
 
+    @Override
     protected String getControlDataObjectFileName() {
         return "./org/eclipse/persistence/testing/sdo/schemas/purchaseOrderComplexNSDataObject.xml";
     }
 
+    @Override
     protected String getControlFileName() {
         return "./org/eclipse/persistence/testing/sdo/schemas/purchaseOrderComplexNS.xml";
     }
 
+    @Override
     protected String getSchemaName() {
         return "org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderComplexDefaultNamespace.xsd";
     }
 
+    @Override
     protected String getControlRootURI() {
         return NON_DEFAULT_URI;
     }
 
+    @Override
     protected String getControlRootName() {
         return "purchaseOrder";
     }
 
+    @Override
     protected String getRootInterfaceName() {
         return "PurchaseOrderType";
     }
 
     // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    @Override
     protected List<String> getPackages() {
         List<String> packages = new ArrayList<String>();
         packages.add(NON_DEFAULT_JAVA_PACKAGE_DIR);
         return packages;
     }
 
+    @Override
     protected void registerTypes() {
         SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
         Type intType = typeHelper.getType("commonj.sdo", "Int");

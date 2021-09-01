@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,103 +55,64 @@ public class EclipseLinkStateObjectBuilder extends BasicStateObjectBuilder
         super();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected LiteralVisitor buildLiteralVisitor() {
         return new EclipseLinkLiteralVisitor();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AsOfClause expression) {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CastExpression expression) {
         // TODO
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ConnectByClause expression) {
         // TODO
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(DatabaseType expression) {
         // TODO
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ExtractExpression expression) {
         // TODO
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(HierarchicalQueryClause expression) {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(OrderSiblingsByClause expression) {
         // TODO
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(RegexpExpression expression) {
         // TODO
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(StartWithClause expression) {
         // TODO
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(TableExpression expression) {
         // TODO
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(TableVariableDeclaration expression) {
         // TODO
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UnionClause expression) {
         // TODO

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,15 +45,16 @@ public class DynamicJAXBCollectionTestCases extends TestCase {
         super(name);
     }
 
+    @Override
     public String getName() {
         return "Dynamic JAXB: Collections: " + super.getName();
     }
 
     public void testXSDSingleListUnmarshal() throws Exception {
-        InputStream schemaStream = classLoader.getSystemResourceAsStream(XSD_SINGLE);
+        InputStream schemaStream = ClassLoader.getSystemResourceAsStream(XSD_SINGLE);
         jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(schemaStream, null, null, null);
 
-        InputStream xmlStream = classLoader.getSystemResourceAsStream(XSD_SINGLE_INSTANCE);
+        InputStream xmlStream = ClassLoader.getSystemResourceAsStream(XSD_SINGLE_INSTANCE);
         JAXBElement<DynamicEntity> jaxbElement = (JAXBElement<DynamicEntity>) jaxbContext.createUnmarshaller().unmarshal(xmlStream);
 
         DynamicEntity customer = jaxbElement.getValue();
@@ -66,7 +67,7 @@ public class DynamicJAXBCollectionTestCases extends TestCase {
     }
 
     public void testXSDMultipleListUnmarshal() throws Exception {
-        InputStream schemaStream = classLoader.getSystemResourceAsStream(XSD_MULTI);
+        InputStream schemaStream = ClassLoader.getSystemResourceAsStream(XSD_MULTI);
         jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(schemaStream, null, null, null);
 
         InputStream xmlStream = Thread.currentThread().getContextClassLoader().getSystemResourceAsStream(XSD_MULTI_INSTANCE);

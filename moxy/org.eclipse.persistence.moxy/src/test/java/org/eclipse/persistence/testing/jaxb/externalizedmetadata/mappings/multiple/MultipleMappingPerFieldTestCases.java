@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,6 +63,7 @@ public class MultipleMappingPerFieldTestCases extends JAXBWithJSONTestCases {
     /**
      * Create the control Object.
      */
+    @Override
     public Object getControlObject() {
         CustomQuoteRequest ctrlObj = new CustomQuoteRequest();
         ctrlObj.requestId = "100";
@@ -71,6 +72,7 @@ public class MultipleMappingPerFieldTestCases extends JAXBWithJSONTestCases {
         return ctrlObj;
     }
 
+    @Override
     public Map getProperties() {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/multiple/oxm.xml");
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();

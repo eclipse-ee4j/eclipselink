@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -97,6 +97,7 @@ public class CollectionHolderPopulatedTestCases extends JAXBWithJSONTestCases{
         return ch;
     }
 
+    @Override
     public Object getReadControlObject() {
         CollectionHolderInitialized ch  = new CollectionHolderInitialized();
         ch.getCollection1().add(10);
@@ -154,6 +155,7 @@ public class CollectionHolderPopulatedTestCases extends JAXBWithJSONTestCases{
         return ch;
     }
 
+    @Override
     protected Object getJSONReadControlObject() {
         CollectionHolderInitialized obj = (CollectionHolderInitialized)getControlObject();
         obj.collection5.get(0).collection10.put(new QName("type"), "collectionHolderInitialized");
@@ -170,11 +172,13 @@ public class CollectionHolderPopulatedTestCases extends JAXBWithJSONTestCases{
         return obj;
     }
 
+    @Override
     public boolean shouldRemoveWhitespaceFromControlDocJSON(){
         return false;
     }
 
     //not applicable
+    @Override
     public void testRoundTrip(){
 
     }

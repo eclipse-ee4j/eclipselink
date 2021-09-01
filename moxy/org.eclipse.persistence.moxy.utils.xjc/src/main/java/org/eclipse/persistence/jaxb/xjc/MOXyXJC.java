@@ -91,6 +91,7 @@ public class MOXyXJC {
         private ConsoleErrorReporter cer = new ConsoleErrorReporter(System.err);
         private String generatedPackagePath = null;
 
+        @Override
         public void generatedFile(String fileName, int count, int total) {
             message(fileName);
             if (this.generatedPackagePath == null) {
@@ -102,22 +103,27 @@ public class MOXyXJC {
             return generatedPackagePath;
         }
 
+        @Override
         public void message(String msg) {
             System.out.println(msg);
         }
 
+        @Override
         public void error(SAXParseException exception) {
             cer.error(exception);
         }
 
+        @Override
         public void fatalError(SAXParseException exception) {
             cer.fatalError(exception);
         }
 
+        @Override
         public void warning(SAXParseException exception) {
             cer.warning(exception);
         }
 
+        @Override
         public void info(SAXParseException exception) {
             cer.info(exception);
         }

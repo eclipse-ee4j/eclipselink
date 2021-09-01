@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,6 +63,7 @@ public class BinaryDataIdentifiedByNameXOPonNSRTestCases extends XMLWithJSONMapp
         setProject(new BinaryDataIdentifiedByNameProject(namespaceResolver));
     }
 
+    @Override
     protected Object getControlObject() {
         Employee emp = Employee.example1();
         String s = "THISISATEXTSTRINGFORTHISDATAHANDLER";
@@ -72,12 +73,13 @@ public class BinaryDataIdentifiedByNameXOPonNSRTestCases extends XMLWithJSONMapp
         return emp;
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         attachmentUnmarshaller = new MyAttachmentUnmarshaller();
         DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");
 
-        attachmentUnmarshaller.attachments.put(attachmentUnmarshaller.ATTACHMENT_TEST_ID, data);
+        attachmentUnmarshaller.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, data);
         xmlUnmarshaller.setAttachmentUnmarshaller(attachmentUnmarshaller);
 
     }
@@ -89,6 +91,7 @@ public class BinaryDataIdentifiedByNameXOPonNSRTestCases extends XMLWithJSONMapp
         return marshaller;
     }
 
+    @Override
     public void xmlToObjectTest(Object testObject) throws Exception {
         super.xmlToObjectTest(testObject);
 

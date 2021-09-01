@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,17 +37,11 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 @SuppressWarnings("nls")
 public final class EclipseLinkSemanticValidatorTest2_4 extends AbstractSemanticValidatorTest {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected JPQLQueryContext buildQueryContext() {
         return new EclipseLinkJPQLQueryContext(jpqlGrammar);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected AbstractSemanticValidator buildValidator() {
         return new EclipseLinkSemanticValidator(
@@ -56,17 +50,11 @@ public final class EclipseLinkSemanticValidatorTest2_4 extends AbstractSemanticV
         );
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isComparisonTypeChecked() {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isPathExpressionToCollectionMappingAllowed() {
         return true;

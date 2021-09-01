@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,7 @@ public class AnyObjectXMLRootSimpleNonStringTestCases extends XMLMappingTestCase
     public AnyObjectXMLRootSimpleNonStringTestCases(String name) throws Exception {
         super(name);
         Project project = new AnyObjectWithGroupingElementProjectNS();
-        ((XMLAnyObjectMapping)((XMLDescriptor)project.getDescriptor(Root.class)).getMappingForAttributeName("any")).setUseXMLRoot(true);
+        ((XMLAnyObjectMapping) project.getDescriptor(Root.class).getMappingForAttributeName("any")).setUseXMLRoot(true);
 
         XMLSchemaClassPathReference schemaRef = new XMLSchemaClassPathReference();
         schemaRef.setSchemaContext("/myns:childType");
@@ -38,6 +38,7 @@ public class AnyObjectXMLRootSimpleNonStringTestCases extends XMLMappingTestCase
         setControlDocument("org/eclipse/persistence/testing/oxm/mappings/anyobject/withgroupingelement/simple_non_string_xmlroot.xml");
     }
 
+    @Override
     public Object getControlObject() {
         Root root = new Root();
 

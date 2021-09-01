@@ -85,6 +85,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception {
         setupParser();
         setupControlDocs();
@@ -99,6 +100,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
         bindingsFileXSDSource = new StreamSource(bindingsFileXSDInputStream);
     }
 
+    @Override
     public void tearDown() throws Exception{
         super.tearDown();
         jaxbContext = null;
@@ -122,7 +124,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
             }
         }
 
-        jaxbContext  = new org.eclipse.persistence.jaxb.JAXBContextFactory().createContext(newTypes, props, Thread.currentThread().getContextClassLoader());
+        jaxbContext  = org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(newTypes, props, Thread.currentThread().getContextClassLoader());
         jaxbMarshaller = jaxbContext.createMarshaller();
         jaxbUnmarshaller = jaxbContext.createUnmarshaller();
      }
@@ -200,7 +202,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
             StringWriter writer = new StringWriter();
 
             XMLOutputFactory factory = XMLOutputFactory.newInstance();
-            factory.setProperty(factory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(false));
+            factory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(false));
             XMLStreamWriter streamWriter= factory.createXMLStreamWriter(writer);
 
             Object objectToWrite = getWriteControlObject();
@@ -233,7 +235,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
             StringWriter writer = new StringWriter();
 
             XMLOutputFactory factory = XMLOutputFactory.newInstance();
-            factory.setProperty(factory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(false));
+            factory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(false));
             XMLEventWriter eventWriter= factory.createXMLEventWriter(writer);
 
             Object objectToWrite = getWriteControlObject();
@@ -278,6 +280,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
         testSchemaGen(getControlSchemaFiles());
     }
 
+     @Override
      protected void compareValues(Object controlValue, Object testValue){
          if(controlValue instanceof Node && testValue instanceof Node) {
              assertXMLIdentical(((Node)controlValue).getOwnerDocument(), ((Node)testValue).getOwnerDocument());
@@ -407,6 +410,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
             assertXMLIdentical(getWriteControlDocument(), testDocument);
         }
 
+        @Override
         public void compareJAXBElementObjects(JAXBElement controlObj, JAXBElement testObj) {
             assertEquals(controlObj.getName().getLocalPart(), testObj.getName().getLocalPart());
             assertEquals(controlObj.getName().getNamespaceURI(), testObj.getName().getNamespaceURI());
@@ -585,6 +589,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
             schemaFiles = new HashMap<String, Writer>();
         }
 
+        @Override
         public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
             //return new StreamResult(System.out);
             if (namespaceURI == null) {

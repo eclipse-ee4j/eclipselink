@@ -160,7 +160,7 @@ public class SDOCopyHelper implements CopyHelper {
                 Setting nextSetting = (Setting)settings.get(index);
 
                 Property prop = dataObject.getSequence().getProperty(index);
-                if (prop == null || ((SDOType) prop.getType()).isDataType()) {
+                if (prop == null || prop.getType().isDataType()) {
                     Setting copySetting = nextSetting.copy(copy);
                     copy.getSequence().getSettings().add(copySetting);
                     copy.getSequence().addValueToSettings(copySetting);
@@ -571,14 +571,14 @@ public class SDOCopyHelper implements CopyHelper {
             Object aVSPropertyItem = null;
 
             // get the # of non-opencontent properties for the object holding the CS - do not use DVS.getTypePropertyValues()
-            for (int size = ((SDOType) anOriginalObject.getType()).getDeclaredProperties().size(), i = 0;
-                     i < size; i++) {
+            for (int size = anOriginalObject.getType().getDeclaredProperties().size(), i = 0;
+                 i < size; i++) {
                 aVSPropertyItem = aVSOriginal.getDeclaredProperty(i);
                 // only iterate set properties
                 if (aVSOriginal.isSetDeclaredProperty(i)) {
                     // shallow copy the object values
                     // handle single case
-                    SDOProperty currentProperty = (SDOProperty)((SDOType)anOriginalObject.getType()).getDeclaredProperties().get(i);
+                    SDOProperty currentProperty = (SDOProperty) anOriginalObject.getType().getDeclaredProperties().get(i);
                     if (currentProperty.isMany()) {
                         propertyToOriginalListMap.put(aVSPropertyItem, currentProperty);
 

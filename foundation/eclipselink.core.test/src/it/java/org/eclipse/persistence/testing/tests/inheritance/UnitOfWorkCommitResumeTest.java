@@ -80,7 +80,7 @@ public class UnitOfWorkCommitResumeTest extends WriteObjectTest {
     */
     protected void changeUnitOfWorkWorkingCopy() {
         Company company = (Company)this.unitOfWorkWorkingCopy;
-        Vector vehicles = (Vector)company.getVehicles().getValue();
+        Vector vehicles = company.getVehicles().getValue();
 
         // Delete a vehicle
         vehicles.removeElement(vehicles.firstElement());
@@ -103,7 +103,7 @@ public class UnitOfWorkCommitResumeTest extends WriteObjectTest {
     */
     protected void changeUnitOfWorkWorkingCopyAgain() {
         Company company = (Company)this.unitOfWorkWorkingCopy;
-        Vector vehicles = (Vector)company.getVehicles().getValue();
+        Vector vehicles = company.getVehicles().getValue();
 
         // Adjust Company name
         company.setName(company.name + "0");

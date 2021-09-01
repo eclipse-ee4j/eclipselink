@@ -67,25 +67,16 @@ public abstract class AbstractConditionalClause extends AbstractExpression {
         super(parent, identifier);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getConditionalExpression().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected final void addChildrenTo(Collection<Expression> children) {
         children.add(getConditionalExpression());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected final void addOrderedChildrenTo(List<Expression> children) {
 
@@ -122,9 +113,6 @@ public abstract class AbstractConditionalClause extends AbstractExpression {
         return new CollectionExpression(this, children, commas, spaces, true);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -186,18 +174,12 @@ public abstract class AbstractConditionalClause extends AbstractExpression {
         return hasSpaceAfterIdentifier;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
         return wordParser.character() == RIGHT_PARENTHESIS ||
                super.isParsingComplete(wordParser, word, expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected final void parse(WordParser wordParser, boolean tolerant) {
 
@@ -210,17 +192,11 @@ public abstract class AbstractConditionalClause extends AbstractExpression {
         conditionalExpression = parse(wordParser, ConditionalExpressionBNF.ID, tolerant);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean shouldSkipLiteral(AbstractExpression expression) {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected final void toParsedText(StringBuilder writer, boolean actual) {
 

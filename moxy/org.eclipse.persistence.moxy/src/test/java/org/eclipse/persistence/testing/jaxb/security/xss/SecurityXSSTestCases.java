@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,6 +46,7 @@ public class SecurityXSSTestCases extends TestCase {
         unmarshallDocument(XML_DOCUMENT_NESTED_ENTITIES);
     }
 
+    @Override
     public void setUp() throws Exception {
         final HashMap<String, Object> contextProperties = new HashMap<>();
         jaxbContext = JAXBContext.newInstance(DOMAIN_CLASSES, contextProperties);

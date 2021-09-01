@@ -41,8 +41,8 @@ public class EmployeeWithSpacesDeleteTest extends DeleteObjectTest {
     public static void deleteDependencies(org.eclipse.persistence.sessions.Session session, Employee employee) {
         // CR2114 - following line modified; employee.getClass() passed as argument
         String appendString = ((AbstractSession)session).getPlatform(employee.getClass()).getTableQualifier();
-        String startQuoteChar = ((DatasourcePlatform)((AbstractSession)session).getPlatform(employee.getClass())).getStartDelimiter();
-        String endQuoteChar = ((DatasourcePlatform)((AbstractSession)session).getPlatform(employee.getClass())).getEndDelimiter();
+        String startQuoteChar = ((AbstractSession)session).getPlatform(employee.getClass()).getStartDelimiter();
+        String endQuoteChar = ((AbstractSession)session).getPlatform(employee.getClass()).getEndDelimiter();
         if (appendString.length() != 0)
             appendString = appendString + ".";
 

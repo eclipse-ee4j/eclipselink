@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
 import commonj.sdo.Property;
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.exceptions.SDOException;
@@ -33,7 +34,7 @@ public class SDODataObjectSetGetWithIndexTest extends SDODataObjectTestCases {
     //purpose:  a property index is in instance property boundry
     public void testInstancePropertiesWithDefinedProperty() {
         // check it is in the list
-        this.assertTrue(DEFINED_PROPERTY_INDEX <= (dataObject.getInstanceProperties().size() - 1));
+        assertTrue(DEFINED_PROPERTY_INDEX <= (dataObject.getInstanceProperties().size() - 1));
     }
 
     //required conditions: none
@@ -42,13 +43,13 @@ public class SDODataObjectSetGetWithIndexTest extends SDODataObjectTestCases {
         dataObject.set(DEFINED_PROPERTY_INDEX, CONTROL_STRING_1);// set defined Property value
 
         String testValue = (String)dataObject.get(DEFINED_PROPERTY_INDEX);
-        this.assertEquals(CONTROL_STRING_1, testValue);// check value is set as we want
+        assertEquals(CONTROL_STRING_1, testValue);// check value is set as we want
     }
 
     //purpose:  Confirm that index id out of boundry of instance properties list.
     public void testInstancePropertiesWithUndefinedProperty() {
         // check it is not in the list
-        this.assertFalse(UNDEFINED_PROPERTY_INDEX <= (dataObject.getInstanceProperties().size() - 1));
+        assertFalse(UNDEFINED_PROPERTY_INDEX <= (dataObject.getInstanceProperties().size() - 1));
     }
 
     //required conditions: 1) DataObject is open
@@ -81,13 +82,13 @@ public class SDODataObjectSetGetWithIndexTest extends SDODataObjectTestCases {
 
     //purpose: check dataObject is not open
     public void testDataObject_Not_Open() {
-        this.assertFalse(dataObject_Not_Open.getType().isOpen());// check if DataObject is not Opened
+        assertFalse(dataObject_Not_Open.getType().isOpen());// check if DataObject is not Opened
     }
 
     //purpose: check property index is out of bountry of instance property list
     public void testDataObject_Not_In_List() {
         // check if it is undefined
-        this.assertFalse(UNDEFINED_PROPERTY_INDEX < (dataObject_Not_Open.getInstanceProperties().size() - 1));
+        assertFalse(UNDEFINED_PROPERTY_INDEX < (dataObject_Not_Open.getInstanceProperties().size() - 1));
     }
 
     //!! !!
@@ -131,10 +132,10 @@ public class SDODataObjectSetGetWithIndexTest extends SDODataObjectTestCases {
     //purpose: UnsupportedOperationException can be thrown for read only Property when set.
     public void testSetinvalidPropertyIndex_WithProperty_ReadOnly() {
         // check if it is defined
-        this.assertTrue(DEFINED_PROPERTY_READONLY_INDEX <= (dataObject_WithReadOnlyProperty.getInstanceProperties().size() - 1));
+        assertTrue(DEFINED_PROPERTY_READONLY_INDEX <= (dataObject_WithReadOnlyProperty.getInstanceProperties().size() - 1));
 
         // check property is read only
-        this.assertTrue(dataObject_WithReadOnlyProperty.getInstanceProperty(DEFINED_PROPERTY_READONLY_NAME).isReadOnly());
+        assertTrue(dataObject_WithReadOnlyProperty.getInstanceProperty(DEFINED_PROPERTY_READONLY_NAME).isReadOnly());
 
         try {
             dataObject_WithReadOnlyProperty.set(DEFINED_PROPERTY_READONLY_INDEX, CONTROL_STRING_1);// set undefined Property value

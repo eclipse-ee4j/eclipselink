@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,9 +46,6 @@ class ReadAllQueryVisitor extends AbstractObjectLevelReadQueryVisitor {
         super(queryContext, query);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(HierarchicalQueryClause expression) {
 
@@ -91,25 +88,16 @@ class ReadAllQueryVisitor extends AbstractObjectLevelReadQueryVisitor {
             orderByItems = new ArrayList<>();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CollectionExpression expression) {
             expression.acceptChildren(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(OrderSiblingsByClause expression) {
             expression.getOrderByItems().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
             orderByItems.add(queryContext.buildExpression(expression));

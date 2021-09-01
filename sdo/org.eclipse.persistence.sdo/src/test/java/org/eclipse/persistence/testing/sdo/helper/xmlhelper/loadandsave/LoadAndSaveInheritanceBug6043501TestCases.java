@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,30 +37,37 @@ public class LoadAndSaveInheritanceBug6043501TestCases extends LoadAndSaveTestCa
         TestRunner.main(arguments);
     }
 
+    @Override
     protected String getSchemaName() {
         return "CompanyBug6043501.xsd";
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/companyBug6043501.xml");
     }
 
+    @Override
     protected String getControlWriteFileName(){
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/companyBug6043501Write.xml");
     }
 
+    @Override
     protected String getNoSchemaControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/companyBug6043501NoSchema.xml");
     }
 
+    @Override
     protected String getControlRootURI() {
         return "http://testUri";
     }
 
+    @Override
     protected String getControlRootName() {
         return "company";
     }
 
+     @Override
      protected void generateClasses(String tmpDirName) throws Exception{
         URL url = new URL(getSchemaLocation() + getSchemaName());
         InputStream is = url.openStream();
@@ -73,10 +80,12 @@ public class LoadAndSaveInheritanceBug6043501TestCases extends LoadAndSaveTestCa
         classGenerator.generate(ss, tmpDirName, schemaResolver);
     }
 
+    @Override
     protected String getRootInterfaceName() {
         return "CompanyType";
     }
 
+    @Override
     protected List defineTypes() {
         try {
             URL url = new URL(getSchemaLocation() + getSchemaName());
@@ -88,10 +97,12 @@ public class LoadAndSaveInheritanceBug6043501TestCases extends LoadAndSaveTestCa
         }
     }
 
+    @Override
     protected String getSchemaLocation() {
         return FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/schemas/";
     }
 
+    @Override
     public void registerTypes() {
         Type stringType = typeHelper.getType("commonj.sdo", "String");
 

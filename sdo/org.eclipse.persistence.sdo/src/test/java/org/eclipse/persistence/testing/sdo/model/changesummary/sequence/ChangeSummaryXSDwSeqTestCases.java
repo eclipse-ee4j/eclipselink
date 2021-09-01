@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -70,6 +70,7 @@ public class ChangeSummaryXSDwSeqTestCases extends SDOTestCase {
         TestRunner.main(arguments);
     }
 
+    @Override
     public void setUp() {
         super.setUp();// watch setup redundancy
         //define types from deep with cs
@@ -284,9 +285,9 @@ public class ChangeSummaryXSDwSeqTestCases extends SDOTestCase {
         // assume that for logging=true copies we should have oldContainer, oldContProperties
         assertEquals(6, numberOfDataObjectsInSubTree);// 16 - 10
         assertEquals(((SDOChangeSummary)cs).getOldContainer().size(),//
-                     ((SDOChangeSummary)copy.getChangeSummary()).getOldContainer().size());
+                     copy.getChangeSummary().getOldContainer().size());
         assertEquals(((SDOChangeSummary)cs).getOldContainmentProperty().size(),//
-                     ((SDOChangeSummary)copy.getChangeSummary()).getOldContainmentProperty().size());
+                     copy.getChangeSummary().getOldContainmentProperty().size());
 
         // no oldSetting for simple object
 
@@ -1033,9 +1034,9 @@ public class ChangeSummaryXSDwSeqTestCases extends SDOTestCase {
         // assume that for logging=true copies we should have oldContainer, oldContProperties
         assertEquals(15, numberOfDataObjectsInSubTree);
         assertEquals(((SDOChangeSummary)cs2).getOldContainer().size(),//
-                     ((SDOChangeSummary)copy.getChangeSummary()).getOldContainer().size());
+                     copy.getChangeSummary().getOldContainer().size());
         assertEquals(((SDOChangeSummary)cs2).getOldContainmentProperty().size(),//
-                     ((SDOChangeSummary)copy.getChangeSummary()).getOldContainmentProperty().size());
+                     copy.getChangeSummary().getOldContainmentProperty().size());
         return copy;
 
     }
@@ -1786,9 +1787,9 @@ public class ChangeSummaryXSDwSeqTestCases extends SDOTestCase {
         assertEquals(3, cs.getChangedDataObjects().size());
         assertEquals(18, ((SDOChangeSummary)cs).getOldContainer().size());// 14 + 4 new objects
         assertEquals(18, ((SDOChangeSummary)cs).getOldContainmentProperty().size());// 14 + 4 new objects
-        assertEquals(1, ((SDOChangeSummary)cs).getOldValues(itemsDO).size());// from 2 (only 1st change on items is recorded)
-        assertEquals(5, ((SDOChangeSummary)cs).getOldValues(item3DO).size());// 1
-        assertEquals(5, ((SDOChangeSummary)cs).getOldValues(item5DO).size());// 1
+        assertEquals(1, cs.getOldValues(itemsDO).size());// from 2 (only 1st change on items is recorded)
+        assertEquals(5, cs.getOldValues(item3DO).size());// 1
+        assertEquals(5, cs.getOldValues(item5DO).size());// 1
         List aSettingList = cs.getOldValues(itemsDO);
         assertTrue(aSettingList.size() > 0);
         ChangeSummary.Setting containmentSetting = (ChangeSummary.Setting)aSettingList.get(0);
@@ -1882,7 +1883,7 @@ public class ChangeSummaryXSDwSeqTestCases extends SDOTestCase {
         DataObject yardDO = shipToDO.getDataObject("yard");
         cs.beginLogging();
         yardDO.detach();
-        assertTrue(((SDOChangeSummary)cs).isDeleted(yardDO));
+        assertTrue(cs.isDeleted(yardDO));
         billToDO.set("yard", yardDO);
 
         assertModified(shipToDO, cs);
@@ -2135,7 +2136,7 @@ public class ChangeSummaryXSDwSeqTestCases extends SDOTestCase {
         }
         DataObject oldContainer = ((SDOChangeSummary)cs).getOldContainer(shipToDO);
         Property shipToProp = oldContainer.getInstanceProperty("shipTo");
-        ChangeSummary.Setting oldSetting = ((SDOChangeSummary)cs).getOldValue(oldContainer, shipToProp);
+        ChangeSummary.Setting oldSetting = cs.getOldValue(oldContainer, shipToProp);
         DataObject deepCopyShipTo = (DataObject)oldSetting.getValue();
         assertEquals("123 Maple Street", deepCopyShipTo.get("street"));
 
@@ -2189,7 +2190,7 @@ public class ChangeSummaryXSDwSeqTestCases extends SDOTestCase {
         assertNull(shipToDO.get("street"));
         DataObject oldContainer = ((SDOChangeSummary)cs).getOldContainer(shipToDO);
         Property shipToProp = oldContainer.getInstanceProperty("shipTo");
-        ChangeSummary.Setting oldSetting = ((SDOChangeSummary)cs).getOldValue(oldContainer, shipToProp);
+        ChangeSummary.Setting oldSetting = cs.getOldValue(oldContainer, shipToProp);
         DataObject deepCopyShipTo = (DataObject)oldSetting.getValue();
         assertEquals("123 Maple Street", deepCopyShipTo.get("street"));
 

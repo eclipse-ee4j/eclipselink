@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,20 +20,24 @@ import org.eclipse.persistence.sessions.Session;
 
 public class WrapperConverter implements Converter {
 
+    @Override
     public void initialize(DatabaseMapping mapping, Session session) {
     }
 
+    @Override
     public Object convertDataValueToObjectValue(Object dataValue, Session session) {
         Wrapper wrapper = new Wrapper();
         wrapper.setValue(dataValue);
         return wrapper;
     }
 
+    @Override
     public Object convertObjectValueToDataValue(Object objectValue, Session session) {
         Wrapper wrapper = (Wrapper) objectValue;
         return wrapper.getValue();
     }
 
+    @Override
     public boolean isMutable() {
         return false;
     }

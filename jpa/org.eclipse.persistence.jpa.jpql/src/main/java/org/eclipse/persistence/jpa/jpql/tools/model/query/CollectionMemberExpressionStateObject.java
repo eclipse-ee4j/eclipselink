@@ -124,17 +124,11 @@ public class CollectionMemberExpressionStateObject extends AbstractStateObject {
         this(parent, entityStateObject, false, false, collectionValuedPath);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
@@ -178,9 +172,6 @@ public class CollectionMemberExpressionStateObject extends AbstractStateObject {
         return entityStateObject;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public CollectionMemberExpression getExpression() {
         return (CollectionMemberExpression) super.getExpression();
@@ -204,18 +195,12 @@ public class CollectionMemberExpressionStateObject extends AbstractStateObject {
         return of;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();
         collectionValuedPath = new CollectionValuedPathExpressionStateObject(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -303,9 +288,6 @@ public class CollectionMemberExpressionStateObject extends AbstractStateObject {
         setOf(!of);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
 

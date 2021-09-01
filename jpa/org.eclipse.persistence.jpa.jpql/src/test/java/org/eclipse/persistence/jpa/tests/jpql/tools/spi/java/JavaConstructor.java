@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -77,9 +77,7 @@ public class JavaConstructor implements IConstructor {
         return new JavaTypeDeclaration(typeRepository, type, genericType, javaType.isArray());
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public ITypeDeclaration[] getParameterTypes() {
         if (parameterTypes == null) {
             parameterTypes = buildParameterTypes();
@@ -91,9 +89,6 @@ public class JavaConstructor implements IConstructor {
         return type.getTypeRepository();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return constructor.toGenericString();

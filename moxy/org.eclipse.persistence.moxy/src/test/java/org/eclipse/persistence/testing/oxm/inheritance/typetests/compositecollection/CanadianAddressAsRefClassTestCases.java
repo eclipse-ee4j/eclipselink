@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,7 +30,7 @@ public class CanadianAddressAsRefClassTestCases extends XMLWithJSONMappingTestCa
         super(name);
         Project p = new COMCollectionTypeProject();
         ((XMLCompositeCollectionMapping)p.getDescriptor(Employee.class).getMappingForAttributeName("addresses")).setReferenceClass(CanadianAddress.class);
-        ((XMLField)((XMLCompositeCollectionMapping)p.getDescriptor(Employee.class).getMappingForAttributeName("addresses")).getField()).setLeafElementType(null);
+        ((XMLField) p.getDescriptor(Employee.class).getMappingForAttributeName("addresses").getField()).setLeafElementType(null);
 
         setProject(p);
         setControlDocument(READ_DOC);
@@ -38,6 +38,7 @@ public class CanadianAddressAsRefClassTestCases extends XMLWithJSONMappingTestCa
 
     }
 
+    @Override
     public Object getControlObject() {
         Employee emp = new Employee();
         ArrayList adds = new ArrayList();

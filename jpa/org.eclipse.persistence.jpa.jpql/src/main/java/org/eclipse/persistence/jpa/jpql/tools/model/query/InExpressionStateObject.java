@@ -183,17 +183,11 @@ public class InExpressionStateObject extends AbstractListHolderStateObject<State
         this(parent, false, path, items);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         if (stateObject != null) {
@@ -214,9 +208,6 @@ public class InExpressionStateObject extends AbstractListHolderStateObject<State
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public InExpression getExpression() {
         return (InExpression) super.getExpression();
@@ -250,9 +241,6 @@ public class InExpressionStateObject extends AbstractListHolderStateObject<State
         return stateObject != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -277,9 +265,6 @@ public class InExpressionStateObject extends AbstractListHolderStateObject<State
         return singleInputParameter;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String listName() {
         return ITEMS_LIST;
@@ -357,9 +342,6 @@ public class InExpressionStateObject extends AbstractListHolderStateObject<State
         setNot(!not);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
 

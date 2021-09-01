@@ -51,6 +51,7 @@ public class XmlElementsSingleIdRefTestCases extends JAXBWithJSONTestCases{
         setControlJSON(JSON_RESOURCE);
     }
 
+    @Override
     protected Object getControlObject() {
         EmployeeSingle employee = new EmployeeSingle();
         employee.id = CONTROL_ID;

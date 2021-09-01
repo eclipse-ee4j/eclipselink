@@ -67,35 +67,23 @@ public final class UpdateItem extends AbstractExpression {
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getStateFieldPathExpression().accept(visitor);
         getNewValue().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         children.add(getStateFieldPathExpression());
         children.add(getNewValue());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
 
@@ -123,9 +111,6 @@ public final class UpdateItem extends AbstractExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -152,9 +137,6 @@ public final class UpdateItem extends AbstractExpression {
         return newValue;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(UpdateItemBNF.ID);
@@ -221,18 +203,12 @@ public final class UpdateItem extends AbstractExpression {
               !stateFieldExpression.isNull();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
         return word.equals(EQUAL) ||
                super.isParsingComplete(wordParser, word, expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -266,9 +242,6 @@ public final class UpdateItem extends AbstractExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
 

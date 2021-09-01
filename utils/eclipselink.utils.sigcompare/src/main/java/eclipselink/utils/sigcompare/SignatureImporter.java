@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -64,12 +64,14 @@ public class SignatureImporter {
             super(Opcodes.ASM5);
         }
 
+        @Override
         public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
             if ((access & Opcodes.ACC_PUBLIC) > 0) {
                 this.sig = new ClassSignature(name, superName, interfaces);
             } // TODO: Handle inheritance
         }
 
+        @Override
         public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
             if (this.sig != null && (access & Opcodes.ACC_PUBLIC) > 0) {
                 this.sig.addField(name, desc);
@@ -77,6 +79,7 @@ public class SignatureImporter {
             return null;
         }
 
+        @Override
         public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
             if (this.sig != null && (access & Opcodes.ACC_PUBLIC) > 0) {
                 this.sig.addMethod(name, desc);
@@ -84,6 +87,7 @@ public class SignatureImporter {
             return null;
         }
 
+        @Override
         public void visitEnd() {
             if (this.sig != null) {
                 this.classes.put(this.sig.getName(), this.sig);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ public class AnyObjectComplexChildNSTestCases extends XMLWithJSONMappingTestCase
         setControlJSON("org/eclipse/persistence/testing/oxm/mappings/anyobject/withgroupingelement/complex_child_ns.json");
     }
 
+    @Override
     public Object getControlObject() {
         Root root = new Root();
         Child child = new Child();

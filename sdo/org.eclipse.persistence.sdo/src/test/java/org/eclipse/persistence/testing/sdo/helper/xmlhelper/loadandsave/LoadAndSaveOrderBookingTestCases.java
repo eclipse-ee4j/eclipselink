@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,39 +44,48 @@ public class LoadAndSaveOrderBookingTestCases extends LoadAndSaveTestCases {
         TestRunner.main(arguments);
     }
 
+    @Override
     protected String getSchemaName() {
         return "OrderBooking.xsd";
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/orderbooking/orderbooking.xml");
     }
 
+    @Override
     protected String getControlWriteFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/orderbooking/orderbooking.xml");
     }
 
+    @Override
     protected String getNoSchemaControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/orderbooking/orderbookingNoSchema.xml");
     }
 
+    @Override
     protected String getControlRootURI() {
         return "http://www.globalcompany.com/ns/OrderBooking";
     }
 
+    @Override
     protected String getControlRootName() {
         return "SOAOrderBookingProcessRequest";
     }
 
+    @Override
     protected String getUnrelatedSchemaName() {
         return "./org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderWithInstanceClass.xsd";
     }
 
+    @Override
     protected String getRootInterfaceName() {
         return "SOAOrderBookingProcessRequest";
     }
 
     // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    @Override
     protected List<String> getPackages() {
         List<String> packages = new ArrayList<String>();
         // Note the first package at index 0 must contain the getRootInterfaceName()
@@ -86,6 +95,7 @@ public class LoadAndSaveOrderBookingTestCases extends LoadAndSaveTestCases {
         return packages;
     }
 
+    @Override
     public void testLoadFromAndSaveAfterDefineMultipleSchemas() throws Exception {
         try {
             List types = defineTypes();
@@ -105,6 +115,7 @@ public class LoadAndSaveOrderBookingTestCases extends LoadAndSaveTestCases {
         }
     }
 
+    @Override
     protected void generateClasses(String tmpDirName) throws Exception {
         URL url = new URL(getSchemaLocation() + getSchemaName());
         InputStream is = url.openStream();
@@ -118,6 +129,7 @@ public class LoadAndSaveOrderBookingTestCases extends LoadAndSaveTestCases {
     }
 
 
+    @Override
     protected List defineTypes() {
         try {
             //String location = getSchemaLocation() + getSchemaName();
@@ -141,10 +153,12 @@ public class LoadAndSaveOrderBookingTestCases extends LoadAndSaveTestCases {
         }
     }
 
+    @Override
     protected String getSchemaLocation() {
         return FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xmlhelper/orderbooking/";
     }
 
+    @Override
     public void testNoSchemaLoadFromInputStreamSaveDataObjectToString() throws Exception {
         super.testNoSchemaLoadFromInputStreamSaveDataObjectToString();
         Type aType = typeHelper.getType("http://www.globalcompany.com/ns/OrderBooking/rules", "approve");
@@ -154,6 +168,7 @@ public class LoadAndSaveOrderBookingTestCases extends LoadAndSaveTestCases {
         assertEquals(mangledClassName, className);
     }
 
+    @Override
     public void registerTypes() {
         Type intType = typeHelper.getType("commonj.sdo", "Int");
         Type stringType = typeHelper.getType("commonj.sdo", "String");

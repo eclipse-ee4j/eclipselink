@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -35,7 +37,7 @@ public class SDODataObjectGetDecimalByPositionalPathTest extends SDODataObjectGe
 
     //1. purpose: getBigDecimal with boolean property
     public void testGetDecimalFromBoolean() {
-        SDOProperty prop = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty prop = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         prop.setType(SDOConstants.SDO_BOOLEAN);
         dataObject_c.set(prop, true);
         try {
@@ -48,7 +50,7 @@ public class SDODataObjectGetDecimalByPositionalPathTest extends SDODataObjectGe
     //2. purpose: getBigDecimal with byte property
     public void testGetDecimalFromByte() {
 
-        SDOProperty prop = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty prop = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         prop.setType(SDOConstants.SDO_BYTE);
         byte theByte = 100;
         dataObject_c.set(prop, theByte);
@@ -65,7 +67,7 @@ public class SDODataObjectGetDecimalByPositionalPathTest extends SDODataObjectGe
     //3. purpose: getBigDecimal with character property
     public void testGetDecimalFromCharacter() {
 
-        SDOProperty prop = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty prop = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         prop.setType(SDOConstants.SDO_CHARACTER);
         dataObject_c.set(prop, 'e');
 
@@ -79,71 +81,71 @@ public class SDODataObjectGetDecimalByPositionalPathTest extends SDODataObjectGe
     //5. purpose: getBigDecimal with Defined Double Property
     public void testGetDecimalConversionFromDefinedDoubleProperty() {
         // dataObject's type add boolean property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_DOUBLE);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_DOUBLE);
 
         double db = 12;
         BigDecimal bd = new BigDecimal(db);
         dataObject_a.setDouble(propertyPath_a_b_c, db);// add it to instance list
 
-        this.assertEquals(bd, dataObject_a.getBigDecimal(propertyPath_a_b_c));
+        assertEquals(bd, dataObject_a.getBigDecimal(propertyPath_a_b_c));
     }
 
 
     //7. purpose: getBigDecimal with Defined float Property
     public void testGetIntConversionFromDefinedFloatProperty() {
         // dataObject's type add float property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_FLOAT);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_FLOAT);
 
         float fl = 12;
         BigDecimal bd = new BigDecimal(fl);
         dataObject_a.setFloat(propertyPath_a_b_c, fl);// add it to instance list
 
-        this.assertEquals(bd, dataObject_a.getBigDecimal(propertyPath_a_b_c));
+        assertEquals(bd, dataObject_a.getBigDecimal(propertyPath_a_b_c));
     }
 
 
     //9. purpose: getBigDecimal with Defined int Property
     public void testGetDecimalConversionFromDefinedIntProperty() {
         // dataObject's type add int property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_INT);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_INT);
 
         int in = 12;
         BigDecimal bd = new BigDecimal(in);
         dataObject_a.setInt(propertyPath_a_b_c, in);// add it to instance list
 
-        this.assertEquals(bd, dataObject_a.getBigDecimal(propertyPath_a_b_c));
+        assertEquals(bd, dataObject_a.getBigDecimal(propertyPath_a_b_c));
     }
 
 
     //11. purpose: getBigDecimal with Defined long Property
     public void testGetDecimalConversionFromDefinedLongProperty() {
         // dataObject's type add short property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_LONG);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_LONG);
 
         long lg = 12;
         BigDecimal bd = new BigDecimal(lg);
         dataObject_a.setLong(propertyPath_a_b_c, lg);// add it to instance list
 
-        this.assertEquals(bd, dataObject_a.getBigDecimal(propertyPath_a_b_c));
+        assertEquals(bd, dataObject_a.getBigDecimal(propertyPath_a_b_c));
     }
 
 
     //14. purpose: getBigDecimal with Defined String Property
     public void testGetDecimalConversionFromDefinedStringProperty() {
         // dataObject's type add int property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_STRING);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_STRING);
 
         String str = "12";
         BigDecimal bd = new BigDecimal(str);
         dataObject_a.setString(propertyPath_a_b_c, str);// add it to instance list
 
-        this.assertEquals(bd, dataObject_a.getBigDecimal(property));
+        assertEquals(bd, dataObject_a.getBigDecimal(property));
     }
 
 
     //17. purpose: getBigDecimal with bytes property
     public void testGetDecimalFromBytes() {
-        SDOProperty prop = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty prop = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         prop.setType(SDOConstants.SDO_BYTES);
         dataObject_c.set(prop, new String("eee").getBytes());
 
@@ -157,20 +159,20 @@ public class SDODataObjectGetDecimalByPositionalPathTest extends SDODataObjectGe
     //18. purpose: getBigDecimal with Defined Decimal Property
     public void testGetDecimalConversionFromDefinedDecimalProperty() {
         // dataObject's type add int property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_DECIMAL);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_DECIMAL);
 
         int db = 12;
         BigDecimal bd = new BigDecimal(db);
         dataObject_a.setBigDecimal(propertyPath_a_b_c, bd);// add it to instance list
 
-        this.assertEquals(bd, dataObject_a.getBigDecimal(propertyPath_a_b_c));
+        assertEquals(bd, dataObject_a.getBigDecimal(propertyPath_a_b_c));
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyBracketPositionalSet() {
         // dataObject's type add boolean property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_DECIMAL);
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setMany(true);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_DECIMAL);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setMany(true);
 
         int db = 12;
         BigDecimal bd = new BigDecimal(db);
@@ -180,15 +182,15 @@ public class SDODataObjectGetDecimalByPositionalPathTest extends SDODataObjectGe
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setBigDecimal(property3, bd);
 
-        this.assertEquals(bd, dataObject_a.getBigDecimal(property3));
+        assertEquals(bd, dataObject_a.getBigDecimal(property3));
 
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyDotPositionalSet() {
         // dataObject's type add boolean property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_DECIMAL);
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setMany(true);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_DECIMAL);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setMany(true);
 
         int db = 12;
         BigDecimal bd = new BigDecimal(db);
@@ -197,20 +199,20 @@ public class SDODataObjectGetDecimalByPositionalPathTest extends SDODataObjectGe
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setBigDecimal(property + ".0", bd);
 
-        this.assertEquals(bd, dataObject_a.getBigDecimal(property + ".0"));
+        assertEquals(bd, dataObject_a.getBigDecimal(property + ".0"));
 
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyBracketInPathMiddle() {
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_DECIMAL);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_DECIMAL);
 
         int db = 12;
         BigDecimal bd = new BigDecimal(db);
 
         dataObject_a.setBigDecimal(property1, bd);// c dataobject's a property has value boolean 'true'
 
-        this.assertEquals(bd, dataObject_a.getBigDecimal(property1));
+        assertEquals(bd, dataObject_a.getBigDecimal(property1));
     }
 
     /*public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet() {
@@ -244,20 +246,20 @@ public class SDODataObjectGetDecimalByPositionalPathTest extends SDODataObjectGe
     //20. purpose: getDecimal with Defined integer Property
     public void testGetDecimalConversionFromDefinedIntegerProperty() {
         // dataObject's type add int property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_INTEGER);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_INTEGER);
 
         BigInteger bi = new BigInteger("12");
         BigDecimal bd = new BigDecimal(bi);
         dataObject_a.setBigInteger(propertyPath_a_b_c, bi);// add it to instance list
 
-        this.assertEquals(bd, dataObject_a.getBigDecimal(propertyPath_a_b_c));
+        assertEquals(bd, dataObject_a.getBigDecimal(propertyPath_a_b_c));
     }
 
 
 
     //22. purpose: getBigDecimal with date property
     public void testGetDecimalFromDate() {
-        SDOProperty prop = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty prop = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         prop.setType(SDOConstants.SDO_DATE);
         dataObject_c.set(prop, Calendar.getInstance().getTime());
 

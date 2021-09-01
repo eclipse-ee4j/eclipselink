@@ -40,25 +40,16 @@ public final class SqrtExpression extends AbstractSingleEncapsulatedExpression {
         super(parent, SQRT);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getEncapsulatedExpressionQueryBNFId() {
         return InternalSqrtExpressionBNF.ID;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(FunctionsReturningNumericsBNF.ID);

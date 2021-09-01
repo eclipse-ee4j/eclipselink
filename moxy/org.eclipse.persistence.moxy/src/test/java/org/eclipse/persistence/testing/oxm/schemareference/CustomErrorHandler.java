@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,9 +20,11 @@ import org.xml.sax.SAXException;
 
 public class CustomErrorHandler extends DefaultHandler {
     private boolean ignoredError = false;
+    @Override
     public void warning(SAXParseException ex) throws SAXException {
         System.out.println("Warning Raised: " + ex.getMessage());
     }
+    @Override
     public void error(SAXParseException ex) throws SAXException {
         String message = ex.getMessage();
         System.out.println("Error with message " + message + " being handled...");
@@ -35,6 +37,7 @@ public class CustomErrorHandler extends DefaultHandler {
             throw ex;
         }
     }
+    @Override
     public void fatalError(SAXParseException ex) throws SAXException {
         System.out.println("Fatal Error Raised: " + ex.getMessage());
         String message = ex.getMessage();

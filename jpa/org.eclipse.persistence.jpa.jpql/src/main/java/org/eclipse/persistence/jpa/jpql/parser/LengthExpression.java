@@ -40,25 +40,16 @@ public final class LengthExpression extends AbstractSingleEncapsulatedExpression
         super(parent, LENGTH);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getEncapsulatedExpressionQueryBNFId() {
         return InternalLengthExpressionBNF.ID;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(FunctionsReturningNumericsBNF.ID);

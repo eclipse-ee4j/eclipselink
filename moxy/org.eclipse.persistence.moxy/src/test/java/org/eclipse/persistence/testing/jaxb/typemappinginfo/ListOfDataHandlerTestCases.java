@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -80,6 +80,7 @@ protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/j
         return typeMappingInfos;
     }
 
+    @Override
     protected Object getControlObject() {
 
         DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");
@@ -99,6 +100,7 @@ protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/j
     }
 
 
+    @Override
     public Map<String, InputStream> getControlSchemaFiles(){
 
         Map<String, InputStream> controlSchema = new HashMap<String, InputStream>();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ public final class CastExpressionTest extends JPQLParserTest {
 
     private JPQLQueryStringFormatter buildStringFormatter_01() {
         return new JPQLQueryStringFormatter() {
+            @Override
             public String format(String jpqlQuery) {
                 return jpqlQuery.replace("AS)", "AS )");
             }
@@ -39,6 +40,7 @@ public final class CastExpressionTest extends JPQLParserTest {
 
     private JPQLQueryStringFormatter buildStringFormatter_02() {
         return new JPQLQueryStringFormatter() {
+            @Override
             public String format(String jpqlQuery) {
                 return jpqlQuery.replace("TIMESTAMP)", "timestamp)");
             }

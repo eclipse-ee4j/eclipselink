@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,10 +33,12 @@ public class AnyObjectNoDefaultRootComplexChildrenTestCases extends XMLWithJSONM
         expectsMarshalException = true;
     }
 
+    @Override
     public boolean isUnmarshalTest() {
         return false;
     }
 
+    @Override
     public Object getControlObject() {
         Root root = new Root();
         Child child = new Child();

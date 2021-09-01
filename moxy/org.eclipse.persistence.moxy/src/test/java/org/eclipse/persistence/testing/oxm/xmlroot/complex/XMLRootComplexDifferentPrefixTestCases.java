@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,6 +40,7 @@ public class XMLRootComplexDifferentPrefixTestCases extends XMLRootComplexTestCa
         TestRunner.main(arguments);
     }
 
+    @Override
     public Project getTopLinkProject() {
         Project p = super.getTopLinkProject();
         ((XMLDescriptor)p.getDescriptor(Person.class)).getNamespaceResolver().put("myns", "test");
@@ -47,6 +48,7 @@ public class XMLRootComplexDifferentPrefixTestCases extends XMLRootComplexTestCa
         return p;
     }
 
+    @Override
     public Object getControlObject() {
         Person peep = new Person();
         peep.setName(CONTROL_PERSON_NAME);
@@ -58,14 +60,17 @@ public class XMLRootComplexDifferentPrefixTestCases extends XMLRootComplexTestCa
         return xmlRoot;
     }
 
+    @Override
     public Object getWriteControlObject() {
         return getControlObject();
     }
 
+    @Override
     public String getXMLResource() {
         return XML_RESOURCE;
     }
 
+    @Override
     public Document getWriteControlDocument() throws Exception {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/oxm/xmlroot/complex/employee-diff-prefix-write.xml");
         Document writeDocument = parser.parse(inputStream);

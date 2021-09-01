@@ -66,27 +66,18 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
         super(parent, identifier);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getFirstExpression().accept(visitor);
         getSecondExpression().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         children.add(getFirstExpression());
         children.add(getSecondExpression());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedEncapsulatedExpressionTo(List<Expression> children) {
 
@@ -132,9 +123,6 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
         return new CollectionExpression(this, children, commas, spaces, true);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -183,9 +171,6 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
         return hasComma;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean hasEncapsulatedExpression() {
         return hasFirstExpression() || hasComma || hasSecondExpression();
@@ -223,9 +208,6 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
         return hasSpaceAfterComma;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
         char character = wordParser.character();
@@ -256,9 +238,6 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
      */
     public abstract String parameterExpressionBNF(int index);
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parseEncapsulatedExpression(WordParser wordParser,
                                                int whitespaceCount,
@@ -296,9 +275,6 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void removeEncapsulatedExpression() {
         hasComma = false;
@@ -307,9 +283,6 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
         hasSpaceAfterComma = false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedTextEncapsulatedExpression(StringBuilder writer, boolean actual) {
 

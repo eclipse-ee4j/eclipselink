@@ -79,33 +79,21 @@ public final class ConstructorExpression extends AbstractExpression {
         super(parent, NEW);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getConstructorItems().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         children.add(getConstructorItems());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
 
@@ -159,9 +147,6 @@ public final class ConstructorExpression extends AbstractExpression {
         return new CollectionExpression(this, children, commas, spaces, true);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -204,9 +189,6 @@ public final class ConstructorExpression extends AbstractExpression {
         return constructorItems;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(ConstructorExpressionBNF.ID);
@@ -253,18 +235,12 @@ public final class ConstructorExpression extends AbstractExpression {
         return hasSpaceAfterNew;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
         return wordParser.character() == RIGHT_PARENTHESIS ||
                super.isParsingComplete(wordParser, word, expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -315,17 +291,11 @@ public final class ConstructorExpression extends AbstractExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean shouldSkipLiteral(AbstractExpression expression) {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
 

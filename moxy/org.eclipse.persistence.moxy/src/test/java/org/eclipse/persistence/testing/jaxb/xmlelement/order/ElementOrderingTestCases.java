@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,15 +37,18 @@ public class ElementOrderingTestCases extends JAXBWithJSONTestCases {
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
     }
 
+    @Override
     public Class getUnmarshalClass(){
         return AlbumInfo.class;
     }
 
+    @Override
     protected Object getJSONReadControlObject() {
         JAXBElement elem = new JAXBElement<AlbumInfo>(new QName(""), AlbumInfo.class, (AlbumInfo) getWriteControlObject());
         return elem;
     }
 
+    @Override
     protected Object getControlObject() {
         JAXBElement elem = new JAXBElement<AlbumInfo>(new QName("albumInfo"), AlbumInfo.class, (AlbumInfo) getWriteControlObject());
         return elem;
@@ -71,5 +74,6 @@ public class ElementOrderingTestCases extends JAXBWithJSONTestCases {
     }
 
     //
+    @Override
     public void testUnmarshallerHandler(){}
 }

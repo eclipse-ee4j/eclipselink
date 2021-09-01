@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,6 +48,7 @@ public class LOBUpdateTest extends ComplexUpdateTest {
         setDescription("This case tests the BLOB/CLOB update with size less or bigger than 4k and checks if it was updated properly");
     }
 
+    @Override
     protected void changeObject() {
         //Bug#3128838  Test Byte[] support
         Image image = (Image)workingCopy;
@@ -57,6 +58,7 @@ public class LOBUpdateTest extends ComplexUpdateTest {
         image.setCommentary(ImageSimulator.initCharArrayBase(size * 2));
     }
 
+    @Override
     public String getName() {
         String strUpdated = "Updated " + size + ", " + 2 * size;
         String strOriginal = "Original " + ((Image)originalObjectNotInDB).getPicture().length + ", " + ((Image)originalObjectNotInDB).getScript().length();
@@ -67,6 +69,7 @@ public class LOBUpdateTest extends ComplexUpdateTest {
         return str;
     }
 
+    @Override
     protected void setup() {
         // Create originalObject and insert it into db - it will be deleted in reset()
         try {
@@ -82,6 +85,7 @@ public class LOBUpdateTest extends ComplexUpdateTest {
         super.setup();
     }
 
+    @Override
     public void reset() {
         if (originalObject != null) {
             super.reset();

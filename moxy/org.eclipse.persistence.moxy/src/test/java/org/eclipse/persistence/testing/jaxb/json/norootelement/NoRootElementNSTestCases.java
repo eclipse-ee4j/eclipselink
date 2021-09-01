@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class NoRootElementNSTestCases extends JSONMarshalUnmarshalTestCases {
 
     }
 
+    @Override
     public Object getControlObject() {
         Address addr = new Address();
         addr.setId(10);
@@ -47,12 +48,14 @@ public class NoRootElementNSTestCases extends JSONMarshalUnmarshalTestCases {
         return Address.class;
     }
 
+    @Override
     public Object getReadControlObject(){
         QName name = new QName("");
         JAXBElement jbe = new JAXBElement<Address>(name, Address.class, (Address)getControlObject());
         return jbe;
     }
 
+     @Override
      public Map getProperties(){
             Map props = new HashMap();
 

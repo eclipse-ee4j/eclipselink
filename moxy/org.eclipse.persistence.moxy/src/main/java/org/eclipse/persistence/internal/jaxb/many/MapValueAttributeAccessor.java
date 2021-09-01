@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,7 +61,7 @@ public class MapValueAttributeAccessor extends AttributeAccessor {
         for(Entry entry : entrySet) {
             MapEntry nextEntry;
             try {
-                nextEntry = (MapEntry)generatedEntryClass.newInstance();
+                nextEntry = (MapEntry)generatedEntryClass.getConstructor().newInstance();
             } catch (Exception e) {
                 return null;
             }
@@ -77,10 +77,8 @@ public class MapValueAttributeAccessor extends AttributeAccessor {
 
         Map mapValue = null;;
         try{
-            mapValue = (Map)mapClass.newInstance();
-        } catch (InstantiationException e) {
-            throw XMLMarshalException.unmarshalException(e);
-        } catch (IllegalAccessException e) {
+            mapValue = (Map)mapClass.getConstructor().newInstance();
+        } catch (ReflectiveOperationException e) {
             throw XMLMarshalException.unmarshalException(e);
         }
         if(value != null) {

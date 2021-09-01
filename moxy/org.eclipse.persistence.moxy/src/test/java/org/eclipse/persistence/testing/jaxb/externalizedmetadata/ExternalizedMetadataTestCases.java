@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -83,6 +83,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception {
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         builderFactory.setNamespaceAware(true);
@@ -536,6 +537,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
         public ResourceResolver(MyStreamSchemaOutputResolver resolver) {
             oResolver = resolver;
         }
+        @Override
         public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseUri) {
             return new MyLSInput(namespaceURI, oResolver);
         }
@@ -554,23 +556,39 @@ public class ExternalizedMetadataTestCases extends TestCase {
             sValue = value;
             oResolver = resolver;
         }
+        @Override
         public void setSystemId(String arg0) {}
+        @Override
         public void setStringData(String arg0) {}
+        @Override
         public void setPublicId(String arg0) {}
+        @Override
         public void setEncoding(String arg0) {}
+        @Override
         public void setCharacterStream(Reader arg0) {}
+        @Override
         public void setCertifiedText(boolean arg0) {}
+        @Override
         public void setByteStream(InputStream arg0) {}
+        @Override
         public void setBaseURI(String arg0) {}
+        @Override
         public String getSystemId() {return null;}
+        @Override
         public String getStringData() {
             return oResolver.schemaFiles.get(sValue).toString();
         }
+        @Override
         public String getPublicId() {return null;}
+        @Override
         public String getEncoding() {return null;}
+        @Override
         public Reader getCharacterStream() {return null;}
+        @Override
         public boolean getCertifiedText() {return false;}
+        @Override
         public InputStream getByteStream() {return null;}
+        @Override
         public String getBaseURI() {return null;}
     }
 
@@ -704,6 +722,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
             schemaFiles = new HashMap<String, File>();
         }
 
+        @Override
         public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
             //return new StreamResult(System.out);
             if (namespaceURI == null) {
@@ -729,6 +748,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
             schemaFiles = new HashMap<String, Writer>();
         }
 
+        @Override
         public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
             //return new StreamResult(System.out);
             if (namespaceURI == null) {

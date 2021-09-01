@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class SimpleAnyTestCases extends XMLMappingTestCases {
         setProject(EMPLOYEE_PROJECT);
     }
 
+    @Override
     public Object getControlObject() {
         Employee controlEmployee = new Employee();
 
@@ -49,6 +50,7 @@ public class SimpleAnyTestCases extends XMLMappingTestCases {
         return controlEmployee;
     }
 
+    @Override
     public void xmlToObjectTest(Object testObject) throws Exception {
         Employee testEmployee = (Employee) testObject;
         assertEquals(1, testEmployee.getSettings().size());

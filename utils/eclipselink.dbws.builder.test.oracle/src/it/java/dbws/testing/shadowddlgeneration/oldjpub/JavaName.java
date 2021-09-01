@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -143,6 +143,7 @@ public class JavaName extends LangName {
     /**
      * Returns the package name of the decl interface
      */
+    @Override
     public String getDeclItfPackage() {
         return m_declItfPackage;
     }
@@ -150,6 +151,7 @@ public class JavaName extends LangName {
     /**
      * Returns the name of the decl interface
      */
+    @Override
     public String getDeclItf() {
         return m_declItf;
     }
@@ -172,10 +174,12 @@ public class JavaName extends LangName {
         return currPackage.equals(m_context) ? m_useClass : packageConcat(m_context, m_name);
     }
 
+    @Override
     public String getUseClass() {
         return m_useClass;
     }
 
+    @Override
     public String getUseClass(boolean full) {
         if (full) {
             return packageConcat(m_usePackage, m_useClass);
@@ -188,6 +192,7 @@ public class JavaName extends LangName {
     /**
      * Returns the package name of the use class
      */
+    @Override
     public String getUsePackage() {
         return m_usePackage;
     }
@@ -195,6 +200,7 @@ public class JavaName extends LangName {
     /**
      * Returns the package name of the use interface
      */
+    @Override
     public String getUseItfPackage() {
         return m_useItfPackage;
     }
@@ -202,6 +208,7 @@ public class JavaName extends LangName {
     /**
      * if the represented type has the user subclass
      */
+    @Override
     public boolean hasUseClass() {
         boolean has = true;
         if (m_name == null || m_context == null || m_useClass == null) {
@@ -220,6 +227,7 @@ public class JavaName extends LangName {
      *
      * * @param currPackage the package in which the reference occurs
      */
+    @Override
     public String getUseClass(String currPackage) {
         if (currPackage == null) {
             return m_useClass;
@@ -241,6 +249,7 @@ public class JavaName extends LangName {
     /**
      * Returns the name of the use interface
      */
+    @Override
     public String getUseItf() {
         return m_useItf;
     }

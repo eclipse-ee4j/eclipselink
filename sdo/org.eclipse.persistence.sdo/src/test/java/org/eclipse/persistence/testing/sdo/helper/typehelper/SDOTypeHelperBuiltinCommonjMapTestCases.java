@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@
 package org.eclipse.persistence.testing.sdo.helper.typehelper;
 
 import commonj.sdo.Type;
+import junit.framework.TestCase;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.testing.sdo.SDOTestCase;
 
@@ -30,12 +31,12 @@ public class SDOTypeHelperBuiltinCommonjMapTestCases extends SDOTestCase {
      */
     public void test_Unique_SDO_Boolean() {
         Type Boolean1 = typeHelper.getType(BUILT_IN, "Boolean");
-        this.assertNotNull(Boolean1);
+        assertNotNull(Boolean1);
 
         Type Boolean2 = typeHelper.getType(BUILT_IN, "Boolean");
-        this.assertNotNull(Boolean2);
+        assertNotNull(Boolean2);
 
-        this.assertTrue(Boolean1 == Boolean2);
+        assertTrue(Boolean1 == Boolean2);
     }
 
     /**
@@ -43,12 +44,12 @@ public class SDOTypeHelperBuiltinCommonjMapTestCases extends SDOTestCase {
      */
     public void test_Unique_SDO_Byte() {
         Type Byte1 = typeHelper.getType(BUILT_IN, "Byte");
-        this.assertNotNull(Byte1);
+        assertNotNull(Byte1);
 
         Type Byte2 = typeHelper.getType(BUILT_IN, "Byte");
-        this.assertNotNull(Byte2);
+        assertNotNull(Byte2);
 
-        this.assertTrue(Byte1 == Byte2);
+        assertTrue(Byte1 == Byte2);
     }
 
     /**
@@ -56,12 +57,12 @@ public class SDOTypeHelperBuiltinCommonjMapTestCases extends SDOTestCase {
      */
     public void test_Unique_SDO_Bytes() {
         Type Bytes1 = typeHelper.getType(BUILT_IN, "Bytes");
-        this.assertNotNull(Bytes1);
+        assertNotNull(Bytes1);
 
         Type Bytes2 = typeHelper.getType(BUILT_IN, "Bytes");
-        this.assertNotNull(Bytes2);
+        assertNotNull(Bytes2);
 
-        this.assertTrue(Bytes1 == Bytes2);
+        assertTrue(Bytes1 == Bytes2);
     }
 
     /**
@@ -69,12 +70,12 @@ public class SDOTypeHelperBuiltinCommonjMapTestCases extends SDOTestCase {
      */
     public void test_Unique_SDO_CHARACTER() {
         Type Character1 = typeHelper.getType(BUILT_IN, "Character");
-        this.assertNotNull(Character1);
+        assertNotNull(Character1);
 
         Type Character2 = typeHelper.getType(BUILT_IN, "Character");
-        this.assertNotNull(Character2);
+        assertNotNull(Character2);
 
-        this.assertTrue(Character1 == Character2);
+        assertTrue(Character1 == Character2);
     }
 
     /**
@@ -82,12 +83,12 @@ public class SDOTypeHelperBuiltinCommonjMapTestCases extends SDOTestCase {
      */
     public void test_Unique_SDO_DATAOBJECT() {
         Type DataObject1 = typeHelper.getType(BUILT_IN, "DataObject");
-        this.assertNotNull(DataObject1);
+        assertNotNull(DataObject1);
 
         Type DataObject2 = typeHelper.getType(BUILT_IN, "DataObject");
-        this.assertNotNull(DataObject2);
+        assertNotNull(DataObject2);
 
-        this.assertTrue(DataObject1 == DataObject2);
+        assertTrue(DataObject1 == DataObject2);
     }
 
     /**
@@ -95,12 +96,12 @@ public class SDOTypeHelperBuiltinCommonjMapTestCases extends SDOTestCase {
       */
     public void test_Unique_SDO_DATE() {
         Type Date1 = typeHelper.getType(BUILT_IN, "Date");
-        this.assertNotNull(Date1);
+        assertNotNull(Date1);
 
         Type Date2 = typeHelper.getType(BUILT_IN, "Date");
-        this.assertNotNull(Date2);
+        assertNotNull(Date2);
 
-        this.assertTrue(Date1 == Date2);
+        assertTrue(Date1 == Date2);
     }
 
     /**
@@ -108,12 +109,12 @@ public class SDOTypeHelperBuiltinCommonjMapTestCases extends SDOTestCase {
      */
     public void test_Unique_SDO_DATETIME() {
         Type DateTime1 = typeHelper.getType(BUILT_IN, "DateTime");
-        this.assertNotNull(DateTime1);
+        assertNotNull(DateTime1);
 
         Type DateTime2 = typeHelper.getType(BUILT_IN, "DateTime");
-        this.assertNotNull(DateTime2);
+        assertNotNull(DateTime2);
 
-        this.assertTrue(DateTime1 == DateTime2);
+        assertTrue(DateTime1 == DateTime2);
     }
 
     /**
@@ -121,12 +122,12 @@ public class SDOTypeHelperBuiltinCommonjMapTestCases extends SDOTestCase {
      */
     public void test_Unique_SDO_DAY() {
         Type Day1 = typeHelper.getType(BUILT_IN, "Day");
-        this.assertNotNull(Day1);
+        assertNotNull(Day1);
 
         Type Day2 = typeHelper.getType(BUILT_IN, "Day");
-        this.assertNotNull(Day2);
+        assertNotNull(Day2);
 
-        this.assertTrue(Day1 == Day2);
+        assertTrue(Day1 == Day2);
     }
 
     /**
@@ -134,12 +135,12 @@ public class SDOTypeHelperBuiltinCommonjMapTestCases extends SDOTestCase {
      */
     public void test_Unique_SDO_DECIMAL() {
         Type Decimal1 = typeHelper.getType(BUILT_IN, "Decimal");
-        this.assertNotNull(Decimal1);
+        assertNotNull(Decimal1);
 
         Type Decimal2 = typeHelper.getType(BUILT_IN, "Decimal");
-        this.assertNotNull(Decimal2);
+        assertNotNull(Decimal2);
 
-        this.assertTrue(Decimal1 == Decimal2);
+        assertTrue(Decimal1 == Decimal2);
     }
 
     /**
@@ -147,12 +148,12 @@ public class SDOTypeHelperBuiltinCommonjMapTestCases extends SDOTestCase {
      */
     public void test_Unique_SDO_DOUBLE() {
         Type Double1 = typeHelper.getType(BUILT_IN, "Double");
-        this.assertNotNull(Double1);
+        assertNotNull(Double1);
 
         Type Double2 = typeHelper.getType(BUILT_IN, "Double");
-        this.assertNotNull(Double2);
+        assertNotNull(Double2);
 
-        this.assertTrue(Double1 == Double2);
+        assertTrue(Double1 == Double2);
     }
 
     /**
@@ -160,12 +161,12 @@ public class SDOTypeHelperBuiltinCommonjMapTestCases extends SDOTestCase {
      */
     public void test_Unique_SDO_DURATION() {
         Type Duration1 = typeHelper.getType(BUILT_IN, "Duration");
-        this.assertNotNull(Duration1);
+        assertNotNull(Duration1);
 
         Type Duration2 = typeHelper.getType(BUILT_IN, "Duration");
-        this.assertNotNull(Duration2);
+        assertNotNull(Duration2);
 
-        this.assertTrue(Duration1 == Duration2);
+        assertTrue(Duration1 == Duration2);
     }
 
     /**
@@ -173,12 +174,12 @@ public class SDOTypeHelperBuiltinCommonjMapTestCases extends SDOTestCase {
      */
     public void test_Unique_SDO_FLOAT() {
         Type Float1 = typeHelper.getType(BUILT_IN, "Float");
-        this.assertNotNull(Float1);
+        assertNotNull(Float1);
 
         Type Float2 = typeHelper.getType(BUILT_IN, "Float");
-        this.assertNotNull(Float2);
+        assertNotNull(Float2);
 
-        this.assertTrue(Float1 == Float2);
+        assertTrue(Float1 == Float2);
     }
 
     /**
@@ -186,12 +187,12 @@ public class SDOTypeHelperBuiltinCommonjMapTestCases extends SDOTestCase {
      */
     public void test_Unique_SDO_INT() {
         Type int1 = typeHelper.getType(BUILT_IN, "Int");
-        this.assertNotNull(int1);
+        assertNotNull(int1);
 
         Type int2 = typeHelper.getType(BUILT_IN, "Int");
-        this.assertNotNull(int2);
+        assertNotNull(int2);
 
-        this.assertTrue(int1 == int2);
+        assertTrue(int1 == int2);
     }
 
     /**
@@ -199,12 +200,12 @@ public class SDOTypeHelperBuiltinCommonjMapTestCases extends SDOTestCase {
      */
     public void test_Unique_SDO_INTEGER() {
         Type Integer1 = typeHelper.getType(BUILT_IN, "Integer");
-        this.assertNotNull(Integer1);
+        assertNotNull(Integer1);
 
         Type Integer2 = typeHelper.getType(BUILT_IN, "Integer");
-        this.assertNotNull(Integer2);
+        assertNotNull(Integer2);
 
-        this.assertTrue(Integer1 == Integer2);
+        assertTrue(Integer1 == Integer2);
     }
 
     /**
@@ -212,12 +213,12 @@ public class SDOTypeHelperBuiltinCommonjMapTestCases extends SDOTestCase {
      */
     public void test_Unique_SDO_LONG() {
         Type Long1 = typeHelper.getType(BUILT_IN, "Long");
-        this.assertNotNull(Long1);
+        assertNotNull(Long1);
 
         Type Long2 = typeHelper.getType(BUILT_IN, "Long");
-        this.assertNotNull(Long2);
+        assertNotNull(Long2);
 
-        this.assertTrue(Long1 == Long2);
+        assertTrue(Long1 == Long2);
     }
 
     /**
@@ -225,12 +226,12 @@ public class SDOTypeHelperBuiltinCommonjMapTestCases extends SDOTestCase {
      */
     public void test_Unique_SDO_MONTH() {
         Type Month1 = typeHelper.getType(BUILT_IN, "Month");
-        this.assertNotNull(Month1);
+        assertNotNull(Month1);
 
         Type Month2 = typeHelper.getType(BUILT_IN, "Month");
-        this.assertNotNull(Month2);
+        assertNotNull(Month2);
 
-        this.assertTrue(Month1 == Month2);
+        assertTrue(Month1 == Month2);
     }
 
     /**
@@ -238,12 +239,12 @@ public class SDOTypeHelperBuiltinCommonjMapTestCases extends SDOTestCase {
      */
     public void test_Unique_SDO_MONTHDAY() {
         Type MonthDay1 = typeHelper.getType(BUILT_IN, "MonthDay");
-        this.assertNotNull(MonthDay1);
+        assertNotNull(MonthDay1);
 
         Type MonthDay2 = typeHelper.getType(BUILT_IN, "MonthDay");
-        this.assertNotNull(MonthDay2);
+        assertNotNull(MonthDay2);
 
-        this.assertTrue(MonthDay1 == MonthDay2);
+        assertTrue(MonthDay1 == MonthDay2);
     }
 
     /**
@@ -251,12 +252,12 @@ public class SDOTypeHelperBuiltinCommonjMapTestCases extends SDOTestCase {
      */
     public void test_Unique_SDO_OBJECT() {
         Type Object1 = typeHelper.getType(BUILT_IN, "Object");
-        this.assertNotNull(Object1);
+        assertNotNull(Object1);
 
         Type Object2 = typeHelper.getType(BUILT_IN, "Object");
-        this.assertNotNull(Object2);
+        assertNotNull(Object2);
 
-        this.assertTrue(Object1 == Object2);
+        assertTrue(Object1 == Object2);
     }
 
     /**
@@ -264,12 +265,12 @@ public class SDOTypeHelperBuiltinCommonjMapTestCases extends SDOTestCase {
      */
     public void test_Unique_SDO_SHORT() {
         Type Short1 = typeHelper.getType(BUILT_IN, "Short");
-        this.assertNotNull(Short1);
+        assertNotNull(Short1);
 
         Type Short2 = typeHelper.getType(BUILT_IN, "Short");
-        this.assertNotNull(Short2);
+        assertNotNull(Short2);
 
-        this.assertTrue(Short1 == Short2);
+        assertTrue(Short1 == Short2);
     }
 
     /**
@@ -277,12 +278,12 @@ public class SDOTypeHelperBuiltinCommonjMapTestCases extends SDOTestCase {
      */
     public void test_Unique_SDO_STRING() {
         Type String1 = typeHelper.getType(BUILT_IN, "String");
-        this.assertNotNull(String1);
+        assertNotNull(String1);
 
         Type String2 = typeHelper.getType(BUILT_IN, "String");
-        this.assertNotNull(String2);
+        assertNotNull(String2);
 
-        this.assertTrue(String1 == String2);
+        assertTrue(String1 == String2);
     }
 
     /**
@@ -290,12 +291,12 @@ public class SDOTypeHelperBuiltinCommonjMapTestCases extends SDOTestCase {
      */
     public void test_Unique_SDO_STRINGS() {
         Type Strings1 = typeHelper.getType(BUILT_IN, "Strings");
-        this.assertNotNull(Strings1);
+        assertNotNull(Strings1);
 
         Type Strings2 = typeHelper.getType(BUILT_IN, "Strings");
-        this.assertNotNull(Strings2);
+        assertNotNull(Strings2);
 
-        this.assertTrue(Strings1 == Strings2);
+        assertTrue(Strings1 == Strings2);
     }
 
     /**
@@ -303,12 +304,12 @@ public class SDOTypeHelperBuiltinCommonjMapTestCases extends SDOTestCase {
      */
     public void test_Unique_SDO_Tim() {
         Type Time1 = typeHelper.getType(BUILT_IN, "Time");
-        this.assertNotNull(Time1);
+        assertNotNull(Time1);
 
         Type Time2 = typeHelper.getType(BUILT_IN, "Time");
-        this.assertNotNull(Time2);
+        assertNotNull(Time2);
 
-        this.assertTrue(Time1 == Time2);
+        assertTrue(Time1 == Time2);
     }
 
     /**
@@ -316,12 +317,12 @@ public class SDOTypeHelperBuiltinCommonjMapTestCases extends SDOTestCase {
      */
     public void test_Unique_SDO_YEAR() {
         Type Year1 = typeHelper.getType(BUILT_IN, "Year");
-        this.assertNotNull(Year1);
+        assertNotNull(Year1);
 
         Type Year2 = typeHelper.getType(BUILT_IN, "Year");
-        this.assertNotNull(Year2);
+        assertNotNull(Year2);
 
-        this.assertTrue(Year1 == Year2);
+        assertTrue(Year1 == Year2);
     }
 
     /**
@@ -329,12 +330,12 @@ public class SDOTypeHelperBuiltinCommonjMapTestCases extends SDOTestCase {
      */
     public void test_Unique_SDO_YEARMONTH() {
         Type YearMonth1 = typeHelper.getType(BUILT_IN, "YearMonth");
-        this.assertNotNull(YearMonth1);
+        assertNotNull(YearMonth1);
 
         Type YearMonth2 = typeHelper.getType(BUILT_IN, "YearMonth");
-        this.assertNotNull(YearMonth2);
+        assertNotNull(YearMonth2);
 
-        this.assertTrue(YearMonth1 == YearMonth2);
+        assertTrue(YearMonth1 == YearMonth2);
     }
 
     /**
@@ -342,12 +343,12 @@ public class SDOTypeHelperBuiltinCommonjMapTestCases extends SDOTestCase {
      */
     public void test_Unique_SDO_YEARMONTHDAY() {
         Type YearMonthDay1 = typeHelper.getType(BUILT_IN, "YearMonthDay");
-        this.assertNotNull(YearMonthDay1);
+        assertNotNull(YearMonthDay1);
 
         Type YearMonthDay2 = typeHelper.getType(BUILT_IN, "YearMonthDay");
-        this.assertNotNull(YearMonthDay2);
+        assertNotNull(YearMonthDay2);
 
-        this.assertTrue(YearMonthDay1 == YearMonthDay2);
+        assertTrue(YearMonthDay1 == YearMonthDay2);
     }
 
     /**
@@ -355,12 +356,12 @@ public class SDOTypeHelperBuiltinCommonjMapTestCases extends SDOTestCase {
      */
     public void test_Unique_SDO_URI() {
         Type URI1 = typeHelper.getType(BUILT_IN, "URI");
-        this.assertNotNull(URI1);
+        assertNotNull(URI1);
 
         Type URI2 = typeHelper.getType(BUILT_IN, "URI");
-        this.assertNotNull(URI2);
+        assertNotNull(URI2);
 
-        this.assertTrue(URI1 == URI2);
+        assertTrue(URI1 == URI2);
     }
 
     /**
@@ -369,10 +370,10 @@ public class SDOTypeHelperBuiltinCommonjMapTestCases extends SDOTestCase {
      */
     public void test_Non_Built_in_URI() {
         Type URI1 = typeHelper.getType("somthing.else", "URI");
-        this.assertNull(URI1);
+        assertNull(URI1);
 
         Type URI2 = typeHelper.getType(null, "URI");
-        this.assertNull(URI2);
+        assertNull(URI2);
 
     }
 
@@ -382,10 +383,10 @@ public class SDOTypeHelperBuiltinCommonjMapTestCases extends SDOTestCase {
      */
     public void test_Non_Built_Typename() {
         Type URI1 = typeHelper.getType("somthing.else", "not_built_in");
-        this.assertNull(URI1);
+        assertNull(URI1);
 
         Type URI2 = typeHelper.getType("somthing.else", null);
-        this.assertNull(URI2);
+        assertNull(URI2);
 
     }
 }

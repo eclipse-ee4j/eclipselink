@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,10 +31,12 @@ public class DefineFailsDontRegisterTypesTestCases extends XSDHelperDefineTestCa
         TestRunner.run(DefineFailsDontRegisterTypesTestCases.class);
     }
 
+    @Override
     public String getSchemaToDefine() {
         return "org/eclipse/persistence/testing/sdo/helper/xsdhelper/define/DefineFails.xsd";
     }
 
+    @Override
     public void testDefine() {
         InputStream is = getSchemaInputStream(getSchemaToDefine());
         int sizeBefore = ((SDOTypeHelper)typeHelper).getTypesHashMap().size();
@@ -55,9 +57,10 @@ public class DefineFailsDontRegisterTypesTestCases extends XSDHelperDefineTestCa
         assertNull(typeHelper.getType("http://www.example.org", "customer-type"));
         assertNull(typeHelper.getType("http://www.example.org", "bad-type"));
 
-        assertNull(((SDOXSDHelper)xsdHelper).getGlobalProperty("http://www.example.org", "customer", true));
+        assertNull(xsdHelper.getGlobalProperty("http://www.example.org", "customer", true));
     }
 
+    @Override
     public List getControlTypes() {
         List types = new ArrayList();
         return types;

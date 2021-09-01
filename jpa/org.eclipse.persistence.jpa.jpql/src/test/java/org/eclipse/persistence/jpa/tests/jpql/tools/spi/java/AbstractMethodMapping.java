@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,33 +44,21 @@ public abstract class AbstractMethodMapping extends AbstractMapping {
         super(parent, method);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Method getMember() {
         return (Method) super.getMember();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Annotation[] getMemberAnnotations() {
         return getMember().getAnnotations();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Type getMemberGenericType() {
         return getMember().getGenericReturnType();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Class<?> getMemberType() {
 
@@ -122,9 +110,7 @@ public abstract class AbstractMethodMapping extends AbstractMapping {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public boolean hasAnnotation(Class<? extends Annotation> annotationType) {
         return getMember().isAnnotationPresent(annotationType);
     }

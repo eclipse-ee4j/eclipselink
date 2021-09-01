@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,6 +57,7 @@ public class XmlInverseRefBidirectionalListObjectsTestCases extends JAXBWithJSON
         return p;
     }
 
+     @Override
      public void xmlToObjectTest(Object testObject) throws Exception {
             log("\n**xmlToObjectTest**");
             log("Expected:");
@@ -76,6 +77,7 @@ public class XmlInverseRefBidirectionalListObjectsTestCases extends JAXBWithJSON
             compareObject(testObject);
         }
 
+       @Override
        public void jsonToObjectTest(Object testObject, Object controlObject) throws Exception {
             if(controlObject == null){
                 assertNull(testObject);
@@ -103,7 +105,7 @@ public class XmlInverseRefBidirectionalListObjectsTestCases extends JAXBWithJSON
             //////////
             Address addr = p.addrs.get(0);
             assertTrue(addr.street.equals("theStreet"));
-            Person owner = (Person)addr.owner;
+            Person owner = addr.owner;
             assertTrue("Expected name differentPerson but was " + owner.name , owner.name.equals("differentPerson"));
             assertTrue(owner.addrs.size()==1);
             assertTrue(owner.addrs.get(0).street.equals("theStreet"));
@@ -111,7 +113,7 @@ public class XmlInverseRefBidirectionalListObjectsTestCases extends JAXBWithJSON
 
             Address addr2 = p.addrs.get(1);
             assertTrue(addr2.street.equals("theStreet2"));
-            Person owner2 = (Person)addr2.owner;
+            Person owner2 = addr2.owner;
 
             assertTrue("Expected name anotherPerson but was " + owner2.name , owner2.name.equals("anotherPerson"));
 

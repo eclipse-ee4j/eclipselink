@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,41 +34,50 @@ public class LoadAndSaveGroupTestCases extends LoadAndSaveTestCases {
         TestRunner.main(arguments);
     }
 
+    @Override
     protected void verifyAfterLoad(XMLDocument document) {
         super.verifyAfterLoad(document);
     }
 
+    @Override
     protected String getControlFileName() {
         return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/group/Group.xml";
     }
 
+    @Override
     protected String getNoSchemaControlFileName() {
         return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/group/GroupNoSchema.xml";
     }
 
+    @Override
     protected String getSchemaName() {
         return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/group/Group.xsd";
     }
 
+    @Override
     protected String getControlRootURI() {
         return "theURI";
     }
 
     // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    @Override
     protected List<String> getPackages() {
         List<String> packages = new ArrayList<String>();
         packages.add("theuri");
         return packages;
     }
 
+    @Override
     protected String getControlRootName() {
         return "AAA";
     }
 
+    @Override
     protected String getRootInterfaceName() {
         return "AAA";
     }
 
+    @Override
     public void registerTypes() {
         SDOType stringType = (SDOType) typeHelper.getType("commonj.sdo", "String");
         SDOType typeType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.TYPE);

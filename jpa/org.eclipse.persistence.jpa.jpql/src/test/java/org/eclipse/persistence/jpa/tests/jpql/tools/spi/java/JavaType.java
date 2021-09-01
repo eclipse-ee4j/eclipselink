@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -126,9 +126,7 @@ public class JavaType implements IType {
         return names;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public Iterable<IConstructor> constructors() {
         if (constructors == null) {
             constructors = buildConstructors();
@@ -136,24 +134,17 @@ public class JavaType implements IType {
         return new SnapshotCloneIterable<IConstructor>(constructors);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public boolean equals(IType type) {
         return (this == type) || typeName.equals(type.getName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean equals(Object object) {
         return equals((IType) object);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public String[] getEnumConstants() {
         if (enumConstants == null) {
             enumConstants = buildEnumConstants();
@@ -161,9 +152,7 @@ public class JavaType implements IType {
         return enumConstants;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public String getName() {
         return typeName;
     }
@@ -177,9 +166,7 @@ public class JavaType implements IType {
         return type;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public ITypeDeclaration getTypeDeclaration() {
         if (typeDeclaration == null) {
             typeDeclaration = new JavaTypeDeclaration(
@@ -201,24 +188,17 @@ public class JavaType implements IType {
         return typeRepository;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public boolean hasAnnotation(Class<? extends Annotation> annotationType) {
         return (type != null) && type.isAnnotationPresent(annotationType);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int hashCode() {
         return typeName.hashCode();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public boolean isAssignableTo(IType otherType) {
 
         if (equals(otherType)) {
@@ -241,23 +221,16 @@ public class JavaType implements IType {
         return otherClass.isAssignableFrom(thisClass);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public boolean isEnum() {
         return (type != null) && type.isEnum();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public boolean isResolvable() {
         return (type != null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return typeName;

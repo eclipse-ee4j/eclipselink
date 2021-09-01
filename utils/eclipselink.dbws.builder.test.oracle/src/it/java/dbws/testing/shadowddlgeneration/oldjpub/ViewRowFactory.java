@@ -126,6 +126,7 @@ public class ViewRowFactory extends AbstractViewRow implements ViewRow {
             || view.equalsIgnoreCase(ALL_ARGUMENTS);
     }
 
+    @Override
     public boolean equals(String key, Object value) {
         boolean eq = false;
         try {

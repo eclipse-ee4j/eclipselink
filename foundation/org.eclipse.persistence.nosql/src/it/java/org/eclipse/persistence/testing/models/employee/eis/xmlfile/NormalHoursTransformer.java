@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,9 +26,11 @@ public class NormalHoursTransformer implements FieldTransformer, AttributeTransf
     public NormalHoursTransformer() {
     }
 
+    @Override
     public void initialize(AbstractTransformationMapping mapping) {
     }
 
+    @Override
     public Object buildFieldValue(Object instance, String fieldName, Session session) {
         Employee employee = (Employee)instance;
         if (fieldName.equalsIgnoreCase("START_TIME/text()")) {
@@ -39,6 +41,7 @@ public class NormalHoursTransformer implements FieldTransformer, AttributeTransf
         return null;
     }
 
+    @Override
     public Object buildAttributeValue(Record row, Object object, Session session) {
         Time[] hours = new Time[2];
 

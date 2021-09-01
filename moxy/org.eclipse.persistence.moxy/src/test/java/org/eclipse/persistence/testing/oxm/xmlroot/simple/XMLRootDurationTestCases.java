@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,6 +22,7 @@ import javax.xml.datatype.Duration;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamReader;
 
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 
 import org.eclipse.persistence.internal.oxm.record.XMLEventReaderInputSource;
@@ -48,6 +49,7 @@ public class XMLRootDurationTestCases extends XMLMappingTestCases {
         TestRunner.main(arguments);
     }
 
+    @Override
     public Object getControlObject() {
         XMLRoot xmlRoot = new XMLRoot();
         xmlRoot.setLocalName(CONTROL_ELEMENT_NAME);
@@ -65,6 +67,7 @@ public class XMLRootDurationTestCases extends XMLMappingTestCases {
     }
 
     // Unmarshal tests
+    @Override
     public void testXMLToObjectFromInputStream() throws Exception {
         InputStream instream = ClassLoader.getSystemResourceAsStream(getXMLResource());
         Object testObject = xmlUnmarshaller.unmarshal(instream, Duration.class);
@@ -72,17 +75,20 @@ public class XMLRootDurationTestCases extends XMLMappingTestCases {
         xmlToObjectTest(testObject);
     }
 
+    @Override
     public void testXMLToObjectFromNode() throws Exception {
         Object testObject = xmlUnmarshaller.unmarshal(getControlDocument(), Duration.class);
         xmlToObjectTest(testObject);
     }
 
+    @Override
     public void testXMLToObjectFromURL() throws Exception {
         java.net.URL url = ClassLoader.getSystemResource(getXMLResource());
         Object testObject = xmlUnmarshaller.unmarshal(url, Duration.class);
         xmlToObjectTest(testObject);
     }
 
+    @Override
     public void testXMLToObjectFromXMLStreamReader() throws Exception {
         if(null != XML_INPUT_FACTORY) {
                 InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -98,6 +104,7 @@ public class XMLRootDurationTestCases extends XMLMappingTestCases {
         }
     }
 
+    @Override
     public void testXMLToObjectFromXMLEventReader() throws Exception {
         if(null != XML_INPUT_FACTORY) {
                 InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -113,6 +120,7 @@ public class XMLRootDurationTestCases extends XMLMappingTestCases {
         }
     }
 
+    @Override
     public void xmlToObjectTest(Object testObject) throws Exception {
         log("\n**testXMLDocumentToObject**");
         log("Expected:");
@@ -123,12 +131,13 @@ public class XMLRootDurationTestCases extends XMLMappingTestCases {
         XMLRoot controlObj = (XMLRoot)getReadControlObject();
         XMLRoot testObj = (XMLRoot)testObject;
 
-        this.assertEquals(controlObj.getLocalName(), testObj.getLocalName());
-        this.assertEquals(controlObj.getNamespaceURI(), testObj.getNamespaceURI());
-        this.assertEquals(controlObj.getObject(), testObj.getObject());
+        assertEquals(controlObj.getLocalName(), testObj.getLocalName());
+        assertEquals(controlObj.getNamespaceURI(), testObj.getNamespaceURI());
+        assertEquals(controlObj.getObject(), testObj.getObject());
     }
 
     // DOES NOT APPLY
+    @Override
     public void testUnmarshallerHandler() throws Exception {
     }
 

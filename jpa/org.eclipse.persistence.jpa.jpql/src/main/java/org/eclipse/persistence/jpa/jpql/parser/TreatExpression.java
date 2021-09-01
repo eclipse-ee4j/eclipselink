@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -75,35 +75,23 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
         super(parent, TREAT);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         acceptUnknownVisitor(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getCollectionValuedPathExpression().accept(visitor);
         getEntityType().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         children.add(getCollectionValuedPathExpression());
         children.add(getEntityType());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedEncapsulatedExpressionTo(List<Expression> children) {
 
@@ -131,9 +119,6 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -184,9 +169,6 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
         return entityType;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(TreatExpressionBNF.ID);
@@ -212,9 +194,6 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
               !collectionValuedPathExpression.isNull();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean hasEncapsulatedExpression() {
         return hasCollectionValuedPathExpression() || hasAs() || hasEntityType();
@@ -251,9 +230,6 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
         return hasSpaceAfterCollectionValuedPathExpression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 
@@ -272,9 +248,6 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
         return super.isParsingComplete(wordParser, word, expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parseEncapsulatedExpression(WordParser wordParser,
                                                int whitespaceCount,
@@ -314,9 +287,6 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void removeEncapsulatedExpression() {
         entityType = null;
@@ -326,9 +296,6 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
         hasSpaceAfterCollectionValuedPathExpression = false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedTextEncapsulatedExpression(StringBuilder writer, boolean actual) {
 

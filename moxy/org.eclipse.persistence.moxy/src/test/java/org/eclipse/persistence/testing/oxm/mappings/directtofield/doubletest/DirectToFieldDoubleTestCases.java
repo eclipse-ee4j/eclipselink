@@ -30,6 +30,7 @@ public class DirectToFieldDoubleTestCases extends XMLMappingTestCases {
         setProject(new DirectToFieldDoubleProject());
     }
 
+  @Override
   protected Object getControlObject() {
     Employee employee = new Employee();
     employee.setID(CONTROL_ID);

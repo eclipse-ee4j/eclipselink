@@ -19,6 +19,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -35,7 +37,7 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
 
     //1. purpose: getDouble with boolean property
     public void testGetDoubleFromBoolean() {
-        SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_BOOLEAN);
         dataObject_c.set(property, true);
 
@@ -49,7 +51,7 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
     //2. purpose: getDouble with Defined Byte Property
     public void testGetDoubleConversionFromDefinedByteProperty() {
         // dataObject's type add boolean property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_BYTE);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_BYTE);
 
 
         byte by = 12;
@@ -57,7 +59,7 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
 
         dataObject_a.setByte(propertyPath_a_b_c, by);// add it to instance list
 
-        this.assertEquals((double)by, dataObject_a.getDouble(propertyPath_a_b_c), delta);
+        assertEquals(by, dataObject_a.getDouble(propertyPath_a_b_c), delta);
     }
 
     //3. purpose: getDouble with Undefined Byte Property
@@ -71,7 +73,7 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
 
     //4. purpose: getDouble with character property
     public void testGetDoubleFromCharacter() {
-        SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_CHARACTER);
         dataObject_c.set(property, 'e');
 
@@ -85,20 +87,20 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
     //5. purpose: getDouble with Defined Double Property
     public void testGetDoubleConversionFromDefinedDoubleProperty() {
         // dataObject's type add boolean property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_DOUBLE);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_DOUBLE);
 
         double db = 12;
         double delta = 0.0;
         dataObject_a.setDouble(propertyPath_a_b_c, db);// add it to instance list
 
-        this.assertEquals((double)db, dataObject_a.getDouble(propertyPath_a_b_c), delta);
+        assertEquals(db, dataObject_a.getDouble(propertyPath_a_b_c), delta);
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyBracketPositionalSet() {
         // dataObject's type add boolean property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_DOUBLE);
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setMany(true);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_DOUBLE);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setMany(true);
 
         double db = 12;
         double delta = 0.0;
@@ -108,15 +110,15 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setDouble(property3, db);
 
-        this.assertEquals(db, dataObject_a.getDouble(property3), delta);
+        assertEquals(db, dataObject_a.getDouble(property3), delta);
 
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyDotPositionalSet() {
         // dataObject's type add boolean property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_DOUBLE);
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setMany(true);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_DOUBLE);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setMany(true);
 
         double db = 12;
         double delta = 0.0;
@@ -125,19 +127,19 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setDouble(property + ".0", db);
 
-        this.assertEquals(db, dataObject_a.getDouble(property + ".0"), delta);
+        assertEquals(db, dataObject_a.getDouble(property + ".0"), delta);
 
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyBracketInPathMiddle() {
-((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_DOUBLE);
+dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_DOUBLE);
         double db = 12;
         double delta = 0.0;
 
         dataObject_a.setDouble(property1, db);// c dataobject's a property has value boolean 'true'
 
-        this.assertEquals(db, dataObject_a.getDouble(property1), delta);
+        assertEquals(db, dataObject_a.getDouble(property1), delta);
     }
 
     /*public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet() {
@@ -163,52 +165,52 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
     //7. purpose: getDouble with Defined float Property
     public void testGetDoubleConversionFromDefinedFloatProperty() {
         // dataObject's type add float property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_FLOAT);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_FLOAT);
 
         float fl = 12;
         double delta = 0.0;
         dataObject_a.setFloat(propertyPath_a_b_c, fl);// add it to instance list
 
-        this.assertEquals((double)fl, dataObject_a.getDouble(propertyPath_a_b_c), delta);
+        assertEquals(fl, dataObject_a.getDouble(propertyPath_a_b_c), delta);
     }
 
 
     //9. purpose: getDouble with Defined int Property
     public void testGetDoubleConversionFromDefinedIntProperty() {
         // dataObject's type add int property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_INT);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_INT);
 
         int in = 12;
         double delta = 0.0;
         dataObject_a.setInt(propertyPath_a_b_c, in);// add it to instance list
 
-        this.assertEquals((double)in, dataObject_a.getDouble(propertyPath_a_b_c), delta);
+        assertEquals(in, dataObject_a.getDouble(propertyPath_a_b_c), delta);
     }
 
 
     //11. purpose: getDouble with Defined long Property
     public void testGetDoubleConversionFromDefinedLongProperty() {
         // dataObject's type add short property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_LONG);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_LONG);
 
         long lg = 12;
         double delta = 0.0;
         dataObject_a.setLong(propertyPath_a_b_c, lg);// add it to instance list
 
-        this.assertEquals((double)lg, dataObject_a.getDouble(propertyPath_a_b_c), delta);
+        assertEquals((double)lg, dataObject_a.getDouble(propertyPath_a_b_c), delta);
     }
 
 
     //13. purpose: getDouble with Defined short Property
     public void testGetDoubleConversionFromDefinedShortProperty() {
         // dataObject's type add short property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_SHORT);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_SHORT);
 
         short shr = 12;
         double delta = 0.0;
         dataObject_a.setShort(propertyPath_a_b_c, shr);// add it to instance list
 
-        this.assertEquals((double)shr, dataObject_a.getDouble(propertyPath_a_b_c), delta);
+        assertEquals(shr, dataObject_a.getDouble(propertyPath_a_b_c), delta);
     }
 
 
@@ -216,19 +218,19 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
     //15. purpose: getDouble with Defined String Property
     public void testGetDoubleConversionFromDefinedStringProperty() {
         // dataObject's type add int property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_STRING);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_STRING);
         String str = "12";
         Double s_d = Double.valueOf(str);
         double delta = 0.0;
         dataObject_a.setString(propertyPath_a_b_c, str);// add it to instance list
 
-        this.assertEquals(s_d.doubleValue(), dataObject_a.getDouble(propertyPath_a_b_c), delta);
+        assertEquals(s_d.doubleValue(), dataObject_a.getDouble(propertyPath_a_b_c), delta);
     }
 
 
     //17. purpose: getDouble with bytes property
     public void testGetDoubleFromBytes() {
-        SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_BYTES);
         dataObject_c.set(property, new byte[]{10, 100});
 
@@ -242,14 +244,14 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
     //18. purpose: getDouble with Defined Decimal Property
     public void testGetDoubleConversionFromDefinedDecimalProperty() {
         // dataObject's type add int property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_DECIMAL);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_DECIMAL);
 
         double db = 12;
         BigDecimal bd = new BigDecimal(db);
         double delta = 0.0;
         dataObject_a.setBigDecimal(propertyPath_a_b_c, bd);// add it to instance list
 
-        this.assertEquals(bd.doubleValue(), dataObject_a.getDouble(propertyPath_a_b_c), delta);
+        assertEquals(bd.doubleValue(), dataObject_a.getDouble(propertyPath_a_b_c), delta);
     }
 
 
@@ -258,18 +260,18 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
         // dataObject's type add int property
 
         // !!    OX PRO BIGINTEGER TO DOUBLE !!
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_INTEGER);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_INTEGER);
 
         BigInteger bi = new BigInteger("12");
         double delta = 0.0;
         dataObject_a.setBigInteger(propertyPath_a_b_c, bi);// add it to instance list
 
-        this.assertEquals(bi.doubleValue(), dataObject_a.getDouble(propertyPath_a_b_c), delta);
+        assertEquals(bi.doubleValue(), dataObject_a.getDouble(propertyPath_a_b_c), delta);
     }
 
     //22. purpose: getDouble with date property
     public void testGetDoubleFromDate() {
-        SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_DATE);
         dataObject_c.set(property, Calendar.getInstance().getTime());
 

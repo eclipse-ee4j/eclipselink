@@ -1224,8 +1224,9 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * @param suppressLogging whether to suppress logging during query execution
      * @return value of {@code true} if given table exists or {@code false} otherwise
      */
+    @Override
     public boolean checkTableExists(final DatabaseSessionImpl session,
-            final TableDefinition table, final boolean suppressLogging) {
+                                    final TableDefinition table, final boolean suppressLogging) {
         try {
             session.setLoggingOff(suppressLogging);
             final Vector result = (Vector)session.executeQuery(getTableExistsQuery(table));

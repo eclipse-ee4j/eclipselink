@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ public class ContainmentManyTestCases extends ContainmentTestCases {
 
 
 
+    @Override
     public SDOType getRootSDOType() {
         SDOType type = new SDOType("http://testing", "myRoot");
         type.setOpen(true);
@@ -67,6 +68,7 @@ public class ContainmentManyTestCases extends ContainmentTestCases {
         return type;
     }
 
+    @Override
     public SDOType getFirstChildType() {
         SDOType type = new SDOType("http://testing", "firstChildType");
         type.setOpen(true);
@@ -90,6 +92,7 @@ public class ContainmentManyTestCases extends ContainmentTestCases {
         return type;
     }
 
+    @Override
     public SDOType getSecondChildType() {
         SDOType type = new SDOType("http://testing", "secondChildType");
         type.setOpen(true);

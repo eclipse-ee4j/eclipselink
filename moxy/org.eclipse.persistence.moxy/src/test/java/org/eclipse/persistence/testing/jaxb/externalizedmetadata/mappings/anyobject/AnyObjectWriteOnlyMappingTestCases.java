@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,6 +44,7 @@ public class AnyObjectWriteOnlyMappingTestCases extends JAXBWithJSONTestCases{
         setClasses(new Class[] { Employee.class });
     }
 
+     @Override
      public Map getProperties(){
             InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyobject/write-only-employee-oxm.xml");
 
@@ -58,6 +59,7 @@ public class AnyObjectWriteOnlyMappingTestCases extends JAXBWithJSONTestCases{
        /**
          * Create the control Employee.
          */
+        @Override
         public Object getControlObject() {
             Employee ctrlEmp = new Employee();
 
@@ -65,6 +67,7 @@ public class AnyObjectWriteOnlyMappingTestCases extends JAXBWithJSONTestCases{
             return ctrlEmp;
         }
 
+        @Override
         public Object getWriteControlObject() {
             Employee ctrlEmp = new Employee();
 
@@ -89,6 +92,7 @@ public class AnyObjectWriteOnlyMappingTestCases extends JAXBWithJSONTestCases{
                super.testSchemaGen(controlSchemas);
         }
 
+        @Override
         public void testRoundTrip(){
             //not applicable with write only mappings
         }

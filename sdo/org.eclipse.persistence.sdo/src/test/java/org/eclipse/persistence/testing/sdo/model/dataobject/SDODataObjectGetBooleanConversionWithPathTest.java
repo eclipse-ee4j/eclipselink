@@ -19,6 +19,8 @@ import commonj.sdo.Property;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Calendar;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -46,7 +48,7 @@ public class SDODataObjectGetBooleanConversionWithPathTest extends SDODataObject
 
         dataObject_a.setBoolean(property, c);// c dataobject's a property has value boolean 'true'
 
-        this.assertEquals(c, dataObject_a.getBoolean(property));
+        assertEquals(c, dataObject_a.getBoolean(property));
 
     }
 
@@ -154,7 +156,7 @@ public class SDODataObjectGetBooleanConversionWithPathTest extends SDODataObject
         //Short c = Short.valueOf(s);
         dataObject_a.setDouble(property, s);// c dataobject's a property has value boolean 'true'
 
-        this.assertEquals(false, dataObject_a.getBoolean(property));
+        assertEquals(false, dataObject_a.getBoolean(property));
 
         /*property_c = new SDOProperty(aHelperContext);
         property_c.setName(PROPERTY_NAME_C);
@@ -182,7 +184,7 @@ public class SDODataObjectGetBooleanConversionWithPathTest extends SDODataObject
         //Short c = Short.valueOf(s);
         dataObject_a.setFloat(property, s.floatValue());// c dataobject's a property has value boolean 'true'
 
-        this.assertEquals(false, dataObject_a.getBoolean(property));
+        assertEquals(false, dataObject_a.getBoolean(property));
 
         /*property_c = new SDOProperty(aHelperContext);
         property_c.setName(PROPERTY_NAME_C);
@@ -210,7 +212,7 @@ public class SDODataObjectGetBooleanConversionWithPathTest extends SDODataObject
         //Short c = Short.valueOf(s);
         dataObject_a.setInt(property, s);// c dataobject's a property has value boolean 'true'
 
-        this.assertEquals(true, dataObject_a.getBoolean(property));
+        assertEquals(true, dataObject_a.getBoolean(property));
 
         /*property_c = new SDOProperty(aHelperContext);
         property_c.setName(PROPERTY_NAME_C);
@@ -238,7 +240,7 @@ public class SDODataObjectGetBooleanConversionWithPathTest extends SDODataObject
         //Short c = Short.valueOf(s);
         dataObject_a.setLong(property, s);// c dataobject's a property has value boolean 'true'
 
-        this.assertEquals(false, dataObject_a.getBoolean(property));
+        assertEquals(false, dataObject_a.getBoolean(property));
 
         /*property_c = new SDOProperty(aHelperContext);
         property_c.setName(PROPERTY_NAME_C);
@@ -266,7 +268,7 @@ public class SDODataObjectGetBooleanConversionWithPathTest extends SDODataObject
         //Short c = Short.valueOf(s);
         dataObject_a.setShort(property, s);// c dataobject's a property has value boolean 'true'
 
-        this.assertEquals(false, dataObject_a.getBoolean(property));
+        assertEquals(false, dataObject_a.getBoolean(property));
 
         /*property_c = new SDOProperty(aHelperContext);
         property_c.setName(PROPERTY_NAME_C);
@@ -293,7 +295,7 @@ public class SDODataObjectGetBooleanConversionWithPathTest extends SDODataObject
         Boolean B_STR = Boolean.valueOf(str);
         dataObject_a.setString(property, str);// add it to instance list
 
-        this.assertEquals(B_STR.booleanValue(), dataObject_a.getBoolean("PName-a/PName-b/PName-c"));
+        assertEquals(B_STR.booleanValue(), dataObject_a.getBoolean("PName-a/PName-b/PName-c"));
     }
 
     //11. purpose: getDouble with Undefined string Property

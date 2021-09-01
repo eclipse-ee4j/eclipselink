@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ public class SingleElementInvalidKeyTestCases extends KeyBasedMappingTestCases {
         setProject(new SingleElementKeyProject());
     }
 
+    @Override
     protected Object getControlObject() {
         Employee employee = new Employee();
         employee.id = "222";
@@ -41,6 +42,7 @@ public class SingleElementInvalidKeyTestCases extends KeyBasedMappingTestCases {
         return root;
     }
 
+    @Override
     protected Document getWriteControlDocument() throws Exception {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(XML_WRITE_RESOURCE);
         Document doc = parser.parse(inputStream);
@@ -49,6 +51,7 @@ public class SingleElementInvalidKeyTestCases extends KeyBasedMappingTestCases {
         return doc;
     }
 
+    @Override
     public Object getWriteControlObject() {
         ArrayList rootAddresses = new ArrayList();
         Address address = new Address();
@@ -88,6 +91,7 @@ public class SingleElementInvalidKeyTestCases extends KeyBasedMappingTestCases {
         return root;
     }
 
+    @Override
     public void testXMLToObjectFromInputStream() throws Exception{
         try{
             super.testXMLToObjectFromInputStream();
@@ -98,6 +102,7 @@ public class SingleElementInvalidKeyTestCases extends KeyBasedMappingTestCases {
         fail("An error should have occurred.");
     }
 
+    @Override
     public void testUnmarshallerHandler() throws Exception{
         try{
             super.testUnmarshallerHandler();
@@ -108,6 +113,7 @@ public class SingleElementInvalidKeyTestCases extends KeyBasedMappingTestCases {
         fail("An error should have occurred.");
     }
 
+    @Override
     public void testXMLToObjectFromNode() throws Exception{
         try{
             super.testXMLToObjectFromNode();
@@ -118,6 +124,7 @@ public class SingleElementInvalidKeyTestCases extends KeyBasedMappingTestCases {
         fail("An error should have occurred.");
     }
 
+    @Override
     public void testXMLToObjectFromURL() throws Exception{
         try{
             super.testXMLToObjectFromURL();
@@ -128,6 +135,7 @@ public class SingleElementInvalidKeyTestCases extends KeyBasedMappingTestCases {
         fail("An error should have occurred.");
     }
 
+    @Override
     public void testXMLToObjectFromXMLEventReader() throws Exception{
         try{
             super.testXMLToObjectFromXMLEventReader();
@@ -138,6 +146,7 @@ public class SingleElementInvalidKeyTestCases extends KeyBasedMappingTestCases {
         fail("An error should have occurred.");
     }
 
+    @Override
     public void testXMLToObjectFromXMLStreamReader() throws Exception{
         try{
             super.testXMLToObjectFromXMLStreamReader();

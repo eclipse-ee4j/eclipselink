@@ -49,11 +49,13 @@ public class JAXBListOfObjectsNonRootTestCases extends JAXBListOfObjectsNoJSONTe
         init();
     }
 
+    @Override
     public void setUp() throws Exception{
         super.setUp();
         getXMLComparer().setIgnoreOrder(true);
     }
 
+    @Override
     public void tearDown(){
         super.tearDown();
         getXMLComparer().setIgnoreOrder(false);
@@ -68,6 +70,7 @@ public class JAXBListOfObjectsNonRootTestCases extends JAXBListOfObjectsNoJSONTe
         setClasses(classes);
     }
 
+       @Override
        public  List<InputStream> getControlSchemaFiles(){
 
            InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/listofobjects.xsd");
@@ -77,6 +80,7 @@ public class JAXBListOfObjectsNonRootTestCases extends JAXBListOfObjectsNoJSONTe
             return controlSchema;
         }
 
+    @Override
     protected Object getControlObject() {
         ListofObjects listofObjects = new ListofObjects();
 
@@ -169,6 +173,7 @@ public class JAXBListOfObjectsNonRootTestCases extends JAXBListOfObjectsNoJSONTe
         return jaxbElement;
     }
 
+    @Override
     protected Type getTypeToUnmarshalTo() {
         return ListofObjects.class;
     }
@@ -210,6 +215,7 @@ public class JAXBListOfObjectsNonRootTestCases extends JAXBListOfObjectsNoJSONTe
 
     }
 
+    @Override
     protected String getNoXsiTypeControlResourceName() {
         return XML_RESOURCE_NO_XSI_TYPE;
     }

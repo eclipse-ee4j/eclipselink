@@ -74,7 +74,7 @@ public class ReadAllMaxRowsVsRownumFilteringTest extends PerformanceComparisonTe
             }
             @Override
             public void startTest() {
-                ((OraclePlatform)getSession().getPlatform()).setShouldUseRownumFiltering(false);
+                getSession().getPlatform().setShouldUseRownumFiltering(false);
             }
 
             /**
@@ -82,7 +82,7 @@ public class ReadAllMaxRowsVsRownumFilteringTest extends PerformanceComparisonTe
              */
             @Override
             public void endTest() {
-                ((OraclePlatform)getSession().getPlatform()).setShouldUseRownumFiltering(true);
+                getSession().getPlatform().setShouldUseRownumFiltering(true);
             }
 
         };

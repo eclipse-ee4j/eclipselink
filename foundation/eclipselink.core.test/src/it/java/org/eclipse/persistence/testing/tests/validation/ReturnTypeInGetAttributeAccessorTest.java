@@ -37,7 +37,7 @@ public class ReturnTypeInGetAttributeAccessorTest extends ExceptionTest {
     @Override
     protected void setup() {
         expectedException = DescriptorException.returnTypeInGetAttributeAccessor(null, null);
-        orgDescriptor = ((DatabaseSession)getSession()).getDescriptor(org.eclipse.persistence.testing.tests.validation.EmployeeWithProblems.class);
+        orgDescriptor = getSession().getDescriptor(org.eclipse.persistence.testing.tests.validation.EmployeeWithProblems.class);
         orgIntegrityChecker = getSession().getIntegrityChecker();
     }
     ClassDescriptor orgDescriptor;
@@ -45,7 +45,7 @@ public class ReturnTypeInGetAttributeAccessorTest extends ExceptionTest {
 
     @Override
     public void reset() {
-        ((DatabaseSession)getSession()).getDescriptors().remove(org.eclipse.persistence.testing.tests.validation.EmployeeWithProblems.class);
+        getSession().getDescriptors().remove(org.eclipse.persistence.testing.tests.validation.EmployeeWithProblems.class);
         if (orgDescriptor != null)
             ((DatabaseSession)getSession()).addDescriptor(orgDescriptor);
         if (orgIntegrityChecker != null)

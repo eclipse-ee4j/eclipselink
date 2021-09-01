@@ -144,11 +144,11 @@ public class ExpressionJavaPrinter {
             printString("}");
         } else if (object.getClass() == ClassConstants.BIGDECIMAL) {
             printString("new java.math.BigDecimal(\"");
-            printString(((BigDecimal)object).toString());
+            printString(object.toString());
             printString("\")");
         } else if (object.getClass() == ClassConstants.BIGINTEGER) {
             printString("new java.math.BigInteger(\"");
-            printString(((BigInteger)object).toString());
+            printString(object.toString());
             printString("\")");
         } else {
             printString((String)ConversionManager.getDefaultManager().convertObject(object, String.class));

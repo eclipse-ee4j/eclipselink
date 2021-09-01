@@ -92,33 +92,21 @@ public class MaxFunctionStateObject extends AggregateFunctionStateObject {
         super(parent, path);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public MaxFunction getExpression() {
         return (MaxFunction) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return MAX;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getQueryBNFId() {
         return StateFieldPathExpressionBNF.ID;

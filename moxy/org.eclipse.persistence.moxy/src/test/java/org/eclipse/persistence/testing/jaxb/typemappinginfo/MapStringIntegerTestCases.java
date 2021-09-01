@@ -57,6 +57,7 @@ public class MapStringIntegerTestCases extends TypeMappingInfoWithJSONTestCases{
         return typeMappingInfos;
     }
 
+    @Override
     public Object getReadControlObject() {
         QName qname = new QName("", "root");
         JAXBElement jbe = new JAXBElement(qname, Object.class, null);
@@ -64,6 +65,7 @@ public class MapStringIntegerTestCases extends TypeMappingInfoWithJSONTestCases{
         return jbe;
     }
 
+    @Override
     protected Object getControlObject() {
         HashMap<String, Integer> theMap = new HashMap<String, Integer>();
         theMap.put("thekey", Integer.valueOf(10));
@@ -72,6 +74,7 @@ public class MapStringIntegerTestCases extends TypeMappingInfoWithJSONTestCases{
         return theMap;
     }
 
+    @Override
     public Map<String, InputStream> getControlSchemaFiles() {
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/typemappinginfo/stringIntegerHashMap.xsd");
 

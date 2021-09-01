@@ -105,9 +105,6 @@ public class ExistsExpressionStateObject extends AbstractSingleEncapsulatedExpre
         super(parent, jpqlFragment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
@@ -125,25 +122,16 @@ public class ExistsExpressionStateObject extends AbstractSingleEncapsulatedExpre
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ExistsExpression getExpression() {
         return (ExistsExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return EXISTS;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getQueryBNFId() {
         return SubqueryBNF.ID;
@@ -159,9 +147,6 @@ public class ExistsExpressionStateObject extends AbstractSingleEncapsulatedExpre
         return not;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -206,9 +191,6 @@ public class ExistsExpressionStateObject extends AbstractSingleEncapsulatedExpre
         firePropertyChanged(NOT_PROPERTY, oldNot, not);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setStateObject(StateObject stateObject) {
         super.setStateObject(stateObject);
@@ -221,9 +203,6 @@ public class ExistsExpressionStateObject extends AbstractSingleEncapsulatedExpre
         setNot(!not);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextEncapsulatedExpression(Appendable writer) throws IOException {
         writer.append(not ? NOT_EXISTS : EXISTS);

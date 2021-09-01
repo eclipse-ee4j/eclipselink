@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,6 +42,7 @@ public class XMLBindingsTestCases extends JAXBWithJSONTestCases{
         setControlJSON(JSON_RESOURCE);
     }
 
+    @Override
     protected Object getControlObject() {
         XmlBindings xmlBindings = new XmlBindings();
         xmlBindings.setPackageName("myPackage");
@@ -60,6 +61,7 @@ public class XMLBindingsTestCases extends JAXBWithJSONTestCases{
         return xmlBindings;
     }
 
+    @Override
     public void xmlToObjectTest(Object testObject) throws Exception {
         log("\n**xmlToObjectTest**");
         log("Expected:");
@@ -91,6 +93,7 @@ public class XMLBindingsTestCases extends JAXBWithJSONTestCases{
     }
 
 
+       @Override
        public void jsonToObjectTest(Object testObject) throws Exception {
             log("\n**xmlToObjectTest**");
             log("Expected:");

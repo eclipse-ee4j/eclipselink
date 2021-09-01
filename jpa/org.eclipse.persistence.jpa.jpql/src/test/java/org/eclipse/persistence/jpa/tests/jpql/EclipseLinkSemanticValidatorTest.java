@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,15 +40,13 @@ public final class EclipseLinkSemanticValidatorTest extends AbstractSemanticVali
 
     private JPQLQueryStringFormatter buildFormatter_01(final String jpqlQuery) {
         return new JPQLQueryStringFormatter() {
+            @Override
             public String format(String query) {
                 return jpqlQuery;
             }
         };
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected JPQLQueryContext buildQueryContext() {
         return new EclipseLinkJPQLQueryContext(jpqlGrammar);
@@ -58,9 +56,6 @@ public final class EclipseLinkSemanticValidatorTest extends AbstractSemanticVali
         return EclipseLinkSemanticValidatorExtension.NULL_EXTENSION;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected AbstractSemanticValidator buildValidator() {
         return new EclipseLinkSemanticValidator(
@@ -69,17 +64,11 @@ public final class EclipseLinkSemanticValidatorTest extends AbstractSemanticVali
         );
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isComparisonTypeChecked() {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isPathExpressionToCollectionMappingAllowed() {
         return true;

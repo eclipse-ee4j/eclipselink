@@ -37,17 +37,11 @@ public final class ObjectExpression extends EncapsulatedIdentificationVariableEx
         super(parent, OBJECT);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(ObjectExpressionBNF.ID);

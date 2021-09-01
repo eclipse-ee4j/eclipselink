@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -194,8 +194,8 @@ public class StoredProcedureQueryHandler extends QueryHandler {
                     field.setSqlType(queryOperation.getResult().getJdbcType());
                     field.setSqlTypeName(getTypeNameForJDBCType(queryOperation.getResult().getJdbcType()));
                     // replace the original field with the new one
-                    ((StoredFunctionCall)spCall).getParameters().remove(0);
-                    ((StoredFunctionCall)spCall).getParameters().add(0, field);
+                    spCall.getParameters().remove(0);
+                    spCall.getParameters().add(0, field);
                 }
                 // support stored function with out args
                 for (ProcedureOutputArgument arg : getOutArguments()) {

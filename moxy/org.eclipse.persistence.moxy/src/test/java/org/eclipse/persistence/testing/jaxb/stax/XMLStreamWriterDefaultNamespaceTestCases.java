@@ -74,7 +74,7 @@ public class XMLStreamWriterDefaultNamespaceTestCases extends OXTestCase {
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
 
         // Set IS_REPAIRING_NAMESPACES to true.
-        factory.setProperty(factory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(true));
+        factory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(true));
 
         XMLStreamWriter streamWriter = factory.createXMLStreamWriter(writer);
 

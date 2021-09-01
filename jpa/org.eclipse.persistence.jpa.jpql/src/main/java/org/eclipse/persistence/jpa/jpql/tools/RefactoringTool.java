@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -364,9 +364,6 @@ public abstract class RefactoringTool extends AbstractRefactoringTool {
         this.jpqlQueryFormatter = jpqlQueryFormatter;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toActualText() {
         return getFormatter().toString(getStateObject());
@@ -441,17 +438,11 @@ public abstract class RefactoringTool extends AbstractRefactoringTool {
             return pathExpressionUpdater;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(ConstructorExpressionStateObject stateObject) {
             visit(stateObject, stateObject.getClassName(), constructorUpdater());
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(StateFieldPathExpressionStateObject stateObject) {
             visit(stateObject, stateObject.getPath(), pathExpressionUpdater());
@@ -554,9 +545,6 @@ public abstract class RefactoringTool extends AbstractRefactoringTool {
             this.newEntityName = newEntityName;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(AbstractSchemaNameStateObject stateObject) {
             if (oldEntityName.equals(stateObject.getText())) {
@@ -564,9 +552,6 @@ public abstract class RefactoringTool extends AbstractRefactoringTool {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(EntityTypeLiteralStateObject stateObject) {
             if (oldEntityName.equals(stateObject.getText())) {
@@ -574,9 +559,6 @@ public abstract class RefactoringTool extends AbstractRefactoringTool {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(IdentificationVariableStateObject stateObject) {
             if (oldEntityName.equals(stateObject.getText())) {
@@ -584,9 +566,6 @@ public abstract class RefactoringTool extends AbstractRefactoringTool {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(TreatExpressionStateObject stateObject) {
             if (oldEntityName.equals(stateObject.getEntityTypeName())) {
@@ -646,17 +625,11 @@ public abstract class RefactoringTool extends AbstractRefactoringTool {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CollectionValuedPathExpressionStateObject stateObject) {
             renameEnumConstant(stateObject);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(StateFieldPathExpressionStateObject stateObject) {
             renameEnumConstant(stateObject);
@@ -739,17 +712,11 @@ public abstract class RefactoringTool extends AbstractRefactoringTool {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CollectionValuedPathExpressionStateObject stateObject) {
             rename(stateObject);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(StateFieldPathExpressionStateObject stateObject) {
             rename(stateObject);
@@ -788,9 +755,6 @@ public abstract class RefactoringTool extends AbstractRefactoringTool {
             this.newVariableName = newVariableName;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(IdentificationVariableStateObject stateObject) {
 
@@ -801,9 +765,6 @@ public abstract class RefactoringTool extends AbstractRefactoringTool {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(JPQLQueryStateObject stateObject) {
             if (stateObject.hasQueryStatement()) {
@@ -811,9 +772,6 @@ public abstract class RefactoringTool extends AbstractRefactoringTool {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(OrderByItemStateObject stateObject) {
             if (stateObject.hasStateObject()) {
@@ -821,9 +779,6 @@ public abstract class RefactoringTool extends AbstractRefactoringTool {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(ResultVariableStateObject stateObject) {
             if (oldVariableName.equalsIgnoreCase(stateObject.getResultVariable())) {
@@ -831,9 +786,6 @@ public abstract class RefactoringTool extends AbstractRefactoringTool {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SelectStatementStateObject stateObject) {
 
@@ -894,9 +846,6 @@ public abstract class RefactoringTool extends AbstractRefactoringTool {
             this.newVariableName = newVariableName;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CollectionValuedPathExpressionStateObject stateObject) {
 
@@ -906,9 +855,6 @@ public abstract class RefactoringTool extends AbstractRefactoringTool {
             super.visit(stateObject);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(IdentificationVariableStateObject stateObject) {
             if (oldVariableName.equalsIgnoreCase(stateObject.getText())) {
@@ -916,9 +862,6 @@ public abstract class RefactoringTool extends AbstractRefactoringTool {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(StateFieldPathExpressionStateObject stateObject) {
 

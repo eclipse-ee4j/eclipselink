@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -106,22 +106,27 @@ public class BinaryPropertyTestCases extends SDOTestCase {
 
         private static final String FIXED_ID = "FIXED";
 
+        @Override
         public String addMtomAttachment(DataHandler data, String elementName, String namespace) {
             return FIXED_ID;
         }
 
+        @Override
         public String addMtomAttachment(byte[] data, int start, int length, String mimeType, String elementName, String namespace) {
             return FIXED_ID;
         }
 
+        @Override
         public String addSwaRefAttachment(DataHandler data) {
             return FIXED_ID;
         }
 
+        @Override
         public String addSwaRefAttachment(byte[] data, int start, int length) {
             return FIXED_ID;
         }
 
+        @Override
         public boolean isXOPPackage() {
             return true;
         }

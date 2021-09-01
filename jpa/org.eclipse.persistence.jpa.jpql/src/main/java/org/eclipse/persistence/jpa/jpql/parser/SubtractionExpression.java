@@ -36,9 +36,6 @@ public final class SubtractionExpression extends ArithmeticExpression {
         super(parent, MINUS);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);

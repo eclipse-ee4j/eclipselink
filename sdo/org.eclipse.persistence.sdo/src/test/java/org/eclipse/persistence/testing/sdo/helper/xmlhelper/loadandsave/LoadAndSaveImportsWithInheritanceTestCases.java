@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,31 +40,38 @@ public class LoadAndSaveImportsWithInheritanceTestCases extends LoadAndSaveTestC
         TestRunner.main(arguments);
     }
 
+    @Override
     protected String getSchemaName() {
         return "SchemaA.xsd";
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/loadandsave/importswithinheritance/c-type.xml");
     }
 
 
+    @Override
     protected String getNoSchemaControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/loadandsave/importswithinheritance/c-type_noschema.xml");
     }
 
+    @Override
     protected String getControlRootURI() {
         return "SchemaCNamespace";
     }
 
+    @Override
     protected String getControlRootName() {
         return "childType";
     }
 
+    @Override
     protected String getRootInterfaceName() {
         return "ChildType";
     }
 
+    @Override
     protected List defineTypes() {
         try {
             URL url = new URL(getSchemaLocation() + getSchemaName());
@@ -76,10 +83,12 @@ public class LoadAndSaveImportsWithInheritanceTestCases extends LoadAndSaveTestC
         return null;
     }
 
+    @Override
     protected String getSchemaLocation() {
         return FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xmlhelper/loadandsave/importswithinheritance/";
     }
 
+    @Override
     protected List getPackages() {
         List packages = new ArrayList();
         packages.add("schemacnamespace");
@@ -88,6 +97,7 @@ public class LoadAndSaveImportsWithInheritanceTestCases extends LoadAndSaveTestC
         return packages;
     }
 
+    @Override
     protected void generateClasses(String tmpDirName) throws Exception {
         URL url = new URL(getSchemaLocation() + getSchemaName());
         InputStream is = url.openStream();
@@ -98,6 +108,7 @@ public class LoadAndSaveImportsWithInheritanceTestCases extends LoadAndSaveTestC
         classGenerator.generate(ss, tmpDirName, schemaResolver);
     }
 
+    @Override
     public void registerTypes() {
 
         Type stringType = typeHelper.getType("commonj.sdo", "String");

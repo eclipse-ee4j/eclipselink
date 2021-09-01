@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -128,6 +128,7 @@ public class ElementWithBuiltInTypeNameTestCases extends SDOTestCase {
             this.schemas = schemas;
         }
 
+        @Override
         public Source resolveSchema(Source sourceXSD, String namespace, String schemaLocation) {
             if (namespace.equals("http://tempuri.org/Imports")) {
                 return new DOMSource(schemas[0], SCHEMA_PATH + "schema0.xsd");
@@ -141,6 +142,7 @@ public class ElementWithBuiltInTypeNameTestCases extends SDOTestCase {
             return null;
         }
 
+        @Override
         public InputSource resolveEntity(String arg0, String arg1) throws SAXException, IOException {
             return null;
         }

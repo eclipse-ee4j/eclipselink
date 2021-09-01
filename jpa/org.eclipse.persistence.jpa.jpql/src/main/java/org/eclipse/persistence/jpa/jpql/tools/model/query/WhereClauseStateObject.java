@@ -53,25 +53,16 @@ public class WhereClauseStateObject extends AbstractConditionalClauseStateObject
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public WhereClause getExpression() {
         return (WhereClause) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return WHERE;

@@ -120,17 +120,11 @@ public class CaseExpressionStateObject extends AbstractListHolderStateObject<Whe
         this.caseOperandStateObject = parent(caseOperandStateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         if (caseOperandStateObject != null) {
@@ -142,9 +136,6 @@ public class CaseExpressionStateObject extends AbstractListHolderStateObject<Whe
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addProblems(List<Problem> problems) {
         super.addProblems(problems);
@@ -224,9 +215,6 @@ public class CaseExpressionStateObject extends AbstractListHolderStateObject<Whe
         return elseStateObject;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public CaseExpression getExpression() {
         return (CaseExpression) super.getExpression();
@@ -252,9 +240,6 @@ public class CaseExpressionStateObject extends AbstractListHolderStateObject<Whe
         return elseStateObject != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -268,9 +253,6 @@ public class CaseExpressionStateObject extends AbstractListHolderStateObject<Whe
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String listName() {
         return WHEN_CLAUSE_STATE_OBJECT_LIST;
@@ -343,9 +325,6 @@ public class CaseExpressionStateObject extends AbstractListHolderStateObject<Whe
         super.setExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void toTextInternal(Appendable writer) throws IOException {
 

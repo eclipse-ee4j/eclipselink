@@ -38,9 +38,6 @@ public final class StartWithClauseBNF extends JPQLQueryBNF {
         super(ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();

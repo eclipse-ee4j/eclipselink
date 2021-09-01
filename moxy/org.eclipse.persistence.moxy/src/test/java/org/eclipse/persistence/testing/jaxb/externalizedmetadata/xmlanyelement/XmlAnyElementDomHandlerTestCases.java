@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,6 +40,7 @@ public class XmlAnyElementDomHandlerTestCases extends JAXBWithJSONTestCases{
         setClasses(new Class[]{Employee.class});
     }
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlanyelement/eclipselink-oxm-dom-handler.xml");
 
@@ -51,6 +52,7 @@ public class XmlAnyElementDomHandlerTestCases extends JAXBWithJSONTestCases{
         return properties;
     }
 
+     @Override
      protected Object getControlObject() {
           Employee ctrlEmp = new Employee();
          ctrlEmp.a = 1;
@@ -67,6 +69,7 @@ public class XmlAnyElementDomHandlerTestCases extends JAXBWithJSONTestCases{
          return ctrlEmp;
       }
 
+     @Override
      public Object getReadControlObject() {
         Employee ctrlEmp = new Employee();
         ctrlEmp.a = 1;
@@ -76,6 +79,7 @@ public class XmlAnyElementDomHandlerTestCases extends JAXBWithJSONTestCases{
         return ctrlEmp;
       }
 
+     @Override
      public void testRoundTrip(){
          //doesn't apply
      }

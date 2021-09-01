@@ -64,33 +64,21 @@ public class LengthExpressionStateObject extends AbstractSingleEncapsulatedExpre
         super(parent, jpqlFragment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public LengthExpression getExpression() {
         return (LengthExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return LENGTH;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getQueryBNFId() {
         return StringPrimaryBNF.ID;
@@ -108,9 +96,6 @@ public class LengthExpressionStateObject extends AbstractSingleEncapsulatedExpre
         super.setExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setStateObject(StateObject stateObject) {
         super.setStateObject(stateObject);

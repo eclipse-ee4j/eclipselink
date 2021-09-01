@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,6 +48,7 @@ public class DynamicJAXBRefreshTestCases extends TestCase {
     private static final String XML_RESOURCE_BEFORE = "org/eclipse/persistence/testing/jaxb/dynamic/before.xml";
     private static final String XML_RESOURCE_AFTER = "org/eclipse/persistence/testing/jaxb/dynamic/after.xml";
 
+    @Override
     public String getName() {
         return "Dynamic JAXB: Metadata Refresh: " + super.getName();
     }

@@ -77,7 +77,7 @@ public class ReadAllFirstResultVsRownumFilteringTest extends PerformanceComparis
             }
             @Override
             public void startTest() {
-                ((OraclePlatform)getSession().getPlatform()).setShouldUseRownumFiltering(false);
+                getSession().getPlatform().setShouldUseRownumFiltering(false);
             }
 
             /**
@@ -85,7 +85,7 @@ public class ReadAllFirstResultVsRownumFilteringTest extends PerformanceComparis
              */
             @Override
             public void endTest() {
-                ((OraclePlatform)getSession().getPlatform()).setShouldUseRownumFiltering(true);
+                getSession().getPlatform().setShouldUseRownumFiltering(true);
             }
 
         };

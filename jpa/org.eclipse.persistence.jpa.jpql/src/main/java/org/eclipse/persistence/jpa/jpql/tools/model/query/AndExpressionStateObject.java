@@ -95,41 +95,26 @@ public class AndExpressionStateObject extends LogicalExpressionStateObject {
         super(parent, leftJpqlFragment, rightJpqlFragment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AndExpression getExpression() {
         return (AndExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return AND;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getLeftQueryBNFId() {
         return ConditionalTermBNF.ID;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getRightQueryBNFId() {
         return ConditionalFactorBNF.ID;

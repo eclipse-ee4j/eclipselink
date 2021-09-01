@@ -20,6 +20,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -62,7 +64,7 @@ public class SDODataObjectGetByteByPositionalPathTest extends SDODataObjectGetBy
 
         dataObject_a.setByte(propertyPath_a_b_c, by);// add it to instance list
 
-        this.assertEquals(by, dataObject_a.getByte(propertyPath_a_b_c));
+        assertEquals(by, dataObject_a.getByte(propertyPath_a_b_c));
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
@@ -82,7 +84,7 @@ public class SDODataObjectGetByteByPositionalPathTest extends SDODataObjectGetBy
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setByte(property3, by);
 
-        this.assertEquals(by, dataObject_a.getByte(property3));
+        assertEquals(by, dataObject_a.getByte(property3));
 
     }
 
@@ -102,7 +104,7 @@ public class SDODataObjectGetByteByPositionalPathTest extends SDODataObjectGetBy
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setByte(property + ".0", by);
 
-        this.assertEquals(by, dataObject_a.getByte(property + ".0"));
+        assertEquals(by, dataObject_a.getByte(property + ".0"));
 
     }
 
@@ -118,7 +120,7 @@ public class SDODataObjectGetByteByPositionalPathTest extends SDODataObjectGetBy
 
         dataObject_a.setByte(property1, by);// c dataobject's a property has value boolean 'true'
 
-        this.assertEquals(by, dataObject_a.getByte(property1));
+        assertEquals(by, dataObject_a.getByte(property1));
     }
 
     /*public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet() {
@@ -179,7 +181,7 @@ public class SDODataObjectGetByteByPositionalPathTest extends SDODataObjectGetBy
         double db = 12;
         dataObject_a.setDouble(propertyPath_a_b_c, db);// add it to instance list
 
-        this.assertEquals((byte)db, dataObject_a.getByte(propertyPath_a_b_c));
+        assertEquals((byte)db, dataObject_a.getByte(propertyPath_a_b_c));
     }
 
     //6. purpose: getByte with Undefined Double Property
@@ -207,7 +209,7 @@ public class SDODataObjectGetByteByPositionalPathTest extends SDODataObjectGetBy
         float fl = 12;
         dataObject_a.setFloat(propertyPath_a_b_c, fl);// add it to instance list
 
-        this.assertEquals((byte)fl, dataObject_a.getByte(propertyPath_a_b_c));
+        assertEquals((byte)fl, dataObject_a.getByte(propertyPath_a_b_c));
     }
 
     //8. purpose: getByte with Undefined float Property
@@ -236,7 +238,7 @@ public class SDODataObjectGetByteByPositionalPathTest extends SDODataObjectGetBy
         int in = 12;
         dataObject_a.setInt(propertyPath_a_b_c, in);// add it to instance list
 
-        this.assertEquals((byte)in, dataObject_a.getByte(propertyPath_a_b_c));
+        assertEquals((byte)in, dataObject_a.getByte(propertyPath_a_b_c));
     }
 
     //10. purpose: getByte with Undefined int Property
@@ -265,7 +267,7 @@ public class SDODataObjectGetByteByPositionalPathTest extends SDODataObjectGetBy
         long lg = 12;
         dataObject_a.setLong(propertyPath_a_b_c, lg);// add it to instance list
 
-        this.assertEquals((byte)lg, dataObject_a.getByte(propertyPath_a_b_c));
+        assertEquals((byte)lg, dataObject_a.getByte(propertyPath_a_b_c));
     }
 
     //12. purpose: getByte with Undefined long Property
@@ -294,7 +296,7 @@ public class SDODataObjectGetByteByPositionalPathTest extends SDODataObjectGetBy
         short shr = 12;
         dataObject_a.setShort(propertyPath_a_b_c, shr);// add it to instance list
 
-        this.assertEquals((byte)shr, dataObject_a.getByte(propertyPath_a_b_c));
+        assertEquals((byte)shr, dataObject_a.getByte(propertyPath_a_b_c));
     }
 
     //14. purpose: getByte with Undefined short Property
@@ -324,7 +326,7 @@ public class SDODataObjectGetByteByPositionalPathTest extends SDODataObjectGetBy
         Byte s_d = Byte.valueOf(str);
         dataObject_a.setString(propertyPath_a_b_c, str);// add it to instance list
 
-        this.assertEquals(s_d.byteValue(), dataObject_a.getByte(property));
+        assertEquals(s_d.byteValue(), dataObject_a.getByte(property));
     }
 
     //16. purpose: getDouble with Undefined string Property

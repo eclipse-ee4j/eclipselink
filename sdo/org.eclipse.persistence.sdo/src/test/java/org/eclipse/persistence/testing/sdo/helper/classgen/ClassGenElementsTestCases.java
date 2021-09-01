@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,6 +35,7 @@ public class ClassGenElementsTestCases extends SDOClassGenTestCases {
         TestRunner.main(arguments);
     }
 
+    @Override
     public void setUp() {
         // schemaGen in the super will fail schema load  with a NPE that generates an empty xsdString for this suite - normal
         super.setUp();
@@ -230,14 +231,17 @@ public class ClassGenElementsTestCases extends SDOClassGenTestCases {
 
     }
 
+    @Override
     protected String getSourceFolder() {
         return "elements";
     }
 
+    @Override
     protected String getControlSourceFolder() {
         return controlSourceFolder;
     }
 
+    @Override
     protected List<String> getControlFileNames() {
         return controlFileNames;
     }
@@ -257,9 +261,11 @@ public class ClassGenElementsTestCases extends SDOClassGenTestCases {
     }
 
     // The following test case is out of scope for ClassGenElements - we let it fail with a NPE that generates an empty xsdString for this suite
+    @Override
     public void testClassGen() throws Exception {
     }
 
+    @Override
     protected String getSchemaName() {
         return null;
     }

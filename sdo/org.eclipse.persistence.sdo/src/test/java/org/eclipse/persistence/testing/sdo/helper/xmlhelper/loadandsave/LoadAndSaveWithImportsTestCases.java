@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ public class LoadAndSaveWithImportsTestCases extends LoadAndSaveTestCases {
         super(name);
     }
 
+    @Override
     protected List defineTypes() {
         try {
             URL url = new URL(getSchemaLocation() + getSchemaName());
@@ -48,45 +49,55 @@ public class LoadAndSaveWithImportsTestCases extends LoadAndSaveTestCases {
         }
     }
 
+    @Override
     protected String getUnrelatedSchemaName() {
         return "./org/eclipse/persistence/testing/sdo/schemas/OrderBookingPO.xsd";
     }
 
+    @Override
     protected String getSchemaLocation() {
         return FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/schemas/";
     }
 
+    @Override
     protected String getSchemaName() {
         return "OrderBookingRequest.xsd";
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/orderBookingRequest.xml");
     }
 
+    @Override
     protected String getNoSchemaControlFileName() {
         //return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/orderBookingRequestNoSchema.xml";
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/orderBookingRequestNoSchema.xml");
     }
 
+     @Override
      protected String getControlWriteFileName() {
 
        return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/orderBookingRequestWrite.xml");
     }
 
+    @Override
     protected String getControlRootURI() {
         return "http://www.globalcompany.com/ns/OrderBooking";
     }
 
+    @Override
     protected String getControlRootName() {
         return "SOAOrderBookingProcessRequest";
     }
 
+    @Override
     protected String getRootInterfaceName() {
         return "SOAOrderBookingProcessRequest";
     }
 
     // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    @Override
     protected List<String> getPackages() {
         List<String> packages = new ArrayList<String>();
         packages.add("com/globalcompany/ns/orderbooking");
@@ -94,6 +105,7 @@ public class LoadAndSaveWithImportsTestCases extends LoadAndSaveTestCases {
         return packages;
     }
 
+    @Override
     protected void generateClasses(String tmpDirName) throws Exception{
 
         URL url = new URL(getSchemaLocation() + getSchemaName());
@@ -113,6 +125,7 @@ public class LoadAndSaveWithImportsTestCases extends LoadAndSaveTestCases {
         TestRunner.main(arguments);
     }
 
+    @Override
     public void registerTypes() {
         Type intType = typeHelper.getType("commonj.sdo", "Int");
         Type stringType = typeHelper.getType("commonj.sdo", "String");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,10 +40,12 @@ public class PooledConnectionTestCase extends ProxyAuthenticationConnectionTestC
     class Listener extends SessionEventAdapter {
         HashSet clientSessions = new HashSet();
 
+        @Override
         public void postAcquireClientSession(SessionEvent event) {
             clientSessions.add(event.getSession());
         }
 
+        @Override
         public void postAcquireConnection(SessionEvent event) {
             org.eclipse.persistence.internal.databaseaccess.DatasourceAccessor dsAccessor = (org.eclipse.persistence.internal.databaseaccess.DatasourceAccessor)event.getResult();
             Iterator it = clientSessions.iterator();
@@ -56,6 +58,7 @@ public class PooledConnectionTestCase extends ProxyAuthenticationConnectionTestC
             }
         }
 
+        @Override
         public void preReleaseClientSession(SessionEvent event) {
             clientSessions.remove(event.getSession());
         }
@@ -66,6 +69,7 @@ public class PooledConnectionTestCase extends ProxyAuthenticationConnectionTestC
         super(proxyProperties);
     }
 
+    @Override
     protected void proxySetup() {
         listener = new Listener();
     }

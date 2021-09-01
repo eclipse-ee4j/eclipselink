@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,7 +39,7 @@ public class InMemoryArchive extends URLArchive {
     private InputStream stream = null;
 
     private InMemoryArchive(){
-        super((URL)null, (String)null);
+        super(null, null);
         String persistenceFactoryResource = InMemoryArchive.class.getName().replace('.', '/') + ".class";
         URL myURL = InMemoryArchive.class.getClassLoader().getResource(persistenceFactoryResource);
         try{

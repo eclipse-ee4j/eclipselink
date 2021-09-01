@@ -26,10 +26,9 @@ module org.eclipse.persistence.dbws {
     requires static jakarta.servlet; //AM
 
     requires org.eclipse.persistence.asm;
-    requires org.eclipse.persistence.core;
     requires org.eclipse.persistence.jpa;
     requires org.eclipse.persistence.jpa.jpql;
-    requires org.eclipse.persistence.moxy;
+    requires transitive org.eclipse.persistence.moxy;
 
     exports org.eclipse.persistence.dbws;
     exports org.eclipse.persistence.jpa.rs;

@@ -56,25 +56,16 @@ public abstract class AbstractOrderByClause extends AbstractExpression {
         super(parent, identifier);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getOrderByItems().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         children.add(getOrderByItems());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
 
@@ -108,9 +99,6 @@ public abstract class AbstractOrderByClause extends AbstractExpression {
         return new CollectionExpression(this, children, spaces, commas, true);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -162,9 +150,6 @@ public abstract class AbstractOrderByClause extends AbstractExpression {
         return hasSpaceAfterIdentifier;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -177,9 +162,6 @@ public abstract class AbstractOrderByClause extends AbstractExpression {
         orderByItems = parse(wordParser, OrderByItemBNF.ID, tolerant);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
 

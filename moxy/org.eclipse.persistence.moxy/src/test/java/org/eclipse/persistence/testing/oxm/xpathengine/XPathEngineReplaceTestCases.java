@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,6 +46,7 @@ public class XPathEngineReplaceTestCases extends org.eclipse.persistence.testing
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/oxm/xpathengine/AddressBook.xml");
 
@@ -54,7 +55,7 @@ public class XPathEngineReplaceTestCases extends org.eclipse.persistence.testing
         DocumentBuilder parser = builderFactory.newDocumentBuilder();
         controlDocument = parser.parse(inputStream);
 
-        searchNode = (Element) controlDocument.getDocumentElement();
+        searchNode = controlDocument.getDocumentElement();
         XMLContext ctx = new XMLContext(new org.eclipse.persistence.testing.oxm.xmlmarshaller.XMLMarshallerTestProject());
         session = (AbstractSession) ctx.getSession(0);
     }
@@ -124,13 +125,13 @@ public class XPathEngineReplaceTestCases extends org.eclipse.persistence.testing
 
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         Document document = builderFactory.newDocumentBuilder().newDocument();
-        Element cityElement = (Element) document.createElement("city");
-        Element nameElement = (Element) document.createElement("name");
+        Element cityElement = document.createElement("city");
+        Element nameElement = document.createElement("name");
 
         Text nameText = document.createTextNode("thename");
 
         nameElement.appendChild(nameText);
-        Element codeElement = (Element) document.createElement("code");
+        Element codeElement = document.createElement("code");
 
         Text codeText = document.createTextNode("thecode");
 
@@ -180,15 +181,15 @@ public class XPathEngineReplaceTestCases extends org.eclipse.persistence.testing
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         Document document = builderFactory.newDocumentBuilder().newDocument();
 
-        Element controlElement = (Element) document.createElement("city");
-        Element townElement = (Element) document.createElement("town");
+        Element controlElement = document.createElement("city");
+        Element townElement = document.createElement("town");
 
-        Element nameElement = (Element) document.createElement("name");
+        Element nameElement = document.createElement("name");
 
         Text nameText = document.createTextNode("thename");
         nameElement.appendChild(nameText);
 
-        Attr codeAttribute = (Attr) document.createAttribute("code");
+        Attr codeAttribute = document.createAttribute("code");
         codeAttribute.setNodeValue("thecode");
 
         // controlElement is just used for comparison at the end of this test

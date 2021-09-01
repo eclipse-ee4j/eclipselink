@@ -54,25 +54,16 @@ public class IndexExpressionStateObject extends EncapsulatedIdentificationVariab
         super(parent, identificationVariable);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IndexExpression getExpression() {
         return (IndexExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return INDEX;

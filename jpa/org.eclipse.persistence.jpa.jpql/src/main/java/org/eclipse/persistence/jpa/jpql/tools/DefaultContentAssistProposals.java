@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -238,9 +238,6 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
         return identifiers;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Iterable<IEntity> abstractSchemaTypes() {
         return new SnapshotCloneIterable<IEntity>(entities);
@@ -324,9 +321,6 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
         rangeIdentificationVariables.put(identificationVariable, entity);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Result buildEscapedQuery(String jpqlQuery, String proposal, int position, boolean insert) {
 
@@ -464,9 +458,6 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
         return new int[] { startPosition, startPosition + length };
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Result buildQuery(String jpqlQuery, String proposal, int position, boolean insert) {
 
@@ -489,9 +480,6 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
         return new Result(sb.toString(), positions[0] + proposal.length());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ResultQuery buildXmlQuery(String jpqlQuery, String proposal, int position, boolean insert) {
 
@@ -524,9 +512,6 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
         return new Result(sb.toString(), proposalPositions[0] + proposal.length());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Iterable<String> classNames() {
         if (classNamePrefix == null) {
@@ -535,9 +520,6 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
         return extension.classNames(classNamePrefix, classType);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Iterable<String> columnNames() {
         if (tableName == null) {
@@ -546,17 +528,11 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
         return extension.columnNames(tableName, columnNamePrefix);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Iterable<EnumProposals> enumConstant() {
         return new SnapshotCloneIterable<EnumProposals>(enumProposals.values());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IEntity getAbstractSchemaType(String identificationVariable) {
         return rangeIdentificationVariables.get(identificationVariable);
@@ -573,9 +549,6 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
         return classNamePrefix;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ClassType getClassType() {
         return classType;
@@ -602,9 +575,6 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
         return jpqlGrammar;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IdentifierRole getIdentifierRole(String identifier) {
         return jpqlGrammar.getExpressionRegistry().getIdentifierRole(identifier);
@@ -632,9 +602,6 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
         return tableNamePrefix;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean hasProposals() {
         return !mappings.isEmpty()                ||
@@ -648,9 +615,6 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
                !rangeIdentificationVariables.isEmpty();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Iterable<String> identificationVariables() {
         List<String> variables = new ArrayList<String>(identificationVariables.size() + rangeIdentificationVariables.size());
@@ -659,9 +623,6 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
         return new SnapshotCloneIterable<String>(variables);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Iterable<String> identifiers() {
         return new SnapshotCloneIterable<String>(identifiers);
@@ -750,9 +711,6 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
         return LONGUEST_IDENTIFIERS.containsKey(proposal) ? LONGUEST_IDENTIFIERS.get(proposal) : proposal;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Iterable<IMapping> mappings() {
         return new SnapshotCloneIterable<IMapping>(mappings);
@@ -819,9 +777,6 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
         return -1;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Iterable<String> tableNames() {
         if (tableNamePrefix == null) {
@@ -830,9 +785,6 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
         return extension.tableNames(tableNamePrefix);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
 
@@ -928,17 +880,11 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
             this.constants = new HashSet<String>();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public Iterable<String> enumConstants() {
             return new SnapshotCloneIterable<String>(constants);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public IType enumType() {
             return enumType;
@@ -975,25 +921,16 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
             this.position  = position;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public int getPosition() {
             return position;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public String getQuery() {
             return jpqlQuery;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();

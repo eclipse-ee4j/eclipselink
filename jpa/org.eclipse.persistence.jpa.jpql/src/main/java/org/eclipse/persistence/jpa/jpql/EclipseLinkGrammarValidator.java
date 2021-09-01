@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -201,17 +201,11 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
         return new InExpressionWithNestedArrayVisitor(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected LiteralVisitor buildLiteralVisitor() {
         return new EclipseLinkLiteralVisitor();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected OwningClauseVisitor buildOwningClauseVisitor() {
         return new EclipseLinkOwningClauseVisitor();
@@ -279,9 +273,6 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
         return inExpressionWithNestedArrayVisitor;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected EclipseLinkOwningClauseVisitor getOwningClauseVisitor() {
         return (EclipseLinkOwningClauseVisitor) super.getOwningClauseVisitor();
@@ -315,26 +306,17 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isInputParameterInValidLocation(InputParameter expression) {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isJoinFetchIdentifiable() {
         EclipseLinkVersion version = EclipseLinkVersion.value(getGrammar().getProviderVersion());
         return version.isNewerThanOrEqual(EclipseLinkVersion.VERSION_2_4);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isMultipleSubquerySelectItemsAllowed(SimpleSelectClause expression) {
         return isInExpressionWithNestedArray(expression);
@@ -364,9 +346,6 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isSubqueryAllowedAnywhere() {
         EclipseLinkVersion version = EclipseLinkVersion.value(getProviderVersion());
@@ -382,9 +361,6 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
         return helper;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void validateAbstractSelectClause(AbstractSelectClause expression,
                                                 boolean multipleSelectItemsAllowed) {
@@ -404,16 +380,10 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
         super.validateAbstractSelectClause(expression, multipleSelectItemsAllowed);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AsOfClause expression) {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CastExpression expression) {
 
@@ -449,25 +419,16 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ConnectByClause expression) {
         // TODO: 2.5
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(DatabaseType expression) {
         validateAbstractDoubleEncapsulatedExpression(expression, databaseTypeHelper());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ExtractExpression expression) {
 
@@ -491,25 +452,16 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(HierarchicalQueryClause expression) {
         // TODO: 2.5
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(OrderSiblingsByClause expression) {
         // TODO
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(RegexpExpression expression) {
 
@@ -596,25 +548,16 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(StartWithClause expression) {
         // TODO: 2.5
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(TableExpression expression) {
         validateAbstractSingleEncapsulatedExpression(expression, tableExpressionHelper());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(TableVariableDeclaration expression) {
 
@@ -647,9 +590,6 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UnionClause expression) {
 
@@ -700,25 +640,16 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
          */
         public boolean valid;
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(InExpression expression) {
             valid = visitor.isNestedArray(expression.getExpression());
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SimpleSelectClause expression) {
             expression.getParent().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SimpleSelectStatement expression) {
             expression.getParent().accept(this);

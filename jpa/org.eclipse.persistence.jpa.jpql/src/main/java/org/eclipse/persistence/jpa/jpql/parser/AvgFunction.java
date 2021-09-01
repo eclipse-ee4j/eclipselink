@@ -35,9 +35,6 @@ public final class AvgFunction extends AggregateFunction {
         super(parent, AVG);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);

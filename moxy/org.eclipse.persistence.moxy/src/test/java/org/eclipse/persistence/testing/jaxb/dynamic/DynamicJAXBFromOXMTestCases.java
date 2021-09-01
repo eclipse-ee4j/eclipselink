@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -79,6 +79,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         super(name);
     }
 
+    @Override
     public String getName() {
         return "Dynamic JAXB: OXM: " + super.getName();
     }
@@ -798,7 +799,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
             InputStream xmlStream = ClassLoader.getSystemResourceAsStream(PERSON_XML);
             JAXBElement person = (JAXBElement) jaxbContext.createUnmarshaller().unmarshal(xmlStream);
             assertEquals("Element was not substituted properly: ", new QName("myNamespace", "person"), person.getName());
-            JAXBElement name = (JAXBElement) ((DynamicEntity) person.getValue()).get("name");
+            JAXBElement name = ((DynamicEntity) person.getValue()).get("name");
             assertEquals("Element was not substituted properly: ", new QName("myNamespace", "name"), name.getName());
 
             // ====================================================================
@@ -806,7 +807,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
             InputStream xmlStream2 = ClassLoader.getSystemResourceAsStream(PERSONNE_XML);
             JAXBElement person2 = (JAXBElement) jaxbContext.createUnmarshaller().unmarshal(xmlStream2);
             assertEquals("Element was not substituted properly: ", new QName("myNamespace", "personne"), person2.getName());
-            JAXBElement name2 = (JAXBElement) ((DynamicEntity) person2.getValue()).get("name");
+            JAXBElement name2 = ((DynamicEntity) person2.getValue()).get("name");
             assertEquals("Element was not substituted properly: ", new QName("myNamespace", "nom"), name2.getName());
         } catch (UndeclaredThrowableException e) {
             if (e.getUndeclaredThrowable() instanceof NoSuchMethodException) {
@@ -1306,7 +1307,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         DynamicEntity readAddress = readPerson.get("address");
         assertEquals("Backpointer was not properly set.", readPerson, readAddress.get("person"));
 
-        Vector<DynamicEntity> readPhones = (Vector<DynamicEntity>) readPerson.get("phoneNumbers");
+        Vector<DynamicEntity> readPhones = readPerson.get("phoneNumbers");
         for (DynamicEntity readPhone : readPhones) {
             assertEquals("Backpointer was not properly set.", readPerson, readPhone.get("person"));
         }

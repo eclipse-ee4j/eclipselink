@@ -65,8 +65,8 @@ public class ProjectXMLSortedCollectionMapping extends TestCase {
             DatabaseMapping mappingToModify = descriptorToModify.getMappingForAttributeName("projects");
 
             if (mappingToModify.isForeignReferenceMapping()) {
-                if (((ForeignReferenceMapping)mappingToModify).isCollectionMapping()) {
-                    CollectionMapping collectionMapping = (CollectionMapping)(((ForeignReferenceMapping)mappingToModify));
+                if (mappingToModify.isCollectionMapping()) {
+                    CollectionMapping collectionMapping = (CollectionMapping) mappingToModify;
                     collectionMapping.useSortedSetClassName(TreeSet.class.getName(),getComparator().getName());
                 }
             }else{
@@ -91,7 +91,7 @@ public class ProjectXMLSortedCollectionMapping extends TestCase {
         CollectionMapping collectionMapping = (CollectionMapping)readBackMapping;
         ContainerPolicy containerPolciy = collectionMapping.getContainerPolicy();
         if(containerPolciy.isCollectionPolicy()){
-            Class conatinerClass = ((SortedCollectionContainerPolicy)containerPolciy).getContainerClass();
+            Class conatinerClass = containerPolciy.getContainerClass();
             Class comparatorClass = ((SortedCollectionContainerPolicy)containerPolciy).getComparatorClass();
             if(!conatinerClass.equals(TreeSet.class) ){
                 throw new TestErrorException("The container class read was not equal to the conatiner class set originally, which expected as the java.util.TreeSet class. ");

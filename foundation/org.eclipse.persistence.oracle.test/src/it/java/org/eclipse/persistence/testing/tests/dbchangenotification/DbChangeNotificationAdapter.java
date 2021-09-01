@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,6 +39,7 @@ public class DbChangeNotificationAdapter implements ProjectAndDatabaseAdapter {
         this.useMultipleConsumers = useMultipleConsumers;
     }
 
+    @Override
     public boolean isOriginalSetupRequired() {
         return false;
     }
@@ -48,6 +49,7 @@ public class DbChangeNotificationAdapter implements ProjectAndDatabaseAdapter {
     boolean useMultipleConsumers;
     Hashtable tableNamesToPkFields = new Hashtable();
 
+    @Override
     public void updateProject(Project project, Session session) {
         Iterator it = project.getDescriptors().values().iterator();
         while (it.hasNext()) {
@@ -65,6 +67,7 @@ public class DbChangeNotificationAdapter implements ProjectAndDatabaseAdapter {
         }
     }
 
+    @Override
     public void updateDatabase(Session session) {
         if (!session.getPlatform().isOracle()) {
             throw new TestWarningException("Currently supports Oracle platform only");

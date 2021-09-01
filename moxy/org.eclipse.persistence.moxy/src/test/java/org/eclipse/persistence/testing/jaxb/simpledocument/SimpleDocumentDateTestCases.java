@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,6 +44,7 @@ public class SimpleDocumentDateTestCases extends JAXBWithJSONTestCases {
             return "{\"dateroot\":\"2013-02-20T00:00:00"+TIMEZONE_OFFSET+"\"}";
         }
 
+        @Override
         public boolean isUnmarshalTest() {
              return false;
         }
@@ -63,6 +64,7 @@ public class SimpleDocumentDateTestCases extends JAXBWithJSONTestCases {
             return doc;
         }
 
+        @Override
         protected Object getControlObject() {
         JAXBElement value = new DateObjectFactory().createDateRoot();
 

@@ -64,33 +64,21 @@ public class SqrtExpressionStateObject extends AbstractSingleEncapsulatedExpress
         super(parent, jpqlFragment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SqrtExpression getExpression() {
         return (SqrtExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return SQRT;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getQueryBNFId() {
         return SimpleArithmeticExpressionBNF.ID;
@@ -108,9 +96,6 @@ public class SqrtExpressionStateObject extends AbstractSingleEncapsulatedExpress
         super.setExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setStateObject(StateObject stateObject) {
         super.setStateObject(stateObject);

@@ -53,6 +53,7 @@ public class XmlPathsTestCases extends JAXBWithJSONTestCases{
      *
      * @return
      */
+    @Override
     public Employee getControlObject() {
         Employee emp = new Employee();
         emp.thing = Integer.valueOf(INT_VAL);

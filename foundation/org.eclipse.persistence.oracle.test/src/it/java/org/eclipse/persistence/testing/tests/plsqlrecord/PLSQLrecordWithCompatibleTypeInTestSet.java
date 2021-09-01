@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -10,7 +10,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
 
-// Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
 
 package org.eclipse.persistence.testing.tests.plsqlrecord;
 
@@ -98,7 +98,7 @@ public class PLSQLrecordWithCompatibleTypeInTestSet  {
 
         project.getDescriptor(PLSQLEmployeeType.class).getQueryManager().
             addQuery("PLSQLrecordWithCompatibleTypeIn", query);
-        Project projectToXml = (Project)project.clone();
+        Project projectToXml = project.clone();
         // trim off login 'cause it changes under test - this way, a comparison
         // can be done to a control document
         projectToXml.setDatasourceLogin(null);
@@ -269,7 +269,7 @@ public class PLSQLrecordWithCompatibleTypeInTestSet  {
         };
         Struct struct = null;
         try {
-            struct = ((Oracle8Platform)s.getPlatform()).createStruct(
+            struct = s.getPlatform().createStruct(
                 "EMP_TYPE", attributes, ((DatabaseSessionImpl)s).getAccessor().getConnection());
         }
         catch (SQLException e) {

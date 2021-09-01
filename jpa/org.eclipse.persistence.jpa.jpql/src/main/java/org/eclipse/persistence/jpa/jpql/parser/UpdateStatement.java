@@ -60,35 +60,23 @@ public final class UpdateStatement extends AbstractExpression {
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getUpdateClause().accept(visitor);
         getWhereClause().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         children.add(getUpdateClause());
         children.add(getWhereClause());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
 
@@ -105,9 +93,6 @@ public final class UpdateStatement extends AbstractExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -122,9 +107,6 @@ public final class UpdateStatement extends AbstractExpression {
         return super.findQueryBNF(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(UpdateStatementBNF.ID);
@@ -172,9 +154,6 @@ public final class UpdateStatement extends AbstractExpression {
               !whereClause.isNull();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -194,9 +173,6 @@ public final class UpdateStatement extends AbstractExpression {
         accept(new FullyQualifyPathExpressionVisitor());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
 

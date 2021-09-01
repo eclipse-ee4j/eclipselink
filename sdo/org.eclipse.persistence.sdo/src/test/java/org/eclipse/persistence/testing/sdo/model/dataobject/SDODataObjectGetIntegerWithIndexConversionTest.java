@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +18,8 @@ import commonj.sdo.Property;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Calendar;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOConstants;
@@ -35,7 +37,7 @@ public class SDODataObjectGetIntegerWithIndexConversionTest extends SDODataObjec
 
     //1. purpose: getBigInteger with boolean property
     public void testGetIntegerFromBoolean() {
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BOOLEAN);
         dataObject.set(property, true);
         try {
@@ -47,7 +49,7 @@ public class SDODataObjectGetIntegerWithIndexConversionTest extends SDODataObjec
 
     //2. purpose: getBigInteger with byte property
     public void testGetIntegerFromByte() {
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BYTE);
         byte theByte = 8;
         dataObject.set(property, theByte);
@@ -62,7 +64,7 @@ public class SDODataObjectGetIntegerWithIndexConversionTest extends SDODataObjec
 
     //3. purpose: getBigInteger with character property
     public void testGetIntegerFromCharacter() {
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_CHARACTER);
         dataObject.set(property, 'e');
         try {
@@ -75,7 +77,7 @@ public class SDODataObjectGetIntegerWithIndexConversionTest extends SDODataObjec
     //5. purpose: getBigInteger with Defined Double Property
     public void testGetIntegerConversionFromDefinedDoubleProperty() {
         // dataObject's type add boolean property
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_DOUBLE);
 
         double db = 12;
@@ -83,13 +85,13 @@ public class SDODataObjectGetIntegerWithIndexConversionTest extends SDODataObjec
         BigInteger bd = new BigInteger(String.valueOf(il));
         dataObject.setDouble(PROPERTY_INDEX, db);// add it to instance list
 
-        this.assertEquals(bd, dataObject.getBigInteger(PROPERTY_INDEX));
+        assertEquals(bd, dataObject.getBigInteger(PROPERTY_INDEX));
     }
 
     //7. purpose: getBigInteger with Defined float Property
     public void testGetIntegerConversionFromDefinedFloatProperty() {
         // dataObject's type add float property
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_FLOAT);
 
         float fl = 12;
@@ -97,33 +99,33 @@ public class SDODataObjectGetIntegerWithIndexConversionTest extends SDODataObjec
         BigInteger bd = new BigInteger(String.valueOf(il));
         dataObject.setFloat(PROPERTY_INDEX, fl);// add it to instance list
 
-        this.assertEquals(bd, dataObject.getBigInteger(PROPERTY_INDEX));
+        assertEquals(bd, dataObject.getBigInteger(PROPERTY_INDEX));
     }
 
     //9. purpose: getBigInteger with Defined int Property
     public void testGetIntegerConversionFromDefinedIntProperty() {
         // dataObject's type add int property
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_INT);
 
         int in = 12;
         BigInteger bd = new BigInteger(String.valueOf(in));
         dataObject.setInt(PROPERTY_INDEX, in);// add it to instance list
 
-        this.assertEquals(bd, dataObject.getBigInteger(PROPERTY_INDEX));
+        assertEquals(bd, dataObject.getBigInteger(PROPERTY_INDEX));
     }
 
     //11. purpose: getBigInteger with Defined long Property
     public void testGetIntegerConversionFromDefinedLongProperty() {
         // dataObject's type add short property
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_LONG);
 
         long lg = 12;
         BigInteger bd = new BigInteger(String.valueOf(lg));
         dataObject.setLong(PROPERTY_INDEX, lg);// add it to instance list
 
-        this.assertEquals(bd, dataObject.getBigInteger(PROPERTY_INDEX));
+        assertEquals(bd, dataObject.getBigInteger(PROPERTY_INDEX));
     }
 
     //14. purpose: getBigInteger with Defined String Property
@@ -138,13 +140,13 @@ public class SDODataObjectGetIntegerWithIndexConversionTest extends SDODataObjec
         BigInteger bd = new BigInteger(str);
         dataObject.setString(PROPERTY_INDEX, str);// add it to instance list
 
-        this.assertEquals(bd, dataObject.getBigInteger(PROPERTY_INDEX));
+        assertEquals(bd, dataObject.getBigInteger(PROPERTY_INDEX));
     }
 
     //16. purpose: getBigInteger with Defined Bytes Property !! OX PRO !!
     public void testGetIntegerConversionFromDefinedBytesProperty() {
         // dataObject's type add boolean property
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_INTEGER);
 
         byte[] b = { 12, 13 };
@@ -152,7 +154,7 @@ public class SDODataObjectGetIntegerWithIndexConversionTest extends SDODataObjec
 
         dataObject.setBytes(PROPERTY_INDEX, b);// add it to instance list
 
-        this.assertEquals(bin, dataObject.getBigInteger(PROPERTY_INDEX));
+        assertEquals(bin, dataObject.getBigInteger(PROPERTY_INDEX));
     }
 
     //17. purpose: getBigInteger with Undefined Bytes Property
@@ -168,7 +170,7 @@ public class SDODataObjectGetIntegerWithIndexConversionTest extends SDODataObjec
 
     //17. purpose: getBigDecimal with bytes property
     public void testGetDecimalFromBytes() {
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BYTES);
         dataObject.set(property, new String("eee").getBytes());
         try {
@@ -181,7 +183,7 @@ public class SDODataObjectGetIntegerWithIndexConversionTest extends SDODataObjec
     //18. purpose: getBigInteger with Defined Decimal Property
     public void testGetIntegerConversionFromDefinedDecimalProperty() {
         // dataObject's type add int property
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_DECIMAL);
 
         int db = 12;
@@ -189,24 +191,24 @@ public class SDODataObjectGetIntegerWithIndexConversionTest extends SDODataObjec
         BigInteger bd_ = new BigInteger(String.valueOf(bd));
         dataObject.setBigDecimal(PROPERTY_INDEX, bd);// add it to instance list
 
-        this.assertEquals(bd_, dataObject.getBigInteger(PROPERTY_INDEX));
+        assertEquals(bd_, dataObject.getBigInteger(PROPERTY_INDEX));
     }
 
     //20. purpose: getBigInteger with Defined integer Property
     public void testGetIntegerConversionFromDefinedIntegerProperty() {
         // dataObject's type add int property
-        SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
+        SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_INTEGER);
 
         BigInteger bi = new BigInteger("12");
         dataObject.setBigInteger(PROPERTY_INDEX, bi);// add it to instance list
 
-        this.assertEquals(bi, dataObject.getBigInteger(PROPERTY_INDEX));
+        assertEquals(bi, dataObject.getBigInteger(PROPERTY_INDEX));
     }
 
     //22. purpose: getBigInteger with date property
     public void testGetIntegerFromDate() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
+        SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_DATE);
         dataObject.set(property, Calendar.getInstance().getTime());
         try {

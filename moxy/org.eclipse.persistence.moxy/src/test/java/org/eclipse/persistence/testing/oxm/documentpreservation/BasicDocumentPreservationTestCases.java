@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,6 +40,7 @@ public class BasicDocumentPreservationTestCases extends OXTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception {
         context = this.getXMLContext("DocumentPreservationSession");
         marshaller = context.createMarshaller();
@@ -56,7 +57,7 @@ public class BasicDocumentPreservationTestCases extends OXTestCase {
 
         Employee emp = (Employee)unmarshaller.unmarshal(sourceDocument);
 
-        Document outputDoc = (Document)marshaller.objectToXML(emp);
+        Document outputDoc = marshaller.objectToXML(emp);
         assertXMLIdentical(controlDocument, outputDoc);
     }
 
@@ -68,7 +69,7 @@ public class BasicDocumentPreservationTestCases extends OXTestCase {
         emp.setLastName(null);
         emp.getAddress().setCity(null);
 
-        Document outputDoc = (Document)marshaller.objectToXML(emp);
+        Document outputDoc = marshaller.objectToXML(emp);
         assertXMLIdentical(controlDocument, outputDoc);
     }
 
@@ -84,7 +85,7 @@ public class BasicDocumentPreservationTestCases extends OXTestCase {
         addr.setProvince("ON");
         addr.setPostalCode("A1A 1A1");
         emp.setAddress(addr);
-        Document outputDoc = (Document)marshaller.objectToXML(emp);
+        Document outputDoc = marshaller.objectToXML(emp);
         assertXMLIdentical(controlDocument, outputDoc);
     }
 

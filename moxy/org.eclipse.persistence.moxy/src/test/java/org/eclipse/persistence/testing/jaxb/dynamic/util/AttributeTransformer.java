@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +20,7 @@ import org.eclipse.persistence.sessions.Session;
 
 public class AttributeTransformer extends AttributeTransformerAdapter {
 
+    @Override
     public Object buildAttributeValue(Record record, Object instance, Session session) {
         String[] objectValue = new String[2];
         objectValue[0] = (String) record.get("transform/first-val/text()");

@@ -194,7 +194,7 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor8<MetadataAnnota
      */
     @Override
     public MetadataClass visitPackage(PackageElement packageElement, MetadataClass metadataClass) {
-        MetadataLogger logger = ((MetadataMirrorFactory) metadataClass.getMetadataFactory()).getLogger();
+        MetadataLogger logger = metadataClass.getMetadataFactory().getLogger();
         logger.getSession().getSessionLog().log(SessionLog.FINE, SessionLog.PROCESSOR,
                 "ElementVisitor Package NOT IMPLEMENTED : {0}",
                 new Object[] {packageElement}, false);

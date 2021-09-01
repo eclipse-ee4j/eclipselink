@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -568,9 +568,9 @@ public class StoredProcedureGenerator {
             Class type = this.getFieldType(dataType);
             String typeName = (String)dataRow.get("TYPE_NAME");
             if ((type != null) || (typeName == null) || (typeName.length() == 0)) {
-                definition.addArgument(prefixArgToken + (String)dataRow.get("COLUMN_NAME"), type, ((Number)dataRow.get("COLUMN_SIZE")).intValue());
+                definition.addArgument(prefixArgToken + dataRow.get("COLUMN_NAME"), type, ((Number)dataRow.get("COLUMN_SIZE")).intValue());
             } else {
-                definition.addArgument(prefixArgToken + (String)dataRow.get("COLUMN_NAME"), typeName);
+                definition.addArgument(prefixArgToken + dataRow.get("COLUMN_NAME"), typeName);
             }
         }
 

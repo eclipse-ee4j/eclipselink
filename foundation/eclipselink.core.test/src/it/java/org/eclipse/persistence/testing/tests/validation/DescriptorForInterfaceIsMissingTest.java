@@ -36,7 +36,7 @@ public class DescriptorForInterfaceIsMissingTest extends ExceptionTest {
     @Override
     protected void setup() {
         expectedException = DescriptorException.descriptorForInterfaceIsMissing(null);
-        orgDescriptor = ((DatabaseSession)getSession()).getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Project.class);
+        orgDescriptor = getSession().getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Project.class);
         orgIntegrityChecker = getSession().getIntegrityChecker();
     }
     ClassDescriptor orgDescriptor;
@@ -44,7 +44,7 @@ public class DescriptorForInterfaceIsMissingTest extends ExceptionTest {
 
     @Override
     public void reset() {
-        ((DatabaseSession)getSession()).getDescriptors().remove(org.eclipse.persistence.testing.models.employee.domain.Project.class);
+        getSession().getDescriptors().remove(org.eclipse.persistence.testing.models.employee.domain.Project.class);
         if (orgDescriptor != null)
             ((DatabaseSession)getSession()).addDescriptor(orgDescriptor);
         if (orgIntegrityChecker != null)

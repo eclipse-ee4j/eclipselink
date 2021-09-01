@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -99,7 +99,7 @@ public class TypeHelperImpl
         Object type = null;
         DatabaseMapping mapping = resolveAttributeMapping(ownerClass, attribute);
         if (mapping.isCollectionMapping()){
-            ContainerPolicy cp = ((CollectionMapping)mapping).getContainerPolicy();
+            ContainerPolicy cp = mapping.getContainerPolicy();
             type = cp.getKeyType();
         }
         return type;
@@ -249,7 +249,7 @@ public class TypeHelperImpl
             // of an embedded. This makes sure that any property or field
             // access of the embedded uses the correct mapping information and
             // not the shell of the descriptors as stored by the session.
-            type = ((AggregateCollectionMapping)mapping).getReferenceDescriptor();
+            type = mapping.getReferenceDescriptor();
         } else if (mapping.isForeignReferenceMapping()) {
             ClassDescriptor descriptor = mapping.getReferenceDescriptor();
             type = descriptor == null ? null : descriptor.getJavaClass();
@@ -258,7 +258,7 @@ public class TypeHelperImpl
             // of an embedded. This makes sure that any property or field
             // access of the embedded uses the correct mapping information and
             // not the shell of the descriptors as stored by the session.
-            type = ((AggregateMapping)mapping).getReferenceDescriptor();
+            type = mapping.getReferenceDescriptor();
         } else {
             type = mapping.getAttributeAccessor().getAttributeClass();
         }

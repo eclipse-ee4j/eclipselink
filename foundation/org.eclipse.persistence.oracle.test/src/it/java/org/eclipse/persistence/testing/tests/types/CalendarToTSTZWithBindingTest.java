@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -140,6 +140,7 @@ public class CalendarToTSTZWithBindingTest extends TestCase {
         return tests;
     }
 
+    @Override
     public void setup() {
         if (!(getSession().getPlatform() instanceof Oracle9Platform)) {
             throw new TestWarningException("Test is only supported on Oracle9 platform and above, as TIMESTAMPTZ is used");
@@ -158,6 +159,7 @@ public class CalendarToTSTZWithBindingTest extends TestCase {
         uow.commit();
     }
 
+    @Override
     public void test() {
         // read data back from database literally in order to check contents of database rather than the driver's TIMESTAMPTZ
         String sql = "select TEST_ID, to_char(TSTZ_DATA,'MM/DD/YYYY hh24:mi:ss TZR') as TSTZ_DATA FROM " +  commonDescriptor().getTableName() +  " where TEST_ID = " + getTestId();
@@ -167,6 +169,7 @@ public class CalendarToTSTZWithBindingTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() throws Exception {
         String expectedResult = getOriginalCalendarString();
         if (this.result == null) {
@@ -179,6 +182,7 @@ public class CalendarToTSTZWithBindingTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         // Compatibility for Oracle 9 and above is checked in the setup() method
         Oracle9Platform platform = (Oracle9Platform) getSession().getPlatform();

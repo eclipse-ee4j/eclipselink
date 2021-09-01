@@ -65,33 +65,21 @@ public class SizeExpressionStateObject extends AbstractSingleEncapsulatedExpress
         super(parent, path);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SizeExpression getExpression() {
         return (SizeExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return SIZE;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getQueryBNFId() {
         return CollectionValuedPathExpressionBNF.ID;
@@ -109,9 +97,6 @@ public class SizeExpressionStateObject extends AbstractSingleEncapsulatedExpress
         super.setExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setStateObject(StateObject stateObject) {
         super.setStateObject(stateObject);
