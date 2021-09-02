@@ -111,6 +111,7 @@
         <bundle.version>${project.version}.${build.qualifier}</bundle.version>
         <project.build.testReports.subdirectory>test-reports</project.build.testReports.subdirectory>
         <project.build.testReports.summaryFile>test-summary</project.build.testReports.summaryFile>
+        <project.build.licenceResourceDirectory>${project.build.directory}/license</project.build.licenceResourceDirectory>
 
         <!--Common properties-->
         <common.licenceFiles>LICENSE.md, NOTICE.md</common.licenceFiles>
@@ -137,7 +138,7 @@
         <!--Default test DB is Derby-->
         <test.properties.file>${user.home}/${test.derby.properties.file}</test.properties.file>
         <test.properties.fileName>${test.derby.properties.file}</test.properties.fileName>
-        <test.properties.default.directory>${project.root.location}/etc</test.properties.default.directory>
+        <test.properties.default.directory>${project.build.directory}/test-default-properties</test.properties.default.directory>
         <test.database>derby</test.database>
         <!--false: to start In-Memory database, true: not start (MySQL, Oracle)-->
         <test.skip.in-memory.db>false</test.skip.in-memory.db>
@@ -1205,39 +1206,13 @@
                     </compilerArgs>
                 </configuration>
             </plugin>
-            <!--Resolve EclipseLink Parent project root directory-->
-            <plugin>
-                <groupId>org.codehaus.gmaven</groupId>
-                <artifactId>groovy-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>find-project-root</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>execute</goal>
-                        </goals>
-                        <configuration>
-                            <source>
-                                <![CDATA[
-                                    def rootPom = project;
-                                    while (rootPom.parent.groupId != "org.eclipse.ee4j") {
-                                        rootPom = rootPom.parent;
-                                    }
-                                    project.properties.setProperty("project.root.location", rootPom.basedir.toString());
-                                    log.info("EclipseLink Parent project directory [project.root.location]:  " + project.properties['project.root.location']);
-                                ]]>
-                            </source>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>license.jar</id>
-                        <phase>package</phase>
+                        <id>common-license.zip</id>
+                        <phase>generate-resources</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
@@ -1249,8 +1224,8 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>test-defaults.jar</id>
-                        <phase>package</phase>
+                        <id>test-defaults.zip</id>
+                        <phase>initialize</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
@@ -1259,6 +1234,50 @@
                             <descriptors>
                                 <descriptor>src/main/assembly/test-defaults.xml</descriptor>
                             </descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-legal-resource</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>org.eclipse.persistence.parent</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>common-license.zip</classifier>
+                                    <type>zip</type>
+                                    <outputDirectory>${project.build.licenceResourceDirectory}</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-test-properties</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>org.eclipse.persistence.parent</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>test-defaults.zip</classifier>
+                                    <type>zip</type>
+                                    <outputDirectory>${test.properties.default.directory}</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
                         </configuration>
                     </execution>
                 </executions>
@@ -1315,7 +1334,7 @@
                         <configuration>
                             <resources>
                                 <resource>
-                                    <directory>${project.root.location}</directory>
+                                    <directory>${project.build.licenceResourceDirectory}</directory>
                                     <includes>${common.licenceFiles}</includes>
                                     <targetPath>META-INF</targetPath>
                                 </resource>

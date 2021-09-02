@@ -37,6 +37,14 @@
     <dependencies>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.parent</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+            <classifier>common-license.zip</classifier>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.moxy</artifactId>
         </dependency>
         <dependency>

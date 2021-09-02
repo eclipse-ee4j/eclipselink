@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2020 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,6 +22,23 @@
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
     <dependencySets>
+        <!--License files-->
+        <dependencySet>
+            <useProjectArtifact>false</useProjectArtifact>
+            <scope>provided</scope>
+            <outputDirectory>eclipselink/</outputDirectory>
+            <includes>
+                <include>${project.groupId}:org.eclipse.persistence.parent:zip:common-license.zip</include>
+            </includes>
+            <unpack>true</unpack>
+            <unpackOptions>
+                <includes>
+                    <include>about.html</include>
+                    <include>license.html</include>
+                    <include>readme.html</include>
+                </includes>
+            </unpackOptions>
+        </dependencySet>
         <dependencySet>
             <useProjectAttachments>true</useProjectAttachments>
             <outputDirectory>eclipselink/jlib/</outputDirectory>
@@ -113,16 +130,6 @@
         </dependencySet>
     </dependencySets>
     <fileSets>
-        <!--License files-->
-        <fileSet>
-            <directory>${project.root.location}</directory>
-            <outputDirectory>eclipselink/</outputDirectory>
-            <includes>
-                <include>about.html</include>
-                <include>license.html</include>
-                <include>readme.html</include>
-            </includes>
-        </fileSet>
         <!--Scripts to bin directory-->
         <fileSet>
             <directory>${project.build.scriptSourceDirectory}</directory>

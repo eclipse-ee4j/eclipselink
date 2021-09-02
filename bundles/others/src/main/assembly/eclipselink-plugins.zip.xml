@@ -21,10 +21,24 @@
         <format>zip</format>
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
-    <componentDescriptors>
-        <componentDescriptor>src/main/assembly/common-license.xml</componentDescriptor>
-    </componentDescriptors>
     <dependencySets>
+        <!--License files-->
+        <dependencySet>
+            <useProjectArtifact>false</useProjectArtifact>
+            <scope>provided</scope>
+            <outputDirectory>.</outputDirectory>
+            <includes>
+                <include>${project.groupId}:org.eclipse.persistence.parent:zip:common-license.zip</include>
+            </includes>
+            <unpack>true</unpack>
+            <unpackOptions>
+                <includes>
+                    <include>about.html</include>
+                    <include>license.html</include>
+                    <include>readme.html</include>
+                </includes>
+            </unpackOptions>
+        </dependencySet>
         <dependencySet>
             <outputFileNameMapping>${artifact.artifactId}_${release.version}.${build.qualifier}.${artifact.extension}</outputFileNameMapping>
             <includes>
