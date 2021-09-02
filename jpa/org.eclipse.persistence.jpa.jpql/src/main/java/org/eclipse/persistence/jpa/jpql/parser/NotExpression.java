@@ -20,7 +20,7 @@ import java.util.List;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
- * <div><b>BNF:</b> <code>expression ::= NOT conditional_primary</code><p></p></div>
+ * <div><b>BNF:</b> <code>expression ::= NOT conditional_primary</code></div>
  *
  * @version 2.5
  * @since 2.3
@@ -39,7 +39,7 @@ public final class NotExpression extends AbstractExpression {
     private boolean hasSpaceAfterNot;
 
     /**
-     * The actual <b></b> identifier found in the string representation of the JPQL query.
+     * The actual <b>NOT</b> identifier found in the string representation of the JPQL query.
      */
     private String identifier;
 

@@ -10,6 +10,9 @@
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
 
+/**
+ * MOXy implementation of XJC tool.
+ */
 module org.eclipse.persistence.moxy.xjc {
 
     requires com.sun.tools.xjc;

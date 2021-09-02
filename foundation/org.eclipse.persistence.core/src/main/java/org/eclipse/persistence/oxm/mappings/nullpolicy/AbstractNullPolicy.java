@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -125,6 +125,12 @@ public abstract class AbstractNullPolicy {
      * operation. We are defaulting to ABSENT_NODE
      */
     protected XMLNullRepresentationType marshalNullRepresentation = XMLNullRepresentationType.ABSENT_NODE;
+
+    /**
+     * Default constructor.
+     */
+    protected AbstractNullPolicy() {
+    }
 
     /**
      * Get the enum that determines what XML to write when a null value is encountered.

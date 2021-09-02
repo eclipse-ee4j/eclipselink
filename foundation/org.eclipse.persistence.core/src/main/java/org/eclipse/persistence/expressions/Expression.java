@@ -96,7 +96,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * Base Expression Constructor.  Not generally used by Developers
      */
-    public Expression() {
+    protected Expression() {
         super();
     }
 

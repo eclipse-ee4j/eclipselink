@@ -79,14 +79,14 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
     /**
      * Initialize the state of the query.
      */
-    public DatabaseQueryMechanism() {
+    protected DatabaseQueryMechanism() {
     }
 
     /**
      * Initialize the state of the query
      * @param query - owner of mechanism
      */
-    public DatabaseQueryMechanism(DatabaseQuery query) {
+    protected DatabaseQueryMechanism(DatabaseQuery query) {
         this.query = query;
     }
 

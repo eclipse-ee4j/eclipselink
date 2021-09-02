@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,7 @@ import java.util.ListResourceBundle;
  * English ResourceBundle for TransactionException messages.
  *
  */
-public class TransactionExceptionResource extends ListResourceBundle {
+public final class TransactionExceptionResource extends ListResourceBundle {
     static final Object[][] contents = {
                                            { "23001", "Error looking up external Transaction resource under JNDI name [{0}]" },
                                            { "23002", "Error obtaining status of current externally managed transaction" },
@@ -40,6 +40,13 @@ public class TransactionExceptionResource extends ListResourceBundle {
                                            { "23015", "Cannot enlist multiple datasources in the transaction." },
                                            { "23016", "Exception in Proxy execution." }
     };
+
+    /**
+     * Default constructor.
+     */
+    public TransactionExceptionResource() {
+        // for reflection
+    }
 
     /**
      * Return the lookup table.

@@ -27,7 +27,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <br>
  * or
  * <br>
- * <div><b>BNF:</b> <code>expression ::= child_item { child_item }*</code><p></p></div>
+ * <div><b>BNF:</b> <code>expression ::= child_item { child_item }*</code></div>
  *
  * @version 2.5
  * @since 2.3

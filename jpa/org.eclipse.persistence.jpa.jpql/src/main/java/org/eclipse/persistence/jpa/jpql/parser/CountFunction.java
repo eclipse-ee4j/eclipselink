@@ -22,7 +22,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  *
  * <div><b>BNF:</b> <code>expression ::= COUNT ([DISTINCT] identification_variable |
  *                                                                state_field_path_expression |
- *                                                                single_valued_object_path_expression)</code><p></p></div>
+ *                                                                single_valued_object_path_expression)</code></div>
  *
  * @version 2.5
  * @since 2.3

@@ -41,8 +41,8 @@ public class MainThread implements Runnable {
 
     public MainThread(SeContainer container, EntityManagerFactory emf, EntityManager em) {
         this.container = container;
-        this.emf = emf;
-        this.em = em;
+        MainThread.emf = emf;
+        MainThread.em = em;
         eventProducer = container.select(EventProducer.class).get();
         queryMaster = em.createNamedQuery("MasterEntity.findById", CacheDeadLockDetectionMaster.class);
         queryMaster.setParameter("id", ID);

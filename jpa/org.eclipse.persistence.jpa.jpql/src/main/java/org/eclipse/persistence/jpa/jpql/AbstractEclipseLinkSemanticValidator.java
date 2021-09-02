@@ -501,6 +501,12 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
 
         public int count;
 
+        /**
+         * Default constructor.
+         */
+        protected SubquerySelectItemCalculator() {
+        }
+
         @Override
         public void visit(BadExpression expression) {
             count = 0;
@@ -544,6 +550,12 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
          * <code>true</code> if the {@link Expression} being visited is a {@link TableExpression}.
          */
         protected boolean valid;
+
+        /**
+         * Default constructor.
+         */
+        protected TableExpressionVisitor() {
+        }
 
         @Override
         public void visit(TableExpression expression) {

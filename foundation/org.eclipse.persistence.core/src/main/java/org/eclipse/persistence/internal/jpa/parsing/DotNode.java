@@ -26,8 +26,8 @@ import org.eclipse.persistence.queries.ReportQuery;
  * INTERNAL
  * <p><b>Purpose</b>: This node represents an 'DOT' (i.e. '.') on the input
  * stream. The left and right will depend on the input stream.
- * <p><b>Responsibilities</b>:<ul>
- * </ul>
+ * <p><b>Responsibilities</b>:
+ *
  *    @author Jon Driscoll and Joel Lucuik
  *    @since TopLink 4.0
  */

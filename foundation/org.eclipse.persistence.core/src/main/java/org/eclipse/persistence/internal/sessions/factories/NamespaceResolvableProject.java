@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,14 +45,14 @@ public abstract class NamespaceResolvableProject extends Project {
     protected NamespaceResolverWithPrefixes ns;
     protected QName fieldQname;
 
-    public NamespaceResolvableProject() {
+    protected NamespaceResolvableProject() {
         super();
         fieldQname = new QName(getSecondaryNamespace(), "field");
         buildNamespaceResolver();
         buildDescriptors();
         setNamespaceResolverOnDescriptors();
     }
-    public NamespaceResolvableProject(NamespaceResolverWithPrefixes ns) {
+    protected NamespaceResolvableProject(NamespaceResolverWithPrefixes ns) {
         super();
         fieldQname = new QName(getSecondaryNamespace(), "field");
         this.ns = ns;

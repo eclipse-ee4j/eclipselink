@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,14 +55,10 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
      *
      * It is used in getNodeValueForValue method. If we knew only class relationship to nodeValue,
      * there is no way how to say that this nodeValue is related to the first or second field (or any other field with given java class).
-     *
-     * @see AdapterWithElementsTestCases
-     *
-     *
-     * @author Martin Vojtek (martin.vojtek@oracle.com)
-     *
      */
     private static class FieldNodeValue {
+        //author Martin Vojtek (martin.vojtek@oracle.com)
+        //see AdapterWithElementsTestCases
         private final Field field;
         private final NodeValue nodeValue;
         public FieldNodeValue(Field field, NodeValue nodeValue) {

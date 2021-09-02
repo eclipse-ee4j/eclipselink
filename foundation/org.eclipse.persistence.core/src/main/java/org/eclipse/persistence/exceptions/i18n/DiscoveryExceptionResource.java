@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,13 +22,20 @@ import java.util.ListResourceBundle;
  *
  * @author Steven Vo
  */
-public class DiscoveryExceptionResource extends ListResourceBundle {
+public final class DiscoveryExceptionResource extends ListResourceBundle {
     static final Object[][] contents = {
                                            { "22001", "Could not join multicast group" },
                                            { "22002", "Could not send service announcment" },
                                            { "22003", "Failed doing lookup of local host" },
                                            { "22004", "Failed trying to receive a service announcement from a remote service" }
     };
+
+    /**
+     * Default constructor.
+     */
+    public DiscoveryExceptionResource() {
+        // for reflection
+    }
 
     /**
      * Return the lookup table.

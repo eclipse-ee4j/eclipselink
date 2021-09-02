@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -39,6 +39,7 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -190,7 +191,7 @@ public class TestOracleLOBLocatorFeature {
                 em.getTransaction().commit();
             } catch (jakarta.persistence.RollbackException re) {
                 // Expected
-                Assert.assertThat(re, getExceptionChainMatcher(java.sql.SQLIntegrityConstraintViolationException.class));
+                MatcherAssert.assertThat(re, getExceptionChainMatcher(java.sql.SQLIntegrityConstraintViolationException.class));
             }
 
             

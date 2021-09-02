@@ -199,7 +199,7 @@ public class CalendarDaylightSavingsTest extends TestCase {
         ExpressionBuilder builder = query.getExpressionBuilder();
         Expression expression = builder.get("testId").equal(getTestId());
         query.setSelectionCriteria(expression);
-        query.setCacheUsage(query.DoNotCheckCache);
+        query.setCacheUsage(ObjectLevelReadQuery.DoNotCheckCache);
 
         // cache the result for later verification
         result = (CalendarDaylightSavingsTest)getSession().executeQuery(query);

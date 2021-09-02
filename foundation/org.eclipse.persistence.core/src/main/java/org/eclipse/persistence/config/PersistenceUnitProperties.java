@@ -1561,7 +1561,7 @@ public class PersistenceUnitProperties {
 
     /**
      * The "<code>eclipselink.logging.level</code>" property allows the default logging levels to be specified.
-     * <p>
+     *
      * <table>
      * <caption>Logging Levels:</caption>
      * <tr><td>{@link SessionLog#ALL_LABEL}</td><td>&nbsp;</td><td>ALL</td></tr>
@@ -1589,7 +1589,7 @@ public class PersistenceUnitProperties {
     /**
      * Property prefix "<code>eclipselink.logging.level.</code>" allows the category specific logging levels
      * to be specified.
-     * <p>
+     *
      * <table>
      * <caption>Logger categories:</caption>
      * <tr><td>{@link SessionLog#CACHE}</td><td>&nbsp;</td><td>cache</td></tr>

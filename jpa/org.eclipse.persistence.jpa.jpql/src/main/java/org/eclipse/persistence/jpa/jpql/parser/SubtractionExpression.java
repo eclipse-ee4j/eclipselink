@@ -19,7 +19,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * One of the four binary operators. A subtraction is the inverse of addition, it is a mathematical
  * operation representing the removal of the second operand from the first operand.
  *
- * <div><b>BNF:</b> <code>arithmetic_expression ::= arithmetic_expression - arithmetic_term</code><p></p></div>
+ * <div><b>BNF:</b> <code>arithmetic_expression ::= arithmetic_expression - arithmetic_term</code></div>
  *
  * @version 2.4
  * @since 2.3

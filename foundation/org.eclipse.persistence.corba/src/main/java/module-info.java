@@ -12,9 +12,9 @@
 
 module org.eclipse.persistence.corba {
 
-    requires java.rmi;
+    requires transitive java.rmi;
 
-    requires org.eclipse.persistence.core;
+    requires transitive org.eclipse.persistence.core;
 
     exports org.eclipse.persistence.sessions.coordination.corba;
     exports org.eclipse.persistence.sessions.coordination.corba.sun;

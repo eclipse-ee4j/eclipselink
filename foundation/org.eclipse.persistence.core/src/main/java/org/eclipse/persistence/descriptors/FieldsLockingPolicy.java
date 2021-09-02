@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,7 +47,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * A field locking policy is based on locking on a subset of fields by comparing with their previous values to detect field-level collisions.
      * Note: the unit of work must be used for all updates when using field locking.
      */
-    public FieldsLockingPolicy() {
+    protected FieldsLockingPolicy() {
         super();
     }
 

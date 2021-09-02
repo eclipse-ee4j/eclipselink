@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -22,7 +22,7 @@ import java.util.ListResourceBundle;
 /**
  * INTERNAL:
  */
-public class XMLConversionExceptionResource extends ListResourceBundle {
+public final class XMLConversionExceptionResource extends ListResourceBundle {
     static final Object[][] contents = {
                                            { "25501", "Cannot create URL for file  [{0}] ." },
                                            { "25502", "Incorrect gDay format: [{0}] (expected [----DD])" },
@@ -33,6 +33,13 @@ public class XMLConversionExceptionResource extends ListResourceBundle {
                                            { "25507", "Incorrect Timestamp dateTime format: [{0}] (expected [YYYY-MM-DD''T''HH:MM:SS.NNNNNNNNN])" },
                                            { "25508", "Incorrect Timestamp time format: [{0}] (expected [HH:MM:SS.NNNNNNNNN])" },
     };
+
+    /**
+     * Default constructor.
+     */
+    public XMLConversionExceptionResource() {
+        // for reflection
+    }
 
     /**
      * Return the lookup table.

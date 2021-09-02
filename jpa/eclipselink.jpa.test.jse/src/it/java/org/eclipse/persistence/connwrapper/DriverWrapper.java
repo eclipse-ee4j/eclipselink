@@ -191,7 +191,7 @@ public class DriverWrapper implements Driver {
     static Driver getDriver() {
         if(driver == null) {
             try {
-                driver = (Driver)Class.forName(driverName, true, Thread.currentThread().getContextClassLoader()).newInstance();
+                driver = (Driver)Class.forName(driverName, true, Thread.currentThread().getContextClassLoader()).getConstructor().newInstance();
             } catch (Exception ex) {
                 throw new RuntimeException("DriverWrapper: failed to instantiate " + driverName, ex);
             }

@@ -240,8 +240,8 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
      * @param jpqlQuery The JPQL query to parse and to test the parsed tree representation
      * @param expressionTester The tester used to verify the parsed tree is correctly representing the
      * JPQL query
-     * @param jpqlQueryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.parser.
-     * JPQLQueryBNF JPQLQueryBNF}
+     * @param jpqlQueryBNFId The unique identifier of the
+     * {@link org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF JPQLQueryBNF}
      */
     protected void testInvalidQuery(String jpqlQuery,
                                     ExpressionTester expressionTester,
@@ -259,8 +259,8 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
      * @param jpqlQuery The JPQL query to parse and to test the parsed tree representation
      * @param expressionTester The tester used to verify the parsed tree is correctly representing the
      * JPQL query
-     * @param jpqlQueryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.parser.
-     * JPQLQueryBNF JPQLQueryBNF}
+     * @param jpqlQueryBNFId The unique identifier of the
+     * {@link org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF JPQLQueryBNF}
      * @param formatter This formatter is used to personalized the formatting of the JPQL query
      * before it is used to test the generated string
      */
@@ -303,8 +303,6 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
      * @param expressionTester The tester used to verify the parsed tree is correctly representing the
      * JPQL query
      * @param jpqlGrammar The {@link JPQLGrammar} used to determine how to parse the JPQL query
-     * @param formatter This formatter is used to personalized the formatting of the JPQL query
-     * before it is used to test the generated string
      */
     protected void testQuery(String jpqlQuery,
                              ExpressionTester expressionTester,
@@ -351,8 +349,8 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
      * @param jpqlQuery The JPQL query to parse and to test the parsed tree representation
      * @param expressionTester The tester used to verify the parsed tree is correctly representing the
      * JPQL query
-     * @param jpqlQueryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.parser.
-     * JPQLQueryBNF JPQLQueryBNF}
+     * @param jpqlQueryBNFId The unique identifier of the
+     * {@link org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF JPQLQueryBNF}
      * @param formatter This formatter is used to personalized the formatting of the JPQL query
      * before it is used to test the generated string
      */
@@ -374,8 +372,8 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
      * @param expressionTester The tester used to verify the parsed tree is correctly representing the
      * JPQL query
      * @param jpqlGrammar The {@link JPQLGrammar} used to determine how to parse the JPQL query
-     * @param jpqlQueryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.parser.
-     * JPQLQueryBNF JPQLQueryBNF}
+     * @param jpqlQueryBNFId The unique identifier of the
+     * {@link org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF JPQLQueryBNF}
      * @param formatter This formatter is used to personalized the formatting of the JPQL query
      * before it is used to test the generated string
      * @param tolerant Determines if the parsing system should be tolerant, meaning if it should try
@@ -474,8 +472,8 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
      * @param jpqlQuery The JPQL query to parse and to test the parsed tree representation
      * @param expressionTester The tester used to verify the parsed tree is correctly representing the
      * JPQL query
-     * @param jpqlQueryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.parser.
-     * JPQLQueryBNF JPQLQueryBNF}
+     * @param jpqlQueryBNFId The unique identifier of the
+     * {@link org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF JPQLQueryBNF}
      * @param formatter This formatter is used to personalized the formatting of the JPQL query
      * before it is used to test the generated string
      * @param tolerant Determines if the parsing system should be tolerant, meaning if it should try
@@ -532,8 +530,8 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
      * @param jpqlQuery The JPQL query to parse and to test the parsed tree representation
      * @param expressionTester The tester used to verify the parsed tree is correctly representing the
      * JPQL query
-     * @param jpqlQueryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.parser.
-     * JPQLQueryBNF JPQLQueryBNF}
+     * @param jpqlQueryBNFId The unique identifier of the
+     * {@link org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF JPQLQueryBNF}
      */
     protected void testValidQuery(String jpqlQuery,
                                   ExpressionTester expressionTester,
@@ -551,8 +549,8 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
      * @param jpqlQuery The JPQL query to parse and to test the parsed tree representation
      * @param expressionTester The tester used to verify the parsed tree is correctly representing the
      * JPQL query
-     * @param jpqlQueryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.parser.
-     * JPQLQueryBNF JPQLQueryBNF}
+     * @param jpqlQueryBNFId The unique identifier of the
+     * {@link org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF JPQLQueryBNF}
      * @param formatter This formatter is used to personalized the formatting of the JPQL query
      * before it is used to test the generated string
      */

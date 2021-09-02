@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -23,7 +23,7 @@ import java.util.ListResourceBundle;
  * INTERNAL:
  * <b>Purpose:</b><p>English ResourceBundle for SDOException.</p>
  */
-public class SDOExceptionResource extends ListResourceBundle {
+public final class SDOExceptionResource extends ListResourceBundle {
     static final Object[][] contents = {
                                            { "45000", "Could not find ID element of type ID on type with uri [{0}] and name [{1}] ." },
                                            { "45001", "An error occurred processing the import with schemaLocation [{0}] and namespace [{1}] ." },
@@ -86,6 +86,13 @@ public class SDOExceptionResource extends ListResourceBundle {
                                            { "45212", "The property could not be defined with the [{0}] name. The name is not a valid XML name."},
 
     };
+
+    /**
+     * Default constructor.
+     */
+    public SDOExceptionResource() {
+        // for reflection
+    }
 
     /**
      * Return the lookup table.

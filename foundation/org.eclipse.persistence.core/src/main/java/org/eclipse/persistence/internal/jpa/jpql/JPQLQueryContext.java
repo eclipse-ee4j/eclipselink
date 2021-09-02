@@ -114,7 +114,7 @@ final class JPQLQueryContext {
 
     /**
      * This visitor is used to retrieve a variable name from various type of
-     * {@link org.eclipse.persistence.jpa.query.parser.Expression JPQL Expression}.
+     * {@link org.eclipse.persistence.jpa.jpql.parser.Expression JPQL Expression}.
      */
     private EclipseLinkLiteralVisitor literalVisitor;
 
@@ -141,8 +141,8 @@ final class JPQLQueryContext {
     private AbstractSession session;
 
     /**
-     * This resolver is used to calculate the type of any {@link org.eclipse.persistence.jpa.jpql.
-     * parser.Expression JPQL Expression}.
+     * This resolver is used to calculate the type of any
+     * {@link org.eclipse.persistence.jpa.jpql.parser.Expression JPQL Expression}.
      */
     private TypeResolver typeResolver;
 
@@ -157,8 +157,8 @@ final class JPQLQueryContext {
     private Set<String> usedIdentificationVariables;
 
     /**
-     * An empty array used when the type of an {@link org.eclipse.persistence.jpa.jpql.parser.
-     * Expression JPQL Expression} is not required.
+     * An empty array used when the type of an
+     * {@link org.eclipse.persistence.jpa.jpql.parser.Expression JPQL Expression} is not required.
      */
     private static final Class<?>[] EMPTY_TYPE = new Class<?>[1];
 
@@ -207,8 +207,8 @@ final class JPQLQueryContext {
     /**
      * Caches the given input parameter name with its calculated type.
      *
-     * @param parameterName The name of the input parameter
-     * @param type The calculated type based on its surrounding, which is never <code>null</code>
+     * @param inputParameter The input parameter
+     * @param queryExpression The {@link Expression} that can be reused rather than being recreated
      */
     void addInputParameter(InputParameter inputParameter, Expression queryExpression) {
 

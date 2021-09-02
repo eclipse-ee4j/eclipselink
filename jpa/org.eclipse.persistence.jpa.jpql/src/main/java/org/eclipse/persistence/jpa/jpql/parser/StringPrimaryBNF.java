@@ -17,14 +17,14 @@ package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
  * The query BNF for a string primary expression.
- * <p></p>
+ * <br>
  * JPA 1.0:
  * <div><b>BNF:</b> <code>string_primary ::= state_field_path_expression |
  *                                                  string_literal |
  *                                                  input_parameter |
  *                                                  functions_returning_strings |
  *                                                  aggregate_expression</code></div>
- * <p></p>
+ * <br>
  * JPA 2.0:
  * <div><b>BNF:</b> <code>string_primary ::= state_field_path_expression |
  *                                                  string_literal |
@@ -32,7 +32,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                  functions_returning_strings |
  *                                                  aggregate_expression |
  *                                                  case_expression</code></div>
- * <p></p>
+ * <br>
  * JPA 2.1:
  * string_primary becomes string_expression
  * <div><b>BNF:</b> <code>string_primary ::= state_field_path_expression |
@@ -43,7 +43,6 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                  case_expression |
  *                                                  function_invocation |
  *                                                  (subquery)</code></div>
- * <p></p>
  *
  * @version 2.5
  * @since 2.3

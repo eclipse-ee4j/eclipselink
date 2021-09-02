@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -25,7 +25,7 @@ package org.eclipse.persistence.exceptions.i18n;
  * Creation date: (12/6/00 9:47:38 AM)
  * @author Rick Barkhouse
  */
-public class ExceptionResource extends java.util.ListResourceBundle {
+public final class ExceptionResource extends java.util.ListResourceBundle {
     static final Object[][] contents = {
                                            { "NoExceptionTranslationForThisLocale", "(There is no translation for this exception.) {0}" },
                                            { "ExceptionHeader", "Exception [EclipseLink-" },
@@ -44,6 +44,13 @@ public class ExceptionResource extends java.util.ListResourceBundle {
                                            { "RuntimeExceptionsHeader", "Runtime Exceptions: " },
                                            { "ErrorFormattingMessage", "Error trying to format exception message: {0}  The arguments are: {1}" }
     };
+
+    /**
+     * Default constructor.
+     */
+    public ExceptionResource() {
+        // for reflection
+    }
 
     /**
      * Return the lookup table.

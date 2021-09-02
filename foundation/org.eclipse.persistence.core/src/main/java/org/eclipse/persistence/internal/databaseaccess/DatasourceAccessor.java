@@ -155,7 +155,7 @@ public abstract class DatasourceAccessor implements Accessor {
     /**
      *    Default Constructor.
      */
-    public DatasourceAccessor() {
+    protected DatasourceAccessor() {
         this.isInTransaction = false;
         this.callCount = 0;
         this.isConnected = false;

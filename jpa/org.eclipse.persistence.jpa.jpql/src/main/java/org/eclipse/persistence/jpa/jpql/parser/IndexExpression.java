@@ -20,7 +20,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * in an ordered list. The <b>INDEX</b> function can only be applied to identification variables
  * denoting types for which an order column has been specified.
  *
- * <div><b>BNF:</b> <code>expression ::= INDEX(identification_variable)</code><p></p></div>
+ * <div><b>BNF:</b> <code>expression ::= INDEX(identification_variable)</code></div>
  *
  * @version 2.5
  * @since 2.3

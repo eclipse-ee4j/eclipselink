@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -87,7 +87,7 @@ public abstract class DatasourceCall implements Call {
     protected static final int RETURN_CURSOR = 4;
     protected static final int EXECUTE_UPDATE = 5;
 
-    public DatasourceCall() {
+    protected DatasourceCall() {
         this.isPrepared = false;
         this.shouldProcessTokenInQuotes = true;
     }

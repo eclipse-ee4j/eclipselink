@@ -32,6 +32,13 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
      */
     public static final String PROPERTIES_FILE_NAME = JPQLQueryProblemResourceBundle.class.getPackage().getName() + ".jpa_jpql_validation";
 
+    /**
+     * Default constructor.
+     */
+    public JPQLQueryProblemResourceBundle() {
+        // for reflection
+    }
+
     @Override
     protected Object[][] getContents() {
 

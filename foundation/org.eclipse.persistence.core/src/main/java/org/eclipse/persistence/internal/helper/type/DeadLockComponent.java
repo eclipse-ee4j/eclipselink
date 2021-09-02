@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.helper.type;
 import org.eclipse.persistence.internal.helper.ConcurrencyManager;
 import org.eclipse.persistence.internal.helper.ConcurrencyUtil;
 
+import java.util.List;
 import java.util.Map;
 
 public class DeadLockComponent {
@@ -24,7 +25,7 @@ public class DeadLockComponent {
     // Mutually exclusive boolean flags
     /**
      * One of the code spots a thread can get stuck is when it is waiting for
-     * {@link org.eclipse.persistence.internal.helper.ConcurrencyManager#isBuildObjectOnThreadComplete(Thread, Map)} to
+     * {@link org.eclipse.persistence.internal.helper.ConcurrencyManager#isBuildObjectOnThreadComplete(Thread, Map, List, boolean)} to
      * return true in the {@code CacheKey.releaseDeferredLock}
      *
      * <P>
@@ -36,7 +37,7 @@ public class DeadLockComponent {
      *
      * <P>
      * we will need to re-write the
-     * {@link org.eclipse.persistence.internal.helper.ConcurrencyManager#isBuildObjectOnThreadComplete(Thread, Map)}
+     * {@link org.eclipse.persistence.internal.helper.ConcurrencyManager#isBuildObjectOnThreadComplete(Thread, Map, List, boolean)}
      * to be able to know what thread and what cache key is being thorny point on object building.
      *
      */

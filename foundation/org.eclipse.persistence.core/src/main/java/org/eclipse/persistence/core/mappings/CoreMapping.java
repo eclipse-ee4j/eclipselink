@@ -33,6 +33,12 @@ public abstract class CoreMapping<
     FIELD extends CoreField> {
 
     /**
+     * Default constructor.
+     */
+    protected CoreMapping() {
+    }
+
+    /**
      * ADVANCED: Return the attributeAccessor. The attribute accessor is
      * responsible for setting and retrieving the attribute value from the
      * object for this mapping.

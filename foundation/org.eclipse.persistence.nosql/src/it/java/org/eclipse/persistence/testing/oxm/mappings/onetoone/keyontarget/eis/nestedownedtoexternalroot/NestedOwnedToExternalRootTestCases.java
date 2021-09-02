@@ -16,6 +16,8 @@ package org.eclipse.persistence.testing.oxm.mappings.onetoone.keyontarget.eis.ne
 
 import java.util.ArrayList;
 import java.util.Vector;
+
+import junit.framework.TestCase;
 import org.eclipse.persistence.eis.interactions.XQueryInteraction;
 import org.eclipse.persistence.internal.eis.adapters.xmlfile.XMLFileInteractionSpec;
 import org.eclipse.persistence.testing.oxm.mappings.EISMappingTestCases;
@@ -134,11 +136,11 @@ public class NestedOwnedToExternalRootTestCases extends EISMappingTestCases {
         log("****Expected:");
         log(getControlObject().toString());
         log("***Actual:");
-        this.assertTrue(objects.size() == 4);
+        assertTrue(objects.size() == 4);
         log(objects.toString());
-        this.assertTrue(((java.util.ArrayList)getControlObject()).size() == objects.size());
+        assertTrue(((java.util.ArrayList)getControlObject()).size() == objects.size());
         ArrayList control = (ArrayList)getControlObject();
-        this.assertEquals(control.get(0), objects.elementAt(0));
+        assertEquals(control.get(0), objects.elementAt(0));
         Company company = (Company)objects.get(0);
                 Department dept = (Department)company.getDepartments().get(0);
         Vector emps = dept.getEmployees();

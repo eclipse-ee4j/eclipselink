@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,7 @@ import java.util.ListResourceBundle;
 /**
  * INTERNAL:
  */
-public class XMLPlatformExceptionResource extends ListResourceBundle {
+public final class XMLPlatformExceptionResource extends ListResourceBundle {
     static final Object[][] contents = {
                                            { "27001", "The XML Platform class was not found: {0}" },
                                            { "27002", "The XML Platform could not be instantiated: {0}" },
@@ -33,6 +33,13 @@ public class XMLPlatformExceptionResource extends ListResourceBundle {
                                            { "27201", "An error occurred while transforming the document." },
                                            { "27202", "Unknown type encountered: {0}" },
     };
+
+    /**
+     * Default constructor.
+     */
+    public XMLPlatformExceptionResource() {
+        // for reflection
+    }
 
     /**
      * Return the lookup table.

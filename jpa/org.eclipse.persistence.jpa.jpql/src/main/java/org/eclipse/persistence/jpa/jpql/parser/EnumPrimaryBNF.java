@@ -21,13 +21,13 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * JPA 1.0:
  * <div><b>BNF:</b> <code>enum_primary ::= state_field_path_expression |
  *                                                enum_literal |
- *                                                input_parameter</code><p></p></div>
+ *                                                input_parameter</code></div>
  *
  * JPA 2.0:
  * <div><b>BNF:</b> <code>enum_primary ::= state_field_path_expression |
  *                                                enum_literal |
  *                                                input_parameter |
- *                                                case_expression</code><p></p></div>
+ *                                                case_expression</code></div>
  *
  * @version 2.4
  * @since 2.3

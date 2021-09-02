@@ -2154,7 +2154,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * chained and each session can have its own Cache/IdentityMap.  Entities can be stored
      * at different levels based on Cache Isolation.  This method will return the correct Session
      * for a particular Entity class based on the Isolation Level and the attributes provided.
-     * <p>
+     *
      * @param canReturnSelf true when method calls itself.  If the path
      * starting at <code>this</code> is acceptable.  Sometimes true if want to
      * move to the first valid session, i.e. executing on ClientSession when really

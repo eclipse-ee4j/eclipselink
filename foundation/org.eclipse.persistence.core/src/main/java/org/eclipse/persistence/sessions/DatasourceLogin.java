@@ -109,7 +109,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * PUBLIC:
      * Create a new login.
      */
-    public DatasourceLogin() {
+    protected DatasourceLogin() {
         this(new DatasourcePlatform());
     }
 
@@ -117,7 +117,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * ADVANCED:
      * Create a new login for the given platform.
      */
-    public DatasourceLogin(Platform databasePlatform) {
+    protected DatasourceLogin(Platform databasePlatform) {
         this.platform = databasePlatform;
 
         this.dontUseExternalConnectionPooling();

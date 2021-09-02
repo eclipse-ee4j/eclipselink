@@ -2306,7 +2306,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
     }
 
     /**
-     * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link JPQLExpression})
+     * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link org.eclipse.persistence.jpa.jpql.parser.JPQLExpression})
      * with the given tester, which is an equivalent representation of the parsed tree.
      * <p>
      * The parsing system will have the tolerance turned on.
@@ -2320,7 +2320,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
     }
 
     /**
-     * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link JPQLExpression})
+     * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link org.eclipse.persistence.jpa.jpql.parser.JPQLExpression})
      * with the given tester, which is an equivalent representation of the parsed tree.
      * <p>
      * This method test both parsing modes: tolerant and non-tolerant. When the tolerant mode is
@@ -2338,7 +2338,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
     }
 
     /**
-     * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link JPQLExpression})
+     * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link org.eclipse.persistence.jpa.jpql.parser.JPQLExpression})
      * with the given tester, which is an equivalent representation of the parsed tree.
      *
      * @param jpqlQuery The JPQL query to parse and to test the parsed tree representation
@@ -2364,7 +2364,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
     }
 
     /**
-     * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link JPQLExpression})
+     * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link org.eclipse.persistence.jpa.jpql.parser.JPQLExpression})
      * with the given tester, which is an equivalent representation of the parsed tree.
      * <p>
      * The parsing system will have the tolerance turned off.
@@ -2794,7 +2794,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
     }
 
     /**
-     * The abstract definition of an {@link ExpressionStateObjectTester}.
+     * The abstract definition of an {@link StateObjectTester}.
      */
     protected static abstract class AbstractStateObjectTester implements StateObjectTester {
 
@@ -3699,7 +3699,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
     }
 
     /**
-     * StateObjectTester for {@link DeleteClause}.
+     * StateObjectTester for {@link org.eclipse.persistence.jpa.jpql.parser.DeleteClause}.
      */
     protected static final class DeleteClauseStateObjectTester extends AbstractStateObjectTester {
 
@@ -4978,7 +4978,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
         EmptyCollectionComparisonExpressionStateObjectTester isNotEmpty();
 
         /**
-         * Determines whether this tester represents the {@link NullExpression}.
+         * Determines whether this tester represents the {@link org.eclipse.persistence.jpa.jpql.parser.NullExpression}.
          *
          * @return <code>true</code> if this tester represents a <code>null</code> object; false
          * otherwise

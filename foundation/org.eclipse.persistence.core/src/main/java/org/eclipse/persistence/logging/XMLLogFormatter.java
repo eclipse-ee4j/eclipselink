@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,13 @@ import java.util.logging.Level;
  */
 @SuppressWarnings("deprecation")
 public class XMLLogFormatter extends XMLFormatter {
+    /**
+     * Default constructor.
+     */
+    public XMLLogFormatter() {
+        super();
+    }
+
     // Append a two digit number.
     private void a2(StringBuffer sb, int x) {
         if (x < 10) {

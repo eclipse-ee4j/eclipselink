@@ -24,7 +24,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * This expression tests whether or not the collection designated by the collection-valued path
  * expression is empty (i.e, has no elements).
  *
- * <div><b>BNF:</b> <code>empty_collection_comparison_expression ::= collection_valued_path_expression IS [NOT] EMPTY</code><p></p></div>
+ * <div><b>BNF:</b> <code>empty_collection_comparison_expression ::= collection_valued_path_expression IS [NOT] EMPTY</code></div>
  *
  * @version 2.5
  * @since 2.3

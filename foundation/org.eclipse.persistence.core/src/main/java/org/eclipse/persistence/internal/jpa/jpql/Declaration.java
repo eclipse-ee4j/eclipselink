@@ -42,12 +42,12 @@ abstract class Declaration implements JPQLQueryDeclaration {
     Expression baseExpression;
 
     /**
-     * The declaration expression, which is either an {@link org.eclipse.persistence.jpa.jpql.parser.
-     * IdentificationVariableDeclaration IdentificationVariableDeclaration} or a {@link
-     * org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration CollectionMemberDeclaration}
-     * when part of a <b>FROM</b> clause, otherwise it's either the {@link org.eclipse.persistence.
-     * jpa.jpql.parser.DeleteClause DeleteClause} or the {@link org.eclipse.persistence.jpa.jpql.
-     * parser.UpdateClause UpdateClause}.
+     * The declaration expression, which is either an
+     * {@link org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration IdentificationVariableDeclaration}
+     * or a {@link org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration CollectionMemberDeclaration}
+     * when part of a <b>FROM</b> clause, otherwise it's either the
+     * {@link org.eclipse.persistence.jpa.jpql.parser.DeleteClause DeleteClause} or the
+     * {@link org.eclipse.persistence.jpa.jpql.parser.UpdateClause UpdateClause}.
      */
     Expression declarationExpression;
 
@@ -180,7 +180,7 @@ abstract class Declaration implements JPQLQueryDeclaration {
 
     /**
      * Resolves this {@link Declaration} and returns the associated {@link ClassDescriptor}. For a
-     * {@link RangeVariableDeclaration}, this will return the actual descriptor for the entity. For
+     * {@link org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration}, this will return the actual descriptor for the entity. For
      * a mapping, this will return the reference descriptor.
      *
      * @return The descriptor associated with this declaration
@@ -189,7 +189,7 @@ abstract class Declaration implements JPQLQueryDeclaration {
 
     /**
      * Resolves this {@link Declaration} and returns the associated {@link DatabaseMapping} if this
-     * represents a path expression. In the case of a {@link RangeVariableDeclaration}, this will
+     * represents a path expression. In the case of a {@link org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration}, this will
      * return <code>null</code>.
      *
      * @return The mapping associated with this declaration

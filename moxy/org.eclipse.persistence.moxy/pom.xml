@@ -32,6 +32,7 @@
 
     <properties>
         <comp.xlint>-Xlint:all,-rawtypes,-unchecked,-serial,-exports</comp.xlint>
+        <comp.xdoclint>-Xdoclint:-missing</comp.xdoclint>
 
         <test-skip-moxy-jaxb-srg>${skipTests}</test-skip-moxy-jaxb-srg>
         <test-skip-moxy-jaxb>true</test-skip-moxy-jaxb>

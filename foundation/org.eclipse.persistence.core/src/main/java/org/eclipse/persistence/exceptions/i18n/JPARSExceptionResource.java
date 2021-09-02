@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ import java.util.ListResourceBundle;
  * English resource bundle for JPARSException
  *
  */
-public class JPARSExceptionResource extends ListResourceBundle {
+public final class JPARSExceptionResource extends ListResourceBundle {
     static final Object[][] contents = {
             { String.valueOf(JPARSErrorCodes.ENTITY_NOT_FOUND), "An entity type {0} with id {1} could not be found in persistence unit {2}." },
             { String.valueOf(JPARSErrorCodes.OBJECT_REFERRED_BY_LINK_DOES_NOT_EXIST), "Entity referred by link does not exist, entity type {0}, id {1}." },
@@ -45,6 +45,13 @@ public class JPARSExceptionResource extends ListResourceBundle {
             { String.valueOf(JPARSErrorCodes.FIELDS_FILTERING_BOTH_PARAMETERS_PRESENT), "Both \"fields\" and \"excludeFields\" cannot be used in the same request." },
             { String.valueOf(JPARSErrorCodes.INVALID_PARAMETER), "Invalid parameter value (\"{0}\" = \"{1}\")." },
     };
+
+    /**
+     * Default constructor.
+     */
+    public JPARSExceptionResource() {
+        // for reflection
+    }
 
     @Override
     protected Object[][] getContents() {

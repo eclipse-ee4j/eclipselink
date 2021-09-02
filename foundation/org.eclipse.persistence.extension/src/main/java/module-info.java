@@ -10,6 +10,9 @@
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
 
+/**
+ * Integrations of 3rd party libraries into EclipseLink.
+ */
 module org.eclipse.persistence.extension {
     requires transitive org.eclipse.persistence.core;
 

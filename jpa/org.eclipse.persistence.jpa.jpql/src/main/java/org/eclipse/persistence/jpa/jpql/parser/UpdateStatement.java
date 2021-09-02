@@ -24,7 +24,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * or values that satisfy the expression. The <b>UPDATE</b> clause restricts the result of a select
  * statement or the scope of an update operation.
  *
- * <div><b>BNF:</b> <code>update_statement ::= update_clause [where_clause]</code><p></p></div>
+ * <div><b>BNF:</b> <code>update_statement ::= update_clause [where_clause]</code></div>
  *
  * @see JPQLExpression
  * @see UpdateClause

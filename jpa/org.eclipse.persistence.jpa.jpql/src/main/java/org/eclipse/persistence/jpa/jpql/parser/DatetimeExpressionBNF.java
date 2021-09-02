@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for a date/time expression.
  *
- * <div><b>BNF:</b> <code>datetime_expression ::= datetime_primary | (subquery)</code><p></p></div>
+ * <div><b>BNF:</b> <code>datetime_expression ::= datetime_primary | (subquery)</code></div>
  *
  * @version 2.4
  * @since 2.3

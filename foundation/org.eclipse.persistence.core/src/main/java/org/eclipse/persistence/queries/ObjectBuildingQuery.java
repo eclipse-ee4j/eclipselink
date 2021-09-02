@@ -107,7 +107,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * INTERNAL:
      * Initialize the state of the query
      */
-    public ObjectBuildingQuery() {
+    protected ObjectBuildingQuery() {
         this.shouldRefreshIdentityMapResult = false;
         this.isCacheCheckComplete = false;
     }

@@ -12,10 +12,10 @@
 
 module org.eclipse.persistence.core {
 
-    requires java.desktop;
-    requires java.management;
-    requires java.naming;
-    requires java.rmi;
+    requires transitive java.desktop;
+    requires transitive java.management; //server platforms
+    requires transitive java.naming;
+    requires transitive java.rmi;
     requires transitive java.sql;
     requires transitive java.xml;
 

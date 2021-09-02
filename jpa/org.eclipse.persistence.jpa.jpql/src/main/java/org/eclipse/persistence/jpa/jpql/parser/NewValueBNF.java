@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for a new value expression.
  *
- * <div><b>BNF:</b> <code>new_value ::= scalar_expression | simple_entity_expression | NULL</code><p></p></div>
+ * <div><b>BNF:</b> <code>new_value ::= scalar_expression | simple_entity_expression | NULL</code></div>
  *
  * @version 2.5
  * @since 2.3

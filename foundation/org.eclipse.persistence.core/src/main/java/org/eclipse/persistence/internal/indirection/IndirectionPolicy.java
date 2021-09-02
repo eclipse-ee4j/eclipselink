@@ -71,7 +71,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * INTERNAL:
      * Construct a new indirection policy.
      */
-    public IndirectionPolicy() {
+    protected IndirectionPolicy() {
         super();
     }
 

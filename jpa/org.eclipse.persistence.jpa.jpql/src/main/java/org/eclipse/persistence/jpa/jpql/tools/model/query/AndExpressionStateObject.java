@@ -26,14 +26,14 @@ import org.eclipse.persistence.jpa.jpql.parser.ConditionalTermBNF;
  * of an <code><b>AND</b></code> operator must be one of: <code><b>TRUE</b></code>,
  * <code><b>FALSE</b></code>, and <code><b>NULL</b></code>. The <code><b>AND</b></code> operator has
  * a higher precedence than the <code><b>OR</b></code> operator.
- * <p>
+ * <br>
  * <code><b>NULL</b></code> represents unknown. Therefore, if one operand is <code><b>NULL</b></code>
  * and the other operand is <code><b>FALSE</b></code> the result is <code><b>FALSE</b></code>,
  * because one <code><b>FALSE</b></code> operand is sufficient for a <code><b>FALSE</b></code>
  * result. If one operand is <code><b>NULL</b></code> and the other operand is either
  * <code><b>TRUE</b></code> or <code><b>NULL</b></code>, the result is <code><b>NULL</b></code>
  * (unknown).
- * <p>
+ * <br>
  *
  * <table border="1" style="border:1px outset darkgrey;">
  * <caption>The following table shows how the <code><b>AND</b></code> operator is evaluated based on its two operands:</caption>

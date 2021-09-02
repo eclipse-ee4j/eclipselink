@@ -27,7 +27,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  *
  * <div><b>BNF:</b> <code>between_expression ::= arithmetic_expression [NOT] BETWEEN arithmetic_expression AND arithmetic_expression |<br>
  *                                                      string_expression [NOT] BETWEEN string_expression AND string_expression |<br>
- *                                                      datetime_expression [NOT] BETWEEN datetime_expression AND datetime_expression</code></div><p>
+ *                                                      datetime_expression [NOT] BETWEEN datetime_expression AND datetime_expression</code></div>
  *
  * @see BetweenExpression
  *

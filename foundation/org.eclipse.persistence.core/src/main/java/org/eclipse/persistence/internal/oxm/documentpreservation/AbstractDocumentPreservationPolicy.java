@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,7 @@ abstract class AbstractDocumentPreservationPolicy extends DocumentPreservationPo
     protected Map nodesToObjects;
     protected Map objectsToNodes;
 
-    public AbstractDocumentPreservationPolicy() {
+    protected AbstractDocumentPreservationPolicy() {
     }
 
     @Override

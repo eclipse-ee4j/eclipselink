@@ -26,8 +26,8 @@ import jakarta.resource.cci.Connection;
 import jakarta.resource.cci.RecordFactory;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.eclipse.persistence.eis.EISDescriptor;
-import org.eclipse.persistence.eis.EISLogin;
 import org.eclipse.persistence.eis.mappings.*;
 import org.eclipse.persistence.internal.eis.adapters.xmlfile.XMLFileConnectionFactory;
 import org.eclipse.persistence.logging.SessionLog;
@@ -76,7 +76,7 @@ public abstract class EISMappingTestCases extends OXTestCase {
             parser = builderFactory.newDocumentBuilder();
         } catch (Exception e) {
             e.printStackTrace();
-            this.fail("An exception occurred during setup");
+            fail("An exception occurred during setup");
         }
     }
 
@@ -92,10 +92,10 @@ public abstract class EISMappingTestCases extends OXTestCase {
         if (!(metadata == Metadata.JAVA)) {
             String directorySetting = (String) project.getDatasourceLogin().getProperty("directory");
             StringWriter stringWriter = new StringWriter();
-            new XMLProjectWriter().write(project, stringWriter);
+            XMLProjectWriter.write(project, stringWriter);
             log("DEPLOYMENT XML: " + stringWriter.toString());
 
-            Project newProject = new XMLProjectReader().read(new StringReader(stringWriter.toString()));
+            Project newProject = XMLProjectReader.read(new StringReader(stringWriter.toString()));
             Map descriptors = project.getDescriptors();
             Iterator keysIterator = descriptors.keySet().iterator();
             while (keysIterator.hasNext()) {
@@ -135,7 +135,7 @@ public abstract class EISMappingTestCases extends OXTestCase {
             recordFactory = connectionFactory.getRecordFactory();
         } catch (Exception e) {
             e.printStackTrace();
-            this.fail("An exception occurred during setup");
+            fail("An exception occurred during setup");
         }
     }
 
@@ -157,7 +157,7 @@ public abstract class EISMappingTestCases extends OXTestCase {
             connection.close();
             session.logout();
         } catch (Exception e) {
-            this.fail("An exception occurred during teardown:");
+            fail("An exception occurred during teardown:");
             e.printStackTrace();
         }
     }
@@ -199,14 +199,14 @@ public abstract class EISMappingTestCases extends OXTestCase {
         log("****Expected:");
         log(getControlObject().toString());
         log("***Actual:");
-        this.assertTrue(objects.size() > 0);
+        assertTrue(objects.size() > 0);
         if (objects.size() > 1) {
             log(objects.toString());
-            this.assertTrue(((java.util.ArrayList)getControlObject()).size() == objects.size());
-            this.assertEquals(getControlObject(), objects);
+            assertTrue(((java.util.ArrayList)getControlObject()).size() == objects.size());
+            assertEquals(getControlObject(), objects);
         } else if (objects.size() == 1) {
             log(objects.elementAt(0).toString());
-            this.assertEquals(getControlObject(), objects.elementAt(0));
+            assertEquals(getControlObject(), objects.elementAt(0));
         }
     }
 
@@ -272,10 +272,10 @@ public abstract class EISMappingTestCases extends OXTestCase {
         log("***Actual:");
         if (objects.size() > 1) {
             log(objects.toString());
-            this.assertTrue(((java.util.ArrayList)getControlObject()).size() == objects.size());
+            assertTrue(((java.util.ArrayList)getControlObject()).size() == objects.size());
         } else {
             log(objects.elementAt(0).toString());
-            this.assertEquals(getControlObject(), objects.elementAt(0));
+            assertEquals(getControlObject(), objects.elementAt(0));
         }
     }
 
@@ -311,7 +311,7 @@ public abstract class EISMappingTestCases extends OXTestCase {
 
         session.getIdentityMapAccessor().initializeAllIdentityMaps();
         Vector afterDeleteObjects = session.readAllObjects(getSourceClass());
-        this.assertEquals("Objects were not all deleted", 0, afterDeleteObjects.size());
+        assertEquals("Objects were not all deleted", 0, afterDeleteObjects.size());
 
         log("****After commit deletes:");
         logTestDocument();

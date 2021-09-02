@@ -49,7 +49,7 @@ public class VectorUtils {
      * vectors.  Query operations on the returned vector "read through" to the
      * specified vector, and attempts to modify the returned vector, whether
      * direct or via its iterator, result in an
-     * <code>UnsupportedOperationException</code>.<p>
+     * <code>UnsupportedOperationException</code>.
      *
      * @param <T> the class of the objects in the vector
      * @param vector the vector for which an unmodifiable view is to be returned.

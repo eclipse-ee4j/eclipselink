@@ -30,13 +30,13 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <div><b>BNF:</b> <code>expression ::= TRIM([[trim_specification] [trim_character] FROM] string_primary)</code></div>
  *
  * <div><b>BNF:</b> <code>trim_character ::= string_literal | input_parameter</code></div>
- * <p>
+ * <br>
  * JPA 2.1:
  * <div><b>BNF:</b> <code>expression ::= TRIM([[trim_specification] [trim_character] FROM] string_expression)</code></div>
  *
- * <div><b>BNF:</b> <code>trim_character ::= string_literal | input_parameter</code><p></p></div>
+ * <div><b>BNF:</b> <code>trim_character ::= string_literal | input_parameter</code></div>
  *
- * <div>Example: <code><b>UPDATE</b> Student st <b>SET</b> st.sname=TRIM(st.sname)</code><p></p></div>
+ * <div>Example: <code><b>UPDATE</b> Student st <b>SET</b> st.sname=TRIM(st.sname)</code></div>
  *
  * @version 2.5
  * @since 2.3

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,6 +46,10 @@ public final class IndirectCollectionsFactory {
      * Class implementing {@link IndirectMap}.
      */
     public static final Class IndirectMap_Class = provider.getMapClass();
+
+    private IndirectCollectionsFactory() {
+        // no instance please
+    }
 
     /**
      * Construct an empty {@link IndirectList} with the default initial capacity (10)

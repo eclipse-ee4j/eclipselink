@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -72,7 +72,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
      * INTERNAL:
      *  converts JDBC results to collections of rows.
      */
-    public AbstractRecord() {
+    protected AbstractRecord() {
         this.fields = new NonSynchronizedVector();
         this.values = new NonSynchronizedVector();
         this.size = 0;
@@ -83,7 +83,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
      * INTERNAL:
      *  converts JDBC results to collections of rows.
      */
-    public AbstractRecord(int initialCapacity) {
+    protected AbstractRecord(int initialCapacity) {
         this.fields = new NonSynchronizedVector(initialCapacity);
         this.values = new NonSynchronizedVector(initialCapacity);
         this.size = 0;
@@ -94,7 +94,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
      * INTERNAL:
      *  converts JDBC results to collections of rows.
      */
-    public AbstractRecord(Vector fields, Vector values) {
+    protected AbstractRecord(Vector fields, Vector values) {
         this.fields = fields;
         this.values = values;
         this.nullValueInFields = false;
@@ -105,7 +105,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
      * INTERNAL:
      *  converts JDBC results to collections of rows.
      */
-    public AbstractRecord(Vector fields, Vector values, int size) {
+    protected AbstractRecord(Vector fields, Vector values, int size) {
         this.fields = fields;
         this.values = values;
         this.nullValueInFields = false;
@@ -429,6 +429,12 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
      * Defines the virtual keySet.
      */
     protected class KeySet extends EntrySet {
+        /**
+         * Default constructor.
+         */
+        public KeySet() {
+        }
+
         @Override
         public Iterator iterator() {
             return new RecordKeyIterator();
@@ -447,6 +453,12 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
      * Defines the virtual valuesSet.
      */
     protected class ValuesSet extends EntrySet {
+        /**
+         * Default constructor.
+         */
+        public ValuesSet() {
+        }
+
         @Override
         public Iterator iterator() {
             return new RecordValuesIterator();
@@ -470,6 +482,13 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
      * Defines the virtual entrySet.
      */
     protected class EntrySet extends AbstractSet {
+        /**
+         * Default constructor.
+         */
+        public EntrySet() {
+            super();
+        }
+
         @Override
         public Iterator iterator() {
             return new RecordEntryIterator();
@@ -536,6 +555,12 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
      * Defines the virtual keySet iterator.
      */
     protected class RecordKeyIterator extends RecordEntryIterator {
+        /**
+         * Default constructor.
+         */
+        public RecordKeyIterator() {
+        }
+
         @Override
         public Object next() {
             if (!hasNext()) {
@@ -550,6 +575,12 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
      * Defines the virtual valuesSet iterator.
      */
     protected class RecordValuesIterator extends RecordEntryIterator {
+        /**
+         * Default constructor.
+         */
+        public RecordValuesIterator() {
+        }
+
         @Override
         public Object next() {
             if (!hasNext()) {

@@ -25,7 +25,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * <p>
  * This is part of JPA 2.0.
  * </p>
- * <div><b>BNF:</b> <code>expression ::= ENTRY(identification_variable)</code><p></p></div>
+ * <div><b>BNF:</b> <code>expression ::= ENTRY(identification_variable)</code></div>
  *
  * @version 2.5
  * @since 2.3

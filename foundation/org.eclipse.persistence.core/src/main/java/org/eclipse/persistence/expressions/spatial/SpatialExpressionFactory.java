@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,7 +36,11 @@ import static org.eclipse.persistence.expressions.ExpressionOperator.SDO_NN;
  *
  * @since Oracle TopLink 11.1.1.0.0
  */
-public class SpatialExpressionFactory {
+public final class SpatialExpressionFactory {
+
+    private SpatialExpressionFactory() {
+        // no instance please
+    }
 
     /**
      * PUBLIC:

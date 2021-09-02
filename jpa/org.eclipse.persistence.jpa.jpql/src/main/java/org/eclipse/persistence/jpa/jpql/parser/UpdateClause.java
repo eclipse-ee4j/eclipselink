@@ -28,7 +28,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * class (together with its subclasses, if any). Only one entity abstract schema type may be
  * specified in the <b>UPDATE</b> clause.
  *
- * <div><b>BNF:</b> <code>update_clause ::= UPDATE abstract_schema_name [[AS] identification_variable] SET update_item {, update_item}*</code><p></p></div>
+ * <div><b>BNF:</b> <code>update_clause ::= UPDATE abstract_schema_name [[AS] identification_variable] SET update_item {, update_item}*</code></div>
  *
  * @see UpdateStatement
  * @see UpdateItem

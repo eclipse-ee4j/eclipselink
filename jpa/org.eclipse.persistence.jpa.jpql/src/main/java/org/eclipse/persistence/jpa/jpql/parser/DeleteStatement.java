@@ -23,7 +23,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * Bulk delete operation apply to entities of a single entity class (together with its subclasses,
  * if any).
  *
- * <div><b>BNF:</b> <code>delete_statement ::= delete_clause [where_clause]</code><p></p></div>
+ * <div><b>BNF:</b> <code>delete_statement ::= delete_clause [where_clause]</code></div>
  *
  * @version 2.5
  * @since 2.3

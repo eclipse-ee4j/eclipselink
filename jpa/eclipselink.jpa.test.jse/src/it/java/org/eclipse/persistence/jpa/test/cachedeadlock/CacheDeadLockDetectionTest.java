@@ -67,7 +67,7 @@ public class CacheDeadLockDetectionTest {
         }
         threadExecution(em);
         try {
-            Thread.currentThread().sleep(7000L);
+            Thread.sleep(7000L);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

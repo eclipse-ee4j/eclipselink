@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for the fetch join expression.
  *
- * <div><b>BNF:</b> <code>fetch_join ::= join_spec FETCH join_association_path_expression</code><p></p></div>
+ * <div><b>BNF:</b> <code>fetch_join ::= join_spec FETCH join_association_path_expression</code></div>
  *
  * @version 2.4
  * @since 2.3

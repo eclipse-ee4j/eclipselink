@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,7 @@ import java.util.ListResourceBundle;
  * English ResourceBundle for EJBQLException.
  *
  */
-public class JPQLExceptionResource extends ListResourceBundle {
+public final class JPQLExceptionResource extends ListResourceBundle {
     static final Object[][] contents = {
                                            { "8001", "Syntax Recognition Problem parsing the query [{0}]. The parser returned the following [{1}]." },
                                            { "8002", "General Problem parsing the query [{0}]. The parser returned the following [{1}]." },
@@ -66,6 +66,13 @@ public class JPQLExceptionResource extends ListResourceBundle {
                                            { "8041", "Error compiling the query [{0}], line {1}, column {2}: Index may only be used on a variable and it is being called on non-variable {3}." }
 
     };
+
+    /**
+     * Default constructor.
+     */
+    public JPQLExceptionResource() {
+        // for reflection
+    }
 
     /**
     * Return the lookup table.

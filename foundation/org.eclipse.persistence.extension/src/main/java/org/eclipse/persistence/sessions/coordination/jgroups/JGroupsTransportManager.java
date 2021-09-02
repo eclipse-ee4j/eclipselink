@@ -33,12 +33,12 @@ import org.jgroups.JChannel;
  * <p>
  * If issues are encountered with the default setting try,<br>
  * -Djava.net.preferIPv4Stack=true
- * <p>
+ *
  * @author James Sutherland
  * @since EclipseLink 2.6
  */
 public class JGroupsTransportManager extends BroadcastTransportManager {
-    protected String configFile = "";
+    private String configFile = "";
 
     /**
      * PUBLIC:

@@ -951,8 +951,7 @@ public abstract class BaseDBWSBuilderHelper {
 
             XMLEntityMappings mappings = XmlEntityMappingsGenerator.generateXmlEntityMappings(orProject, complextypes, crudOps);
             if (mappings != null) {
-                XMLEntityMappingsWriter writer = new XMLEntityMappingsWriter();
-                writer.write(mappings, dbwsOrStream);
+                XMLEntityMappingsWriter.write(mappings, dbwsOrStream);
             }
         }
         if (!isNullStream(dbwsOxStream)) {

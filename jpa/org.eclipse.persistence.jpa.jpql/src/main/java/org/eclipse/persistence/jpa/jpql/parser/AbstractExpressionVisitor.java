@@ -30,6 +30,12 @@ package org.eclipse.persistence.jpa.jpql.parser;
  */
 public abstract class AbstractExpressionVisitor implements ExpressionVisitor {
 
+    /**
+     * Default constructor.
+     */
+    protected AbstractExpressionVisitor() {
+    }
+
     @Override
     public void visit(AbsExpression expression) {
     }

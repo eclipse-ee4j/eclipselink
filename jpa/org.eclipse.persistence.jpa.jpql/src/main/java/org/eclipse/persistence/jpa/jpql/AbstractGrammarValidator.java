@@ -4863,6 +4863,12 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
          */
         ComparisonExpression expression;
 
+        /**
+         * Default constructor.
+         */
+        protected ComparisonExpressionVisitor() {
+        }
+
         @Override
         public void visit(ComparisonExpression expression) {
             this.expression = expression;
@@ -4876,6 +4882,12 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
          * Determines whether the visited {@link Expression} is {@link DateTime} or not.
          */
         public boolean dateTime;
+
+        /**
+         * Default constructor.
+         */
+        protected DateTimeVisitor() {
+        }
 
         @Override
         public void visit(DateTime expression) {

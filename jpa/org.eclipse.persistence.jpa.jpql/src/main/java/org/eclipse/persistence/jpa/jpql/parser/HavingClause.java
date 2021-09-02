@@ -19,7 +19,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * The <b>HAVING</b> construct enables conditions to be specified that further restrict the query
  * result as restrictions upon the groups.
  *
- * <div><b>BNF:</b> <code>having_clause ::= HAVING conditional_expression</code><p></p></div>
+ * <div><b>BNF:</b> <code>having_clause ::= HAVING conditional_expression</code></div>
  *
  * @version 2.5
  * @since 2.3

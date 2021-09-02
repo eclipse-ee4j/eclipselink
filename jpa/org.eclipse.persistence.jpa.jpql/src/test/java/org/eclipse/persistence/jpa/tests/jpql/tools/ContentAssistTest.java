@@ -80,7 +80,7 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
      * information that is outside the scope of simply providing JPA metadata information,
      * such as table names, column names, class names.
      *
-     * @return By default, {@link ContentAssistExtension.NULL_HELPER} is returned
+     * @return By default, {@link ContentAssistExtension#NULL_HELPER} is returned
      */
     protected ContentAssistExtension buildContentAssistExtension() {
         return ContentAssistExtension.NULL_HELPER;

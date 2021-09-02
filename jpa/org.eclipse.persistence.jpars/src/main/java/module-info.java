@@ -15,10 +15,10 @@ module org.eclipse.persistence.jpars {
     requires jakarta.persistence;
     requires jakarta.xml.bind;
     requires jakarta.activation;
-    requires jakarta.annotation;
-    requires jakarta.ws.rs;
+    requires transitive jakarta.annotation;
+    requires transitive jakarta.ws.rs;
 
-    requires org.eclipse.persistence.dbws;
+    requires transitive org.eclipse.persistence.dbws;
     requires org.eclipse.persistence.jpa;
     requires org.eclipse.persistence.asm;
     requires org.eclipse.persistence.core;

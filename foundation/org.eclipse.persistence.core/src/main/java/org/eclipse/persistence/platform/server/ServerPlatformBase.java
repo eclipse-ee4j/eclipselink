@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -152,7 +152,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * @param newDatabaseSession
      *            The instance of DatabaseSession that I am helping.
      */
-    public ServerPlatformBase(DatabaseSession newDatabaseSession) {
+    protected ServerPlatformBase(DatabaseSession newDatabaseSession) {
         this.isJTAEnabled = true;
         // Default JMX support to false for all sub-platforms except those that override this flag
         this.isRuntimeServicesEnabled = isRuntimeServicesEnabledDefault();

@@ -1088,8 +1088,7 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
     }
 
     /**
-     * Visits the given {@link ArithmeticExpression} and creates the appropriate {@link org.eclipse.
-     * persistence.expressions.Expression Expression}.
+     * Visits the given {@link ArithmeticExpression} and creates the appropriate {@link Expression Expression}.
      *
      * @param expression The {@link ArithmeticExpression} to visit
      */
@@ -1119,8 +1118,9 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
     }
 
     /**
-     * Visits the given {@link Expression} and creates the appropriate {@link org.eclipse.persistence.
-     * expressions.Expression Expression} that will check the type for each of its children. If the
+     * Visits the given {@link Expression} and creates the appropriate
+     * {@link org.eclipse.persistence.expressions.Expression Expression}
+     * that will check the type for each of its children. If the
      * type is the same, then it's the {@link Expression}'s type; otherwise the type will be {@link Object}.
      *
      * @param expression The {@link Expression} to calculate the type of its children

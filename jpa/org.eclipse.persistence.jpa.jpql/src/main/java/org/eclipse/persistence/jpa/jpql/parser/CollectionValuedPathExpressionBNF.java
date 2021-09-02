@@ -19,10 +19,10 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * The query BNF for a collection-valued path expression.
  * <p>
  * JPA 1.0:
- * <div><b>BNF:</b> <code>collection_valued_path_expression ::= identification_variable.{single_valued_object_field.}*collection_valued_field</code><p></p></div>
+ * <div><b>BNF:</b> <code>collection_valued_path_expression ::= identification_variable.{single_valued_object_field.}*collection_valued_field</code></div>
  *
  * JPA 2.0:
- * <div><b>BNF:</b> <code>collection_valued_path_expression ::= general_identification_variable.{single_valued_object_field.}*collection_valued_field</code><p></p></div>
+ * <div><b>BNF:</b> <code>collection_valued_path_expression ::= general_identification_variable.{single_valued_object_field.}*collection_valued_field</code></div>
  *
  * @version 2.5
  * @since 2.3

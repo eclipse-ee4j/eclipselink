@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for a simple valued object path expression.
  *
- * <div><b>BNF:</b> <code>single_valued_object_path_expression ::= general_identification_variable.{single_valued_object_field.}* single_valued_object_field</code><p></p></div>
+ * <div><b>BNF:</b> <code>single_valued_object_path_expression ::= general_identification_variable.{single_valued_object_field.}* single_valued_object_field</code></div>
  *
  * @version 2.4
  * @since 2.3

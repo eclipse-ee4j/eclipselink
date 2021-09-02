@@ -1032,8 +1032,6 @@ public class ExplainDeadLockUtil {
      * Create a deadlock component for a thread known to be stuck trying to release deferred locks.
      *
      * @param nextThreadPartOfDeadLock
-     *
-     * @param nextThreadPartOfDeadLock
      *            the thread that was participating in the dead lock as we went deeper in the recursion.
      * @param threadNotAbleToAccessResource
      *            the thread at the current depth that is part of the dead lock

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2019 IBM and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 IBM and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -2581,7 +2581,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      * NOTE: A similar pattern also used in method prepareDeleteAll():
      *  if you are updating this method consider applying a similar update to that method as well.
      *
-     * @return Vector<SQLDeleteAllStatementForTempTable>
+     * @return {@code Vector<SQLDeleteAllStatementForTempTable>}
      */
     private Vector buildDeleteAllStatementsForTempTable(ClassDescriptor descriptor, DatabaseTable rootTable, List<DatabaseField> rootTablePrimaryKeyFields, Vector tablesToIgnore) {
         Vector statements = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();

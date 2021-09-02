@@ -41,6 +41,12 @@ public final class FullyQualifyPathExpressionVisitor extends AbstractTraverseChi
      */
     private GeneralIdentificationVariableVisitor visitor;
 
+    /**
+     * Default constructor.
+     */
+    public FullyQualifyPathExpressionVisitor() {
+    }
+
     private GeneralIdentificationVariableVisitor generalIdentificationVariableVisitor() {
         if (visitor == null) {
             visitor = new GeneralIdentificationVariableVisitor();

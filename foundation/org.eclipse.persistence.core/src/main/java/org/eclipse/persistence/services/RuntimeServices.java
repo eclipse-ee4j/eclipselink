@@ -96,14 +96,14 @@ public abstract class RuntimeServices {
     /**
      *  Default Constructor
      */
-    public RuntimeServices() {
+    protected RuntimeServices() {
     }
 
     /**
      *  Constructor
      *  @param session the session to be used with these RuntimeServices
      */
-    public RuntimeServices(Session session) {
+    protected RuntimeServices(Session session) {
         this.session = session;
     }
 

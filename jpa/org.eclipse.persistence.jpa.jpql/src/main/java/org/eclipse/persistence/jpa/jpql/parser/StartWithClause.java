@@ -20,7 +20,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * If this clause is omitted, then Oracle uses all rows in the table as root rows. The <code><b>START
  * WITH</b></code> condition can contain a subquery, but it cannot contain a scalar subquery expression.
  *
- * <div><b>BNF:</b> <code>start_with_clause ::= <b>START WITH</b> conditional_expression</code><p></p></div>
+ * <div><b>BNF:</b> <code>start_with_clause ::= <b>START WITH</b> conditional_expression</code></div>
  *
  * @see HierarchicalQueryClause
  *

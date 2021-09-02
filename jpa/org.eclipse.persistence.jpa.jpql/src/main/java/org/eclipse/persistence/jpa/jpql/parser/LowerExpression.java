@@ -17,13 +17,12 @@ package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
  * The <b>LOWER</b> function converts a string to lower case and it returns a string.
- * <p></p>
+ * <br>
  * JPA 1.0, 2.0:
  * <div><b>BNF:</b> <code>expression ::= LOWER(string_primary)</code></div>
- * <p></p>
+ * <br>
  * JPA 2.1:
  * <div><b>BNF:</b> <code>expression ::= LOWER(string_expression)</code></div>
- * <p></p>
  *
  * @version 2.5
  * @since 2.3

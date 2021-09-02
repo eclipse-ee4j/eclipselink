@@ -101,8 +101,8 @@ public abstract class AbstractMapping implements IMapping {
     /**
      * Calculates the type of the persistent attribute represented by this external form.
      *
-     * @return The mapping type, which is one of the constants defined in {@link org.eclipse.
-     * persistence.jpa.jpql.spi.IMappingType IMappingType} when the provider is generic JPA
+     * @return The mapping type, which is one of the constants defined in
+     * {@link org.eclipse.persistence.jpa.jpql.tools.spi.IMappingType IMappingType} when the provider is generic JPA
      */
     protected int calculateMappingType() {
         return calculateMappingType(getMemberAnnotations());
@@ -112,8 +112,8 @@ public abstract class AbstractMapping implements IMapping {
      * Calculates the type of the mapping represented by this external form.
      *
      * @param annotations The {@link Annotation Annotations} that are present on the member
-     * @return The mapping type, which is one of the constants defined in {@link org.eclipse.
-     * persistence.jpa.jpql.spi.IMappingType IMappingType} when the provider is generic JPA
+     * @return The mapping type, which is one of the constants defined in
+     * {@link org.eclipse.persistence.jpa.jpql.tools.spi.IMappingType IMappingType} when the provider is generic JPA
      */
     protected int calculateMappingType(Annotation[] annotations) {
 

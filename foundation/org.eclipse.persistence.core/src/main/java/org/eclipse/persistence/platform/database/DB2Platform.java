@@ -560,8 +560,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
 
     /**
      * INTERNAL:
-     * The Concat operator is of the form .... VARCHAR ( <operand1> ||
-     * <operand2> )
+     * The Concat operator is of the form {@code .... VARCHAR ( <operand1> || <operand2> )}
      */
     private ExpressionOperator concatOperator() {
         ExpressionOperator exOperator = new ExpressionOperator();
@@ -579,7 +578,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
 
     /**
      * INTERNAL:
-     * The 2 arg LTRIM operator is of the form .... TRIM (LEADING, <operand2> FROM <operand1> )
+     * The 2 arg LTRIM operator is of the form {@code .... TRIM (LEADING, <operand2> FROM <operand1> )}
      */
     private ExpressionOperator ltrim2Operator() {
         ExpressionOperator operator = new ExpressionOperator();
@@ -601,7 +600,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
 
     /**
      * INTERNAL:
-     * The 2 arg RTRIM operator is of the form .... TRIM (TRAILING, <operand2> FROM <operand1> )
+     * The 2 arg RTRIM operator is of the form {@code .... TRIM (TRAILING, <operand2> FROM <operand1> )}
      */
     private ExpressionOperator rtrim2Operator() {
         ExpressionOperator operator = new ExpressionOperator();

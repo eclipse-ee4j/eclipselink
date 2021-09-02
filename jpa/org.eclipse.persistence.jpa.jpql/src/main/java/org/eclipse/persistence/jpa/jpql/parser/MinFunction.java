@@ -20,7 +20,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * (i.e., numeric types, string types, character types, or date types). The return type of this
  * function is based on the state-field's type.
  *
- * <div><b>BNF:</b> <code>expression ::= MIN([DISTINCT] state_field_path_expression)</code><p></p></div>
+ * <div><b>BNF:</b> <code>expression ::= MIN([DISTINCT] state_field_path_expression)</code></div>
  *
  * @version 2.5
  * @since 2.3

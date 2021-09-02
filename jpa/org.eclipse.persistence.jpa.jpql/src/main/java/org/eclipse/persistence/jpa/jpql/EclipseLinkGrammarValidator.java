@@ -619,6 +619,12 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 
         protected InExpression expression;
 
+        /**
+         * Default constructor.
+         */
+        protected InExpressionVisitor() {
+        }
+
         @Override
         public void visit(InExpression expression) {
             this.expression = expression;

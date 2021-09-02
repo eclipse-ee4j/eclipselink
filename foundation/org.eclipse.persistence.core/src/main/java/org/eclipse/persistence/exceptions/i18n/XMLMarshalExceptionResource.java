@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -27,7 +27,7 @@ import java.util.ListResourceBundle;
  * @author    Rick Barkhouse - rick.barkhouse@oracle.com
  * @since    OracleAS TopLink 10<i>g</i> (10.0.3), 03/25/2003 10:04:12
  */
-public class XMLMarshalExceptionResource extends ListResourceBundle {
+public final class XMLMarshalExceptionResource extends ListResourceBundle {
     static final Object[][] contents = {
                                            { "25001", "Invalid XPath string: {0}" },
                                            { "25002", "An integer index could not be parsed from this XPath string: {0}" },
@@ -72,6 +72,13 @@ public class XMLMarshalExceptionResource extends ListResourceBundle {
                                            { "25042", "The value of the variable property {0} on the class {1} can not be null."}
 
     };
+
+    /**
+     * Default constructor.
+     */
+    public XMLMarshalExceptionResource() {
+        // for reflection
+    }
 
     /**
      * Return the lookup table.

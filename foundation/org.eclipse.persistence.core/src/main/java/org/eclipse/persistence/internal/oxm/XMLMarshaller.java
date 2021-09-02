@@ -150,7 +150,7 @@ public abstract class XMLMarshaller<
     private Object marshalAttributeGroup;
     private Boolean logPayload;
 
-    public XMLMarshaller(CONTEXT context) {
+    protected XMLMarshaller(CONTEXT context) {
         super(context);
         this.includeRoot = true;
         this.marshalEmptyCollections = true;

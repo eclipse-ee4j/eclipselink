@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -221,18 +221,18 @@ public interface Server extends org.eclipse.persistence.sessions.DatabaseSession
      * PUBLIC:
      * Sets the read connection pool to be a separate shared <code>ConnectionPool</code>
      * with the minimum and maximum number of connections.
-     * <p>
+     * <br>
      * A separate read connection pool is not used by default, by default the default connection pool is used for reading.
      * A separate read connection pool can be used to dedicate a pool of connections only for reading.
      * It can also be used to use a non-JTA DataSource for reading to avoid JTA overhead,
      * or to use a different user login for reading.
-     * <p>
+     * <br>
      * Since read connections are not used for writing, multiple users can
      * theoretically use the same connection at the same time.
      * However some JDBC drivers do not allow this, or have poor concurrency when this is done.
-     * <p>
+     * <br>
      * Use this read connection pool to take advantage of concurrent reading.
-     * <p>
+     *
      * @param minNumberOfConnections
      * @param maxNumberOfConnections As multiple readers can use the same connection
      * concurrently fewer connections are needed.
@@ -247,18 +247,18 @@ public interface Server extends org.eclipse.persistence.sessions.DatabaseSession
      * PUBLIC:
      * Sets the read connection pool to be a separate shared <code>ConnectionPool</code>
      * with the minimum and maximum number of connections.
-     * <p>
+     * <br>
      * A separate read connection pool is not used by default, by default the default connection pool is used for reading.
      * A separate read connection pool can be used to dedicate a pool of connections only for reading.
      * It can also be used to use a non-JTA DataSource for reading to avoid JTA overhead,
      * or to use a different user login for reading.
-     * <p>
+     * <br>
      * Since read connections are not used for writing, multiple users can
      * theoretically use the same connection at the same time.
      * However some JDBC drivers do not allow this, or have poor concurrency when this is done.
-     * <p>
+     * <br>
      * Use this read connection pool to take advantage of concurrent reading.
-     * <p>
+     *
      * @param initialNumberOfConnections connections connected at startup
      * @param minNumberOfConnections connections that are pooled
      * @param maxNumberOfConnections As multiple readers can use the same connection

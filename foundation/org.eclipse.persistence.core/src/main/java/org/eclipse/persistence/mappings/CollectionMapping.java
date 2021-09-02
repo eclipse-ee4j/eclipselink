@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -91,7 +91,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * PUBLIC:
      * Default constructor.
      */
-    public CollectionMapping() {
+    protected CollectionMapping() {
         this.selectionQuery = new ReadAllQuery();
         this.hasCustomDeleteAllQuery = false;
         this.containerPolicy = ContainerPolicy.buildDefaultPolicy();

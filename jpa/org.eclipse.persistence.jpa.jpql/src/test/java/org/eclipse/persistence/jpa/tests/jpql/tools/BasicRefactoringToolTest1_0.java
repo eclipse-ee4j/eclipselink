@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,8 +21,8 @@ import org.eclipse.persistence.jpa.tests.jpql.UniqueSignature;
 import org.junit.Test;
 
 /**
- * The abstract definition of a unit-test that tests {@link org.eclipse.persistence.jpa.jpql.
- * BasicRefactoringTool BasicRefactoringTool} when the JPA version is 1.0.
+ * The abstract definition of a unit-test that tests
+ * {@link BasicRefactoringTool BasicRefactoringTool} when the JPA version is 1.0.
  *
  * @version 2.5
  * @since 2.4

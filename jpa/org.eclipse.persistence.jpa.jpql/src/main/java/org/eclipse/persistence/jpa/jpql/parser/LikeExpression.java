@@ -31,7 +31,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * Character) and is used to escape the special meaning of the underscore and percent characters in
  * <code>pattern_value</code>.
  *
- * <div><b>BNF:</b> <code>like_expression ::= string_expression [NOT] LIKE pattern_value [ESCAPE escape_character]</code><p></p></div>
+ * <div><b>BNF:</b> <code>like_expression ::= string_expression [NOT] LIKE pattern_value [ESCAPE escape_character]</code></div>
  *
  * @version 2.5
  * @since 2.3

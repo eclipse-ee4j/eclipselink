@@ -17,4 +17,5 @@ module org.eclipse.persistence.jpa.jpql {
     exports org.eclipse.persistence.jpa.jpql;
     exports org.eclipse.persistence.jpa.jpql.parser;
     exports org.eclipse.persistence.jpa.jpql.utility.iterable;
+    exports org.eclipse.persistence.jpa.jpql.utility.iterator;
 }

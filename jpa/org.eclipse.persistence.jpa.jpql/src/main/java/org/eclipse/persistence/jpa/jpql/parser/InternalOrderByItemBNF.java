@@ -19,8 +19,8 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * The query BNF for an order by item.
  * <p>
  * JPA 1.0: <div><b>BNF:</b> <code>orderby_item ::= state_field_path_expression [ ASC | DESC ]</code></div>
- * <p>
- * JPA 2.0 <div><b>BNF:</b> <code>orderby_item ::= state_field_path_expression | result_variable [ ASC | DESC ]</code><p></p></div>
+ * <br>
+ * JPA 2.0 <div><b>BNF:</b> <code>orderby_item ::= state_field_path_expression | result_variable [ ASC | DESC ]</code></div>
  *
  * @version 2.5.1
  * @since 2.3

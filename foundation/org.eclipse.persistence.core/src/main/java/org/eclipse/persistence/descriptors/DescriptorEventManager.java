@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1050,10 +1050,10 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
     }
 
     /**
-     * Create an instance of {@link AtomicIntegerArray} initialized with {@code NullEvent} values.
+     * Create an instance of {@link java.util.concurrent.atomic.AtomicIntegerArray} initialized with {@code NullEvent} values.
      *
      * @param length length of the array.
-     * @return initialized instance of {@link AtomicIntegerArray}
+     * @return initialized instance of {@link java.util.concurrent.atomic.AtomicIntegerArray}
      */
     private static <T> AtomicReferenceArray<T> newAtomicReferenceArray(final int length) {
         final AtomicReferenceArray array = new AtomicReferenceArray<>(length);
@@ -1062,10 +1062,10 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
     }
 
     /**
-     * Create an instance of {@link AtomicIntegerArray} initialized with content of provided array.
+     * Create an instance of {@link java.util.concurrent.atomic.AtomicIntegerArray} initialized with content of provided array.
      *
      * @param src source array.
-     * @return initialized instance of {@link AtomicIntegerArray}
+     * @return initialized instance of {@link java.util.concurrent.atomic.AtomicIntegerArray}
      */
     private static <T> AtomicReferenceArray<T> newAtomicReferenceArray(final AtomicReferenceArray<T> src) {
         final int length = src.length();
