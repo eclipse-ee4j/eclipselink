@@ -72,8 +72,9 @@ public class XMLVariableXPathObjectMapping extends XMLCompositeObjectMapping  im
                 getConverter().initialize(this, session);
             }
         }
-        if(null != getInverseReferenceMapping().getAttributeAccessor()) {
-            getInverseReferenceMapping().getAttributeAccessor().initializeAttributes(this.referenceClass);
+        final XMLInverseReferenceMapping inverseReferenceMapping = getInverseReferenceMapping();
+        if (null != inverseReferenceMapping && null != inverseReferenceMapping.getAttributeAccessor()) {
+            inverseReferenceMapping.getAttributeAccessor().initializeAttributes(this.referenceClass);
         }
 
         if(variableAttributeName != null){
