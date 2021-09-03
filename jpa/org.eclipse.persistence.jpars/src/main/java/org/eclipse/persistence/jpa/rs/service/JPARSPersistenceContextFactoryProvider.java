@@ -20,9 +20,15 @@ import org.eclipse.persistence.jpa.rs.PersistenceContextFactory;
 import org.eclipse.persistence.jpa.rs.PersistenceContextFactoryProvider;
 import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
 
+/**
+ * Concrete implementation of {@link PersistenceContextFactoryProvider}.
+ */
 public class JPARSPersistenceContextFactoryProvider implements
         PersistenceContextFactoryProvider {
 
+    /**
+     * The single point to bootstrap and look up PersistenceContexts in the JPARS application.
+     */
     protected static PersistenceContextFactory factory = new PersistenceFactoryBase();
 
     /**

@@ -149,6 +149,30 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-testCompile</id>
+                        <configuration>
+                            <!-- TODO: move OXM tests to o.e.p.core -->
+                            <compilerArgs>
+                                <arg>--add-exports</arg>
+                                <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.documentpreservation=org.eclipse.persistence.moxy.test</arg>
+                                <arg>--add-exports</arg>
+                                <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.record.deferred=org.eclipse.persistence.moxy.test</arg>
+                                <arg>--add-exports</arg>
+                                <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.schema=org.eclipse.persistence.moxy.test</arg>
+                                <arg>--add-exports</arg>
+                                <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.conversion=org.eclipse.persistence.moxy.test</arg>
+                                <arg>--add-exports</arg>
+                                <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.schema.model=org.eclipse.persistence.moxy.test</arg>
+                            </compilerArgs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <executions>

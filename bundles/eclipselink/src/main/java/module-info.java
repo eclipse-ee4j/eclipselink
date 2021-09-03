@@ -12,17 +12,17 @@
 
 module eclipselink {
 
-    requires java.desktop;
-    requires java.management;
-    requires java.naming;
-    requires java.rmi;
-    requires java.sql;
-    requires java.xml;
+    requires transitive java.desktop;
+    requires transitive java.management;
+    requires transitive java.naming;
+    requires transitive java.rmi;
+    requires transitive java.sql;
+    requires transitive java.xml;
 
     //following cannot be optional because we provide
     //implementation of its spi/extension here
-    requires jakarta.persistence;
-    requires jakarta.xml.bind;
+    requires transitive jakarta.persistence;
+    requires transitive jakarta.xml.bind;
     requires com.sun.tools.xjc;
 
 
@@ -43,6 +43,7 @@ module eclipselink {
     exports org.eclipse.persistence.jpa.jpql;
     exports org.eclipse.persistence.jpa.jpql.parser;
     exports org.eclipse.persistence.jpa.jpql.utility.iterable;
+    exports org.eclipse.persistence.jpa.jpql.utility.iterator;
 
     exports org.eclipse.persistence;
     exports org.eclipse.persistence.annotations;
@@ -176,6 +177,7 @@ module eclipselink {
 
     exports org.eclipse.persistence.sdo;
     exports org.eclipse.persistence.sdo.helper;
+    exports org.eclipse.persistence.sdo.helper.delegates;
     exports org.eclipse.persistence.sdo.types;
 
     exports org.eclipse.persistence.dbws;
@@ -195,6 +197,96 @@ module eclipselink {
     exports org.eclipse.persistence.jpa.rs.util.list;
     exports org.eclipse.persistence.jpa.rs.util.metadatasources;
     exports org.eclipse.persistence.jpa.rs.util.xmladapters;
+
+    //exported through EclipseLink PUBLIC API
+    exports org.eclipse.persistence.internal.cache;
+    exports org.eclipse.persistence.internal.codegen;
+    exports org.eclipse.persistence.internal.core.databaseaccess;
+    exports org.eclipse.persistence.internal.core.descriptors;
+    exports org.eclipse.persistence.internal.core.helper;
+    exports org.eclipse.persistence.internal.core.queries;
+    exports org.eclipse.persistence.internal.core.sessions;
+    exports org.eclipse.persistence.internal.databaseaccess;
+    exports org.eclipse.persistence.internal.descriptors;
+    exports org.eclipse.persistence.internal.descriptors.changetracking;
+    exports org.eclipse.persistence.internal.dynamic;
+    exports org.eclipse.persistence.internal.expressions;
+    exports org.eclipse.persistence.internal.helper;
+    exports org.eclipse.persistence.internal.identitymaps;
+    exports org.eclipse.persistence.internal.indirection;
+    exports org.eclipse.persistence.internal.jaxb;
+    exports org.eclipse.persistence.internal.jpa;
+    exports org.eclipse.persistence.internal.jpa.deployment;
+    exports org.eclipse.persistence.internal.jpa.metadata.xml;
+    exports org.eclipse.persistence.internal.jpa.rs.metadata.model;
+    exports org.eclipse.persistence.internal.jpa.rs.weaving;
+    exports org.eclipse.persistence.internal.libraries.asm;
+    exports org.eclipse.persistence.internal.localization;
+    exports org.eclipse.persistence.internal.oxm;
+    exports org.eclipse.persistence.internal.oxm.mappings;
+    exports org.eclipse.persistence.internal.oxm.record;
+    exports org.eclipse.persistence.internal.oxm.record.namespaces;
+    exports org.eclipse.persistence.internal.oxm.schema.model;
+    exports org.eclipse.persistence.internal.oxm.unmapped;
+    exports org.eclipse.persistence.internal.platform.database;
+    exports org.eclipse.persistence.internal.platform.database.oracle;
+    exports org.eclipse.persistence.internal.queries;
+    exports org.eclipse.persistence.internal.security;
+    exports org.eclipse.persistence.internal.sequencing;
+    exports org.eclipse.persistence.internal.sessions;
+    exports org.eclipse.persistence.internal.sessions.coordination;
+    exports org.eclipse.persistence.internal.sessions.coordination.corba;
+    exports org.eclipse.persistence.internal.sessions.coordination.jms;
+    exports org.eclipse.persistence.internal.sessions.factories;
+    exports org.eclipse.persistence.internal.sessions.factories.model;
+    exports org.eclipse.persistence.internal.sessions.remote;
+    exports org.eclipse.persistence.internal.xr;
+
+    //exported through EclipseLink INTERNAL API
+    exports org.eclipse.persistence.internal.helper.linkedlist;
+    exports org.eclipse.persistence.internal.helper.type;
+    exports org.eclipse.persistence.internal.jpa.metadata;
+    exports org.eclipse.persistence.internal.jpa.metadata.accessors;
+    exports org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
+    exports org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
+    exports org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
+    exports org.eclipse.persistence.internal.jpa.metadata.additionalcriteria;
+    exports org.eclipse.persistence.internal.jpa.metadata.cache;
+    exports org.eclipse.persistence.internal.jpa.metadata.changetracking;
+    exports org.eclipse.persistence.internal.jpa.metadata.columns;
+    exports org.eclipse.persistence.internal.jpa.metadata.converters;
+    exports org.eclipse.persistence.internal.jpa.metadata.copypolicy;
+    exports org.eclipse.persistence.internal.jpa.metadata.graphs;
+    exports org.eclipse.persistence.internal.jpa.metadata.inheritance;
+    exports org.eclipse.persistence.internal.jpa.metadata.listeners;
+    exports org.eclipse.persistence.internal.jpa.metadata.locking;
+    exports org.eclipse.persistence.internal.jpa.metadata.mappings;
+    exports org.eclipse.persistence.internal.jpa.metadata.multitenant;
+    exports org.eclipse.persistence.internal.jpa.metadata.nosql;
+    exports org.eclipse.persistence.internal.jpa.metadata.partitioning;
+    exports org.eclipse.persistence.internal.jpa.metadata.queries;
+    exports org.eclipse.persistence.internal.jpa.metadata.sequencing;
+    exports org.eclipse.persistence.internal.jpa.metadata.sop;
+    exports org.eclipse.persistence.internal.jpa.metadata.structures;
+    exports org.eclipse.persistence.internal.jpa.metadata.tables;
+    exports org.eclipse.persistence.internal.jpa.metadata.transformers;
+    exports org.eclipse.persistence.internal.oxm.schema;
+    exports org.eclipse.persistence.internal.sessions.cdi;
+    exports org.eclipse.persistence.internal.sessions.coordination.broadcast;
+    exports org.eclipse.persistence.internal.sessions.factories.model.event;
+    exports org.eclipse.persistence.internal.sessions.factories.model.log;
+    exports org.eclipse.persistence.internal.sessions.factories.model.login;
+    exports org.eclipse.persistence.internal.sessions.factories.model.platform;
+    exports org.eclipse.persistence.internal.sessions.factories.model.pool;
+    exports org.eclipse.persistence.internal.sessions.factories.model.project;
+    exports org.eclipse.persistence.internal.sessions.factories.model.rcm;
+    exports org.eclipse.persistence.internal.sessions.factories.model.rcm.command;
+    exports org.eclipse.persistence.internal.sessions.factories.model.sequencing;
+    exports org.eclipse.persistence.internal.sessions.factories.model.session;
+    exports org.eclipse.persistence.internal.sessions.factories.model.transport;
+    exports org.eclipse.persistence.internal.sessions.factories.model.transport.discovery;
+    exports org.eclipse.persistence.internal.sessions.factories.model.transport.naming;
+    exports org.eclipse.persistence.internal.xr.sxf;
 
     provides jakarta.persistence.spi.PersistenceProvider with org.eclipse.persistence.jpa.PersistenceProvider;
     provides jakarta.xml.bind.JAXBContextFactory with org.eclipse.persistence.jaxb.XMLBindingContextFactory;

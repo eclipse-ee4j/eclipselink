@@ -15,8 +15,7 @@ module org.eclipse.persistence.sdo {
     requires java.naming;
 
     requires org.eclipse.persistence.asm;
-    requires transitive org.eclipse.persistence.core;
-    requires org.eclipse.persistence.moxy;
+    requires transitive org.eclipse.persistence.moxy;
     requires jakarta.activation;
     requires jakarta.mail;
     requires jakarta.xml.bind;

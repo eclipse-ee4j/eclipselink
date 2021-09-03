@@ -10,6 +10,9 @@
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
 
+/**
+ * JPA-RS REST services.
+ */
 module org.eclipse.persistence.jpars {
 
     requires jakarta.persistence;
