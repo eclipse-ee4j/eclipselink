@@ -58,12 +58,12 @@ public class TestReadEntityDirectMapMapping extends TestCase {
         mapKey.setId(1);
         mapKey.setData("11");
         uow.registerObject(mapKey);
-        holder.addEntityDirectMapItem(mapKey, Integer.valueOf(1));
+        holder.addEntityDirectMapItem(mapKey, 1);
         EntityMapKey mapKey2 = new EntityMapKey();
         mapKey2.setId(2);
         mapKey2.setData("22");
         uow.registerObject(mapKey2);
-        holder.addEntityDirectMapItem(mapKey2, Integer.valueOf(2));
+        holder.addEntityDirectMapItem(mapKey2, 2);
         uow.registerObject(holder);
 
         uow.commit();
@@ -92,7 +92,7 @@ public class TestReadEntityDirectMapMapping extends TestCase {
         EntityMapKey mapKey = new EntityMapKey();
         mapKey.setId(1);
         Integer value = (Integer)holder.getEntityToDirectMap().get(mapKey);
-        if (value.intValue() != 1){
+        if (value != 1){
             throw new TestErrorException("Incorrect map value was read.");
         }
     }

@@ -189,7 +189,7 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         query.addArgument("1");
         Vector params = new Vector();
         //4000 is a more reasonable budget given test data if results are expected
-        params.add(Integer.valueOf(4000));
+        params.add(4000);
         List results = (List)getServerSession().executeQuery(query, params);
         assertNotNull("No result returned", results);
         assertTrue("Empty list returned", (results.size()!=0));
@@ -208,7 +208,7 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         query.setShouldBindAllParameters(true);
         query.addArgument("1");
         Vector params = new Vector();
-        params.add(Integer.valueOf(4000));
+        params.add(4000);
         List results = (List)getServerSession().executeQuery(query, params);
         assertNotNull("No result returned", results);
         assertTrue("Empty list returned", (results.size()!=0));

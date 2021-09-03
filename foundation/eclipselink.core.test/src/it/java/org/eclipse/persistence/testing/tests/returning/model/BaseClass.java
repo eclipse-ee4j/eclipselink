@@ -57,12 +57,12 @@ public abstract class BaseClass implements Cloneable {
             a_plus_minus_b_BigDecimal[1] = null;
         }
         if (a != null) {
-            a_Integer = Integer.valueOf(a.intValue());
+            a_Integer = a.intValue();
         } else {
             a_Integer = null;
         }
         if (b != null) {
-            b_Integer = Integer.valueOf(b.intValue());
+            b_Integer = b.intValue();
         } else {
             b_Integer = null;
         }
@@ -71,7 +71,7 @@ public abstract class BaseClass implements Cloneable {
     protected void setC(BigDecimal c) {
         if (c != null) {
             c_BigDecimal = c;
-            c_Integer = Integer.valueOf(c_BigDecimal.intValue());
+            c_Integer = c_BigDecimal.intValue();
         } else {
             c_BigDecimal = null;
             c_Integer = null;
@@ -228,10 +228,10 @@ public abstract class BaseClass implements Cloneable {
             BigDecimal a = a2.divide(new BigDecimal(2), RoundingMode.UNNECESSARY);
             BigDecimal b2 = a_plus_minus_b_BigDecimal[0].subtract(a_plus_minus_b_BigDecimal[1]);
             BigDecimal b = b2.divide(new BigDecimal(2), RoundingMode.UNNECESSARY);
-            if (a_Integer.intValue() != a.intValue()) {
+            if (a_Integer != a.intValue()) {
                 return false;
             }
-            if (b_Integer.intValue() != b.intValue()) {
+            if (b_Integer != b.intValue()) {
                 return false;
             }
         }
@@ -243,7 +243,7 @@ public abstract class BaseClass implements Cloneable {
             if (c_Integer == null) {
                 return false;
             }
-            if (c_BigDecimal.intValue() != c_Integer.intValue()) {
+            if (c_BigDecimal.intValue() != c_Integer) {
                 return false;
             }
         }

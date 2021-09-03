@@ -26,8 +26,8 @@ public class StoredProcedureTest_Inout_Out_In extends TestCase {
     boolean useCustomSQL;
     boolean useArgumentNames;
     boolean shouldBindAllParameters;
-    Integer in = Integer.valueOf(1);
-    Integer inout = Integer.valueOf(2);
+    Integer in = 1;
+    Integer inout = 2;
     static final int PROC = 0;
     static final int FUNC = 1;
 
@@ -147,8 +147,8 @@ public class StoredProcedureTest_Inout_Out_In extends TestCase {
         Number inoutExpected = in;
         Number outExpected = inout;
 
-        Integer inoutReturned = Integer.valueOf(((Number)row.get("P_INOUT")).intValue());
-        Integer outReturned = Integer.valueOf(((Number)row.get("P_OUT")).intValue());
+        Integer inoutReturned = ((Number) row.get("P_INOUT")).intValue();
+        Integer outReturned = ((Number) row.get("P_OUT")).intValue();
 
         if (!inoutExpected.equals(inoutReturned)) {
             throw new TestErrorException("Invalid value P_INOUT = " + inoutReturned + "; should be " + inoutExpected);
@@ -158,7 +158,7 @@ public class StoredProcedureTest_Inout_Out_In extends TestCase {
         }
 
         if (mode == FUNC) {
-            Integer result = Integer.valueOf(((Number)row.get("RESULT")).intValue());
+            Integer result = ((Number) row.get("RESULT")).intValue();
 
             if (!result.equals(outReturned)) {
                 throw new TestErrorException("Invalid value RESULT = " + result + "; should be " + outReturned);

@@ -37,14 +37,14 @@ public class XMLDirectCollectionOfListsTestCases extends XMLMappingTestCases {
         Root root = new Root();
 
         ArrayList<Double> values1 = new ArrayList<Double>();
-        values1.add(Double.valueOf(1.2));
-        values1.add(Double.valueOf(3.4));
-        values1.add(Double.valueOf(5.6));
+        values1.add(1.2);
+        values1.add(3.4);
+        values1.add(5.6);
 
         ArrayList<Double> values2 = new ArrayList<Double>();
-        values2.add(Double.valueOf(-7.8));
-        values2.add(Double.valueOf(-9.0));
-        values2.add(Double.valueOf(-1.2));
+        values2.add(-7.8);
+        values2.add(-9.0);
+        values2.add(-1.2);
 
         ArrayList<ArrayList<Double>> itemCollection = new ArrayList<ArrayList<Double>>();
         itemCollection.add(values1);

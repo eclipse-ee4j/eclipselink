@@ -77,7 +77,7 @@ public class AnyCollectionWithGroupingWithXMLRootTestCases extends XMLWithJSONMa
 
         XMLRoot xmlroot2 = new XMLRoot();
 
-        xmlroot2.setObject(Integer.valueOf(15));
+        xmlroot2.setObject(15);
         //xmlroot2.setObject("15");
         xmlroot2.setLocalName("myns:theInteger");
         xmlroot2.setNamespaceURI("www.example.com/some-dir/some.xsd");
@@ -151,7 +151,7 @@ public class AnyCollectionWithGroupingWithXMLRootTestCases extends XMLWithJSONMa
 
            XMLRoot xmlroot2 = new XMLRoot();
 
-           xmlroot2.setObject(Integer.valueOf(15));
+           xmlroot2.setObject(15);
            //xmlroot2.setObject("15");
            xmlroot2.setLocalName("theInteger");
            xmlroot2.setNamespaceURI("www.example.com/some-dir/some.xsd");

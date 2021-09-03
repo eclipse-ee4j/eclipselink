@@ -177,9 +177,9 @@ public class NijiNiTestSet {
         s.dontLogMessages();
         ((DatabaseSession)s).login();
         Vector queryArgs = new NonSynchronizedVector();
-        queryArgs.add(Integer.valueOf(1));
+        queryArgs.add(1);
         queryArgs.add("test");
-        queryArgs.add(Integer.valueOf(10));
+        queryArgs.add(10);
         boolean worked = false;
         String msg = null;
         try {

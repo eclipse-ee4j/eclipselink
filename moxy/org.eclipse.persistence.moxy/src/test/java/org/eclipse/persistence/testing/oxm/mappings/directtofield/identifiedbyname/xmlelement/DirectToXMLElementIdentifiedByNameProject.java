@@ -46,7 +46,7 @@ public class DirectToXMLElementIdentifiedByNameProject extends Project {
 
         XMLDirectMapping marriedMapping = new XMLDirectMapping();
         marriedMapping.setAttributeName("married");
-                marriedMapping.setNullValue(Boolean.valueOf(false));
+                marriedMapping.setNullValue(Boolean.FALSE);
         marriedMapping.setXPath("married/text()");
         descriptor.addMapping(marriedMapping);
 

@@ -135,7 +135,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
         Map<String, String> options = processingEnv.getOptions();
 
         log = new MessagerLog(processingEnv.getMessager(), options);
-        if (Boolean.valueOf(options.get("verbose")) && log.getLevel() > SessionLog.FINER) {
+        if (Boolean.parseBoolean(options.get("verbose")) && log.getLevel() > SessionLog.FINER) {
             log.setLevel(SessionLog.FINER);
         }
         AbstractSessionLog.setLog(log);
@@ -146,20 +146,20 @@ public class CanonicalModelProcessor extends AbstractProcessor {
                     new Object[]{option.getKey(), option.getValue()});
         }
 
-        useStaticFactory = Boolean.valueOf(CanonicalModelProperties.getOption(
+        useStaticFactory = Boolean.parseBoolean(CanonicalModelProperties.getOption(
                 CanonicalModelProperties.CANONICAL_MODEL_USE_STATIC_FACTORY,
                 CanonicalModelProperties.CANONICAL_MODEL_USE_STATIC_FACTORY_DEFAULT,
                 options));
-        generateGenerated = Boolean.valueOf(CanonicalModelProperties.getOption(
+        generateGenerated = Boolean.parseBoolean(CanonicalModelProperties.getOption(
                 CanonicalModelProperties.CANONICAL_MODEL_GENERATE_GENERATED,
                 CanonicalModelProperties.CANONICAL_MODEL_GENERATE_GENERATED_DEFAULT,
                 options));
         if (generateGenerated) {
-            generateTimestamp = Boolean.valueOf(CanonicalModelProperties.getOption(
+            generateTimestamp = Boolean.parseBoolean(CanonicalModelProperties.getOption(
                 CanonicalModelProperties.CANONICAL_MODEL_GENERATE_TIMESTAMP,
                 CanonicalModelProperties.CANONICAL_MODEL_GENERATE_TIMESTAMP_DEFAULT,
                 options));
-            generateComments = Boolean.valueOf(CanonicalModelProperties.getOption(
+            generateComments = Boolean.parseBoolean(CanonicalModelProperties.getOption(
                 CanonicalModelProperties.CANONICAL_MODEL_GENERATE_COMMENTS,
                 CanonicalModelProperties.CANONICAL_MODEL_GENERATE_COMMENTS_DEFAULT,
                 options));

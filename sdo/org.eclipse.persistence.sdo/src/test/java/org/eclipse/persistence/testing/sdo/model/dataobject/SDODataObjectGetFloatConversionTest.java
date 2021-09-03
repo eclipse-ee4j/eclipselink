@@ -358,7 +358,7 @@ public class SDODataObjectGetFloatConversionTest extends SDODataObjectConversion
     public void testGetFloatFromCharacterObject() {
         SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_CHARACTEROBJECT);
-        dataObject.set(property, Character.valueOf('y'));
+        dataObject.set(property, 'y');
         try {
             dataObject.getFloat(property);
             fail("ClassCastException should be thrown.");

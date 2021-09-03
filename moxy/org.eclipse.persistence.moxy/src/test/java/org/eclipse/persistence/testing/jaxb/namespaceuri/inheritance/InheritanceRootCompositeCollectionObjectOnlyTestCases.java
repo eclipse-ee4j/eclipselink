@@ -66,7 +66,7 @@ public class InheritanceRootCompositeCollectionObjectOnlyTestCases extends JAXBW
 
         List objectList = new ArrayList(baseTypes);
         objectList.add(new String("string test"));
-        objectList.add(Integer.valueOf(500));
+        objectList.add(500);
         root.objectList = objectList;
 
         return root;

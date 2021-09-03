@@ -27,8 +27,8 @@ public class TestUpdateDirectDirectMapMapping extends TestReadDirectDirectMapMap
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holders = uow.readAllObjects(DirectDirectMapHolder.class, holderExp);
         changedHolder = (DirectDirectMapHolder)holders.get(0);
-        changedHolder.removeDirectToDirectMapItem(Integer.valueOf(1));
-        changedHolder.addDirectToDirectMapItem(Integer.valueOf(3), Integer.valueOf(3));
+        changedHolder.removeDirectToDirectMapItem(1);
+        changedHolder.addDirectToDirectMapItem(3, 3);
         uow.commit();
         Object holderForComparison = uow.readObject(changedHolder);
         if (!compareObjects(changedHolder, holderForComparison)){
@@ -45,11 +45,11 @@ public class TestUpdateDirectDirectMapMapping extends TestReadDirectDirectMapMap
         if (!compareObjects(holder, changedHolder)){
             throw new TestErrorException("Objects do not match reinitialize");
         }
-        if (holder.getDirectToDirectMap().containsKey(Integer.valueOf(1))){
+        if (holder.getDirectToDirectMap().containsKey(1)){
             throw new TestErrorException("Item that was removed is still present in map.");
         }
-        Integer value = (Integer)holder.getDirectToDirectMap().get(Integer.valueOf(3));
-        if (value.intValue() != 3){
+        Integer value = (Integer)holder.getDirectToDirectMap().get(3);
+        if (value != 3){
             throw new TestErrorException("Item was not correctly added to map");
         }
     }

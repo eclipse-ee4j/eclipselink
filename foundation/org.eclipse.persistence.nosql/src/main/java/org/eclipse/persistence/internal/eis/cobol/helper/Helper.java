@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,22 +44,22 @@ public class Helper {
     }
 
     public static byte byteFromString(String string) {
-        return Byte.valueOf(string).byteValue();
+        return Byte.parseByte(string);
     }
 
     /** takes a hex string and returns an int value */
     public static int intFromHexString(String string) {
-        return integerFromHexString(string).intValue();
+        return integerFromHexString(string);
     }
 
     /** takes a byte and returns the Integer value */
     public static Integer integerFromByte(byte byteValue) {
-        return Integer.valueOf(intFromByte(byteValue));
+        return intFromByte(byteValue);
     }
 
     /** takes a byte value and returns int value */
     public static int intFromByte(byte byteValue) {
-        Byte bigByte = Byte.valueOf(byteValue);
+        Byte bigByte = byteValue;
         return bigByte.intValue();
     }
 

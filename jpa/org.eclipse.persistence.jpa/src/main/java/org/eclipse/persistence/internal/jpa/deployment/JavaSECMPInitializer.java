@@ -191,7 +191,7 @@ public class JavaSECMPInitializer extends JPAInitializer {
         }
 
         AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.WEAVER, "cmp_init_tempLoader_created", tempLoader);
-        AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.WEAVER, "cmp_init_shouldOverrideLoadClassForCollectionMembers", Boolean.valueOf(shouldOverrideLoadClassForCollectionMembers));
+        AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.WEAVER, "cmp_init_shouldOverrideLoadClassForCollectionMembers", shouldOverrideLoadClassForCollectionMembers);
 
         return tempLoader;
     }

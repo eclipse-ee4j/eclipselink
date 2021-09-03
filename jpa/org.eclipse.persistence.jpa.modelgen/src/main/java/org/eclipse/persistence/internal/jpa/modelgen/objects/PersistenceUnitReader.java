@@ -152,7 +152,7 @@ public class PersistenceUnitReader {
     public void initPersistenceUnits(final MetadataMirrorFactory factory) {
         // As a performance enhancement to avoid reloading and merging XML metadata for every compile round,
         // the user may choose to turn off the XML loading by setting the load XML flag to false.
-        if (Boolean.valueOf(CanonicalModelProperties.getOption(CANONICAL_MODEL_LOAD_XML, CANONICAL_MODEL_LOAD_XML_DEFAULT, processingEnv.getOptions()))) {
+        if (Boolean.parseBoolean(CanonicalModelProperties.getOption(CANONICAL_MODEL_LOAD_XML, CANONICAL_MODEL_LOAD_XML_DEFAULT, processingEnv.getOptions()))) {
             final String filename = CanonicalModelProperties.getOption(ECLIPSELINK_PERSISTENCE_XML, ECLIPSELINK_PERSISTENCE_XML_DEFAULT, processingEnv.getOptions());
             HashSet<String> persistenceUnitList = getPersistenceUnitList(processingEnv);
 

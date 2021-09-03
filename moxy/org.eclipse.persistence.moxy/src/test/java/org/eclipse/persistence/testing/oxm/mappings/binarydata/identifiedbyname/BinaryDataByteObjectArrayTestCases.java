@@ -52,7 +52,7 @@ public class BinaryDataByteObjectArrayTestCases extends XMLWithJSONMappingTestCa
 
             Byte[] objectBytes = new Byte[bytes.length];
             for (int index = 0; index < bytes.length; index++) {
-                objectBytes[index] = Byte.valueOf(bytes[index]);
+                objectBytes[index] = bytes[index];
             }
             emp.setPhoto(objectBytes);
             emp.setData(new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text"));

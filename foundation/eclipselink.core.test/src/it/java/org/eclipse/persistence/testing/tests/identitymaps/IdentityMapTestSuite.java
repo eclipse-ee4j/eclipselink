@@ -42,9 +42,9 @@ public class IdentityMapTestSuite extends TestSuite {
         employees.addElement(employee1);
         employees.addElement(employee2);
         primaryKey1 = new Vector();
-        primaryKey1.addElement(Integer.valueOf(99));
+        primaryKey1.addElement(99);
         primaryKey2 = new Vector();
-        primaryKey2.addElement(Integer.valueOf(88));
+        primaryKey2.addElement(88);
 
         primaryKeys.addElement(primaryKey1);
         primaryKeys.addElement(primaryKey2);

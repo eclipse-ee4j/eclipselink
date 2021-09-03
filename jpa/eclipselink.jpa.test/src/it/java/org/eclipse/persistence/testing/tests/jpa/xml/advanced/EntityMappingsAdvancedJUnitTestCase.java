@@ -1049,8 +1049,8 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         int lastIndex = firstName.length();
         List employees = em.createQuery("SELECT object(e) FROM XMLEmployee e where e.firstName = substring(:p1, :p2, :p3)").
             setParameter("p1", firstName).
-            setParameter("p2", Integer.valueOf(firstIndex)).
-            setParameter("p3", Integer.valueOf(lastIndex)).
+            setParameter("p2", firstIndex).
+            setParameter("p3", lastIndex).
             getResultList();
 
         // clean up
@@ -1299,7 +1299,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
 
         // verify properties set on Employee instance
         errorMsg += verifyPropertyValue(descriptor, "entityName", String.class, "XMLEmployee");
-        errorMsg += verifyPropertyValue(descriptor, "entityIntegerProperty", Integer.class, Integer.valueOf(1));
+        errorMsg += verifyPropertyValue(descriptor, "entityIntegerProperty", Integer.class, 1);
         errorMsg += verifyPropertyValue(descriptor, "ToBeOverriddenByXml", Boolean.class, Boolean.TRUE);
         errorMsg += verifyPropertyValue(descriptor, "ToBeProcessed", Boolean.class, Boolean.TRUE);
 
@@ -1311,13 +1311,13 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         // attribute m_lastName has many properties of different types
         DatabaseMapping mapping = descriptor.getMappingForAttributeName("lastName");
         errorMsg += verifyPropertyValue(mapping, "BooleanProperty", Boolean.class, Boolean.TRUE);
-        errorMsg += verifyPropertyValue(mapping, "ByteProperty", Byte.class, Byte.valueOf((byte)1));
-        errorMsg += verifyPropertyValue(mapping, "CharacterProperty", Character.class, Character.valueOf('A'));
-        errorMsg += verifyPropertyValue(mapping, "DoubleProperty", Double.class, Double.valueOf(1));
-        errorMsg += verifyPropertyValue(mapping, "FloatProperty", Float.class, Float.valueOf(1));
-        errorMsg += verifyPropertyValue(mapping, "IntegerProperty", Integer.class, Integer.valueOf(1));
-        errorMsg += verifyPropertyValue(mapping, "LongProperty", Long.class, Long.valueOf(1));
-        errorMsg += verifyPropertyValue(mapping, "ShortProperty", Short.class, Short.valueOf((short)1));
+        errorMsg += verifyPropertyValue(mapping, "ByteProperty", Byte.class, (byte) 1);
+        errorMsg += verifyPropertyValue(mapping, "CharacterProperty", Character.class, 'A');
+        errorMsg += verifyPropertyValue(mapping, "DoubleProperty", Double.class, 1.0);
+        errorMsg += verifyPropertyValue(mapping, "FloatProperty", Float.class, 1F);
+        errorMsg += verifyPropertyValue(mapping, "IntegerProperty", Integer.class, 1);
+        errorMsg += verifyPropertyValue(mapping, "LongProperty", Long.class, 1L);
+        errorMsg += verifyPropertyValue(mapping, "ShortProperty", Short.class, (short) 1);
         errorMsg += verifyPropertyValue(mapping, "BigDecimalProperty", java.math.BigDecimal.class, java.math.BigDecimal.ONE);
         errorMsg += verifyPropertyValue(mapping, "BigIntegerProperty", java.math.BigInteger.class, java.math.BigInteger.ONE);
         errorMsg += verifyPropertyValue(mapping, "TimeProperty", java.sql.Time.class, Helper.timeFromString("13:59:59"));
@@ -1717,9 +1717,9 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         pk.add(dealer.getId());
 
         if (isOnServer()) {
-            return ((Integer)getServerSession().getDescriptor(Dealer.class).getOptimisticLockingPolicy().getWriteLockValue(dealer, pk, getServerSession())).intValue();
+            return (Integer) getServerSession().getDescriptor(Dealer.class).getOptimisticLockingPolicy().getWriteLockValue(dealer, pk, getServerSession());
         } else {
-            return ((Integer)((EntityManagerImpl)em).getServerSession().getDescriptor(Dealer.class).getOptimisticLockingPolicy().getWriteLockValue(dealer, pk, ((EntityManagerImpl)em).getServerSession())).intValue();
+            return (Integer) ((EntityManagerImpl) em).getServerSession().getDescriptor(Dealer.class).getOptimisticLockingPolicy().getWriteLockValue(dealer, pk, ((EntityManagerImpl) em).getServerSession());
         }
     }
 
@@ -1845,7 +1845,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
 
             // Cost
             Shovel shovel = new Shovel();
-            shovel.setMy("cost", Double.valueOf(9.99));
+            shovel.setMy("cost", 9.99);
 
             // Sections
             ShovelSections shovelSections = new ShovelSections();
@@ -1906,7 +1906,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             beginTransaction(em);
 
             em.merge(refreshedShovel);
-            refreshedShovel.setMy("cost", Double.valueOf(7.99));
+            refreshedShovel.setMy("cost", 7.99);
 
             commitTransaction(em);
 

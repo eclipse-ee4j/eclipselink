@@ -23,7 +23,7 @@ public class ByteToExampleEnumAdapter extends XmlAdapter<ExampleEnum, Byte> {
     public ExampleEnum marshal(Byte v) throws Exception {
         ExampleEnum[] exArray = ExampleEnum.values();
         for(ExampleEnum ex : exArray) {
-            if(ex.getValue() == (int)v.byteValue()) {
+            if(ex.getValue() == (int) v) {
                 return ex;
             }
         }
@@ -32,6 +32,6 @@ public class ByteToExampleEnumAdapter extends XmlAdapter<ExampleEnum, Byte> {
 
     @Override
     public Byte unmarshal(ExampleEnum v) throws Exception {
-        return Byte.valueOf((byte)v.getValue());
+        return (byte) v.getValue();
     }
 }

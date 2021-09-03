@@ -127,7 +127,7 @@ public class SDODataObjectGetDataObjectByPositionalPathTest extends SDODataObjec
         dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_BOOLEAN);
 
         boolean c = true;
-        Boolean C = Boolean.valueOf(c);
+        Boolean C = c;
 
         dataObject_c.set(property_c, C);
 

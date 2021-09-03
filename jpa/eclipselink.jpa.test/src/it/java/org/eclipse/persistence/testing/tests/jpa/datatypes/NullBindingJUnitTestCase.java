@@ -95,7 +95,7 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
         beginTransaction(em);
         wt = new WrapperTypes(BigDecimal.ZERO, BigInteger.ZERO, Boolean.FALSE,
                 Byte.valueOf("0"), 'A', Short.valueOf("0"),
-                0, 0L, Float.valueOf(0.0f), 0.0, "A String");
+                0, 0L, 0.0f, 0.0, "A String");
         em.persist(wt);
         wrapperId = wt.getId();
         commitTransaction(em);

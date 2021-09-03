@@ -50,9 +50,9 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
         Integer numberOfCalls = (Integer)sessionCalls.get(sessionName);
         int num = 0;
         if(numberOfCalls != null) {
-            num = numberOfCalls.intValue();
+            num = numberOfCalls;
         }
-        sessionCalls.put(sessionName, Integer.valueOf(num + 1));
+        sessionCalls.put(sessionName, num + 1);
 
         //**temp
         session.getEventManager().addListener(new AcquireReleaseListener());
@@ -73,9 +73,9 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
         Integer numberOfCalls = (Integer)descriptorCalls.get(javaClassName);
         int num = 0;
         if(numberOfCalls != null) {
-            num = numberOfCalls.intValue();
+            num = numberOfCalls;
         }
-        descriptorCalls.put(javaClassName, Integer.valueOf(num + 1));
+        descriptorCalls.put(javaClassName, num + 1);
 
         addCustomQueryKeys(descriptor);
     }
@@ -93,7 +93,7 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
         if(numberOfCalls == null) {
             return 0;
         } else {
-            return numberOfCalls.intValue();
+            return numberOfCalls;
         }
     }
 
@@ -102,7 +102,7 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
         if(numberOfCalls == null) {
             return 0;
         } else {
-            return numberOfCalls.intValue();
+            return numberOfCalls;
         }
     }
 

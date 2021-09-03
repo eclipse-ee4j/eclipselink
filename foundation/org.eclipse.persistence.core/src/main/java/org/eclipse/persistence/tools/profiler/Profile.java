@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,7 +47,7 @@ public class Profile implements Serializable, Cloneable {
     }
 
     public void addTiming(String name, long time) {
-        getOperationTimings().put(name, Long.valueOf(time));
+        getOperationTimings().put(name, time);
     }
 
     @Override
@@ -185,7 +185,7 @@ public class Profile implements Serializable, Cloneable {
             for (Enumeration operationNames = getOperationTimings().keys();
                      operationNames.hasMoreElements();) {
                 String operationName = (String)operationNames.nextElement();
-                long operationTime = ((Long)getOperationTimings().get(operationName)).longValue();
+                long operationTime = (Long) getOperationTimings().get(operationName);
 
                 if (operationTime != 0) {
                     profiler.writeNestingTabs(writer);

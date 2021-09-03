@@ -108,35 +108,35 @@ public class Buyer implements Serializable {
     }
 
     public void addAmex(long number) {
-        getCreditCards().put(AMEX, Long.valueOf(number));
+        getCreditCards().put(AMEX, number);
     }
 
     public void addCanadianImperialCreditLine(long number) {
-        getCreditLines().put(CANADIAN_IMPERIAL, Long.valueOf(number));
+        getCreditLines().put(CANADIAN_IMPERIAL, number);
     }
 
     public void addDinersClub(long number) {
-        getCreditCards().put(DINERS, Long.valueOf(number));
+        getCreditCards().put(DINERS, number);
     }
 
     public void addMastercard(long number) {
-        getCreditCards().put(MASTERCARD, Long.valueOf(number));
+        getCreditCards().put(MASTERCARD, number);
     }
 
     public void addRoyalBankCreditLine(long number) {
-        getCreditLines().put(ROYAL_BANK, Long.valueOf(number));
+        getCreditLines().put(ROYAL_BANK, number);
     }
 
     public void addScotiabankCreditLine(long number) {
-        getCreditLines().put(SCOTIABANK, Long.valueOf(number));
+        getCreditLines().put(SCOTIABANK, number);
     }
 
     public void addTorontoDominionCreditLine(long number) {
-        getCreditLines().put(TORONTO_DOMINION, Long.valueOf(number));
+        getCreditLines().put(TORONTO_DOMINION, number);
     }
 
     public void addVisa(long number) {
-        getCreditCards().put(VISA, Long.valueOf(number));
+        getCreditCards().put(VISA, number);
     }
 
     public boolean buysSaturdayToSunday() {
@@ -251,7 +251,7 @@ public class Buyer implements Serializable {
         if (cardNumber == null) {
             return false;
         } else {
-            return cardNumber.longValue() == number;
+            return cardNumber == number;
         }
     }
 
@@ -259,7 +259,7 @@ public class Buyer implements Serializable {
         if (creditLineNumber == null) {
             return false;
         } else {
-            return creditLineNumber.longValue() == number;
+            return creditLineNumber == number;
         }
     }
 

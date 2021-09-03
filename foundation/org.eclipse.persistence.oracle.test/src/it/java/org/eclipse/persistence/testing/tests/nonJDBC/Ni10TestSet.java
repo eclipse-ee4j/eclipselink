@@ -158,7 +158,7 @@ public class Ni10TestSet {
         s.dontLogMessages();
         ((DatabaseSession)s).login();
         Vector queryArgs = new NonSynchronizedVector();
-        queryArgs.add(Integer.valueOf(-1));
+        queryArgs.add(-1);
         boolean worked = false;
         String msg = null;
         try {
@@ -171,7 +171,7 @@ public class Ni10TestSet {
         assertTrue("invocation signtype_in_test failed: " + msg, worked);
         // test data range: 2 should NOT work
         queryArgs = new NonSynchronizedVector();
-        queryArgs.add(Integer.valueOf(2));
+        queryArgs.add(2);
         worked = false;
         msg = null;
         try {
@@ -184,7 +184,7 @@ public class Ni10TestSet {
         assertFalse("invocation signtype_in_test with 2 worked: " + msg, worked);
         // test data range: -2 should NOT work
         queryArgs = new NonSynchronizedVector();
-        queryArgs.add(Integer.valueOf(-2));
+        queryArgs.add(-2);
         worked = false;
         msg = null;
         try {

@@ -116,7 +116,7 @@ public class QNameTestCases extends OXTestCase {
 
     public void testIntegerToQName_default() {
         try {
-            Integer integer = Integer.valueOf(1);
+            Integer integer = 1;
             xcm.convertObject(integer, QName.class);
         } catch (ConversionException e) {
             assertTrue("The incorrect exception was thrown", e.getErrorCode() == ConversionException.COULD_NOT_BE_CONVERTED);
@@ -125,7 +125,7 @@ public class QNameTestCases extends OXTestCase {
 
     public void testIntegerToQName_qname() {
         try {
-            Integer integer = Integer.valueOf(1);
+            Integer integer = 1;
             xcm.convertObject(integer, QName.class, XMLConstants.QNAME_QNAME);
         } catch (ConversionException e) {
             assertTrue("The incorrect exception was thrown", e.getErrorCode() == ConversionException.COULD_NOT_BE_CONVERTED);

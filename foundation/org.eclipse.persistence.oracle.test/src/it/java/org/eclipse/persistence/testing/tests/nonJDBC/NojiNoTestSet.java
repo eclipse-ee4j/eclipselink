@@ -193,7 +193,7 @@ public class NojiNoTestSet {
         BigDecimal bint2bigdec = (BigDecimal)record.get("X");
         assertTrue("wrong bint2bigdec value", bint2bigdec.intValue() == 42);
         Integer bool2int = (Integer)record.get("Z");
-        assertTrue("wrong bool2int value", bool2int.intValue() == 1);
+        assertTrue("wrong bool2int value", bool2int == 1);
         ((DatabaseSession)s).logout();
     }
 }

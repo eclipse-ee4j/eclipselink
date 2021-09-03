@@ -37,7 +37,7 @@ public class WeakReferenceTest extends AutoVerifyTestCase {
         try{
             Long[] arr = new Long[10000000];
             for (int i = 0; i< 10000000; ++i){
-                arr[i] = Long.valueOf(i);
+                arr[i] = (long) i;
             }
             System.gc();
             try{

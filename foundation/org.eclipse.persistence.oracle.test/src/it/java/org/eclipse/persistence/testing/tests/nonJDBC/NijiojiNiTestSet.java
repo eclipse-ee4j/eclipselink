@@ -197,10 +197,10 @@ public class NijiojiNiTestSet {
         ((DatabaseSession)s).login();
         Object o = null;
         Vector queryArgs = new NonSynchronizedVector();
-        queryArgs.add(Integer.valueOf(105));
-        queryArgs.add(Integer.valueOf(106));
+        queryArgs.add(105);
+        queryArgs.add(106);
         queryArgs.add("BLAHZOO");
-        queryArgs.add(Integer.valueOf(0));
+        queryArgs.add(0);
         boolean worked = false;
         String msg = null;
         try {

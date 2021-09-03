@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -262,7 +262,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * Used for OX mapping.
      */
     public boolean excludeDefaultListeners() {
-        return m_excludeDefaultListeners != null && m_excludeDefaultListeners.booleanValue();
+        return m_excludeDefaultListeners != null && m_excludeDefaultListeners;
     }
 
     /**
@@ -270,7 +270,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * Used for OX mapping.
      */
     public boolean excludeSuperclassListeners() {
-        return m_excludeSuperclassListeners != null && m_excludeSuperclassListeners.booleanValue();
+        return m_excludeSuperclassListeners != null && m_excludeSuperclassListeners;
     }
 
     /**

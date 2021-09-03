@@ -45,7 +45,7 @@ public class SDODataObjectGetStringWithIndexConversionTest extends SDODataObject
         property.setType(SDOConstants.SDO_BOOLEAN);
 
         boolean str = true;
-        Boolean B_STR = Boolean.valueOf(str);
+        Boolean B_STR = str;
         dataObject.setBoolean(PROPERTY_INDEX, str);// add it to instance list
 
         assertEquals(B_STR.toString(), dataObject.getString(PROPERTY_INDEX));

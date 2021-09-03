@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2015 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -98,7 +98,7 @@ public class TestNVarChar {
 
             Long count = em.createQuery("SELECT COUNT(n) FROM NvarcharEntity n WHERE n.dataField=:data", Long.class)
                     .setParameter("data", latinChars).getSingleResult();
-            Assert.assertTrue(count.longValue() > 0);
+            Assert.assertTrue(count > 0);
 
         } finally {
             if (em.getTransaction().isActive()) {
@@ -124,7 +124,7 @@ public class TestNVarChar {
             em.getTransaction().commit();
 
             Long count = em.createQuery("SELECT count(n) FROM NvarcharEntity n WHERE n.dataField=\"" + str + "\"", Long.class).getSingleResult();
-            Assert.assertTrue(count.longValue() >= 1);
+            Assert.assertTrue(count >= 1);
 
         } finally {
             if (em.getTransaction().isActive()) {

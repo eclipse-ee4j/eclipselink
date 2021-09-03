@@ -93,7 +93,7 @@ public class DeepMergeCloneSerializedNewTest extends org.eclipse.persistence.tes
 
             //add a new manager, test 1-m's
             Emp newEmp = new Emp();
-            newEmp.setEmpno(Double.valueOf((double)(System.currentTimeMillis()) % 10000));
+            newEmp.setEmpno((double) (System.currentTimeMillis()) % 10000);
             newEmp.setEname("THe New Guy" + System.currentTimeMillis());
             if ((deserialDept.getEmpCollection() != null) && (deserialDept.getEmpCollection().size() > 1)) {
                 deserialDept.getEmpCollection().remove(deserialDept.getEmpCollection().iterator().next());

@@ -185,7 +185,7 @@ public class jiNojiTestSet {
         Object o = null;
         Vector queryArgs = new NonSynchronizedVector();
         queryArgs.add("test");
-        queryArgs.add(Integer.valueOf(15));
+        queryArgs.add(15);
         boolean worked = false;
         String msg = null;
         try {

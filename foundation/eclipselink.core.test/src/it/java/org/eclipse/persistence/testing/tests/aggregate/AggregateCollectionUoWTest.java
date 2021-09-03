@@ -51,7 +51,7 @@ public class AggregateCollectionUoWTest extends WriteObjectTest {
         House house2 = (House)houses.get(houses.size()-1);
         house2.setDescriptions("do not buy it, it collapses -:)");
         Oid newInsurancePolicyId = new Oid();
-        newInsurancePolicyId.setOid(Integer.valueOf(893453));
+        newInsurancePolicyId.setOid(893453);
         house2.setInsuranceId(newInsurancePolicyId);
         House newHouse = new House();
         newHouse.setLocation("123 Slater Street");

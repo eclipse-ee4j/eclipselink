@@ -33,11 +33,11 @@ public class SDODataObjectGetShortConversionByXPathQueryTest extends SDODataObje
         prop.setType(SDOConstants.SDO_SHORT);
 
         short s = 12;
-        Short bb = Short.valueOf(s);
+        Short bb = s;
 
         //List b = new ArrayList();
         //dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
-        dataObject_a.setShort(propertyTest + "test", bb.shortValue());
+        dataObject_a.setShort(propertyTest + "test", bb);
 
         assertEquals(bb.shortValue(), dataObject_a.getShort(propertyTest + "test"));
     }
@@ -49,9 +49,9 @@ public class SDODataObjectGetShortConversionByXPathQueryTest extends SDODataObje
 
         List objects = new ArrayList();
         short s = 12;
-        Short b = Short.valueOf(s);
+        Short b = s;
         short s1 = 12;
-        Short bb = Short.valueOf(s1);
+        Short bb = s1;
         objects.add(b);
         objects.add(bb);
 
@@ -102,9 +102,9 @@ public class SDODataObjectGetShortConversionByXPathQueryTest extends SDODataObje
         property_c1_object.setType(SDOConstants.SDO_SHORT);
 
         short s = 12;
-        Short bb = Short.valueOf(s);
+        Short bb = s;
 
-        dataObject_a.setShort("PName-a0/PName-b0[number='1']/PName-c1.0", bb.shortValue());
+        dataObject_a.setShort("PName-a0/PName-b0[number='1']/PName-c1.0", bb);
 
         assertEquals(bb.shortValue(), dataObject_a.getShort("PName-a0/PName-b0[number='1']/PName-c1.0"));
     }

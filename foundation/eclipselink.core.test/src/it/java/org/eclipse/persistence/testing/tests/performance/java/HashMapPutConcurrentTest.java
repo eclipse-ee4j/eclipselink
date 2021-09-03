@@ -27,7 +27,7 @@ public class HashMapPutConcurrentTest extends ConcurrentPerformanceComparisonTes
     public HashMapPutConcurrentTest() {
         setDescription("Measure the concurrency of HashMap.");
         for (int index = 0; index < 100; index ++) {
-            this.keys[index] = Integer.valueOf(index);
+            this.keys[index] = index;
         }
     }
 
@@ -36,7 +36,7 @@ public class HashMapPutConcurrentTest extends ConcurrentPerformanceComparisonTes
         super.setup();
         map = new HashMap(100);
         for (int index = 0; index < 100; index++) {
-            map.put(Integer.valueOf(index), Integer.valueOf(index));
+            map.put(index, index);
         }
     }
 

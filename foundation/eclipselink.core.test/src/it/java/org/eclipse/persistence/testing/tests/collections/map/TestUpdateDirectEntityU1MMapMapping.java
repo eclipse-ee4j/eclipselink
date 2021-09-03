@@ -53,11 +53,11 @@ public class TestUpdateDirectEntityU1MMapMapping extends TestReadDirectEntityU1M
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holders = uow.readAllObjects(DirectEntityU1MMapHolder.class, holderExp);
         changedHolder = (DirectEntityU1MMapHolder)holders.get(0);
-        changedHolder.removeDirectToEntityMapItem(Integer.valueOf(11));
+        changedHolder.removeDirectToEntityMapItem(11);
         EntityMapValue mapValue = new EntityMapValue();
         mapValue.setId(3);
         mapValue = (EntityMapValue)uow.registerObject(mapValue);
-        changedHolder.addDirectToEntityMapItem(Integer.valueOf(33), mapValue);
+        changedHolder.addDirectToEntityMapItem(33, mapValue);
         uow.commit();
         Object holderForComparison = uow.readObject(changedHolder);
         if (!compareObjects(changedHolder, holderForComparison)){
@@ -73,10 +73,10 @@ public class TestUpdateDirectEntityU1MMapMapping extends TestReadDirectEntityU1M
         if (!compareObjects(holder, changedHolder)){
             throw new TestErrorException("Objects do not match reinitialize");
         }
-        if (holder.getDirectToEntityMap().containsKey(Integer.valueOf(1))){
+        if (holder.getDirectToEntityMap().containsKey(1)){
             throw new TestErrorException("Item that was removed is still present in map.");
         }
-        EntityMapValue value = (EntityMapValue)holder.getDirectToEntityMap().get(Integer.valueOf(33));
+        EntityMapValue value = (EntityMapValue)holder.getDirectToEntityMap().get(33);
         if (value.getId() != 3){
             throw new TestErrorException("Item was not correctly added to map");
         }

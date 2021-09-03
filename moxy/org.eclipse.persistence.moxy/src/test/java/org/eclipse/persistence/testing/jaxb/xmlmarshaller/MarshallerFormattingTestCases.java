@@ -73,7 +73,7 @@ public class MarshallerFormattingTestCases extends OXTestCase {
 
     public void testInvalidFormatting() throws Exception {
         try {
-            Object value = Integer.valueOf(10);
+            Object value = 10;
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, value);
         } catch (PropertyException e) {
             assertTrue(true);
@@ -89,7 +89,7 @@ public class MarshallerFormattingTestCases extends OXTestCase {
         StringWriter writer = new StringWriter();
         Boolean originalSetting = (Boolean) marshaller.getProperty(Marshaller.JAXB_FORMATTED_OUTPUT);
 
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.valueOf(isFormatted));
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, isFormatted);
         marshaller.marshal(controlObject, writer);
 
         log("Expected:" + controlString);

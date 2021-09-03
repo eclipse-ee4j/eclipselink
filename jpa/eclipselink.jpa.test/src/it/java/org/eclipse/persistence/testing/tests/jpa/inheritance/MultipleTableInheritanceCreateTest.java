@@ -50,8 +50,8 @@ public class MultipleTableInheritanceCreateTest extends EntityContainerTestBase 
 
             Bus bus = new Bus();
             bus.setBusDriver(busDriver);
-            bus.setFuelCapacity(Integer.valueOf(275));
-            bus.setPassengerCapacity(Integer.valueOf(100));
+            bus.setFuelCapacity(275);
+            bus.setPassengerCapacity(100);
 
             beginTransaction();
             getEntityManager().persist(bus);

@@ -879,12 +879,12 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
             row.addElement(summary.getLoadBuildSummary().jvm);
             row.addElement(summary.getLoadBuildSummary().machine);
             row.addElement(summary.getLoadBuildSummary().toplinkVersion);
-            row.addElement(Integer.valueOf(summary.getTotalTests()));
-            row.addElement(Integer.valueOf(summary.getSetupFailures()));
-            row.addElement(Integer.valueOf(summary.getErrors()));
-            row.addElement(Integer.valueOf(summary.getFatalErrors()));
-            row.addElement(Integer.valueOf(summary.getProblems()));
-            row.addElement(Long.valueOf(summary.getTotalTime()));
+            row.addElement(summary.getTotalTests());
+            row.addElement(summary.getSetupFailures());
+            row.addElement(summary.getErrors());
+            row.addElement(summary.getFatalErrors());
+            row.addElement(summary.getProblems());
+            row.addElement(summary.getTotalTime());
             tableModel.addRow(row);
         }
         getSelectedTable().setModel(tableModel);
@@ -906,9 +906,9 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
             Vector row = new Vector();
             row.addElement(result.getName());
             row.addElement(result.getOutcome());
-            row.addElement(Long.valueOf(result.getTestTime()));
-            row.addElement(Long.valueOf(result.getTotalTime()));
-            row.addElement(Boolean.valueOf(result.getException() != null));
+            row.addElement(result.getTestTime());
+            row.addElement(result.getTotalTime());
+            row.addElement(result.getException() != null);
             row.addElement(result.getLoadBuildSummary().timestamp);
             row.addElement(result.getLoadBuildSummary().loginChoice);
             row.addElement(result.getLoadBuildSummary().os);
@@ -935,14 +935,14 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
             TestResultsSummary summary = (TestResultsSummary)enumtr.nextElement();
             Vector row = new Vector();
             row.addElement(summary.getName());
-            row.addElement(Integer.valueOf(summary.getTotalTests()));
-            row.addElement(Integer.valueOf(summary.getSetupFailures()));
-            row.addElement(Integer.valueOf(summary.getPassed()));
-            row.addElement(Integer.valueOf(summary.getErrors()));
-            row.addElement(Integer.valueOf(summary.getFatalErrors()));
-            row.addElement(Integer.valueOf(summary.getProblems()));
-            row.addElement(Integer.valueOf(summary.getWarnings()));
-            row.addElement(Long.valueOf(summary.getTotalTime()));
+            row.addElement(summary.getTotalTests());
+            row.addElement(summary.getSetupFailures());
+            row.addElement(summary.getPassed());
+            row.addElement(summary.getErrors());
+            row.addElement(summary.getFatalErrors());
+            row.addElement(summary.getProblems());
+            row.addElement(summary.getWarnings());
+            row.addElement(summary.getTotalTime());
             tableModel.addRow(row);
         }
         getSelectedTable().setModel(tableModel);

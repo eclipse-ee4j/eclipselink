@@ -90,7 +90,7 @@ public class DatasourcePlatform implements Platform {
     protected String endDelimiter = null;
 
     /** Ensures that only one thread at a time can add/remove sequences */
-    protected Object sequencesLock = Boolean.valueOf(true);
+    protected Object sequencesLock = Boolean.TRUE;
 
     /** If the native sequence type is not supported, if table sequencing should be used. */
     protected boolean defaultNativeSequenceToTable;
@@ -133,7 +133,7 @@ public class DatasourcePlatform implements Platform {
     }
 
     protected void addOperator(ExpressionOperator operator) {
-        platformOperators.put(Integer.valueOf(operator.getSelector()), operator);
+        platformOperators.put(operator.getSelector(), operator);
     }
 
     /**
@@ -295,7 +295,7 @@ public class DatasourcePlatform implements Platform {
      * Return the operator for the operator constant defined in ExpressionOperator.
      */
     public ExpressionOperator getOperator(int selector) {
-        return (ExpressionOperator)getPlatformOperators().get(Integer.valueOf(selector));
+        return (ExpressionOperator)getPlatformOperators().get(selector);
     }
 
     /**

@@ -18,7 +18,7 @@ import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
 public class TypeAttributeUserTypeNamespaceOnParentTestCases extends XMLMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/directtofield/typeattribute/TypeAttributeUserType2.xml";
-    private final static Integer CONTROL_ID = Integer.valueOf(123);
+    private final static Integer CONTROL_ID = 123;
     private final static String CONTROL_FIRST_NAME = "Jane";
     private final static String CONTROL_LAST_NAME = "Doe";
 

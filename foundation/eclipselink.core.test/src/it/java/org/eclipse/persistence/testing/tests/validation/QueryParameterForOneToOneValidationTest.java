@@ -80,7 +80,7 @@ public class QueryParameterForOneToOneValidationTest extends ExceptionTest {
         try {
             // doesn't matter what id is queried
             Vector params = new Vector();
-            params.add(Integer.valueOf(id));
+            params.add(id);
 
             // special case for conforming
             if (this.shouldConform) {

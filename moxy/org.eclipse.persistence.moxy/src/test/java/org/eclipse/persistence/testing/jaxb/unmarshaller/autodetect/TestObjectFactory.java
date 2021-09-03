@@ -27,7 +27,7 @@ public class TestObjectFactory {
 
     @XmlElementDecl(name="integer-root")
     public JAXBElement<Integer> createIntegerRoot() {
-        return new JAXBElement<Integer>(new QName("integer-root"), Integer.class, Integer.valueOf(0));
+        return new JAXBElement<Integer>(new QName("integer-root"), Integer.class, 0);
     }
 
     public EmployeeCollection createEmployeeCollection() {

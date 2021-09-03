@@ -35,7 +35,7 @@ public class XMLChoiceMappingNonStringValueTestCases extends XMLWithJSONMappingT
     Employee employee = new Employee();
     employee.name = "Jane Doe";
 
-    employee.choice = Integer.valueOf(12);
+    employee.choice = 12;
 
     employee.phone = "123-4567";
 

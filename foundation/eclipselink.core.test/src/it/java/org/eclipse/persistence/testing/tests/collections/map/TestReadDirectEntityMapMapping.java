@@ -57,12 +57,12 @@ public class TestReadDirectEntityMapMapping extends TestCase {
         DirectEntityMapHolder holder = new DirectEntityMapHolder();
         EntityMapValue value = new EntityMapValue();
         value.setId(1);
-        holder.addDirectToEntityMapItem(Integer.valueOf(11), value);
+        holder.addDirectToEntityMapItem(11, value);
 
 
         EntityMapValue value2 = new EntityMapValue();
         value2.setId(2);
-        holder.addDirectToEntityMapItem(Integer.valueOf(22), value2);
+        holder.addDirectToEntityMapItem(22, value2);
         uow.registerObject(holder);
         uow.registerObject(value);
         uow.registerObject(value2);
@@ -90,7 +90,7 @@ public class TestReadDirectEntityMapMapping extends TestCase {
         if (holder.getDirectToEntityMap().size() != 2){
             throw new TestErrorException("Incorrect Number of MapEntityValues was read.");
         }
-        EntityMapValue value = (EntityMapValue)holder.getDirectToEntityMap().get(Integer.valueOf(11));
+        EntityMapValue value = (EntityMapValue)holder.getDirectToEntityMap().get(11);
         if (value.getId() != 1){
             throw new TestErrorException("Incorrect MapEntityValues was read.");
         }

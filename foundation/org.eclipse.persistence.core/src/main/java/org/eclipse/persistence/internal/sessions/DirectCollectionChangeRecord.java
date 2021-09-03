@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -90,22 +90,22 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
      */
     public void addAdditionChange(Object key, Integer count){
         if (getRemoveObjectMap().containsKey(key)) {
-            int removeValue = ((Integer)getRemoveObjectMap().get(key)).intValue();
-            int addition = count.intValue();
+            int removeValue = (Integer) getRemoveObjectMap().get(key);
+            int addition = count;
             int result = removeValue - addition;
             if (result > 0 ) { // more removes still
-                getRemoveObjectMap().put(key, Integer.valueOf(result));
+                getRemoveObjectMap().put(key, result);
             } else if (result < 0) { // more adds now
                 getRemoveObjectMap().remove(key);
-                getAddObjectMap().put(key, Integer.valueOf(Math.abs(result)));
+                getAddObjectMap().put(key, Math.abs(result));
             } else { // equal
                 getRemoveObjectMap().remove(key);
             }
         } else {
             if (this.getAddObjectMap().containsKey(key)) {
-                int addValue = ((Integer)this.getAddObjectMap().get(key)).intValue();
-                addValue += count.intValue();
-                this.getAddObjectMap().put(key, Integer.valueOf(addValue));
+                int addValue = (Integer) this.getAddObjectMap().get(key);
+                addValue += count;
+                this.getAddObjectMap().put(key, addValue);
             } else {
                 this.getAddObjectMap().put(key, count);
             }
@@ -117,12 +117,12 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
             }
         }
         // this is an attribute change track add keep count
-        int addValue = count.intValue();
+        int addValue = count;
         int commitValue = 0;
         if (getCommitAddMap().containsKey(key)) {
-            commitValue = ((Integer)getCommitAddMap().get(key)).intValue();
+            commitValue = (Integer) getCommitAddMap().get(key);
         }
-        getCommitAddMap().put(key, Integer.valueOf(addValue + commitValue));
+        getCommitAddMap().put(key, addValue + commitValue);
     }
 
     /**
@@ -146,22 +146,22 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
      */
     public void addRemoveChange(Object key, Integer count){
         if (getAddObjectMap().containsKey(key)) {
-            int removeValue = ((Integer)getAddObjectMap().get(key)).intValue();
-            int addition = count.intValue();
+            int removeValue = (Integer) getAddObjectMap().get(key);
+            int addition = count;
             int result = removeValue - addition;
             if (result > 0 ) { // more removes still
-                getAddObjectMap().put(key, Integer.valueOf(result));
+                getAddObjectMap().put(key, result);
             } else if (result < 0) { // more adds now
                 getAddObjectMap().remove(key);
-                getRemoveObjectMap().put(key, Integer.valueOf(Math.abs(result)));
+                getRemoveObjectMap().put(key, Math.abs(result));
             } else { // equal
                 getAddObjectMap().remove(key);
             }
         } else {
             if (this.getRemoveObjectMap().containsKey(key)){
-                int addValue = ((Integer)this.getRemoveObjectMap().get(key)).intValue();
-                addValue += count.intValue();
-                this.getRemoveObjectMap().put(key, Integer.valueOf(addValue));
+                int addValue = (Integer) this.getRemoveObjectMap().get(key);
+                addValue += count;
+                this.getRemoveObjectMap().put(key, addValue);
             } else {
                 this.getRemoveObjectMap().put(key, count);
             }
@@ -172,12 +172,12 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
                 return;
             }
         }
-        int removeValue = count.intValue();
+        int removeValue = count;
         int commitValue = 0;
         if (getCommitAddMap().containsKey(key)){
-            commitValue = ((Integer)getCommitAddMap().get(key)).intValue();
+            commitValue = (Integer) getCommitAddMap().get(key);
         }
-        getCommitAddMap().put(key, Integer.valueOf(commitValue - removeValue));
+        getCommitAddMap().put(key, commitValue - removeValue);
     }
 
     /**
@@ -211,10 +211,10 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
      */
     public void incrementDatabaseCount(Object object){
         if (getCommitAddMap().containsKey(object)) {
-            int count = ((Integer)getCommitAddMap().get(object)).intValue();
-            getCommitAddMap().put(object, Integer.valueOf(++count));
+            int count = (Integer) getCommitAddMap().get(object);
+            getCommitAddMap().put(object, ++count);
         } else {
-            getCommitAddMap().put(object, Integer.valueOf(1));
+            getCommitAddMap().put(object, 1);
         }
     }
 
@@ -223,9 +223,9 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
      */
     public void decrementDatabaseCount(Object object){
         if (getCommitAddMap().containsKey(object)) {
-            int count = ((Integer)getCommitAddMap().get(object)).intValue();
+            int count = (Integer) getCommitAddMap().get(object);
             if(count > 1) {
-                getCommitAddMap().put(object, Integer.valueOf(--count));
+                getCommitAddMap().put(object, --count);
             } else {
                 getCommitAddMap().remove(object);
             }
@@ -241,7 +241,7 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
         Vector vector = new Vector();
         for (Iterator iterator = getAddObjectMap().keySet().iterator(); iterator.hasNext();){
             Object object = iterator.next();
-            int count = ((Integer)getAddObjectMap().get(object)).intValue();
+            int count = (Integer) getAddObjectMap().get(object);
             while (count > 0){
                 vector.add(object);
                 --count;
@@ -279,7 +279,7 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
         Vector vector = new Vector();
         for (Iterator iterator = getRemoveObjectMap().keySet().iterator(); iterator.hasNext();){
             Object object = iterator.next();
-            int count = ((Integer)getRemoveObjectMap().get(object)).intValue();
+            int count = (Integer) getRemoveObjectMap().get(object);
             while (count > 0){
                 vector.add(object);
                 --count;
@@ -339,7 +339,7 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
             Object removed = iterator.next();
             if (!((DirectCollectionChangeRecord)mergeFromRecord).getCommitAddMap().containsKey(removed)){
                 // we have not recorded a change of this type in this class before so  add it
-                this.getCommitAddMap().put(removed, Integer.valueOf(1));
+                this.getCommitAddMap().put(removed, 1);
             }
             this.addRemoveChange(removed, (Integer)removeMapToMerge.get(removed));
         }

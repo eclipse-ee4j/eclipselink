@@ -55,12 +55,12 @@ public class TestUpdateDirectEntityMapMapping extends TestCase {
         holder = new DirectEntityMapHolder();
         EntityMapValue value = new EntityMapValue();
         value.setId(1);
-        holder.addDirectToEntityMapItem(Integer.valueOf(11), value);
+        holder.addDirectToEntityMapItem(11, value);
 
 
         EntityMapValue value2 = new EntityMapValue();
         value2.setId(2);
-        holder.addDirectToEntityMapItem(Integer.valueOf(22), value2);
+        holder.addDirectToEntityMapItem(22, value2);
         uow.registerObject(holder);
         uow.registerObject(value);
         uow.registerObject(value2);
@@ -78,9 +78,9 @@ public class TestUpdateDirectEntityMapMapping extends TestCase {
         changedHolder = (DirectEntityMapHolder)uow.readObject(holder);
         EntityMapValue value = new EntityMapValue();
         value.setId(3);
-        changedHolder.addDirectToEntityMapItem(Integer.valueOf(33), value);
+        changedHolder.addDirectToEntityMapItem(33, value);
 
-        changedHolder.getDirectToEntityMap().remove(Integer.valueOf(11));
+        changedHolder.getDirectToEntityMap().remove(11);
         uow.commit();
         Object holderForComparison = uow.readObject(holder);
         if (!compareObjects(changedHolder, holderForComparison)){
@@ -98,7 +98,7 @@ public class TestUpdateDirectEntityMapMapping extends TestCase {
         if (holder.getDirectToEntityMap().size() != 2){
             throw new TestErrorException("Incorrect Number of MapEntityValues was read.");
         }
-        EntityMapValue value = (EntityMapValue)holder.getDirectToEntityMap().get(Integer.valueOf(33));
+        EntityMapValue value = (EntityMapValue)holder.getDirectToEntityMap().get(33);
         if (value.getId() != 3){
             throw new TestErrorException("MapEntityValue was not added properly.");
         }

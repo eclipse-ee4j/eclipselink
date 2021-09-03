@@ -232,7 +232,7 @@ public class SDODataObjectGetCharacterByPositionalPathTest extends SDODataObject
         dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_STRING);
 
         char str = 'c';
-        Character B_STR = Character.valueOf(str);
+        Character B_STR = str;
         dataObject_a.setString(propertyPath_a_b_c, B_STR.toString());// add it to instance list
 
         assertEquals(str, dataObject_a.getChar(property));

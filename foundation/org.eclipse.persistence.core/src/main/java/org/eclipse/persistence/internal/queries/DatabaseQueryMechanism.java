@@ -759,7 +759,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             existQuery.setDescriptor(getDescriptor());
             existQuery.setTranslationRow(getTranslationRow());
 
-            doesExist = ((Boolean)getSession().executeQuery(existQuery)).booleanValue();
+            doesExist = (Boolean) getSession().executeQuery(existQuery);
         }
 
         if (!doesExist) {
@@ -937,10 +937,10 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
                 OptimisticLockingPolicy policy = descriptor.getOptimisticLockingPolicy();
                 policy.addLockValuesToTranslationRow(writeQuery);
 
-                if (!getModifyRow().isEmpty() || shouldModifyVersionField.booleanValue()) {
+                if (!getModifyRow().isEmpty() || shouldModifyVersionField) {
                     // Update the row with newer lock value.
                     policy.updateRowAndObjectForUpdate(writeQuery, object);
-                } else if (!shouldModifyVersionField.booleanValue() && (policy instanceof VersionLockingPolicy)) {
+                } else if (!shouldModifyVersionField && (policy instanceof VersionLockingPolicy)) {
                     // Add the existing write lock value to the for a "read" lock (requires something to update).
                     ((VersionLockingPolicy)policy).writeLockValueIntoRow(writeQuery, object);
                 }
@@ -959,7 +959,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             if (QueryMonitor.shouldMonitor()) {
                 QueryMonitor.incrementUpdate(getWriteObjectQuery());
             }
-            int rowCount = updateObject().intValue();
+            int rowCount = updateObject();
 
             if (rowCount < 1) {
                 if (session.hasEventManager()) {
@@ -1093,7 +1093,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             if (QueryMonitor.shouldMonitor()) {
                 QueryMonitor.incrementUpdate(getWriteObjectQuery());
             }
-            int rowCount = updateObject().intValue();
+            int rowCount = updateObject();
 
             if (rowCount < 1) {
                 if (session.hasEventManager()) {

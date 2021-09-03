@@ -33,7 +33,7 @@ public class TestUpdate extends JPA1Base {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
         try {
-            CubiclePrimaryKeyClass cubKey = new CubiclePrimaryKeyClass(Integer.valueOf(40), Integer.valueOf(41));
+            CubiclePrimaryKeyClass cubKey = new CubiclePrimaryKeyClass(40, 41);
             Cubicle cub = new Cubicle(cubKey, "green", null /* employee */
             );
             env.beginTransaction(em);
@@ -59,8 +59,8 @@ public class TestUpdate extends JPA1Base {
         try {
             Employee emp = new Employee(17, "first", "last", null /* department */
             );
-            CubiclePrimaryKeyClass key1 = new CubiclePrimaryKeyClass(Integer.valueOf(98), Integer.valueOf(99));
-            CubiclePrimaryKeyClass key2 = new CubiclePrimaryKeyClass(Integer.valueOf(5), Integer.valueOf(6));
+            CubiclePrimaryKeyClass key1 = new CubiclePrimaryKeyClass(98, 99);
+            CubiclePrimaryKeyClass key2 = new CubiclePrimaryKeyClass(5, 6);
             Cubicle cub1 = new Cubicle(key1, "orange", emp);
             env.beginTransaction(em);
             emp.setCubicle(cub1);
@@ -68,12 +68,12 @@ public class TestUpdate extends JPA1Base {
             em.persist(cub1);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            emp = em.find(Employee.class, Integer.valueOf(17));
+            emp = em.find(Employee.class, 17);
             Cubicle cub2 = new Cubicle(key2, "dusky pink", emp);
             emp.setCubicle(cub2);
             em.persist(cub2);
             env.commitTransactionAndClear(em);
-            emp = em.find(Employee.class, Integer.valueOf(17));
+            emp = em.find(Employee.class, 17);
             verify(emp != null, "employee lost");
             verify(emp.getCubicle() != null, "cubicle lost");
             CubiclePrimaryKeyClass key = emp.getCubicle().getId();
@@ -94,7 +94,7 @@ public class TestUpdate extends JPA1Base {
             env.commitTransaction(em);
             em.clear();
             env.beginTransaction(em);
-            dep = em.find(Department.class, Integer.valueOf(dep.getId()));
+            dep = em.find(Department.class, dep.getId());
             dep.setId(99);
             try {
                 env.commitTransaction(em);

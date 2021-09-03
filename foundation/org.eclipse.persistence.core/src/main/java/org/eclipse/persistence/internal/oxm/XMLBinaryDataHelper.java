@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -180,7 +180,7 @@ public class XMLBinaryDataHelper {
     public EncodedData getBytesFromByteObjectArray(Byte[] bytes, String mimeType) {
         byte[] data = new byte[bytes.length];
         for (int i = 0; i < data.length; i++) {
-            data[i] = bytes[i].byteValue();
+            data[i] = bytes[i];
         }
         return new EncodedData(data, mimeType);
     }
@@ -258,7 +258,7 @@ public class XMLBinaryDataHelper {
             Byte[] objectBytes = (Byte[]) obj;
             byte[] bytes = new byte[objectBytes.length];
             for (int i = 0; i < objectBytes.length; i++) {
-                bytes[i] = objectBytes[i].byteValue();
+                bytes[i] = objectBytes[i];
             }
             try {
                 return new MimeMultipart(new ByteArrayDataSource(bytes, "multipart/mixed"));
@@ -295,7 +295,7 @@ public class XMLBinaryDataHelper {
             Byte[] objectBytes = (Byte[]) obj;
             byte[] bytes = new byte[objectBytes.length];
             for (int i = 0; i < objectBytes.length; i++) {
-                bytes[i] = objectBytes[i].byteValue();
+                bytes[i] = objectBytes[i];
             }
             ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
             try {
@@ -405,7 +405,7 @@ public class XMLBinaryDataHelper {
             Byte[] objectBytes = (Byte[]) obj;
             byte[] bytes = new byte[objectBytes.length];
             for (int i = 0; i < objectBytes.length; i++) {
-                bytes[i] = objectBytes[i].byteValue();
+                bytes[i] = objectBytes[i];
             }
             return new ByteArraySource(bytes);
         } else if(obj instanceof InputStream) {

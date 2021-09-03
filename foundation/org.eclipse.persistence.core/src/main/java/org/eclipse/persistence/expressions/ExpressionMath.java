@@ -200,7 +200,7 @@ public final class ExpressionMath {
      * Return the operator.
      */
     public static ExpressionOperator getOperator(int selector) {
-        ExpressionOperator result = ExpressionOperator.getOperator(Integer.valueOf(selector));
+        ExpressionOperator result = ExpressionOperator.getOperator(selector);
         if (result != null) {
             return result;
         }

@@ -56,6 +56,6 @@ public abstract class SequencedInfo {
         if (i == null) {
             return 0;
         }
-        return i.intValue();
+        return i;
     }
 }

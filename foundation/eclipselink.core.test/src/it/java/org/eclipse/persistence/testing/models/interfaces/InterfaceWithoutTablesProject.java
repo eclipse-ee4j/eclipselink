@@ -279,7 +279,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         // SECTION: VARIABLEONETOONEMAPPING
         org.eclipse.persistence.mappings.VariableOneToOneMapping variableonetoonemapping =
             new org.eclipse.persistence.mappings.VariableOneToOneMapping();
-        variableonetoonemapping.setWeight(Integer.valueOf(3));
+        variableonetoonemapping.setWeight(3);
         variableonetoonemapping.setAttributeName("contact");
         variableonetoonemapping.setIsReadOnly(false);
         variableonetoonemapping.setUsesIndirection(false);
@@ -664,8 +664,8 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         //variableonetoonemapping.addClassIndicator(Email.class, "E");
         //variableonetoonemapping.addClassIndicator(Phone.class, "P");
         variableonetoonemapping.addClassIndicator(Email.class,
-                                                  Float.valueOf(1)); // TO TEST NUMERIC TYPE INDICATOR
-        variableonetoonemapping.addClassIndicator(Phone.class, Float.valueOf(2));
+                1F); // TO TEST NUMERIC TYPE INDICATOR
+        variableonetoonemapping.addClassIndicator(Phone.class, 2F);
         descriptor.addMapping(variableonetoonemapping);
 
         // SECTION: VARIABLEONETOONEMAPPING
@@ -681,8 +681,8 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         //variableonetoonemapping2.addClassIndicator(Email.class, "E");
         //variableonetoonemapping2.addClassIndicator(Phone.class, "P");
         variableonetoonemapping2.addClassIndicator(Email.class,
-                                                   Float.valueOf(1)); // TO TEST NUMERIC TYPE INDICATOR
-        variableonetoonemapping2.addClassIndicator(Phone.class, Float.valueOf(2));
+                1F); // TO TEST NUMERIC TYPE INDICATOR
+        variableonetoonemapping2.addClassIndicator(Phone.class, 2F);
         descriptor.addMapping(variableonetoonemapping2);
 
         Employee.addToDescriptor(descriptor);

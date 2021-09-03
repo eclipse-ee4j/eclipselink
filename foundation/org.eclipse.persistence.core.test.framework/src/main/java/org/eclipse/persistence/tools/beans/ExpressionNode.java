@@ -86,33 +86,33 @@ public class ExpressionNode {
     }
 
     public static String getOperator(int anOperator) {
-        return (String)getOperators().get(Integer.valueOf(anOperator));
+        return (String)getOperators().get(anOperator);
     }
 
     public static Hashtable getOperators() {
         if (operators == null) {
             operators = new Hashtable();
-            operators.put(Integer.valueOf(ExpressionOperator.Equal), Equals);
-            operators.put(Integer.valueOf(ExpressionOperator.NotEqual), NotEquals);
-            operators.put(Integer.valueOf(ExpressionOperator.LessThan), LessThan);
-            operators.put(Integer.valueOf(ExpressionOperator.LessThanEqual),
+            operators.put(ExpressionOperator.Equal, Equals);
+            operators.put(ExpressionOperator.NotEqual, NotEquals);
+            operators.put(ExpressionOperator.LessThan, LessThan);
+            operators.put(ExpressionOperator.LessThanEqual,
                           LessThanEqual);
-            operators.put(Integer.valueOf(ExpressionOperator.GreaterThan),
+            operators.put(ExpressionOperator.GreaterThan,
                           GreaterThan);
-            operators.put(Integer.valueOf(ExpressionOperator.GreaterThanEqual),
+            operators.put(ExpressionOperator.GreaterThanEqual,
                           GreaterThanEqual);
-            operators.put(Integer.valueOf(ExpressionOperator.Like), Like);
-            operators.put(Integer.valueOf(ExpressionOperator.NotLike), NotLike);
-            operators.put(Integer.valueOf(ExpressionOperator.In), In);
-            operators.put(Integer.valueOf(ExpressionOperator.NotIn), NotIn);
-            operators.put(Integer.valueOf(ExpressionOperator.Between), Between);
-            operators.put(Integer.valueOf(ExpressionOperator.NotBetween),
+            operators.put(ExpressionOperator.Like, Like);
+            operators.put(ExpressionOperator.NotLike, NotLike);
+            operators.put(ExpressionOperator.In, In);
+            operators.put(ExpressionOperator.NotIn, NotIn);
+            operators.put(ExpressionOperator.Between, Between);
+            operators.put(ExpressionOperator.NotBetween,
                           NotBetween);
-            operators.put(Integer.valueOf(ExpressionOperator.Or), Or);
-            operators.put(Integer.valueOf(ExpressionOperator.And), And);
-            operators.put(Integer.valueOf(ExpressionOperator.Not), Not);
-            operators.put(Integer.valueOf(ExpressionOperator.ToLowerCase), Lower);
-            operators.put(Integer.valueOf(ExpressionOperator.ToUpperCase), Upper);
+            operators.put(ExpressionOperator.Or, Or);
+            operators.put(ExpressionOperator.And, And);
+            operators.put(ExpressionOperator.Not, Not);
+            operators.put(ExpressionOperator.ToLowerCase, Lower);
+            operators.put(ExpressionOperator.ToUpperCase, Upper);
         }
 
         return operators;

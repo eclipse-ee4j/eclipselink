@@ -246,7 +246,7 @@ public class MenuItem implements ChangeTracker {
     }
 
     public void setPrice(float newValue) {
-        propertyChange("price", Float.valueOf(this.price), Float.valueOf(newValue));
+        propertyChange("price", this.price, newValue);
         this.price = newValue;
     }
 

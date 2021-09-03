@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -872,7 +872,7 @@ public class Helper extends CoreHelper implements Serializable {
      * Jan 1, 1970).  Negative values represent dates prior to the epoch.
      */
     public static java.sql.Date dateFromLong(Long longObject) {
-        return new java.sql.Date(longObject.longValue());
+        return new java.sql.Date(longObject);
     }
 
     /**
@@ -1916,7 +1916,7 @@ public class Helper extends CoreHelper implements Serializable {
      * Jan 1, 1970).  Negative values represent dates prior to the epoch.
      */
     public static java.sql.Time timeFromLong(Long longObject) {
-        return new java.sql.Time(longObject.longValue());
+        return new java.sql.Time(longObject);
     }
 
     /**
@@ -2182,7 +2182,7 @@ public class Helper extends CoreHelper implements Serializable {
      * Jan 1, 1970).  Negative values represent dates prior to the epoch.
      */
     public static java.util.Date utilDateFromLong(Long longObject) {
-        return new java.util.Date(longObject.longValue());
+        return new java.util.Date(longObject);
     }
 
     /**
@@ -2248,8 +2248,8 @@ public class Helper extends CoreHelper implements Serializable {
      */
     public static boolean isEquivalentToNull(Object value) {
         return (!isZeroValidPrimaryKey
-                    && (((value.getClass() == ClassConstants.LONG) && (((Long)value).longValue() == 0L))
-                            || ((value.getClass() == ClassConstants.INTEGER) && (((Integer)value).intValue() == 0))));
+                    && (((value.getClass() == ClassConstants.LONG) && ((Long) value == 0L))
+                            || ((value.getClass() == ClassConstants.INTEGER) && ((Integer) value == 0))));
     }
 
     /**

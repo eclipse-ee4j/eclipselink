@@ -22,7 +22,7 @@ public class SimpleReverseSqrtTest extends org.eclipse.persistence.testing.tests
         setTestEmployees(getExtraEmployees());
         Employee emp = (Employee)getTestEmployees().firstElement();
 
-        double salarySquareRoot = Math.sqrt((Double.valueOf(emp.getSalary()).doubleValue()));
+        double salarySquareRoot = Math.sqrt(((double) emp.getSalary()));
         String ejbqlString;
 
         ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";

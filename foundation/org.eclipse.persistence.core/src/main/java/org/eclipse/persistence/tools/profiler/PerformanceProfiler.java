@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -100,14 +100,14 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
                      operationNames.hasMoreElements();) {
                 String name = (String)operationNames.nextElement();
                 Long oldTime = (Long)summary.getOperationTimings().get(name);
-                long profileTime = ((Long)profile.getOperationTimings().get(name)).longValue();
+                long profileTime = (Long) profile.getOperationTimings().get(name);
                 long newTime;
                 if (oldTime == null) {
                     newTime = profileTime;
                 } else {
-                    newTime = oldTime.longValue() + profileTime;
+                    newTime = oldTime + profileTime;
                 }
-                summary.getOperationTimings().put(name, Long.valueOf(newTime));
+                summary.getOperationTimings().put(name, newTime);
             }
         }
 
@@ -147,14 +147,14 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
                      operationNames.hasMoreElements();) {
                 String name = (String)operationNames.nextElement();
                 Long oldTime = (Long)summary.getOperationTimings().get(name);
-                long profileTime = ((Long)profile.getOperationTimings().get(name)).longValue();
+                long profileTime = (Long) profile.getOperationTimings().get(name);
                 long newTime;
                 if (oldTime == null) {
                     newTime = profileTime;
                 } else {
-                    newTime = oldTime.longValue() + profileTime;
+                    newTime = oldTime + profileTime;
                 }
-                summary.getOperationTimings().put(name, Long.valueOf(newTime));
+                summary.getOperationTimings().put(name, newTime);
             }
         }
 
@@ -188,14 +188,14 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
                      operationNames.hasMoreElements();) {
                 String name = (String)operationNames.nextElement();
                 Long oldTime = (Long)summary.getOperationTimings().get(name);
-                long profileTime = ((Long)profile.getOperationTimings().get(name)).longValue();
+                long profileTime = (Long) profile.getOperationTimings().get(name);
                 long newTime;
                 if (oldTime == null) {
                     newTime = profileTime;
                 } else {
-                    newTime = oldTime.longValue() + profileTime;
+                    newTime = oldTime + profileTime;
                 }
-                summary.getOperationTimings().put(name, Long.valueOf(newTime));
+                summary.getOperationTimings().put(name, newTime);
             }
         }
 
@@ -231,7 +231,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
         if (startTime == null) {
             return;
         }
-        long time = endTime - startTime.longValue();
+        long time = endTime - startTime;
 
         if (getNestLevel() == 0) {
             // Log as a profile if not within query execution,
@@ -257,9 +257,9 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
 
         Long totalTime = getOperationTimings().get(operationName);
         if (totalTime == null) {
-            getOperationTimings().put(operationName, Long.valueOf(time));
+            getOperationTimings().put(operationName, time);
         } else {
-            getOperationTimings().put(operationName, Long.valueOf(totalTime.longValue() + time));
+            getOperationTimings().put(operationName, totalTime + time);
         }
     }
 
@@ -281,7 +281,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
     }
 
     protected Map<String, Long> getOperationStartTimes() {
-        Integer threadId = Integer.valueOf(Thread.currentThread().hashCode());
+        Integer threadId = Thread.currentThread().hashCode();
         if (getOperationStartTimesByThread().get(threadId) == null) {
             getOperationStartTimesByThread().put(threadId, new Hashtable(10));
         }
@@ -293,7 +293,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
     }
 
     protected Map<String, Long> getOperationTimings() {
-        Integer threadId = Integer.valueOf(Thread.currentThread().hashCode());
+        Integer threadId = Thread.currentThread().hashCode();
         if (getOperationTimingsByThread().get(threadId) == null) {
             getOperationTimingsByThread().put(threadId, new Hashtable(10));
         }
@@ -416,10 +416,10 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
 
                 for (String name : getOperationTimings().keySet()) {
                     Long operationStartTime = timingsBeforeExecution.get(name);
-                    long operationEndTime = getOperationTimings().get(name).longValue();
+                    long operationEndTime = getOperationTimings().get(name);
                     long operationTime;
                     if (operationStartTime != null) {
-                        operationTime = operationEndTime - operationStartTime.longValue();
+                        operationTime = operationEndTime - operationStartTime;
                     } else {
                         operationTime = operationEndTime;
                     }
@@ -465,7 +465,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
                     setProfileTime(getProfileTime() + (totalTimeIncludingProfiling - (endTime - startTime)));
                     profile.setProfileTime(totalTimeIncludingProfiling - profile.getTotalTime());
                     for (String timingName : ((Map<String, Long>)(((Hashtable)startTimingsBeforeExecution).clone())).keySet()) {
-                        startTimingsBeforeExecution.put(timingName, Long.valueOf(((Number)startTimingsBeforeExecution.get(timingName)).longValue() + totalTimeIncludingProfiling));
+                        startTimingsBeforeExecution.put(timingName, ((Number) startTimingsBeforeExecution.get(timingName)).longValue() + totalTimeIncludingProfiling);
                     }
                 }
             }
@@ -483,7 +483,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
     }
 
     protected void setOperationStartTimes(Map<String, Long> operationStartTimes) {
-        Integer threadId = Integer.valueOf(Thread.currentThread().hashCode());
+        Integer threadId = Thread.currentThread().hashCode();
         getOperationStartTimesByThread().put(threadId, operationStartTimes);
     }
 
@@ -492,7 +492,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
     }
 
     protected void setOperationTimings(Map<String, Long> operationTimings) {
-        Integer threadId = Integer.valueOf(Thread.currentThread().hashCode());
+        Integer threadId = Thread.currentThread().hashCode();
         getOperationTimingsByThread().put(threadId, operationTimings);
     }
 
@@ -532,7 +532,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
      */
     @Override
     public void startOperationProfile(String operationName) {
-        getOperationStartTimes().put(operationName, Long.valueOf(System.nanoTime()));
+        getOperationStartTimes().put(operationName, System.nanoTime());
     }
 
     /**

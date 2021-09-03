@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,8 +32,8 @@ public class MappingCompare implements Comparator, Serializable {
 
     @Override
     public int compare(Object arg1, Object arg2) {
-        int arg1Value = ((DatabaseMapping)arg1).getWeight().intValue();
-        int arg2Value = ((DatabaseMapping)arg2).getWeight().intValue();
+        int arg1Value = ((DatabaseMapping) arg1).getWeight();
+        int arg2Value = ((DatabaseMapping) arg2).getWeight();
         if (arg1Value == arg2Value) {
             int result = ((DatabaseMapping)arg1).getClass().getName().compareTo(((DatabaseMapping)arg2).getClass().getName());
             // For same classes, compare attribute names.

@@ -43,7 +43,7 @@ public class Commercial implements Program, java.io.Serializable {
     }
 
     public void setDuration(float duration) {
-        this.duration = Float.valueOf(duration);
+        this.duration = duration;
     }
 
     @Override

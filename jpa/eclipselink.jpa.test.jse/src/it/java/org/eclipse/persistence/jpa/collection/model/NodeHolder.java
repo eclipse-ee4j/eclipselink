@@ -53,7 +53,7 @@ public class NodeHolder {
     }
 
     public void removeNodes(int id) {
-        nodes.remove(Integer.valueOf(id));
+        nodes.remove(id);
     }
 
     public int getId() {

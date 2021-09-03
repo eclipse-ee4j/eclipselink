@@ -146,11 +146,11 @@ public class Computer extends Hardware implements Serializable {
     }
 
     public void isMacintosh() {
-        isMacintosh = Boolean.valueOf(true);
+        isMacintosh = Boolean.TRUE;
     }
 
     public void notMacintosh() {
-        isMacintosh = Boolean.valueOf(false);
+        isMacintosh = Boolean.FALSE;
     }
 
     public void setDescription(String aDescription) {

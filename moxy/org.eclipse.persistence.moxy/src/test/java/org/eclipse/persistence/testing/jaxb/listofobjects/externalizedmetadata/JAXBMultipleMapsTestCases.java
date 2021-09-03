@@ -126,8 +126,8 @@ public class JAXBMultipleMapsTestCases extends JAXBListOfObjectsTestCases {
     protected Object getControlObject() {
 
         Map<String, Integer> theMap = new HashMap<String, Integer>();
-        theMap.put("aaa", Integer.valueOf(1));
-        theMap.put("bbb", Integer.valueOf(2));
+        theMap.put("aaa", 1);
+        theMap.put("bbb", 2);
 
         QName qname = new QName("root");
         JAXBElement jaxbElement = new JAXBElement(qname, Object.class, null);

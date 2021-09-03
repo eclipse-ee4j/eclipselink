@@ -220,7 +220,7 @@ public class ForeignKeyTestSuite extends JUnitTestCase {
             organizer.setRace(race);
 
             Responsibility responsibility = new Responsibility();
-            responsibility.setUniqueIdentifier(Long.valueOf(System.currentTimeMillis()));
+            responsibility.setUniqueIdentifier(System.currentTimeMillis());
             responsibility.setDescription("Raise funds");
 
             race.addOrganizer(organizer, responsibility);

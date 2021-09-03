@@ -150,7 +150,7 @@ public abstract class AbstractOrder implements Serializable {
     }
 
     public int getTotal() {
-        return ((Integer)total.getValue()).intValue();
+        return (Integer) total.getValue();
     }
 
     public int getTotalFromRow(org.eclipse.persistence.sessions.Record row, Session session) {
@@ -187,7 +187,7 @@ public abstract class AbstractOrder implements Serializable {
     protected void initialize() {
         this.contacts2 = new Stack();
         this.salesReps2 = new TestHashtable();
-        this.total = new ValueHolder(Integer.valueOf(1));
+        this.total = new ValueHolder(1);
         this.total2 = 0;
     }
 
@@ -214,7 +214,7 @@ public abstract class AbstractOrder implements Serializable {
     }
 
     public void setTotal(int total) {
-        this.total.setValue(Integer.valueOf(total));
+        this.total.setValue(total);
     }
 
     public String toString() {

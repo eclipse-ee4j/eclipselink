@@ -49,7 +49,7 @@ public class MarshallerFragmentTestCases extends OXTestCase {
         marshaller = jaxbContext.createMarshaller();
 
         originalSetting = (Boolean)marshaller.getProperty(XMLConstants.JAXB_FRAGMENT);
-        marshaller.setProperty(XMLConstants.JAXB_FRAGMENT, Boolean.valueOf(true));
+        marshaller.setProperty(XMLConstants.JAXB_FRAGMENT, Boolean.TRUE);
 
         //set up controlObject
         controlObject = new Employee();

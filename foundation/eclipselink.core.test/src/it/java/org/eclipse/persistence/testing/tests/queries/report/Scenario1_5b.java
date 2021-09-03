@@ -38,7 +38,7 @@ public class Scenario1_5b extends ReportQueryTestCase {
             if (project.getBudget() > 4000) {
                 Object[] result = new Object[2];
                 result[0] = project.getName();
-                result[1] = Double.valueOf(project.getBudget());
+                result[1] = project.getBudget();
                 addResult(result, null);
             }
         }

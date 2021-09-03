@@ -47,7 +47,7 @@ public class JAXBElementCharacterTestCases extends JAXBElementTestCases {
 
     @Override
     protected Object getControlObject() {
-        Character character = Character.valueOf('s');
+        Character character = 's';
         JAXBElement<Character> jbe = new JAXBElement<Character>(new QName("a", "b"),Character.class, character);
         return jbe;
     }

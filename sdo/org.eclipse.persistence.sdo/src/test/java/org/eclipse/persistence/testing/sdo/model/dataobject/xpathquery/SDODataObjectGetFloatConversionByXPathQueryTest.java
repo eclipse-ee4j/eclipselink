@@ -32,13 +32,13 @@ public class SDODataObjectGetFloatConversionByXPathQueryTest extends SDODataObje
         SDOProperty prop = dataObject_c0.getType().getProperty("test");
         prop.setType(SDOConstants.SDO_FLOAT);
 
-        Float bb = Float.valueOf(1.2f);
+        Float bb = 1.2f;
 
         //List b = new ArrayList();
         //dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
-        dataObject_a.setFloat(propertyTest + "test", bb.floatValue());
+        dataObject_a.setFloat(propertyTest + "test", bb);
 
-        assertEquals("testGetBooleanConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet failed", bb.floatValue(), dataObject_a.getFloat(propertyTest + "test"), (float)0.0);
+        assertEquals("testGetBooleanConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet failed", bb, dataObject_a.getFloat(propertyTest + "test"), (float)0.0);
     }
 
     // purpose: opencontent properties
@@ -46,14 +46,14 @@ public class SDODataObjectGetFloatConversionByXPathQueryTest extends SDODataObje
         SDOProperty property_c1_object = dataObject_c1.getInstanceProperty("PName-c1");
         property_c1_object.setType(SDOConstants.SDO_FLOAT);
         List objects = new ArrayList();
-        Float b = Float.valueOf(2f);
-        Float bb = Float.valueOf(12f);
+        Float b = 2f;
+        Float bb = 12f;
         objects.add(b);
         objects.add(bb);
 
         dataObject_c1.set(property_c1_object, objects);// add it to instance list
 
-        assertEquals("testGetBooleanConversionFromDefinedPropertyWithPath failed", bb.floatValue(), dataObject_a.getFloat("PName-a0/PName-b0[number='1']/PName-c1.1"), (float)0.0);
+        assertEquals("testGetBooleanConversionFromDefinedPropertyWithPath failed", bb, dataObject_a.getFloat("PName-a0/PName-b0[number='1']/PName-c1.1"), (float)0.0);
     }
 
     //2. purpose: getDataObject with property value is not dataobject
@@ -102,10 +102,10 @@ public class SDODataObjectGetFloatConversionByXPathQueryTest extends SDODataObje
 
         type_c0.addDeclaredProperty(property_c1_object);
 
-        Float b = Float.valueOf(12);
+        Float b = 12F;
 
-        dataObject_a.setFloat("PName-a0/PName-b0[number='1']/PName-c1.0", b.floatValue());
+        dataObject_a.setFloat("PName-a0/PName-b0[number='1']/PName-c1.0", b);
 
-        assertEquals("testSetGetDataObjectWithQueryPath failed", b.floatValue(), dataObject_a.getFloat("PName-a0/PName-b0[number='1']/PName-c1.0"), (float)0.0);
+        assertEquals("testSetGetDataObjectWithQueryPath failed", b, dataObject_a.getFloat("PName-a0/PName-b0[number='1']/PName-c1.0"), (float)0.0);
     }
 }

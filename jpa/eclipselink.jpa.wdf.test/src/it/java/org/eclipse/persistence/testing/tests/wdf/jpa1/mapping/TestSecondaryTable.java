@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -75,7 +75,7 @@ public class TestSecondaryTable extends JPA1Base {
             Integer projectId = project.getId();
             con = env.getDataSource().getConnection();
             pstmt = con.prepareStatement("select count(*) from TMP_PROJECT_DETAILS where PROJECT_ID = ?");
-            pstmt.setInt(1, projectId.intValue());
+            pstmt.setInt(1, projectId);
             rs = pstmt.executeQuery();
             rs.next();
             verify(rs.getInt(1) == 0, "secondary table not empty");
@@ -152,11 +152,11 @@ public class TestSecondaryTable extends JPA1Base {
             rev1.setSuccessRate((short) 0);
             env.commitTransactionAndClear(em1);
             env.beginTransaction(em1);
-            rev1 = em1.find(Review.class, Integer.valueOf(id));
+            rev1 = em1.find(Review.class, id);
             verify(rev1 != null, "Review is null");
             version = rev1.getVersion();
             env.beginTransaction(em2);
-            Review rev2 = em2.find(Review.class, Integer.valueOf(id));
+            Review rev2 = em2.find(Review.class, id);
             rev2.setSuccessRate((short) 10); // 1 update
             env.commitTransactionAndClear(em2);
             rev1.setSuccessRate((short) 20); // 2 update

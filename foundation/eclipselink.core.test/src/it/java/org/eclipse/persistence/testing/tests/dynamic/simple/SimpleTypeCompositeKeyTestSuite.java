@@ -80,7 +80,7 @@ public class SimpleTypeCompositeKeyTestSuite extends SimpleTypeTestSuite {
             0, simpleInstance.<Integer>get("id2").intValue());
         assertFalse("value1 set on new instance", simpleInstance.isSet("value1"));
         assertEquals("value2 not default value on new instance",
-            false, simpleInstance.<Boolean>get("value2").booleanValue());
+            false, simpleInstance.<Boolean>get("value2"));
         assertFalse("value3 set on new instance", simpleInstance.isSet("value3"));
         assertFalse("value4 set on new instance", simpleInstance.isSet("value4"));
     }

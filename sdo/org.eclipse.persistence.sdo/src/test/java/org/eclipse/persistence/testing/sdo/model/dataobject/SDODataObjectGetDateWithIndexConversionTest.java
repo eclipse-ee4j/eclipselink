@@ -203,7 +203,7 @@ public class SDODataObjectGetDateWithIndexConversionTest extends SDODataObjectCo
     public void testGetDateFromInteger() {
         SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_INTEGER);
-        dataObject.set(property, Integer.valueOf(2));
+        dataObject.set(property, 2);
         try {
             dataObject.getDate(PROPERTY_INDEX);
             fail("ClassCastException should be thrown.");

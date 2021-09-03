@@ -18,7 +18,7 @@ import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
 public class TypeAttributeDoubleTestCases extends XMLMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/directtofield/typeattribute/TypeAttributeDouble.xml";
-    private final static Double CONTROL_ID = Double.valueOf(123.0);
+    private final static Double CONTROL_ID = 123.0;
     private final static String CONTROL_FIRST_NAME = "Jane";
     private final static String CONTROL_LAST_NAME = "Doe";
 

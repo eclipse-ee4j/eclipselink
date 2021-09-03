@@ -150,7 +150,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
         if (isMutable == null) {
             return false;
         }
-        return isMutable.booleanValue();
+        return isMutable;
     }
 
     /**

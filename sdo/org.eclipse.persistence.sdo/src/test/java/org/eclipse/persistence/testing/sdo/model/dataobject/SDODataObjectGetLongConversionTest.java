@@ -362,7 +362,7 @@ public class SDODataObjectGetLongConversionTest extends SDODataObjectConversionT
     public void testGetLongFromCharacterObject() {
         SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_CHARACTEROBJECT);
-        dataObject.set(property, Character.valueOf('v'));
+        dataObject.set(property, 'v');
         try {
             dataObject.getLong(property);
             fail("ClassCastException should be thrown.");

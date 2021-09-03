@@ -190,8 +190,8 @@ public class jiNiojiTestSet {
         Object o = null;
         Vector queryArgs = new NonSynchronizedVector();
         queryArgs.add("snicker-doodle");
-        queryArgs.add(Integer.valueOf(102));
-        queryArgs.add(Integer.valueOf(103));
+        queryArgs.add(102);
+        queryArgs.add(103);
         boolean worked = false;
         String msg = null;
         try {

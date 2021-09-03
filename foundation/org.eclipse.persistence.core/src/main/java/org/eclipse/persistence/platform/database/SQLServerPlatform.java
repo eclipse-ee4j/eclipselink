@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -566,12 +566,12 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     public Hashtable maximumNumericValues() {
         Hashtable values = new Hashtable();
 
-        values.put(Integer.class, Integer.valueOf(Integer.MAX_VALUE));
-        values.put(Long.class, Long.valueOf(Long.MAX_VALUE));
-        values.put(Double.class, Double.valueOf(0));
-        values.put(Short.class, Short.valueOf(Short.MAX_VALUE));
-        values.put(Byte.class, Byte.valueOf(Byte.MAX_VALUE));
-        values.put(Float.class, Float.valueOf(0));
+        values.put(Integer.class, Integer.MAX_VALUE);
+        values.put(Long.class, Long.MAX_VALUE);
+        values.put(Double.class, (double) 0);
+        values.put(Short.class, Short.MAX_VALUE);
+        values.put(Byte.class, Byte.MAX_VALUE);
+        values.put(Float.class, (float) 0);
         values.put(java.math.BigInteger.class, new java.math.BigInteger("9999999999999999999999999999"));
         values.put(java.math.BigDecimal.class, new java.math.BigDecimal("999999999.9999999999999999999"));
         return values;
@@ -586,12 +586,12 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     public Hashtable minimumNumericValues() {
         Hashtable values = new Hashtable();
 
-        values.put(Integer.class, Integer.valueOf(Integer.MIN_VALUE));
-        values.put(Long.class, Long.valueOf(Long.MIN_VALUE));
-        values.put(Double.class, Double.valueOf(-9));
-        values.put(Short.class, Short.valueOf(Short.MIN_VALUE));
-        values.put(Byte.class, Byte.valueOf(Byte.MIN_VALUE));
-        values.put(Float.class, Float.valueOf(-9));
+        values.put(Integer.class, Integer.MIN_VALUE);
+        values.put(Long.class, Long.MIN_VALUE);
+        values.put(Double.class, (double) -9);
+        values.put(Short.class, Short.MIN_VALUE);
+        values.put(Byte.class, Byte.MIN_VALUE);
+        values.put(Float.class, (float) -9);
         values.put(java.math.BigInteger.class, new java.math.BigInteger("-9999999999999999999999999999"));
         values.put(java.math.BigDecimal.class, new java.math.BigDecimal("-999999999.9999999999999999999"));
         return values;

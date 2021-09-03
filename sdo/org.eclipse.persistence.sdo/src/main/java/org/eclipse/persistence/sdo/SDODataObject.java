@@ -146,7 +146,7 @@ public class SDODataObject implements DataObject, SequencedObject {
             if (value == null) {
                 return false;
             }
-            return value.booleanValue();
+            return value;
         } catch (Exception e) {
             // Swallow exception and return null, as per SDO 2.1 spec
             return false;
@@ -160,7 +160,7 @@ public class SDODataObject implements DataObject, SequencedObject {
             if (value == null) {
                 return 0;
             }
-            return value.byteValue();
+            return value;
         } catch (Exception e) {
             // Swallow exception and return null, as per SDO 2.1 spec
             return 0;
@@ -174,7 +174,7 @@ public class SDODataObject implements DataObject, SequencedObject {
             if (value == null) {
                 return '\u0000';
             }
-            return value.charValue();
+            return value;
         } catch (Exception e) {
             // Swallow exception and return null, as per SDO 2.1 spec
             return '\u0000';
@@ -188,7 +188,7 @@ public class SDODataObject implements DataObject, SequencedObject {
             if (value == null) {
                 return 0.0d;
             }
-            return value.doubleValue();
+            return value;
         } catch (Exception e) {
             // Swallow exception and return null, as per SDO 2.1 spec
             return 0.0d;
@@ -202,7 +202,7 @@ public class SDODataObject implements DataObject, SequencedObject {
             if (value == null) {
                 return 0.0f;
             }
-            return value.floatValue();
+            return value;
         } catch (Exception e) {
             // Swallow exception and return null, as per SDO 2.1 spec
             return 0.0f;
@@ -216,7 +216,7 @@ public class SDODataObject implements DataObject, SequencedObject {
             if (value == null) {
                 return 0;
             }
-            return value.intValue();
+            return value;
         } catch (Exception e) {
             // Swallow exception and return null, as per SDO 2.1 spec
             return 0;
@@ -230,7 +230,7 @@ public class SDODataObject implements DataObject, SequencedObject {
             if (value == null) {
                 return 0L;
             }
-            return value.longValue();
+            return value;
         } catch (Exception e) {
             // Swallow exception and return null, as per SDO 2.1 spec
             return 0L;
@@ -244,7 +244,7 @@ public class SDODataObject implements DataObject, SequencedObject {
             if (value == null) {
                 return 0;
             }
-            return value.shortValue();
+            return value;
         } catch (Exception e) {
             // Swallow exception and return null, as per SDO 2.1 spec
             return 0;
@@ -981,7 +981,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         if (propertyBooleanValue == null) {
             return false;
         }
-        return propertyBooleanValue.booleanValue();
+        return propertyBooleanValue;
     }
 
     @Override
@@ -990,7 +990,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         if (propertyByteValue == null) {
             return 0;
         }
-        return propertyByteValue.byteValue();
+        return propertyByteValue;
     }
 
     @Override
@@ -999,7 +999,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         if (propertyCharValue == null) {
             return '\u0000';
         }
-        return propertyCharValue.charValue();
+        return propertyCharValue;
     }
 
     @Override
@@ -1008,7 +1008,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         if (propertyDoubleValue == null) {
             return 0.0d;
         }
-        return propertyDoubleValue.doubleValue();
+        return propertyDoubleValue;
     }
 
     @Override
@@ -1017,7 +1017,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         if (propertyFloatValue == null) {
             return 0.0f;
         }
-        return propertyFloatValue.floatValue();
+        return propertyFloatValue;
     }
 
     @Override
@@ -1026,7 +1026,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         if (propertyIntegerValue == null) {
             return 0;
         }
-        return propertyIntegerValue.intValue();
+        return propertyIntegerValue;
     }
 
     @Override
@@ -1035,7 +1035,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         if (propertyLongValue == null) {
             return 0L;
         }
-        return propertyLongValue.longValue();
+        return propertyLongValue;
     }
 
     @Override
@@ -1044,7 +1044,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         if (propertyShortValue == null) {
             return 0;
         }
-        return propertyShortValue.shortValue();
+        return propertyShortValue;
     }
 
     @Override

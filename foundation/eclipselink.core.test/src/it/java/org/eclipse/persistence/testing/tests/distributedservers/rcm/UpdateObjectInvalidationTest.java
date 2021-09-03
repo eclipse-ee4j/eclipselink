@@ -35,7 +35,7 @@ public class UpdateObjectInvalidationTest extends ConfigurableCacheSyncDistribut
     public UpdateObjectInvalidationTest() {
         super();
         setDescription("Ensure a remote object is invalidated when its descriptor is set to INVALIDATE_CHANGED_OBJECTS");
-        cacheSyncConfigValues.put(Employee.class, Integer.valueOf(ClassDescriptor.INVALIDATE_CHANGED_OBJECTS));
+        cacheSyncConfigValues.put(Employee.class, ClassDescriptor.INVALIDATE_CHANGED_OBJECTS);
     }
 
     @Override

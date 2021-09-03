@@ -55,11 +55,11 @@ public class TestEmployee_Review extends JPA1Base {
             em.persist(_review2);
             em.flush();
             env.commitTransactionAndClear(em);
-            Review rev = em.find(Review.class, Integer.valueOf(12));
+            Review rev = em.find(Review.class, 12);
             verify(rev != null, "Review null");
             verify(rev.getId() == 12, "wrong review");
             env.beginTransaction(em);
-            Employee employee = em.find(Employee.class, Integer.valueOf(7));
+            Employee employee = em.find(Employee.class, 7);
             verify(employee != null, "employee not found");
             Set reviews = employee.getReviews();
             verify(reviews.size() == 2, "set has wrong size");
@@ -74,7 +74,7 @@ public class TestEmployee_Review extends JPA1Base {
     public void testFindIndividualReview() {
         final EntityManager em = getEnvironment().getEntityManager();
         try {
-            Review rev = em.find(Review.class, Integer.valueOf(12));
+            Review rev = em.find(Review.class, 12);
             verify(rev != null, "Review null");
             verify(rev.getId() == 12, "wrong review");
         } finally {
@@ -88,7 +88,7 @@ public class TestEmployee_Review extends JPA1Base {
         final EntityManager em = env.getEntityManager();
         try {
             env.beginTransaction(em);
-            Employee employee = em.find(Employee.class, Integer.valueOf(7));
+            Employee employee = em.find(Employee.class, 7);
             verify(employee != null, "employee not found");
             Set reviews = employee.getReviews();
             verify(reviews.size() == 2, "set has wrong size");
@@ -118,7 +118,7 @@ public class TestEmployee_Review extends JPA1Base {
             } else {
                 failureExpected = true;
             }
-            Employee employee = em.find(Employee.class, Integer.valueOf(7));
+            Employee employee = em.find(Employee.class, 7);
             verify(employee != null, "employee not found");
             Set reviews = employee.getReviews();
             try {
@@ -142,7 +142,7 @@ public class TestEmployee_Review extends JPA1Base {
         final EntityManager em = env.getEntityManager();
         try {
             env.beginTransaction(em);
-            Employee employee = em.find(Employee.class, Integer.valueOf(7));
+            Employee employee = em.find(Employee.class, 7);
             verify(employee != null, "employee not found");
             employee = AbstractBaseTest.serializeDeserialize(employee);
             Set reviews = employee.getReviews();
@@ -167,7 +167,7 @@ public class TestEmployee_Review extends JPA1Base {
         final EntityManager em = env.getEntityManager();
         try {
             env.beginTransaction(em);
-            Employee employee = em.find(Employee.class, Integer.valueOf(7));
+            Employee employee = em.find(Employee.class, 7);
             verify(employee != null, "employee not found");
             Set reviews = employee.getReviews();
             // touch the set

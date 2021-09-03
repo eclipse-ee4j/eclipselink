@@ -81,9 +81,9 @@ public class SDODataObjectGetBooleanWithIndexConversionTest extends SDODataObjec
         SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_CHARACTER);
 
-        Character b = Character.valueOf('0');
+        Character b = '0';
 
-        dataObject.setChar(PROPERTY_INDEX, b.charValue());// add it to instance list
+        dataObject.setChar(PROPERTY_INDEX, b);// add it to instance list
 
         assertEquals(false, dataObject.getBoolean(PROPERTY_INDEX));
 
@@ -104,9 +104,9 @@ try {
         SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_DOUBLE);
 
-        Double b = Double.valueOf(0);
+        Double b = (double) 0;
 
-        dataObject.setDouble(PROPERTY_INDEX, b.doubleValue());// add it to instance list
+        dataObject.setDouble(PROPERTY_INDEX, b);// add it to instance list
 
         assertEquals(false, dataObject.getBoolean(PROPERTY_INDEX));
 
@@ -127,9 +127,9 @@ try {
         SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_FLOAT);
 
-        Float b = Float.valueOf(1.01f);
+        Float b = 1.01f;
 
-        dataObject.setFloat(PROPERTY_INDEX, b.floatValue());// add it to instance list
+        dataObject.setFloat(PROPERTY_INDEX, b);// add it to instance list
 
         assertEquals(true, dataObject.getBoolean(PROPERTY_INDEX));
 
@@ -150,9 +150,9 @@ try {
         SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_INT);
 
-        Integer b = Integer.valueOf(1);
+        Integer b = 1;
 
-        dataObject.setLong(PROPERTY_INDEX, b.intValue());// add it to instance list
+        dataObject.setLong(PROPERTY_INDEX, b);// add it to instance list
 
         assertEquals(true, dataObject.getBoolean(PROPERTY_INDEX));
 
@@ -173,9 +173,9 @@ try {
         SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_LONG);
 
-        Long b = Long.valueOf(1);
+        Long b = 1L;
 
-        dataObject.setLong(PROPERTY_INDEX, b.longValue());// add it to instance list
+        dataObject.setLong(PROPERTY_INDEX, b);// add it to instance list
 
         assertEquals(true, dataObject.getBoolean(PROPERTY_INDEX));
 

@@ -2362,7 +2362,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * PUBLIC: Bind all arguments to any SQL statement.
      */
     public void setShouldBindAllParameters(boolean shouldBindAllParameters) {
-        this.shouldBindAllParameters = Boolean.valueOf(shouldBindAllParameters);
+        this.shouldBindAllParameters = shouldBindAllParameters;
         setIsPrepared(false);
     }
 
@@ -2379,7 +2379,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * binding as well.
      */
     public void setShouldCacheStatement(boolean shouldCacheStatement) {
-        this.shouldCacheStatement = Boolean.valueOf(shouldCacheStatement);
+        this.shouldCacheStatement = shouldCacheStatement;
         setIsPrepared(false);
     }
 
@@ -2501,7 +2501,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public boolean shouldAllowNativeSQLQuery(boolean projectAllowsNativeQueries) {
         // If allow native SQL query is undefined, use the project setting
         // otherwise use the allow native SQL setting.
-        return (allowNativeSQLQuery == null) ? projectAllowsNativeQueries : allowNativeSQLQuery.booleanValue();
+        return (allowNativeSQLQuery == null) ? projectAllowsNativeQueries : allowNativeSQLQuery;
     }
 
     /**

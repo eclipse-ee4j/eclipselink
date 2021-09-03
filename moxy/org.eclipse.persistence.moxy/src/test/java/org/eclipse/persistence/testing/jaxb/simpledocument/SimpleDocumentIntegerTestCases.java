@@ -43,7 +43,7 @@ public class SimpleDocumentIntegerTestCases extends JAXBWithJSONTestCases {
         @Override
         protected Object getControlObject() {
             JAXBElement value = new IntegerObjectFactory().createIntegerRoot();
-            value.setValue(Integer.valueOf(27));
+            value.setValue(27);
             return value;
         }
 

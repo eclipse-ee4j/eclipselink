@@ -157,7 +157,7 @@ public class Ni2TestSet {
         s.dontLogMessages();
         ((DatabaseSession)s).login();
         Vector queryArgs = new NonSynchronizedVector();
-        queryArgs.add(Integer.valueOf(2));
+        queryArgs.add(2);
         boolean worked = false;
         String msg = null;
         try {

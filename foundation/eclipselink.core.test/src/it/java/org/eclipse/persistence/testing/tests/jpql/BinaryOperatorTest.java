@@ -118,7 +118,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         theTest.setReferenceClass(Employee.class);
 
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression whereClause = ExpressionBuilder.fromConstant(Integer.valueOf(50000), builder).greaterThan(ExpressionMath.add(builder.get("salary"), Integer.valueOf(1000)));
+        Expression whereClause = ExpressionBuilder.fromConstant(50000, builder).greaterThan(ExpressionMath.add(builder.get("salary"), Integer.valueOf(1000)));
         theTest.setOriginalObjectExpression(whereClause);
 
         return theTest;
@@ -160,7 +160,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         theTest.setReferenceClass(Employee.class);
 
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression whereClause = ExpressionBuilder.fromConstant(Integer.valueOf(50000), builder).greaterThan(ExpressionMath.subtract(builder.get("salary"), Integer.valueOf(1000)));
+        Expression whereClause = ExpressionBuilder.fromConstant(50000, builder).greaterThan(ExpressionMath.subtract(builder.get("salary"), Integer.valueOf(1000)));
         theTest.setOriginalObjectExpression(whereClause);
 
         return theTest;
@@ -202,7 +202,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         theTest.setReferenceClass(Employee.class);
 
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression whereClause = ExpressionBuilder.fromConstant(Integer.valueOf(100000), builder).greaterThan(ExpressionMath.multiply(builder.get("salary"), Integer.valueOf(2)));
+        Expression whereClause = ExpressionBuilder.fromConstant(100000, builder).greaterThan(ExpressionMath.multiply(builder.get("salary"), Integer.valueOf(2)));
         theTest.setOriginalObjectExpression(whereClause);
 
         return theTest;
@@ -244,7 +244,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         theTest.setReferenceClass(Employee.class);
 
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression whereClause = ExpressionBuilder.fromConstant(Integer.valueOf(20000), builder).greaterThan(ExpressionMath.divide(builder.get("salary"), Integer.valueOf(2)));
+        Expression whereClause = ExpressionBuilder.fromConstant(20000, builder).greaterThan(ExpressionMath.divide(builder.get("salary"), Integer.valueOf(2)));
         theTest.setOriginalObjectExpression(whereClause);
 
         return theTest;

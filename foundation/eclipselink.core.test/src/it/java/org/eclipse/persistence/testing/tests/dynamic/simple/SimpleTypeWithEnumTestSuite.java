@@ -118,7 +118,7 @@ public class SimpleTypeWithEnumTestSuite {
         DynamicEntity simpleInstance = find(dynamicHelper, session, 1);
         assertNotNull("Could not find simple instance with id = 1", simpleInstance);
 
-        simpleInstance = find(dynamicHelper, session, Integer.valueOf(1));
+        simpleInstance = find(dynamicHelper, session, 1);
         assertNotNull("Could not find simple instance with id = Integer(1)", simpleInstance);
     }
 
@@ -161,7 +161,7 @@ public class SimpleTypeWithEnumTestSuite {
             0, simpleInstance.<Integer>get("id").intValue());
         assertFalse("value1 set on new instance", simpleInstance.isSet("value1"));
         assertEquals("value2 not default value on new instance",
-            false, simpleInstance.<Boolean>get("value2").booleanValue());
+            false, simpleInstance.<Boolean>get("value2"));
         assertEquals("value2 not default value", false, simpleInstance.get("value2"));
         assertFalse("value3 set on new instance", simpleInstance.isSet("value3"));
         assertFalse("value4  set on new instance", simpleInstance.isSet("value4"));

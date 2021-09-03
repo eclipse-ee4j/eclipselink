@@ -119,7 +119,7 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
             assassin.getNicknames().add("Clyde");
 
             Gun gun = new Gun();
-            gun.setCaliber(Integer.valueOf(50));
+            gun.setCaliber(50);
             gun.setDescription("Sniper rifle");
             gun.setModel("9-112");
 
@@ -638,8 +638,8 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
                 Gun gun1 = em1.find(Gun.class, gunSerialNumber);
                 Gun gun2 = em2.find(Gun.class, gunSerialNumber);
 
-                gun1.setCaliber(Integer.valueOf(12));
-                gun2.setCaliber(Integer.valueOf(22));
+                gun1.setCaliber(12);
+                gun2.setCaliber(22);
 
                 em1.getTransaction().commit();
                 em2.getTransaction().commit();

@@ -48,7 +48,7 @@ public class Cubicle implements Serializable {
     }
 
     public Cubicle(CubiclePrimaryKeyClass key, String color, Employee emp) {
-        this(Integer.valueOf(key.getFloor().intValue()), Integer.valueOf(key.getPlace().intValue()), color, emp);
+        this(key.getFloor(), key.getPlace(), color, emp);
     }
 
     public Cubicle(Integer aFloor, Integer aPlace, String aColor, Employee aEmployee) {

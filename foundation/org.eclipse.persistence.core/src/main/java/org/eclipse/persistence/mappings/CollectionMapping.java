@@ -1595,7 +1595,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 if (fireChangeEvents) {
                     // Objects removed from the first position in the list, so the index of the removed object is always 0.
                     // When event is processed the index is used only in listOrderField case, ignored otherwise.
-                    Integer zero = Integer.valueOf(0);
+                    Integer zero = 0;
                     while (containerPolicy.hasNext(iterator)) {
                         CollectionChangeEvent event = containerPolicy.createChangeEvent(target, getAttributeName(), valueOfTarget, containerPolicy.next(iterator, mergeSession), CollectionChangeEvent.REMOVE, zero, false);
                         listener.internalPropertyChange(event);

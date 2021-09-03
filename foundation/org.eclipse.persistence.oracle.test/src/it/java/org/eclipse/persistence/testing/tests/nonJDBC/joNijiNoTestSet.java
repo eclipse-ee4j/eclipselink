@@ -190,8 +190,8 @@ public class joNijiNoTestSet {
         ((DatabaseSession)s).login();
         Object o = null;
         Vector queryArgs = new NonSynchronizedVector();
-        queryArgs.add(Integer.valueOf(100));
-        queryArgs.add(Integer.valueOf(101));
+        queryArgs.add(100);
+        queryArgs.add(101);
         boolean worked = false;
         String msg = null;
         try {
@@ -207,7 +207,7 @@ public class joNijiNoTestSet {
         String y = (String)record.get("X");
         assertTrue("wrong y value", y.equals("test"));
         Integer aa = (Integer)record.get("AA");
-        assertTrue("wrong aa value", aa.intValue() == 1);
+        assertTrue("wrong aa value", aa == 1);
         ((DatabaseSession)s).logout();
     }
 }

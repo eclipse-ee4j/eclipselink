@@ -46,7 +46,7 @@ public class DirectIsSetNullPolicyElementAbsentIsSetAbsentFalseWithParamsTestCas
 
         // TODO: verify EMPTY_STRING behavior
         //Object[] isSetParameters = {"x","y", false, (int)1, (short)1, (long)1, (double)1.0, (float)1.0, (byte)1};
-        Object[] isSetParameters = {"x","y", Boolean.valueOf(true), Integer.valueOf(255), Short.valueOf((short)32767), Long.valueOf(1), Double.valueOf(1.0), Float.valueOf(-1.0f), Byte.valueOf((byte)32), Character.valueOf('C')};
+        Object[] isSetParameters = {"x","y", Boolean.TRUE, 255, (short) 32767, 1L, 1.0, -1.0f, (byte) 32, 'C'};
         //Object[] isSetParameters = {"x","y"};
 
         ((IsSetNullPolicy)aNullPolicy).setIsSetMethodName("isSetFirstName");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -109,7 +109,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
             }
 
             if (getMapping() != null) {
-                if (tableIndex != null && tableIndex.intValue() > 0) {
+                if (tableIndex != null && tableIndex > 0) {
                     return null;
                 }
                 TableExpression tableExp = null;
@@ -133,7 +133,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
                 iLast = getHistoricalTables().size() - 1;
             } else {
                 // only return expression for the specified table
-                iFirst = tableIndex.intValue();
+                iFirst = tableIndex;
                 iLast = iFirst;
             }
             for (int i = iFirst; i <= iLast ; i++) {

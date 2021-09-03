@@ -321,7 +321,7 @@ public class ExpressionTestSuite extends TestSuite {
 
     private void addBetweenTest2() {
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression expression = builder.get("salary").between(builder.get("manager").get("salary"), Integer.valueOf(500000));
+        Expression expression = builder.get("salary").between(builder.get("manager").get("salary"), 500000);
 
         ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 5);
         test.setExpression(expression);
@@ -417,7 +417,7 @@ public class ExpressionTestSuite extends TestSuite {
         ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 12);
         test.setExpression(expression);
         test.setQuery(query);
-        test.getArguments().add(Integer.valueOf(1));
+        test.getArguments().add(1);
         test.setName("ConstantEqualConstantTest");
         test.setDescription("Test meaningless selection criteria like 1 == 1.");
 
@@ -1636,7 +1636,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.setExpression(expression);
         test.setQuery(query);
         test.getArguments().add(null);
-        test.getArguments().add(Integer.valueOf(1));
+        test.getArguments().add(1);
         test.getArguments().add(new String("String"));
         test.setName("ParameterIsNullTest");
         test.setDescription("For bug 3107049 tests parameterExp.isNull.");

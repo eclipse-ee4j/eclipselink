@@ -1048,8 +1048,8 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         b = em.merge(b);
         a = em.merge(a);
 
-        assertTrue("The PK value for "+ b.getClass() +" (" + b.getId().getNumberId().getValue() + ") is not sequence generated", (b.getId().getNumberId().getValue() >= Long.valueOf(1000)));
-        assertTrue("The PK value for "+ a.getClass() +" (" + a.getId().getNumberId().getValue() + ") is not sequence generated", (a.getId().getNumberId().getValue() >= Long.valueOf(1000)));
+        assertTrue("The PK value for "+ b.getClass() +" (" + b.getId().getNumberId().getValue() + ") is not sequence generated", (b.getId().getNumberId().getValue() >= 1000L));
+        assertTrue("The PK value for "+ a.getClass() +" (" + a.getId().getNumberId().getValue() + ") is not sequence generated", (a.getId().getNumberId().getValue() >= 1000L));
 
         rollbackTransaction(em);
     }

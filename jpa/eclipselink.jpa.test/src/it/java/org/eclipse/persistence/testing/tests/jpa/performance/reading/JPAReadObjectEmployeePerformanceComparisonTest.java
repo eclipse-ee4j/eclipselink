@@ -46,7 +46,7 @@ public class JPAReadObjectEmployeePerformanceComparisonTest extends PerformanceR
     public void test() throws Exception {
         EntityManager manager = createEntityManager();
         manager.getTransaction().begin();
-        Employee employee = manager.getReference(Employee.class, Long.valueOf(this.employeeId));
+        Employee employee = manager.getReference(Employee.class, this.employeeId);
         employee.toString();
         manager.getTransaction().commit();
         manager.close();

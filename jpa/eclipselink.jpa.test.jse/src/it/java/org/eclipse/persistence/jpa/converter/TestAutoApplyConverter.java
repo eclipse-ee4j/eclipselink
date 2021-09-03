@@ -82,7 +82,7 @@ public class TestAutoApplyConverter {
             em.getTransaction().commit();
             
             Assert.assertTrue(BooleanToStringAutoApplyConverter.convertToDatabaseTriggered);
-            Assert.assertEquals(Boolean.valueOf(valueConvert), BooleanToStringAutoApplyConverter.ctdcVal);
+            Assert.assertEquals(valueConvert, BooleanToStringAutoApplyConverter.ctdcVal);
             BooleanToStringAutoApplyConverter.reset();
             
             em.clear();
@@ -185,8 +185,8 @@ public class TestAutoApplyConverter {
         
         EntityManager em = emfAutoApplyConverters.createEntityManager();
         long id = System.currentTimeMillis();
-        Byte valueConvert = Byte.valueOf((byte) 10);
-        Byte valueNoConvert = Byte.valueOf((byte) 14);
+        Byte valueConvert = (byte) 10;
+        Byte valueNoConvert = (byte) 14;
         try {
             ByteToStringAutoApplyConverter.reset();
             ConvertEntityByW2S entity = new ConvertEntityByW2S(id, valueConvert, valueNoConvert);
@@ -261,8 +261,8 @@ public class TestAutoApplyConverter {
         
         EntityManager em = emfAutoApplyConverters.createEntityManager();
         long id = System.currentTimeMillis();
-        Character valueConvert = Character.valueOf('A');
-        Character valueNoConvert = Character.valueOf('z');
+        Character valueConvert = 'A';
+        Character valueNoConvert = 'z';
         try {
             CharToStringAutoApplyConverter.reset();
             ConvertEntityCW2S entity = new ConvertEntityCW2S(id, valueConvert, valueNoConvert);
@@ -337,8 +337,8 @@ public class TestAutoApplyConverter {
         
         EntityManager em = emfAutoApplyConverters.createEntityManager();
         long id = System.currentTimeMillis();
-        Double valueConvert = Double.valueOf(42.0);
-        Double valueNoConvert = Double.valueOf(100.0);
+        Double valueConvert = 42.0;
+        Double valueNoConvert = 100.0;
         try {
             DoubleToStringAutoApplyConverter.reset();
             ConvertEntityDW2S entity = new ConvertEntityDW2S(id, valueConvert, valueNoConvert);
@@ -413,8 +413,8 @@ public class TestAutoApplyConverter {
         
         EntityManager em = emfAutoApplyConverters.createEntityManager();
         long id = System.currentTimeMillis();
-        Float valueConvert = Float.valueOf(42.0f);
-        Float valueNoConvert = Float.valueOf(100.0f);
+        Float valueConvert = 42.0f;
+        Float valueNoConvert = 100.0f;
         try {
             FloatToStringAutoApplyConverter.reset();
             ConvertEntityFW2S entity = new ConvertEntityFW2S(id, valueConvert, valueNoConvert);
@@ -489,8 +489,8 @@ public class TestAutoApplyConverter {
         
         EntityManager em = emfAutoApplyConverters.createEntityManager();
         long id = System.currentTimeMillis();
-        Integer valueConvert = Integer.valueOf(42);
-        Integer valueNoConvert = Integer.valueOf(100);
+        Integer valueConvert = 42;
+        Integer valueNoConvert = 100;
         try {
             IntToStringAutoApplyConverter.reset();
             ConvertEntityIW2S entity = new ConvertEntityIW2S(id, valueConvert, valueNoConvert);
@@ -565,8 +565,8 @@ public class TestAutoApplyConverter {
         
         EntityManager em = emfAutoApplyConverters.createEntityManager();
         long id = System.currentTimeMillis();
-        Long valueConvert = Long.valueOf(42);
-        Long valueNoConvert = Long.valueOf(100);
+        Long valueConvert = 42L;
+        Long valueNoConvert = 100L;
         try {
             LongToStringAutoApplyConverter.reset();
             ConvertEntityLW2S entity = new ConvertEntityLW2S(id, valueConvert, valueNoConvert);
@@ -641,8 +641,8 @@ public class TestAutoApplyConverter {
         
         EntityManager em = emfAutoApplyConverters.createEntityManager();
         long id = System.currentTimeMillis();
-        Short valueConvert = Short.valueOf((short) 42);
-        Short valueNoConvert = Short.valueOf((short) 100);
+        Short valueConvert = (short) 42;
+        Short valueNoConvert = (short) 100;
         try {
             ShortToStringAutoApplyConverter.reset();
             ConvertEntityShW2S entity = new ConvertEntityShW2S(id, valueConvert, valueNoConvert);

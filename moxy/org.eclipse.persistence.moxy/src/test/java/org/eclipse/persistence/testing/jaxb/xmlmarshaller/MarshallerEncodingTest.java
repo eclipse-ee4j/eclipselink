@@ -64,7 +64,7 @@ public class MarshallerEncodingTest extends OXTestCase {
         originalEncoding = (String)marshaller.getProperty(Marshaller.JAXB_ENCODING);
         originalFormatting = (Boolean)marshaller.getProperty(Marshaller.JAXB_FORMATTED_OUTPUT);
         marshaller.setProperty(Marshaller.JAXB_ENCODING, encoding);
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.valueOf(false));
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.FALSE);
         controlObject = setupControlObject();
 
     }

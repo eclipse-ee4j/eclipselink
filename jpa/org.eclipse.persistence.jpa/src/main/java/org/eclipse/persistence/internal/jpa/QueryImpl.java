@@ -300,7 +300,7 @@ public class QueryImpl {
                 performPreQueryFlush();
             }
             Integer changedRows = (Integer) getActiveSession().executeQuery(databaseQuery, parameterValues);
-            return changedRows.intValue();
+            return changedRows;
         } catch (PersistenceException exception) {
             setRollbackOnly();
             throw exception;
@@ -757,7 +757,7 @@ public class QueryImpl {
      */
     protected boolean isFlushModeAUTO() {
         if (getDatabaseQueryInternal().getFlushOnExecute() != null) {
-            return getDatabaseQueryInternal().getFlushOnExecute().booleanValue();
+            return getDatabaseQueryInternal().getFlushOnExecute();
         } else {
             return entityManager.isFlushModeAUTO();
         }

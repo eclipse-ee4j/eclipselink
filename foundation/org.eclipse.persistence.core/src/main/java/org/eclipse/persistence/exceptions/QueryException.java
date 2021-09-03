@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -286,7 +286,7 @@ public class QueryException extends ValidationException {
     }
 
     public static QueryException backupCloneIsDeleted(Object clone) {
-        Object[] args = { clone, clone.getClass(), Integer.valueOf(System.identityHashCode(clone)), CR };
+        Object[] args = { clone, clone.getClass(), System.identityHashCode(clone), CR };
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, BACKUP_CLONE_DELETED, args));
         queryException.setErrorCode(BACKUP_CLONE_DELETED);
@@ -295,7 +295,7 @@ public class QueryException extends ValidationException {
 
     public static QueryException backupCloneIsOriginalFromParent(Object clone) {
         // need to be verified
-        Object[] args = { clone, clone.getClass(), Integer.valueOf(System.identityHashCode(clone)), CR };
+        Object[] args = { clone, clone.getClass(), System.identityHashCode(clone), CR };
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, BACKUP_CLONE_IS_ORIGINAL_FROM_PARENT, args));
         queryException.setErrorCode(BACKUP_CLONE_IS_ORIGINAL_FROM_PARENT);
@@ -303,7 +303,7 @@ public class QueryException extends ValidationException {
     }
 
     public static QueryException backupCloneIsOriginalFromSelf(Object clone) {
-        Object[] args = { clone, clone.getClass(), Integer.valueOf(System.identityHashCode(clone)), CR };
+        Object[] args = { clone, clone.getClass(), System.identityHashCode(clone), CR };
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, BACKUP_CLONE_IS_ORIGINAL_FROM_SELF, args));
         queryException.setErrorCode(BACKUP_CLONE_IS_ORIGINAL_FROM_SELF);
@@ -1078,7 +1078,7 @@ public class QueryException extends ValidationException {
     }
 
     public static QueryException reportQueryResultSizeMismatch(int expected, int retrieved) {
-        Object[] args = { Integer.valueOf(expected), Integer.valueOf(retrieved) };
+        Object[] args = {expected, retrieved};
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, REPORT_QUERY_RESULT_SIZE_MISMATCH, args));
         queryException.setErrorCode(REPORT_QUERY_RESULT_SIZE_MISMATCH);

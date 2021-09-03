@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -35,7 +35,7 @@ public class Timestamp {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        id = Long.valueOf(System.currentTimeMillis());
+        id = System.currentTimeMillis();
     }
 
     public Long getId() {

@@ -311,7 +311,7 @@ public class Employee implements Serializable, ChangeTracker {
     }
 
     public void setSalary(int salary) {
-        propertyChange("salary", Integer.valueOf(this.salary), Integer.valueOf(salary));
+        propertyChange("salary", this.salary, salary);
         this.salary = salary;
     }
 

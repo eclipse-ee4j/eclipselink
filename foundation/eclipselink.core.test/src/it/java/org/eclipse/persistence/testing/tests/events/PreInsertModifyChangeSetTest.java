@@ -36,7 +36,7 @@ public class PreInsertModifyChangeSetTest extends AutoVerifyTestCase {
         @Override
         public void preInsert(DescriptorEvent event) {
             if (event.getQuery().getDescriptor() != null) {
-                event.updateAttributeWithObject("salary", Integer.valueOf(callCount));
+                event.updateAttributeWithObject("salary", callCount);
                 ++callCount;
             }
         }

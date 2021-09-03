@@ -66,7 +66,7 @@ public class SDODataObjectGetDecimalConversionTest extends SDODataObjectConversi
     public void testGetDecimalFromCharacter() {
         SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_CHARACTER);
-        dataObject.set(property, Character.valueOf('y'));
+        dataObject.set(property, 'y');
         try {
             dataObject.getBigDecimal(property);
             fail("ClassCastException should be thrown.");

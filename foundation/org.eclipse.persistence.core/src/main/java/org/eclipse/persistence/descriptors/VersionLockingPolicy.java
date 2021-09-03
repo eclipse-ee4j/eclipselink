@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -225,7 +225,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      */
     @Override
     public Object getBaseValue() {
-        return Long.valueOf(0);
+        return 0L;
     }
 
     /**
@@ -240,7 +240,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * returns the initial locking value
      */
     protected Object getInitialWriteValue(AbstractSession session) {
-        return Long.valueOf(1);
+        return 1L;
     }
 
     /**
@@ -322,7 +322,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
 
         // If null, was an insert, use 0.
         if (newWriteLockFieldValue == null) {
-            newWriteLockFieldValue = Long.valueOf(0);
+            newWriteLockFieldValue = 0L;
         }
 
         if (isStoredInCache()) {
@@ -331,7 +331,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
             writeLockFieldValue = (Number)lockValueFromObject(domainObject);
         }
         if (writeLockFieldValue == null){
-            writeLockFieldValue = Long.valueOf(0);
+            writeLockFieldValue = 0L;
         }
         return (int)(newWriteLockFieldValue.longValue() - writeLockFieldValue.longValue());
     }
@@ -385,7 +385,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * Adds 1 to the value passed in.
      */
     protected Number incrementWriteLockValue(Number numberValue) {
-        return Long.valueOf(numberValue.longValue() + 1);
+        return numberValue.longValue() + 1;
     }
 
     /**

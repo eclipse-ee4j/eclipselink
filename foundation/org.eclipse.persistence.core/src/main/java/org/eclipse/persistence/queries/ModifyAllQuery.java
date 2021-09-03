@@ -209,7 +209,7 @@ public abstract class ModifyAllQuery extends ModifyQuery {
      * by the query.
      */
     protected void invalidateCache() {
-        if(result != null && result.intValue() == 0) {
+        if(result != null && result == 0) {
             // no rows modified in the db - nothing to invalidate
             return;
         }

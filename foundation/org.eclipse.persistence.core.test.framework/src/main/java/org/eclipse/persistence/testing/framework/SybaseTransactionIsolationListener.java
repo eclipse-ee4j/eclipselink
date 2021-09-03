@@ -92,7 +92,7 @@ public class SybaseTransactionIsolationListener extends SessionEventAdapter {
             stmt1 = conn.createStatement();
             result = stmt1.executeQuery("select @@isolation");
             result.next();
-            isolationLevel = Integer.valueOf(result.getInt(1));
+            isolationLevel = result.getInt(1);
             if(isolationLevel > 0) {
                 // If conn1 began transaction and updated the row (but hasn't committed the transaction yet),
                 // then conn2 should be able to read the original (not updated) state of the row.

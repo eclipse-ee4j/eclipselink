@@ -147,7 +147,7 @@ public class ConverterTestSuite extends JUnitTestCase {
             organizer.setRace(race);
 
             Responsibility responsibility = new Responsibility();
-            responsibility.setUniqueIdentifier(Long.valueOf(System.currentTimeMillis()));
+            responsibility.setUniqueIdentifier(System.currentTimeMillis());
             responsibility.setDescription("Raise funds");
 
             race.addOrganizer(organizer, responsibility);
@@ -207,7 +207,7 @@ public class ConverterTestSuite extends JUnitTestCase {
             organizer.setRace(race);
 
             Responsibility responsibility = new Responsibility();
-            responsibility.setUniqueIdentifier(Long.valueOf(System.currentTimeMillis()));
+            responsibility.setUniqueIdentifier(System.currentTimeMillis());
             //This string causes an exception to be thrown from the ResponsibilityConverter.convertToEntityAttribute method
             responsibility.setDescription(ResponsibilityConverter.THROW_EXCEPTION_IN_TO_ENTITY_ATTRIBUTE);
 
@@ -262,7 +262,7 @@ public class ConverterTestSuite extends JUnitTestCase {
             organizer.setRace(race);
 
             Responsibility responsibility = new Responsibility();
-            responsibility.setUniqueIdentifier(Long.valueOf(System.currentTimeMillis()));
+            responsibility.setUniqueIdentifier(System.currentTimeMillis());
             //This string causes an exception to be thrown from the ResponsibilityConverter.convertToDatabaseColumn method
             responsibility.setDescription(ResponsibilityConverter.THROW_EXCEPTION_IN_TO_DATABASE_COLUMN);
 

@@ -37,7 +37,7 @@ public class ObjectFactory {
 
     @XmlElementDecl(name="value", scope=BeanB.class)
     public JAXBElement<Integer> createBeanBValue() {
-        return new JAXBElement<Integer>(new QName("value"), Integer.class, Integer.valueOf(12));
+        return new JAXBElement<Integer>(new QName("value"), Integer.class, 12);
     }
 
     @XmlElementDecl(name="value")

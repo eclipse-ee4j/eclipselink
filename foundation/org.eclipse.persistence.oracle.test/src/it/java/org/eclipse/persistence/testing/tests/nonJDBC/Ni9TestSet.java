@@ -158,7 +158,7 @@ public class Ni9TestSet {
         s.dontLogMessages();
         ((DatabaseSession)s).login();
         Vector queryArgs = new NonSynchronizedVector();
-        queryArgs.add(Integer.valueOf(9));
+        queryArgs.add(9);
         boolean worked = false;
         String msg = null;
         try {
@@ -171,7 +171,7 @@ public class Ni9TestSet {
         assertTrue("invocation positiven_in_test failed: " + msg, worked);
         // test data range: negative number should NOT work
         queryArgs = new NonSynchronizedVector();
-        queryArgs.add(Integer.valueOf(-1));
+        queryArgs.add(-1);
         worked = false;
         msg = null;
         try {

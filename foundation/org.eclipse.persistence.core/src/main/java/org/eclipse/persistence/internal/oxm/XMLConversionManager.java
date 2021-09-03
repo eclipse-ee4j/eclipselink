@@ -354,7 +354,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
         if(sourceObject instanceof String && isNumericQName(schemaTypeQName)){
             int integer = Integer.parseInt((String)sourceObject);
 
-            return Character.valueOf((char)integer);
+            return (char) integer;
 
         }
 
@@ -583,9 +583,9 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
            if(((String) sourceObject).length() == 0) {
                return 0d;
            }else if(Constants.POSITIVE_INFINITY.equals(sourceObject)){
-               return Double.valueOf(Double.POSITIVE_INFINITY);
+               return Double.POSITIVE_INFINITY;
            }else if(Constants.NEGATIVE_INFINITY.equals(sourceObject)){
-               return Double.valueOf(Double.NEGATIVE_INFINITY);
+               return Double.NEGATIVE_INFINITY;
            }else{
                return super.convertObjectToDouble(sourceObject);
            }
@@ -605,9 +605,9 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
            if(((String) sourceObject).length() == 0) {
                return 0f;
            } else if(Constants.POSITIVE_INFINITY.equals(sourceObject)){
-               return Float.valueOf(Float.POSITIVE_INFINITY);
+               return Float.POSITIVE_INFINITY;
            }else if(Constants.NEGATIVE_INFINITY.equals(sourceObject)){
-               return Float.valueOf(Float.NEGATIVE_INFINITY);
+               return Float.NEGATIVE_INFINITY;
            }
        }
        return super.convertObjectToFloat(sourceObject);
@@ -1662,7 +1662,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     public String buildBase64StringFromObjectBytes(Byte[] bytes) {
         byte[] primitiveBytes = new byte[bytes.length];
         for (int i = 0; i < bytes.length; i++) {
-            primitiveBytes[i] = bytes[i].byteValue();
+            primitiveBytes[i] = bytes[i];
         }
         return buildBase64StringFromBytes(primitiveBytes);
     }
@@ -1670,7 +1670,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     protected String buildHexStringFromObjectBytes(Byte[] bytes) {
         byte[] primitiveBytes = new byte[bytes.length];
         for (int i = 0; i < bytes.length; i++) {
-            primitiveBytes[i] = bytes[i].byteValue();
+            primitiveBytes[i] = bytes[i];
         }
         return Helper.buildHexStringFromBytes(primitiveBytes);
     }

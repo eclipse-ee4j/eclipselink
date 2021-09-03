@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -199,7 +199,7 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
      * @param shouldForceUpdate
      */
     public void setForceUpdate(boolean shouldForceUpdate) {
-        this.forceUpdate = Boolean.valueOf(shouldForceUpdate);
+        this.forceUpdate = shouldForceUpdate;
     }
 
     /**
@@ -220,7 +220,7 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
      * @param shouldUpdatAllFields
      */
     public void setUpdateAllFields(boolean shouldUpdatAllFields) {
-        this.updateAllFields = Boolean.valueOf(shouldUpdatAllFields);
+        this.updateAllFields = shouldUpdatAllFields;
     }
 
     /**

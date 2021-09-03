@@ -35,7 +35,7 @@ public class Base64TestCases extends OXTestCase {
 
     public void testIntegerToString_base64() {
         try {
-            Integer integer = Integer.valueOf(1);
+            Integer integer = 1;
             xcm.convertObject(integer, ClassConstants.ABYTE, XMLConstants.BASE_64_BINARY_QNAME);
         } catch (ConversionException e) {
             assertTrue("The incorrect exception was thrown", e.getErrorCode() == ConversionException.COULD_NOT_BE_CONVERTED);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -350,14 +350,14 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
     protected void logDebugPreallocation(String seqName, Object firstSequenceValue, Vector sequences) {
         if (getOwnerSession().shouldLog(SessionLog.FINEST, SessionLog.SEQUENCING)) {
             // the first value has been already removed from sequences vector
-            Object[] args = { seqName, Integer.valueOf(sequences.size() + 1), firstSequenceValue, sequences.lastElement() };
+            Object[] args = { seqName, sequences.size() + 1, firstSequenceValue, sequences.lastElement() };
             getOwnerSession().log(SessionLog.FINEST, SessionLog.SEQUENCING, "sequencing_preallocation", args);
         }
     }
 
     protected void logDebugLocalPreallocation(AbstractSession writeSession, String seqName, Vector sequences, Accessor accessor) {
         if (writeSession.shouldLog(SessionLog.FINEST, SessionLog.SEQUENCING)) {
-            Object[] args = { seqName, Integer.valueOf(sequences.size()), sequences.firstElement(), sequences.lastElement() };
+            Object[] args = { seqName, sequences.size(), sequences.firstElement(), sequences.lastElement() };
             writeSession.log(SessionLog.FINEST, SessionLog.SEQUENCING, "sequencing_localPreallocation", args, accessor);
         }
     }

@@ -89,26 +89,26 @@ public class StoredProcedureGenerator {
      */
     protected void buildIntToTypeConverterHash() {
         this.intToTypeConverterHash = new Hashtable();
-        this.intToTypeConverterHash.put(Integer.valueOf(8), Double.class);
-        this.intToTypeConverterHash.put(Integer.valueOf(-7), Boolean.class);
-        this.intToTypeConverterHash.put(Integer.valueOf(-3), Byte[].class);
-        this.intToTypeConverterHash.put(Integer.valueOf(-6), Short.class);
-        this.intToTypeConverterHash.put(Integer.valueOf(5), Short.class);
-        this.intToTypeConverterHash.put(Integer.valueOf(4), Integer.class);
-        this.intToTypeConverterHash.put(Integer.valueOf(2), java.math.BigDecimal.class);
-        this.intToTypeConverterHash.put(Integer.valueOf(6), Float.class);
-        this.intToTypeConverterHash.put(Integer.valueOf(1), Character.class);
-        this.intToTypeConverterHash.put(Integer.valueOf(12), String.class);
-        this.intToTypeConverterHash.put(Integer.valueOf(91), java.sql.Date.class);
-        this.intToTypeConverterHash.put(Integer.valueOf(93), java.sql.Timestamp.class);
-        this.intToTypeConverterHash.put(Integer.valueOf(3), java.math.BigDecimal.class);
+        this.intToTypeConverterHash.put(8, Double.class);
+        this.intToTypeConverterHash.put(-7, Boolean.class);
+        this.intToTypeConverterHash.put(-3, Byte[].class);
+        this.intToTypeConverterHash.put(-6, Short.class);
+        this.intToTypeConverterHash.put(5, Short.class);
+        this.intToTypeConverterHash.put(4, Integer.class);
+        this.intToTypeConverterHash.put(2, java.math.BigDecimal.class);
+        this.intToTypeConverterHash.put(6, Float.class);
+        this.intToTypeConverterHash.put(1, Character.class);
+        this.intToTypeConverterHash.put(12, String.class);
+        this.intToTypeConverterHash.put(91, java.sql.Date.class);
+        this.intToTypeConverterHash.put(93, java.sql.Timestamp.class);
+        this.intToTypeConverterHash.put(3, java.math.BigDecimal.class);
 
-        this.intToTypeConverterHash.put(Integer.valueOf(-5), java.math.BigDecimal.class);
-        this.intToTypeConverterHash.put(Integer.valueOf(7), Float.class);
-        this.intToTypeConverterHash.put(Integer.valueOf(-1), String.class);
-        this.intToTypeConverterHash.put(Integer.valueOf(92), Time.class);
-        this.intToTypeConverterHash.put(Integer.valueOf(-2), Byte[].class);
-        this.intToTypeConverterHash.put(Integer.valueOf(-4), Byte[].class);
+        this.intToTypeConverterHash.put(-5, java.math.BigDecimal.class);
+        this.intToTypeConverterHash.put(7, Float.class);
+        this.intToTypeConverterHash.put(-1, String.class);
+        this.intToTypeConverterHash.put(92, Time.class);
+        this.intToTypeConverterHash.put(-2, Byte[].class);
+        this.intToTypeConverterHash.put(-4, Byte[].class);
         //this.intToTypeConverterHash.put(Integer.valueOf(0),null.class);
     }
 
@@ -684,7 +684,7 @@ public class StoredProcedureGenerator {
      * return the class corresponding to the passed in JDBC type.
      */
     protected Class getFieldType(Object jdbcDataType) {
-        Integer key = Integer.valueOf(((Number)jdbcDataType).intValue());
+        Integer key = ((Number) jdbcDataType).intValue();
         return (Class)intToTypeConverterHash.get(key);
     }
 

@@ -41,7 +41,7 @@ public class JPA2InsertDeleteEmployeePerformanceComparisonTest extends Performan
         Employee any = (Employee)manager.createQuery("Select e from Employee e").getResultList().get(0);
         // Create a query to avoid a cache hit to load emulated data.
         Query query = manager.createQuery("Select e from Employee e where e.id = :id");
-        query.setParameter("id", Long.valueOf(any.getId()));
+        query.setParameter("id", any.getId());
         any = (Employee)query.getSingleResult();
         manager.close();
         manager = createEntityManager();
@@ -84,7 +84,7 @@ public class JPA2InsertDeleteEmployeePerformanceComparisonTest extends Performan
 
         manager = createEntityManager();
         manager.getTransaction().begin();
-        employee = manager.getReference(Employee.class, Long.valueOf(employee.getId()));
+        employee = manager.getReference(Employee.class, employee.getId());
         manager.remove(employee);
         manager.getTransaction().commit();
         manager.close();

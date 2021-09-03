@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2011, 2018 Jenzabar, Inc. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -121,7 +121,7 @@ public class Informix11Platform extends InformixPlatform {
    */
   @Override
   protected void initializePlatformOperators() {
-    final ExpressionOperator distinctOverride = ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Distinct));
+    final ExpressionOperator distinctOverride = ExpressionOperator.getOperator(ExpressionOperator.Distinct);
     assert distinctOverride != null;
     distinctOverride.printsAs("DISTINCT "); // no parens, one space
     super.initializePlatformOperators();

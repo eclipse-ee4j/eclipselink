@@ -73,7 +73,7 @@ public class SingleInheritanceTest extends TestCase {
 
         //empty Vehicle's inheritance info
         InheritancePolicy newInheritancePolicy = (InheritancePolicy)originalInheritancePolicy.clone();
-        newInheritancePolicy.addClassIndicator(org.eclipse.persistence.testing.models.inheritance.Vehicle.class, Long.valueOf(8));
+        newInheritancePolicy.addClassIndicator(org.eclipse.persistence.testing.models.inheritance.Vehicle.class, 8L);
         newInheritancePolicy.setChildDescriptors(new Vector());
         newInheritancePolicy.setClassIndicatorMapping(new Hashtable(3));
         vehicleDescriptor.setInheritancePolicy(newInheritancePolicy);

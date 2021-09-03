@@ -32,7 +32,7 @@ public class RelatedNewObjectCacheSyncTest extends ConfigurableCacheSyncDistribu
     protected Expression expression = null;
 
     public RelatedNewObjectCacheSyncTest() {
-        cacheSyncConfigValues.put(Employee.class, Integer.valueOf(ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES));
+        cacheSyncConfigValues.put(Employee.class, ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES);
     }
 
     @Override

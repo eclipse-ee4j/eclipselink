@@ -441,7 +441,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
 
         // verify that 'sal' and 'c' fields were updated successfully
         XRDynamicEntity tableTypeEntity = (XRDynamicEntity) result;
-        assertTrue("Expected [sal] '112000.99' but was '" + tableTypeEntity.get("sal") + "'", Float.compare(tableTypeEntity.get("sal"), Float.valueOf(112000.99f)) == 0);
+        assertTrue("Expected [sal] '112000.99' but was '" + tableTypeEntity.get("sal") + "'", Float.compare(tableTypeEntity.get("sal"), 112000.99f) == 0);
 
         Character[] chars = tableTypeEntity.get("c");
         StringBuilder sb = new StringBuilder(chars.length);

@@ -83,7 +83,7 @@ public class TestLockMethod extends JPA1Base {
             em.persist(dep);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            dep = em.find(Department.class, Integer.valueOf(100));
+            dep = em.find(Department.class, 100);
             em.remove(dep);
             em.lock(dep, LockModeType.READ);
             flop("no exception NonManagedEntity");
@@ -104,7 +104,7 @@ public class TestLockMethod extends JPA1Base {
             em.persist(dep);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            dep = em.find(Department.class, Integer.valueOf(101));
+            dep = em.find(Department.class, 101);
             em.remove(dep);
             em.flush();
             em.lock(dep, LockModeType.READ);
@@ -256,11 +256,11 @@ public class TestLockMethod extends JPA1Base {
             env.commitTransactionAndClear(em1);
             // read first version
             env.beginTransaction(em1);
-            dep1 = em1.find(Department.class, Integer.valueOf(id));
+            dep1 = em1.find(Department.class, id);
             verify(dep1 != null, "Department is null");
             // change entity meanwhile
             env.beginTransaction(em2);
-            Department dep2 = em2.find(Department.class, Integer.valueOf(id));
+            Department dep2 = em2.find(Department.class, id);
             dep2.setName("dep" + id + "x");
             env.commitTransactionAndClear(em2);
             // try to lock first version
@@ -325,7 +325,7 @@ public class TestLockMethod extends JPA1Base {
             env.commitTransaction(em);
             em.clear();
             env.beginTransaction(em);
-            dep = em.find(Department.class, Integer.valueOf(dep.getId()));
+            dep = em.find(Department.class, dep.getId());
             try {
                 em.lock(depDetached, LockModeType.READ);
                 flop("exception not thrown as expected");
@@ -342,7 +342,7 @@ public class TestLockMethod extends JPA1Base {
             env.commitTransaction(em);
             em.clear();
             env.beginTransaction(em);
-            dep = em.find(Department.class, Integer.valueOf(dep.getId()));
+            dep = em.find(Department.class, dep.getId());
             em.remove(dep);
             try {
                 em.lock(depDetached, LockModeType.READ);
@@ -360,7 +360,7 @@ public class TestLockMethod extends JPA1Base {
             env.commitTransaction(em);
             em.clear();
             env.beginTransaction(em);
-            dep = em.find(Department.class, Integer.valueOf(dep.getId()));
+            dep = em.find(Department.class, dep.getId());
             em.remove(dep);
             em.flush();
             try {

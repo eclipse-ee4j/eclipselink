@@ -85,7 +85,7 @@ public class NumberTestCases extends OXTestCase {
 
     public void testConvertEmptyStringTo_Double() {
         Double test = (Double) xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, Double.class);
-        assertEquals(0.0, test.doubleValue());
+        assertEquals(0.0, test);
     }
 
     public void testConvertEmptyStringTo_float() {
@@ -95,7 +95,7 @@ public class NumberTestCases extends OXTestCase {
 
     public void testConvertEmptyStringTo_Float() {
         Float test = (Float) xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, Float.class);
-        assertEquals(0.0, test.floatValue(), 0);
+        assertEquals(0.0, test, 0);
     }
 
     public void testConvertEmptyStringTo_int() {

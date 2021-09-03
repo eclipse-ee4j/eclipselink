@@ -186,7 +186,7 @@ public class jiNoTestSet {
         Vector results = (Vector)o;
         DatabaseRecord record = (DatabaseRecord)results.get(0);
         Integer bool2int = (Integer)record.get("Y");
-        assertTrue("wrong bool2int value", bool2int.intValue() == 0);
+        assertTrue("wrong bool2int value", bool2int == 0);
         ((DatabaseSession)s).logout();
     }
 }

@@ -41,7 +41,7 @@ public class NullValueTest extends AutoVerifyTestCase {
         saveDefaultNullValues = getSession().getLogin().getPlatform().getConversionManager().getDefaultNullValues();
         getSession().getLogin().getPlatform().getConversionManager().setDefaultNullValues(new Hashtable());
         getSession().getLogin().setDefaultNullValue(String.class, "null");
-        getSession().getLogin().setDefaultNullValue(int.class, Integer.valueOf(-1));
+        getSession().getLogin().setDefaultNullValue(int.class, -1);
         // Reinit mappings.
         for (DatabaseMapping mapping : getSession().getDescriptor(Address.class).getMappings()) {
             if (mapping.isDirectToFieldMapping()) {

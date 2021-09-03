@@ -32,8 +32,8 @@ import org.junit.Test;
 public class TestUnidirectionalOneToOne extends JPA1Base {
     private static final int HANS_ID_VALUE = 1;
     private static final int FRED_ID_VALUE = 2;
-    private static final Integer HANS_ID = Integer.valueOf(HANS_ID_VALUE);
-    private static final Integer FRED_ID = Integer.valueOf(FRED_ID_VALUE);
+    private static final Integer HANS_ID = HANS_ID_VALUE;
+    private static final Integer FRED_ID = FRED_ID_VALUE;
     private static final byte[] SMOKER_GUID = new byte[16];
     private static final byte[] NON_SMOKER_GUID = new byte[16];
     static {

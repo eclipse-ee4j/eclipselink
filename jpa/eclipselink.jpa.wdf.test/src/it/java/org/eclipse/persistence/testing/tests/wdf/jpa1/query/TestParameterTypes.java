@@ -45,7 +45,7 @@ public class TestParameterTypes extends JPA1Base {
             em.persist(obj);
             env.commitTransactionAndClear(em);
             verify(true, "no Exception");
-            obj = em.find(BasicTypesFieldAccess.class, Integer.valueOf(0));
+            obj = em.find(BasicTypesFieldAccess.class, 0);
         } finally {
             closeEntityManager(em);
         }
@@ -129,7 +129,7 @@ public class TestParameterTypes extends JPA1Base {
             @Override
             public Query createQuery(EntityManager em, int id) {
                 return em.createQuery("select b from BasicTypesFieldAccess b where b.primitiveBoolean = ?1 and b.id = ?2")
-                        .setParameter(1, Boolean.TRUE).setParameter(2, Integer.valueOf(id));
+                        .setParameter(1, Boolean.TRUE).setParameter(2, id);
             }
 
             @Override
@@ -156,8 +156,8 @@ public class TestParameterTypes extends JPA1Base {
             @Override
             public Query createQuery(EntityManager em, int id) {
                 return em.createQuery("select b from BasicTypesFieldAccess b where b.primititveByte = ?1 and b.id = ?2")
-                        .setParameter(1, Byte.valueOf((byte) 17)).setParameter(2, Integer.valueOf(id)).setParameter(2,
-                                Integer.valueOf(id));
+                        .setParameter(1, (byte) 17).setParameter(2, id).setParameter(2,
+                                id);
             }
         };
         validatePrimitive(2, validator);
@@ -179,7 +179,7 @@ public class TestParameterTypes extends JPA1Base {
             @Override
             public Query createQuery(EntityManager em, int id) {
                 return em.createQuery("select b from BasicTypesFieldAccess b where b.primitiveChar = ?1 and b.id = ?2")
-                        .setParameter(1, Character.valueOf('A')).setParameter(2, Integer.valueOf(id));
+                        .setParameter(1, 'A').setParameter(2, id);
             }
         };
         validatePrimitive(3, validator);
@@ -201,7 +201,7 @@ public class TestParameterTypes extends JPA1Base {
             @Override
             public Query createQuery(EntityManager em, int id) {
                 return em.createQuery("select b from BasicTypesFieldAccess b where b.primitiveShort = ?1 and b.id = ?2")
-                        .setParameter(1, Short.valueOf((short) 19)).setParameter(2, Integer.valueOf(id));
+                        .setParameter(1, (short) 19).setParameter(2, id);
             }
         };
         validatePrimitive(4, validator);
@@ -223,7 +223,7 @@ public class TestParameterTypes extends JPA1Base {
             @Override
             public Query createQuery(EntityManager em, int id) {
                 return em.createQuery("select b from BasicTypesFieldAccess b where b.primitiveInt = ?1 and b.id = ?2")
-                        .setParameter(1, Integer.valueOf(88)).setParameter(2, Integer.valueOf(id));
+                        .setParameter(1, 88).setParameter(2, id);
             }
         };
         validatePrimitive(5, validator);
@@ -245,7 +245,7 @@ public class TestParameterTypes extends JPA1Base {
             @Override
             public Query createQuery(EntityManager em, int id) {
                 return em.createQuery("select b from BasicTypesFieldAccess b where b.primitiveLong = ?1 and b.id = ?2")
-                        .setParameter(1, Long.valueOf(88)).setParameter(2, Integer.valueOf(id));
+                        .setParameter(1, 88L).setParameter(2, id);
             }
         };
         validatePrimitive(6, validator);
@@ -267,7 +267,7 @@ public class TestParameterTypes extends JPA1Base {
             @Override
             public Query createQuery(EntityManager em, int id) {
                 return em.createQuery("select b from BasicTypesFieldAccess b where b.primitiveFloat = ?1 and b.id = ?2")
-                        .setParameter(1, Float.valueOf("88.5")).setParameter(2, Integer.valueOf(id));
+                        .setParameter(1, Float.valueOf("88.5")).setParameter(2, id);
             }
         };
         validatePrimitive(7, validator);
@@ -289,7 +289,7 @@ public class TestParameterTypes extends JPA1Base {
             @Override
             public Query createQuery(EntityManager em, int id) {
                 return em.createQuery("select b from BasicTypesFieldAccess b where b.primitiveDouble = ?1 and b.id = ?2")
-                        .setParameter(1, Double.valueOf(("99.5"))).setParameter(2, Integer.valueOf(id));
+                        .setParameter(1, Double.valueOf(("99.5"))).setParameter(2, id);
             }
         };
         validatePrimitive(8, validator);
@@ -307,7 +307,7 @@ public class TestParameterTypes extends JPA1Base {
             @Override
             public Query createQuery(EntityManager em, int id) {
                 return em.createQuery("select b from BasicTypesFieldAccess b where b.wrapperBoolean = ?1 and b.id = ?2")
-                        .setParameter(1, Boolean.TRUE).setParameter(2, Integer.valueOf(id));
+                        .setParameter(1, Boolean.TRUE).setParameter(2, id);
             }
 
             @Override
@@ -323,7 +323,7 @@ public class TestParameterTypes extends JPA1Base {
         Validator validator = new Validator() {
             @Override
             public void set(BasicTypesFieldAccess obj) {
-                obj.setWrapperByte(Byte.valueOf((byte) 17));
+                obj.setWrapperByte((byte) 17);
             }
 
             @Override
@@ -334,7 +334,7 @@ public class TestParameterTypes extends JPA1Base {
             @Override
             public Query createQuery(EntityManager em, int id) {
                 return em.createQuery("select b from BasicTypesFieldAccess b where b.wrapperByte = ?1 and b.id = ?2")
-                        .setParameter(1, Byte.valueOf((byte) 17)).setParameter(2, Integer.valueOf(id));
+                        .setParameter(1, (byte) 17).setParameter(2, id);
             }
         };
         validateReference(12, validator);
@@ -345,7 +345,7 @@ public class TestParameterTypes extends JPA1Base {
         Validator validator = new Validator() {
             @Override
             public void set(BasicTypesFieldAccess obj) {
-                obj.setWrapperCharacter(Character.valueOf('A'));
+                obj.setWrapperCharacter('A');
             }
 
             @Override
@@ -356,7 +356,7 @@ public class TestParameterTypes extends JPA1Base {
             @Override
             public Query createQuery(EntityManager em, int id) {
                 return em.createQuery("select b from BasicTypesFieldAccess b where b.wrapperCharacter = ?1 and b.id = ?2")
-                        .setParameter(1, Character.valueOf('A')).setParameter(2, Integer.valueOf(id));
+                        .setParameter(1, 'A').setParameter(2, id);
             }
         };
         validateReference(13, validator);
@@ -367,7 +367,7 @@ public class TestParameterTypes extends JPA1Base {
         Validator validator = new Validator() {
             @Override
             public void set(BasicTypesFieldAccess obj) {
-                obj.setWrapperShort(Short.valueOf((short) 1));
+                obj.setWrapperShort((short) 1);
             }
 
             @Override
@@ -378,7 +378,7 @@ public class TestParameterTypes extends JPA1Base {
             @Override
             public Query createQuery(EntityManager em, int id) {
                 return em.createQuery("select b from BasicTypesFieldAccess b where b.wrapperShort = ?1 and b.id = ?2")
-                        .setParameter(1, Short.valueOf((short) 1)).setParameter(2, Integer.valueOf(id));
+                        .setParameter(1, (short) 1).setParameter(2, id);
             }
         };
         validateReference(14, validator);
@@ -389,7 +389,7 @@ public class TestParameterTypes extends JPA1Base {
         Validator validator = new Validator() {
             @Override
             public void set(BasicTypesFieldAccess obj) {
-                obj.setWrapperInteger(Integer.valueOf(1));
+                obj.setWrapperInteger(1);
             }
 
             @Override
@@ -400,7 +400,7 @@ public class TestParameterTypes extends JPA1Base {
             @Override
             public Query createQuery(EntityManager em, int id) {
                 return em.createQuery("select b from BasicTypesFieldAccess b where b.wrapperInteger = ?1 and b.id = ?2")
-                        .setParameter(1, Integer.valueOf(1)).setParameter(2, Integer.valueOf(id));
+                        .setParameter(1, 1).setParameter(2, id);
             }
         };
         validateReference(15, validator);
@@ -411,7 +411,7 @@ public class TestParameterTypes extends JPA1Base {
         Validator validator = new Validator() {
             @Override
             public void set(BasicTypesFieldAccess obj) {
-                obj.setWrapperLong(Long.valueOf(1));
+                obj.setWrapperLong(1L);
             }
 
             @Override
@@ -422,7 +422,7 @@ public class TestParameterTypes extends JPA1Base {
             @Override
             public Query createQuery(EntityManager em, int id) {
                 return em.createQuery("select b from BasicTypesFieldAccess b where b.wrapperLong = ?1 and b.id = ?2")
-                        .setParameter(1, Long.valueOf(1)).setParameter(2, Integer.valueOf(id));
+                        .setParameter(1, 1L).setParameter(2, id);
             }
         };
         validateReference(16, validator);
@@ -433,7 +433,7 @@ public class TestParameterTypes extends JPA1Base {
         Validator validator = new Validator() {
             @Override
             public void set(BasicTypesFieldAccess obj) {
-                obj.setWrapperDouble(Double.valueOf(1));
+                obj.setWrapperDouble(1.0);
             }
 
             @Override
@@ -444,7 +444,7 @@ public class TestParameterTypes extends JPA1Base {
             @Override
             public Query createQuery(EntityManager em, int id) {
                 return em.createQuery("select b from BasicTypesFieldAccess b where b.wrapperDouble = ?1 and b.id = ?2")
-                        .setParameter(1, Double.valueOf(("1"))).setParameter(2, Integer.valueOf(id));
+                        .setParameter(1, Double.valueOf(("1"))).setParameter(2, id);
             }
         };
         validateReference(18, validator);
@@ -455,7 +455,7 @@ public class TestParameterTypes extends JPA1Base {
         Validator validator = new Validator() {
             @Override
             public void set(BasicTypesFieldAccess obj) {
-                obj.setWrapperFloat(Float.valueOf(1));
+                obj.setWrapperFloat(1F);
             }
 
             @Override
@@ -466,7 +466,7 @@ public class TestParameterTypes extends JPA1Base {
             @Override
             public Query createQuery(EntityManager em, int id) {
                 return em.createQuery("select b from BasicTypesFieldAccess b where b.wrapperFloat = ?1 and b.id = ?2")
-                        .setParameter(1, Float.valueOf("1")).setParameter(2, Integer.valueOf(id));
+                        .setParameter(1, Float.valueOf("1")).setParameter(2, id);
             }
         };
         validateReference(17, validator);
@@ -489,7 +489,7 @@ public class TestParameterTypes extends JPA1Base {
             @Override
             public Query createQuery(EntityManager em, int id) {
                 return em.createQuery("select b from BasicTypesFieldAccess b where b.string2Varchar = ?1 and b.id = ?2")
-                        .setParameter(1, "VC 1").setParameter(2, Integer.valueOf(id));
+                        .setParameter(1, "VC 1").setParameter(2, id);
             }
         };
         validateReference(21, validator);
@@ -532,7 +532,7 @@ public class TestParameterTypes extends JPA1Base {
             @Override
             public Query createQuery(EntityManager em, int id) {
                 return em.createQuery("select b from BasicTypesFieldAccess b where b.bigDecimal = ?1 and b.id = ?2")
-                        .setParameter(1, new BigDecimal("1.1")).setParameter(2, Integer.valueOf(id));
+                        .setParameter(1, new BigDecimal("1.1")).setParameter(2, id);
             }
         };
         validateReference(23, validator);
@@ -554,7 +554,7 @@ public class TestParameterTypes extends JPA1Base {
             @Override
             public Query createQuery(EntityManager em, int id) {
                 return em.createQuery("select b from BasicTypesFieldAccess b where b.bigInteger = ?1 and b.id = ?2")
-                        .setParameter(1, new BigInteger("11")).setParameter(2, Integer.valueOf(id));
+                        .setParameter(1, new BigInteger("11")).setParameter(2, id);
             }
         };
         validateReference(24, validator);
@@ -577,7 +577,7 @@ public class TestParameterTypes extends JPA1Base {
             @Override
             public Query createQuery(EntityManager em, int id) {
                 return em.createQuery("select b from BasicTypesFieldAccess b where b.utilDate = ?1 and b.id = ?2")
-                        .setParameter(1, new Date(1000), TemporalType.TIMESTAMP).setParameter(2, Integer.valueOf(id));
+                        .setParameter(1, new Date(1000), TemporalType.TIMESTAMP).setParameter(2, id);
             }
         };
         validateMutable(31, validator);
@@ -600,7 +600,7 @@ public class TestParameterTypes extends JPA1Base {
             public Query createQuery(EntityManager em, int id) {
                 return em.createQuery("select b from BasicTypesFieldAccess b where b.utilCalendar = ?1 and b.id = ?2")
                         .setParameter(1, new GregorianCalendar(2005, 9, 8, 10, 49), TemporalType.TIMESTAMP).setParameter(2,
-                                Integer.valueOf(id));
+                                id);
             }
         };
         validateMutable(32, validator);
@@ -622,7 +622,7 @@ public class TestParameterTypes extends JPA1Base {
             @Override
             public Query createQuery(EntityManager em, int id) {
                 return em.createQuery("select b from BasicTypesFieldAccess b where b.sqlDate = ?1 and b.id = ?2").setParameter(
-                        1, java.sql.Date.valueOf("2005-09-08")).setParameter(2, Integer.valueOf(id));
+                        1, java.sql.Date.valueOf("2005-09-08")).setParameter(2, id);
             }
         };
         validateMutable(33, validator);
@@ -644,7 +644,7 @@ public class TestParameterTypes extends JPA1Base {
             @Override
             public Query createQuery(EntityManager em, int id) {
                 return em.createQuery("select b from BasicTypesFieldAccess b where b.sqlTime = ?1 and b.id = ?2").setParameter(
-                        1, java.sql.Time.valueOf("10:49:00")).setParameter(2, Integer.valueOf(id));
+                        1, java.sql.Time.valueOf("10:49:00")).setParameter(2, id);
             }
         };
         validateMutable(34, validator);
@@ -666,7 +666,7 @@ public class TestParameterTypes extends JPA1Base {
             @Override
             public Query createQuery(EntityManager em, int id) {
                 return em.createQuery("select b from BasicTypesFieldAccess b where b.sqlTimestamp = ?1 and b.id = ?2")
-                        .setParameter(1, new java.sql.Timestamp(1000)).setParameter(2, Integer.valueOf(id));
+                        .setParameter(1, new java.sql.Timestamp(1000)).setParameter(2, id);
             }
         };
         validateMutable(35, validator);
@@ -691,7 +691,7 @@ public class TestParameterTypes extends JPA1Base {
             public Query createQuery(EntityManager em, int id) {
                 return em.createQuery(
                         "select b from BasicTypesFieldAccess b where b.primitiveByteArray2Binary = ?1 and b.id = ?2")
-                        .setParameter(1, UNCHANGED).setParameter(2, Integer.valueOf(id));
+                        .setParameter(1, UNCHANGED).setParameter(2, id);
             }
         };
         validateMutable(41, validator);
@@ -759,7 +759,7 @@ public class TestParameterTypes extends JPA1Base {
             public Query createQuery(EntityManager em, int id) {
                 return em.createQuery(
                         "select b from BasicTypesFieldAccess b where b.primitiveCharArray2Varchar = ?1 and b.id = ?2")
-                        .setParameter(1, UNCHANGED).setParameter(2, Integer.valueOf(id));
+                        .setParameter(1, UNCHANGED).setParameter(2, id);
             }
         };
         validateMutable(44, validator);
@@ -789,9 +789,9 @@ public class TestParameterTypes extends JPA1Base {
 
     @Test
     public void testWrapperByteArray2Binary() {
-        final Byte[] UNCHANGED = new Byte[] { Byte.valueOf((byte) 0), Byte.valueOf((byte) 1), Byte.valueOf((byte) 2),
-                Byte.valueOf((byte) 3), Byte.valueOf((byte) 4), Byte.valueOf((byte) 5), Byte.valueOf((byte) 6),
-                Byte.valueOf((byte) 7) };
+        final Byte[] UNCHANGED = new Byte[] {(byte) 0, (byte) 1, (byte) 2,
+                (byte) 3, (byte) 4, (byte) 5, (byte) 6,
+                (byte) 7};
         Validator validator = new Validator() {
             @Override
             public void set(BasicTypesFieldAccess obj) {
@@ -807,7 +807,7 @@ public class TestParameterTypes extends JPA1Base {
             public Query createQuery(EntityManager em, int id) {
                 return em.createQuery(
                         "select b from BasicTypesFieldAccess b where b.wrapperByteArray2Binary = ?1 and b.id = ?2")
-                        .setParameter(1, UNCHANGED).setParameter(2, Integer.valueOf(id));
+                        .setParameter(1, UNCHANGED).setParameter(2, id);
             }
         };
         validateMutable(46, validator);
@@ -815,9 +815,9 @@ public class TestParameterTypes extends JPA1Base {
 
     @Test
     public void testWrapperByteArray2Longvarbinary() {
-        final Byte[] UNCHANGED = new Byte[] { Byte.valueOf((byte) 0), Byte.valueOf((byte) 1), Byte.valueOf((byte) 2),
-                Byte.valueOf((byte) 3), Byte.valueOf((byte) 4), Byte.valueOf((byte) 5), Byte.valueOf((byte) 6),
-                Byte.valueOf((byte) 7) };
+        final Byte[] UNCHANGED = new Byte[] {(byte) 0, (byte) 1, (byte) 2,
+                (byte) 3, (byte) 4, (byte) 5, (byte) 6,
+                (byte) 7};
         Validator validator = new Validator() {
             @Override
             public void set(BasicTypesFieldAccess obj) {
@@ -839,9 +839,9 @@ public class TestParameterTypes extends JPA1Base {
 
     @Test
     public void testWrapperByteArray2Blob() {
-        final Byte[] UNCHANGED = new Byte[] { Byte.valueOf((byte) 0), Byte.valueOf((byte) 1), Byte.valueOf((byte) 2),
-                Byte.valueOf((byte) 3), Byte.valueOf((byte) 4), Byte.valueOf((byte) 5), Byte.valueOf((byte) 6),
-                Byte.valueOf((byte) 7) };
+        final Byte[] UNCHANGED = new Byte[] {(byte) 0, (byte) 1, (byte) 2,
+                (byte) 3, (byte) 4, (byte) 5, (byte) 6,
+                (byte) 7};
         Validator validator = new Validator() {
             @Override
             public void set(BasicTypesFieldAccess obj) {
@@ -880,7 +880,7 @@ public class TestParameterTypes extends JPA1Base {
             public Query createQuery(EntityManager em, int id) {
                 return em.createQuery(
                         "select b from BasicTypesFieldAccess b where b.wrapperCharacterArray2Varchar = ?1 and b.id = ?2")
-                        .setParameter(1, UNCHANGED).setParameter(2, Integer.valueOf(id));
+                        .setParameter(1, UNCHANGED).setParameter(2, id);
             }
         };
         validateMutable(49, validator);
@@ -943,7 +943,7 @@ public class TestParameterTypes extends JPA1Base {
             @Override
             public Query createQuery(EntityManager em, int id) {
                 return em.createQuery("select b from BasicTypesFieldAccess b where b.enumString = ?1 and b.id = ?2")
-                        .setParameter(1, UserDefinedEnum.HUGO).setParameter(2, Integer.valueOf(id));
+                        .setParameter(1, UserDefinedEnum.HUGO).setParameter(2, id);
             }
 
             @Override
@@ -965,7 +965,7 @@ public class TestParameterTypes extends JPA1Base {
             @Override
             public Query createQuery(EntityManager em, int id) {
                 return em.createQuery("select b from BasicTypesFieldAccess b where b.enumOrdinal = ?1 and b.id = ?2")
-                        .setParameter(1, UserDefinedEnum.HUGO).setParameter(2, Integer.valueOf(id));
+                        .setParameter(1, UserDefinedEnum.HUGO).setParameter(2, id);
             }
 
             @Override

@@ -155,7 +155,7 @@ public class RemoteConnectionExceptionsTest extends TestCase {
             if (!ok) {
                 if (((Method)methods.elementAt(i)).getName().equals("isConnected")) {
                     if (Boolean.class.isInstance(results[i])) {
-                        ok = !((Boolean)results[i]).booleanValue();
+                        ok = !(Boolean) results[i];
                     }
                 }
             }
@@ -224,23 +224,23 @@ public class RemoteConnectionExceptionsTest extends TestCase {
 
     public static Object getWrapperClassInstance(Class cls) {
         if (Integer.TYPE.equals(cls)) {
-            return Integer.valueOf(0);
+            return 0;
         } else if (Boolean.TYPE.equals(cls)) {
-            return Boolean.valueOf(false);
+            return Boolean.FALSE;
         } else if (Character.TYPE.equals(cls)) {
-            return Character.valueOf(' ');
+            return ' ';
         } else if (Byte.TYPE.equals(cls)) {
             byte b = 0;
-            return Byte.valueOf(b);
+            return b;
         } else if (Short.TYPE.equals(cls)) {
             short s = 0;
-            return Short.valueOf(s);
+            return s;
         } else if (Long.TYPE.equals(cls)) {
-            return Long.valueOf(0);
+            return 0L;
         } else if (Float.TYPE.equals(cls)) {
-            return Float.valueOf(0);
+            return (float) 0;
         } else if (Double.TYPE.equals(cls)) {
-            return Double.valueOf(0);
+            return (double) 0;
         } else {
             return null;
         }

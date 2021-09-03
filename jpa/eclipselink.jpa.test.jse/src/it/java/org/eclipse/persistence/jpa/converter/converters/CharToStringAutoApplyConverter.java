@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2016 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -46,7 +46,7 @@ public class CharToStringAutoApplyConverter implements AttributeConverter<Charac
     public Character convertToEntityAttribute(String dbData) {
         convertToEntityTriggered = true;
         cteaVal = dbData;
-        return Character.valueOf(dbData.charAt(0));
+        return dbData.charAt(0);
     }
 
 }

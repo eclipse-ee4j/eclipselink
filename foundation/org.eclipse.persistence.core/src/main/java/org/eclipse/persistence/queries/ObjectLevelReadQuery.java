@@ -507,7 +507,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         final Boolean useCustomQuery = checkCustomQueryFlag(session, translationRow);
         checkDescriptor(session);
         ObjectLevelReadQuery customQuery;
-        if (useCustomQuery != null && useCustomQuery.booleanValue()) {
+        if (useCustomQuery != null && useCustomQuery) {
             customQuery = getReadQuery();
             if (this.accessors != null) {
                 customQuery = (ObjectLevelReadQuery) customQuery.clone();
@@ -2194,7 +2194,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                 if (timeout == null) {
                     setLockMode(ObjectBuildingQuery.LOCK);
                 } else {
-                    if (timeout.intValue() == 0) {
+                    if (timeout == 0) {
                         setLockMode(ObjectBuildingQuery.LOCK_NOWAIT);
                     } else {
                         convertedTimeout = TimeUnit.SECONDS.convert(timeout, timeoutUnit);
@@ -2770,7 +2770,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         if (shouldOuterJoinSubclasses == null) {
             return false;
         }
-        return shouldOuterJoinSubclasses.booleanValue();
+        return shouldOuterJoinSubclasses;
     }
 
     /**
@@ -2780,7 +2780,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * a root or branch inheritance class that has subclasses that span multiple tables.
      */
     public void setShouldOuterJoinSubclasses(boolean shouldOuterJoinSubclasses) {
-        this.shouldOuterJoinSubclasses = Boolean.valueOf(shouldOuterJoinSubclasses);
+        this.shouldOuterJoinSubclasses = shouldOuterJoinSubclasses;
         setIsPrepared(false);
     }
 
@@ -2843,9 +2843,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     protected boolean isReferenceClassLocked() {
         if (isReferenceClassLocked == null) {
-            isReferenceClassLocked = Boolean.valueOf(isLockQuery() && lockingClause.isReferenceClassLocked());
+            isReferenceClassLocked = isLockQuery() && lockingClause.isReferenceClassLocked();
         }
-        return isReferenceClassLocked.booleanValue();
+        return isReferenceClassLocked;
     }
 
     /**
@@ -2944,7 +2944,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Set if the query should be optimized to build directly from the result set.
      */
     public void setIsResultSetAccessOptimizedQuery(boolean isResultSetAccessOptimizedQuery) {
-        if (this.isResultSetAccessOptimizedQuery == null || this.isResultSetAccessOptimizedQuery.booleanValue() != isResultSetOptimizedQuery) {
+        if (this.isResultSetAccessOptimizedQuery == null || this.isResultSetAccessOptimizedQuery != isResultSetOptimizedQuery) {
             this.isResultSetAccessOptimizedQuery = isResultSetAccessOptimizedQuery;
             this.usesResultSetAccessOptimization = null;
         }

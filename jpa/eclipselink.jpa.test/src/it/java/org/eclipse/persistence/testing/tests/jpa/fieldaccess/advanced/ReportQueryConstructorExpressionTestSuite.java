@@ -230,7 +230,7 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         while (i.hasNext()){
             DataHolder holder = (DataHolder)((ReportQueryResult)i.next()).get(DataHolder.class.getName());
             ReportQueryResult result = (ReportQueryResult)report.next();
-            assertTrue("Incorrect salary ", ((Integer)result.get("salary")).intValue() == holder.getPrimitiveInt());
+            assertTrue("Incorrect salary ", (Integer) result.get("salary") == holder.getPrimitiveInt());
 
         }
         assertTrue("Different result sizes", !(report.hasNext()));

@@ -785,8 +785,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Employee emp1 = (Employee) expectedResult.elementAt(0);
         Employee emp2 = (Employee) expectedResult.elementAt(1);
 
-        double salarySquareRoot1 = Math.sqrt((Double.valueOf(emp1.getSalary()).doubleValue()));
-        double salarySquareRoot2 = Math.sqrt((Double.valueOf(emp2.getSalary()).doubleValue()));
+        double salarySquareRoot1 = Math.sqrt(((double) emp1.getSalary()));
+        double salarySquareRoot2 = Math.sqrt(((double) emp2.getSalary()));
 
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
         ejbqlString = ejbqlString + salarySquareRoot1;
@@ -824,8 +824,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Employee emp1 = (Employee) expectedResult.elementAt(0);
         Employee emp2 = (Employee) expectedResult.elementAt(1);
 
-        double salarySquareRoot1 = Math.sqrt((Double.valueOf(emp1.getSalary()).doubleValue()));
-        double salarySquareRoot2 = Math.sqrt((Double.valueOf(emp2.getSalary()).doubleValue()));
+        double salarySquareRoot1 = Math.sqrt(((double) emp1.getSalary()));
+        double salarySquareRoot2 = Math.sqrt(((double) emp2.getSalary()));
 
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
         ejbqlString = ejbqlString + "(SQRT(emp.salary) = ";
@@ -1387,7 +1387,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
                 sum += e.getSalary();
             }
         }
-        LongHolder expectedResult = new LongHolder(Long.valueOf(sum), Long.valueOf(count));
+        LongHolder expectedResult = new LongHolder((long) sum, (long) count);
 
         Assert.assertTrue("Constructor with aggregates argument Test Case Failed", result.equals(expectedResult));
     }
@@ -2722,8 +2722,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         em.persist(consumer);
         em.flush();
         List expectedResult = new ArrayList();
-        expectedResult.add(Integer.valueOf(0));
-        expectedResult.add(Integer.valueOf(1));
+        expectedResult.add(0);
+        expectedResult.add(1);
         clearCache();
         String ejbqlString = "select index(d) from EXPERT_CONSUMER e join e.designations d";
 
@@ -2919,7 +2919,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        assertTrue("The wrong absolute value was returned.", ((Integer)result.get(0)).intValue() == 35000);
+        assertTrue("The wrong absolute value was returned.", (Integer) result.get(0) == 35000);
     }
 
     public void modInSelectTest(){
@@ -2929,7 +2929,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        assertTrue("The wrong mod value was returned.", ((Integer)result.get(0)).intValue() == 0);
+        assertTrue("The wrong mod value was returned.", (Integer) result.get(0) == 0);
     }
 
     public void sqrtInSelectTest(){
@@ -2944,8 +2944,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        assertTrue("The wrong square root value was returned.", ((Double)result.get(0)).doubleValue() > 187);
-        assertTrue("The wrong square root value was returned.", ((Double)result.get(0)).doubleValue() < 188);
+        assertTrue("The wrong square root value was returned.", (Double) result.get(0) > 187);
+        assertTrue("The wrong square root value was returned.", (Double) result.get(0) < 188);
     }
 
     public void sizeInSelectTest(){
@@ -2955,7 +2955,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        assertTrue("The wrong absolute value was returned.", ((Integer)result.get(0)).intValue() == 2);
+        assertTrue("The wrong absolute value was returned.", (Integer) result.get(0) == 2);
     }
 
     public void mathInSelectTest(){
@@ -2965,7 +2965,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        assertTrue("The wrong value was returned.", ((Integer)result.get(0)).intValue() == 35100);
+        assertTrue("The wrong value was returned.", (Integer) result.get(0) == 35100);
     }
 
     public void paramNoVariableTest(){
@@ -4408,7 +4408,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         EntityManager em = createEntityManager();
         Employee emp = (Employee)em.createQuery("select e from Employee e where e.firstName = 'John' and e.lastName = 'Way'").getSingleResult();
         Long result = (Long)em.createQuery("select count(pn) from Employee e join e.phoneQK pn where e.id = :id").setParameter("id", emp.getId()).getSingleResult();
-        assertTrue("Incorrect number of results returned", result.equals(Long.valueOf(2)));
+        assertTrue("Incorrect number of results returned", result.equals(2L));
     }
 
     // Bug 306766

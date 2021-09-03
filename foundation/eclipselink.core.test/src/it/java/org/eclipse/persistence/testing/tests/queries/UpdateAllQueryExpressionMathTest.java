@@ -55,7 +55,7 @@ public class UpdateAllQueryExpressionMathTest extends AutoVerifyTestCase {
         ExpressionBuilder eb = new ExpressionBuilder();
         UpdateAllQuery updateQuery = new UpdateAllQuery(org.eclipse.persistence.testing.models.insurance.Claim.class);
         updateQuery.setSelectionCriteria(eb.get("amount").greaterThan(1000));
-        updateQuery.addUpdate(eb.get("amount"), ExpressionMath.multiply(eb.get("amount"), Double.valueOf(1.10)));
+        updateQuery.addUpdate(eb.get("amount"), ExpressionMath.multiply(eb.get("amount"), 1.10));
         m_session.executeQuery(updateQuery);
     }
 
@@ -71,12 +71,12 @@ public class UpdateAllQueryExpressionMathTest extends AutoVerifyTestCase {
             Float original = (Float)m_originalClaims.get(id);
             Float updated = (Float)m_updatedClaims.get(id);
 
-            if (original.compareTo(Float.valueOf(1001)) < 0) {// Ensure it was not updated
+            if (original.compareTo(1001F) < 0) {// Ensure it was not updated
                 if (updated.compareTo(original) != 0) {
                     throw new TestErrorException("Claim amount was updated when it shouldn't have been");
                 }
             } else {// Ensure it was properly updated
-                if (updated.compareTo(Float.valueOf(original.floatValue() * 1.10f)) != 0) {
+                if (updated.compareTo(original * 1.10f) != 0) {
                     throw new TestErrorException("Claim amount (" + original + ") was NOT properly updated. Value = " + updated);
                 }
             }
@@ -90,7 +90,7 @@ public class UpdateAllQueryExpressionMathTest extends AutoVerifyTestCase {
 
         while (e.hasMoreElements()) {
             Claim claim = (Claim)e.nextElement();
-            claimsToReturn.put(Long.valueOf(claim.getId()), Float.valueOf(claim.getAmount()));
+            claimsToReturn.put(claim.getId(), claim.getAmount());
         }
 
         return claimsToReturn;

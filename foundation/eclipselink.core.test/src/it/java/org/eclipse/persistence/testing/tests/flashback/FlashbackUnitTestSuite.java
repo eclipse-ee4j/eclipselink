@@ -129,7 +129,7 @@ public class FlashbackUnitTestSuite extends TestSuite {
         query.setAsOfClause(clause);
         query.addArgument("TIME");
         Vector arguments = new Vector();
-        arguments.add(Long.valueOf(value));
+        arguments.add(value);
 
         Vector employees = (Vector)getSession().executeQuery(query, arguments);
         if (employees.size() != 0) {

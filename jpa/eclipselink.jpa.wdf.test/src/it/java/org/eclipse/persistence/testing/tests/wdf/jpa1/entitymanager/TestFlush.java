@@ -51,7 +51,7 @@ public class TestFlush extends JPA1Base {
             // case 1: direct relationship Employee -> Cubicle (new) - 1:1
             Department dep = new Department(1, "dep");
             Employee emp1 = new Employee(2, "first", "last", dep);
-            Cubicle cub1 = new Cubicle(Integer.valueOf(3), Integer.valueOf(3), "color", emp1);
+            Cubicle cub1 = new Cubicle(3, 3, "color", emp1);
             emp1.setCubicle(cub1);
             env.beginTransaction(em);
             em.persist(dep);
@@ -174,7 +174,7 @@ public class TestFlush extends JPA1Base {
             // case 1: direct relationship Employee -> Cubicle (FOR_DELETE) - 1:1
             Department dep = new Department(101, "dep");
             Employee emp1 = new Employee(102, "first", "last", dep);
-            Cubicle cub1 = new Cubicle(Integer.valueOf(103), Integer.valueOf(103), "color", emp1);
+            Cubicle cub1 = new Cubicle(103, 103, "color", emp1);
             emp1.setCubicle(cub1);
             env.beginTransaction(em);
             em.persist(dep);
@@ -183,7 +183,7 @@ public class TestFlush extends JPA1Base {
             env.commitTransactionAndClear(em);
 
             env.beginTransaction(em);
-            emp1 = em.find(Employee.class, Integer.valueOf(emp1.getId()));
+            emp1 = em.find(Employee.class, emp1.getId());
             cub1 = em.find(Cubicle.class, cub1.getId());
             cub1.setEmployee(null); // added as suggested by Tom
             em.remove(cub1);
@@ -226,7 +226,7 @@ public class TestFlush extends JPA1Base {
             em.persist(emp1);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            emp1 = em.find(Employee.class, Integer.valueOf(emp1.getId()));
+            emp1 = em.find(Employee.class, emp1.getId());
             proj = em.find(Project.class, proj.getId());
             emp1.getProjects().size();
             em.remove(proj);
@@ -275,8 +275,8 @@ public class TestFlush extends JPA1Base {
             em.persist(emp2);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            emp1 = em.find(Employee.class, Integer.valueOf(emp1.getId()));
-            emp2 = em.find(Employee.class, Integer.valueOf(emp2.getId()));
+            emp1 = em.find(Employee.class, emp1.getId());
+            emp2 = em.find(Employee.class, emp2.getId());
             proj = em.find(Project.class, proj.getId());
             emp1.getProjects().size();
             proj.getEmployees().size();
@@ -307,14 +307,14 @@ public class TestFlush extends JPA1Base {
             // case 1b: direct relationship Employee -> Cubicle (DELETE_EXECUTED) - 1:1
             dep = new Department(111, "dep");
             emp1 = new Employee(112, "first", "last", dep);
-            cub1 = new Cubicle(Integer.valueOf(113), Integer.valueOf(112), "color", emp1);
+            cub1 = new Cubicle(113, 112, "color", emp1);
             env.beginTransaction(em);
             em.persist(dep);
             em.persist(emp1);
             em.persist(cub1);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            emp1 = em.find(Employee.class, Integer.valueOf(emp1.getId()));
+            emp1 = em.find(Employee.class, emp1.getId());
             cub1 = em.find(Cubicle.class, cub1.getId());
             em.remove(cub1);
             em.flush();
@@ -352,7 +352,7 @@ public class TestFlush extends JPA1Base {
             em.persist(proj);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            emp1 = em.find(Employee.class, Integer.valueOf(emp1.getId()));
+            emp1 = em.find(Employee.class, emp1.getId());
             proj = em.find(Project.class, proj.getId());
             em.remove(proj);
             em.flush();
@@ -403,8 +403,8 @@ public class TestFlush extends JPA1Base {
             em.persist(emp2);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            emp1 = em.find(Employee.class, Integer.valueOf(emp1.getId()));
-            emp2 = em.find(Employee.class, Integer.valueOf(emp2.getId()));
+            emp1 = em.find(Employee.class, emp1.getId());
+            emp2 = em.find(Employee.class, emp2.getId());
             proj = em.find(Project.class, proj.getId());
             emp1.getProjects().size();
             projEmployees = proj.getEmployees();
@@ -475,10 +475,10 @@ public class TestFlush extends JPA1Base {
             env.commitTransactionAndClear(em);
 
             env.beginTransaction(em);
-            dep = em.find(Department.class, Integer.valueOf(dep.getId()));
+            dep = em.find(Department.class, dep.getId());
             proj = em.find(Project.class, proj.getId());
             em.remove(proj);
-            emp1 = em.find(Employee.class, Integer.valueOf(emp1.getId()));
+            emp1 = em.find(Employee.class, emp1.getId());
             // copy all projects from emp1 to emp2 with out actually touching them
             Employee emp2 = new Employee(203, "aaa", "bbb", dep);
             proj.addEmployee(emp2); // added as suggested by Tom
@@ -523,10 +523,10 @@ public class TestFlush extends JPA1Base {
             em.persist(emp1);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            dep = em.find(Department.class, Integer.valueOf(dep.getId()));
+            dep = em.find(Department.class, dep.getId());
             proj = em.find(Project.class, proj.getId());
             em.remove(proj);
-            emp1 = em.find(Employee.class, Integer.valueOf(emp1.getId()));
+            emp1 = em.find(Employee.class, emp1.getId());
             // copy all projects from emp1 to emp2 with out actually touching them
             emp2 = new Employee(206, "aaa", "bbb", dep);
             emp2.setProjects(emp1.getProjects());
@@ -590,14 +590,14 @@ public class TestFlush extends JPA1Base {
             department.setName(initial);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            department = em.find(Department.class, Integer.valueOf(id));
+            department = em.find(Department.class, id);
             verify(initial.equals(department.getName()), "wrong name: " + department.getName());
             department.setName("changed");
             em.flush();
             // lets try the same with a managed field
             department.setName(initial);
             env.commitTransactionAndClear(em);
-            department = em.find(Department.class, Integer.valueOf(id));
+            department = em.find(Department.class, id);
             verify(initial.equals(department.getName()), "wrong name: " + department.getName());
         } finally {
             closeEntityManager(em);
@@ -624,7 +624,7 @@ public class TestFlush extends JPA1Base {
             em.persist(r3);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            frank = em.find(Employee.class, Integer.valueOf(id));
+            frank = em.find(Employee.class, id);
             Set<Review> reviewsFound = frank.getReviews();
             int foundSize = reviewsFound.size();
             // lets remove a department the same with a managed field
@@ -637,7 +637,7 @@ public class TestFlush extends JPA1Base {
             frank.setReviews(reviewsFound);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            frank = em.find(Employee.class, Integer.valueOf(id));
+            frank = em.find(Employee.class, id);
             verify(frank.getReviews().size() == foundSize, "wrong number of reviews: " + frank.getReviews().size());
             env.rollbackTransactionAndClear(em);
         } finally {
@@ -672,7 +672,7 @@ public class TestFlush extends JPA1Base {
             em.flush();
             // verify that entity is inserted
             Query query = em.createQuery("select d from Department d where d.id = ?1");
-            query.setParameter(1, Integer.valueOf(dep.getId()));
+            query.setParameter(1, dep.getId());
             List<Department> result = query.getResultList();
             verify(result.size() == 1, "query returned " + result.size() + " entities");
             env.rollbackTransaction(em);

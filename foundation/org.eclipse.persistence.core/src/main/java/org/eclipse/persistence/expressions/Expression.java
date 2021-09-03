@@ -2003,7 +2003,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Create a new expression tree with the named operator. Part of the implementation of user-level "get"
      */
     public ExpressionOperator getOperator(int selector) {
-        ExpressionOperator result = ExpressionOperator.getOperator(Integer.valueOf(selector));
+        ExpressionOperator result = ExpressionOperator.getOperator(selector);
         if (result != null) {
             return result;
         }
@@ -2350,7 +2350,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theBytes.length);
 
         for (int index = 0; index < theBytes.length; index++) {
-            values.add(Byte.valueOf(theBytes[index]));
+            values.add(theBytes[index]);
         }
 
         return in(values);
@@ -2365,7 +2365,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theChars.length);
 
         for (int index = 0; index < theChars.length; index++) {
-            values.add(Character.valueOf(theChars[index]));
+            values.add(theChars[index]);
         }
 
         return in(values);
@@ -2380,7 +2380,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theDoubles.length);
 
         for (int index = 0; index < theDoubles.length; index++) {
-            values.add(Double.valueOf(theDoubles[index]));
+            values.add(theDoubles[index]);
         }
 
         return in(values);
@@ -2395,7 +2395,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theFloats.length);
 
         for (int index = 0; index < theFloats.length; index++) {
-            values.add(Float.valueOf(theFloats[index]));
+            values.add(theFloats[index]);
         }
 
         return in(values);
@@ -2410,7 +2410,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theInts.length);
 
         for (int index = 0; index < theInts.length; index++) {
-            values.add(Integer.valueOf(theInts[index]));
+            values.add(theInts[index]);
         }
 
         return in(values);
@@ -2425,7 +2425,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theLongs.length);
 
         for (int index = 0; index < theLongs.length; index++) {
-            values.add(Long.valueOf(theLongs[index]));
+            values.add(theLongs[index]);
         }
 
         return in(values);
@@ -2455,7 +2455,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theShorts.length);
 
         for (int index = 0; index < theShorts.length; index++) {
-            values.add(Short.valueOf(theShorts[index]));
+            values.add(theShorts[index]);
         }
 
         return in(values);
@@ -2470,7 +2470,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theBooleans.length);
 
         for (int index = 0; index < theBooleans.length; index++) {
-            values.add(Boolean.valueOf(theBooleans[index]));
+            values.add(theBooleans[index]);
         }
 
         return in(values);
@@ -3558,7 +3558,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theBytes.length);
 
         for (int index = 0; index < theBytes.length; index++) {
-            values.add(Byte.valueOf(theBytes[index]));
+            values.add(theBytes[index]);
         }
 
         return notIn(values);
@@ -3573,7 +3573,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theChars.length);
 
         for (int index = 0; index < theChars.length; index++) {
-            values.add(Character.valueOf(theChars[index]));
+            values.add(theChars[index]);
         }
 
         return notIn(values);
@@ -3588,7 +3588,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theDoubles.length);
 
         for (int index = 0; index < theDoubles.length; index++) {
-            values.add(Double.valueOf(theDoubles[index]));
+            values.add(theDoubles[index]);
         }
 
         return notIn(values);
@@ -3603,7 +3603,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theFloats.length);
 
         for (int index = 0; index < theFloats.length; index++) {
-            values.add(Float.valueOf(theFloats[index]));
+            values.add(theFloats[index]);
         }
 
         return notIn(values);
@@ -3618,7 +3618,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theInts.length);
 
         for (int index = 0; index < theInts.length; index++) {
-            values.add(Integer.valueOf(theInts[index]));
+            values.add(theInts[index]);
         }
 
         return notIn(values);
@@ -3633,7 +3633,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theLongs.length);
 
         for (int index = 0; index < theLongs.length; index++) {
-            values.add(Long.valueOf(theLongs[index]));
+            values.add(theLongs[index]);
         }
 
         return notIn(values);
@@ -3668,7 +3668,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theShorts.length);
 
         for (int index = 0; index < theShorts.length; index++) {
-            values.add(Short.valueOf(theShorts[index]));
+            values.add(theShorts[index]);
         }
 
         return notIn(values);
@@ -3683,7 +3683,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theBooleans.length);
 
         for (int index = 0; index < theBooleans.length; index++) {
-            values.add(Boolean.valueOf(theBooleans[index]));
+            values.add(theBooleans[index]);
         }
 
         return notIn(values);
@@ -4779,7 +4779,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theBytes.length);
 
         for (int index = 0; index < theBytes.length; index++) {
-            values.add(Byte.valueOf(theBytes[index]));
+            values.add(theBytes[index]);
         }
 
         return any(values);
@@ -4794,7 +4794,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theChars.length);
 
         for (int index = 0; index < theChars.length; index++) {
-            values.add(Character.valueOf(theChars[index]));
+            values.add(theChars[index]);
         }
 
         return any(values);
@@ -4809,7 +4809,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theDoubles.length);
 
         for (int index = 0; index < theDoubles.length; index++) {
-            values.add(Double.valueOf(theDoubles[index]));
+            values.add(theDoubles[index]);
         }
 
         return any(values);
@@ -4824,7 +4824,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theFloats.length);
 
         for (int index = 0; index < theFloats.length; index++) {
-            values.add(Float.valueOf(theFloats[index]));
+            values.add(theFloats[index]);
         }
 
         return any(values);
@@ -4839,7 +4839,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theInts.length);
 
         for (int index = 0; index < theInts.length; index++) {
-            values.add(Integer.valueOf(theInts[index]));
+            values.add(theInts[index]);
         }
 
         return any(values);
@@ -4854,7 +4854,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theLongs.length);
 
         for (int index = 0; index < theLongs.length; index++) {
-            values.add(Long.valueOf(theLongs[index]));
+            values.add(theLongs[index]);
         }
 
         return any(values);
@@ -4884,7 +4884,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theShorts.length);
 
         for (int index = 0; index < theShorts.length; index++) {
-            values.add(Short.valueOf(theShorts[index]));
+            values.add(theShorts[index]);
         }
 
         return any(values);
@@ -4899,7 +4899,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theBooleans.length);
 
         for (int index = 0; index < theBooleans.length; index++) {
-            values.add(Boolean.valueOf(theBooleans[index]));
+            values.add(theBooleans[index]);
         }
 
         return any(values);
@@ -5042,7 +5042,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theBytes.length);
 
         for (int index = 0; index < theBytes.length; index++) {
-            values.add(Byte.valueOf(theBytes[index]));
+            values.add(theBytes[index]);
         }
 
         return some(values);
@@ -5057,7 +5057,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theChars.length);
 
         for (int index = 0; index < theChars.length; index++) {
-            values.add(Character.valueOf(theChars[index]));
+            values.add(theChars[index]);
         }
 
         return some(values);
@@ -5072,7 +5072,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theDoubles.length);
 
         for (int index = 0; index < theDoubles.length; index++) {
-            values.add(Double.valueOf(theDoubles[index]));
+            values.add(theDoubles[index]);
         }
 
         return some(values);
@@ -5087,7 +5087,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theFloats.length);
 
         for (int index = 0; index < theFloats.length; index++) {
-            values.add(Float.valueOf(theFloats[index]));
+            values.add(theFloats[index]);
         }
 
         return some(values);
@@ -5102,7 +5102,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theInts.length);
 
         for (int index = 0; index < theInts.length; index++) {
-            values.add(Integer.valueOf(theInts[index]));
+            values.add(theInts[index]);
         }
 
         return some(values);
@@ -5117,7 +5117,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theLongs.length);
 
         for (int index = 0; index < theLongs.length; index++) {
-            values.add(Long.valueOf(theLongs[index]));
+            values.add(theLongs[index]);
         }
 
         return some(values);
@@ -5147,7 +5147,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theShorts.length);
 
         for (int index = 0; index < theShorts.length; index++) {
-            values.add(Short.valueOf(theShorts[index]));
+            values.add(theShorts[index]);
         }
 
         return some(values);
@@ -5162,7 +5162,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theBooleans.length);
 
         for (int index = 0; index < theBooleans.length; index++) {
-            values.add(Boolean.valueOf(theBooleans[index]));
+            values.add(theBooleans[index]);
         }
 
         return some(values);
@@ -5204,7 +5204,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theBytes.length);
 
         for (int index = 0; index < theBytes.length; index++) {
-            values.add(Byte.valueOf(theBytes[index]));
+            values.add(theBytes[index]);
         }
 
         return all(values);
@@ -5219,7 +5219,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theChars.length);
 
         for (int index = 0; index < theChars.length; index++) {
-            values.add(Character.valueOf(theChars[index]));
+            values.add(theChars[index]);
         }
 
         return all(values);
@@ -5234,7 +5234,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theDoubles.length);
 
         for (int index = 0; index < theDoubles.length; index++) {
-            values.add(Double.valueOf(theDoubles[index]));
+            values.add(theDoubles[index]);
         }
 
         return all(values);
@@ -5249,7 +5249,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theFloats.length);
 
         for (int index = 0; index < theFloats.length; index++) {
-            values.add(Float.valueOf(theFloats[index]));
+            values.add(theFloats[index]);
         }
 
         return all(values);
@@ -5264,7 +5264,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theInts.length);
 
         for (int index = 0; index < theInts.length; index++) {
-            values.add(Integer.valueOf(theInts[index]));
+            values.add(theInts[index]);
         }
 
         return all(values);
@@ -5279,7 +5279,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theLongs.length);
 
         for (int index = 0; index < theLongs.length; index++) {
-            values.add(Long.valueOf(theLongs[index]));
+            values.add(theLongs[index]);
         }
 
         return all(values);
@@ -5309,7 +5309,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theShorts.length);
 
         for (int index = 0; index < theShorts.length; index++) {
-            values.add(Short.valueOf(theShorts[index]));
+            values.add(theShorts[index]);
         }
 
         return all(values);
@@ -5324,7 +5324,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theBooleans.length);
 
         for (int index = 0; index < theBooleans.length; index++) {
-            values.add(Boolean.valueOf(theBooleans[index]));
+            values.add(theBooleans[index]);
         }
 
         return all(values);

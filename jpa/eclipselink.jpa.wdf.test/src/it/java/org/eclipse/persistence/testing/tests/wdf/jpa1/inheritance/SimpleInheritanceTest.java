@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -43,7 +43,7 @@ public class SimpleInheritanceTest extends JPA1Base {
         try {
             PreparedStatement stmt = conn.prepareStatement("select ID from TMP_VEHICLE where ID = ?");
             try {
-                stmt.setShort(1, vehicleId.shortValue());
+                stmt.setShort(1, vehicleId);
                 ResultSet rs = stmt.executeQuery();
                 try {
                     verify(rs.next(), "no department with id " + vehicleId + " found using JDBC.");
@@ -63,7 +63,7 @@ public class SimpleInheritanceTest extends JPA1Base {
         try {
             PreparedStatement stmt = conn.prepareStatement("select ID, DTYPE from TMP_VEHICLE where ID = ?");
             try {
-                stmt.setShort(1, vehicleId.shortValue());
+                stmt.setShort(1, vehicleId);
                 ResultSet rs = stmt.executeQuery();
                 try {
                     verify(rs.next(), "no department with id " + vehicleId + " found using JDBC.");

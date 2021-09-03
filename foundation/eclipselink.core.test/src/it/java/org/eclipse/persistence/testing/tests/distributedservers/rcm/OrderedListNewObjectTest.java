@@ -27,8 +27,8 @@ public class OrderedListNewObjectTest extends ConfigurableCacheSyncDistributedTe
 
     public OrderedListNewObjectTest(){
         super();
-        cacheSyncConfigValues.put(ListHolder.class, Integer.valueOf(ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES));
-        cacheSyncConfigValues.put(ListItem.class, Integer.valueOf(ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES));
+        cacheSyncConfigValues.put(ListHolder.class, ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES);
+        cacheSyncConfigValues.put(ListItem.class, ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES);
     }
 
     @Override

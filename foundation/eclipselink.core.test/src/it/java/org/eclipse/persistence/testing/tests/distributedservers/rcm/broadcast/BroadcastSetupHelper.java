@@ -237,7 +237,7 @@ public abstract class BroadcastSetupHelper {
 
     public void startCacheSynchronization(AbstractSession session, boolean isSource) {
         try {
-            sessions.put(session, Boolean.valueOf(isSource));
+            sessions.put(session, isSource);
             if (sessions.size() == 1) {
                 createFactory();
                 startFactory();

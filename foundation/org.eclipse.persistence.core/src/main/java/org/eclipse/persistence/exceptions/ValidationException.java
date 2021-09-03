@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1959,7 +1959,7 @@ public class ValidationException extends EclipseLinkException {
     }
 
     public static ValidationException wrongCollectionChangeEventType(int eveType) {
-        Object[] args = { Integer.valueOf(eveType) };
+        Object[] args = {eveType};
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, WRONG_COLLECTION_CHANGE_EVENT_TYPE, args));
         validationException.setErrorCode(WRONG_COLLECTION_CHANGE_EVENT_TYPE);
         return validationException;

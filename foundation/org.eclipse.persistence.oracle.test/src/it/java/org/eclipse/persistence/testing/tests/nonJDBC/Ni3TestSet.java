@@ -157,7 +157,7 @@ public class Ni3TestSet {
         s.dontLogMessages();
         ((DatabaseSession)s).login();
         Vector queryArgs = new NonSynchronizedVector();
-        queryArgs.add(Integer.valueOf(3));
+        queryArgs.add(3);
         boolean worked = false;
         String msg = null;
         try {

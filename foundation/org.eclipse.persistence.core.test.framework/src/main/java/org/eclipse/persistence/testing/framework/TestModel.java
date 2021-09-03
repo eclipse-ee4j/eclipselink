@@ -76,7 +76,7 @@ public class TestModel extends TestCollection {
                 }
             }
         }
-        return shouldResetSystemAfterEachTestModel.booleanValue();
+        return shouldResetSystemAfterEachTestModel;
     }
 
     /**

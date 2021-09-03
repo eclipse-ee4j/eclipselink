@@ -114,9 +114,9 @@ public class TestParameterBinding {
             //3: Test COALESCE function with all arguments as parameters
             TypedQuery<GenericEntity> query = em.createQuery("SELECT 1 FROM GenericEntity s "
                     + "WHERE ABS(COALESCE(?1, ?2)) >= ?3", GenericEntity.class);
-            query.setParameter(1, Integer.valueOf(1));
-            query.setParameter(2, Integer.valueOf(20));
-            query.setParameter(3, Integer.valueOf(300));
+            query.setParameter(1, 1);
+            query.setParameter(2, 20);
+            query.setParameter(3, 300);
             query.getResultList();
 
             DatabaseCall call = ((JpaQuery<GenericEntity>)query).getDatabaseQuery().getCall();

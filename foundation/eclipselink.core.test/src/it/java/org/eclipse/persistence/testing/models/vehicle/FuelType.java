@@ -43,14 +43,14 @@ public class FuelType implements java.io.Serializable {
 
     public static FuelType example1() {
         FuelType example = new FuelType();
-        example.setFuelId(Integer.valueOf(1));
+        example.setFuelId(1);
         example.setFuelDescription("Petrol");
         return example;
     }
 
     public static FuelType example2() {
         FuelType example = new FuelType();
-        example.setFuelId(Integer.valueOf(2));
+        example.setFuelId(2);
         example.setFuelDescription("Diesel");
         return example;
     }

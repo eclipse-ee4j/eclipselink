@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,7 +51,7 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
      */
     @Override
     public synchronized void addChild(Expression argument){
-        if (hasLastChild != null && hasLastChild.booleanValue()){
+        if (hasLastChild != null && hasLastChild){
             getChildren().add(getChildren().size() - 1, argument);
         } else {
             super.addChild(argument);
@@ -68,7 +68,7 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
      * @param argument
      */
     public synchronized void addRightMostChild(Expression argument){
-        if (hasLastChild != null && hasLastChild.booleanValue()){
+        if (hasLastChild != null && hasLastChild){
             getChildren().remove(super.getChildren().size() - 1);
             super.addChild(argument);
         } else {

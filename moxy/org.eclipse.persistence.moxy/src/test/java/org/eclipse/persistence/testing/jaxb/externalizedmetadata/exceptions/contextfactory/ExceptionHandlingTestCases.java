@@ -137,7 +137,7 @@ public class ExceptionHandlingTestCases extends OXTestCase {
     public void testInvalidParameterTypeBadOxmXmlValue() {
         Map<String, List<Integer>> properties = new HashMap<String, List<Integer>>();
         ArrayList<Integer> ints = new ArrayList<Integer>();
-        ints.add(Integer.valueOf(666));
+        ints.add(666);
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, ints);
         try {
             JAXBContextFactory.createContext(CONTEXT_PATH, getClass().getClassLoader(), properties);

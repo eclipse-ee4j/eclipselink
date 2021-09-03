@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -115,7 +115,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
         }
         if (container instanceof IndirectCollection){
             if (this.useLazyInstantiation != null){
-                ((IndirectCollection)container).setUseLazyInstantiation(this.useLazyInstantiation.booleanValue());
+                ((IndirectCollection)container).setUseLazyInstantiation(this.useLazyInstantiation);
             }
         }
         return container;
@@ -316,7 +316,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      */
     protected static int getDefaultContainerSize() {
         //3732
-        return defaultContainerSize.intValue();
+        return defaultContainerSize;
     }
 
     /**
@@ -580,7 +580,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      */
     public static void setDefaultContainerSize(int defaultSize) {
         //3732
-        defaultContainerSize = Integer.valueOf(defaultSize);
+        defaultContainerSize = defaultSize;
     }
 
     /**

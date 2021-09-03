@@ -49,14 +49,14 @@ public class MergeChangeSetWithDirectMapMappingTest extends TransactionalTestCas
         // put a new value in, will now be in the cache
         UnitOfWork uow1 = getSession().acquireUnitOfWork();
         DirectMapMappings maps = (DirectMapMappings)uow1.registerObject(new DirectMapMappings());
-        maps.directMap.put(Integer.valueOf(1), "bogus");
-        maps.directMap.put(Integer.valueOf(3), "third");
+        maps.directMap.put(1, "bogus");
+        maps.directMap.put(3, "third");
         uow1.commit();
 
         UnitOfWork uow2 = getSession().acquireUnitOfWork();
         DirectMapMappings mapsClone = (DirectMapMappings)uow2.registerObject(maps);
-        mapsClone.directMap.put(Integer.valueOf(2), "axemen");
-        mapsClone.directMap.put(Integer.valueOf(1), "guy");
+        mapsClone.directMap.put(2, "axemen");
+        mapsClone.directMap.put(1, "guy");
 
         UnitOfWorkChangeSet changes = (UnitOfWorkChangeSet)uow2.getCurrentChanges();
         uow2.release();
@@ -82,15 +82,15 @@ public class MergeChangeSetWithDirectMapMappingTest extends TransactionalTestCas
 
         // Some checks to ensure it actually worked as expected
 
-        if (!mapsQueryResult.directMap.containsKey(Integer.valueOf(1))) {
+        if (!mapsQueryResult.directMap.containsKey(1)) {
             throw new TestErrorException("Change set did not merge into cache properly");
-        } else if (!mapsQueryResult.directMap.get(Integer.valueOf(1)).equals("guy")) {
+        } else if (!mapsQueryResult.directMap.get(1).equals("guy")) {
             throw new TestErrorException("Change set did not merge into cache properly");
-        } else if (!mapsQueryResult.directMap.containsKey(Integer.valueOf(2))) {
+        } else if (!mapsQueryResult.directMap.containsKey(2)) {
             throw new TestErrorException("Change set did not merge into cache properly");
-        } else if (!mapsQueryResult.directMap.get(Integer.valueOf(2)).equals("axemen")) {
+        } else if (!mapsQueryResult.directMap.get(2).equals("axemen")) {
             throw new TestErrorException("Change set did not merge into cache properly");
-        } else if (!mapsQueryResult.directMap.containsKey(Integer.valueOf(3))) {
+        } else if (!mapsQueryResult.directMap.containsKey(3)) {
             throw new TestErrorException("Change set did not merge into cache properly");
         }
     }

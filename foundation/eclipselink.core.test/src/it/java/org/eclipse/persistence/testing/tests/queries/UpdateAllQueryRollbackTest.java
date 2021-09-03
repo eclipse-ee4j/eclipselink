@@ -58,7 +58,7 @@ public class UpdateAllQueryRollbackTest extends TestCase {
         m_uow.executeQuery(uaq1);
 
         UpdateAllQuery uaq2 = new UpdateAllQuery(Employee.class);
-        uaq2.addUpdate(eb.getField("BAD"), Integer.valueOf(10000));
+        uaq2.addUpdate(eb.getField("BAD"), 10000);
         m_uow.executeQuery(uaq2);
 
         try {

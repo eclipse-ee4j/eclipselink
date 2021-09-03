@@ -39,13 +39,13 @@ public class EmployeeCollectionTestCases  extends JAXBWithJSONTestCases {
         //same as getReadControl Except order is different
         EmployeeCollection employee = new EmployeeCollection();
         ArrayList choices = new ArrayList();
-        choices.add(new JAXBElement(new QName("myns", "integer-root"), Integer.class, Integer.valueOf(21)));
+        choices.add(new JAXBElement(new QName("myns", "integer-root"), Integer.class, 21));
         choices.add(new JAXBElement(new QName("root"), String.class, "Value1"));
         choices.add(new JAXBElement(new QName("root"), String.class, "Value2"));
 
         EmployeeCollection nestedEmployee = new EmployeeCollection();
         nestedEmployee.refs = new ArrayList();
-        nestedEmployee.refs.add(new JAXBElement(new QName("myns", "integer-root"), Integer.class, Integer.valueOf(29)));
+        nestedEmployee.refs.add(new JAXBElement(new QName("myns", "integer-root"), Integer.class, 29));
         choices.add(nestedEmployee);
         employee.refs = choices;
         return employee;
@@ -55,11 +55,11 @@ public class EmployeeCollectionTestCases  extends JAXBWithJSONTestCases {
     protected Object getControlObject() {
         EmployeeCollection employee = new EmployeeCollection();
         ArrayList choices = new ArrayList();
-        choices.add(new JAXBElement(new QName("myns", "integer-root"), Integer.class, Integer.valueOf(21)));
+        choices.add(new JAXBElement(new QName("myns", "integer-root"), Integer.class, 21));
         choices.add(new JAXBElement(new QName("root"), String.class, "Value1"));
         EmployeeCollection nestedEmployee = new EmployeeCollection();
         nestedEmployee.refs = new ArrayList();
-        nestedEmployee.refs.add(new JAXBElement(new QName("myns", "integer-root"), Integer.class, Integer.valueOf(29)));
+        nestedEmployee.refs.add(new JAXBElement(new QName("myns", "integer-root"), Integer.class, 29));
         choices.add(nestedEmployee);
         choices.add(new JAXBElement(new QName("root"), String.class, "Value2"));
         employee.refs = choices;

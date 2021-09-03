@@ -75,7 +75,7 @@ public class OverrideInheritedMappingTest extends TestCase {
         //getAbstractSession().updateObject(this.theCar);
         //Read the car and check that the field was set (override of inherited mapping worked)
         Car carRead = (Car)getSession().readObject(Car.class, new ExpressionBuilder().get("id").equal(this.carID));
-        if (carRead.fuelCapacity.intValue() != 200) {
+        if (carRead.fuelCapacity != 200) {
             throw new TestErrorException("The inherited mapping was not overridden!");
         }
     }

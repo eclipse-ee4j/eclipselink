@@ -45,7 +45,7 @@ public class SameNamePKTest extends TestCase {
         SecureSystem system = new SecureSystem();
         system.setManufacturer("Secure Systems Inc.");
         Identification identification = new Identification();
-        identification.setId(Long.valueOf(1));
+        identification.setId(1L);
         system.setId(identification);
         UnitOfWork uow = getSession().acquireUnitOfWork();
         uow.registerObject(system);

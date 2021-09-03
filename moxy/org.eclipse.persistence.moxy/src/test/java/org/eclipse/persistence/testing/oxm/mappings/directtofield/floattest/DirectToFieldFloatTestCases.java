@@ -22,7 +22,7 @@ public class DirectToFieldFloatTestCases extends XMLMappingTestCases {
   private final static int CONTROL_ID = 123;
   private final static String CONTROL_FIRST_NAME = "Jane";
   private final static String CONTROL_LAST_NAME = "Doe";
-  private final static Float CONTROL_SALARY = Float.valueOf(100000.0f);
+  private final static Float CONTROL_SALARY = 100000.0f;
 
   public DirectToFieldFloatTestCases(String name) throws Exception {
     super(name);

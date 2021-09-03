@@ -157,8 +157,8 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
 
         try {
             Bus bus = new Bus();
-            bus.setPassengerCapacity(Integer.valueOf(50));
-            bus.setFuelCapacity(Integer.valueOf(175));
+            bus.setPassengerCapacity(50);
+            bus.setFuelCapacity(175);
             bus.setDescription("OC Transpo Bus");
             bus.setFuelType("Diesel");
             em.persist(bus);
@@ -203,8 +203,8 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
 
         try {
             SportsCar sportsCar = new SportsCar();
-            sportsCar.setPassengerCapacity(Integer.valueOf(4));
-            sportsCar.setFuelCapacity(Integer.valueOf(55));
+            sportsCar.setPassengerCapacity(4);
+            sportsCar.setFuelCapacity(55);
             sportsCar.setDescription("Porshe");
             sportsCar.setFuelType("Gas");
             em.persist(sportsCar);
@@ -238,8 +238,8 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
 
         try {
             Bus bus = new Bus();
-            bus.setPassengerCapacity(Integer.valueOf(30));
-            bus.setFuelCapacity(Integer.valueOf(100));
+            bus.setPassengerCapacity(30);
+            bus.setFuelCapacity(100);
             bus.setDescription("School Bus");
             bus.setFuelType("Diesel");
             em.persist(bus);
@@ -281,8 +281,8 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
 
         try {
             SportsCar sportsCar = new SportsCar();
-            sportsCar.setPassengerCapacity(Integer.valueOf(2));
-            sportsCar.setFuelCapacity(Integer.valueOf(60));
+            sportsCar.setPassengerCapacity(2);
+            sportsCar.setFuelCapacity(60);
             sportsCar.setDescription("Corvette");
             sportsCar.setFuelType("Gas");
             em.persist(sportsCar);
@@ -314,8 +314,8 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
 
         try {
             SportsCar sportsCar = new SportsCar();
-            sportsCar.setPassengerCapacity(Integer.valueOf(2));
-            sportsCar.setFuelCapacity(Integer.valueOf(90));
+            sportsCar.setPassengerCapacity(2);
+            sportsCar.setFuelCapacity(90);
             sportsCar.setDescription("Viper");
             sportsCar.setFuelType("Gas");
             em.persist(sportsCar);

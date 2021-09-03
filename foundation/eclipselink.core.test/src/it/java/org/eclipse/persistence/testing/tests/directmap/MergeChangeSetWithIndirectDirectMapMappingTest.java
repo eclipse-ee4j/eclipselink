@@ -47,14 +47,14 @@ public class MergeChangeSetWithIndirectDirectMapMappingTest extends Transactiona
         // put a new value in, will now be in the cache
         UnitOfWork uow1 = getSession().acquireUnitOfWork();
         DirectMapMappings maps = (DirectMapMappings)uow1.registerObject(new DirectMapMappings());
-        maps.indirectionDirectMap.put(Integer.valueOf(1), "bogus");
-        maps.indirectionDirectMap.put(Integer.valueOf(3), "third");
+        maps.indirectionDirectMap.put(1, "bogus");
+        maps.indirectionDirectMap.put(3, "third");
         uow1.commit();
 
         UnitOfWork uow2 = getSession().acquireUnitOfWork();
         DirectMapMappings mapsClone = (DirectMapMappings)uow2.registerObject(maps);
-        mapsClone.indirectionDirectMap.put(Integer.valueOf(2), "axemen");
-        mapsClone.indirectionDirectMap.put(Integer.valueOf(1), "guy");
+        mapsClone.indirectionDirectMap.put(2, "axemen");
+        mapsClone.indirectionDirectMap.put(1, "guy");
 
         UnitOfWorkChangeSet changes = (UnitOfWorkChangeSet)uow2.getCurrentChanges();
 
@@ -74,15 +74,15 @@ public class MergeChangeSetWithIndirectDirectMapMappingTest extends Transactiona
 
         // Some checks to ensure it actually worked as expected
 
-        if (!mapsQueryResult.indirectionDirectMap.containsKey(Integer.valueOf(1))) {
+        if (!mapsQueryResult.indirectionDirectMap.containsKey(1)) {
             throw new TestErrorException("Change set did not merge into cache properly");
-        } else if (!mapsQueryResult.indirectionDirectMap.get(Integer.valueOf(1)).equals("guy")) {
+        } else if (!mapsQueryResult.indirectionDirectMap.get(1).equals("guy")) {
             throw new TestErrorException("Change set did not merge into cache properly");
-        } else if (!mapsQueryResult.indirectionDirectMap.containsKey(Integer.valueOf(2))) {
+        } else if (!mapsQueryResult.indirectionDirectMap.containsKey(2)) {
             throw new TestErrorException("Change set did not merge into cache properly");
-        } else if (!mapsQueryResult.indirectionDirectMap.get(Integer.valueOf(2)).equals("axemen")) {
+        } else if (!mapsQueryResult.indirectionDirectMap.get(2).equals("axemen")) {
             throw new TestErrorException("Change set did not merge into cache properly");
-        } else if (!mapsQueryResult.indirectionDirectMap.containsKey(Integer.valueOf(3))) {
+        } else if (!mapsQueryResult.indirectionDirectMap.containsKey(3)) {
             throw new TestErrorException("Change set did not merge into cache properly");
         }
     }

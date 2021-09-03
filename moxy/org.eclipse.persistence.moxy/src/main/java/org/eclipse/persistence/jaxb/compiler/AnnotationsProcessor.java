@@ -2974,7 +2974,7 @@ public final class AnnotationsProcessor {
         org.eclipse.persistence.jaxb.xmlmodel.XmlNullPolicy policy = new org.eclipse.persistence.jaxb.xmlmodel.XmlNullPolicy();
         policy.setEmptyNodeRepresentsNull(nullPolicy.emptyNodeRepresentsNull());
         policy.setIsSetPerformedForAbsentNode(nullPolicy.isSetPerformedForAbsentNode());
-        policy.setXsiNilRepresentsNull(Boolean.valueOf(nullPolicy.xsiNilRepresentsNull()));
+        policy.setXsiNilRepresentsNull(nullPolicy.xsiNilRepresentsNull());
         policy.setNullRepresentationForXml(org.eclipse.persistence.jaxb.xmlmodel.XmlMarshalNullRepresentation.valueOf(nullPolicy.nullRepresentationForXml().toString()));
         property.setNullPolicy(policy);
     }

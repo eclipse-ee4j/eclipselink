@@ -18,7 +18,7 @@ import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
 public class TypeAttributeFloatTestCases extends XMLMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/directtofield/typeattribute/TypeAttributeFloat.xml";
-    private final static Float CONTROL_ID = Float.valueOf(123.0f);
+    private final static Float CONTROL_ID = 123.0f;
     private final static String CONTROL_FIRST_NAME = "Jane";
     private final static String CONTROL_LAST_NAME = "Doe";
 

@@ -55,10 +55,10 @@ public class TestReadAggregateDirectMapMapping extends TestCase {
         AggregateDirectMapHolder holder = new AggregateDirectMapHolder();
         AggregateMapKey mapKey = new AggregateMapKey();
         mapKey.setKey(1);
-        holder.addAggregateToDirectMapItem(mapKey, Integer.valueOf(1));
+        holder.addAggregateToDirectMapItem(mapKey, 1);
         AggregateMapKey mapKey2 = new AggregateMapKey();
         mapKey2.setKey(2);
-        holder.addAggregateToDirectMapItem(mapKey2, Integer.valueOf(2));
+        holder.addAggregateToDirectMapItem(mapKey2, 2);
         uow.registerObject(holder);
         uow.commit();
         holderExp = (new ExpressionBuilder()).get("id").equal(holder.getId());
@@ -86,7 +86,7 @@ public class TestReadAggregateDirectMapMapping extends TestCase {
         AggregateMapKey mapKey = new AggregateMapKey();
         mapKey.setKey(1);
         Integer value = (Integer)holder.getAggregateToDirectMap().get(mapKey);
-        if (value.intValue() != 1){
+        if (value != 1){
             throw new TestErrorException("Incorrect map value was read.");
         }
     }

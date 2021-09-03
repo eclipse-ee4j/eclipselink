@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -130,10 +130,10 @@ public class JoinColumnMetadata extends RelationalColumnMetadata {
         DatabaseField fkField = super.getForeignKeyField();
 
         fkField.setTableName(m_table == null ? "" : m_table);
-        fkField.setUnique(m_unique == null ? false : m_unique.booleanValue());
-        fkField.setNullable(m_nullable == null ? true : m_nullable.booleanValue());
-        fkField.setUpdatable(m_updatable == null ? true : m_updatable.booleanValue());
-        fkField.setInsertable(m_insertable == null ? true : m_insertable.booleanValue());
+        fkField.setUnique(m_unique == null ? false : m_unique);
+        fkField.setNullable(m_nullable == null ? true : m_nullable);
+        fkField.setUpdatable(m_updatable == null ? true : m_updatable);
+        fkField.setInsertable(m_insertable == null ? true : m_insertable);
 
         return fkField;
     }

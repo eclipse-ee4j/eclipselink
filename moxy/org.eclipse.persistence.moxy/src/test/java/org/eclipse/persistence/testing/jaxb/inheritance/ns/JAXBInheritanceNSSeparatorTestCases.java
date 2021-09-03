@@ -59,7 +59,7 @@ public class JAXBInheritanceNSSeparatorTestCases extends JAXBInheritanceNSTestCa
                 StringWriter writer = new StringWriter();
 
                 XMLOutputFactory factory = XMLOutputFactory.newInstance();
-                factory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(false));
+                factory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.FALSE);
                 XMLStreamWriter streamWriter= factory.createXMLStreamWriter(writer);
 
                 Object objectToWrite = getWriteControlObject();

@@ -72,7 +72,7 @@ public class TestAggregateFunctions {
 
             q = em.createQuery("SELECT COUNT(n.primitive) FROM NoResultEntity n");
             res = q.getSingleResult();
-            Assert.assertEquals("Result of COUNT aggregate should have been a Long", Long.valueOf(0), res);
+            Assert.assertEquals("Result of COUNT aggregate should have been a Long", 0L, res);
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -117,7 +117,7 @@ public class TestAggregateFunctions {
 
             q = em.createQuery("SELECT COUNT(n.wrapper) FROM NoResultEntity n");
             res = q.getSingleResult();
-            Assert.assertEquals("Result of COUNT aggregate should have been a Long", Long.valueOf(0), res);
+            Assert.assertEquals("Result of COUNT aggregate should have been a Long", 0L, res);
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -159,23 +159,23 @@ public class TestAggregateFunctions {
 
             Query q = em.createQuery("SELECT MIN(se.itemInteger2) FROM SimpleEntity se");
             Object res = q.getSingleResult();
-            Assert.assertEquals("Result of MIN aggregate should have been NULL", Integer.valueOf(0), res);
+            Assert.assertEquals("Result of MIN aggregate should have been NULL", 0, res);
 
             Query q2 = em.createQuery("SELECT MAX(se.itemInteger2) FROM SimpleEntity se");
             Object res2 = q2.getSingleResult();
-            Assert.assertEquals("Result of MAX aggregate should have been NULL", Integer.valueOf(0), res2);
+            Assert.assertEquals("Result of MAX aggregate should have been NULL", 0, res2);
 
             Query q3 = em.createQuery("SELECT AVG(se.itemInteger2) FROM SimpleEntity se");
             Object res3 = q3.getSingleResult();
-            Assert.assertEquals("Result of AVG aggregate should have been NULL", Double.valueOf(0), res3);
+            Assert.assertEquals("Result of AVG aggregate should have been NULL", (double) 0, res3);
 
             Query q4 = em.createQuery("SELECT SUM(se.itemInteger2) FROM SimpleEntity se");
             Object res4 = q4.getSingleResult();
-            Assert.assertEquals("Result of SUM aggregate should have been NULL", Long.valueOf(0), res4);
+            Assert.assertEquals("Result of SUM aggregate should have been NULL", 0L, res4);
 
             Query q5 = em.createQuery("SELECT COUNT(se.itemInteger2) FROM SimpleEntity se");
             Object res5 = q5.getSingleResult();
-            Assert.assertEquals("Result of COUNT aggregate should have been a Long", Long.valueOf(2), res5);
+            Assert.assertEquals("Result of COUNT aggregate should have been a Long", 2L, res5);
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -204,12 +204,12 @@ public class TestAggregateFunctions {
 
         SimpleEntity se = new SimpleEntity();
         se.setKeyString("SimpleEntity1");
-        se.setItemInteger1(Integer.valueOf(0));
+        se.setItemInteger1(0);
         entities.add(se);
 
         SimpleEntity se2 = new SimpleEntity();
         se2.setKeyString("SimpleEntity2");
-        se2.setItemInteger1(Integer.valueOf(0));
+        se2.setItemInteger1(0);
         entities.add(se2);
 
         EntityManager em = resultEmf.createEntityManager();
@@ -223,23 +223,23 @@ public class TestAggregateFunctions {
 
             Query q = em.createQuery("SELECT MIN(se.itemInteger1) FROM SimpleEntity se");
             Object res = q.getSingleResult();
-            Assert.assertEquals("Result of MIN aggregate should have been NULL", Integer.valueOf(0), res);
+            Assert.assertEquals("Result of MIN aggregate should have been NULL", 0, res);
 
             Query q2 = em.createQuery("SELECT MAX(se.itemInteger1) FROM SimpleEntity se");
             Object res2 = q2.getSingleResult();
-            Assert.assertEquals("Result of MAX aggregate should have been NULL", Integer.valueOf(0), res2);
+            Assert.assertEquals("Result of MAX aggregate should have been NULL", 0, res2);
 
             Query q3 = em.createQuery("SELECT AVG(se.itemInteger1) FROM SimpleEntity se");
             Object res3 = q3.getSingleResult();
-            Assert.assertEquals("Result of AVG aggregate should have been NULL", Double.valueOf(0), res3);
+            Assert.assertEquals("Result of AVG aggregate should have been NULL", (double) 0, res3);
 
             Query q4 = em.createQuery("SELECT SUM(se.itemInteger1) FROM SimpleEntity se");
             Object res4 = q4.getSingleResult();
-            Assert.assertEquals("Result of SUM aggregate should have been NULL", Long.valueOf(0), res4);
+            Assert.assertEquals("Result of SUM aggregate should have been NULL", 0L, res4);
 
             Query q5 = em.createQuery("SELECT COUNT(se.itemInteger1) FROM SimpleEntity se");
             Object res5 = q5.getSingleResult();
-            Assert.assertEquals("Result of COUNT aggregate should have been a Long", Long.valueOf(2), res5);
+            Assert.assertEquals("Result of COUNT aggregate should have been a Long", 2L, res5);
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();

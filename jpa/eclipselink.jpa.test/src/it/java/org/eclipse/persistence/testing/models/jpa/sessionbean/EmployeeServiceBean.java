@@ -42,7 +42,7 @@ public class EmployeeServiceBean implements EmployeeService {
 
     @Override
     public Employee findById(int id) {
-        Employee employee = entityManager.find(Employee.class, Integer.valueOf(id));
+        Employee employee = entityManager.find(Employee.class, id);
         if (employee != null) {
             employee.getAddress();
         }
@@ -58,7 +58,7 @@ public class EmployeeServiceBean implements EmployeeService {
     }
     @Override
     public Employee fetchById(int id) {
-        Employee employee = entityManager.find(Employee.class, Integer.valueOf(id));
+        Employee employee = entityManager.find(Employee.class, id);
         employee.getAddress();
         employee.getManager();
         return employee;

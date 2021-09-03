@@ -1338,7 +1338,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
                     if (null == oldIndex) {
                         newIndex = 1;
                     } else {
-                        newIndex = oldIndex.intValue() + 1;
+                        newIndex = oldIndex + 1;
                     }
                 }
                 indexMap.put(xPathFragment, newIndex);

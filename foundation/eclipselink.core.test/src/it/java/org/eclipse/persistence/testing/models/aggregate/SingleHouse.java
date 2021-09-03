@@ -31,7 +31,7 @@ public class SingleHouse extends House {
         SingleHouse example1 = new SingleHouse();
 
         Oid insurancePolicyId = new Oid();
-        insurancePolicyId.setOid(Integer.valueOf(15));
+        insurancePolicyId.setOid(15);
         example1.setInsuranceId(insurancePolicyId);
         example1.setDescriptions("beautiful 4 bedroom single house");
         example1.setLocation("435 Carling Ave.");
@@ -48,7 +48,7 @@ public class SingleHouse extends House {
         SingleHouse example2 = new SingleHouse();
 
         Oid insurancePolicyId = new Oid();
-        insurancePolicyId.setOid(Integer.valueOf(27));
+        insurancePolicyId.setOid(27);
         example2.setInsuranceId(insurancePolicyId);
         example2.setDescriptions("spacious 5 bedroom banglow");
         example2.setLocation("33D King Edward Street");

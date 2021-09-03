@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -106,7 +106,7 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
         ClassDescriptor descriptor = super.buildDatabaseLoginConfigDescriptor();
 
         XMLDirectMapping bindAllParametersMapping = (XMLDirectMapping)descriptor.getMappingForAttributeName("m_bindAllParameters");
-        bindAllParametersMapping.setNullValue(Boolean.valueOf(BIND_ALL_PARAMETERS_DEFAULT));
+        bindAllParametersMapping.setNullValue(Boolean.TRUE);
 
         XMLDirectMapping validateConnectionHealthOnErrorMapping = new XMLDirectMapping();
         validateConnectionHealthOnErrorMapping.setAttributeName("connectionHealthValidatedOnError");
@@ -154,7 +154,7 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
         useSingleThreadedNotificationMapping.setGetMethodName("useSingleThreadedNotification");
         useSingleThreadedNotificationMapping.setSetMethodName("setUseSingleThreadedNotification");
         useSingleThreadedNotificationMapping.setXPath("use-single-threaded-notification/text()");
-        useSingleThreadedNotificationMapping.setNullValue(Boolean.valueOf(USE_SINGLE_THREADED_NOTIFICATION_DEFAULT));
+        useSingleThreadedNotificationMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(useSingleThreadedNotificationMapping);
 
         XMLDirectMapping topicNameMapping = new XMLDirectMapping();

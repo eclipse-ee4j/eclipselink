@@ -94,7 +94,7 @@ public class SetAndGetWithManyPropertyViaPathTestCases extends SDOTestCase {
             myProp.set("type", SDOConstants.SDO_BOOLEAN);
             myProp.set("many", Boolean.valueOf("true"));
             Type myDOType = typeHelper.define(myDO);
-            boolean b = Boolean.valueOf("true").booleanValue();
+            boolean b = Boolean.parseBoolean("true");
             myDO.setBoolean("myBoolean", b);
             boolean myboolean = myDO.getBoolean("myBoolean");
             assertTrue("Expected Boolean [" + b + "], but was [" + myboolean + "]", myboolean == b);
@@ -113,7 +113,7 @@ public class SetAndGetWithManyPropertyViaPathTestCases extends SDOTestCase {
             myProp.set("type", SDOConstants.SDO_BYTE);
             myProp.set("many", Boolean.valueOf("true"));
             Type myDOType = typeHelper.define(myDO);
-            byte b = Byte.valueOf("8").byteValue();
+            byte b = Byte.parseByte("8");
             myDO.setByte("myByte", b);
             byte mybyte = myDO.getByte("myByte");
             assertTrue("Expected byte [" + b + "], but was [" + mybyte + "]", mybyte == b);
@@ -133,8 +133,8 @@ public class SetAndGetWithManyPropertyViaPathTestCases extends SDOTestCase {
             myProp.set("type", SDOConstants.SDO_BYTES);
             myProp.set("many", Boolean.valueOf("true"));
             Type myDOType = typeHelper.define(myDO);
-            byte b1 = Byte.valueOf("16").byteValue();
-            byte b2 = Byte.valueOf("8").byteValue();
+            byte b1 = Byte.parseByte("16");
+            byte b2 = Byte.parseByte("8");
             byte[] bytes = new byte[] {b1, b2};
 
             myDO.setBytes("myBytes", bytes);
@@ -278,7 +278,7 @@ public class SetAndGetWithManyPropertyViaPathTestCases extends SDOTestCase {
             myProp.set("type", SDOConstants.SDO_SHORT);
             myProp.set("many", Boolean.valueOf("true"));
             Type myDOType = typeHelper.define(myDO);
-            short s = Short.valueOf("66").shortValue();
+            short s = Short.parseShort("66");
             myDO.setShort("myShort", s);
             short myshort = myDO.getShort("myShort");
             assertTrue("Expected short [" + s + "], but was [" + myshort + "]", myshort == s);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2015 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -43,7 +43,7 @@ public class WebLogicPlatformDetector implements ServerPlatformDetector {
         if (serverNameAndVersion != null) {
             int idx = serverNameAndVersion.indexOf('.');
             try {
-                int version = Integer.valueOf(serverNameAndVersion.substring(0, idx));
+                int version = Integer.parseInt(serverNameAndVersion.substring(0, idx));
                 if (version >= 12) {
                     platform = TargetServer.WebLogic_12;
                 } else {

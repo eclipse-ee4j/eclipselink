@@ -27,7 +27,7 @@ public class Player {
     }
 
     public Integer getId() {
-        return Integer.valueOf(Long.valueOf(m_id).intValue());
+        return Long.valueOf(m_id).intValue();
     }
 
     public Team getTeam() {

@@ -42,9 +42,9 @@ public class RelatedNewObjectNotSentTest extends ConfigurableCacheSyncDistribute
     protected Expression expression = null;
 
     public RelatedNewObjectNotSentTest() {
-        cacheSyncConfigValues.put(Employee.class, Integer.valueOf(ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES));
-        cacheSyncConfigValues.put(Address.class, Integer.valueOf(ClassDescriptor.DO_NOT_SEND_CHANGES));
-        cacheSyncConfigValues.put(SmallProject.class, Integer.valueOf(ClassDescriptor.DO_NOT_SEND_CHANGES));
+        cacheSyncConfigValues.put(Employee.class, ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES);
+        cacheSyncConfigValues.put(Address.class, ClassDescriptor.DO_NOT_SEND_CHANGES);
+        cacheSyncConfigValues.put(SmallProject.class, ClassDescriptor.DO_NOT_SEND_CHANGES);
     }
 
     @Override

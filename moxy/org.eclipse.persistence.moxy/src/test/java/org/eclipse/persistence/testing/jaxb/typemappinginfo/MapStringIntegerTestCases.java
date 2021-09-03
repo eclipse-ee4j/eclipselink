@@ -68,7 +68,7 @@ public class MapStringIntegerTestCases extends TypeMappingInfoWithJSONTestCases{
     @Override
     protected Object getControlObject() {
         HashMap<String, Integer> theMap = new HashMap<String, Integer>();
-        theMap.put("thekey", Integer.valueOf(10));
+        theMap.put("thekey", 10);
 
 
         return theMap;

@@ -34,7 +34,7 @@ public class SDODataObjectGetWithPathTest extends SDODataObjectConversionWithPat
         dataObject_c._setType(type_c);
 
         boolean c = true;
-        Boolean C = Boolean.valueOf(c);
+        Boolean C = c;
 
         //dataObject_a.setBoolean("PName-a/PName-b/PName-c", c);// c dataobject's a property has value boolean 'true'
         dataObject_a.set("PName-a/PName-b/PName-c", C);
@@ -51,7 +51,7 @@ public class SDODataObjectGetWithPathTest extends SDODataObjectConversionWithPat
         dataObject_c._setType(type_c);
 
         boolean c = true;
-        Boolean C = Boolean.valueOf(c);
+        Boolean C = c;
 
         dataObject_a.setBoolean("PName-a/PName-b/PName-c", c);// c dataobject's a property has value boolean 'true'
         //dataObject_a.set("PName-a/PName-b/PName-c", C);
@@ -68,7 +68,7 @@ public class SDODataObjectGetWithPathTest extends SDODataObjectConversionWithPat
         dataObject_c_bNotSDODataOject._setType(type_c_bNotSDODataOject);
 
         boolean c = true;
-        Boolean C = Boolean.valueOf(c);
+        Boolean C = c;
 
         //dataObject_c_bNotSDODataOject.setBoolean(property_c_bNotSDODataOject, c);// c dataobject's a property has value boolean 'true'
         try {
@@ -123,7 +123,7 @@ public class SDODataObjectGetWithPathTest extends SDODataObjectConversionWithPat
     public void testGetBooleanConversionFromPathWithLength_1() {
         property_a_pathLength_1.setType(SDOConstants.SDO_BOOLEAN);
         boolean b = true;
-        Boolean B = Boolean.valueOf(b);
+        Boolean B = b;
 
         dataObject_a_pathLength_1.setBoolean("PName-a-length-1", b);
 

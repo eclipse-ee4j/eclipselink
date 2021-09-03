@@ -120,7 +120,7 @@ public class SimpleTypeTestSuite {
         EntityManager em = emf.createEntityManager();
         DynamicEntity simpleInstance = find(em, 1);
         assertNotNull("Could not find simple instance with id = 1", simpleInstance);
-        simpleInstance = find(em, Integer.valueOf(1));
+        simpleInstance = find(em, 1);
         assertNotNull("Could not find simple instance with id = Integer(1)", simpleInstance);
     }
 
@@ -163,7 +163,7 @@ public class SimpleTypeTestSuite {
             0, simpleInstance.<Integer>get("id").intValue());
         assertFalse("value1 set on new instance", simpleInstance.isSet("value1"));
         assertEquals("value2 not default value on new instance",
-            false, simpleInstance.<Boolean>get("value2").booleanValue());
+            false, simpleInstance.<Boolean>get("value2"));
         assertFalse("value3 set on new instance", simpleInstance.isSet("value3"));
         assertFalse("value4 set on new instance", simpleInstance.isSet("value4"));
     }

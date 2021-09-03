@@ -161,7 +161,7 @@ public class SDODataObjectGetDoubleWithIndexConversionTest extends SDODataObject
         double delta = 0.0;
         dataObject.setString(PROPERTY_INDEX, str);// add it to instance list
 
-        assertEquals(s_d.doubleValue(), dataObject.getDouble(PROPERTY_INDEX), delta);
+        assertEquals(s_d, dataObject.getDouble(PROPERTY_INDEX), delta);
     }
 
     //17. purpose: getDouble with bytes property

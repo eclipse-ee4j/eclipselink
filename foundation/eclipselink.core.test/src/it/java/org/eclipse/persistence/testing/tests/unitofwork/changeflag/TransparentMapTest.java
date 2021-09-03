@@ -115,7 +115,7 @@ public class TransparentMapTest extends org.eclipse.persistence.testing.framewor
         //test update
         this.licenceType = "Alcohol License";
         this.licenceValue = (Boolean)clone.getLicenses().get(licenceType);
-        clone.getLicenses().put(licenceType, Boolean.valueOf(!(this.licenceValue).booleanValue()));
+        clone.getLicenses().put(licenceType, !this.licenceValue);
 
         uow.commit();
     }

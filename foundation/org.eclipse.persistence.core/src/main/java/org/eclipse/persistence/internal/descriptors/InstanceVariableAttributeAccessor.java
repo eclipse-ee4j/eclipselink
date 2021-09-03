@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -164,12 +164,12 @@ public class InstanceVariableAttributeAccessor extends AttributeAccessor {
                     if (org.eclipse.persistence.internal.helper.Helper.isPrimitiveWrapper(fieldClass)) {
                         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                             try {
-                                AccessController.doPrivileged(new PrivilegedSetValueInField(this.attributeField, anObject, ConversionManager.getDefaultManager().convertObject(Integer.valueOf(0), fieldClass)));
+                                AccessController.doPrivileged(new PrivilegedSetValueInField(this.attributeField, anObject, ConversionManager.getDefaultManager().convertObject(0, fieldClass)));
                             } catch (PrivilegedActionException exc) {
                                 throw DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), null, exc.getException());
                                                         }
                         } else {
-                            org.eclipse.persistence.internal.security.PrivilegedAccessHelper.setValueInField(this.attributeField, anObject, ConversionManager.getDefaultManager().convertObject(Integer.valueOf(0), fieldClass));
+                            org.eclipse.persistence.internal.security.PrivilegedAccessHelper.setValueInField(this.attributeField, anObject, ConversionManager.getDefaultManager().convertObject(0, fieldClass));
                         }
                     }
                     return;
@@ -214,12 +214,12 @@ public class InstanceVariableAttributeAccessor extends AttributeAccessor {
                         if (org.eclipse.persistence.internal.helper.Helper.isPrimitiveWrapper(fieldClass)) {
                             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                                 try {
-                                    AccessController.doPrivileged(new PrivilegedSetValueInField(this.attributeField, anObject, ConversionManager.getDefaultManager().convertObject(Integer.valueOf(0), fieldClass)));
+                                    AccessController.doPrivileged(new PrivilegedSetValueInField(this.attributeField, anObject, ConversionManager.getDefaultManager().convertObject(0, fieldClass)));
                                 } catch (PrivilegedActionException exc) {
                                     throw DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), null, exc.getException());
                                 }
                             } else {
-                                org.eclipse.persistence.internal.security.PrivilegedAccessHelper.setValueInField(this.attributeField, anObject, ConversionManager.getDefaultManager().convertObject(Integer.valueOf(0), fieldClass));
+                                org.eclipse.persistence.internal.security.PrivilegedAccessHelper.setValueInField(this.attributeField, anObject, ConversionManager.getDefaultManager().convertObject(0, fieldClass));
                             }
                         }
                     } else {

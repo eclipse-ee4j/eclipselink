@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -440,7 +440,7 @@ public class SDOException extends EclipseLinkException {
      * This exception occurs only for complex single types.
      */
     public static SDOException sequenceDuplicateSettingNotSupportedForComplexSingleObject(int index, String settingPropertyName) {
-        Object[] args = { Integer.valueOf(index), settingPropertyName };
+        Object[] args = {index, settingPropertyName };
         SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, SEQUENCE_DUPLICATE_ADD_NOT_SUPPORTED, args));
         exception.setErrorCode(SEQUENCE_DUPLICATE_ADD_NOT_SUPPORTED);
         return exception;
@@ -522,7 +522,7 @@ public class SDOException extends EclipseLinkException {
     * Exception when trying to find a property at an invalid index
     */
     public static SDOException propertyNotFoundAtIndex(Exception e, int propIndex) {
-        Object[] args = { Integer.valueOf(propIndex) };
+        Object[] args = {propIndex};
         SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, PROPERTY_NOT_FOUND_AT_INDEX, args), e);
         exception.setErrorCode(PROPERTY_NOT_FOUND_AT_INDEX);
         return exception;
@@ -578,7 +578,7 @@ public class SDOException extends EclipseLinkException {
      * Exception trying to pass an invalid index to a method
      */
     public static SDOException invalidIndex(IndexOutOfBoundsException nestedException, int index) {
-        Object[] args = {Integer.valueOf(index) };
+        Object[] args = {index};
         SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, INVALID_INDEX, args),nestedException);
         exception.setErrorCode(INVALID_INDEX);
         return exception;

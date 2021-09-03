@@ -75,11 +75,11 @@ public abstract class BaseNcharTest extends TestCase {
         }
         if (object.getNchar() != null) {
             if (!object.getNchar().equals(controlObject.getNchar())) {
-                throw new TestException("wrong NCHAR: " + charCode(object.getNchar().charValue()) + "; should be: " + charCode(controlObject.getNchar().charValue()));
+                throw new TestException("wrong NCHAR: " + charCode(object.getNchar()) + "; should be: " + charCode(controlObject.getNchar()));
             }
         } else {
             if (controlObject.getNchar() != null) {
-                throw new TestException("wrong NCHAR: NULL  should be: " + charCode(controlObject.getNchar().charValue()));
+                throw new TestException("wrong NCHAR: NULL  should be: " + charCode(controlObject.getNchar()));
             }
         }
         if (object.getStr() != null) {

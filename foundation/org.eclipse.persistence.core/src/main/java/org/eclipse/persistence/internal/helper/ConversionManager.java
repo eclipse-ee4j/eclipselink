@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2020 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -316,7 +316,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                 Byte[] objectBytes = (Byte[])sourceObject;
                 byte[] bytes = new byte[objectBytes.length];
                 for (int index = 0; index < objectBytes.length; index++) {
-                    bytes[index] = objectBytes[index].byteValue();
+                    bytes[index] = objectBytes[index];
                 }
                 bigInteger = new BigInteger(bytes);
             } else if (sourceObject instanceof byte[]) {
@@ -338,7 +338,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
      */
     protected Boolean convertObjectToBoolean(Object sourceObject) {
         if (sourceObject instanceof Character) {
-            switch (Character.toLowerCase(((Character)sourceObject).charValue())) {
+            switch (Character.toLowerCase((Character) sourceObject)) {
             case '1':
             case 't':
                 return Boolean.TRUE;
@@ -378,7 +378,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                 return Byte.valueOf((String)sourceObject);
             }
             if (sourceObject instanceof Number) {
-                return Byte.valueOf(((Number)sourceObject).byteValue());
+                return ((Number) sourceObject).byteValue();
             }
         } catch (NumberFormatException exception) {
             throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.BYTE, exception);
@@ -404,7 +404,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             for (int index = 0; index < objectBytes.length; index++) {
                 Byte value = objectBytes[index];
                 if (value != null) {
-                    bytes[index] = value.byteValue();
+                    bytes[index] = value;
                 }
             }
             return bytes;
@@ -447,7 +447,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
         byte[] bytes = convertObjectToByteArray(sourceObject);
         Byte[] objectBytes = new Byte[bytes.length];
         for (int index = 0; index < bytes.length; index++) {
-            objectBytes[index] = Byte.valueOf(bytes[index]);
+            objectBytes[index] = bytes[index];
         }
         return objectBytes;
     }
@@ -476,11 +476,11 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                 // ELBug336192 - Return default null value of char instead of returning null.
                 return (Character)getDefaultNullValue(ClassConstants.PCHAR);
             }
-            return Character.valueOf(((String)sourceObject).charAt(0));
+            return ((String) sourceObject).charAt(0);
         }
 
         if (sourceObject instanceof Number) {
-            return Character.valueOf((char)((Number)sourceObject).byteValue());
+            return (char) ((Number) sourceObject).byteValue();
         }
 
         throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.CHAR);
@@ -493,7 +493,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
         String stringValue = convertObjectToString(sourceObject);
         Character[] chars = new Character[stringValue.length()];
         for (int index = 0; index < stringValue.length(); index++) {
-            chars[index] = Character.valueOf(stringValue.charAt(index));
+            chars[index] = stringValue.charAt(index);
         }
         return chars;
     }
@@ -506,7 +506,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             Character[] objectChars = (Character[])sourceObject;
             char[] chars = new char[objectChars.length];
             for (int index = 0; index < objectChars.length; index++) {
-                chars[index] = objectChars[index].charValue();
+                chars[index] = objectChars[index];
             }
             return chars;
         }
@@ -576,7 +576,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                 return Double.valueOf((String)sourceObject);
             }
             if (sourceObject instanceof Number) {
-                return Double.valueOf(((Number)sourceObject).doubleValue());
+                return ((Number) sourceObject).doubleValue();
             }
         } catch (NumberFormatException exception) {
             throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.DOUBLE, exception);
@@ -595,7 +595,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                 return Float.valueOf((String)sourceObject);
             }
             if (sourceObject instanceof Number) {
-                return Float.valueOf(((Number)sourceObject).floatValue());
+                return ((Number) sourceObject).floatValue();
             }
         } catch (NumberFormatException exception) {
             throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.FLOAT, exception);
@@ -616,14 +616,14 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             }
 
             if (sourceObject instanceof Number) {
-                return Integer.valueOf(((Number)sourceObject).intValue());
+                return ((Number) sourceObject).intValue();
             }
 
             if (sourceObject instanceof Boolean) {
-                if (((Boolean)sourceObject).booleanValue()) {
-                    return Integer.valueOf(1);
+                if ((Boolean) sourceObject) {
+                    return 1;
                 } else {
-                    return Integer.valueOf(0);
+                    return 0;
                 }
             }
         } catch (NumberFormatException exception) {
@@ -645,20 +645,20 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                 return Long.valueOf((String)sourceObject);
             }
             if (sourceObject instanceof Number) {
-                return Long.valueOf(((Number)sourceObject).longValue());
+                return ((Number) sourceObject).longValue();
             }
             if (sourceObject instanceof java.util.Date) {
-                return Long.valueOf(((java.util.Date)sourceObject).getTime());
+                return ((java.util.Date) sourceObject).getTime();
             }
             if (sourceObject instanceof java.util.Calendar) {
-                return Long.valueOf(((java.util.Calendar)sourceObject).getTimeInMillis());
+                return ((Calendar) sourceObject).getTimeInMillis();
             }
 
             if (sourceObject instanceof Boolean) {
-                if (((Boolean)sourceObject).booleanValue()) {
-                    return Long.valueOf(1);
+                if ((Boolean) sourceObject) {
+                    return 1L;
                 } else {
-                    return Long.valueOf(0);
+                    return 0L;
                 }
             }
         } catch (NumberFormatException exception) {
@@ -687,7 +687,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             }
 
             if (sourceObject instanceof Boolean) {
-                if (((Boolean)sourceObject).booleanValue()) {
+                if ((Boolean) sourceObject) {
                     return BigDecimal.valueOf(1);
                 } else {
                     return BigDecimal.valueOf(0);
@@ -713,14 +713,14 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             }
 
             if (sourceObject instanceof Number) {
-                return Short.valueOf(((Number)sourceObject).shortValue());
+                return ((Number) sourceObject).shortValue();
             }
 
             if (sourceObject instanceof Boolean) {
-                if (((Boolean)sourceObject).booleanValue()) {
-                    return Short.valueOf((short)1);
+                if ((Boolean) sourceObject) {
+                    return (short) 1;
                 } else {
-                    return Short.valueOf((short)0);
+                    return (short) 0;
                 }
             }
         } catch (Exception exception) {

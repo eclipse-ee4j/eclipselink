@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -45,8 +45,8 @@ public class TestEmbeddedIdAsInnerClass extends JPA1Base {
             assertEquals(query.getResultList().size(), 3);
 
             query = em.createQuery("select t from Trailer t where t.pk.low = ?1 and t.pk.high = ?2");
-            query.setParameter(1, Integer.valueOf(new Trailer.PK(1, 2).getLow()));
-            query.setParameter(2, Integer.valueOf(new Trailer.PK(1, 2).getHigh()));
+            query.setParameter(1, new Trailer.PK(1, 2).getLow());
+            query.setParameter(2, new Trailer.PK(1, 2).getHigh());
             final Trailer result = (Trailer) query.getSingleResult();
             Assert.assertEquals("wrong load", trailer12.getLoad(), result.getLoad(), 0.0);
         } finally {

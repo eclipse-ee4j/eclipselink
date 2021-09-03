@@ -1975,7 +1975,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             Object[] objectdata = (Object[])aQuery.getSingleResult();
 
             assertTrue("Address data not found or returned using stored procedure", ((objectdata!=null)&& (objectdata.length==2)) );
-            assertTrue("Address Id data returned doesn't match persisted address", (address1.getID() == ((Long)objectdata[0]).longValue()) );
+            assertTrue("Address Id data returned doesn't match persisted address", (address1.getID() == (Long) objectdata[0]) );
             assertTrue("Address Street data returned doesn't match persisted address", ( address1.getStreet().equals(objectdata[1] )) );
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
@@ -2485,7 +2485,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
 
         // verify properties set on Employee instance
         errorMsg += verifyPropertyValue(descriptor, "entityName", String.class, "Employee");
-        errorMsg += verifyPropertyValue(descriptor, "entityIntegerProperty", Integer.class, Integer.valueOf(1));
+        errorMsg += verifyPropertyValue(descriptor, "entityIntegerProperty", Integer.class, 1);
 
         // each attribute of Employee was assigned a property attributeName with the value attribute name.
         for(DatabaseMapping mapping : descriptor.getMappings()) {
@@ -2495,13 +2495,13 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         // attribute m_lastName has many properties of different types
         DatabaseMapping mapping = descriptor.getMappingForAttributeName("lastName");
         errorMsg += verifyPropertyValue(mapping, "BooleanProperty", Boolean.class, Boolean.TRUE);
-        errorMsg += verifyPropertyValue(mapping, "ByteProperty", Byte.class, Byte.valueOf((byte)1));
-        errorMsg += verifyPropertyValue(mapping, "CharacterProperty", Character.class, Character.valueOf('A'));
-        errorMsg += verifyPropertyValue(mapping, "DoubleProperty", Double.class, Double.valueOf(1));
-        errorMsg += verifyPropertyValue(mapping, "FloatProperty", Float.class, Float.valueOf(1));
-        errorMsg += verifyPropertyValue(mapping, "IntegerProperty", Integer.class, Integer.valueOf(1));
-        errorMsg += verifyPropertyValue(mapping, "LongProperty", Long.class, Long.valueOf(1));
-        errorMsg += verifyPropertyValue(mapping, "ShortProperty", Short.class, Short.valueOf((short)1));
+        errorMsg += verifyPropertyValue(mapping, "ByteProperty", Byte.class, (byte) 1);
+        errorMsg += verifyPropertyValue(mapping, "CharacterProperty", Character.class, 'A');
+        errorMsg += verifyPropertyValue(mapping, "DoubleProperty", Double.class, 1.0);
+        errorMsg += verifyPropertyValue(mapping, "FloatProperty", Float.class, 1F);
+        errorMsg += verifyPropertyValue(mapping, "IntegerProperty", Integer.class, 1);
+        errorMsg += verifyPropertyValue(mapping, "LongProperty", Long.class, 1L);
+        errorMsg += verifyPropertyValue(mapping, "ShortProperty", Short.class, (short) 1);
         errorMsg += verifyPropertyValue(mapping, "BigDecimalProperty", java.math.BigDecimal.class, java.math.BigDecimal.ONE);
         errorMsg += verifyPropertyValue(mapping, "BigIntegerProperty", java.math.BigInteger.class, java.math.BigInteger.ONE);
         errorMsg += verifyPropertyValue(mapping, "byte[]Property", byte[].class, new byte[]{1, 2, 3, 4});
@@ -3864,7 +3864,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         Vector pk = new Vector(1);
         pk.add(dealer.getId());
 
-        return ((Integer)getServerSession().getDescriptor(Dealer.class).getOptimisticLockingPolicy().getWriteLockValue(dealer, pk, getServerSession())).intValue();
+        return (Integer) getServerSession().getDescriptor(Dealer.class).getOptimisticLockingPolicy().getWriteLockValue(dealer, pk, getServerSession());
     }
 
     protected List<Employee> createEmployeesWithUnidirectionalMappings(String lastName) {

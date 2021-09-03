@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -207,7 +207,7 @@ public class OracleJDBC_10_1_0_2ProxyConnectionCustomizer extends ConnectionCust
     protected void buildProxyProperties() {
         Object proxyTypeValue = session.getProperty(PersistenceUnitProperties.ORACLE_PROXY_TYPE);
         try {
-            proxyType = ((Integer)session.getPlatform().getConversionManager().convertObject(proxyTypeValue, Integer.class)).intValue();
+            proxyType = (Integer) session.getPlatform().getConversionManager().convertObject(proxyTypeValue, Integer.class);
         } catch (ConversionException conversionException) {
             throw ValidationException.oracleJDBC10_1_0_2ProxyConnectorRequiresIntProxytype();
         }

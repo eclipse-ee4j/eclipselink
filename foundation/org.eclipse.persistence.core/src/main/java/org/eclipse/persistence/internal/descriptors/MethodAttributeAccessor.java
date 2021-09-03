@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -296,7 +296,7 @@ public class MethodAttributeAccessor extends AttributeAccessor {
 
                 //Found when fixing Bug2910086
                 if (fieldClass.isPrimitive() && (attributeValue == null)) {
-                    parameters[parameters.length-1] = ConversionManager.getDefaultManager().convertObject(Integer.valueOf(0), fieldClass);
+                    parameters[parameters.length-1] = ConversionManager.getDefaultManager().convertObject(0, fieldClass);
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                         try {
                             AccessController.doPrivileged(new PrivilegedMethodInvoker(getSetMethod(), domainObject, parameters));

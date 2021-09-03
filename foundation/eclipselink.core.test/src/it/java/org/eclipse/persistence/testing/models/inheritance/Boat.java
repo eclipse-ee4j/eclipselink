@@ -18,7 +18,7 @@ public class Boat extends NonFueledVehicle {
     public static Boat example1(Company company) {
         Boat example = new Boat();
 
-        example.setPassengerCapacity(Integer.valueOf(10));
+        example.setPassengerCapacity(10);
         example.getOwner().setValue(company);
         return example;
     }
@@ -26,7 +26,7 @@ public class Boat extends NonFueledVehicle {
     public static Boat example2(Company company) {
         Boat example = new Boat();
 
-        example.setPassengerCapacity(Integer.valueOf(20));
+        example.setPassengerCapacity(20);
         example.getOwner().setValue(company);
         return example;
     }
@@ -34,7 +34,7 @@ public class Boat extends NonFueledVehicle {
     public static Boat example3(Company company) {
         Boat example = new Boat();
 
-        example.setPassengerCapacity(Integer.valueOf(30));
+        example.setPassengerCapacity(30);
         example.getOwner().setValue(company);
         return example;
     }

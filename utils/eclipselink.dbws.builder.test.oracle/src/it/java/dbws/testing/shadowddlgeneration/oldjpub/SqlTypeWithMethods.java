@@ -172,14 +172,14 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
                     try {
                         paramNames_v.add(paramName[i]);
                         String mode = paramMode[i];
-                        paramModes_v.add(Integer.valueOf((mode == null) ? ProcedureMethod.INOUT : (mode
-                            .equals("IN") ? ProcedureMethod.IN : (mode.equals("OUT") ? ProcedureMethod.OUT
-                            : ProcedureMethod.INOUT))));
+                        paramModes_v.add((mode == null) ? ProcedureMethod.INOUT : (mode
+                                .equals("IN") ? ProcedureMethod.IN : (mode.equals("OUT") ? ProcedureMethod.OUT
+                                : ProcedureMethod.INOUT)));
                         paramTypes_v.add(m_reflector.addPlsqlDBType(paramTypeOwner[i],
                             paramTypeName[i], paramTypeSubname[i], paramTypeMod[i],
                             mcharFormOfUse[i], type, paramMethodName[i], paramMethodNo[i],
                             sequence[i], this));
-                        paramNCharFormOfUse_v.add(Boolean.valueOf(mcharFormOfUse[i]));
+                        paramNCharFormOfUse_v.add(mcharFormOfUse[i]);
                     }
                     catch (SQLException e) {
                         e.printStackTrace();
@@ -201,8 +201,8 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
             for (int i = 0; i < len; i++) {
                 paramTypes[i] = (paramTypes_v.get(i));
                 paramNames[i] = paramNames_v.get(i);
-                paramModes[i] = paramModes_v.get(i).intValue();
-                paramNCharFormOfUse[i] = paramNCharFormOfUse_v.get(i).booleanValue();
+                paramModes[i] = paramModes_v.get(i);
+                paramNCharFormOfUse[i] = paramNCharFormOfUse_v.get(i);
             }
 
             paramTypes = generateDefaultArgsHolderParamTypes(paramTypes, paramDefaults,
@@ -289,13 +289,13 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
             if (overload == null || overload.equals("")) {
                 rowIter = m_viewCache.getRows(Util.ALL_ARGUMENTS, new String[]{"DEFAULTED"},
                     new String[]{"OBJECT_ID", "OBJECT_NAME", "SEQUENCE", "OVERLOAD"}, new Object[]{
-                        Integer.valueOf(object_id), methodName, Integer.valueOf(sequence), null},
+                                object_id, methodName, sequence, null},
                     new String[0]);
             }
             else {
                 rowIter = m_viewCache.getRows(Util.ALL_ARGUMENTS, new String[]{"DEFAULTED"},
                     new String[]{"OBJECT_ID", "OBJECT_NAME", "SEQUENCE", "OVERLOAD"}, new Object[]{
-                        Integer.valueOf(object_id), methodName, Integer.valueOf(sequence), overload},
+                                object_id, methodName, sequence, overload},
                     new String[0]);
             }
             if (rowIter.hasNext()) {

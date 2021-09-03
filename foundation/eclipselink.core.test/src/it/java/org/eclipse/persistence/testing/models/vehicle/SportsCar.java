@@ -68,7 +68,7 @@ public class SportsCar implements java.io.Serializable {
         SportsCar example = new SportsCar();
 
         example.setId(10);
-        example.setFuelCapacity(Integer.valueOf(30));
+        example.setFuelCapacity(30);
         example.setDescription("TOYOTA");
         example.setFuelType(FuelType.example1());
         example.setEngineType(EngineType.example1());
@@ -79,7 +79,7 @@ public class SportsCar implements java.io.Serializable {
         SportsCar example = new SportsCar();
 
         example.setId(20);
-        example.setFuelCapacity(Integer.valueOf(50));
+        example.setFuelCapacity(50);
         example.setDescription("TATA INDICA");
         example.setFuelType(FuelType.example2());
         example.setEngineType(EngineType.example2());

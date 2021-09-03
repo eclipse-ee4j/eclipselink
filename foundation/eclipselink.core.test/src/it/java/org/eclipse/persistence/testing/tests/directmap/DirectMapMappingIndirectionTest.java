@@ -48,8 +48,8 @@ public class DirectMapMappingIndirectionTest extends AutoVerifyTestCase {
         // Create a directmapmapping with a few items in it
         UnitOfWork uow = getSession().acquireUnitOfWork();
         DirectMapMappings maps1 = (DirectMapMappings)uow.registerObject(new DirectMapMappings());
-        maps1.indirectionDirectMap.put(Integer.valueOf(1), "guy");
-        maps1.indirectionDirectMap.put(Integer.valueOf(2), "axemen");
+        maps1.indirectionDirectMap.put(1, "guy");
+        maps1.indirectionDirectMap.put(2, "axemen");
         uow.commit();
 
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();

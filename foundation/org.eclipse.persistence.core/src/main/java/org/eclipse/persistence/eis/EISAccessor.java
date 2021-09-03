@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -182,9 +182,9 @@ public class EISAccessor extends DatasourceAccessor {
                 session.log(SessionLog.FINEST, SessionLog.QUERY, "adapter_result", output);
                 if (eisCall.isNothingReturned()) {
                     if (success) {
-                        result = Integer.valueOf(1);
+                        result = 1;
                     } else {
-                        result = Integer.valueOf(0);
+                        result = 0;
                     }
                     // Fire the output parameter row to allow app to handle return value.
                     if (output != null) {

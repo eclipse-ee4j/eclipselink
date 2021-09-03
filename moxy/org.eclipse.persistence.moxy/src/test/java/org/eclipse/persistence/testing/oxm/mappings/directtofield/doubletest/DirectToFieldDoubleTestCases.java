@@ -22,7 +22,7 @@ public class DirectToFieldDoubleTestCases extends XMLMappingTestCases {
   private final static int CONTROL_ID = 123;
   private final static String CONTROL_FIRST_NAME = "Jane";
   private final static String CONTROL_LAST_NAME = "Doe";
-  private final static Double CONTROL_SALARY = Double.valueOf(100000.0);
+  private final static Double CONTROL_SALARY = 100000.0;
 
   public DirectToFieldDoubleTestCases(String name) throws Exception {
     super(name);

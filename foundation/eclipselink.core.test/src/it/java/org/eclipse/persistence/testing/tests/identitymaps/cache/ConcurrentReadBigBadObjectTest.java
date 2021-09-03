@@ -61,12 +61,12 @@ public class ConcurrentReadBigBadObjectTest extends TestCase {
         int i =0;
         while (i<mappings){
             m = (DatabaseMapping)v.get(i);
-            m.setWeight(Integer.valueOf(Integer.MAX_VALUE-1));
+            m.setWeight(Integer.MAX_VALUE - 1);
             i++;
         }
 
         m = d.getMappingForAttributeName("number02");
-        m.setWeight(Integer.valueOf(Integer.MAX_VALUE));
+        m.setWeight(Integer.MAX_VALUE);
 
         server.login();
         server.serverSession.setLogLevel(getSession().getLogLevel());

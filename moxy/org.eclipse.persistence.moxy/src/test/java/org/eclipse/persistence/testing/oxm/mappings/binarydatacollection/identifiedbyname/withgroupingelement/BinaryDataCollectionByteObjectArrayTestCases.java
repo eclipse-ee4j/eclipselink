@@ -51,7 +51,7 @@ public class BinaryDataCollectionByteObjectArrayTestCases extends XMLWithJSONMap
 
             Byte[] objectBytes = new Byte[bytes.length];
             for (int index = 0; index < bytes.length; index++) {
-                objectBytes[index] = Byte.valueOf(bytes[index]);
+                objectBytes[index] = bytes[index];
             }
 
             photos.addElement(objectBytes);

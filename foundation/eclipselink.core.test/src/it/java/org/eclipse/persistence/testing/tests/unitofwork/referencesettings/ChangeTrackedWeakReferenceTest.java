@@ -35,7 +35,7 @@ public class ChangeTrackedWeakReferenceTest extends AutoVerifyTestCase {
         try{
             Long[] arr = new Long[100000];
             for (int i = 0; i< 100000; ++i){
-                arr[i] = Long.valueOf(i);
+                arr[i] = (long) i;
             }
         }catch (Error er){
             //ignore

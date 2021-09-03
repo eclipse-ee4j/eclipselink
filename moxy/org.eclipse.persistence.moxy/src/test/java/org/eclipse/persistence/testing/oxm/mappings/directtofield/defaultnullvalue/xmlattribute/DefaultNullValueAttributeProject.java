@@ -37,7 +37,7 @@ public class DefaultNullValueAttributeProject extends Project {
         idMapping.setAttributeName("id");
         idMapping.getAttributeName();
         idMapping.setXPath("@id");
-        idMapping.setNullValue(Integer.valueOf(CONTROL_ID));
+        idMapping.setNullValue(CONTROL_ID);
         xmlDescriptor.addMapping(idMapping);
 
         //XMLDirectMapping firstNameMapping = new XMLDirectMapping();

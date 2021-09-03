@@ -472,7 +472,7 @@ public class SessionsFactory {
         if (datasourceName != null) {
             try {
                 JNDIConnector jndiConnector = new JNDIConnector(new javax.naming.InitialContext(), datasourceName);
-                jndiConnector.setLookupType(databaseLoginConfig.getLookupType().intValue());
+                jndiConnector.setLookupType(databaseLoginConfig.getLookupType());
                 databaseLogin.setConnector(jndiConnector);
             } catch (Exception exception) {
                 throw SessionLoaderException.failedToLoadTag("datasource", datasourceName, exception);
@@ -512,7 +512,7 @@ public class SessionsFactory {
         // Max batch writing size - XML Schema default is 32000
         Integer maxBatchWritingSize = databaseLoginConfig.getMaxBatchWritingSize();
         if (maxBatchWritingSize != null) {
-            databaseLogin.setMaxBatchWritingSize(maxBatchWritingSize.intValue());
+            databaseLogin.setMaxBatchWritingSize(maxBatchWritingSize);
         }
 
         // Native SQL - XML Schema default is false
@@ -686,13 +686,13 @@ public class SessionsFactory {
         // Max connections
         Integer maxConnections = poolConfig.getMaxConnections();
         if (maxConnections != null) {
-            serverSession.getSequencingControl().setMaxPoolSize(maxConnections.intValue());
+            serverSession.getSequencingControl().setMaxPoolSize(maxConnections);
         }
 
         // Min connections
         Integer minConnections = poolConfig.getMinConnections();
         if (minConnections != null) {
-            serverSession.getSequencingControl().setMinPoolSize(minConnections.intValue());
+            serverSession.getSequencingControl().setMinPoolSize(minConnections);
         }
 
         // Name - no need to process
@@ -810,13 +810,13 @@ public class SessionsFactory {
         // Max connections
         Integer maxConnections = poolConfig.getMaxConnections();
         if (maxConnections != null) {
-            connectionPool.setMaxNumberOfConnections(maxConnections.intValue());
+            connectionPool.setMaxNumberOfConnections(maxConnections);
         }
 
         // Min connections
         Integer minConnections = poolConfig.getMinConnections();
         if (minConnections != null) {
-            connectionPool.setMinNumberOfConnections(minConnections.intValue());
+            connectionPool.setMinNumberOfConnections(minConnections);
         }
     }
 
@@ -983,7 +983,7 @@ public class SessionsFactory {
         }
 
         String name = sequenceConfig.getName();
-        int size = sequenceConfig.getPreallocationSize().intValue();
+        int size = sequenceConfig.getPreallocationSize();
 
         if (sequenceConfig instanceof DefaultSequenceConfig) {
             return new DefaultSequence(name, size);
@@ -1286,19 +1286,19 @@ public class SessionsFactory {
     protected void processLogConfig(LogConfig logConfig, SessionLog log) {
         if (logConfig.getLoggingOptions() != null) {
             if (logConfig.getLoggingOptions().getShouldLogExceptionStackTrace() != null) {
-                log.setShouldLogExceptionStackTrace(logConfig.getLoggingOptions().getShouldLogExceptionStackTrace().booleanValue());
+                log.setShouldLogExceptionStackTrace(logConfig.getLoggingOptions().getShouldLogExceptionStackTrace());
             }
             if (logConfig.getLoggingOptions().getShouldPrintConnection() != null) {
-                log.setShouldPrintConnection(logConfig.getLoggingOptions().getShouldPrintConnection().booleanValue());
+                log.setShouldPrintConnection(logConfig.getLoggingOptions().getShouldPrintConnection());
             }
             if (logConfig.getLoggingOptions().getShouldPrintDate() != null) {
-                log.setShouldPrintDate(logConfig.getLoggingOptions().getShouldPrintDate().booleanValue());
+                log.setShouldPrintDate(logConfig.getLoggingOptions().getShouldPrintDate());
             }
             if (logConfig.getLoggingOptions().getShouldPrintSession() != null) {
-                log.setShouldPrintSession(logConfig.getLoggingOptions().getShouldPrintSession().booleanValue());
+                log.setShouldPrintSession(logConfig.getLoggingOptions().getShouldPrintSession());
             }
             if (logConfig.getLoggingOptions().getShouldPrintThread() != null) {
-                log.setShouldPrintThread(logConfig.getLoggingOptions().getShouldPrintThread().booleanValue());
+                log.setShouldPrintThread(logConfig.getLoggingOptions().getShouldPrintThread());
             }
         }
     }

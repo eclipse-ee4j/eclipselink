@@ -102,12 +102,12 @@ public class EmployeeSystem extends TestSystem {
 
         Vector arguments = new Vector(2);
         arguments.add("EMP_SEQ");
-        arguments.add(Integer.valueOf(0));
+        arguments.add(0);
         session.executeQuery(query, arguments);
 
         arguments = new Vector(2);
         arguments.add("PROJ_SEQ");
-        arguments.add(Integer.valueOf(0));
+        arguments.add(0);
         session.executeQuery(query, arguments);
     }
 

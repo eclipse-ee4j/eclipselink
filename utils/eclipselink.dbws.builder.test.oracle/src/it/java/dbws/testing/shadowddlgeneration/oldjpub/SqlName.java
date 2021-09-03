@@ -745,10 +745,10 @@ public class SqlName extends Name {
 
     public boolean hasConversion() {
         if (m_hasConversion == null) {
-            m_hasConversion = Boolean.valueOf(getIntoConversion() != null
-                || getOutOfConversion() != null);
+            m_hasConversion = getIntoConversion() != null
+                    || getOutOfConversion() != null;
         }
-        return m_hasConversion.booleanValue();
+        return m_hasConversion;
     }
 
     /**

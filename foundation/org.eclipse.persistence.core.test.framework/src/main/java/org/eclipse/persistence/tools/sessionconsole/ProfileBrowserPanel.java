@@ -117,14 +117,14 @@ public class ProfileBrowserPanel extends JPanel {
                 String name = (String)operationNames.nextElement();
                 Long oldTime = (Long)summary.getOperationTimings().get(name);
                 long profileTime =
-                    ((Long)profile.getOperationTimings().get(name)).longValue();
+                        (Long) profile.getOperationTimings().get(name);
                 long newTime;
                 if (oldTime == null) {
                     newTime = profileTime;
                 } else {
-                    newTime = oldTime.longValue() + profileTime;
+                    newTime = oldTime + profileTime;
                 }
-                summary.getOperationTimings().put(name, Long.valueOf(newTime));
+                summary.getOperationTimings().put(name, newTime);
             }
         }
 
@@ -168,14 +168,14 @@ public class ProfileBrowserPanel extends JPanel {
                 String name = (String)operationNames.nextElement();
                 Long oldTime = (Long)summary.getOperationTimings().get(name);
                 long profileTime =
-                    ((Long)profile.getOperationTimings().get(name)).longValue();
+                        (Long) profile.getOperationTimings().get(name);
                 long newTime;
                 if (oldTime == null) {
                     newTime = profileTime;
                 } else {
-                    newTime = oldTime.longValue() + profileTime;
+                    newTime = oldTime + profileTime;
                 }
-                summary.getOperationTimings().put(name, Long.valueOf(newTime));
+                summary.getOperationTimings().put(name, newTime);
             }
         }
 
@@ -231,14 +231,14 @@ public class ProfileBrowserPanel extends JPanel {
                 String name = (String)operationNames.nextElement();
                 Long oldTime = (Long)summary.getOperationTimings().get(name);
                 long profileTime =
-                    ((Long)profile.getOperationTimings().get(name)).longValue();
+                        (Long) profile.getOperationTimings().get(name);
                 long newTime;
                 if (oldTime == null) {
                     newTime = profileTime;
                 } else {
-                    newTime = oldTime.longValue() + profileTime;
+                    newTime = oldTime + profileTime;
                 }
-                summary.getOperationTimings().put(name, Long.valueOf(newTime));
+                summary.getOperationTimings().put(name, newTime);
             }
         }
 

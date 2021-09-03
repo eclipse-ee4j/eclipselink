@@ -483,10 +483,10 @@ public class Employee implements Serializable {
         }
 
         if (getDesignation().getValue().equals("Executive")) {
-            rank = Integer.valueOf(1);
+            rank = 1;
         }
         if (getDesignation().getValue().equals("Non-Executive")) {
-            rank = Integer.valueOf(2);
+            rank = 2;
         }
         return rank;
     }
@@ -495,15 +495,15 @@ public class Employee implements Serializable {
         if (row.get("ERANK") == null) {
             return null;
         }
-        Integer value = Integer.valueOf(((Number)row.get("ERANK")).intValue());
+        Integer value = ((Number) row.get("ERANK")).intValue();
         String rank = null;
         Employee employee = new Employee();
 
         //(Employee) aSession.readObject(Employee.class);
-        if (value.intValue() == 1) {
+        if (value == 1) {
             rank = new String("Executive");
         }
-        if (value.intValue() == 2) {
+        if (value == 2) {
             rank = new String("Non-Executive");
         }
         return rank;

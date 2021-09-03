@@ -28,7 +28,7 @@ public abstract class _CORBAServerManagerImplBase extends org.omg.CORBA.portable
   private static java.util.Hashtable _methods = new java.util.Hashtable ();
   static
   {
-    _methods.put ("createRemoteSessionController", Integer.valueOf(0));
+    _methods.put ("createRemoteSessionController", 0);
   }
 
   // Type-specific CORBA::Object operations
@@ -54,7 +54,7 @@ public abstract class _CORBAServerManagerImplBase extends org.omg.CORBA.portable
     if (__method == null)
       throw new org.omg.CORBA.BAD_OPERATION (0, org.omg.CORBA.CompletionStatus.COMPLETED_MAYBE);
 
-    switch (__method.intValue ())
+    switch (__method)
     {
        case 0:  // org/eclipse/persistence/testing/Remote/SunCORBA/CORBAServerManager/createRemoteSessionController
        {

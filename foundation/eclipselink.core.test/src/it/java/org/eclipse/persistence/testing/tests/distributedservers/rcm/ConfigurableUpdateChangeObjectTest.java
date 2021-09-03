@@ -63,8 +63,8 @@ public class ConfigurableUpdateChangeObjectTest extends UpdateChangeObjectTest {
                 int cacheSyncType = descriptor.getCacheSynchronizationType();
                 Object newCacheSyncType = cacheSyncConfigValues.get(keyClass);
                 if (newCacheSyncType != null) {
-                    oldCacheSyncConfigValues.put(keyClass, Integer.valueOf(cacheSyncType));
-                    descriptor.setCacheSynchronizationType(((Integer)newCacheSyncType).intValue());
+                    oldCacheSyncConfigValues.put(keyClass, cacheSyncType);
+                    descriptor.setCacheSynchronizationType((Integer) newCacheSyncType);
                 }
             }
         }
@@ -95,7 +95,7 @@ public class ConfigurableUpdateChangeObjectTest extends UpdateChangeObjectTest {
         while (keys.hasMoreElements()) {
             Class keyClass = (Class)keys.nextElement();
             ClassDescriptor descriptor = getSession().getDescriptor(keyClass);
-            int newCacheSyncType = ((Integer)oldCacheSyncConfigValues.get(keyClass)).intValue();
+            int newCacheSyncType = (Integer) oldCacheSyncConfigValues.get(keyClass);
             descriptor.setCacheSynchronizationType(newCacheSyncType);
         }
     }

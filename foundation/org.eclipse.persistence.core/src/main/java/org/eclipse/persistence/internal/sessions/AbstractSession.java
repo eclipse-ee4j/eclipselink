@@ -1344,7 +1344,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         query.setObject(object);
         query.checkDatabaseForDoesExist();
         query.setIsExecutionClone(true);
-        return ((Boolean)executeQuery(query)).booleanValue();
+        return (Boolean) executeQuery(query);
     }
 
     /**
@@ -1534,7 +1534,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         if (value == null) {
             return 0;
         } else {
-            return value.intValue();
+            return value;
         }
     }
 
@@ -2075,8 +2075,8 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                             result = object;
                         } else {
                             if (object instanceof Integer) {
-                                if (((Integer)result).intValue() != 0) {
-                                    if (((Integer)object).intValue() != 0) {
+                                if ((Integer) result != 0) {
+                                    if ((Integer) object != 0) {
                                         result = object;
                                     }
                                 }
@@ -5061,7 +5061,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         if (value == null) {
             return 0;
         } else {
-            return value.intValue();
+            return value;
         }
     }
 

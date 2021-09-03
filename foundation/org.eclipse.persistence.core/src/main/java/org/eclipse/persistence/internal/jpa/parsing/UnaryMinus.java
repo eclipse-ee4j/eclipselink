@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,7 +57,7 @@ public class UnaryMinus extends Node {
      */
     @Override
     public Expression generateExpression(GenerationContext context) {
-        Expression whereClause = new ConstantExpression(Integer.valueOf(0), new ExpressionBuilder());
+        Expression whereClause = new ConstantExpression(0, new ExpressionBuilder());
         whereClause = ExpressionMath.subtract(whereClause, getLeft().generateExpression(context));
         return whereClause;
     }

@@ -169,7 +169,7 @@ public class jiNiTestSet {
         ((DatabaseSession)s).login();
         Vector queryArgs = new NonSynchronizedVector();
         queryArgs.add("test");
-        queryArgs.add(Integer.valueOf(0));
+        queryArgs.add(0);
         boolean worked = false;
         String msg = null;
         try {

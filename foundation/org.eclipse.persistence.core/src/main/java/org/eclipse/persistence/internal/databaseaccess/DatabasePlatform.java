@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -418,7 +418,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * Appends a Boolean value as a number
      */
     protected void appendBoolean(Boolean bool, Writer writer) throws IOException {
-        if (bool.booleanValue()) {
+        if (bool) {
             writer.write("1");
         } else {
             writer.write("0");
@@ -1686,12 +1686,12 @@ public class DatabasePlatform extends DatasourcePlatform {
     public Hashtable maximumNumericValues() {
         Hashtable values = new Hashtable();
 
-        values.put(Integer.class, Integer.valueOf(Integer.MAX_VALUE));
-        values.put(Long.class, Long.valueOf(Long.MAX_VALUE));
-        values.put(Double.class, Double.valueOf(Double.MAX_VALUE));
-        values.put(Short.class, Short.valueOf(Short.MAX_VALUE));
-        values.put(Byte.class, Byte.valueOf(Byte.MAX_VALUE));
-        values.put(Float.class, Float.valueOf(Float.MAX_VALUE));
+        values.put(Integer.class, Integer.MAX_VALUE);
+        values.put(Long.class, Long.MAX_VALUE);
+        values.put(Double.class, Double.MAX_VALUE);
+        values.put(Short.class, Short.MAX_VALUE);
+        values.put(Byte.class, Byte.MAX_VALUE);
+        values.put(Float.class, Float.MAX_VALUE);
         values.put(java.math.BigInteger.class, new java.math.BigInteger("999999999999999999999999999999999999999"));
         values.put(java.math.BigDecimal.class, new java.math.BigDecimal("99999999999999999999.9999999999999999999"));
         return values;
@@ -1705,12 +1705,12 @@ public class DatabasePlatform extends DatasourcePlatform {
     public Hashtable minimumNumericValues() {
         Hashtable values = new Hashtable();
 
-        values.put(Integer.class, Integer.valueOf(Integer.MIN_VALUE));
-        values.put(Long.class, Long.valueOf(Long.MIN_VALUE));
-        values.put(Double.class, Double.valueOf(Double.MIN_VALUE));
-        values.put(Short.class, Short.valueOf(Short.MIN_VALUE));
-        values.put(Byte.class, Byte.valueOf(Byte.MIN_VALUE));
-        values.put(Float.class, Float.valueOf(Float.MIN_VALUE));
+        values.put(Integer.class, Integer.MIN_VALUE);
+        values.put(Long.class, Long.MIN_VALUE);
+        values.put(Double.class, Double.MIN_VALUE);
+        values.put(Short.class, Short.MIN_VALUE);
+        values.put(Byte.class, Byte.MIN_VALUE);
+        values.put(Float.class, Float.MIN_VALUE);
         values.put(java.math.BigInteger.class, new java.math.BigInteger("-99999999999999999999999999999999999999"));
         values.put(java.math.BigDecimal.class, new java.math.BigDecimal("-9999999999999999999.9999999999999999999"));
         return values;
@@ -1759,7 +1759,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         int nBoundParameters = 0;
         writer.write("(");
         for (int i = 0; i < theObjects.length; i++) {
-            nBoundParameters = nBoundParameters + appendParameterInternal(call, writer, Integer.valueOf(theObjects[i]));
+            nBoundParameters = nBoundParameters + appendParameterInternal(call, writer, theObjects[i]);
             if (i < (theObjects.length - 1)) {
                 writer.write(", ");
             }
@@ -2141,7 +2141,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      *  With the value of false, outerjoins are performed in the from clause.
      */
     public void setPrintOuterJoinInWhereClause(boolean printOuterJoinInWhereClause) {
-        this.printOuterJoinInWhereClause = Boolean.valueOf(printOuterJoinInWhereClause);
+        this.printOuterJoinInWhereClause = printOuterJoinInWhereClause;
     }
 
     /**
@@ -2151,7 +2151,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * if false, inner joins are printed in the FROM clause.
      */
     public void setPrintInnerJoinInWhereClause(boolean printInnerJoinInWhereClause) {
-        this.printInnerJoinInWhereClause = Boolean.valueOf(printInnerJoinInWhereClause);
+        this.printInnerJoinInWhereClause = printInnerJoinInWhereClause;
     }
 
     public void setUsesStringBinding(boolean aBool) {
@@ -2585,7 +2585,7 @@ public class DatabasePlatform extends DatasourcePlatform {
             java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), ot.toLocalTime()));
             statement.setTimestamp(index, ts);
         } else if (parameter instanceof Boolean) {
-            statement.setBoolean(index, ((Boolean) parameter).booleanValue());
+            statement.setBoolean(index, (Boolean) parameter);
         } else if (parameter == null) {
             // Normally null is passed as a DatabaseField so the type is included, but in some case may be passed directly.
             statement.setNull(index, getJDBCType((Class)null));
@@ -2690,7 +2690,7 @@ public class DatabasePlatform extends DatasourcePlatform {
             java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), ot.toLocalTime()));
             statement.setTimestamp(name, ts);
         } else if (parameter instanceof Boolean) {
-            statement.setBoolean(name, ((Boolean) parameter).booleanValue());
+            statement.setBoolean(name, (Boolean) parameter);
         } else if (parameter == null) {
             // Normally null is passed as a DatabaseField so the type is included, but in some case may be passed directly.
             statement.setNull(name, getJDBCType((Class)null));

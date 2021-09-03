@@ -178,7 +178,7 @@ public class TestCascadeFlush extends JPA1Base {
             em.persist(existing);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            existing = em.find(CascadingNode.class, Integer.valueOf(existing.getId())); // known object in state managed
+            existing = em.find(CascadingNode.class, existing.getId()); // known object in state managed
             em.persist(parent);
             CascadingNode child = new CascadingNode(existing.getId(), parent);
             child.setParent(null); // to avoid circular cascade
@@ -213,7 +213,7 @@ public class TestCascadeFlush extends JPA1Base {
             em.persist(existing);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            existing = em.find(CascadingNode.class, Integer.valueOf(existing.getId()));
+            existing = em.find(CascadingNode.class, existing.getId());
             em.remove(existing); // known object in state deleted
             em.persist(parent);
             CascadingNode child = new CascadingNode(existing.getId(), parent);
@@ -253,7 +253,7 @@ public class TestCascadeFlush extends JPA1Base {
             env.beginTransaction(em);
             CascadingNode parent = new CascadingNode(32, null);
             em.persist(parent);
-            child = em.find(CascadingNode.class, Integer.valueOf(child.getId()));
+            child = em.find(CascadingNode.class, child.getId());
             em.remove(child);
             parent.addChild(child);
             verify(em.contains(parent), "Parent not contained in persistence context after persist");
@@ -310,7 +310,7 @@ public class TestCascadeFlush extends JPA1Base {
             env.commitTransaction(em);
             em.clear();
             env.beginTransaction(em);
-            em.find(CascadingNode.class, Integer.valueOf(rootId));
+            em.find(CascadingNode.class, rootId);
             env.commitTransaction(em);
         } finally {
             closeEntityManager(em);

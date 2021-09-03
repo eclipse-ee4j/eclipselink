@@ -30,11 +30,11 @@ public class SDODataObjectGetLongConversionByXPathQueryTest extends SDODataObjec
         SDOProperty prop = dataObject_c0.getType().getProperty("test");
         prop.setType(SDOConstants.SDO_LONG);
 
-        Long bb = Long.valueOf(12);
+        Long bb = 12L;
 
         //List b = new ArrayList();
         //dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
-        dataObject_a.setLong(propertyTest + "test", bb.longValue());
+        dataObject_a.setLong(propertyTest + "test", bb);
 
         assertEquals(bb.longValue(), dataObject_a.getLong(propertyTest + "test"));
     }
@@ -44,8 +44,8 @@ public class SDODataObjectGetLongConversionByXPathQueryTest extends SDODataObjec
         SDOProperty property_c1_object = dataObject_c1.getInstanceProperty("PName-c1");
         property_c1_object.setType(SDOConstants.SDO_LONG);
         List objects = new ArrayList();
-        Long b = Long.valueOf(12);
-        Long bb = Long.valueOf(2);
+        Long b = 12L;
+        Long bb = 2L;
         objects.add(b);
         objects.add(bb);
 
@@ -100,9 +100,9 @@ public class SDODataObjectGetLongConversionByXPathQueryTest extends SDODataObjec
 
         type_c0.addDeclaredProperty(property_c1_object);
 
-        Long bb = Long.valueOf(12);
+        Long bb = 12L;
 
-        dataObject_a.setLong("PName-a0/PName-b0[number='1']/PName-c1.0", bb.longValue());
+        dataObject_a.setLong("PName-a0/PName-b0[number='1']/PName-c1.0", bb);
 
         assertEquals(bb.longValue(), dataObject_a.getLong("PName-a0/PName-b0[number='1']/PName-c1.0"));
     }

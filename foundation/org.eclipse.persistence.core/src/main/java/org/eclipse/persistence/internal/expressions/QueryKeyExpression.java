@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -629,21 +629,21 @@ public class QueryKeyExpression extends ObjectExpression {
             }
             QueryKey queryKey = getQueryKeyOrNull();
             if (queryKey != null) {
-                isAttributeExpression = Boolean.valueOf(queryKey.isDirectQueryKey());
+                isAttributeExpression = queryKey.isDirectQueryKey();
             } else {
                 DatabaseMapping mapping = getMapping();
                 if (mapping != null) {
                     if (mapping.isVariableOneToOneMapping()) {
                         throw QueryException.cannotQueryAcrossAVariableOneToOneMapping(mapping, mapping.getDescriptor());
                     } else {
-                        isAttributeExpression = Boolean.valueOf(mapping.isDirectToFieldMapping());
+                        isAttributeExpression = mapping.isDirectToFieldMapping();
                     }
                 } else {
                     isAttributeExpression = Boolean.FALSE;
                 }
             }
         }
-        return isAttributeExpression.booleanValue();
+        return isAttributeExpression;
     }
 
     @Override

@@ -37,7 +37,7 @@ public class DirectToFieldDoubleNanTestCases extends XMLMappingTestCases {
     employee.setFirstName(CONTROL_FIRST_NAME);
     employee.setLastName(CONTROL_LAST_NAME);
     employee.setSalary(CONTROL_SALARY);
-    double doubleValue = CONTROL_SALARY.doubleValue();
+    double doubleValue = CONTROL_SALARY;
 
     return employee;
   }

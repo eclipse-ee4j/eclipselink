@@ -394,7 +394,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
         }
         try {
             Class[] parameters = new Class[]{ClassConstants.PINT, ClassDescriptor.class, AbstractSession.class, boolean.class};
-            Object[] values = new Object[]{Integer.valueOf(size), descriptor, this.session, isIsolated};
+            Object[] values = new Object[]{size, descriptor, this.session, isIsolated};
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 Constructor constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(identityMapClass, parameters, false));
                 IdentityMap map = (IdentityMap)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, values));
@@ -1353,7 +1353,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 CacheKey cacheKey = (CacheKey)cacheKeys.next();
                 parameters[0] = cacheKey.getObject();
                 writer.write(TraceLocalization.buildMessage("locked_object", parameters) + Helper.cr());
-                parameters[0] = Integer.valueOf(cacheKey.getDepth());
+                parameters[0] = cacheKey.getDepth();
                 writer.write(TraceLocalization.buildMessage("depth", parameters) + Helper.cr());
             }
             DeferredLockManager deferredLockManager = ConcurrencyManager.getDeferredLockManager(activeThread);

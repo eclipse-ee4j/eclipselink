@@ -253,7 +253,7 @@ public class SDODataObjectGetDateConversionWithPathTest extends SDODataObjectCon
         property_c.setType(SDOConstants.SDO_INTEGER);
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
-        Integer value = Integer.valueOf(3);
+        Integer value = 3;
         dataObject_c.set(property_c, value);
         try {
             dataObject_a.getDate(propertyPath_a_b_c);

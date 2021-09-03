@@ -93,12 +93,12 @@ public abstract class PerformanceRegressionTestCase extends PerformanceCompariso
         TestResult lastResult = (TestResult)stream.nextElement();
         double lastCount = lastResult.getTestTime();
         PerformanceComparisonTestResult testResult = (PerformanceComparisonTestResult)((TestCase)test).getTestResult();
-        testResult.getBaselineVersionResults().add(Double.valueOf(lastCount));
+        testResult.getBaselineVersionResults().add(lastCount);
         // Average last 5 runs.
         int numberOfRuns = 0;
         while (stream.hasMoreElements() && (numberOfRuns < 4)) {
             TestResult nextResult = (TestResult)stream.nextElement();
-            testResult.getBaselineVersionResults().add(Double.valueOf(nextResult.getTestTime()));
+            testResult.getBaselineVersionResults().add((double) nextResult.getTestTime());
             numberOfRuns++;
         }
         stream.close();
@@ -116,11 +116,11 @@ public abstract class PerformanceRegressionTestCase extends PerformanceCompariso
         query.useCursoredStream(1, 1);
         stream = (CursoredStream)session.executeQuery(query);
         // Average last 5 runs.
-        testResult.getCurrentVersionResults().add(Double.valueOf(currentCount));
+        testResult.getCurrentVersionResults().add(currentCount);
         numberOfRuns = 0;
         while (stream.hasMoreElements() && (numberOfRuns < 4)) {
             TestResult nextResult = (TestResult)stream.nextElement();
-            testResult.getCurrentVersionResults().add(Double.valueOf(nextResult.getTestTime()));
+            testResult.getCurrentVersionResults().add((double) nextResult.getTestTime());
             numberOfRuns++;
         }
         stream.close();

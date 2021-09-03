@@ -57,12 +57,12 @@ public class DirectMapMappingBatchReadTest extends AutoVerifyTestCase {
         // Create a directmapmapping with a few items in it
         UnitOfWork uow = getSession().acquireUnitOfWork();
         DirectMapMappings maps1 = (DirectMapMappings)uow.registerObject(new DirectMapMappings());
-        maps1.directMap.put(Integer.valueOf(1), "guy");
-        maps1.directMap.put(Integer.valueOf(2), "axemen");
+        maps1.directMap.put(1, "guy");
+        maps1.directMap.put(2, "axemen");
 
         DirectMapMappings maps2 = (DirectMapMappings)uow.registerObject(new DirectMapMappings());
-        maps2.directMap.put(Integer.valueOf(1), "steve");
-        maps2.directMap.put(Integer.valueOf(2), "superman");
+        maps2.directMap.put(1, "steve");
+        maps2.directMap.put(2, "superman");
 
         uow.commit();
     }

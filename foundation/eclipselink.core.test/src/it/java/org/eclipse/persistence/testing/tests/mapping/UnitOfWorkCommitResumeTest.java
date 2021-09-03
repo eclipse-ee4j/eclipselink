@@ -104,7 +104,7 @@ public class UnitOfWorkCommitResumeTest extends WriteObjectTest {
         //employee.computer = Computer.example1(employee) ;
         // ObjectTypeMapping - Computer.isMacintosh
         Computer aComputer = (Computer)employee.getComputer();
-        if (aComputer.isMacintosh.booleanValue()) {
+        if (aComputer.isMacintosh) {
             aComputer.notMacintosh();
         } else {
             aComputer.isMacintosh();

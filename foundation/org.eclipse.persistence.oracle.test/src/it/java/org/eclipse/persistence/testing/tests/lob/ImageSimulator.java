@@ -73,7 +73,7 @@ public class ImageSimulator {
         new Random().nextBytes(pictures);
         Byte[] pics = new Byte[cycle];
         for (int x = 0; x < cycle; x++) {
-            pics[x] = Byte.valueOf(pictures[x]);
+            pics[x] = pictures[x];
         }
         return pics;
     }

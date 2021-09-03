@@ -269,7 +269,7 @@ public class PLSQLrecordWithCompatibleTypeOutTestSet  {
         assertTrue("incorrect ENAME" , result.name.equals("GOOFY"));
         assertTrue("incorrect JOB" , result.job.equals("ACTOR"));
         assertNull("MGR is supposed to be null",  result.manager);
-        assertTrue("incorrect SAL" , result.salary.equals(Float.valueOf(6000)));
+        assertTrue("incorrect SAL" , result.salary.equals(6000F));
         assertNull("COMM is supposed to be null", result.commission);
         assertTrue("incorrect DEPTNO" , result.department.equals(new BigDecimal(20)));
         ((DatabaseSession)s).logout();

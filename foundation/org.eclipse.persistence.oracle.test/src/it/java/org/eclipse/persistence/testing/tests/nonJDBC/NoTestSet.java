@@ -161,7 +161,7 @@ public class NoTestSet {
         }
         assertTrue("invocation no failed: " + msg, worked);
         Integer bool2int = (Integer)o;
-        assertTrue("wrong bool2int value", bool2int.intValue() == 1);
+        assertTrue("wrong bool2int value", bool2int == 1);
         ((DatabaseSession)s).logout();
     }
 }

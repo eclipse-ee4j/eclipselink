@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -189,7 +189,7 @@ public class CascadeMetadata extends ORMetadata {
      * Used for OX mapping.
      */
     public boolean isCascadeAll() {
-        return m_cascadeAll != null && m_cascadeAll.booleanValue();
+        return m_cascadeAll != null && m_cascadeAll;
     }
 
     /**
@@ -197,7 +197,7 @@ public class CascadeMetadata extends ORMetadata {
      * Used for OX mapping.
      */
     public boolean isCascadeDetach() {
-        return m_cascadeDetach != null && m_cascadeDetach.booleanValue();
+        return m_cascadeDetach != null && m_cascadeDetach;
     }
 
     /**
@@ -205,7 +205,7 @@ public class CascadeMetadata extends ORMetadata {
      * Used for OX mapping.
      */
     public boolean isCascadeMerge() {
-        return m_cascadeMerge != null && m_cascadeMerge.booleanValue();
+        return m_cascadeMerge != null && m_cascadeMerge;
     }
 
     /**
@@ -213,7 +213,7 @@ public class CascadeMetadata extends ORMetadata {
      * Used for OX mapping.
      */
     public boolean isCascadePersist() {
-        return m_cascadePersist != null && m_cascadePersist.booleanValue();
+        return m_cascadePersist != null && m_cascadePersist;
     }
 
     /**
@@ -221,7 +221,7 @@ public class CascadeMetadata extends ORMetadata {
      * Used for OX mapping.
      */
     public boolean isCascadeRefresh() {
-        return m_cascadeRefresh != null && m_cascadeRefresh.booleanValue();
+        return m_cascadeRefresh != null && m_cascadeRefresh;
     }
 
     /**
@@ -229,7 +229,7 @@ public class CascadeMetadata extends ORMetadata {
      * Used for OX mapping.
      */
     public boolean isCascadeRemove() {
-        return m_cascadeRemove != null && m_cascadeRemove.booleanValue();
+        return m_cascadeRemove != null && m_cascadeRemove;
     }
 
     /**

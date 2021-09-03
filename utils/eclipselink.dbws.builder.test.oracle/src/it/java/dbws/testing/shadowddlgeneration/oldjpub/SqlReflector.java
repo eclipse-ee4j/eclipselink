@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -607,8 +607,8 @@ public class SqlReflector {
                         if (outParams == null) {
                             throw new SQLException("no data from sqljutl.get_typecode call");
                         }
-                        dbTypeCode = ((Integer)outParams[0]).intValue();
-                        kind = ((Integer)outParams[2]).intValue();
+                        dbTypeCode = (Integer) outParams[0];
+                        kind = (Integer) outParams[2];
                     }
                     catch (SQLException exn) {
                         String msg = exn.getMessage();
@@ -993,7 +993,7 @@ public class SqlReflector {
         int pos;
         String annotation;
         boolean isPlsqlIndexTable = false;
-        int maxLen = Integer.valueOf(DEFAULT_VARCHAR_LEN);
+        int maxLen = Integer.parseInt(DEFAULT_VARCHAR_LEN);
         int maxElemLen = -1;
         boolean isNumeric = true;
         if ((pos = javaName.indexOf("[")) >= 0) {
@@ -1025,7 +1025,7 @@ public class SqlReflector {
             }
             javaName = javaName + "[]";
             if (maxElemLen == -1) {
-                maxElemLen = Integer.valueOf(getDefaultTypeLen("VARCHAR2"));
+                maxElemLen = Integer.parseInt(getDefaultTypeLen("VARCHAR2"));
             }
         }
         else {
@@ -1318,7 +1318,7 @@ public class SqlReflector {
             try {
                 String v = m_conn.getMetaData().getDatabaseProductVersion().toUpperCase();
                 if (v.startsWith("ORACLE DATABASE 10G") || v.startsWith("ORACLE DATABASE 11G")) {
-                    m_isPre920 = Boolean.valueOf(false);
+                    m_isPre920 = Boolean.FALSE;
                     return false;
                 }
                 int pos = v.indexOf("ORACLE");
@@ -1331,17 +1331,17 @@ public class SqlReflector {
                     || vp.equals("ORACLE10")
                     || (vp.equals("ORACLE9I") && (v.indexOf("9.2.") > 0 || v.indexOf("9.3.") > 0 || v
                         .indexOf("9.4.") > 0))) {
-                    m_isPre920 = Boolean.valueOf(false);
+                    m_isPre920 = Boolean.FALSE;
                 }
             }
             catch (Exception e) {
                 // Connection is pre 9.2.0
             }
             if (m_isPre920 == null) {
-                m_isPre920 = Boolean.valueOf(true);
+                m_isPre920 = Boolean.TRUE;
             }
         }
-        return m_isPre920.booleanValue();
+        return m_isPre920;
     }
 
     public boolean geqOracle9() {

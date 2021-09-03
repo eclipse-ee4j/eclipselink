@@ -43,7 +43,7 @@ public class EmployeeSeqDeadlockClient2 extends EmployeeSeqDeadlockClient {
                         ((ClientSession)clientSession).getSequencing().getNextValue(SmallProject.class);
                     }
                     if (fifoOut != null) {
-                        fifoOut.insertTail(Integer.valueOf(i));
+                        fifoOut.insertTail(i);
                     }
 
                     //                System.out.println(getName() + " " + i);
@@ -81,7 +81,7 @@ public class EmployeeSeqDeadlockClient2 extends EmployeeSeqDeadlockClient {
         this.server = null;
 
         if (fifoOut != null) {
-            fifoOut.insertTail(Integer.valueOf(-1));
+            fifoOut.insertTail(-1);
         }
     }
 

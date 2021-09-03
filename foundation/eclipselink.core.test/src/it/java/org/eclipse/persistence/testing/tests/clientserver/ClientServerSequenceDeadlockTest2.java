@@ -91,7 +91,7 @@ public class ClientServerSequenceDeadlockTest2 extends ClientServerSequenceDeadl
                     long currentTime = System.currentTimeMillis();
                     if (!fifoArray[i].isEmpty()) {
                         clientLastActionTimeArray[i] = currentTime;
-                        int objectNumber = ((Integer)fifoArray[i].removeHead()).intValue();
+                        int objectNumber = (Integer) fifoArray[i].removeHead();
 
                         //                    System.out.println("Client# = " + i + " object# =  " + objectNumber);
                         if (objectNumber == (numObjects / 2)) {
@@ -102,7 +102,7 @@ public class ClientServerSequenceDeadlockTest2 extends ClientServerSequenceDeadl
                             }
                             if (firstHalfDoneForAll) {
                                 for (int j = 0; j < NUM_CLIENTS; j++) {
-                                    fifoInArray[j].insertTail(Boolean.valueOf(true));
+                                    fifoInArray[j].insertTail(Boolean.TRUE);
                                 }
                             }
                         }

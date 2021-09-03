@@ -402,7 +402,7 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
             m_entityListenerClass = getMetadataFactory().getMetadataClass(m_className);
         }
         JPAEntityListenerHolder holder = new JPAEntityListenerHolder();
-        holder.setIsDefaultListener(Boolean.valueOf(isDefaultListener));
+        holder.setIsDefaultListener(isDefaultListener);
 
         holder.listenerClassName = m_entityListenerClass.getName();
 

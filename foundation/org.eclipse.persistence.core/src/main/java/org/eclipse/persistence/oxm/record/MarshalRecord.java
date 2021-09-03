@@ -528,7 +528,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
             if (null == index) {
                 start = 1;
             } else {
-                start = index.intValue();
+                start = index;
             }
             for (int x = start; x < xPathFragment.getIndexValue(); x++) {
                 element(xPathFragment);

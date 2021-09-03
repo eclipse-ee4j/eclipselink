@@ -36,8 +36,8 @@ public class TranslatedKeyInheritanceTestCase extends org.eclipse.persistence.te
 
         // CREATE A GRASSHOPPER
         GrassHopper grassHopper = new GrassHopper();
-        grassHopper.setIn_numberOfLegs(Integer.valueOf(6));
-        grassHopper.setGh_maximumJump(Integer.valueOf(100));
+        grassHopper.setIn_numberOfLegs(6);
+        grassHopper.setGh_maximumJump(100);
 
         // ADD THE GRASSHOPPER TO THE DATABASE
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -56,7 +56,7 @@ public class TranslatedKeyInheritanceTestCase extends org.eclipse.persistence.te
         // MODIFY THE GRASSHOPPER
         UnitOfWork uow = getSession().acquireUnitOfWork();
         GrassHopper tempGrassHopper = (GrassHopper)uow.registerObject(grassHopper);
-        tempGrassHopper.setGh_maximumJump(Integer.valueOf(150));
+        tempGrassHopper.setGh_maximumJump(150);
         uow.commit();
 
     }

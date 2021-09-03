@@ -59,7 +59,7 @@ public class AnyCollectionWithoutGroupingWithXMLRootTestCases extends XMLMapping
 
         XMLRoot xmlroot2 = new XMLRoot();
 
-        xmlroot2.setObject(Integer.valueOf(15));
+        xmlroot2.setObject(15);
         xmlroot2.setLocalName("theInteger");
         xmlroot2.setSchemaType(XMLConstants.INT_QNAME);
         any.addElement(xmlroot2);

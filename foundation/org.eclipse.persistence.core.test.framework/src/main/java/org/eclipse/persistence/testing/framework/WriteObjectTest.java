@@ -172,7 +172,7 @@ public class WriteObjectTest extends TransactionalTestCase {
     @Override
     public void reset() {
         if (bindAllParametersOriginal != null) {
-            getSession().getLogin().setShouldBindAllParameters(bindAllParametersOriginal.booleanValue());
+            getSession().getLogin().setShouldBindAllParameters(bindAllParametersOriginal);
         }
         super.reset();
     }
@@ -209,14 +209,14 @@ public class WriteObjectTest extends TransactionalTestCase {
      * run much slower than before.
      */
     public void setShouldBindAllParameters(boolean value) {
-        bindAllParameters = Boolean.valueOf(value);
+        bindAllParameters = value;
     }
 
     @Override
     protected void setup() {
         if (shouldBindAllParameters() != null) {
-            bindAllParametersOriginal = Boolean.valueOf(getSession().getLogin().shouldBindAllParameters());
-            getSession().getLogin().setShouldBindAllParameters(shouldBindAllParameters().booleanValue());
+            bindAllParametersOriginal = getSession().getLogin().shouldBindAllParameters();
+            getSession().getLogin().setShouldBindAllParameters(shouldBindAllParameters());
         }
         super.setup();
 

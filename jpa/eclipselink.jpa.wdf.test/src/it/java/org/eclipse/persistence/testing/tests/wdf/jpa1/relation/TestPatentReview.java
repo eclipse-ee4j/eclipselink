@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -47,7 +47,7 @@ public class TestPatentReview extends JPA1Base {
             em.persist(patent);
             em.persist(patentReview);
             env.commitTransactionAndClear(em);
-            Object found = em.find(PatentReview.class, Integer.valueOf(17));
+            Object found = em.find(PatentReview.class, 17);
             verify(found != null, "nothing found");
             verify(found instanceof PatentReview, "wrong instance: " + found.getClass().getName());
             PatentReview review = (PatentReview) found;

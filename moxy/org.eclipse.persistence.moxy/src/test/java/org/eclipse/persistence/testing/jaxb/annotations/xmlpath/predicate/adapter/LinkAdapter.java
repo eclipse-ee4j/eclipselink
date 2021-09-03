@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,8 +45,8 @@ public class LinkAdapter extends XmlAdapter<String, Object> {
             return a;
         } else {
             PhoneNumber p = new PhoneNumber();
-            p.setAreaCode(Integer.valueOf(arg0.substring(0, 3)));
-            p.setNumber(Integer.valueOf(arg0.substring(3)));
+            p.setAreaCode(Integer.parseInt(arg0.substring(0, 3)));
+            p.setNumber(Integer.parseInt(arg0.substring(3)));
             return p;
         }
     }

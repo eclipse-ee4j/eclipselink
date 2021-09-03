@@ -34,7 +34,7 @@ public class Employee implements CycleRecoverable {
 
         if (id < 1000) {
             // Return an object of a built-in Java type
-            return Integer.valueOf(this.id);
+            return this.id;
         } else {
             // Return an object of a diffenet type (one that is known to this context)
             EmployeePointer p = new EmployeePointer();

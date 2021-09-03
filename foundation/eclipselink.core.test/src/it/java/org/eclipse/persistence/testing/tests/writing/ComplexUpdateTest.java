@@ -52,7 +52,7 @@ public class ComplexUpdateTest extends WriteObjectTest {
 
     @Override
     public String getName() {
-        return super.getName() + Boolean.valueOf(usesUnitOfWork) + Boolean.valueOf(usesNestedUnitOfWork);
+        return super.getName() + usesUnitOfWork + usesNestedUnitOfWork;
     }
 
     @Override

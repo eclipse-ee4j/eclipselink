@@ -47,7 +47,7 @@ public class EmployeeWithByteArrayObject {
         byte[] bytes = MyAttachmentUnmarshaller.PHOTO_BASE64.getBytes();
         Byte[] objectBytes = new Byte[bytes.length];
         for (int index = 0; index < bytes.length; index++) {
-            objectBytes[index] = Byte.valueOf(bytes[index]);
+            objectBytes[index] = bytes[index];
         }
         photos.addElement(objectBytes);
         photos.addElement(objectBytes);

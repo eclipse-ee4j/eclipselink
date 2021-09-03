@@ -157,7 +157,7 @@ public class Ni6TestSet {
         s.dontLogMessages();
         ((DatabaseSession)s).login();
         Vector queryArgs = new NonSynchronizedVector();
-        queryArgs.add(Integer.valueOf(6));
+        queryArgs.add(6);
         boolean worked = false;
         String msg = null;
         try {

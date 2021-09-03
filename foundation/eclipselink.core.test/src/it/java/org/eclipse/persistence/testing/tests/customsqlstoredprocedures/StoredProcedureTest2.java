@@ -55,7 +55,7 @@ public class StoredProcedureTest2 extends TestCase {
         query.addArgument("P_ID");
 
         Vector args = new Vector(1);
-        args.addElement(Integer.valueOf(id));
+        args.addElement(id);
 
         row = (DatabaseRecord)((Vector)getSession().executeQuery(query, args)).firstElement();
     }

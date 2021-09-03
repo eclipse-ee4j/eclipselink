@@ -42,7 +42,7 @@ public class CacheHitAndInMemoryTestSuite extends TestSuite {
         addTest(new CacheHitTest(manager.getObject(Shipment.class, "example1")));
 
         Order order = (Order)((Shipment)org.eclipse.persistence.testing.models.legacy.Employee.example1().shipments.elementAt(0)).orders.elementAt(0);
-        order.shipment.shipmentNumber = Integer.valueOf(order.shipment.shipmentNumber.intValue());
+        order.shipment.shipmentNumber = order.shipment.shipmentNumber.intValue();
         addTest(new CacheHitTest(order));
 
         org.eclipse.persistence.testing.models.legacy.Employee employee = (org.eclipse.persistence.testing.models.legacy.Employee)manager.getObject(org.eclipse.persistence.testing.models.legacy.Employee.class, "example1");
@@ -139,7 +139,7 @@ public class CacheHitAndInMemoryTestSuite extends TestSuite {
 
         builder = new ExpressionBuilder();
         Vector ids = new Vector();
-        ids.addElement(Long.valueOf(123456789));
+        ids.addElement(123456789L);
         ids.addElement(example.getId());
         query = new ReadObjectQuery(Employee.class, builder.get("id").in(ids));
         test = new InMemoryCacheHitTest(query);

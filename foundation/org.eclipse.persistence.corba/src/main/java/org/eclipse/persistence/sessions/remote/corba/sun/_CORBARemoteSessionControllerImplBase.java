@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,40 +32,40 @@ public abstract class _CORBARemoteSessionControllerImplBase extends org.omg.CORB
     private static final Hashtable<String, Integer> _methods = new Hashtable<>();
 
     static {
-        _methods.put("getLogin", Integer.valueOf(2));
-        _methods.put("scrollableCursorCurrentIndex", Integer.valueOf(5));
-        _methods.put("commitRootUnitOfWork", Integer.valueOf(6));
-        _methods.put("scrollableCursorAbsolute", Integer.valueOf(8));
-        _methods.put("cursoredStreamNextPage", Integer.valueOf(10));
-        _methods.put("executeQuery", Integer.valueOf(14));
-        _methods.put("scrollableCursorFirst", Integer.valueOf(15));
-        _methods.put("scrollableCursorAfterLast", Integer.valueOf(18));
-        _methods.put("cursoredStreamClose", Integer.valueOf(19));
-        _methods.put("getSequenceNumberNamed", Integer.valueOf(22));
-        _methods.put("scrollableCursorClose", Integer.valueOf(24));
-        _methods.put("processCommand", Integer.valueOf(25));
-        _methods.put("cursorSelectObjects", Integer.valueOf(27));
-        _methods.put("scrollableCursorLast", Integer.valueOf(29));
-        _methods.put("executeNamedQuery", Integer.valueOf(31));
-        _methods.put("scrollableCursorBeforeFirst", Integer.valueOf(33));
-        _methods.put("scrollableCursorIsBeforeFirst", Integer.valueOf(34));
-        _methods.put("beginTransaction", Integer.valueOf(35));
-        _methods.put("initializeIdentityMapsOnServerSession", Integer.valueOf(36));
-        _methods.put("scrollableCursorIsLast", Integer.valueOf(37));
-        _methods.put("scrollableCursorSize", Integer.valueOf(38));
-        _methods.put("scrollableCursorIsFirst", Integer.valueOf(39));
-        _methods.put("getDescriptor", Integer.valueOf(40));
-        _methods.put("cursoredStreamSize", Integer.valueOf(41));
-        _methods.put("scrollableCursorRelative", Integer.valueOf(42));
-        _methods.put("commitTransaction", Integer.valueOf(45));
-        _methods.put("rollbackTransaction", Integer.valueOf(47));
-        _methods.put("instantiateRemoteValueHolderOnServer", Integer.valueOf(52));
-        _methods.put("scrollableCursorNextObject", Integer.valueOf(53));
-        _methods.put("scrollableCursorIsAfterLast", Integer.valueOf(54));
-        _methods.put("getDefaultReadOnlyClasses", Integer.valueOf(56));
-        _methods.put("scrollableCursorPreviousObject", Integer.valueOf(57));
-        _methods.put("getDescriptorForAlias", Integer.valueOf(58));
-        _methods.put("beginEarlyTransaction", Integer.valueOf(59));
+        _methods.put("getLogin", 2);
+        _methods.put("scrollableCursorCurrentIndex", 5);
+        _methods.put("commitRootUnitOfWork", 6);
+        _methods.put("scrollableCursorAbsolute", 8);
+        _methods.put("cursoredStreamNextPage", 10);
+        _methods.put("executeQuery", 14);
+        _methods.put("scrollableCursorFirst", 15);
+        _methods.put("scrollableCursorAfterLast", 18);
+        _methods.put("cursoredStreamClose", 19);
+        _methods.put("getSequenceNumberNamed", 22);
+        _methods.put("scrollableCursorClose", 24);
+        _methods.put("processCommand", 25);
+        _methods.put("cursorSelectObjects", 27);
+        _methods.put("scrollableCursorLast", 29);
+        _methods.put("executeNamedQuery", 31);
+        _methods.put("scrollableCursorBeforeFirst", 33);
+        _methods.put("scrollableCursorIsBeforeFirst", 34);
+        _methods.put("beginTransaction", 35);
+        _methods.put("initializeIdentityMapsOnServerSession", 36);
+        _methods.put("scrollableCursorIsLast", 37);
+        _methods.put("scrollableCursorSize", 38);
+        _methods.put("scrollableCursorIsFirst", 39);
+        _methods.put("getDescriptor", 40);
+        _methods.put("cursoredStreamSize", 41);
+        _methods.put("scrollableCursorRelative", 42);
+        _methods.put("commitTransaction", 45);
+        _methods.put("rollbackTransaction", 47);
+        _methods.put("instantiateRemoteValueHolderOnServer", 52);
+        _methods.put("scrollableCursorNextObject", 53);
+        _methods.put("scrollableCursorIsAfterLast", 54);
+        _methods.put("getDefaultReadOnlyClasses", 56);
+        _methods.put("scrollableCursorPreviousObject", 57);
+        _methods.put("getDescriptorForAlias", 58);
+        _methods.put("beginEarlyTransaction", 59);
     }
 
     @Override

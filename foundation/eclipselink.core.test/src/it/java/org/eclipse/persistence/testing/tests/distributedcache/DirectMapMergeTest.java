@@ -27,7 +27,7 @@ public class DirectMapMergeTest extends DistributedCacheMergeTest {
 
     @Override
     protected void modifyCollection(UnitOfWork uow, Object objectToModify) {
-        ((DirectMapMappings)objectToModify).directMap.put(Integer.valueOf(11), newItemForCollection());
+        ((DirectMapMappings)objectToModify).directMap.put(11, newItemForCollection());
     }
 
     @Override
