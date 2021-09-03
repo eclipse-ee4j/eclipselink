@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -20,7 +20,6 @@ HELP_PLUGIN='org.apache.maven.plugins:maven-help-plugin:3.1.0'
 # $5 -  OVERWRITE_STAGING           - Allows to overwrite existing version in OSSRH (Jakarta) staging repositories
 
 echo '-[ EclipseLink Release ]-----------------------------------------------------------'
-. /etc/profile
 
 ECLIPSELINK_VERSION="${1}"
 NEXT_ECLIPSELINK_VERSION="${2}"
