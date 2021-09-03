@@ -158,7 +158,7 @@ public class Ni8TestSet {
         s.dontLogMessages();
         ((DatabaseSession)s).login();
         Vector queryArgs = new NonSynchronizedVector();
-        queryArgs.add(Integer.valueOf(8));
+        queryArgs.add(8);
         boolean worked = false;
         String msg = null;
         try {
@@ -171,7 +171,7 @@ public class Ni8TestSet {
         assertTrue("invocation positive_in_test failed: " + msg, worked);
         // test data range: negative number should NOT work
         queryArgs = new NonSynchronizedVector();
-        queryArgs.add(Integer.valueOf(-1));
+        queryArgs.add(-1);
         worked = false;
         msg = null;
         try {

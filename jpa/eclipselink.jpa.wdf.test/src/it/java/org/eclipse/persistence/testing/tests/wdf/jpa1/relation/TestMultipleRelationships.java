@@ -37,7 +37,7 @@ import org.junit.Test;
 public class TestMultipleRelationships extends JPA1Base {
     private static final int HANS_ID_VALUE = 1;
     private static final int FRED_ID_VALUE = 2;
-    private static final Integer HANS_ID = Integer.valueOf(HANS_ID_VALUE);
+    private static final Integer HANS_ID = HANS_ID_VALUE;
     private static final Project PUHLEN = new Project("G\u00fcrteltiere puhlen");
     private static final Project PINSELN = new Project("B\u00e4uche pinseln");
     private static final Project FALTEN = new Project("Zitronen falten");

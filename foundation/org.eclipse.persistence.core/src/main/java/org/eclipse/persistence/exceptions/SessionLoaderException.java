@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -102,7 +102,7 @@ public class SessionLoaderException extends EclipseLinkException {
     }
 
     public static SessionLoaderException finalException(Vector exceptionList) {
-        Object[] args = { Integer.valueOf(exceptionList.size()) };
+        Object[] args = {exceptionList.size()};
 
         SessionLoaderException sessionLoaderException = new SessionLoaderException(ExceptionMessageGenerator.buildMessage(SessionLoaderException.class, FINAL_EXCEPTION, args));
         sessionLoaderException.setErrorCode(FINAL_EXCEPTION);
@@ -112,7 +112,7 @@ public class SessionLoaderException extends EclipseLinkException {
 
     //CR4142
     public static SessionLoaderException failedToParseXML(String message, int lineNumber, int columnNumber, Throwable exception) {
-        Object[] args = { message, Integer.valueOf(lineNumber), Integer.valueOf(columnNumber) };
+        Object[] args = { message, lineNumber, columnNumber};
 
         SessionLoaderException sessionLoaderException = new SessionLoaderException(ExceptionMessageGenerator.buildMessage(SessionLoaderException.class, UNABLE_TO_PARSE_XML, args), exception);
         sessionLoaderException.setErrorCode(UNABLE_TO_PARSE_XML);

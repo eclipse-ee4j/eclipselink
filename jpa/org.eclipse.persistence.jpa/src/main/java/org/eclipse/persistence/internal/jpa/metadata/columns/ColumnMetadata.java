@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -134,10 +134,10 @@ public class ColumnMetadata extends DirectColumnMetadata {
     @Override
     public DatabaseField getDatabaseField() {
         DatabaseField field = super.getDatabaseField();
-        field.setUnique(m_unique == null ? false : m_unique.booleanValue());
-        field.setScale(m_scale == null ? 0 : m_scale.intValue());
-        field.setLength(m_length == null ? 0 : m_length.intValue());
-        field.setPrecision(m_precision == null ? 0 : m_precision.intValue());
+        field.setUnique(m_unique == null ? false : m_unique);
+        field.setScale(m_scale == null ? 0 : m_scale);
+        field.setLength(m_length == null ? 0 : m_length);
+        field.setPrecision(m_precision == null ? 0 : m_precision);
         field.setTableName(m_table == null ? "" : m_table);
         return field;
     }

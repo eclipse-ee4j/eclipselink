@@ -31,7 +31,7 @@ public class TestUpdateAggregateDirectMapMapping extends TestReadAggregateDirect
         holder.removeAggregateToDirectMapItem(mapKey);
         mapKey = new AggregateMapKey();
         mapKey.setKey(3);
-        holder.addAggregateToDirectMapItem(mapKey, Integer.valueOf(3));
+        holder.addAggregateToDirectMapItem(mapKey, 3);
         uow.commit();
         Object holderForComparison = uow.readObject(holder);
         if (!compareObjects(holder, holderForComparison)){
@@ -57,7 +57,7 @@ public class TestUpdateAggregateDirectMapMapping extends TestReadAggregateDirect
         mapKey = new AggregateMapKey();
         mapKey.setKey(3);
         Integer value = (Integer)holder.getAggregateToDirectMap().get(mapKey);
-        if (value.intValue() != 3){
+        if (value != 3){
             throw new TestErrorException("Item was not correctly added to map");
         }
     }

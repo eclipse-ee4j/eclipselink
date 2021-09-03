@@ -179,10 +179,10 @@ public class SDODataObjectGetBooleanConversionWithPathTest extends SDODataObject
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
 
-        Float s = Float.valueOf(0);
+        Float s = (float) 0;
 
         //Short c = Short.valueOf(s);
-        dataObject_a.setFloat(property, s.floatValue());// c dataobject's a property has value boolean 'true'
+        dataObject_a.setFloat(property, s);// c dataobject's a property has value boolean 'true'
 
         assertEquals(false, dataObject_a.getBoolean(property));
 

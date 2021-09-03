@@ -114,9 +114,9 @@ public class MapPopulator {
     public AggregateDirectMapHolder getAggregateDirectMapHolder(){
         AggregateDirectMapHolder holder = new AggregateDirectMapHolder();
         AggregateMapKey mapKey = getAggregateMapKey1();
-        holder.addAggregateToDirectMapItem(mapKey, Integer.valueOf(1));
+        holder.addAggregateToDirectMapItem(mapKey, 1);
         AggregateMapKey mapKey2 = getAggregateMapKey2();
-        holder.addAggregateToDirectMapItem(mapKey2, Integer.valueOf(2));
+        holder.addAggregateToDirectMapItem(mapKey2, 2);
         return holder;
     }
 
@@ -161,16 +161,16 @@ public class MapPopulator {
     public DirectAggregateMapHolder getDirectAggregateMapHolder(){
         DirectAggregateMapHolder holder = new DirectAggregateMapHolder();
         AggregateMapValue value = getAggregateMapValue1();
-        holder.addDirectToAggregateMapItem(Integer.valueOf(1), value);
+        holder.addDirectToAggregateMapItem(1, value);
         value = getAggregateMapValue2();
-        holder.addDirectToAggregateMapItem(Integer.valueOf(2), value);
+        holder.addDirectToAggregateMapItem(2, value);
         return holder;
     }
 
     public DirectDirectMapHolder getDirectDirectMapHolder(){
         DirectDirectMapHolder holder = new DirectDirectMapHolder();
-        holder.addDirectToDirectMapItem(Integer.valueOf(1), Integer.valueOf(1));
-        holder.addDirectToDirectMapItem(Integer.valueOf(2), Integer.valueOf(2));
+        holder.addDirectToDirectMapItem(1, 1);
+        holder.addDirectToDirectMapItem(2, 2);
         return holder;
     }
 
@@ -178,31 +178,31 @@ public class MapPopulator {
         DirectEntity1MMapHolder initialHolder = new DirectEntity1MMapHolder();
         DEOTMMapValue value = getDEOTMMapValue1();
         value.getHolder().setValue(initialHolder);
-        initialHolder.addDirectToEntityMapItem(Integer.valueOf(11), value);
+        initialHolder.addDirectToEntityMapItem(11, value);
 
         DEOTMMapValue value2 = getDEOTMMapValue2();
         value2.getHolder().setValue(initialHolder);
-        initialHolder.addDirectToEntityMapItem(Integer.valueOf(22), value2);
+        initialHolder.addDirectToEntityMapItem(22, value2);
         return initialHolder;
     }
 
     public DirectEntityMapHolder getDirectEntityMapHolder(){
         DirectEntityMapHolder holder = new DirectEntityMapHolder();
         EntityMapValue value = getEntityMapValue1();
-        holder.addDirectToEntityMapItem(Integer.valueOf(11), value);
+        holder.addDirectToEntityMapItem(11, value);
 
         EntityMapValue value2 = getEntityMapValue2();
-        holder.addDirectToEntityMapItem(Integer.valueOf(22), value2);
+        holder.addDirectToEntityMapItem(22, value2);
         return holder;
     }
 
     public DirectEntityU1MMapHolder getDirectEntityU1MMapHolder(){
         DirectEntityU1MMapHolder holder = new DirectEntityU1MMapHolder();
         EntityMapValue value = getEntityMapValue3();
-        holder.addDirectToEntityMapItem(Integer.valueOf(11), value);
+        holder.addDirectToEntityMapItem(11, value);
 
         EntityMapValue value2 = getEntityMapValue4();
-        holder.addDirectToEntityMapItem(Integer.valueOf(22), value2);
+        holder.addDirectToEntityMapItem(22, value2);
         return holder;
     }
 
@@ -220,9 +220,9 @@ public class MapPopulator {
     public EntityDirectMapHolder getEntityDirectMapHolder(){
         EntityDirectMapHolder holder = new EntityDirectMapHolder();
         EntityMapKey mapKey = getEntityMapKey3();
-        holder.addEntityDirectMapItem(mapKey, Integer.valueOf(1));
+        holder.addEntityDirectMapItem(mapKey, 1);
         EntityMapKey mapKey2 = getEntityMapKey4();
-        holder.addEntityDirectMapItem(mapKey2, Integer.valueOf(2));
+        holder.addEntityDirectMapItem(mapKey2, 2);
         return holder;
     }
 

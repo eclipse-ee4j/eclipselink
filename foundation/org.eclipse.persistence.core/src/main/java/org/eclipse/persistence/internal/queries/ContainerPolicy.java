@@ -694,7 +694,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
             }
             Object[] arguments = new Object[1];
             //Code change for 3732.  No longer need to add 1 as this was for JDK 1.1
-            arguments[0] = Integer.valueOf(initialCapacity);
+            arguments[0] = initialCapacity;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
                     return AccessController.doPrivileged(new PrivilegedInvokeConstructor(this.constructor, arguments));

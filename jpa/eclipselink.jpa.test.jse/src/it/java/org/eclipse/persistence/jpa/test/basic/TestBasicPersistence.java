@@ -89,7 +89,7 @@ public class TestBasicPersistence {
         String rmiPortProp = System.getProperty("rmi.port");
         if (!(rmiPortProp == null || rmiPortProp.isEmpty())) {
             try {
-                rmiPortVal = Integer.valueOf(rmiPortProp);
+                rmiPortVal = Integer.parseInt(rmiPortProp);
             } catch (NumberFormatException nfe) {
                 // Use default value.
             }

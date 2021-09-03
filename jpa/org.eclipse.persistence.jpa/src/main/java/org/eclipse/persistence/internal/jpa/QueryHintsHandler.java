@@ -197,7 +197,7 @@ public class QueryHintsHandler {
         if (hint == null) {
             return false;
         } else {
-            return Boolean.valueOf(hint.toString());
+            return Boolean.parseBoolean(hint.toString());
         }
     }
 
@@ -662,7 +662,7 @@ public class QueryHintsHandler {
         @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
-                int cacheUsage = ((Integer)valueToApply).intValue();
+                int cacheUsage = (Integer) valueToApply;
                 ((ObjectLevelReadQuery)query).setCacheUsage(cacheUsage);
                 if (cacheUsage == ObjectLevelReadQuery.CheckCacheByExactPrimaryKey
                         || cacheUsage == ObjectLevelReadQuery.CheckCacheByPrimaryKey
@@ -672,7 +672,7 @@ public class QueryHintsHandler {
                     return newQuery;
                 }
             } else if (query.isModifyAllQuery()) {
-                int cacheUsage = ((Integer)valueToApply).intValue();
+                int cacheUsage = (Integer) valueToApply;
                 ((ModifyAllQuery)query).setCacheUsage(cacheUsage);
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
@@ -699,10 +699,10 @@ public class QueryHintsHandler {
             if (query.isDataReadQuery()) {
                 DataModifyQuery newQuery = new DataModifyQuery();
                 newQuery.copyFromQuery(query);
-                newQuery.setIsBatchExecutionSupported(((Boolean)valueToApply).booleanValue());
+                newQuery.setIsBatchExecutionSupported((Boolean) valueToApply);
                 return newQuery;
             } else if (query.isModifyQuery()) {
-                ((ModifyQuery)query).setIsBatchExecutionSupported(((Boolean)valueToApply).booleanValue());
+                ((ModifyQuery)query).setIsBatchExecutionSupported((Boolean) valueToApply);
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }
@@ -788,7 +788,7 @@ public class QueryHintsHandler {
         @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectBuildingQuery()) {
-                ((ObjectBuildingQuery)query).setLockMode(((Short)valueToApply).shortValue());
+                ((ObjectBuildingQuery)query).setLockMode((Short) valueToApply);
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }
@@ -868,7 +868,7 @@ public class QueryHintsHandler {
         @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectBuildingQuery()) {
-                ((ObjectBuildingQuery)query).setShouldRefreshIdentityMapResult(((Boolean)valueToApply).booleanValue());
+                ((ObjectBuildingQuery)query).setShouldRefreshIdentityMapResult((Boolean) valueToApply);
                 // Set default cascade to be by mapping.
                 if (!query.shouldCascadeParts()) {
                     query.cascadeByMapping();
@@ -1016,7 +1016,7 @@ public class QueryHintsHandler {
         @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectBuildingQuery()) {
-                ((ObjectBuildingQuery)query).setShouldUseExclusiveConnection(((Boolean)valueToApply).booleanValue());
+                ((ObjectBuildingQuery)query).setShouldUseExclusiveConnection((Boolean) valueToApply);
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }
@@ -1036,7 +1036,7 @@ public class QueryHintsHandler {
         @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
-                ((ObjectLevelReadQuery)query).setShouldOuterJoinSubclasses(((Boolean)valueToApply).booleanValue());
+                ((ObjectLevelReadQuery)query).setShouldOuterJoinSubclasses((Boolean) valueToApply);
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }
@@ -1056,7 +1056,7 @@ public class QueryHintsHandler {
         @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
-                ((ObjectLevelReadQuery)query).setShouldUseDefaultFetchGroup(((Boolean)valueToApply).booleanValue());
+                ((ObjectLevelReadQuery)query).setShouldUseDefaultFetchGroup((Boolean) valueToApply);
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }
@@ -1269,7 +1269,7 @@ public class QueryHintsHandler {
         @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isReadQuery()) {
-                if (((Boolean)valueToApply).booleanValue()) {
+                if ((Boolean) valueToApply) {
                     if (((ReadQuery)query).getQueryResultsCachePolicy() == null) {
                         ((ReadQuery)query).cacheQueryResults();
                     }
@@ -1300,7 +1300,7 @@ public class QueryHintsHandler {
                 if (((ReadQuery)query).getQueryResultsCachePolicy() == null) {
                     ((ReadQuery)query).cacheQueryResults();
                 }
-                ((ReadQuery)query).getQueryResultsCachePolicy().setIsNullIgnored(((Boolean)valueToApply).booleanValue());
+                ((ReadQuery)query).getQueryResultsCachePolicy().setIsNullIgnored((Boolean) valueToApply);
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }
@@ -1327,7 +1327,7 @@ public class QueryHintsHandler {
                 if (((ReadQuery)query).getQueryResultsCachePolicy() == null) {
                     ((ReadQuery)query).cacheQueryResults();
                 }
-                ((ReadQuery)query).getQueryResultsCachePolicy().setInvalidateOnChange(((Boolean)valueToApply).booleanValue());
+                ((ReadQuery)query).getQueryResultsCachePolicy().setInvalidateOnChange((Boolean) valueToApply);
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }
@@ -1357,7 +1357,7 @@ public class QueryHintsHandler {
                 if (((ReadQuery)query).getQueryResultsCachePolicy().getCacheInvalidationPolicy() == null) {
                     ((ReadQuery)query).getQueryResultsCachePolicy().setCacheInvalidationPolicy(new TimeToLiveCacheInvalidationPolicy());
                 }
-                ((ReadQuery)query).getQueryResultsCachePolicy().getCacheInvalidationPolicy().setIsInvalidationRandomized(((Boolean)valueToApply).booleanValue());
+                ((ReadQuery)query).getQueryResultsCachePolicy().getCacheInvalidationPolicy().setIsInvalidationRandomized((Boolean) valueToApply);
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }
@@ -1696,7 +1696,7 @@ public class QueryHintsHandler {
         @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
-                ((ObjectLevelReadQuery)query).setIsReadOnly(((Boolean)valueToApply).booleanValue());
+                ((ObjectLevelReadQuery)query).setIsReadOnly((Boolean) valueToApply);
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }
@@ -1715,7 +1715,7 @@ public class QueryHintsHandler {
 
         @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
-            query.setIsNativeConnectionRequired(((Boolean)valueToApply).booleanValue());
+            query.setIsNativeConnectionRequired((Boolean) valueToApply);
             return query;
         }
     }
@@ -1731,7 +1731,7 @@ public class QueryHintsHandler {
 
         @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
-            if (!((Boolean)valueToApply).booleanValue()) {
+            if (!(Boolean) valueToApply) {
                 if (query.isReadAllQuery()) {
                     if (((ReadAllQuery) query).getContainerPolicy().isCursoredStreamPolicy()) {
                         ((ReadAllQuery) query).setContainerPolicy(ContainerPolicy.buildDefaultPolicy());
@@ -1847,7 +1847,7 @@ public class QueryHintsHandler {
 
         @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
-            if (!((Boolean)valueToApply).booleanValue()) {
+            if (!(Boolean) valueToApply) {
                 if (query.isReadAllQuery()) {
                     if (((ReadAllQuery) query).getContainerPolicy().isScrollableCursorPolicy()) {
                         ((ReadAllQuery) query).setContainerPolicy(ContainerPolicy.buildDefaultPolicy());
@@ -1886,7 +1886,7 @@ public class QueryHintsHandler {
 
         @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
-            query.setShouldMaintainCache(((Boolean)valueToApply).booleanValue());
+            query.setShouldMaintainCache((Boolean) valueToApply);
             return query;
         }
     }
@@ -1902,7 +1902,7 @@ public class QueryHintsHandler {
 
         @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
-            query.setShouldPrepare(((Boolean)valueToApply).booleanValue());
+            query.setShouldPrepare((Boolean) valueToApply);
             return query;
         }
     }
@@ -1918,7 +1918,7 @@ public class QueryHintsHandler {
 
         @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
-            query.setShouldCacheStatement(((Boolean)valueToApply).booleanValue());
+            query.setShouldCacheStatement((Boolean) valueToApply);
             return query;
         }
     }

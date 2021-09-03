@@ -282,10 +282,10 @@ public class InsuranceProject extends org.eclipse.persistence.sessions.Project {
 
         // Inheritance properties.
         descriptor.getDescriptorInheritancePolicy().setClassIndicatorFieldName("POLICY.POL_TYPE");
-        descriptor.getDescriptorInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.insurance.HousePolicy.class, Long.valueOf(3));
-        descriptor.getDescriptorInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.insurance.HealthPolicy.class, Long.valueOf(2));
-        descriptor.getDescriptorInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.insurance.VehiclePolicy.class, Long.valueOf(1));
-        descriptor.getDescriptorInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.insurance.BicyclePolicy.class, Long.valueOf(0));
+        descriptor.getDescriptorInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.insurance.HousePolicy.class, 3L);
+        descriptor.getDescriptorInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.insurance.HealthPolicy.class, 2L);
+        descriptor.getDescriptorInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.insurance.VehiclePolicy.class, 1L);
+        descriptor.getDescriptorInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.insurance.BicyclePolicy.class, 0L);
 
         // Mappings.
         DirectToFieldMapping policyNumberMapping = new DirectToFieldMapping();
@@ -381,8 +381,8 @@ public class InsuranceProject extends org.eclipse.persistence.sessions.Project {
         sexMapping.setSetMethodName("setSex");
         sexMapping.setFieldName("HOLDER.SEX");
         ObjectTypeConverter sexConverter = new ObjectTypeConverter();
-        sexConverter.addConversionValue(Character.valueOf('F'), "Female");
-        sexConverter.addConversionValue(Character.valueOf('M'), "Male");
+        sexConverter.addConversionValue('F', "Female");
+        sexConverter.addConversionValue('M', "Male");
         sexMapping.setConverter(sexConverter);
         descriptor.addMapping(sexMapping);
 

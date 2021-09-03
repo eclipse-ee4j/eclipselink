@@ -50,8 +50,8 @@ public class SDODataObjectGetByteConversionByXPathQueryTest extends SDODataObjec
         List objects = new ArrayList();
         byte by = 12;
         byte by1 = 1;
-        Byte b = Byte.valueOf(by);
-        Byte bb = Byte.valueOf(by1);
+        Byte b = by;
+        Byte bb = by1;
         objects.add(b);
         objects.add(bb);
 
@@ -109,7 +109,7 @@ public class SDODataObjectGetByteConversionByXPathQueryTest extends SDODataObjec
         type_c0.addDeclaredProperty(property_c1_object);
 
         byte by = 12;
-        Byte b = Byte.valueOf(by);
+        Byte b = by;
 
         dataObject_a.set("PName-a0/PName-b0[number='1']/PName-c1.0", b);
 

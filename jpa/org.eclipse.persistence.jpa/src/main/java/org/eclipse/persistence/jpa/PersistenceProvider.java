@@ -469,11 +469,11 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
                 if (setup.isDeployed()){
                     Boolean isLoaded = EntityManagerFactoryImpl.isLoaded(entity, setup.getSession());
                     if (isLoaded != null){
-                        if (isLoaded.booleanValue() && attributeName != null){
+                        if (isLoaded && attributeName != null){
                             isLoaded = EntityManagerFactoryImpl.isLoaded(entity, attributeName, setup.getSession());
                         }
                         if (isLoaded != null){
-                            return isLoaded.booleanValue() ? LoadState.LOADED : LoadState.NOT_LOADED;
+                            return isLoaded ? LoadState.LOADED : LoadState.NOT_LOADED;
                         }
                     }
                 }

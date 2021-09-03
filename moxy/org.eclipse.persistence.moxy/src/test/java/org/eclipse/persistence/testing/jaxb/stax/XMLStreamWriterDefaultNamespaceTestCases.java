@@ -47,7 +47,7 @@ public class XMLStreamWriterDefaultNamespaceTestCases extends OXTestCase {
         streamWriter.writeStartElement("", "root", "someNamespace");
         streamWriter.writeDefaultNamespace("someNamespace");
         Marshaller marshaller = ctx.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.valueOf(true));
+        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
 
         marshaller.marshal(new JAXBElement(new QName("employee"), Employee.class, new Employee()), streamWriter);
         streamWriter.writeEndElement();
@@ -74,7 +74,7 @@ public class XMLStreamWriterDefaultNamespaceTestCases extends OXTestCase {
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
 
         // Set IS_REPAIRING_NAMESPACES to true.
-        factory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(true));
+        factory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.TRUE);
 
         XMLStreamWriter streamWriter = factory.createXMLStreamWriter(writer);
 

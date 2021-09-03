@@ -82,9 +82,9 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
         SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_CHARACTER);
 
-        Character b = Character.valueOf('1');
+        Character b = '1';
 
-        dataObject.setChar(property, b.charValue());// add it to instance list
+        dataObject.setChar(property, b);// add it to instance list
 
         assertEquals(true, dataObject.getBoolean(property));
 
@@ -104,9 +104,9 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
         SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_DOUBLE);
 
-        Double b = Double.valueOf(0);
+        Double b = (double) 0;
 
-        dataObject.setDouble(property, b.doubleValue());// add it to instance list
+        dataObject.setDouble(property, b);// add it to instance list
 
         assertEquals(false, dataObject.getBoolean(property));
 
@@ -126,9 +126,9 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
         SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_FLOAT);
 
-        Float b = Float.valueOf(1.20f);
+        Float b = 1.20f;
 
-        dataObject.setFloat(property, b.floatValue());// add it to instance list
+        dataObject.setFloat(property, b);// add it to instance list
 
         assertEquals(true, dataObject.getBoolean(property));
 
@@ -148,9 +148,9 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
         SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_INT);
 
-        Integer b = Integer.valueOf(0);
+        Integer b = 0;
 
-        dataObject.setInt(property, b.intValue());// add it to instance list
+        dataObject.setInt(property, b);// add it to instance list
 
         assertEquals(false, dataObject.getBoolean(property));
 
@@ -170,9 +170,9 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
         SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_LONG);
 
-        Double b = Double.valueOf(0);
+        Double b = (double) 0;
 
-        dataObject.setDouble(property, b.doubleValue());// add it to instance list
+        dataObject.setDouble(property, b);// add it to instance list
 
         assertEquals(false, dataObject.getBoolean(property));
 
@@ -193,9 +193,9 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
         property.setType(SDOConstants.SDO_SHORT);
 
         short s = 12;
-        Short b = Short.valueOf(s);
+        Short b = s;
 
-        dataObject.setShort(property, b.shortValue());// add it to instance list
+        dataObject.setShort(property, b);// add it to instance list
 
         assertEquals(true, dataObject.getBoolean(property));
 
@@ -334,9 +334,9 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
         SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_CHARACTEROBJECT);
 
-        Character b = Character.valueOf('1');
+        Character b = '1';
 
-        dataObject.setChar(property, b.charValue());// add it to instance list
+        dataObject.setChar(property, b);// add it to instance list
 
         assertEquals(true, dataObject.getBoolean(property));
 
@@ -356,9 +356,9 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
         SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_DOUBLEOBJECT);
 
-        Double b = Double.valueOf(0);
+        Double b = (double) 0;
 
-        dataObject.setDouble(property, b.doubleValue());// add it to instance list
+        dataObject.setDouble(property, b);// add it to instance list
 
         assertEquals(false, dataObject.getBoolean(property));
 
@@ -377,9 +377,9 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
         SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_FLOATOBJECT);
 
-        Float b = Float.valueOf(1.20f);
+        Float b = 1.20f;
 
-        dataObject.setFloat(property, b.floatValue());// add it to instance list
+        dataObject.setFloat(property, b);// add it to instance list
 
         assertEquals(true, dataObject.getBoolean(property));
 
@@ -399,9 +399,9 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
         SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_INTOBJECT);
 
-        Integer b = Integer.valueOf(0);
+        Integer b = 0;
 
-        dataObject.setInt(property, b.intValue());// add it to instance list
+        dataObject.setInt(property, b);// add it to instance list
 
         assertEquals(false, dataObject.getBoolean(property));
 
@@ -421,9 +421,9 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
         property.setType(SDOConstants.SDO_SHORTOBJECT);
 
         short s = 12;
-        Short b = Short.valueOf(s);
+        Short b = s;
 
-        dataObject.setShort(property, b.shortValue());// add it to instance list
+        dataObject.setShort(property, b);// add it to instance list
 
         assertEquals(true, dataObject.getBoolean(property));
 
@@ -443,9 +443,9 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
         SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_CHARACTEROBJECT);
 
-        Character b = Character.valueOf('t');
+        Character b = 't';
 
-        dataObject.setChar(property, b.charValue());// add it to instance list
+        dataObject.setChar(property, b);// add it to instance list
 
         try {
             //this.assertEquals(true, dataObject_a.getBoolean(property));
@@ -462,9 +462,9 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
         SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_CHARACTEROBJECT);
 
-        Character b = Character.valueOf('f');
+        Character b = 'f';
 
-        dataObject.setChar(property, b.charValue());// add it to instance list
+        dataObject.setChar(property, b);// add it to instance list
 
         try {
             //this.assertEquals(true, dataObject_a.getBoolean(property));

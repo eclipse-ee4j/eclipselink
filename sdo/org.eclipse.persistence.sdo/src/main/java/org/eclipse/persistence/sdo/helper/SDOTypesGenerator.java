@@ -476,7 +476,7 @@ public class SDOTypesGenerator {
 
         String sequencedValue = (String) complexType.getAttributesMap().get(SDOConstants.SDOXML_SEQUENCE_QNAME);
         if (sequencedValue != null) {
-            currentType.setSequenced(Boolean.valueOf(sequencedValue));
+            currentType.setSequenced(Boolean.parseBoolean(sequencedValue));
         }
         Annotation annotation = complexType.getAnnotation();
         if (annotation != null) {
@@ -1219,7 +1219,7 @@ public class SDOTypesGenerator {
 
         String manyValue = (String) element.getAttributesMap().get(SDOConstants.SDOXML_MANY_QNAME);
         if (manyValue != null) {
-            isMany = Boolean.valueOf(manyValue);
+            isMany = Boolean.parseBoolean(manyValue);
         }
 
         SDOProperty p = null;
@@ -1713,7 +1713,7 @@ public class SDOTypesGenerator {
         //readOnly annotation
         String readOnlyValue = (String) simpleComponent.getAttributesMap().get(SDOConstants.SDOXML_READONLY_QNAME);
         if (readOnlyValue != null) {
-            p.setReadOnly(Boolean.valueOf(readOnlyValue));
+            p.setReadOnly(Boolean.parseBoolean(readOnlyValue));
         }
 
         //dataType annotation

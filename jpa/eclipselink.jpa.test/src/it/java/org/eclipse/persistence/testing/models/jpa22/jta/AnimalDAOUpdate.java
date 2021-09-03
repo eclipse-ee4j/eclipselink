@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,7 +43,7 @@ public class AnimalDAOUpdate {
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public Animal updateAnimal(final int id, final String name, final AnimalCheck listener) {
-        Animal animal = em.find(Animal.class, Integer.valueOf(id));
+        Animal animal = em.find(Animal.class, id);
         Animal eventOld = animal.clone();
         animal.setName(name);
         Animal eventNew = animal.clone();

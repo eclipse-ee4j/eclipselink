@@ -564,7 +564,7 @@ public abstract class DatabaseCall extends DatasourceCall {
         if (returnsResultSet == null) {
             return !shouldBuildOutputRow();
         } else {
-            return returnsResultSet.booleanValue();
+            return returnsResultSet;
         }
     }
 
@@ -999,7 +999,7 @@ public abstract class DatabaseCall extends DatasourceCall {
      * Use this method to tell EclipseLink that the stored procedure will be returning a JDBC ResultSet
      */
     public void setReturnsResultSet(boolean returnsResultSet) {
-        this.returnsResultSet = Boolean.valueOf(returnsResultSet);
+        this.returnsResultSet = returnsResultSet;
     }
 
     /**
@@ -1021,7 +1021,7 @@ public abstract class DatabaseCall extends DatasourceCall {
      * Bound calls can use prepared statement caching.
      */
     public void setShouldCacheStatement(boolean shouldCacheStatement) {
-        this.shouldCacheStatement = Boolean.valueOf(shouldCacheStatement);
+        this.shouldCacheStatement = shouldCacheStatement;
     }
 
     /**
@@ -1035,7 +1035,7 @@ public abstract class DatabaseCall extends DatasourceCall {
      * The call may specify that its parameters should be bound.
      */
     public void setUsesBinding(boolean usesBinding) {
-        this.usesBinding = Boolean.valueOf(usesBinding);
+        this.usesBinding = usesBinding;
     }
 
     /**
@@ -1063,7 +1063,7 @@ public abstract class DatabaseCall extends DatasourceCall {
         if (this.shouldCacheStatement == null) {
             return databasePlatform.shouldCacheAllStatements();
         } else {
-            return this.shouldCacheStatement.booleanValue();
+            return this.shouldCacheStatement;
         }
     }
 
@@ -1323,7 +1323,7 @@ public abstract class DatabaseCall extends DatasourceCall {
         if (this.usesBinding == null) {
             return databasePlatform.shouldBindAllParameters();
         } else {
-            return this.usesBinding.booleanValue();
+            return this.usesBinding;
         }
     }
 

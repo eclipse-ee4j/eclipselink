@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -58,13 +58,13 @@ public class CommitManager {
     protected Map<Object, Integer> commitState;
 
     /** The commit is in progress, but the row has not been written. */
-    protected static final Integer PRE = Integer.valueOf(1);
+    protected static final Integer PRE = 1;
     /** The commit is in progress, and the row has been written. */
-    protected static final Integer POST = Integer.valueOf(2);
+    protected static final Integer POST = 2;
     /** The commit is complete for the object. */
-    protected static final Integer COMPLETE = Integer.valueOf(3);
+    protected static final Integer COMPLETE = 3;
     /** This object should be ignored. */
-    protected static final Integer IGNORE = Integer.valueOf(4);
+    protected static final Integer IGNORE = 4;
 
     /** Set of objects that had partial row written to resolve constraints. */
     protected Map shallowCommits;
@@ -677,7 +677,7 @@ public class CommitManager {
      */
     @Override
     public String toString() {
-        Object[] args = { Integer.valueOf(this.commitDepth) };
+        Object[] args = {this.commitDepth};
         return Helper.getShortClassName(getClass()) + ToStringLocalization.buildMessage("commit_depth", args);
     }
 }

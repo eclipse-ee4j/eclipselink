@@ -57,8 +57,8 @@ public class ParallelBuilderReportItemTest extends ReportQueryTestCase {
             result[3] = wife.getLastName();
             result[4] = husband.getGender();
             result[5] = wife.getGender();
-            result[6] = Integer.valueOf(husband.getSalary());
-            result[7] = Integer.valueOf(wife.getSalary());
+            result[6] = husband.getSalary();
+            result[7] = wife.getSalary();
             addResult(result, null);
         }
     }

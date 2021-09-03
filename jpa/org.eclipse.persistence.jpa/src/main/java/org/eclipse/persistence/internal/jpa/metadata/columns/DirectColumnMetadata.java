@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -104,9 +104,9 @@ public class DirectColumnMetadata extends MetadataColumn {
     public DatabaseField getDatabaseField() {
         DatabaseField databaseField = super.getDatabaseField();
 
-        databaseField.setNullable(m_nullable == null ? true : m_nullable.booleanValue());
-        databaseField.setUpdatable(m_updatable == null ? true : m_updatable.booleanValue());
-        databaseField.setInsertable(m_insertable == null ? true : m_insertable.booleanValue());
+        databaseField.setNullable(m_nullable == null ? true : m_nullable);
+        databaseField.setUpdatable(m_updatable == null ? true : m_updatable);
+        databaseField.setInsertable(m_insertable == null ? true : m_insertable);
 
         return databaseField;
     }

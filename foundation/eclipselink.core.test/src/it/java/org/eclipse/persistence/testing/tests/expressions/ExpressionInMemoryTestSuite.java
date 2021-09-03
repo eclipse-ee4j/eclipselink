@@ -62,7 +62,7 @@ public class ExpressionInMemoryTestSuite extends ExpressionUnitTestSuite {
         //expression = expression.and((ExpressionMath.sign(builder.get("salary"))).greaterThan(0));
         expression = expression.and((ExpressionMath.exp(ExpressionMath.min(builder.get("salary"), 5))).lessThan(1000000));
         // Test sqrt.
-        expression = expression.and(ExpressionMath.power(builder.get("salary"), Double.valueOf(0.5)).greaterThan(0));
+        expression = expression.and(ExpressionMath.power(builder.get("salary"), 0.5).greaterThan(0));
 
         ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 0);
         test.setExpression(expression);

@@ -30,7 +30,7 @@ public class InvalidCacheSyncTypeTest extends ConfigurableCacheSyncDistributedTe
         super();
         setName("InvalidCacheSyncTypeTest(" + type + ")");
         cacheSyncType = type;
-        cacheSyncConfigValues.put(Employee.class, Integer.valueOf(type));
+        cacheSyncConfigValues.put(Employee.class, type);
     }
 
     @Override

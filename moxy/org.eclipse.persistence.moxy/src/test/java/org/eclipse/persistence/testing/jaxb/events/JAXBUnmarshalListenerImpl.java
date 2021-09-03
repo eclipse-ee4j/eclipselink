@@ -19,12 +19,12 @@ import java.util.ArrayList;
 import jakarta.xml.bind.Unmarshaller;
 
 public class JAXBUnmarshalListenerImpl extends Unmarshaller.Listener {
-    static Integer EMPLOYEE_BEFORE_UNMARSHAL = Integer.valueOf(0);
-    static Integer ADDRESS_BEFORE_UNMARSHAL = Integer.valueOf(1);
-    static Integer PHONE_BEFORE_UNMARSHAL = Integer.valueOf(2);
-    static Integer EMPLOYEE_AFTER_UNMARSHAL = Integer.valueOf(3);
-    static Integer ADDRESS_AFTER_UNMARSHAL = Integer.valueOf(4);
-    static Integer PHONE_AFTER_UNMARSHAL = Integer.valueOf(5);
+    static Integer EMPLOYEE_BEFORE_UNMARSHAL = 0;
+    static Integer ADDRESS_BEFORE_UNMARSHAL = 1;
+    static Integer PHONE_BEFORE_UNMARSHAL = 2;
+    static Integer EMPLOYEE_AFTER_UNMARSHAL = 3;
+    static Integer ADDRESS_AFTER_UNMARSHAL = 4;
+    static Integer PHONE_AFTER_UNMARSHAL = 5;
 
     public ArrayList events = null;
 

@@ -52,8 +52,8 @@ public class TestReadDirectDirectMapMapping extends TestCase {
 
         UnitOfWork uow = getSession().acquireUnitOfWork();
         DirectDirectMapHolder holder = new DirectDirectMapHolder();
-        holder.addDirectToDirectMapItem(Integer.valueOf(1), Integer.valueOf(1));
-        holder.addDirectToDirectMapItem(Integer.valueOf(2), Integer.valueOf(2));
+        holder.addDirectToDirectMapItem(1, 1);
+        holder.addDirectToDirectMapItem(2, 2);
         uow.registerObject(holder);
         uow.commit();
         holderExp = (new ExpressionBuilder()).get("id").equal(holder.getId());
@@ -79,7 +79,7 @@ public class TestReadDirectDirectMapMapping extends TestCase {
             throw new TestErrorException("Incorrect Number of Map values was read.");
         }
         Integer value = (Integer)holder.getDirectToDirectMap().get(1);
-        if (value.intValue() != 1){
+        if (value != 1){
             throw new TestErrorException("Incorrect map value was read.");
         }
     }

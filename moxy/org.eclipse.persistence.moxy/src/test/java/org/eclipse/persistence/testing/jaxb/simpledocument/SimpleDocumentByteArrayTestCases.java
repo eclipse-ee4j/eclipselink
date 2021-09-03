@@ -40,7 +40,7 @@ public class SimpleDocumentByteArrayTestCases extends JAXBWithJSONTestCases {
         @Override
         protected Object getControlObject() {
             JAXBElement value = new ByteArrayObjectFactory().createBase64Root();
-            value.setValue(new Byte[]{Byte.valueOf((byte)1), Byte.valueOf((byte)2), Byte.valueOf((byte)3), Byte.valueOf((byte)4), Byte.valueOf((byte)5), Byte.valueOf((byte)6), Byte.valueOf((byte)7)});
+            value.setValue(new Byte[]{(byte) 1, (byte) 2, (byte) 3, (byte) 4, (byte) 5, (byte) 6, (byte) 7});
             return value;
         }
 

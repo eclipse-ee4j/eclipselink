@@ -55,7 +55,7 @@ public class Resource {
      * @param newId int
      */
     public void setId(int newId) {
-        propertyChange("id", Integer.valueOf(this.id), Integer.valueOf(newId));
+        propertyChange("id", this.id, newId);
         id = newId;
     }
 

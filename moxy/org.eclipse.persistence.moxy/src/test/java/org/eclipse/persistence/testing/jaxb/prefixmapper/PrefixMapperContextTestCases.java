@@ -44,7 +44,7 @@ public class PrefixMapperContextTestCases extends TestCase {
         JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{EmployeeContext.class}, null);
         Marshaller m = ctx.createMarshaller();
         m.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, new ContextPrefixMapper());
-        m.setProperty(XMLConstants.JAXB_FRAGMENT, Boolean.valueOf(true));
+        m.setProperty(XMLConstants.JAXB_FRAGMENT, Boolean.TRUE);
         EmployeeContext emp = new EmployeeContext();
         emp.firstName = "Jon";
         emp.lastName = "Doe";

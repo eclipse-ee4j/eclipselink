@@ -44,14 +44,14 @@ public class SDODataObjectGetDoubleConversionByXPathQueryTest extends SDODataObj
         SDOProperty property_c1_object = dataObject_c1.getInstanceProperty("PName-c1");
         property_c1_object.setType(SDOConstants.SDO_DOUBLE);
         List objects = new ArrayList();
-        Double b = Double.valueOf(12);
-        Double bb = Double.valueOf(11);
+        Double b = 12.0;
+        Double bb = 11.0;
         objects.add(b);
         objects.add(bb);
         dataObject_c1.set(property_c1_object, objects);
 
         //dataObject_c1.set("PName-a0/PName-b0[number='1']/PName-c1", objects);// add it to instance list
-        assertEquals("testGetBooleanConversionFromDefinedPropertyWithPath failed", bb.doubleValue(), dataObject_a.getDouble("PName-a0/PName-b0[number='1']/PName-c1.1"), (float)0.0);
+        assertEquals("testGetBooleanConversionFromDefinedPropertyWithPath failed", bb, dataObject_a.getDouble("PName-a0/PName-b0[number='1']/PName-c1.1"), (float)0.0);
     }
 
     //2. purpose: getDataObject with property value is not dataobject
@@ -100,10 +100,10 @@ public class SDODataObjectGetDoubleConversionByXPathQueryTest extends SDODataObj
            property_c1_object.setType(SDOConstants.SDO_DOUBLE);
 
            type_c0.addDeclaredProperty(property_c1_object);*/
-        Double b = Double.valueOf(12);
+        Double b = 12.0;
 
-        dataObject_a.setDouble("PName-a0/PName-b0[number='1']/PName-c1.0", b.doubleValue());
+        dataObject_a.setDouble("PName-a0/PName-b0[number='1']/PName-c1.0", b);
 
-        assertEquals("testSetGetDataObjectWithQueryPath failed", b.doubleValue(), dataObject_a.getDouble("PName-a0/PName-b0[number='1']/PName-c1.0"), (float)0.0);
+        assertEquals("testSetGetDataObjectWithQueryPath failed", b, dataObject_a.getDouble("PName-a0/PName-b0[number='1']/PName-c1.0"), (float)0.0);
     }
 }

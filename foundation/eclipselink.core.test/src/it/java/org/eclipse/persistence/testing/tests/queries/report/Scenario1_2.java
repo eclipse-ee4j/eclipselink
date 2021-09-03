@@ -39,7 +39,7 @@ public class Scenario1_2 extends ReportQueryTestCase {
                 Object[] result = new Object[3];
                 result[0] = emp.getFirstName();
                 result[1] = emp.getLastName();
-                result[2] = Integer.valueOf(emp.getSalary());
+                result[2] = emp.getSalary();
                 addResult(result, null);
             }
         }

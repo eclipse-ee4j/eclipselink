@@ -224,7 +224,7 @@ public class IndexMetadata extends ORMetadata {
      * Return true is there is a unique setting for this index.
      */
     protected boolean isUnique() {
-        return m_unique != null && m_unique.booleanValue();
+        return m_unique != null && m_unique;
     }
 
     /**

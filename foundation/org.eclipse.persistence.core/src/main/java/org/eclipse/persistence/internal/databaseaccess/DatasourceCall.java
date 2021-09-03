@@ -60,15 +60,15 @@ public abstract class DatasourceCall implements Call {
 
     // The parameter types determine if the parameter is a modify, translation or literal type.
     protected List<Integer> parameterTypes;
-    public static final Integer LITERAL = Integer.valueOf(1);
-    public static final Integer MODIFY = Integer.valueOf(2);
-    public static final Integer TRANSLATION = Integer.valueOf(3);
-    public static final Integer CUSTOM_MODIFY = Integer.valueOf(4);
-    public static final Integer OUT = Integer.valueOf(5);
-    public static final Integer INOUT = Integer.valueOf(6);
-    public static final Integer IN = Integer.valueOf(7);
-    public static final Integer OUT_CURSOR = Integer.valueOf(8);
-    public static final Integer INLINE = Integer.valueOf(9);
+    public static final Integer LITERAL = 1;
+    public static final Integer MODIFY = 2;
+    public static final Integer TRANSLATION = 3;
+    public static final Integer CUSTOM_MODIFY = 4;
+    public static final Integer OUT = 5;
+    public static final Integer INOUT = 6;
+    public static final Integer IN = 7;
+    public static final Integer OUT_CURSOR = 8;
+    public static final Integer INLINE = 9;
 
     // Store if the call has been prepared.
     protected boolean isPrepared;

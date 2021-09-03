@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -130,7 +130,7 @@ public class EmulatedResultSet implements ResultSet {
      */
     @Override
     public boolean getBoolean(int columnIndex) throws SQLException {
-        return ((Boolean)getObject(columnIndex)).booleanValue();
+        return (Boolean) getObject(columnIndex);
     }
 
     /**
@@ -444,7 +444,7 @@ public class EmulatedResultSet implements ResultSet {
      */
     @Override
     public boolean getBoolean(String columnName) throws SQLException {
-        return ((Boolean)getObject(columnName)).booleanValue();
+        return (Boolean) getObject(columnName);
     }
 
     /**

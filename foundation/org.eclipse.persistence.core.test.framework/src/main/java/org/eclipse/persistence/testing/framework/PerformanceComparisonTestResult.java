@@ -171,10 +171,10 @@ public class PerformanceComparisonTestResult extends TestResult {
             // Set the test average count as the test time.
             this.setAverageTestCount((long)testAverage);
 
-            this.testAverages.add(Double.valueOf(testAverage));
+            this.testAverages.add(testAverage);
             this.testMins.add(PerformanceComparisonTestResult.minResults(times));
             this.testMaxs.add(PerformanceComparisonTestResult.maxResults(times));
-            this.testStandardDeviations.add(Double.valueOf(testStandardDeviation));
+            this.testStandardDeviations.add(testStandardDeviation);
 
             if (testIndex > 0) {
                 double testBaseLineAverage = ((Number)this.testAverages.get(0)).doubleValue();
@@ -182,7 +182,7 @@ public class PerformanceComparisonTestResult extends TestResult {
                 // Difference
                 double percentageDifference =
                     PerformanceComparisonTestResult.percentageDifference(testAverage, testBaseLineAverage);
-                this.percentageDifferences.add(Double.valueOf(percentageDifference));
+                this.percentageDifferences.add(percentageDifference);
             }
         }
     }
@@ -215,7 +215,7 @@ public class PerformanceComparisonTestResult extends TestResult {
         if (getTestCounts().size() <= test) {
             getTestCounts().add(new ArrayList());
         }
-        ((List)getTestCounts().get(test)).add(Long.valueOf(time));
+        ((List)getTestCounts().get(test)).add(time);
     }
 
     /**
@@ -297,7 +297,7 @@ public class PerformanceComparisonTestResult extends TestResult {
      * Compute the max of the results.
      */
     public static Number maxResults(List times) {
-        Number testMax = Double.valueOf(0);
+        Number testMax = (double) 0;
         for (int index = 0; index < times.size(); index++) {
             Number time = (Number)times.get(index);
             if (time.doubleValue() > testMax.doubleValue()) {
@@ -311,7 +311,7 @@ public class PerformanceComparisonTestResult extends TestResult {
      * Compute the min of the results.
      */
     public static Number minResults(List times) {
-        Number testMin = Double.valueOf(0);
+        Number testMin = (double) 0;
         for (int index = 0; index < times.size(); index++) {
             Number time = (Number)times.get(index);
             if ((testMin.doubleValue() == 0) || (time.doubleValue() < testMin.doubleValue())) {

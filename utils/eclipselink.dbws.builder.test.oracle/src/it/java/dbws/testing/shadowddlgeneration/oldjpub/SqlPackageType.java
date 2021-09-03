@@ -123,11 +123,11 @@ public class SqlPackageType extends SqlTypeWithMethods {
         if (m_methodFilter != null && m_methodFilter.isSingleMethod()) {
             keys = new String[]{OWNER, PACKAGE_NAME, OBJECT_NAME, DATA_LEVEL};
             values = new Object[]{schema, name, m_methodFilter.getSingleMethodName(),
-                Integer.valueOf(0)};
+                    0};
         }
         else {
             keys = new String[]{OWNER, Util.PACKAGE_NAME, Util.DATA_LEVEL};
-            values = new Object[]{schema, name, Integer.valueOf(0)};
+            values = new Object[]{schema, name, 0};
         }
         Iterator<ViewRow> iter = m_viewCache.getRows(ALL_ARGUMENTS, new String[0], keys, values,
             new String[0]);
@@ -156,11 +156,11 @@ public class SqlPackageType extends SqlTypeWithMethods {
                 keys = new String[]{OWNER, PACKAGE_NAME, OBJECT_NAME,
                     DATA_LEVEL, POSITION};
                 values = new Object[]{schema, name, methodFilter.getSingleMethodName(),
-                    Integer.valueOf(0), Integer.valueOf(0)};
+                        0, 0};
             }
             else {
                 keys = new String[]{OWNER, PACKAGE_NAME, DATA_LEVEL, POSITION};
-                values = new Object[]{schema, name, Integer.valueOf(0), Integer.valueOf(0)};
+                values = new Object[]{schema, name, 0, 0};
             }
 
             Iterator<ViewRow> iter = viewCache.getRows(ALL_ARGUMENTS, new String[0], keys, values,
@@ -222,11 +222,11 @@ public class SqlPackageType extends SqlTypeWithMethods {
             if (methodFilter != null && methodFilter.isSingleMethod()) {
                 keys = new String[]{OWNER, PACKAGE_NAME, OBJECT_NAME, DATA_LEVEL};
                 values = new Object[]{schema, name, methodFilter.getSingleMethodName(),
-                    Integer.valueOf(0)};
+                        0};
             }
             else {
                 keys = new String[]{OWNER, PACKAGE_NAME, DATA_LEVEL};
-                values = new Object[]{schema, name, Integer.valueOf(0)};
+                values = new Object[]{schema, name, 0};
             }
             Iterator<ViewRow> iter = viewCache.getRows(ALL_ARGUMENTS, new String[0], keys, values,
                 new String[0]);

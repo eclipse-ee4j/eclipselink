@@ -38,8 +38,8 @@ public class DirectMapMappingsSerializedConverterTestCase extends AutoVerifyTest
         // Create a directmapmapping with a few items in it
         UnitOfWork uow = getSession().acquireUnitOfWork();
         DirectMapMappings m1 = new DirectMapMappings();
-        m1.blobDirectMap.put(Integer.valueOf(1), Integer.valueOf(1));
-        m1.blobDirectMap.put(Integer.valueOf(2), Integer.valueOf(2));
+        m1.blobDirectMap.put(1, 1);
+        m1.blobDirectMap.put(2, 2);
         DirectMapMappings maps1 = (DirectMapMappings)uow.registerObject(m1);
 
         uow.commit();
@@ -50,7 +50,7 @@ public class DirectMapMappingsSerializedConverterTestCase extends AutoVerifyTest
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         UnitOfWork uow = getSession().acquireUnitOfWork();
         DirectMapMappings maps = (DirectMapMappings)uow.readObject(DirectMapMappings.class);
-        if (!maps.blobDirectMap.get(Integer.valueOf(1)).equals(Integer.valueOf(1))) {
+        if (!maps.blobDirectMap.get(1).equals(1)) {
             throw new TestErrorException("The cloned direct map does not maintain the proper type when used with a SerializedObjectConverter.");
         }
     }

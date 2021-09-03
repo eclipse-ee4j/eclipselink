@@ -232,7 +232,7 @@ public class XSDHelperAttributeTestCases extends XSDHelperTestCases {
         assertEquals(myTestType, p.getContainingType());
         // check default value !! it is propbably good to also test string !!
         // !! reason: getDefault() returns Obj, but actual xml default value can be int or float which is not Obj !!
-        assertEquals(p.getDefault(), Integer.valueOf(3));
+        assertEquals(p.getDefault(), 3);
 
         // check opposite Property
         assertNull(p.getOpposite());

@@ -41,7 +41,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_BOOLEAN);
         dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setMany(true);
 
-        Boolean bb = Boolean.valueOf(true);
+        Boolean bb = Boolean.TRUE;
         List b = new ArrayList();
 
         //b.add(bb);
@@ -59,7 +59,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_BOOLEAN);
         dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setMany(true);
 
-        Boolean bb = Boolean.valueOf(true);
+        Boolean bb = Boolean.TRUE;
         List b = new ArrayList();
 
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
@@ -76,7 +76,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyBracketInPathMiddle() {
         dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_BOOLEAN);
 
-        Boolean b = Boolean.valueOf(true);
+        Boolean b = Boolean.TRUE;
 
         dataObject_a.setBoolean(property1, true);// c dataobject's a property has value boolean 'true'
 

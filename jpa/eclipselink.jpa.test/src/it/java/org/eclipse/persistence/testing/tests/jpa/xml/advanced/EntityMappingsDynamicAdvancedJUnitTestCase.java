@@ -410,7 +410,7 @@ public class EntityMappingsDynamicAdvancedJUnitTestCase extends JUnitTestCase {
 
             // Cost
             DynamicEntity shovel = helper.newDynamicEntity("DynamicShovel");
-            shovel.set("cost", Double.valueOf(9.99));
+            shovel.set("cost", 9.99);
 
             // Sections
             DynamicEntity shovelSections = helper.newDynamicEntity("ShovelSections");
@@ -471,7 +471,7 @@ public class EntityMappingsDynamicAdvancedJUnitTestCase extends JUnitTestCase {
             beginTransaction(em);
 
             em.merge(refreshedShovel);
-            refreshedShovel.set("cost", Double.valueOf(7.99));
+            refreshedShovel.set("cost", 7.99);
 
             commitTransaction(em);
 

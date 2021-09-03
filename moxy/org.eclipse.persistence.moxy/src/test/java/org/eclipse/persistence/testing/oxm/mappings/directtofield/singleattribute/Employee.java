@@ -23,11 +23,11 @@ public class Employee {
   }
 
   public int getID() {
-    return id.intValue();
+    return id;
   }
 
   public void setID(int newID) {
-    id = Integer.valueOf(newID);
+    id = newID;
   }
     public Integer getIntegerId() {
         return id;

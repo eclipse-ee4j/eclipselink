@@ -29,8 +29,8 @@ public class NewObjectWithOptimisticLockingTest extends ConfigurableCacheSyncDis
 
     public NewObjectWithOptimisticLockingTest(){
         super();
-        cacheSyncConfigValues.put(ListHolder.class, Integer.valueOf(ClassDescriptor.SEND_OBJECT_CHANGES));
-        cacheSyncConfigValues.put(ListItem.class, Integer.valueOf(ClassDescriptor.SEND_OBJECT_CHANGES));
+        cacheSyncConfigValues.put(ListHolder.class, ClassDescriptor.SEND_OBJECT_CHANGES);
+        cacheSyncConfigValues.put(ListItem.class, ClassDescriptor.SEND_OBJECT_CHANGES);
     }
 
     @Override

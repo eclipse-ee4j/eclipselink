@@ -28,14 +28,14 @@ public class ConversionDataObjectForSupportedTypes extends ConversionDataObject 
 
         example.setAPCharArray(new char[] { 'a', 'b', 'c' });
         example.setAPByteArray(new byte[] { 1, 2, 3 });
-        example.aCharacter = Character.valueOf('t');
-        example.anInteger = Integer.valueOf(1);
-        example.aFloat = Float.valueOf(1.0f);
-        example.aBoolean = Boolean.valueOf(false);
-        example.aLong = Long.valueOf(1L);
-        example.aDouble = Double.valueOf(1.0);
-        example.aByte = Byte.valueOf((byte)1);
-        example.aShort = Short.valueOf((short)1);
+        example.aCharacter = 't';
+        example.anInteger = 1;
+        example.aFloat = 1.0f;
+        example.aBoolean = Boolean.FALSE;
+        example.aLong = 1L;
+        example.aDouble = 1.0;
+        example.aByte = (byte) 1;
+        example.aShort = (short) 1;
         example.aBigDecimal = new java.math.BigDecimal(1.0);
         example.aBigInteger = new java.math.BigInteger("1");
         example.aNumber = example.aBigDecimal;
@@ -53,7 +53,7 @@ public class ConversionDataObjectForSupportedTypes extends ConversionDataObject 
         example.stringToInt = new String("111");
         example.stringToTimestamp = new String("2003/11/23 23:45:56");
         example.aByteArray = new Byte[] { Byte.valueOf("4"), Byte.valueOf("5"), Byte.valueOf("6") };
-        example.aCharacterArray = new Character[] { Character.valueOf('C'), Character.valueOf('H'), Character.valueOf('A') };
+        example.aCharacterArray = new Character[] {'C', 'H', 'A'};
 
         return example;
     }

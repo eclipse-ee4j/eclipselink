@@ -35,8 +35,8 @@ public class XmlElementsListOfElementTest extends JAXBWithJSONTestCases {
     protected Object getControlObject() {
         XmlElementsListOfElement example = new XmlElementsListOfElement();
         example.items = new ArrayList();
-        example.items.add(Integer.valueOf(1));
-        example.items.add(Float.valueOf(2.5f));
+        example.items.add(1);
+        example.items.add(2.5f);
         return example;
     }
 }

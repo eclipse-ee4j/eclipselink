@@ -471,7 +471,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
                 //need to cast to erase the type on the get("id") expression so it matches the type on param1
                 cq.where(qb.or( qb.greaterThan(root.<Integer>get("id" ), param1), param1.isNull()) );
 
-                em.createQuery(cq).setParameter(param1, Integer.valueOf(1)).getResultList();
+                em.createQuery(cq).setParameter(param1, 1).getResultList();
             } finally {
                 rollbackTransaction(em);
                 closeEntityManager(em);

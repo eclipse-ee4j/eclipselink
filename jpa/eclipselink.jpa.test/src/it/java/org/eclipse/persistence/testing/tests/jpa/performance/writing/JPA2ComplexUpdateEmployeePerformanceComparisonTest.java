@@ -49,7 +49,7 @@ public class JPA2ComplexUpdateEmployeePerformanceComparisonTest extends Performa
     public void test() throws Exception {
         EntityManager manager = createEntityManager();
         manager.getTransaction().begin();
-        Employee employee = manager.find(Employee.class, Long.valueOf(originalEmployee.getId()));
+        Employee employee = manager.find(Employee.class, originalEmployee.getId());
         count++;
         employee.setFirstName(originalEmployee.getFirstName() + count);
         employee.setLastName(originalEmployee.getLastName() + count);
@@ -102,7 +102,7 @@ public class JPA2ComplexUpdateEmployeePerformanceComparisonTest extends Performa
             manager.getTransaction().commit();
         } catch (Exception exception) {
             // Cache can get stale from TopLink run, so force refresh.
-            employee = manager.getReference(Employee.class, Long.valueOf(originalEmployee.getId()));
+            employee = manager.getReference(Employee.class, originalEmployee.getId());
             manager.refresh(employee);
             employee.getPhoneNumbers();
         }

@@ -24,9 +24,9 @@ public class WithGroupingElementIdentifiedByNameIntegerTestCases extends XMLMapp
 
   private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/directcollection/typeattribute/identifiedbyname/withgroupingelement/WithGroupingElementIntegerIdentifiedByName.xml";
   private final static int CONTROL_ID = 123;
-    private final static Integer CONTROL_RESPONSIBILITY1 = Integer.valueOf(100);
-  private final static Integer CONTROL_RESPONSIBILITY2 = Integer.valueOf(200);
-  private final static Integer CONTROL_RESPONSIBILITY3 = Integer.valueOf(300);
+    private final static Integer CONTROL_RESPONSIBILITY1 = 100;
+  private final static Integer CONTROL_RESPONSIBILITY2 = 200;
+  private final static Integer CONTROL_RESPONSIBILITY3 = 300;
 
   public WithGroupingElementIdentifiedByNameIntegerTestCases(String name) throws Exception {
     super(name);

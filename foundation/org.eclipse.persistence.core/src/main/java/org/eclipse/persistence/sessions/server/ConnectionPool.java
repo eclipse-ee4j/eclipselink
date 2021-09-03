@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -148,7 +148,7 @@ public class ConnectionPool {
                 }
                 this.connectionsUsed.add(connection);
                 if (this.owner.isInProfile()) {
-                    this.owner.updateProfile(MONITOR_HEADER + this.name, Integer.valueOf(this.connectionsUsed.size()));
+                    this.owner.updateProfile(MONITOR_HEADER + this.name, this.connectionsUsed.size());
                 }
                 if (this.owner.shouldLog(SessionLog.FINEST, SessionLog.CONNECTION)) {
                     Object[] args = new Object[1];
@@ -199,7 +199,7 @@ public class ConnectionPool {
         }
         this.connectionsUsed.add(connection);
         if (this.owner.isInProfile()) {
-            this.owner.updateProfile(MONITOR_HEADER + this.name, Integer.valueOf(this.connectionsUsed.size()));
+            this.owner.updateProfile(MONITOR_HEADER + this.name, this.connectionsUsed.size());
         }
         if (this.owner.shouldLog(SessionLog.FINEST, SessionLog.CONNECTION)) {
             Object[] args = new Object[1];
@@ -348,7 +348,7 @@ public class ConnectionPool {
             }
         }
         if (this.owner.isInProfile()) {
-            this.owner.updateProfile(MONITOR_HEADER + this.name, Integer.valueOf(this.connectionsUsed.size()));
+            this.owner.updateProfile(MONITOR_HEADER + this.name, this.connectionsUsed.size());
         }
         notify();
     }
@@ -516,7 +516,7 @@ public class ConnectionPool {
      */
     @Override
     public String toString() {
-        Object[] args = { Integer.valueOf(getMinNumberOfConnections()), Integer.valueOf(getMaxNumberOfConnections()) };
+        Object[] args = {getMinNumberOfConnections(), getMaxNumberOfConnections()};
         return Helper.getShortClassName(getClass()) + ToStringLocalization.buildMessage("min_max", args);
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -434,11 +434,11 @@ public class SQLSelectStatement extends SQLStatement {
                         }
                         TreeMap indexToExpressionMap = new TreeMap();
                         mapTableIndexToExpression(holder.outerJoinedMappingCriteria, indexToExpressionMap, tablesInOrder);
-                        Expression sourceToRelationJoin = (Expression)indexToExpressionMap.get(Integer.valueOf(1));
-                        Expression relationToTargetJoin = (Expression)indexToExpressionMap.get(Integer.valueOf(2));
+                        Expression sourceToRelationJoin = (Expression)indexToExpressionMap.get(1);
+                        Expression relationToTargetJoin = (Expression)indexToExpressionMap.get(2);
                         Expression relationToKeyJoin = null;
                         if (isMapKeyObject) {
-                            relationToKeyJoin = (Expression)indexToExpressionMap.get(Integer.valueOf(3));
+                            relationToKeyJoin = (Expression)indexToExpressionMap.get(3);
                         }
 
                         if (outerExpression.shouldUseOuterJoin()) {
@@ -2193,7 +2193,7 @@ public class SQLSelectStatement extends SQLStatement {
         if(expression instanceof DataExpression) {
             DataExpression de = (DataExpression)expression;
             if(de.getAliasedField() != null) {
-                tables.add(Integer.valueOf(tablesInOrder.indexOf(de.getAliasedField().getTable())));
+                tables.add(tablesInOrder.indexOf(de.getAliasedField().getTable()));
             }
             return tables;
         }
@@ -2255,7 +2255,7 @@ public class SQLSelectStatement extends SQLStatement {
         Iterator it = indexToExpressionMap.entrySet().iterator();
         while(it.hasNext()) {
             Map.Entry entry = (Map.Entry)it.next();
-            int index = ((Integer)entry.getKey()).intValue();
+            int index = (Integer) entry.getKey();
             map.put(tablesInOrder.get(index), entry.getValue());
         }
         return map;

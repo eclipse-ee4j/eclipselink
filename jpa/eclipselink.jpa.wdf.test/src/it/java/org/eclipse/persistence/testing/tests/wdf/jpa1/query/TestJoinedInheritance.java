@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -267,7 +267,7 @@ public class TestJoinedInheritance extends JPA1Base {
             Iterator iter = result.iterator();
             Object obj = iter.next();
             verify(obj instanceof Integer, "select item is no Integer (wrong class " + obj.getClass() + ")");
-            int id = ((Integer) obj).intValue();
+            int id = (Integer) obj;
             verify(id == 1, "wrong employee id " + id + ", 1 is expected");
             query = em
                     .createQuery("select distinct e.id from Employee e join e.checkingAccount c where c.balance = 99 and c.client.creditCardAccounts is not empty");

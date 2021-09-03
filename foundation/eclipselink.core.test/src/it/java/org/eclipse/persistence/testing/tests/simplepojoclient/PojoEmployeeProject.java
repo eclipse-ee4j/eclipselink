@@ -92,8 +92,8 @@ PojoEmployeeProject extends org.eclipse.persistence.sessions.Project {
         genderMapping.setSetMethodName("setGender");
         genderMapping.setFieldName("POJO_EMPLOYEE.GENDER");
         ObjectTypeConverter genderMappingConverter = new ObjectTypeConverter();
-        genderMappingConverter.addConversionValue(Character.valueOf('F'), "Female");
-        genderMappingConverter.addConversionValue(Character.valueOf('M'), "Male");
+        genderMappingConverter.addConversionValue('F', "Female");
+        genderMappingConverter.addConversionValue('M', "Male");
         genderMapping.setConverter(genderMappingConverter);
         descriptor.addMapping(genderMapping);
 

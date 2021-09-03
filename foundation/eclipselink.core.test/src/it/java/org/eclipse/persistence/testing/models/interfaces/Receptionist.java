@@ -22,9 +22,9 @@ public class Receptionist extends AdministrativeJob {
     public static Receptionist example1() {
         Receptionist example = new Receptionist();
 
-        example.setWordsPerMinute(Integer.valueOf(50));
-        example.setSalary(Float.valueOf(22500.00f));
-        example.setMinimumSalary(Float.valueOf(22000.00f));
+        example.setWordsPerMinute(50);
+        example.setSalary(22500.00f);
+        example.setMinimumSalary(22000.00f);
 
         return example;
     }
@@ -32,9 +32,9 @@ public class Receptionist extends AdministrativeJob {
     public static Receptionist example2() {
         Receptionist example = new Receptionist();
 
-        example.setWordsPerMinute(Integer.valueOf(50));
-        example.setSalary(Float.valueOf(23450.00f));
-        example.setMinimumSalary(Float.valueOf(22000.00f));
+        example.setWordsPerMinute(50);
+        example.setSalary(23450.00f);
+        example.setMinimumSalary(22000.00f);
 
         return example;
     }
@@ -42,9 +42,9 @@ public class Receptionist extends AdministrativeJob {
     public static Receptionist example3() {
         Receptionist example = new Receptionist();
 
-        example.setWordsPerMinute(Integer.valueOf(60));
-        example.setSalary(Float.valueOf(26450.00f));
-        example.setMinimumSalary(Float.valueOf(22000.00f));
+        example.setWordsPerMinute(60);
+        example.setSalary(26450.00f);
+        example.setMinimumSalary(22000.00f);
 
         return example;
     }

@@ -62,10 +62,10 @@ public class InheritanceRootChoiceOnlyTestCases extends JAXBWithJSONTestCases {
         List choiceList = new ArrayList();
         choiceList.add(new String("choice string test2"));
         choiceList.add(anotherPackageSubType);
-        choiceList.add(Integer.valueOf(400));
+        choiceList.add(400);
         choiceList.add(subTypeLevel2);
         choiceList.add(new String("choice string test"));
-        choiceList.add(Integer.valueOf(500));
+        choiceList.add(500);
         root.choiceList = choiceList;
         return root;
     }

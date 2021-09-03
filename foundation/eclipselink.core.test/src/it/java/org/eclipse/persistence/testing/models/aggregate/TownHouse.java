@@ -23,7 +23,7 @@ public class TownHouse extends House {
         TownHouse example3 = new TownHouse();
 
         Oid insurancePolicyId = new Oid();
-        insurancePolicyId.setOid(Integer.valueOf(333));
+        insurancePolicyId.setOid(333);
         example3.setInsuranceId(insurancePolicyId);
         example3.setDescriptions("renovated 3-bedroom gardon house");
         example3.setLocation("2236 Baseline Rd");
@@ -34,7 +34,7 @@ public class TownHouse extends House {
         TownHouse example4 = new TownHouse();
 
         Oid insurancePolicyId = new Oid();
-        insurancePolicyId.setOid(Integer.valueOf(4444));
+        insurancePolicyId.setOid(4444);
         example4.setInsuranceId(insurancePolicyId);
         example4.setDescriptions("two bedroom luxury townhouse");
         example4.setLocation("790C Bank Street");

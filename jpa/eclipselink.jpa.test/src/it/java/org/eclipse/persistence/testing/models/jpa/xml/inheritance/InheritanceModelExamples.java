@@ -22,7 +22,7 @@ public class InheritanceModelExamples  {
 
     public static Bicycle bikeExample1(Company company) {
         Bicycle example = new Bicycle();
-        example.setPassengerCapacity(Integer.valueOf(1));
+        example.setPassengerCapacity(1);
         example.setOwner(company);
         example.setDescription("Hercules");
 //        example.addPartNumber("1288H8HH-f");
@@ -32,7 +32,7 @@ public class InheritanceModelExamples  {
 
     public static Bicycle bikeExample2(Company company) {
         Bicycle example = new Bicycle();
-        example.setPassengerCapacity(Integer.valueOf(2));
+        example.setPassengerCapacity(2);
         example.setOwner(company);
         example.setDescription("Atlas");
 //        example.addPartNumber("176339GT-a");
@@ -43,7 +43,7 @@ public class InheritanceModelExamples  {
 
     public static Bicycle bikeExample3(Company company) {
         Bicycle example = new Bicycle();
-        example.setPassengerCapacity(Integer.valueOf(3));
+        example.setPassengerCapacity(3);
         example.setOwner(company);
         example.setDescription("Aone");
 //        example.addPartNumber("188181TT-a");
@@ -53,21 +53,21 @@ public class InheritanceModelExamples  {
 
     public static Boat boatExample1(Company company) {
         Boat example = new Boat();
-        example.setPassengerCapacity(Integer.valueOf(10));
+        example.setPassengerCapacity(10);
         example.setOwner(company);
         return example;
     }
 
     public static Boat boatExample2(Company company) {
         Boat example = new Boat();
-        example.setPassengerCapacity(Integer.valueOf(20));
+        example.setPassengerCapacity(20);
         example.setOwner(company);
         return example;
     }
 
     public static Boat boatExample3(Company company) {
         Boat example = new Boat();
-        example.setPassengerCapacity(Integer.valueOf(30));
+        example.setPassengerCapacity(30);
         example.setOwner(company);
         return example;
     }
@@ -75,8 +75,8 @@ public class InheritanceModelExamples  {
     public static Bus busExample1(Company company) {
         Bus example = new Bus();
 
-        example.setPassengerCapacity(Integer.valueOf(30));
-        example.setFuelCapacity(Integer.valueOf(100));
+        example.setPassengerCapacity(30);
+        example.setFuelCapacity(100);
         example.setDescription("SCHOOL BUS");
         example.setFuelType("Petrol");
         example.setOwner(company);
@@ -90,8 +90,8 @@ public class InheritanceModelExamples  {
     public static Bus busExample2(Company company) {
         Bus example = new Bus();
 
-        example.setPassengerCapacity(Integer.valueOf(30));
-        example.setFuelCapacity(Integer.valueOf(100));
+        example.setPassengerCapacity(30);
+        example.setFuelCapacity(100);
         example.setDescription("TOUR BUS");
         example.setFuelType("Petrol");
         example.setOwner(company);
@@ -105,8 +105,8 @@ public class InheritanceModelExamples  {
     public static Bus busExample3(Company company) {
         Bus example = new Bus();
 
-        example.setPassengerCapacity(Integer.valueOf(30));
-        example.setFuelCapacity(Integer.valueOf(100));
+        example.setPassengerCapacity(30);
+        example.setFuelCapacity(100);
         example.setDescription("TRANSIT BUS");
         example.setFuelType("Gas");
         example.setOwner(company);
@@ -120,8 +120,8 @@ public class InheritanceModelExamples  {
     public static Car carExample1() {
         Car example = new Car();
 
-        example.setPassengerCapacity(Integer.valueOf(2));
-        example.setFuelCapacity(Integer.valueOf(30));
+        example.setPassengerCapacity(2);
+        example.setFuelCapacity(30);
         example.setDescription("PONTIAC");
         example.setFuelType("Petrol");
 //        example.addPartNumber("021776RM-b");
@@ -133,8 +133,8 @@ public class InheritanceModelExamples  {
     public static Car carExample2() {
         Car example = new Car();
 
-        example.setPassengerCapacity(Integer.valueOf(4));
-        example.setFuelCapacity(Integer.valueOf(50));
+        example.setPassengerCapacity(4);
+        example.setFuelCapacity(50);
         example.setDescription("TOYOTA");
         example.setFuelType("Petrol");
 //        example.addPartNumber("021776TT-a");
@@ -146,8 +146,8 @@ public class InheritanceModelExamples  {
     public static Car carExample3() {
         Car example = new Car();
 
-        example.setPassengerCapacity(Integer.valueOf(5));
-        example.setFuelCapacity(Integer.valueOf(60));
+        example.setPassengerCapacity(5);
+        example.setFuelCapacity(60);
         example.setDescription("BMW");
         example.setFuelType("Disel");
 //        example.addPartNumber("021776KM-k");
@@ -159,8 +159,8 @@ public class InheritanceModelExamples  {
     public static Car carExample4() {
         Car example = new Car();
 
-        example.setPassengerCapacity(Integer.valueOf(8));
-        example.setFuelCapacity(Integer.valueOf(100));
+        example.setPassengerCapacity(8);
+        example.setFuelCapacity(100);
         example.setDescription("Mazda");
         example.setFuelType("Coca-Cola");
 //        example.addPartNumber("021776KM-k");
@@ -210,8 +210,8 @@ public class InheritanceModelExamples  {
 
     public static FueledVehicle fueledVehicleExample1(Company company) {
         FueledVehicle example = new FueledVehicle();
-        example.setPassengerCapacity(Integer.valueOf(1));
-        example.setFuelCapacity(Integer.valueOf(10));
+        example.setPassengerCapacity(1);
+        example.setFuelCapacity(10);
         example.setDescription("Motercycle");
         example.setOwner(company);
         return example;
@@ -220,8 +220,8 @@ public class InheritanceModelExamples  {
     public static Car imaginaryCarExample1()
     {
         ImaginaryCar example = new ImaginaryCar();
-        example.setPassengerCapacity(Integer.valueOf(2));
-        example.setFuelCapacity(Integer.valueOf(30));
+        example.setPassengerCapacity(2);
+        example.setFuelCapacity(30);
         example.setDescription("PONTIAC");
         example.setFuelType("Petrol");
     //    example.addPartNumber("021776RM-b");
@@ -232,8 +232,8 @@ public class InheritanceModelExamples  {
     public static Car imaginaryCarExample2()
     {
         ImaginaryCar example = new ImaginaryCar();
-        example.setPassengerCapacity(Integer.valueOf(4));
-        example.setFuelCapacity(Integer.valueOf(50));
+        example.setPassengerCapacity(4);
+        example.setFuelCapacity(50);
         example.setDescription("TOYOTA");
         example.setFuelType("Petrol");
     //    example.addPartNumber("021776TT-a");
@@ -244,8 +244,8 @@ public class InheritanceModelExamples  {
     public static Car imaginaryCarExample3()
     {
         ImaginaryCar example = new ImaginaryCar();
-        example.setPassengerCapacity(Integer.valueOf(5));
-        example.setFuelCapacity(Integer.valueOf(60));
+        example.setPassengerCapacity(5);
+        example.setFuelCapacity(60);
         example.setDescription("BMW");
         example.setFuelType("Disel");
     //    example.addPartNumber("021776KM-k");
@@ -256,8 +256,8 @@ public class InheritanceModelExamples  {
     public static Car imaginaryCarExample4()
     {
         Car example = new Car();
-        example.setPassengerCapacity(Integer.valueOf(8));
-        example.setFuelCapacity(Integer.valueOf(100));
+        example.setPassengerCapacity(8);
+        example.setFuelCapacity(100);
         example.setDescription("Mazda");
         example.setFuelType("Coca-Cola");
     //    example.addPartNumber("021776KM-k");
@@ -268,7 +268,7 @@ public class InheritanceModelExamples  {
 
     public static NonFueledVehicle nonFueledVehicleExample1(Company company) {
         NonFueledVehicle example = new NonFueledVehicle();
-        example.setPassengerCapacity(Integer.valueOf(1));
+        example.setPassengerCapacity(1);
         example.setOwner(company);
         return example;
     }
@@ -319,8 +319,8 @@ public class InheritanceModelExamples  {
 
     public static Car sportsCarExample1() {
         SportsCar example = new SportsCar();
-        example.setPassengerCapacity(Integer.valueOf(2));
-        example.setFuelCapacity(Integer.valueOf(60));
+        example.setPassengerCapacity(2);
+        example.setFuelCapacity(60);
         example.setDescription("Corvet");
         example.setFuelType("Disel");
         return example;

@@ -328,7 +328,7 @@ public class SDODataObjectGetByteConversionTest extends SDODataObjectConversionT
     public void testGetByteFromCharacterObject() {
         SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_CHARACTEROBJECT);
-        Character theValue = Character.valueOf('e');
+        Character theValue = 'e';
         dataObject.set(property, theValue);
         try {
             dataObject.getByte(property);

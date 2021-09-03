@@ -242,7 +242,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
         assertEquals(p.getContainingType().getName(), "myTestType");
 
         // check default value !! facing same problem as attribute's test !!
-        assertEquals(p.getDefault(), Integer.valueOf(3));
+        assertEquals(p.getDefault(), 3);
 
         // check opposite Property
         assertNull(p.getOpposite());
@@ -489,7 +489,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
         assertEquals(p.getContainingType().getName(), "myTestType");
 
         // check default value !! may have the problem as in attriutes' test !!
-        assertEquals(p.getDefault(), Integer.valueOf(3));
+        assertEquals(p.getDefault(), 3);
 
         // check opposite Property
         assertNull(p.getOpposite());
@@ -535,7 +535,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
         assertEquals(p.getContainingType().getName(), "myTestType");
 
         // check default value !! may have the problem as in attriutes' test !!
-        assertEquals(p.getDefault(), Integer.valueOf(3));
+        assertEquals(p.getDefault(), 3);
 
         // check opposite Property
         assertNull(p.getOpposite());

@@ -46,9 +46,9 @@ public class PredefinedInQueryReadAllTest extends ReadAllTest {
     @Override
     protected void test() {
         Vector sals = new Vector();
-        sals.addElement(Integer.valueOf(100));
-        sals.addElement(Integer.valueOf(56232));
-        sals.addElement(Integer.valueOf(10000));
+        sals.addElement(100);
+        sals.addElement(56232);
+        sals.addElement(10000);
         Vector args = new Vector();
         args.addElement(sals);
 
@@ -58,9 +58,9 @@ public class PredefinedInQueryReadAllTest extends ReadAllTest {
 
         // Also execute the query using a collection type other than vector.
         Collection collection = new HashSet();
-        collection.add(Integer.valueOf(100));
-        collection.add(Integer.valueOf(56232));
-        collection.add(Integer.valueOf(10000));
+        collection.add(100);
+        collection.add(56232);
+        collection.add(10000);
         args = new Vector();
         args.addElement(collection);
 

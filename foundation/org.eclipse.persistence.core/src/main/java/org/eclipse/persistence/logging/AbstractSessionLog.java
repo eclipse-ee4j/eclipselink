@@ -257,7 +257,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     @Override
     public boolean shouldDisplayData() {
         if (this.shouldDisplayData != null) {
-            return shouldDisplayData.booleanValue();
+            return shouldDisplayData;
         } else {
             return this.level < SessionLog.CONFIG;
         }
@@ -595,7 +595,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     @Override
     public boolean shouldPrintSession() {
-        return (shouldPrintSession == null) || shouldPrintSession.booleanValue();
+        return (shouldPrintSession == null) || shouldPrintSession;
     }
 
     /**
@@ -616,7 +616,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     @Override
     public boolean shouldPrintConnection() {
-        return (shouldPrintConnection == null) || shouldPrintConnection.booleanValue();
+        return (shouldPrintConnection == null) || shouldPrintConnection;
     }
 
     /**
@@ -640,7 +640,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         if (shouldLogExceptionStackTrace == null) {
             return getLevel() <= FINER;
         } else {
-            return shouldLogExceptionStackTrace.booleanValue();
+            return shouldLogExceptionStackTrace;
         }
     }
 
@@ -671,7 +671,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     @Override
     public boolean shouldPrintDate() {
-        return (shouldPrintDate == null) || (shouldPrintDate.booleanValue());
+        return (shouldPrintDate == null) || (shouldPrintDate);
     }
 
     /**
@@ -695,7 +695,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         if (shouldPrintThread == null) {
             return getLevel() <= FINE;
         } else {
-            return shouldPrintThread.booleanValue();
+            return shouldPrintThread;
         }
     }
 

@@ -46,7 +46,7 @@ public class JPA2ReadObjectCompletelyEmployeePerformanceComparisonTest extends P
     public void test() throws Exception {
         EntityManager manager = createEntityManager();
         manager.getTransaction().begin();
-        Employee employee = manager.getReference(Employee.class, Long.valueOf(this.employeeId));
+        Employee employee = manager.getReference(Employee.class, this.employeeId);
         employee.getAddress().toString();
         String.valueOf(employee.getManager());
         employee.getManagedEmployees().size();

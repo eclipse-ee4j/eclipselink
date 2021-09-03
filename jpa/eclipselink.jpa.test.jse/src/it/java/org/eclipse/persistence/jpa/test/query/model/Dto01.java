@@ -40,8 +40,8 @@ public class Dto01 {
     public Dto01(String str1, String str2, Long integer1, Long integer2) {
         this.str1 = str1;
         this.str2 = str2;
-        this.integer1 =  Integer.valueOf(integer1.intValue());
-        this.integer2 = Integer.valueOf(integer2.intValue());
+        this.integer1 = integer1.intValue();
+        this.integer2 = integer2.intValue();
     }
 
     public String getStr1() {

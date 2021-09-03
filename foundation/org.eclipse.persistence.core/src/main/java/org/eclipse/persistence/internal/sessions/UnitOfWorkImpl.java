@@ -845,7 +845,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         existQuery.setDescriptor(descriptor);
         existQuery.setIsExecutionClone(true);
 
-        return ((Boolean) executeQuery(existQuery)).booleanValue();
+        return (Boolean) executeQuery(existQuery);
     }
 
     /**
@@ -1937,7 +1937,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         if (descriptor == null) {
             throw DescriptorException.missingDescriptor(lockObject.getClass().toString());
         }
-        getOptimisticReadLockObjects().put(descriptor.getObjectBuilder().unwrapObject(lockObject, this), Boolean.valueOf(shouldModifyVersionField));
+        getOptimisticReadLockObjects().put(descriptor.getObjectBuilder().unwrapObject(lockObject, this), shouldModifyVersionField);
     }
 
     /**
@@ -3695,7 +3695,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             existQuery.setIsExecutionClone(true);
 
             existQuery.setCheckCacheFirst(true);
-            if (((Boolean)executeQuery(existQuery)).booleanValue()){
+            if ((Boolean) executeQuery(existQuery)){
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("cannot_remove_detatched_entity", new Object[]{toBeDeleted}));
             }//else, it is a new or previously deleted object that should be ignored (and delete should cascade)
         } else {
@@ -4427,7 +4427,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             existQuery.setObject(newObject);
             existQuery.setDescriptor(descriptor);
             existQuery.setIsExecutionClone(true);
-            if (((Boolean)executeQuery(existQuery)).booleanValue()) {
+            if ((Boolean) executeQuery(existQuery)) {
                 throw ValidationException.cannotPersistExistingObject(newObject, this);
             }
         }
@@ -5829,7 +5829,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * INTERNAL:
      */
     public void addPessimisticLockedClone(Object clone) {
-        log(SessionLog.FINEST, SessionLog.TRANSACTION, "tracking_pl_object", clone, Integer.valueOf(this.hashCode()));
+        log(SessionLog.FINEST, SessionLog.TRANSACTION, "tracking_pl_object", clone, this.hashCode());
         getPessimisticLockedObjects().put(clone, clone);
     }
 
@@ -5994,9 +5994,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             //ignore for bug 290703
         }
         if(accessor!=null && accessor instanceof DatasourceAccessor){
-            getProperties().put(DatasourceAccessor.READ_STATEMENTS_COUNT_PROPERTY,Integer.valueOf(((DatasourceAccessor)accessor).getReadStatementsCount()));
-            getProperties().put(DatasourceAccessor.WRITE_STATEMENTS_COUNT_PROPERTY,Integer.valueOf(((DatasourceAccessor)accessor).getWriteStatementsCount()));
-            getProperties().put(DatasourceAccessor.STOREDPROCEDURE_STATEMENTS_COUNT_PROPERTY,Integer.valueOf(((DatasourceAccessor)accessor).getStoredProcedureStatementsCount()));
+            getProperties().put(DatasourceAccessor.READ_STATEMENTS_COUNT_PROPERTY, ((DatasourceAccessor) accessor).getReadStatementsCount());
+            getProperties().put(DatasourceAccessor.WRITE_STATEMENTS_COUNT_PROPERTY, ((DatasourceAccessor) accessor).getWriteStatementsCount());
+            getProperties().put(DatasourceAccessor.STOREDPROCEDURE_STATEMENTS_COUNT_PROPERTY, ((DatasourceAccessor) accessor).getStoredProcedureStatementsCount());
         }
     }
 

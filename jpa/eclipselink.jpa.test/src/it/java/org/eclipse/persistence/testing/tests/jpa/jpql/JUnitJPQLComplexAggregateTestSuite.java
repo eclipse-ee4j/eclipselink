@@ -529,7 +529,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         EntityManager em = createEntityManager();
         beginTransaction(em);
 
-        Long expectedResult = Long.valueOf(getServerSession().readAllObjects(Employee.class).size());
+        Long expectedResult = (long) getServerSession().readAllObjects(Employee.class).size();
 
         String jpql = "SELECT COUNT(DISTINCT e) FROM Employee e";
         Query q = em.createQuery(jpql);
@@ -550,8 +550,8 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
 
         // Need to create the expected result manually, because using the
         // TopLink query API would run into the same issue 2497.
-        List expectedResult = Arrays.asList(new Long[] { Long.valueOf(1), Long.valueOf(0),
-                                                         Long.valueOf(0), Long.valueOf(1) });
+        List expectedResult = Arrays.asList(new Long[] {1L, 0L,
+                0L, 1L});
         Collections.sort(expectedResult);
 
         String jpql = "SELECT COUNT(o) FROM Customer c LEFT JOIN c.orders o GROUP BY c.name";
@@ -578,7 +578,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
 
         // Need to create the expected result manually, because using the
         // TopLink query API would run into the same issue 2497.
-        List expectedResult = Arrays.asList(new Long[] { Long.valueOf(2), Long.valueOf(5), Long.valueOf(3) });
+        List expectedResult = Arrays.asList(new Long[] {2L, 5L, 3L});
         Collections.sort(expectedResult);
 
         String jpql = "SELECT COUNT(p) FROM Employee e LEFT JOIN e.phoneNumbers p WHERE e.lastName LIKE 'S%' GROUP BY e.lastName";
@@ -619,7 +619,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
 
             // Need to create the expected result manually, because using the
             // TopLink query API would run into the same issue 6155093.
-            List expectedResult = Arrays.asList(new Long[] { Long.valueOf(1) });
+            List expectedResult = Arrays.asList(new Long[] {1L});
             Collections.sort(expectedResult);
 
             // COUNT DISTINCT with inner join

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -104,7 +104,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
         if ((this.call == null) && (!hasMultipleCalls())) {
             prepareDeleteObject();
             if ((this.call == null) && (!hasMultipleCalls())) {
-                return Integer.valueOf(1);// Must be 1 otherwise locking error will occur.
+                return 1;// Must be 1 otherwise locking error will occur.
             }
         }
 
@@ -454,7 +454,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
         if ((this.call == null) && (!hasMultipleCalls())) {
             prepareUpdateObject();
             if ((this.call == null) && (!hasMultipleCalls())) {
-                return Integer.valueOf(1);// Must be 1 otherwise locking error will occur.
+                return 1;// Must be 1 otherwise locking error will occur.
             }
         }
 

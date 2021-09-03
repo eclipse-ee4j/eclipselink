@@ -108,7 +108,7 @@ public class ClientServerSequenceDeadlockTest extends ClientServerConcurrentWrit
                     long currentTime = System.currentTimeMillis();
                     if (!fifoArray[i].isEmpty()) {
                         clientLastActionTimeArray[i] = currentTime;
-                        int objectNumber = ((Integer)fifoArray[i].removeHead()).intValue();
+                        int objectNumber = (Integer) fifoArray[i].removeHead();
 
                         //                    System.out.println("Client# = " + i + " object# =  " + objectNumber);
                         if ((objectNumber == numObjects) || (objectNumber == -1)) {

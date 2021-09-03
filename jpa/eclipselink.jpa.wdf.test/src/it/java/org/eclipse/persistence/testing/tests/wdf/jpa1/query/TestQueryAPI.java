@@ -129,11 +129,11 @@ public class TestQueryAPI extends QueryTest {
 
             // test invalid typed ordered param
             Query q3 = em.createQuery(queryStringOrderedParam);
-            assertOrderedParameterInvalid(q3, 1, Integer.valueOf(2));
+            assertOrderedParameterInvalid(q3, 1, 2);
 
             // test invalid typed named param
             Query q4 = em.createQuery(queryStringNamedParam);
-            assertNamedParameterInvalid(q4, "firstname", Integer.valueOf(3));
+            assertNamedParameterInvalid(q4, "firstname", 3);
 
             // test invalid named ordered param
             Query q5 = em.createQuery(queryStringOrderedParam);

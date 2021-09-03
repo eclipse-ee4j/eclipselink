@@ -195,8 +195,8 @@ public class jiNiNijiTestSet {
             getQueryManager().getQuery("jiNiNiji");
         Vector queryArgs = new NonSynchronizedVector();
         queryArgs.add("test");
-        queryArgs.add(Integer.valueOf(14));
-        queryArgs.add(Integer.valueOf(1));
+        queryArgs.add(14);
+        queryArgs.add(1);
         queryArgs.add(Float.parseFloat("123.1"));
         boolean worked = false;
         String msg = null;

@@ -47,7 +47,7 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
 
     @Override
     public void run(RunNotifier notifier) {
-        if (Boolean.valueOf(System.getProperty("servertest"))) {
+        if (Boolean.parseBoolean(System.getProperty("servertest"))) {
             runOnServer(notifier);
         } else {
             super.run(notifier);

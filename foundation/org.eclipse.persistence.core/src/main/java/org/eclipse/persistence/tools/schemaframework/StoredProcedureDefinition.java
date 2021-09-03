@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -34,9 +34,9 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
     protected Vector statements;
     protected Vector arguments;
     protected Vector argumentTypes;
-    protected static final Integer IN = Integer.valueOf(1);
-    protected static final Integer OUT = Integer.valueOf(2);
-    protected static final Integer INOUT = Integer.valueOf(3);
+    protected static final Integer IN = 1;
+    protected static final Integer OUT = 2;
+    protected static final Integer INOUT = 3;
 
     public StoredProcedureDefinition() {
         this.statements = new Vector();

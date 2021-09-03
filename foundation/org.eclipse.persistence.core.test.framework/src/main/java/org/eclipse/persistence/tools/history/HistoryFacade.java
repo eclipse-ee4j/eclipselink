@@ -108,7 +108,7 @@ public class HistoryFacade {
         }
         if (timeOffsetsMap.containsKey(rootSession)) {
             Long offset = (Long)timeOffsetsMap.get(rootSession);
-            return System.currentTimeMillis() + offset.longValue();
+            return System.currentTimeMillis() + offset;
         } else {
             DatabaseQuery query =
                 rootSession.getPlatform().getTimestampQuery();
@@ -118,7 +118,7 @@ public class HistoryFacade {
             long endTime = System.currentTimeMillis();
             long jvmTime = (endTime - startTime) / 2 + startTime;
             long offset = databaseTime.getTime() - jvmTime;
-            timeOffsetsMap.put(rootSession, Long.valueOf(offset));
+            timeOffsetsMap.put(rootSession, offset);
             return jvmTime + offset;
         }
     }

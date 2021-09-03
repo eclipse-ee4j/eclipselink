@@ -89,7 +89,7 @@ public class DefaultNamespace2TestCases extends JAXBWithJSONTestCases {
             StringWriter writer = new StringWriter();
 
             XMLOutputFactory factory = XMLOutputFactory.newInstance();
-            factory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(true));
+            factory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.TRUE);
             XMLStreamWriter streamWriter= factory.createXMLStreamWriter(writer);
 
             Object objectToWrite = getWriteControlObject();
@@ -129,7 +129,7 @@ public class DefaultNamespace2TestCases extends JAXBWithJSONTestCases {
                StringWriter writer = new StringWriter();
 
                XMLOutputFactory factory = XMLOutputFactory.newInstance();
-               factory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(true));
+               factory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.TRUE);
                XMLStreamWriter streamWriter= factory.createXMLStreamWriter(writer);
 
                Object objectToWrite = getWriteControlObject();

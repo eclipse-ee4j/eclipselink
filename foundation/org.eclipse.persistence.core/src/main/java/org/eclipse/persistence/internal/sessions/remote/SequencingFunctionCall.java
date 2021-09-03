@@ -27,14 +27,14 @@ public class SequencingFunctionCall {
     public static class DoesExist extends SimpleFunctionCall {
         @Override
         protected Object execute(AbstractSession session) {
-            return Boolean.valueOf(session.getSequencing() != null);
+            return session.getSequencing() != null;
         }
     }
 
     public static class WhenShouldAcquireValueForAll extends SimpleFunctionCall {
         @Override
         protected Object execute(AbstractSession session) {
-            return Integer.valueOf(session.getSequencing().whenShouldAcquireValueForAll());
+            return session.getSequencing().whenShouldAcquireValueForAll();
         }
     }
 

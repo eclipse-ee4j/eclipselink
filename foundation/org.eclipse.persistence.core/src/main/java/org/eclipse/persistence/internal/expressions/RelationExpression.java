@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -502,10 +502,10 @@ public class RelationExpression extends CompoundExpression {
                     if ((mapping != null) && (mapping.isDirectCollectionMapping()) && !(this.secondChild.isMapEntryExpression())) {
                         this.isObjectComparisonExpression = Boolean.FALSE;
                     } else {
-                        this.isObjectComparisonExpression = Boolean.valueOf(this.firstChild.isObjectExpression()
+                        this.isObjectComparisonExpression = this.firstChild.isObjectExpression()
                                 || this.firstChild.isValueExpression()
                                 || this.firstChild.isSubSelectExpression()
-                                || (this.firstChild.isFunctionExpression() && ((FunctionExpression)this.firstChild).operator.isAnyOrAll()));
+                                || (this.firstChild.isFunctionExpression() && ((FunctionExpression) this.firstChild).operator.isAnyOrAll());
                     }
                 } else {
                     this.isObjectComparisonExpression = Boolean.FALSE;
@@ -515,14 +515,14 @@ public class RelationExpression extends CompoundExpression {
                 if ((mapping != null) && (mapping.isDirectCollectionMapping()) && !(this.firstChild.isMapEntryExpression())) {
                     this.isObjectComparisonExpression = Boolean.FALSE;
                 } else {
-                    this.isObjectComparisonExpression = Boolean.valueOf(this.secondChild.isObjectExpression()
+                    this.isObjectComparisonExpression = this.secondChild.isObjectExpression()
                             || this.secondChild.isValueExpression()
                             || this.secondChild.isSubSelectExpression()
-                            || (this.secondChild.isFunctionExpression() && ((FunctionExpression)this.secondChild).operator.isAnyOrAll()));
+                            || (this.secondChild.isFunctionExpression() && ((FunctionExpression) this.secondChild).operator.isAnyOrAll());
                 }
             }
         }
-        return this.isObjectComparisonExpression.booleanValue();
+        return this.isObjectComparisonExpression;
     }
 
     /**
@@ -717,7 +717,7 @@ public class RelationExpression extends CompoundExpression {
 
                 // some db (derby) require that in EXIST(SELECT...) subquery returns a single column
                 subQuery.getItems().clear();
-                subQuery.addItem("one", new ConstantExpression(Integer.valueOf(1), subQuery.getExpressionBuilder()));
+                subQuery.addItem("one", new ConstantExpression(1, subQuery.getExpressionBuilder()));
 
                 Expression subSelectCriteria = subQuery.getSelectionCriteria();
                 ExpressionBuilder subBuilder = subQuery.getExpressionBuilder();
@@ -752,7 +752,7 @@ public class RelationExpression extends CompoundExpression {
 
             // some db (derby) require that in EXIST(SELECT...) subquery returns a single column
             subQuery.getItems().clear();
-            subQuery.addItem("one", new ConstantExpression(Integer.valueOf(1), subQuery.getExpressionBuilder()));
+            subQuery.addItem("one", new ConstantExpression(1, subQuery.getExpressionBuilder()));
 
             Expression subSelectCriteria = subQuery.getSelectionCriteria();
             ExpressionBuilder subBuilder = subQuery.getExpressionBuilder();

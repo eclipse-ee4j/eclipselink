@@ -29,7 +29,7 @@ public class House {
         super();
         sellingPoints = new Vector();
         insuranceId = new Oid();
-        insuranceId.setOid(Integer.valueOf(0));
+        insuranceId.setOid(0);
     }
 
     public java.lang.String getDescriptions() {

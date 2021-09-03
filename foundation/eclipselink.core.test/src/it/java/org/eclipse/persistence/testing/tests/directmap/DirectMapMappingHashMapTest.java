@@ -54,9 +54,9 @@ public class DirectMapMappingHashMapTest extends AutoVerifyTestCase {
         // Create a hashmap with a null in it.
         UnitOfWork uow = getSession().acquireUnitOfWork();
         DirectMapMappings maps = (DirectMapMappings)uow.registerObject(new DirectMapMappings());
-        maps.directHashMap.put(Integer.valueOf(1), "item1");
-        maps.directHashMap.put(Integer.valueOf(2), "item2");
-        maps.directHashMap.put(Integer.valueOf(3), null);
+        maps.directHashMap.put(1, "item1");
+        maps.directHashMap.put(2, "item2");
+        maps.directHashMap.put(3, null);
 
         try {
             uow.commit();
@@ -81,7 +81,7 @@ public class DirectMapMappingHashMapTest extends AutoVerifyTestCase {
             throw new TestErrorException("Incorrect amount of items in the hashmap.");
         }
 
-        if (queryResult.directHashMap.get(Integer.valueOf(3)) != null) {
+        if (queryResult.directHashMap.get(3) != null) {
             throw new TestErrorException("The null value was not read back in correctly.");
         }
     }

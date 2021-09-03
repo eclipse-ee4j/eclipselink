@@ -35,7 +35,7 @@ public class Bicycle extends NonFueledVehicle {
 
     @Override
     public void change() {
-        this.setPassengerCapacity(Integer.valueOf(100));
+        this.setPassengerCapacity(100);
         this.setDescription("This Bike is easy to handle");
     }
 }

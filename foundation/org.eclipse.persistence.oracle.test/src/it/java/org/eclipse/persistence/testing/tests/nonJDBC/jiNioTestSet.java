@@ -177,7 +177,7 @@ public class jiNioTestSet {
         Object o = null;
         Vector queryArgs = new NonSynchronizedVector();
         queryArgs.add("test");
-        queryArgs.add(Integer.valueOf(1));
+        queryArgs.add(1);
         boolean worked = false;
         String msg = null;
         try {
@@ -191,7 +191,7 @@ public class jiNioTestSet {
         Vector results = (Vector)o;
         DatabaseRecord record = (DatabaseRecord)results.get(0);
         Integer bool2int = (Integer)record.get("Y");
-        assertTrue("wrong bool2int value", bool2int.intValue() == 0);
+        assertTrue("wrong bool2int value", bool2int == 0);
         ((DatabaseSession)s).logout();
     }
 }

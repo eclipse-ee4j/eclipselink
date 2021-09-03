@@ -53,14 +53,14 @@ public class DirectMapMappingDeleteTest extends AutoVerifyTestCase {
         // Create a directmapmapping with a few items in it
         UnitOfWork uow = getSession().acquireUnitOfWork();
         DirectMapMappings maps1 = (DirectMapMappings)uow.registerObject(new DirectMapMappings());
-        maps1.directMap.put(Integer.valueOf(1), "guy");
-        maps1.directMap.put(Integer.valueOf(2), "axemen");
+        maps1.directMap.put(1, "guy");
+        maps1.directMap.put(2, "axemen");
         uow.commit();
 
         // Read the same directmapping back and delete an item from it
         UnitOfWork uow2 = getSession().acquireUnitOfWork();
         DirectMapMappings maps2 = (DirectMapMappings)uow2.readObject(DirectMapMappings.class);
-        maps2.directMap.remove(Integer.valueOf(2));
+        maps2.directMap.remove(2);
         uow2.commit();
 
         // Clear the cache

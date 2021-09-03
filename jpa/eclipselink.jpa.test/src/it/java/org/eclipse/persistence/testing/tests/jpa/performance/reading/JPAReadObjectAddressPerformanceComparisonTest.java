@@ -52,7 +52,7 @@ public class JPAReadObjectAddressPerformanceComparisonTest extends PerformanceRe
         Query query = manager.createQuery("Select a from Address a where a.id = :id");
         query.setHint(QueryHints.QUERY_TYPE, QueryType.ReadObject);
         query.setHint(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheByExactPrimaryKey);
-        query.setParameter("id", Long.valueOf(this.addressId));
+        query.setParameter("id", this.addressId);
         Address address = (Address)query.getSingleResult();
         address.toString();
         manager.getTransaction().commit();

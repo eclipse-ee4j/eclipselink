@@ -18,8 +18,8 @@ public class SportsCar extends Car {
     public static Car example1() {
         SportsCar example = new SportsCar();
 
-        example.setPassengerCapacity(Integer.valueOf(2));
-        example.setFuelCapacity(Integer.valueOf(60));
+        example.setPassengerCapacity(2);
+        example.setFuelCapacity(60);
         example.setDescription("Corvet");
         example.setFuelType("Disel");
         return example;

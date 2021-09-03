@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -883,13 +883,13 @@ public class JAXBMarshaller implements jakarta.xml.bind.Marshaller {
                         throw new PropertyException(key, Constants.EMPTY_STRING);
                     }
                     Boolean fragment = (Boolean) value;
-                    xmlMarshaller.setFragment(fragment.booleanValue());
+                    xmlMarshaller.setFragment(fragment);
                 } else if (JAXB_FORMATTED_OUTPUT.equals(key)) {
                     if (value == null) {
                         throw new PropertyException(key, Constants.EMPTY_STRING);
                     }
                     Boolean formattedOutput = (Boolean) value;
-                    xmlMarshaller.setFormattedOutput(formattedOutput.booleanValue());
+                    xmlMarshaller.setFormattedOutput(formattedOutput);
                 } else if (JAXB_ENCODING.equals(key)) {
                     xmlMarshaller.setEncoding((String) value);
                 } else if (JAXB_SCHEMA_LOCATION.equals(key)) {
@@ -948,14 +948,14 @@ public class JAXBMarshaller implements jakarta.xml.bind.Marshaller {
                         throw new PropertyException(key, Constants.EMPTY_STRING);
                     }
                     Boolean fragment = !(Boolean) value;
-                    xmlMarshaller.setFragment(fragment.booleanValue());
+                    xmlMarshaller.setFragment(fragment);
                 } else if (XML_HEADERS.equals(key)) {
                     xmlMarshaller.setXmlHeader((String) value);
                 } else if (OBJECT_IDENTITY_CYCLE_DETECTION.equals(key)) {
                     if (value == null) {
                         throw new PropertyException(key, Constants.EMPTY_STRING);
                     }
-                    xmlMarshaller.setEqualUsingIdenity(((Boolean) value).booleanValue());
+                    xmlMarshaller.setEqualUsingIdenity((Boolean) value);
                 } else if (MarshallerProperties.MEDIA_TYPE.equals(key)) {
                     MediaType mType = null;
                     if (value instanceof MediaType) {

@@ -40,12 +40,12 @@ public class ImageSimulator {
         generatedImage.setScript(initStringBase(clobSize / 100));
         generatedImage.setAudio(initByteBase(blobSize));
         generatedImage.setCommentary(initCharArrayBase(clobSize));
-        generatedImage.setCustomAttribute1(new SerializableNonEntity(Long.valueOf(Long.MAX_VALUE)));
-        generatedImage.setCustomAttribute2(new SerializableNonEntity(Long.valueOf(Long.MAX_VALUE)));
-        generatedImage.setXml1(new SerializableNonEntity(Long.valueOf(Long.MIN_VALUE)));
-        generatedImage.setXml2(new SerializableNonEntity(Long.valueOf(Long.MIN_VALUE)));
-        generatedImage.setJson1(new SerializableNonEntity(Long.valueOf(Long.MIN_VALUE)));
-        generatedImage.setJson2(new SerializableNonEntity(Long.valueOf(Long.MIN_VALUE)));
+        generatedImage.setCustomAttribute1(new SerializableNonEntity(Long.MAX_VALUE));
+        generatedImage.setCustomAttribute2(new SerializableNonEntity(Long.MAX_VALUE));
+        generatedImage.setXml1(new SerializableNonEntity(Long.MIN_VALUE));
+        generatedImage.setXml2(new SerializableNonEntity(Long.MIN_VALUE));
+        generatedImage.setJson1(new SerializableNonEntity(Long.MIN_VALUE));
+        generatedImage.setJson2(new SerializableNonEntity(Long.MIN_VALUE));
 
         return generatedImage;
     }
@@ -77,7 +77,7 @@ public class ImageSimulator {
         new Random().nextBytes(pictures);
         Byte[] pics = new Byte[cycle];
         for (int x = 0; x < cycle; x++) {
-            pics[x] = Byte.valueOf(pictures[x]);
+            pics[x] = pictures[x];
         }
         return pics;
     }

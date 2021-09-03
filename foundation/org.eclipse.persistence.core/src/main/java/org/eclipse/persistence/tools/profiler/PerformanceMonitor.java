@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -101,7 +101,7 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
         for (String operation : operations) {
             Object value = this.operationTimings.get(operation);
             if (value == null) {
-                value = Long.valueOf(0);
+                value = 0L;
             }
             writer.write(operation);
             writer.write("\t");
@@ -134,14 +134,14 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
         if (startTime == null) {
             return;
         }
-        long time = endTime - startTime.longValue();
+        long time = endTime - startTime;
 
         synchronized (this.operationTimings) {
             Long totalTime = (Long)this.operationTimings.get(operationName);
             if (totalTime == null) {
-                this.operationTimings.put(operationName, Long.valueOf(time));
+                this.operationTimings.put(operationName, time);
             } else {
-                this.operationTimings.put(operationName, Long.valueOf(totalTime.longValue() + time));
+                this.operationTimings.put(operationName, totalTime + time);
             }
         }
     }
@@ -162,7 +162,7 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
     }
 
     protected Map<String, Long> getOperationStartTimes() {
-        Integer threadId = Integer.valueOf(Thread.currentThread().hashCode());
+        Integer threadId = Thread.currentThread().hashCode();
         Map<String, Long> times = this.operationStartTimesByThread.get(threadId);
         if (times == null) {
             times = new Hashtable<>();
@@ -220,7 +220,7 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
      */
     @Override
     public void startOperationProfile(String operationName) {
-        getOperationStartTimes().put(operationName, Long.valueOf(System.nanoTime()));
+        getOperationStartTimes().put(operationName, System.nanoTime());
     }
 
     /**
@@ -251,9 +251,9 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
         synchronized (this.operationTimings) {
             Long occurred = (Long)this.operationTimings.get(operationName);
             if (occurred == null) {
-                this.operationTimings.put(operationName, Long.valueOf(1));
+                this.operationTimings.put(operationName, 1L);
             } else {
-                this.operationTimings.put(operationName, Long.valueOf(occurred.longValue() + 1));
+                this.operationTimings.put(operationName, occurred + 1);
             }
         }
     }

@@ -44,7 +44,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
 
-        Boolean bb = Boolean.valueOf(true);
+        Boolean bb = Boolean.TRUE;
         List b = new ArrayList();
 
         //b.add(bb);
@@ -65,7 +65,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
 
-        Boolean bb = Boolean.valueOf(true);
+        Boolean bb = Boolean.TRUE;
         List b = new ArrayList();
 
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
@@ -83,7 +83,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
 
-        Boolean b = Boolean.valueOf(true);
+        Boolean b = Boolean.TRUE;
 
         dataObject_a.setBoolean(property1, true);// c dataobject's a property has value boolean 'true'
 
@@ -150,11 +150,11 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
 
-        Character bb = Character.valueOf('1');
+        Character bb = '1';
         List b = new ArrayList();
 
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
-        dataObject_a.setChar(property + ".0", bb.charValue());
+        dataObject_a.setChar(property + ".0", bb);
 
         assertEquals(true, dataObject_a.getBoolean(property + ".0"));
 
@@ -180,11 +180,11 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
 
-        Double bb = Double.valueOf(1);
+        Double bb = 1.0;
         List b = new ArrayList();
 
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
-        dataObject_a.setDouble(property + ".0", bb.doubleValue());
+        dataObject_a.setDouble(property + ".0", bb);
 
         assertEquals(true, dataObject_a.getBoolean(property + ".0"));
 
@@ -210,11 +210,11 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
 
-        Float bb = Float.valueOf(1);
+        Float bb = 1F;
         List b = new ArrayList();
 
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
-        dataObject_a.setFloat(property + ".0", bb.floatValue());
+        dataObject_a.setFloat(property + ".0", bb);
 
         assertEquals(true, dataObject_a.getBoolean(property + ".0"));
 
@@ -241,11 +241,11 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         dataObject_c._setType(type_c);
 
         //short s = 1;
-        Integer bb = Integer.valueOf(1);
+        Integer bb = 1;
         List b = new ArrayList();
 
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
-        dataObject_a.setInt(property + ".0", bb.intValue());
+        dataObject_a.setInt(property + ".0", bb);
 
         assertEquals(true, dataObject_a.getBoolean(property + ".0"));
 
@@ -272,11 +272,11 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         dataObject_c._setType(type_c);
 
         long s = 1;
-        Long bb = Long.valueOf(s);
+        Long bb = s;
         List b = new ArrayList();
 
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
-        dataObject_a.setLong(property + ".0", bb.longValue());
+        dataObject_a.setLong(property + ".0", bb);
 
         assertEquals(true, dataObject_a.getBoolean(property + ".0"));
 
@@ -303,11 +303,11 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         dataObject_c._setType(type_c);
 
         short s = 1;
-        Short bb = Short.valueOf(s);
+        Short bb = s;
         List b = new ArrayList();
 
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
-        dataObject_a.setShort(property + ".0", bb.shortValue());
+        dataObject_a.setShort(property + ".0", bb);
 
         assertEquals(true, dataObject_a.getBoolean(property + ".0"));
 

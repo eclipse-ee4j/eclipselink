@@ -46,7 +46,7 @@ public class LargeProject extends Project {
     }
 
     public void setBudget(double budget) {
-        propertyChange("budget", Double.valueOf(this.budget), Double.valueOf(budget));
+        propertyChange("budget", this.budget, budget);
         this.budget = budget;
     }
 

@@ -508,7 +508,7 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
 
     @Override
     public void setSalary(int salary) {
-        propertyChange("salary", Integer.valueOf(this.salary), Integer.valueOf(salary));
+        propertyChange("salary", this.salary, salary);
         this.salary = salary;
     }
 

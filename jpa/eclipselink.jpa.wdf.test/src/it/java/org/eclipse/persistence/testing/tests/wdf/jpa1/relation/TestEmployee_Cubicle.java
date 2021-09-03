@@ -35,7 +35,7 @@ public class TestEmployee_Cubicle extends JPA1Base {
             env.beginTransaction(em);
             Department dep = new Department(9, "neun");
             Employee emp = new Employee(5, "first", "last", dep);
-            Cubicle cub = new Cubicle(Integer.valueOf(3), Integer.valueOf(4), "red", emp);
+            Cubicle cub = new Cubicle(3, 4, "red", emp);
             emp.setCubicle(cub);
             em.persist(dep);
             em.persist(emp);
@@ -51,13 +51,13 @@ public class TestEmployee_Cubicle extends JPA1Base {
     public void testRelationToCompositeKey() {
         final EntityManager em = getEnvironment().getEntityManager();
         try {
-            Employee employee = em.find(Employee.class, Integer.valueOf(5));
+            Employee employee = em.find(Employee.class, 5);
             verify(employee.getId() == 5, "wrong employee");
             verify(employee.getCubicle() != null, "cubicle is null");
             verify(employee.getCubicle().getFloor() != null, "floor is null");
-            verify(employee.getCubicle().getFloor().intValue() == 3, "wrong floor");
+            verify(employee.getCubicle().getFloor() == 3, "wrong floor");
             verify(employee.getCubicle().getPlace() != null, "place is null");
-            verify(employee.getCubicle().getPlace().intValue() == 4, "wrong place");
+            verify(employee.getCubicle().getPlace() == 4, "wrong place");
             verify(employee.getDepartment() != null, "department is null");
             verify(employee.getDepartment().getId() == 9, "wrong department");
         } finally {

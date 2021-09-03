@@ -638,7 +638,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      */
     public void setShouldModifyVersionField(Boolean shouldModifyVersionField) {
         this.shouldModifyVersionField = shouldModifyVersionField;
-        if(shouldModifyVersionField != null && shouldModifyVersionField.booleanValue()) {
+        if(shouldModifyVersionField != null && shouldModifyVersionField) {
             // mark the version number as 'dirty'
             // Note that at this point there is no newWriteLockValue - it will be set later.
             // This flag is set to indicate that the change set WILL have changes.

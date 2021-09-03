@@ -36,14 +36,14 @@ public class EngineType implements java.io.Serializable {
 
     public static EngineType example1() {
         EngineType example = new EngineType();
-        example.setId(Integer.valueOf(1));
+        example.setId(1);
         example.setType("Steel");
         return example;
     }
 
     public static EngineType example2() {
         EngineType example = new EngineType();
-        example.setId(Integer.valueOf(2));
+        example.setId(2);
         example.setType("AlumSteel");
         return example;
     }

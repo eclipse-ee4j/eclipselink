@@ -121,26 +121,26 @@ public class RelationshipsSystem extends TestSystem {
         uow.registerObject(fieldOffice2);
 
         Dept dept = new Dept();
-        dept.setDeptno(Double.valueOf(5.0));
+        dept.setDeptno(5.0);
         dept.setDname("Goofs");
 
         Emp emp = new Emp();
-        emp.setEmpno(Double.valueOf(5.0));
+        emp.setEmpno(5.0);
         emp.setEname("Anthony");
         emp.setDeptno(dept);
 
         Emp emp1 = new Emp();
-        emp1.setEmpno(Double.valueOf(6.0));
+        emp1.setEmpno(6.0);
         emp1.setEname("Bob");
         emp1.setDeptno(dept);
 
         Emp emp2 = new Emp();
-        emp2.setEmpno(Double.valueOf(7.0));
+        emp2.setEmpno(7.0);
         emp2.setEname("Fargo");
         emp2.setDeptno(dept);
 
         Emp emp3 = new Emp();
-        emp3.setEmpno(Double.valueOf(8.0));
+        emp3.setEmpno(8.0);
         emp3.setEname("Oneder");
         emp3.setDeptno(dept);
 

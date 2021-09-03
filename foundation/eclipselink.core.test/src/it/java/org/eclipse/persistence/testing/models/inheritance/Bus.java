@@ -20,8 +20,8 @@ public class Bus extends FueledVehicle {
     public static Bus example2(Company company) {
         Bus example = new Bus();
 
-        example.setPassengerCapacity(Integer.valueOf(30));
-        example.setFuelCapacity(Integer.valueOf(100));
+        example.setPassengerCapacity(30);
+        example.setFuelCapacity(100);
         example.setDescription("SCHOOL BUS");
         example.setFuelType("Petrol");
         example.getOwner().setValue(company);
@@ -35,8 +35,8 @@ public class Bus extends FueledVehicle {
     public static Bus example3(Company company) {
         Bus example = new Bus();
 
-        example.setPassengerCapacity(Integer.valueOf(30));
-        example.setFuelCapacity(Integer.valueOf(100));
+        example.setPassengerCapacity(30);
+        example.setFuelCapacity(100);
         example.setDescription("TOUR BUS");
         example.setFuelType("Petrol");
         example.getOwner().setValue(company);
@@ -50,8 +50,8 @@ public class Bus extends FueledVehicle {
     public static Bus example4(Company company) {
         Bus example = new Bus();
 
-        example.setPassengerCapacity(Integer.valueOf(30));
-        example.setFuelCapacity(Integer.valueOf(100));
+        example.setPassengerCapacity(30);
+        example.setFuelCapacity(100);
         example.setDescription("TRANSIT BUS");
         example.setFuelType("Gas");
         example.getOwner().setValue(company);

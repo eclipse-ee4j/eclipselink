@@ -34,7 +34,7 @@ public class SDODataObjectGetListConversionByXPathQueryTest extends SDODataObjec
         prop.setType(SDOConstants.SDO_BOOLEAN);
         prop.setMany(true);
 
-        Boolean bb = Boolean.valueOf(true);
+        Boolean bb = Boolean.TRUE;
         List b = new ArrayList();
         b.add(bb);
 

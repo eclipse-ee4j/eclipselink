@@ -38,7 +38,7 @@ public class PrintStackTraceTest extends AutoVerifyTestCase {
     public void test() {
 
         // do not use logMessages(), which has been already set up for the session
-        Integer integer = Integer.valueOf(1);
+        Integer integer = 1;
         try {
             UnitOfWork uow = getSession().acquireUnitOfWork();
             uow.registerObject(integer);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -38,7 +38,7 @@ public class TestGenerator extends JPA1Base {
             Project p1 = new Project();
             em.persist(p1);
             verify(p1.getId() != null, "id is null");
-            verify(p1.getId().intValue() != 0, "id == 0");
+            verify(p1.getId() != 0, "id == 0");
             env.rollbackTransactionAndClear(em);
         } finally {
             closeEntityManager(em);
@@ -77,7 +77,7 @@ public class TestGenerator extends JPA1Base {
             Project p1 = new Project();
             p1 = em.merge(p1);
             verify(p1.getId() != null, "id is null");
-            verify(p1.getId().intValue() != 0, "id == 0");
+            verify(p1.getId() != 0, "id == 0");
             env.rollbackTransactionAndClear(em);
         } finally {
             closeEntityManager(em);
@@ -97,7 +97,7 @@ public class TestGenerator extends JPA1Base {
             env.beginTransaction(em);
             p1 = em.merge(p1);
             verify(p1.getId() != null, "id is null");
-            verify(p1.getId().intValue() != 0, "id == 0");
+            verify(p1.getId() != 0, "id == 0");
             env.rollbackTransactionAndClear(em);
         } finally {
             closeEntityManager(em);

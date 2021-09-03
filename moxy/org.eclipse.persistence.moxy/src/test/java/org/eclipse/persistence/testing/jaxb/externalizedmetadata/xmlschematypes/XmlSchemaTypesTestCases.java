@@ -74,7 +74,7 @@ public class XmlSchemaTypesTestCases extends JAXBWithJSONTestCases {
 
         //setup control Employee
         GregorianCalendar calendar = new GregorianCalendar();
-        Date theDate = new Date(Long.valueOf("1262840400000"));
+        Date theDate = new Date(Long.parseLong("1262840400000"));
         calendar.setTime(theDate);
 
         emp.hireDate = calendar;

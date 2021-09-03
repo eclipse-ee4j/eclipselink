@@ -31,11 +31,11 @@ public class SDODataObjectGetIntConversionByXPathQueryTest extends SDODataObject
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet() {
         SDOProperty prop = dataObject_c0.getType().getProperty("test");
         prop.setType(SDOConstants.SDO_INT);
-        Integer bb = Integer.valueOf(12);
+        Integer bb = 12;
 
         //List b = new ArrayList();
         //dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
-        dataObject_a.setInt(propertyTest + "test", bb.intValue());
+        dataObject_a.setInt(propertyTest + "test", bb);
 
         assertEquals(bb.intValue(), dataObject_a.getInt(propertyTest + "test"));
     }
@@ -47,8 +47,8 @@ public class SDODataObjectGetIntConversionByXPathQueryTest extends SDODataObject
 
         //type_c0.addDeclaredProperty(property_c1_object);
         List objects = new ArrayList();
-        Integer b = Integer.valueOf(12);
-        Integer bb = Integer.valueOf(2);
+        Integer b = 12;
+        Integer bb = 2;
         objects.add(b);
         objects.add(bb);
 
@@ -103,9 +103,9 @@ public class SDODataObjectGetIntConversionByXPathQueryTest extends SDODataObject
 
         type_c0.addDeclaredProperty(property_c1_object);
 
-        Integer b = Integer.valueOf(12);
+        Integer b = 12;
 
-        dataObject_a.setInt("PName-a0/PName-b0[number='1']/PName-c1.0", b.intValue());
+        dataObject_a.setInt("PName-a0/PName-b0[number='1']/PName-c1.0", b);
 
         assertEquals(b.intValue(), dataObject_a.getInt("PName-a0/PName-b0[number='1']/PName-c1.0"));
     }

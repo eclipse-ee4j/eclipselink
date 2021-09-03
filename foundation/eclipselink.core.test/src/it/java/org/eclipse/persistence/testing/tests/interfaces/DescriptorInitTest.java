@@ -54,11 +54,11 @@ public class DescriptorInitTest extends TestCase {
 
             String part1;
             String part2;
-            Character ch = Character.valueOf(className.charAt(className.length() - 2));
-            if (ch.equals(Character.valueOf('0'))) { //Class100
+            Character ch = className.charAt(className.length() - 2);
+            if (ch.equals('0')) { //Class100
                 part1 = className.substring(6, className.length() - 3);
                 part2 = className.substring(className.length() - 3);
-            } else if (Character.isDigit(ch.charValue())) { //Class##
+            } else if (Character.isDigit(ch)) { //Class##
                 part1 = className.substring(6, className.length() - 2);
                 part2 = className.substring(className.length() - 2);
             } else { //Class#

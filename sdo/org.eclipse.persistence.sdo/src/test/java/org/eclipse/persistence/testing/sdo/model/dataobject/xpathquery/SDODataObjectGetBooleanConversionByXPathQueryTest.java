@@ -85,8 +85,8 @@ public class SDODataObjectGetBooleanConversionByXPathQueryTest extends SDODataOb
 
         //type_c0.addDeclaredProperty(property_c1_object);
         List objects = new ArrayList();
-        Boolean b = Boolean.valueOf(true);
-        Boolean bb = Boolean.valueOf(false);
+        Boolean b = Boolean.TRUE;
+        Boolean bb = Boolean.FALSE;
         objects.add(b);
         objects.add(bb);
 
@@ -143,7 +143,7 @@ public class SDODataObjectGetBooleanConversionByXPathQueryTest extends SDODataOb
 
        // type_c0.addDeclaredProperty(property_c1_object);
 
-        Boolean b = Boolean.valueOf(true);
+        Boolean b = Boolean.TRUE;
 
         dataObject_a.setBoolean("PName-a0/PName-b0[number='1']/PName-c1.0", true);
 
@@ -159,7 +159,7 @@ public class SDODataObjectGetBooleanConversionByXPathQueryTest extends SDODataOb
 
         type_c0.addDeclaredProperty(property_c1_object);
 
-        Boolean b = Boolean.valueOf(true);
+        Boolean b = Boolean.TRUE;
 
         dataObject_c0.setBoolean("PName-c1.0", true);
 

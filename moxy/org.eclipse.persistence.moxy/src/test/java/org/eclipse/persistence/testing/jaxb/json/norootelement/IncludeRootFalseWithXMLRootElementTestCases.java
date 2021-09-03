@@ -74,7 +74,7 @@ public class IncludeRootFalseWithXMLRootElementTestCases extends NoRootElementTe
     public Map<Object, Object> getProperties() {
         HashMap m = new HashMap();
 
-        m.put(JAXBContextProperties.JSON_INCLUDE_ROOT, Boolean.valueOf(false));
+        m.put(JAXBContextProperties.JSON_INCLUDE_ROOT, Boolean.FALSE);
         return m;
 
     }

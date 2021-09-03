@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -102,7 +102,7 @@ public class CopyBookParser {
                     firstToken = firstToken.substring(0, currentLine.lastIndexOf('.'));
                 }
                 Integer levelNumber = Helper.integerFromString(firstToken);
-                if ((levelNumber != null) && (levelNumber.intValue() < 50)) {
+                if ((levelNumber != null) && (levelNumber < 50)) {
                     //assure we've gotten entire line
                     while (!currentLine.trim().endsWith(".")) {
                         currentLine += lineTokenizer.nextToken();
@@ -110,7 +110,7 @@ public class CopyBookParser {
                     }
                     currentLine = currentLine.substring(0, currentLine.lastIndexOf('.'));
                     recordLines.addElement(currentLine);
-                    lineNums.addElement(Integer.valueOf(currentLineNumber));
+                    lineNums.addElement(currentLineNumber);
                 }
             }
         }
@@ -123,7 +123,7 @@ public class CopyBookParser {
         Enumeration recordLineNums = lineNums.elements();
         while (recordsEnum.hasMoreElements()) {
             currentLine = (String)recordsEnum.nextElement();
-            currentLineNumber = ((Integer)recordLineNums.nextElement()).intValue();
+            currentLineNumber = (Integer) recordLineNums.nextElement();
             StringTokenizer lineTokens = new StringTokenizer(currentLine);
             if (lineTokens.hasMoreTokens()) {
                 String firstToken = lineTokens.nextToken();
@@ -131,7 +131,7 @@ public class CopyBookParser {
                 Object component;
 
                 //process record
-                if (levelNumber.intValue() == 1) {
+                if (levelNumber == 1) {
                     nestingLevel = maximumNestingLevels;
                     parents = new Stack();
                     parentsToLevels = new Hashtable();
@@ -140,19 +140,19 @@ public class CopyBookParser {
                     records.addElement(component);
                 }
                 //process subordinate field
-                else if (levelNumber.intValue() >= nestingLevel) {
+                else if (levelNumber >= nestingLevel) {
                     component = buildField(lineTokens);
                     ((CompositeObject)parents.peek()).addField((FieldMetaData)component);
                 }
                 //field is no longer subordinate skip back to original level
                 else {
-                    while (((Integer)parentsToLevels.get(parents.peek())).intValue() >= levelNumber.intValue()) {
+                    while ((Integer) parentsToLevels.get(parents.peek()) >= levelNumber) {
                         parents.pop();
                     }
                     component = buildField(lineTokens);
                     ((CompositeObject)parents.peek()).addField((FieldMetaData)component);
                 }
-                nestingLevel = levelNumber.intValue();
+                nestingLevel = levelNumber;
                 if (component instanceof FieldMetaData) {
                     ((FieldMetaData)component).setRecord(record);
                 }
@@ -317,16 +317,16 @@ public class CopyBookParser {
             if (index < tokens.length) {
                 if (tokens[++index].equalsIgnoreCase("to")) {
                     Integer newSize = Helper.integerFromString(tokens[++index]);
-                    if (size.intValue() > 0) {
-                        newSize = Integer.valueOf(newSize.intValue() - size.intValue());
+                    if (size > 0) {
+                        newSize = newSize - size;
                     }
                     size = newSize;
                 }
             }
-            if (size.intValue() < 1) {
+            if (size < 1) {
                 throw invalidCopyBookException("Must occur at least once.");
             }
-            return size.intValue();
+            return size;
             //there was no integer following the occurs statment or one after the to statement
         } catch (ArrayIndexOutOfBoundsException exception) {
             throw invalidCopyBookException("Occurs clause must be folowed by and integer.", exception);
@@ -396,7 +396,7 @@ public class CopyBookParser {
                 }
                 try {
                     Integer value = Integer.valueOf(number.toString());
-                    size += value.intValue();
+                    size += value;
                 } catch (NumberFormatException exception) {
                     throw invalidCopyBookException("In pic statement a valid integer must be enclosed by the parenthesis.", exception);
                 }

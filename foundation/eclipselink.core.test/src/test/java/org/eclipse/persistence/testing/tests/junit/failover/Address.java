@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -102,9 +102,9 @@ public final class Address {
         Vector<DatabaseRecord> rows = new Vector<>();
         Vector<DatabaseField> fields = desc.getAllFields();
         DatabaseField[] fieldsArray = fields.toArray(new DatabaseField[0]);
-        rows.add(new ArrayRecord(fields, fieldsArray, new Object[] { Integer.valueOf(51), "Calgary", "Canada", "J5J2B5", "ALB", "1111 Moose Rd." }));
-        rows.add(new ArrayRecord(fields, fieldsArray, new Object[] { Integer.valueOf(52), "Metcalfe", "Canada", "Y4F7V6", "ONT", "2 Anderson Rd." }));
-        rows.add(new ArrayRecord(fields, fieldsArray, new Object[] { Integer.valueOf(53), "Montreal", "Canada", "Q2S5Z5", "QUE", "1 Habs Place" }));
+        rows.add(new ArrayRecord(fields, fieldsArray, new Object[] {51, "Calgary", "Canada", "J5J2B5", "ALB", "1111 Moose Rd." }));
+        rows.add(new ArrayRecord(fields, fieldsArray, new Object[] {52, "Metcalfe", "Canada", "Y4F7V6", "ONT", "2 Anderson Rd." }));
+        rows.add(new ArrayRecord(fields, fieldsArray, new Object[] {53, "Montreal", "Canada", "Q2S5Z5", "QUE", "1 Habs Place" }));
         return rows;
     }
 }

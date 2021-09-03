@@ -43,7 +43,7 @@ public class NullPointerWhileSettingValueThruInstanceVariableAccessorTest extend
     @Override
     public void test() {
         try {
-            mapping.setAttributeValueInObject(null, Integer.valueOf(0));
+            mapping.setAttributeValueInObject(null, 0);
         } catch (EclipseLinkException exception) {
             caughtException = exception;
         }

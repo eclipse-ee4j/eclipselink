@@ -70,10 +70,10 @@ public class JAXBBooleanArrayTestCases extends JAXBListOfObjectsTestCases {
     @Override
     protected Object getControlObject() {
         boolean[] booleans = new boolean[4];
-        booleans[0] = Boolean.FALSE.booleanValue();
-        booleans[1] = Boolean.TRUE.booleanValue();
-        booleans[2] = Boolean.FALSE.booleanValue();
-        booleans[3] = Boolean.TRUE.booleanValue();
+        booleans[0] = false;
+        booleans[1] = true;
+        booleans[2] = false;
+        booleans[3] = true;
 
         QName qname = new QName("examplenamespace", "root");
         JAXBElement jaxbElement = new JAXBElement(qname, Object.class,null);

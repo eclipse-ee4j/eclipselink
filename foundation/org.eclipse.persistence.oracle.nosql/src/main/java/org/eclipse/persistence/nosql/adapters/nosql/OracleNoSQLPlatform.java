@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -146,7 +146,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
             if (timeout instanceof Number) {
                 noSqlSpec.setTimeout(((Number)timeout).longValue());
             } else if (timeout instanceof String) {
-                noSqlSpec.setTimeout(Long.valueOf(((String)timeout)));
+                noSqlSpec.setTimeout(Long.parseLong(((String)timeout)));
             } else if (interaction.getQuery().getQueryTimeout() > 0) {
                 noSqlSpec.setTimeout(interaction.getQuery().getQueryTimeout());
             }

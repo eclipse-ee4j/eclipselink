@@ -123,9 +123,9 @@ public abstract class SqlStmtMethod extends ProcedureMethod {
                     // e.printStackTrace(); //D+
                     throw new SQLException(e.getMessage());
                 }
-                sqlStmtParamModesV.add(Integer.valueOf(ProcedureMethod.IN));
+                sqlStmtParamModesV.add(ProcedureMethod.IN);
                 if (unique) {
-                    uniqueParamModesV.add(Integer.valueOf(ProcedureMethod.IN));
+                    uniqueParamModesV.add(ProcedureMethod.IN);
                 }
                 m_sqlStmtTmp = m_sqlStmtTmp.substring(0, idx0) + "?"
                     + m_sqlStmtTmp.substring(idx1 + 1);
@@ -147,7 +147,7 @@ public abstract class SqlStmtMethod extends ProcedureMethod {
             int jj = sqlStmtParamNamesV.size() - j - 1;
             m_sqlStmtParamNames[jj] = sqlStmtParamNamesV.get(j);
             m_sqlStmtParamTypes[jj] = sqlStmtParamTypesV.get(j);
-            m_sqlStmtParamModes[jj] = sqlStmtParamModesV.get(j).intValue();
+            m_sqlStmtParamModes[jj] = sqlStmtParamModesV.get(j);
         }
         m_paramNames = new String[uniqueParamNamesV.size()];
         m_paramTypes = new TypeClass[uniqueParamNamesV.size()];
@@ -156,7 +156,7 @@ public abstract class SqlStmtMethod extends ProcedureMethod {
             int jj = uniqueParamNamesV.size() - j - 1;
             m_paramNames[jj] = uniqueParamNamesV.get(j);
             m_paramTypes[jj] = uniqueParamTypesV.get(j);
-            m_paramModes[jj] = uniqueParamModesV.get(j).intValue();
+            m_paramModes[jj] = uniqueParamModesV.get(j);
         }
     }
 

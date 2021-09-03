@@ -35,17 +35,17 @@ public class FeatureTestModelWithoutBinding extends FeatureTestModel {
     @Override
     public void reset() {
         if (origionalStatementCachingState != null) {
-            this.getSession().getPlatform().setShouldCacheAllStatements(this.origionalStatementCachingState.booleanValue());
+            this.getSession().getPlatform().setShouldCacheAllStatements(this.origionalStatementCachingState);
         }
         if (origionalBindingState != null) {
-            this.getSession().getPlatform().setShouldBindAllParameters(this.origionalBindingState.booleanValue());
+            this.getSession().getPlatform().setShouldBindAllParameters(this.origionalBindingState);
         }
     }
 
     @Override
     public void setup() {
-        this.origionalBindingState = Boolean.valueOf(this.getSession().getPlatform().shouldBindAllParameters());
-        this.origionalStatementCachingState = Boolean.valueOf(this.getSession().getPlatform().shouldCacheAllStatements());
+        this.origionalBindingState = this.getSession().getPlatform().shouldBindAllParameters();
+        this.origionalStatementCachingState = this.getSession().getPlatform().shouldCacheAllStatements();
         this.getSession().getPlatform().setShouldBindAllParameters(false);
         this.getSession().getPlatform().setShouldCacheAllStatements(false);
     }

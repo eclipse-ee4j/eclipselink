@@ -225,7 +225,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
         }
         Sensor phaseEvent = getSensorByName(operationName);
         if (phaseEvent != null) {
-            Long startToken = Long.valueOf(((PhaseEvent)phaseEvent).start());
+            Long startToken = ((PhaseEvent) phaseEvent).start();
             getPhaseEventStartToken().put(operationName, startToken);
         }
     }
@@ -247,7 +247,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
 
         Sensor phaseEvent = getPhaseEventForQuery(operationName, query, weight);
         if (phaseEvent != null) {
-            Long startToken = Long.valueOf(((PhaseEvent)phaseEvent).start());
+            Long startToken = ((PhaseEvent) phaseEvent).start();
             if (query != null) {
                 getPhaseEventStartToken().put(query.getSensorName(operationName, getSessionName()), startToken);
             } else {
@@ -270,7 +270,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
         Sensor phaseEvent = getSensorByName(operationName);
         if (phaseEvent != null) {
             Long startTime = (Long)getPhaseEventStartToken().get(operationName);
-            ((PhaseEvent)phaseEvent).stop(startTime.longValue());
+            ((PhaseEvent)phaseEvent).stop(startTime);
         }
     }
 
@@ -297,7 +297,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
             } else {
                 startTime = (Long)getPhaseEventStartToken().get(operationName);
             }
-            ((PhaseEvent)phaseEvent).stop(startTime.longValue());
+            ((PhaseEvent)phaseEvent).stop(startTime);
         }
     }
 

@@ -44,12 +44,12 @@ public class CharNchar {
     public void copyAllButId(CharNchar obj) {
         setChar(null);
         if (obj.getChar() != null) {
-            setChar(Character.valueOf(obj.getChar().charValue()));
+            setChar(obj.getChar());
         }
 
         setNchar(null);
         if (obj.getNchar() != null) {
-            setNchar(Character.valueOf(obj.getNchar().charValue()));
+            setNchar(obj.getNchar());
         }
 
         setStr(null);
@@ -89,8 +89,8 @@ public class CharNchar {
     }
 
     public void setAll(char ch, char nCh, int sizeStr, int sizeClob, int sizeClob2) {
-        this.ch = Character.valueOf(ch);
-        this.nCh = Character.valueOf(nCh);
+        this.ch = ch;
+        this.nCh = nCh;
 
         char[] chArray = new char[sizeStr];
         char[] nchArray = new char[sizeStr];

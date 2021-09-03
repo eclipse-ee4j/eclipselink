@@ -256,7 +256,7 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
     protected int getVersion(Employee emp) {
         Vector pk = new Vector();
         pk.add(emp.getId());
-        return ((Integer)getServerSession("fieldaccess").getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(emp, pk, getServerSession("fieldaccess"))).intValue();
+        return (Integer) getServerSession("fieldaccess").getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(emp, pk, getServerSession("fieldaccess"));
     }
 
 }

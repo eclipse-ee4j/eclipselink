@@ -159,7 +159,7 @@ public class DoPrivilegedTest extends PerformanceComparisonTestCase {
             Field[] fields = AccessController.doPrivileged(new PrivilegedGetFields(clazz));
             Field field = AccessController.doPrivileged(new PrivilegedGetDeclaredField(clazz, fieldName, true));
             try {
-                int intValueFromField = ((Integer)AccessController.doPrivileged(new PrivilegedGetValueFromField(field, version))).intValue();
+                int intValueFromField = (Integer) AccessController.doPrivileged(new PrivilegedGetValueFromField(field, version));
             } catch (Exception e) {
             }
             AccessController.doPrivileged(new PrivilegedGetValueFromField(field, version));

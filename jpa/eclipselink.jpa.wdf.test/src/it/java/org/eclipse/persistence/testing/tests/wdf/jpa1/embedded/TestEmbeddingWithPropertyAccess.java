@@ -44,14 +44,14 @@ public class TestEmbeddingWithPropertyAccess extends JPA1Base {
             em.persist(obj);
             env.commitTransactionAndClear(em);
             verify(true, "no Exception");
-            obj = em.find(EmbeddingPropertyAccess.class, Integer.valueOf(0));
+            obj = em.find(EmbeddingPropertyAccess.class, 0);
         } finally {
             closeEntityManager(em);
         }
     }
 
     private EmbeddingPropertyAccess find(EntityManager em, int id) {
-        return em.find(EmbeddingPropertyAccess.class, Integer.valueOf(id));
+        return em.find(EmbeddingPropertyAccess.class, id);
     }
 
     private void validateMutable(final int id, MutableValidator validator, String fieldName) {

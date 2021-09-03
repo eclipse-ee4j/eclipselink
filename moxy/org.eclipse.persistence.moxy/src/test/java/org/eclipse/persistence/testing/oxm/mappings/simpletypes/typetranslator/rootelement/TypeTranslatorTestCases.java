@@ -42,7 +42,7 @@ public class TypeTranslatorTestCases extends XMLMappingTestCases {
 
         Byte[] byteObjects = new Byte[bytes.length];
         for(int i=0; i<bytes.length; i++){
-            byteObjects[i] =  Byte.valueOf(bytes[i]);
+            byteObjects[i] = bytes[i];
         }
 
         byteHolder.setBytes(byteObjects);

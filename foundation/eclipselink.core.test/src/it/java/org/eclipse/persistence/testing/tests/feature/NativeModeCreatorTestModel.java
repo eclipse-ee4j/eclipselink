@@ -45,9 +45,9 @@ public class NativeModeCreatorTestModel extends TestModel {
     @Override
     public void addForcedRequiredSystems() {
         DatabasePlatform platform = getSession().getPlatform();
-        usesNativeSQL = Boolean.valueOf(platform.usesNativeSQL());
+        usesNativeSQL = platform.usesNativeSQL();
         defaultSequence = getSession().getLogin().getDefaultSequence();
-        shouldBindAllParameters = Boolean.valueOf(platform.shouldBindAllParameters());
+        shouldBindAllParameters = platform.shouldBindAllParameters();
 
         if (platform.isSybase() || platform.isSQLAnywhere() || platform.isOracle() || platform.isSQLServer() || platform.isInformix() ||
             platform.isMySQL() || platform.isDB2() || platform.isTimesTen() || platform.isSymfoware()) {
@@ -149,7 +149,7 @@ public class NativeModeCreatorTestModel extends TestModel {
             platform.isMySQL() || platform.isDB2() || platform.isTimesTen() || platform.isSymfoware()) {
 
             if (usesNativeSQL != null) {
-                platform.setUsesNativeSQL(usesNativeSQL.booleanValue());
+                platform.setUsesNativeSQL(usesNativeSQL);
             }
             if (defaultSequence != null) {
                 getSession().getLogin().setDefaultSequence(defaultSequence);
@@ -157,7 +157,7 @@ public class NativeModeCreatorTestModel extends TestModel {
             }
         }
         if (shouldBindAllParameters != null) {
-            platform.setShouldBindAllParameters(shouldBindAllParameters.booleanValue());
+            platform.setShouldBindAllParameters(shouldBindAllParameters);
         }
         if (qualifier != null) {
             getSession().getLogin().setTableQualifier(qualifier);

@@ -80,7 +80,7 @@ public class TestCascadePersist extends JPA1Base {
             env.commitTransactionAndClear(em);
             // cascade from parent to child
             env.beginTransaction(em);
-            parent = em.find(CascadingNode.class, Integer.valueOf(parent.getId())); // parent is now managed
+            parent = em.find(CascadingNode.class, parent.getId()); // parent is now managed
             CascadingNode child = new CascadingNode(12, parent);
             child.setParent(null); // to avoid circular cascade
             em.persist(parent);
@@ -183,7 +183,7 @@ public class TestCascadePersist extends JPA1Base {
             env.commitTransactionAndClear(em);
 
             env.beginTransaction(em);
-            existing = em.find(CascadingNode.class, Integer.valueOf(existing.getId())); // known object in state managed
+            existing = em.find(CascadingNode.class, existing.getId()); // known object in state managed
             persistFailed = false;
             immediateException = false;
             try {
@@ -221,7 +221,7 @@ public class TestCascadePersist extends JPA1Base {
             env.commitTransactionAndClear(em);
 
             env.beginTransaction(em);
-            existing = em.find(CascadingNode.class, Integer.valueOf(existing.getId()));
+            existing = em.find(CascadingNode.class, existing.getId());
             em.remove(existing); // known object in state deleted
             persistFailed = false;
             immediateException = false;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -815,7 +815,7 @@ public class DescriptorException extends ValidationException {
     }
 
     public static DescriptorException invalidDescriptorEventCode(DescriptorEvent event, ClassDescriptor descriptor) {
-        Object[] args = { Integer.valueOf(event.getEventCode()) };
+        Object[] args = {event.getEventCode()};
 
         DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, INVALID_DESCRIPTOR_EVENT_CODE, args), descriptor);
         descriptorException.setErrorCode(INVALID_DESCRIPTOR_EVENT_CODE);

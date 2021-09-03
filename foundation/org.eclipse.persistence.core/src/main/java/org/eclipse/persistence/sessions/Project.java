@@ -189,7 +189,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     protected Map<String, PartitioningPolicy> partitioningPolicies;
 
     /** Ensures that only one thread at a time can add/remove descriptors */
-    protected Object descriptorsLock = Boolean.valueOf(true);
+    protected Object descriptorsLock = Boolean.TRUE;
 
     /** VPD connection settings */
     protected String vpdIdentifier;

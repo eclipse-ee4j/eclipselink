@@ -185,7 +185,7 @@ public class joNijioTestSet {
         ((DatabaseSession)s).login();
         Object o = null;
         Vector queryArgs = new NonSynchronizedVector();
-        queryArgs.add(Integer.valueOf(1));
+        queryArgs.add(1);
         queryArgs.add("test");
         boolean worked = false;
         String msg = null;

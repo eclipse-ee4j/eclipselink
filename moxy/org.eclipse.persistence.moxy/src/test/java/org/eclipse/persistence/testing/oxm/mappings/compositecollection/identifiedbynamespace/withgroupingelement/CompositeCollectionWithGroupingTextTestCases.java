@@ -71,7 +71,7 @@ public class CompositeCollectionWithGroupingTextTestCases extends XMLMappingTest
         mailingAddress2.setPostalCode(CONTROL_MAILING_ADDRESS_2_POSTAL_CODE);
         employee.getMailingAddresses().add(mailingAddress2);
 
-        employee.getMailingAddresses().add(Integer.valueOf(5));
+        employee.getMailingAddresses().add(5);
 
         return employee;
     }

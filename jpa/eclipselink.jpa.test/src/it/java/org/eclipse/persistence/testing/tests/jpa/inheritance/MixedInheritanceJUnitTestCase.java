@@ -149,7 +149,7 @@ public class MixedInheritanceJUnitTestCase extends JUnitTestCase {
         MudTireInfo mudTire = new MudTireInfo();
         mudTire.setName("Goodyear Mud Tracks");
         mudTire.setCode("MT-674-A4");
-        mudTire.setPressure(Integer.valueOf(100));
+        mudTire.setPressure(100);
         mudTire.setTreadDepth(3);
 
         TireRating tireRating = new TireRating();
@@ -181,7 +181,7 @@ public class MixedInheritanceJUnitTestCase extends JUnitTestCase {
         RockTireInfo rockTire = new RockTireInfo();
         rockTire.setName("Goodyear Mud Tracks");
         rockTire.setCode("AE-678");
-        rockTire.setPressure(Integer.valueOf(100));
+        rockTire.setPressure(100);
         rockTire.setGrip(RockTireInfo.Grip.SUPER);
 
         try {

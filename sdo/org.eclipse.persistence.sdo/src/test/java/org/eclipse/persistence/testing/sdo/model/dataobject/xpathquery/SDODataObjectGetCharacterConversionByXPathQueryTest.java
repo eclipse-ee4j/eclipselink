@@ -48,8 +48,8 @@ public class SDODataObjectGetCharacterConversionByXPathQueryTest extends SDOData
         List objects = new ArrayList();
         char c = 'c';
         char c1 = 'a';
-        Character b = Character.valueOf(c);
-        Character bb = Character.valueOf(c1);
+        Character b = c;
+        Character bb = c1;
         objects.add(b);
         objects.add(bb);
 

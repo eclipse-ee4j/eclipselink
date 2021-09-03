@@ -33,7 +33,7 @@ public class CourseDeveloper extends DevelopmentJob {
         CourseDeveloper example = new CourseDeveloper();
 
         example.setCourse("Intro to Quake 2 Map Design using Qoole");
-        example.setSalary(Float.valueOf(52000.00f));
+        example.setSalary(52000.00f);
 
         return example;
     }
@@ -42,7 +42,7 @@ public class CourseDeveloper extends DevelopmentJob {
         CourseDeveloper example = new CourseDeveloper();
 
         example.setCourse("Introduction to Synthesis");
-        example.setSalary(Float.valueOf(51000.00f));
+        example.setSalary(51000.00f);
 
         return example;
     }
@@ -51,7 +51,7 @@ public class CourseDeveloper extends DevelopmentJob {
         CourseDeveloper example = new CourseDeveloper();
 
         example.setCourse("Welcome to Ada!");
-        example.setSalary(Float.valueOf(56000.00f));
+        example.setSalary(56000.00f);
 
         return example;
     }

@@ -318,7 +318,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
                     manager.close();
                 }
                 manager = createEntityManager();
-                address = manager.find(Address.class, Long.valueOf(address.getId()));
+                address = manager.find(Address.class, address.getId());
                 if (address.getStreet().equals("Hastings")) {
                     throwError("Change tracking detected the change (not used?).");
                 } else {
@@ -347,7 +347,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
                     manager.close();
                 }
                 manager = createEntityManager();
-                address = manager.find(Address.class, Long.valueOf(address.getId()));
+                address = manager.find(Address.class, address.getId());
                 if (address.getStreet().equals("Hastings")) {
                     throwError("Change tracking detected the change (not used?).");
                 } else {
@@ -378,7 +378,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
                     manager.close();
                 }
                 manager = createEntityManager();
-                employee = manager.getReference(Employee.class, Long.valueOf(employee.getId()));
+                employee = manager.getReference(Employee.class, employee.getId());
                 if (employee.getLastName().equals("Hastings")) {
                     throwError("Change tracking detected the change (not used?).");
                 } else {
@@ -408,7 +408,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
                     manager.close();
                 }
                 manager = createEntityManager();
-                employee = manager.getReference(Employee.class, Long.valueOf(employee.getId()));
+                employee = manager.getReference(Employee.class, employee.getId());
                 manager.refresh(employee);
                 if (employee.getPeriod().getStartDate().getDate() == 7) {
                     throwError("Change tracking detected the change (not used?).");

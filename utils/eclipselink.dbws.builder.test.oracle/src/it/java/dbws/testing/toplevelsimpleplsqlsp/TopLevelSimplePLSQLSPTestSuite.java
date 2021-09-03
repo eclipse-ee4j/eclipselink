@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -234,7 +234,7 @@ public class TopLevelSimplePLSQLSPTestSuite extends DBWSTestSuite {
     @Test
     public void testBoolean() {
         Invocation invocation = new Invocation("testBoolean");
-        invocation.setParameter("X", Integer.valueOf(0));
+        invocation.setParameter("X", 0);
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
         assertNotNull("result is null", result);
@@ -255,7 +255,7 @@ public class TopLevelSimplePLSQLSPTestSuite extends DBWSTestSuite {
     @Test
     public void testBooleanIn() {
         Invocation invocation = new Invocation("testBooleanIn");
-        invocation.setParameter("X", Integer.valueOf(0));
+        invocation.setParameter("X", 0);
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
         assertNotNull("result is null", result);

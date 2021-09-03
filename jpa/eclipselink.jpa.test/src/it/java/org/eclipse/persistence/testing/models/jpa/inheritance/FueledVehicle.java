@@ -39,7 +39,7 @@ public class FueledVehicle extends Vehicle implements Cloneable {
 
     @Override
     public void change() {
-        this.setPassengerCapacity(Integer.valueOf(100));
+        this.setPassengerCapacity(100);
         this.setFuelType("HOT AIR");
     }
 

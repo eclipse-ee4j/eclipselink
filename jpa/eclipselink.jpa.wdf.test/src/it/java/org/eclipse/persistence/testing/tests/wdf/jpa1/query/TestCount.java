@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -59,7 +59,7 @@ public class TestCount extends JPA1Base {
             em.persist(eisKratzen);
             Project schneeSchieben = new Project("Schnee Schieben");
             em.persist(schneeSchieben);
-            Cubicle cubicle = new Cubicle(new CubiclePrimaryKeyClass(Integer.valueOf(1), Integer.valueOf(2)), "red-green-gold",
+            Cubicle cubicle = new Cubicle(new CubiclePrimaryKeyClass(1, 2), "red-green-gold",
                     null);
             em.persist(cubicle);
             env.commitTransactionAndClear(em);

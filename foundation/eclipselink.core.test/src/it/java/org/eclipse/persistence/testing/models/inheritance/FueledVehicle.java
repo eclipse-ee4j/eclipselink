@@ -21,7 +21,7 @@ public class FueledVehicle extends Vehicle {
 
     @Override
     public void change() {
-        this.setPassengerCapacity(Integer.valueOf(100));
+        this.setPassengerCapacity(100);
         this.addPartNumber("NEWPART 1");
         this.setFuelType("HOT AIR");
 
@@ -30,8 +30,8 @@ public class FueledVehicle extends Vehicle {
     public static FueledVehicle example1(Company company) {
         FueledVehicle example = new FueledVehicle();
 
-        example.setPassengerCapacity(Integer.valueOf(1));
-        example.setFuelCapacity(Integer.valueOf(10));
+        example.setPassengerCapacity(1);
+        example.setFuelCapacity(10);
         example.setDescription("Motercycle");
         example.getOwner().setValue(company);
         return example;

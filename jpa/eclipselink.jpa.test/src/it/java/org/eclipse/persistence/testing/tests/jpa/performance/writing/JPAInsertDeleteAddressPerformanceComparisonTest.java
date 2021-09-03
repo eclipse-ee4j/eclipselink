@@ -36,7 +36,7 @@ public class JPAInsertDeleteAddressPerformanceComparisonTest extends Performance
         Address any = (Address)manager.createQuery("Select a from Address a").getResultList().get(0);
         // Create a query to avoid a cache hit to load emulated data.
         Query query = manager.createQuery("Select a from Address a where a.id = :id");
-        query.setParameter("id", Long.valueOf(any.getId()));
+        query.setParameter("id", any.getId());
         any = (Address)query.getSingleResult();
         manager.close();
         manager = createEntityManager();
@@ -62,7 +62,7 @@ public class JPAInsertDeleteAddressPerformanceComparisonTest extends Performance
 
         manager = createEntityManager();
         manager.getTransaction().begin();
-        address = manager.getReference(Address.class, Long.valueOf(address.getId()));
+        address = manager.getReference(Address.class, address.getId());
         manager.remove(address);
         manager.getTransaction().commit();
         manager.close();

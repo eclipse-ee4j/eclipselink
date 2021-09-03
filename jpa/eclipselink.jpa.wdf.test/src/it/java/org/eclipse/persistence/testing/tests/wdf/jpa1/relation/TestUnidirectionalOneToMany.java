@@ -40,7 +40,7 @@ import org.junit.Test;
 public class TestUnidirectionalOneToMany extends JPA1Base {
 
     private static final int EMP_ID_VALUE = 4;
-    private static final Integer EMP_ID = Integer.valueOf(EMP_ID_VALUE);
+    private static final Integer EMP_ID = EMP_ID_VALUE;
     private static final Set<Pair> SEED_SET = new HashSet<Pair>();
     static {
         SEED_SET.add(new Pair(EMP_ID_VALUE, 1));
@@ -179,7 +179,7 @@ public class TestUnidirectionalOneToMany extends JPA1Base {
             emp = em.find(Employee.class, EMP_ID);
             reviews = emp.getReviews();
             verify(reviews.size() == 2, "not exactly 2 reviews but " + reviews.size());
-            Object object = em.find(Review.class, Integer.valueOf(removedId));
+            Object object = em.find(Review.class, removedId);
             verify(object == null, "review found");
             env.rollbackTransactionAndClear(em);
         } finally {
@@ -273,7 +273,7 @@ public class TestUnidirectionalOneToMany extends JPA1Base {
             expected.add(new Pair(newId, 3));
             checkJoinTable(expected);
             env.beginTransaction(em);
-            emp = em.find(Employee.class, Integer.valueOf(newId));
+            emp = em.find(Employee.class, newId);
             reviews = emp.getReviews();
             verify(reviews.size() == 3, "not exactly 3 reviews but " + reviews.size());
             env.rollbackTransactionAndClear(em);

@@ -34,7 +34,7 @@ public class BooleanTester extends TypeTester {
     public BooleanTester(boolean testValue) {
         super(Boolean.valueOf(testValue).toString());
         booleanValue = testValue;
-        booleanClassValue = Boolean.valueOf(testValue);
+        booleanClassValue = testValue;
     }
 
     public static RelationalDescriptor descriptor() {
@@ -83,11 +83,11 @@ public class BooleanTester extends TypeTester {
     }
 
     public void setBooleanClassValue(boolean boolValue) {
-        booleanClassValue = Boolean.valueOf(boolValue);
+        booleanClassValue = boolValue;
     }
 
     public void setBooleanValue(Boolean boolValue) {
-        booleanValue = boolValue.booleanValue();
+        booleanValue = boolValue;
     }
 
     public void setBooleanValue(boolean boolValue) {

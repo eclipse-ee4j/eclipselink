@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -304,7 +304,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
      * INTERNAL:
      */
     public Boolean isCascadeOnDelete() {
-        return m_cascadeOnDelete != null && m_cascadeOnDelete.booleanValue();
+        return m_cascadeOnDelete != null && m_cascadeOnDelete;
     }
 
     /**
@@ -323,7 +323,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
      * Used for OX mapping.
      */
     public boolean isNonCacheable() {
-        return m_nonCacheable != null && m_nonCacheable.booleanValue();
+        return m_nonCacheable != null && m_nonCacheable;
     }
 
     /**

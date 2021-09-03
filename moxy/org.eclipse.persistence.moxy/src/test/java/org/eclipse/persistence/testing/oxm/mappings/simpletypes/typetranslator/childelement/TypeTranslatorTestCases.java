@@ -25,7 +25,7 @@ import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 public class TypeTranslatorTestCases extends XMLMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/simpletypes/typetranslator/TypeTranslatorTest.xml";
     private final static String CONTROL_EMPLOYEE_NAME = "Jane Doh";
-    private final static Integer CONTROL_EMPLOYEE_PHONE = Integer.valueOf(4441234);
+    private final static Integer CONTROL_EMPLOYEE_PHONE = 4441234;
     private XMLMarshaller xmlMarshaller;
 
     public TypeTranslatorTestCases(String name) throws Exception {

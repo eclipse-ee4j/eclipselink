@@ -40,13 +40,13 @@ public class XmlElementsCollectionTestCases extends JAXBWithJSONTestCases {
         EmployeeCollection employee = new EmployeeCollection();
         employee.id = CONTROL_ID;
         ArrayList choices = new ArrayList();
-        choices.add(Integer.valueOf(12));
+        choices.add(12);
         choices.add("String Value");
         Address addr = new Address();
         addr.city = "Ottawa";
         addr.street = "123 Fake Street";
         choices.add(addr);
-        choices.add(Integer.valueOf(5));
+        choices.add(5);
         choices.add("");
         employee.choice = choices;
         return employee;
@@ -57,8 +57,8 @@ public class XmlElementsCollectionTestCases extends JAXBWithJSONTestCases {
           EmployeeCollection employee = new EmployeeCollection();
           employee.id = CONTROL_ID;
           ArrayList choices = new ArrayList();
-          choices.add(Integer.valueOf(12));
-          choices.add(Integer.valueOf(5));
+          choices.add(12);
+          choices.add(5);
           choices.add("String Value");
           choices.add("");
           Address addr = new Address();

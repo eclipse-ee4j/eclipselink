@@ -33,7 +33,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 public class EMQueryJUnitTestSuite extends JUnitTestCase {
-    protected Integer nonExistingCustomerId = Integer.valueOf(999999);
+    protected Integer nonExistingCustomerId = 999999;
 
     public EMQueryJUnitTestSuite() {
     }

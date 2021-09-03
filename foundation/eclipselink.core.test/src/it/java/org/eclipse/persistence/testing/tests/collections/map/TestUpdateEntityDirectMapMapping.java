@@ -63,7 +63,7 @@ public class TestUpdateEntityDirectMapMapping extends TestReadEntityDirectMapMap
         mapKey.setId(3);
         mapKey.setData("testData");
         mapKey = (EntityMapKey)uow.registerObject(mapKey);
-        changedHolder.addEntityDirectMapItem(mapKey, Integer.valueOf(3));
+        changedHolder.addEntityDirectMapItem(mapKey, 3);
         uow.commit();
         Object holderForComparison = uow.readObject(changedHolder);
         if (!compareObjects(changedHolder, holderForComparison)){
@@ -87,7 +87,7 @@ public class TestUpdateEntityDirectMapMapping extends TestReadEntityDirectMapMap
         mapKey = new EntityMapKey();
         mapKey.setId(3);
         Integer value = (Integer)holder.getEntityToDirectMap().get(mapKey);
-        if (value.intValue() != 3){
+        if (value != 3){
             throw new TestErrorException("Item was not correctly added to map");
         }
         if (keyMapping.isPrivateOwned()){

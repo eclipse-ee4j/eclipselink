@@ -76,8 +76,8 @@ public class XMLElementsWithWrapperTestCases extends JAXBWithJSONTestCases{
         // setup control objects
         Foo foo = new Foo();
         List theItems = new ArrayList();
-        theItems.add(Float.valueOf(2.5f));
-        theItems.add(Integer.valueOf(1));
+        theItems.add(2.5f);
+        theItems.add(1);
         foo.items = theItems;
         return foo;
     }

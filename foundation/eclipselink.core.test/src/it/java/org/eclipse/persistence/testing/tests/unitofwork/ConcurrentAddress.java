@@ -312,7 +312,7 @@ public class ConcurrentAddress implements Serializable, Cloneable {
         DirectToFieldMapping cityMapping = new DirectToFieldMapping();
         cityMapping.setAttributeName("city");
         cityMapping.setFieldName("CONCURRENT_ADDRESS.CITY");
-        cityMapping.setWeight(Integer.valueOf(10));
+        cityMapping.setWeight(10);
         descriptor.addMapping(cityMapping);
 
         DirectToFieldMapping countryMapping = new DirectToFieldMapping();
@@ -320,7 +320,7 @@ public class ConcurrentAddress implements Serializable, Cloneable {
         countryMapping.setFieldName("CONCURRENT_ADDRESS.COUNTRY");
         countryMapping.setSetMethodName("setCountry");
         countryMapping.setGetMethodName("getCountry");
-        countryMapping.setWeight(Integer.valueOf(9));
+        countryMapping.setWeight(9);
         descriptor.addMapping(countryMapping);
 
         DirectToFieldMapping idMapping = new DirectToFieldMapping();
@@ -328,13 +328,13 @@ public class ConcurrentAddress implements Serializable, Cloneable {
         idMapping.setFieldName("CONCURRENT_ADDRESS.ADDRESS_ID");
         idMapping.setSetMethodName("setId");
         idMapping.setGetMethodName("getId");
-        idMapping.setWeight(Integer.valueOf(8));
+        idMapping.setWeight(8);
         descriptor.addMapping(idMapping);
 
         DirectToFieldMapping postalCodeMapping = new DirectToFieldMapping();
         postalCodeMapping.setAttributeName("postalCode");
         postalCodeMapping.setFieldName("CONCURRENT_ADDRESS.P_CODE");
-        postalCodeMapping.setWeight(Integer.valueOf(7));
+        postalCodeMapping.setWeight(7);
         descriptor.addMapping(postalCodeMapping);
 
         DirectToFieldMapping provinceMapping = new DirectToFieldMapping();
@@ -342,13 +342,13 @@ public class ConcurrentAddress implements Serializable, Cloneable {
         provinceMapping.setFieldName("CONCURRENT_ADDRESS.PROVINCE");
         provinceMapping.setSetMethodName("setProvince");
         provinceMapping.setGetMethodName("getProvince");
-        provinceMapping.setWeight(Integer.valueOf(6));
+        provinceMapping.setWeight(6);
         descriptor.addMapping(provinceMapping);
 
         DirectToFieldMapping streetMapping = new DirectToFieldMapping();
         streetMapping.setAttributeName("street");
         streetMapping.setFieldName("CONCURRENT_ADDRESS.STREET");
-        streetMapping.setWeight(Integer.valueOf(5));
+        streetMapping.setWeight(5);
         descriptor.addMapping(streetMapping);
 
         return descriptor;

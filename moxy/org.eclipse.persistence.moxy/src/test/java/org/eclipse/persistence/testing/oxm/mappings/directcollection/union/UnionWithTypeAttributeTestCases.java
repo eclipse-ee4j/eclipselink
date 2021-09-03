@@ -25,7 +25,7 @@ import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
 public class UnionWithTypeAttributeTestCases extends XMLMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/directcollection/union/UnionWithTypeAttribute.xml";
-    protected final static Integer CONTROL_ITEM = Integer.valueOf(10);
+    protected final static Integer CONTROL_ITEM = 10;
     protected final static String CONTROL_FIRST_NAME = "Jane";
     protected final static String CONTROL_LAST_NAME = "Doe";
 

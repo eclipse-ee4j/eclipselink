@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -137,11 +137,11 @@ public class DBasePlatform extends org.eclipse.persistence.platform.database.Dat
     public Hashtable maximumNumericValues() {
         Hashtable values = new Hashtable();
 
-        values.put(Integer.class, Integer.valueOf(Integer.MAX_VALUE));
+        values.put(Integer.class, Integer.MAX_VALUE);
         values.put(Long.class, Long.valueOf("922337203685478000"));
         values.put(Double.class, Double.valueOf("99999999.999999999"));
-        values.put(Short.class, Short.valueOf(Short.MIN_VALUE));
-        values.put(Byte.class, Byte.valueOf(Byte.MIN_VALUE));
+        values.put(Short.class, Short.MIN_VALUE);
+        values.put(Byte.class, Byte.MIN_VALUE);
         values.put(Float.class, Float.valueOf("99999999.999999999"));
         values.put(java.math.BigInteger.class, new java.math.BigInteger("922337203685478000"));
         values.put(java.math.BigDecimal.class, new java.math.BigDecimal("999999.999999999"));
@@ -157,11 +157,11 @@ public class DBasePlatform extends org.eclipse.persistence.platform.database.Dat
     public Hashtable minimumNumericValues() {
         Hashtable values = new Hashtable();
 
-        values.put(Integer.class, Integer.valueOf(Integer.MIN_VALUE));
+        values.put(Integer.class, Integer.MIN_VALUE);
         values.put(Long.class, Long.valueOf("-922337203685478000"));
         values.put(Double.class, Double.valueOf("-99999999.999999999"));
-        values.put(Short.class, Short.valueOf(Short.MIN_VALUE));
-        values.put(Byte.class, Byte.valueOf(Byte.MIN_VALUE));
+        values.put(Short.class, Short.MIN_VALUE);
+        values.put(Byte.class, Byte.MIN_VALUE);
         values.put(Float.class, Float.valueOf("-99999999.999999999"));
         values.put(java.math.BigInteger.class, new java.math.BigInteger("-922337203685478000"));
         values.put(java.math.BigDecimal.class, new java.math.BigDecimal("-999999.999999999"));

@@ -80,7 +80,7 @@ public class StoredProcWithOutputParamsAndResultSetTest extends TestCase {
             spCall.setProcedureName("Select_Output_and_ResultSet");
             spCall.addNamedArgument("ARG1", "argument");
             if (useInOut) {
-                spCall.addNamedInOutputArgumentValue("VERSION", Long.valueOf(0), "VERSION", java.math.BigDecimal.class);
+                spCall.addNamedInOutputArgumentValue("VERSION", 0L, "VERSION", java.math.BigDecimal.class);
             } else {
                 spCall.addNamedOutputArgument("VERSION", "VERSION", BigDecimal.class);
             }
@@ -95,9 +95,9 @@ public class StoredProcWithOutputParamsAndResultSetTest extends TestCase {
         getSession().removeQuery("dblogin");
         getSession().addQuery("dblogin", readQuery);
         Vector args = new Vector(2);
-        args.addElement(Integer.valueOf(1));
+        args.addElement(1);
         if (useCustomSQL && useInOut) {
-            args.addElement(Long.valueOf(0));
+            args.addElement(0L);
         }
         try {
             Vector vResult = (Vector)getSession().executeQuery("dblogin", args);
@@ -111,9 +111,9 @@ public class StoredProcWithOutputParamsAndResultSetTest extends TestCase {
         } else {
             spCall = new StoredProcedureCall();
             spCall.setProcedureName("Select_Output_and_ResultSet");
-            spCall.addNamedArgumentValue("ARG1", Integer.valueOf(1));
+            spCall.addNamedArgumentValue("ARG1", 1);
             if (useInOut) {
-                spCall.addNamedInOutputArgumentValue("VERSION", Long.valueOf(0), "VERSION", java.math.BigDecimal.class);
+                spCall.addNamedInOutputArgumentValue("VERSION", 0L, "VERSION", java.math.BigDecimal.class);
             } else {
                 spCall.addNamedOutputArgument("VERSION", "VERSION", BigDecimal.class);
             }

@@ -23,7 +23,7 @@ public class ProductDeveloper extends DevelopmentJob {
         ProductDeveloper example = new ProductDeveloper();
 
         example.setProduct("Quake 2 Maps");
-        example.setSalary(Float.valueOf(145000.00f));
+        example.setSalary(145000.00f);
 
         return example;
     }
@@ -32,7 +32,7 @@ public class ProductDeveloper extends DevelopmentJob {
         ProductDeveloper example = new ProductDeveloper();
 
         example.setProduct("Trinity Operating System");
-        example.setSalary(Float.valueOf(85000.00f));
+        example.setSalary(85000.00f);
 
         return example;
     }
@@ -41,7 +41,7 @@ public class ProductDeveloper extends DevelopmentJob {
         ProductDeveloper example = new ProductDeveloper();
 
         example.setProduct("Ada For Dummies");
-        example.setSalary(Float.valueOf(80000.00f));
+        example.setSalary(80000.00f);
 
         return example;
     }

@@ -277,7 +277,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                     && isDefaultPropertiesQuery() && (!hasOrderByExpressions())
                     && descriptor.getQueryManager().hasReadAllQuery();
             setIsCustomQueryUsed(useCustomQueryValue);
-            return Boolean.valueOf(useCustomQueryValue);
+            return useCustomQueryValue;
         }
     }
 

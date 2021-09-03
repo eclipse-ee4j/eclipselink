@@ -58,14 +58,14 @@ public class TestOptimistic extends JPA1Base {
             env.commitTransactionAndClear(em1);
 
             env.beginTransaction(em1);
-            rev1 = em1.find(Review.class, Integer.valueOf(id));
+            rev1 = em1.find(Review.class, id);
             verify(rev1 != null, "Review is null");
             rev1.getVersion();
 
             EntityManager em2 = env.getEntityManagerFactory().createEntityManager();
             try {
                 env.beginTransaction(em2);
-                Review rev2 = em2.find(Review.class, Integer.valueOf(id));
+                Review rev2 = em2.find(Review.class, id);
                 rev2.setReviewText("two"); // 1 update
                 env.commitTransactionAndClear(em2);
             } finally {
@@ -109,10 +109,10 @@ public class TestOptimistic extends JPA1Base {
             env.commitTransactionAndClear(em1);
 
             env.beginTransaction(em1);
-            rev1 = em1.find(Review.class, Integer.valueOf(id));
+            rev1 = em1.find(Review.class, id);
             verify(rev1 != null, "Review is null");
             env.beginTransaction(em2);
-            Review rev2 = em2.find(Review.class, Integer.valueOf(id));
+            Review rev2 = em2.find(Review.class, id);
             em2.remove(rev2); // 1 delete
             env.commitTransactionAndClear(em2);
             rev1.setReviewText("1"); // 2 update
@@ -149,10 +149,10 @@ public class TestOptimistic extends JPA1Base {
             em1.persist(rev1);
             env.commitTransactionAndClear(em1);
             env.beginTransaction(em1);
-            rev1 = em1.find(Review.class, Integer.valueOf(id));
+            rev1 = em1.find(Review.class, id);
             verify(rev1 != null, "Review is null");
             env.beginTransaction(em2);
-            Review rev2 = em2.find(Review.class, Integer.valueOf(id));
+            Review rev2 = em2.find(Review.class, id);
             rev2.setReviewDate(Date.valueOf("2005-12-23")); // 1 update
             env.commitTransactionAndClear(em2);
             em1.remove(rev1); // 2 delete
@@ -186,10 +186,10 @@ public class TestOptimistic extends JPA1Base {
             em1.persist(rev1);
             env.commitTransactionAndClear(em1);
             env.beginTransaction(em1);
-            rev1 = em1.find(Review.class, Integer.valueOf(id));
+            rev1 = em1.find(Review.class, id);
             verify(rev1 != null, "Review is null");
             env.beginTransaction(em2);
-            Review rev2 = em2.find(Review.class, Integer.valueOf(id));
+            Review rev2 = em2.find(Review.class, id);
             em2.remove(rev2); // 1 delete
             env.commitTransactionAndClear(em2);
             em1.remove(rev1); // 2 delete
@@ -218,7 +218,7 @@ public class TestOptimistic extends JPA1Base {
             env.commitTransactionAndClear(em);
             version = rev.getVersion();
             env.beginTransaction(em);
-            rev = em.find(Review.class, Integer.valueOf(id));
+            rev = em.find(Review.class, id);
             verify(rev != null, "Review is null");
             rev.setReviewText(rev.getReviewText()); // no change
             env.commitTransactionAndClear(em);
@@ -297,7 +297,7 @@ public class TestOptimistic extends JPA1Base {
             rev = em.merge(rev);
             em.flush();
             env.commitTransactionAndClear(em); // still 4th version
-            rev = em.find(Review.class, Integer.valueOf(id));
+            rev = em.find(Review.class, id);
             verify(rev.getReviewText().equals("BBB"), "wrong reviewText");
             verify(rev.getReviewDate().equals(Date.valueOf("2005-12-23")), "wrong reviewDate");
             verify(rev.getVersion() == startVersion + 3, "wrong version");
@@ -340,10 +340,10 @@ public class TestOptimistic extends JPA1Base {
             em1.persist(rev1);
             env.commitTransactionAndClear(em1);
             env.beginTransaction(em1);
-            rev1 = em1.find(Review.class, Integer.valueOf(id));
+            rev1 = em1.find(Review.class, id);
             verify(rev1 != null, "Review is null");
             env.beginTransaction(em2);
-            Review rev2 = em2.find(Review.class, Integer.valueOf(id));
+            Review rev2 = em2.find(Review.class, id);
             rev2.setReviewDate(Date.valueOf("2005-12-23"));
             env.commitTransactionAndClear(em2);
             em1.refresh(rev1);
@@ -368,7 +368,7 @@ public class TestOptimistic extends JPA1Base {
             env.commitTransactionAndClear(em);
             for (int i = 0; i < 3; i++) {
                 env.beginTransaction(em);
-                rev = em.find(Review.class, Integer.valueOf(id));
+                rev = em.find(Review.class, id);
                 verify(rev != null, "Review is null");
                 rev.setReviewText(Integer.valueOf(i).toString());
                 env.commitTransactionAndClear(em);
@@ -391,7 +391,7 @@ public class TestOptimistic extends JPA1Base {
             em.persist(rev1);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            rev1 = em.find(Review.class, Integer.valueOf(id));
+            rev1 = em.find(Review.class, id);
             verify(rev1 != null, "Review is null");
             em.persist(rev1);
             verify(rev1.getVersion() > 0, "Version reset");
@@ -417,17 +417,17 @@ public class TestOptimistic extends JPA1Base {
             em1.persist(rev1);
             env.commitTransactionAndClear(em1);
             env.beginTransaction(em1); // Tx1 read and flush change
-            rev1 = em1.find(Review.class, Integer.valueOf(id));
+            rev1 = em1.find(Review.class, id);
             verify(rev1 != null, "Review is null");
             rev1.setReviewText("2");
             em1.flush();
             env.beginTransaction(em2); // Tx2 read flushed entity ?
-            Review rev2 = em2.find(Review.class, Integer.valueOf(id));
+            Review rev2 = em2.find(Review.class, id);
             verify(rev2 != null, "Review is null");
             env.rollbackTransactionAndClear(em1); // Tx1 rollback first change
                                                   // and commit second
             env.beginTransaction(em1);
-            rev1 = em1.find(Review.class, Integer.valueOf(id));
+            rev1 = em1.find(Review.class, id);
             verify(rev1 != null, "Review is null");
             rev1.setReviewText("3");
             env.commitTransactionAndClear(em1);
@@ -473,7 +473,7 @@ public class TestOptimistic extends JPA1Base {
 
     private void updateNodes(JPAEnvironment env, EntityManager em, String newName) {
         env.beginTransaction(em);
-        Node tmp = em.find(Node.class, Integer.valueOf(0));
+        Node tmp = em.find(Node.class, 0);
         verify(tmp.getVersion() != 0, "wrong version");
         while (tmp != null) {
             tmp.setName(newName);

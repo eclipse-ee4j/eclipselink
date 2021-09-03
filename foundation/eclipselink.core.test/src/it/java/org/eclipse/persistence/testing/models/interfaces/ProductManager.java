@@ -34,7 +34,7 @@ public class ProductManager implements ManagerialJob, VIP, java.io.Serializable 
         ProductManager example = new ProductManager();
 
         example.setProduct("Quake 2 Maps");
-        example.setSalary(Float.valueOf(88000.00f));
+        example.setSalary(88000.00f);
         example.setGoldCardNumber(new BigInteger("482122381872"));
 
         Vector employees = new Vector(1);
@@ -49,7 +49,7 @@ public class ProductManager implements ManagerialJob, VIP, java.io.Serializable 
         ProductManager example = new ProductManager();
 
         example.setProduct("Trinity Operating System");
-        example.setSalary(Float.valueOf(84000.00f));
+        example.setSalary(84000.00f);
         example.setGoldCardNumber(new BigInteger("998128762878"));
 
         Vector employees = new Vector(1);
@@ -64,7 +64,7 @@ public class ProductManager implements ManagerialJob, VIP, java.io.Serializable 
         ProductManager example = new ProductManager();
 
         example.setProduct("Ada For Dummies");
-        example.setSalary(Float.valueOf(84000.00f));
+        example.setSalary(84000.00f);
         example.setGoldCardNumber(new BigInteger("144173389267"));
 
         Vector employees = new Vector(1);

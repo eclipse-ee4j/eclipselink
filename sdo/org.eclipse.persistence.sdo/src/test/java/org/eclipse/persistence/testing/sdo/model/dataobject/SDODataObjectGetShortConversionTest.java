@@ -326,7 +326,7 @@ public class SDODataObjectGetShortConversionTest extends SDODataObjectConversion
     public void testGetShortFromCharacterObject() {
         SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_CHARACTEROBJECT);
-        dataObject.set(property,Character.valueOf('a'));
+        dataObject.set(property, 'a');
         try {
             dataObject.getShort(property);
             fail("ClassCastException should be thrown.");

@@ -32,7 +32,7 @@ public class TypeAttributeNullTestCases extends XMLMappingTestCases {
         Employee employee = new Employee();
         Identifier id = new Identifier();
         id.setInitials("AAA");
-        id.setSinNumber(Integer.valueOf(123));
+        id.setSinNumber(123);
         employee.setIdentifier(id);
         employee.setFirstName(CONTROL_FIRST_NAME);
         employee.setLastName(CONTROL_LAST_NAME);

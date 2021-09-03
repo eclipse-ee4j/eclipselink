@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -240,7 +240,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
             for (int index = getCalls().size() - 1; index >= 0; index--) {
                 DatasourceCall databseCall = (DatasourceCall)getCalls().elementAt(index);
                 Integer rowCount = (Integer)executeCall(databseCall);
-                if ((index == (getCalls().size() - 1)) || (rowCount.intValue() <= 0)) {// Row count returned must be from first table or zero if any are zero.
+                if ((index == (getCalls().size() - 1)) || (rowCount <= 0)) {// Row count returned must be from first table or zero if any are zero.
                     returnedRowCount = rowCount;
                 }
             }
@@ -303,7 +303,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
             for (int index = 0; index < getCalls().size(); index++) {
                 DatasourceCall databseCall = (DatasourceCall)getCalls().elementAt(index);
                 Integer rowCount = (Integer)executeCall(databseCall);
-                if ((index == 0) || (rowCount.intValue() <= 0)) {// Row count returned must be from first table or zero if any are zero.
+                if ((index == 0) || (rowCount <= 0)) {// Row count returned must be from first table or zero if any are zero.
                     returnedRowCount = rowCount;
                 }
             }
@@ -864,11 +864,11 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
                     Integer rowCount;
                     if (result instanceof AbstractRecord) {
                         this.query.setProperty("output", result);
-                        rowCount = Integer.valueOf(1);
+                        rowCount = 1;
                     } else {
                         rowCount = (Integer)result;
                     }
-                    if ((index == 0) || (rowCount.intValue() <= 0)) {// Row count returned must be from first table or zero if any are zero.
+                    if ((index == 0) || (rowCount <= 0)) {// Row count returned must be from first table or zero if any are zero.
                         returnedRowCount = rowCount;
                     }
                     if (returnFields != null) {
@@ -881,7 +881,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
             // Set the return row if one was returned (Postgres).
             if (result instanceof AbstractRecord) {
                 this.query.setProperty("output", result);
-                returnedRowCount = Integer.valueOf(1);
+                returnedRowCount = 1;
             } else {
                 returnedRowCount = (Integer)result;
             }
@@ -964,7 +964,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
             try {
                 DatasourceCall databseCall = (DatasourceCall)getCalls().elementAt(index);
                 Integer rowCount = (Integer)executeCall(databseCall);
-                if ((index == nTables*2) || (rowCount.intValue() <= 0)) {// Row count returned must be from first table or zero if any are zero.
+                if ((index == nTables*2) || (rowCount <= 0)) {// Row count returned must be from first table or zero if any are zero.
                     returnedRowCount = rowCount;
                 }
             } catch (DatabaseException databaseEx) {

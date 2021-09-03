@@ -345,7 +345,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 // reason MySql returns a Long here. By position is ok, that is,
                 // it returns an Integer (as we registered)
                 if (outputParamValueFromName instanceof Long) {
-                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromName, outputParamValueFromName.equals(Long.valueOf(numberOfEmployes)));
+                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromName, outputParamValueFromName.equals((long) numberOfEmployes));
                 } else if (outputParamValueFromName instanceof Integer) {
                     assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromName, outputParamValueFromName.equals(numberOfEmployes));
                 }
@@ -381,7 +381,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 // This test also mixes index and named parameters, so this test my be invalid to begin with.
                 assertNotNull("The output parameter was null.", outputParamValueFromPosition);
                 if (outputParamValueFromName instanceof Long) {
-                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromPosition, outputParamValueFromPosition.equals(Long.valueOf(numberOfEmployes)));
+                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromPosition, outputParamValueFromPosition.equals((long) numberOfEmployes));
                 } else if (outputParamValueFromName instanceof Integer) {
                     assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromPosition, outputParamValueFromPosition.equals(numberOfEmployes));
                 }
@@ -509,7 +509,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 // reason MySql returns a Long here. By position is ok, that is,
                 // it returns an Integer (as we registered)
                 if (outputParamValueFromName instanceof Long) {
-                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromName, outputParamValueFromName.equals(Long.valueOf(numberOfEmployes)));
+                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromName, outputParamValueFromName.equals((long) numberOfEmployes));
                 } else if (outputParamValueFromName instanceof Integer) {
                     assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromName, outputParamValueFromName.equals(numberOfEmployes));
                 }
@@ -544,7 +544,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 // This test also mixes index and named parameters, so this test my be invalid to begin with.
                 assertNotNull("The output parameter was null.", outputParamValueFromPosition);
                 if (outputParamValueFromName instanceof Long) {
-                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromPosition, outputParamValueFromPosition.equals(Long.valueOf(numberOfEmployes)));
+                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromPosition, outputParamValueFromPosition.equals((long) numberOfEmployes));
                 } else if (outputParamValueFromName instanceof Integer) {
                     assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromPosition, outputParamValueFromPosition.equals(numberOfEmployes));
                 }

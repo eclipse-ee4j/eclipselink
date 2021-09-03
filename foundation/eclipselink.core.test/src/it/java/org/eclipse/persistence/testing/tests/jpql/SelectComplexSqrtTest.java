@@ -24,8 +24,8 @@ public class SelectComplexSqrtTest extends SqrtTestCase {
         Employee emp2 = (Employee)getTestEmployees().lastElement();
 
         String ejbqlString;
-        double salarySquareRoot1 = Math.sqrt((Double.valueOf(emp1.getSalary()).doubleValue()));
-        double salarySquareRoot2 = Math.sqrt((Double.valueOf(emp2.getSalary()).doubleValue()));
+        double salarySquareRoot1 = Math.sqrt(((double) emp1.getSalary()));
+        double salarySquareRoot2 = Math.sqrt(((double) emp2.getSalary()));
 
         ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
         ejbqlString = ejbqlString + "(SQRT(emp.salary) = ";

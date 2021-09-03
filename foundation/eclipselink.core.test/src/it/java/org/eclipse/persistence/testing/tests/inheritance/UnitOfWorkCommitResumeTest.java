@@ -87,7 +87,7 @@ public class UnitOfWorkCommitResumeTest extends WriteObjectTest {
 
         // Change a vehicle
         Vehicle aVehicle = (Vehicle)vehicles.lastElement();
-        aVehicle.setPassengerCapacity(Integer.valueOf(15));
+        aVehicle.setPassengerCapacity(15);
 
         // Add some vehicles
         Car car = Car.example2();
@@ -113,7 +113,7 @@ public class UnitOfWorkCommitResumeTest extends WriteObjectTest {
 
         // Change a vehicle
         Vehicle aVehicle = (Vehicle)vehicles.firstElement();
-        aVehicle.setPassengerCapacity(Integer.valueOf(15));
+        aVehicle.setPassengerCapacity(15);
 
         // Add some vehicles
         Car car = Car.example2();

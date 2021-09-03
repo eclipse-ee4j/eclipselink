@@ -183,10 +183,10 @@ public class DynamicJAXBFromSessionsXMLTestCases extends JAXBTestCases {
         collRef.add(collRef2);
         root.set("collRef", collRef);
 
-        root.set("choice", Integer.valueOf(2112));
+        root.set("choice", 2112);
 
         Vector choiceColl = new Vector(3);
-        choiceColl.add(Double.valueOf(3.14159));
+        choiceColl.add(3.14159);
         choiceColl.add("Pi");
         choiceColl.add(Boolean.TRUE);
         root.set("choiceColl", choiceColl);

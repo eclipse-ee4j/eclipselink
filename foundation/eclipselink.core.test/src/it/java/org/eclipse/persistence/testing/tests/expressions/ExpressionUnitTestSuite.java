@@ -317,7 +317,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         // The following query will select all employees who will still have a salary under
         // $50,000 after a 15% raise.
         Vector arguments = new Vector();
-        arguments.addElement(Integer.valueOf(15));
+        arguments.addElement(15);
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = builder.get("salary").getFunction(applyRaiseSelector, arguments).lessThan(50000);
 
@@ -912,7 +912,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
 
     protected void _addNotBetween$ObjectTest() {
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression expression = builder.get("salary").notBetween(builder.get("manager").get("salary"), Integer.valueOf(500000));
+        Expression expression = builder.get("salary").notBetween(builder.get("manager").get("salary"), 500000);
 
         ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 3);
         test.setExpression(expression);

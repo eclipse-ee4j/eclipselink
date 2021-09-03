@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -348,7 +348,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             final ObjectExpression localExpression = objectExpression
                     .getFirstNonAggregateExpressionAfterExpressionBuilder(new ArrayList(1));
             if ((localExpression == objectExpression) && (mapping != null) && mapping.isForeignReferenceMapping()) {
-                getJoinedMappingIndexes_().put(mapping, Integer.valueOf(currentIndex));
+                getJoinedMappingIndexes_().put(mapping, currentIndex);
             }
             final ClassDescriptor descriptor = mapping.getReferenceDescriptor();
             int numberOfFields = 0;

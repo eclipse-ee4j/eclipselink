@@ -46,14 +46,14 @@ public class XmlElementsInheritanceTestCases extends JAXBWithJSONTestCases {
         EmployeeCollection employee = new EmployeeCollection();
         employee.id = CONTROL_ID;
         ArrayList choices = new ArrayList();
-        choices.add(Integer.valueOf(12));
+        choices.add(12);
         choices.add("String Value");
         CanadianAddress addr = new CanadianAddress();
         addr.city = "Ottawa";
         addr.street = "123 Fake Street";
         addr.postalCode = "A1A 1A1";
         choices.add(addr);
-        choices.add(Integer.valueOf(5));
+        choices.add(5);
         employee.choice = choices;
         return employee;
     }
@@ -63,8 +63,8 @@ public class XmlElementsInheritanceTestCases extends JAXBWithJSONTestCases {
           EmployeeCollection employee = new EmployeeCollection();
           employee.id = CONTROL_ID;
           ArrayList choices = new ArrayList();
-          choices.add(Integer.valueOf(12));
-          choices.add(Integer.valueOf(5));
+          choices.add(12);
+          choices.add(5);
           choices.add("String Value");
           CanadianAddress addr = new CanadianAddress();
           addr.city = "Ottawa";

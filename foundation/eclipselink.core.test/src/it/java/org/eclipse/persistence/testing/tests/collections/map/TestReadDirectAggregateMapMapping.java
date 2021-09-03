@@ -55,10 +55,10 @@ public class TestReadDirectAggregateMapMapping extends TestCase {
         DirectAggregateMapHolder holder = new DirectAggregateMapHolder();
         AggregateMapValue value = new AggregateMapValue();
         value.setValue(1);
-        holder.addDirectToAggregateMapItem(Integer.valueOf(1), value);
+        holder.addDirectToAggregateMapItem(1, value);
         value = new AggregateMapValue();
         value.setValue(2);
-        holder.addDirectToAggregateMapItem(Integer.valueOf(2), value);
+        holder.addDirectToAggregateMapItem(2, value);
         uow.registerObject(holder);
         uow.commit();
         holderExp = (new ExpressionBuilder()).get("id").equal(holder.getId());
@@ -83,7 +83,7 @@ public class TestReadDirectAggregateMapMapping extends TestCase {
         if (holder.getDirectToAggregateMap().size() != 2){
             throw new TestErrorException("Incorrect Number of Map values was read.");
         }
-        AggregateMapValue value = (AggregateMapValue)holder.getDirectToAggregateMap().get(Integer.valueOf(1));
+        AggregateMapValue value = (AggregateMapValue)holder.getDirectToAggregateMap().get(1);
         if (value.getValue() != 1){
             throw new TestErrorException("Incorrect map value was read.");
         }

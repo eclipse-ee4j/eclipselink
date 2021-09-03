@@ -175,7 +175,7 @@ public class SDODataObjectGetCharacterWithIndexConversionTest extends SDODataObj
         type.addDeclaredProperty(property);
 
         char str = 'c';
-        Character B_STR = Character.valueOf(str);
+        Character B_STR = str;
         dataObject.setString(PROPERTY_INDEX, B_STR.toString());// add it to instance list
 
         assertEquals(str, dataObject.getChar(PROPERTY_INDEX));

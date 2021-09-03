@@ -374,7 +374,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
 
         try {
             String ejbqlString = "SELECT emp FROM Employee emp WHERE emp.id > :param1 OR :param1 IS null";
-            createEntityManager().createQuery(ejbqlString).setParameter("param1", Integer.valueOf(1)).getResultList();
+            createEntityManager().createQuery(ejbqlString).setParameter("param1", 1).getResultList();
         } catch (Exception e) {
             exception = e;
         }

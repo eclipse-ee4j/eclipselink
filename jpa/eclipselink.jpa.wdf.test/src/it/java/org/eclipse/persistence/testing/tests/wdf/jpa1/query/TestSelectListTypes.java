@@ -46,7 +46,7 @@ public class TestSelectListTypes extends JPA1Base {
             env.beginTransaction(em);
             em.persist(obj);
             env.commitTransactionAndClear(em);
-            obj = em.find(BasicTypesFieldAccess.class, Integer.valueOf(0));
+            obj = em.find(BasicTypesFieldAccess.class, 0);
         } finally {
             closeEntityManager(em);
         }

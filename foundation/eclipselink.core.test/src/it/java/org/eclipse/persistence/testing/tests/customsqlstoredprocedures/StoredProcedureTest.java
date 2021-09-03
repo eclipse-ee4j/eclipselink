@@ -43,7 +43,7 @@ public class StoredProcedureTest extends TestCase {
 
     @Override
     public void test() {
-        Integer id = Integer.valueOf(12);
+        Integer id = 12;
         String name = "James";
 
         StoredProcedureCall call = new StoredProcedureCall();

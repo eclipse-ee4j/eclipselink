@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -245,7 +245,7 @@ public class DoesExistQuery extends DatabaseQuery {
         AbstractRecord databaseRow = getQueryMechanism().selectRowForDoesExist(field);
 
         // Null means no row was returned.
-        return Boolean.valueOf(databaseRow != null);
+        return databaseRow != null;
     }
 
     /**

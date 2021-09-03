@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -512,7 +512,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
                     if(index == null) {
                         throw ValidationException.collectionRemoveEventWithNoIndex(getMapping());
                     } else {
-                        currentIndexes.add(index.intValue(), newList.indexOf(obj));
+                        currentIndexes.add(index, newList.indexOf(obj));
                     }
                 }
             }
@@ -560,7 +560,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
                    if(index == null) {
                        throw ValidationException.collectionRemoveEventWithNoIndex(getMapping());
                    } else {
-                       originalList.add(index.intValue(), obj);
+                       originalList.add(index, obj);
                    }
                }
            }

@@ -44,17 +44,17 @@ public class NumericTester extends TypeTester {
     public NumericTester() {
         super("ZERO");
         intValue = 0;
-        integerClassValue = Integer.valueOf(0);
+        integerClassValue = 0;
         floatValue = 0;
-        floatClassValue = Float.valueOf(0);
+        floatClassValue = (float) 0;
         longValue = 0;
-        longClassValue = Long.valueOf(0);
+        longClassValue = 0L;
         doubleValue = 0;
-        doubleClassValue = Double.valueOf(0);
+        doubleClassValue = (double) 0;
         shortValue = (short)0;
-        shortClassValue = Short.valueOf((short)0);
+        shortClassValue = (short) 0;
         byteValue = (byte)0;
-        byteClassValue = Byte.valueOf((byte)0);
+        byteClassValue = (byte) 0;
         bigIntegerValue = new BigInteger("0");
         bigDecimalValue = new BigDecimal(bigIntegerValue, 19);
     }
@@ -225,17 +225,17 @@ public class NumericTester extends TypeTester {
         NumericTester tester = new NumericTester("MAXIMUM");
         Hashtable maximums = platform.maximumNumericValues();
 
-        tester.setIntegerValue(((Integer)maximums.get(Integer.class)).intValue());
+        tester.setIntegerValue((Integer) maximums.get(Integer.class));
         tester.setIntegerClassValue((Integer)maximums.get(Integer.class));
-        tester.setFloatValue(((Float)maximums.get(Float.class)).floatValue());
+        tester.setFloatValue((Float) maximums.get(Float.class));
         tester.setFloatClassValue((Float)maximums.get(Float.class));
-        tester.setLongValue(((Long)maximums.get(Long.class)).longValue());
+        tester.setLongValue((Long) maximums.get(Long.class));
         tester.setLongClassValue((Long)maximums.get(Long.class));
-        tester.setDoubleValue(((Double)maximums.get(Double.class)).doubleValue());
+        tester.setDoubleValue((Double) maximums.get(Double.class));
         tester.setDoubleClassValue((Double)maximums.get(Double.class));
-        tester.setShortValue(((Short)maximums.get(Short.class)).shortValue());
+        tester.setShortValue((Short) maximums.get(Short.class));
         tester.setShortClassValue((Short)maximums.get(Short.class));
-        tester.setByteValue(((Byte)maximums.get(Byte.class)).byteValue());
+        tester.setByteValue((Byte) maximums.get(Byte.class));
         tester.setByteClassValue((Byte)maximums.get(Byte.class));
         tester.setBigIntegerValue((BigInteger)maximums.get(BigInteger.class));
         tester.setBigDecimalValue((BigDecimal)maximums.get(BigDecimal.class));
@@ -247,17 +247,17 @@ public class NumericTester extends TypeTester {
         NumericTester tester = new NumericTester("MINIMUM");
         Hashtable minimums = platform.minimumNumericValues();
 
-        tester.setIntegerValue(((Integer)minimums.get(Integer.class)).intValue());
+        tester.setIntegerValue((Integer) minimums.get(Integer.class));
         tester.setIntegerClassValue((Integer)minimums.get(Integer.class));
-        tester.setFloatValue(((Float)minimums.get(Float.class)).floatValue());
+        tester.setFloatValue((Float) minimums.get(Float.class));
         tester.setFloatClassValue((Float)minimums.get(Float.class));
-        tester.setLongValue(((Long)minimums.get(Long.class)).longValue());
+        tester.setLongValue((Long) minimums.get(Long.class));
         tester.setLongClassValue((Long)minimums.get(Long.class));
-        tester.setDoubleValue(((Double)minimums.get(Double.class)).doubleValue());
+        tester.setDoubleValue((Double) minimums.get(Double.class));
         tester.setDoubleClassValue((Double)minimums.get(Double.class));
-        tester.setShortValue(((Short)minimums.get(Short.class)).shortValue());
+        tester.setShortValue((Short) minimums.get(Short.class));
         tester.setShortClassValue((Short)minimums.get(Short.class));
-        tester.setByteValue(((Byte)minimums.get(Byte.class)).byteValue());
+        tester.setByteValue((Byte) minimums.get(Byte.class));
         tester.setByteClassValue((Byte)minimums.get(Byte.class));
         tester.setBigIntegerValue((BigInteger)minimums.get(BigInteger.class));
         tester.setBigDecimalValue((BigDecimal)minimums.get(BigDecimal.class));
@@ -274,7 +274,7 @@ public class NumericTester extends TypeTester {
     }
 
     public void setByteClassValue(byte aByte) {
-        byteClassValue = Byte.valueOf(aByte);
+        byteClassValue = aByte;
     }
 
     public void setByteClassValue(Byte aByte) {
@@ -286,7 +286,7 @@ public class NumericTester extends TypeTester {
     }
 
     public void setDoubleClassValue(double aDouble) {
-        doubleClassValue = Double.valueOf(aDouble);
+        doubleClassValue = aDouble;
     }
 
     public void setDoubleClassValue(Double aDouble) {
@@ -298,7 +298,7 @@ public class NumericTester extends TypeTester {
     }
 
     public void setFloatClassValue(float aFloat) {
-        floatClassValue = Float.valueOf(aFloat);
+        floatClassValue = aFloat;
     }
 
     public void setFloatClassValue(Float aFloat) {
@@ -310,7 +310,7 @@ public class NumericTester extends TypeTester {
     }
 
     public void setIntegerClassValue(int anInteger) {
-        integerClassValue = Integer.valueOf(anInteger);
+        integerClassValue = anInteger;
     }
 
     public void setIntegerClassValue(Integer anInteger) {
@@ -322,7 +322,7 @@ public class NumericTester extends TypeTester {
     }
 
     public void setLongClassValue(long aLong) {
-        longClassValue = Long.valueOf(aLong);
+        longClassValue = aLong;
     }
 
     public void setLongClassValue(Long aLong) {
@@ -338,7 +338,7 @@ public class NumericTester extends TypeTester {
     }
 
     public void setShortClassValue(short aShort) {
-        shortClassValue = Short.valueOf(aShort);
+        shortClassValue = aShort;
     }
 
     public void setShortValue(short aShort) {

@@ -181,7 +181,7 @@ public class TestSimpleQuery extends JPA1Base {
             env.beginTransaction(em);
             Project project = new Project(null);
             em.persist(project);
-            final int projectId = project.getId().intValue();
+            final int projectId = project.getId();
             env.commitTransactionAndClear(em);
             Query query = em.createQuery("select p from Project p where p.name IS NULL");
             List result = query.getResultList();
@@ -189,7 +189,7 @@ public class TestSimpleQuery extends JPA1Base {
             Iterator iter = result.iterator();
             while (iter.hasNext()) {
                 project = (Project) iter.next();
-                verify(project.getId().intValue() == projectId, "wrong project");
+                verify(project.getId() == projectId, "wrong project");
             }
             query = em.createQuery("select distinct p from Project p where p.name IS NULL");
             result = query.getResultList();
@@ -197,7 +197,7 @@ public class TestSimpleQuery extends JPA1Base {
             iter = result.iterator();
             while (iter.hasNext()) {
                 project = (Project) iter.next();
-                verify(project.getId().intValue() == projectId, "wrong project");
+                verify(project.getId() == projectId, "wrong project");
             }
         } finally {
             closeEntityManager(em);
@@ -210,11 +210,11 @@ public class TestSimpleQuery extends JPA1Base {
         Set<Integer> actual = new HashSet<Integer>();
         for (Object object : result) {
             BasicTypesFieldAccess fa = (BasicTypesFieldAccess) object;
-            actual.add(Integer.valueOf(fa.getId()));
+            actual.add(fa.getId());
         }
         Set<Integer> expected = new HashSet<Integer>();
         for (int i : ids) {
-            expected.add(Integer.valueOf(i));
+            expected.add(i);
         }
         verify(expected.equals(actual), "expecetd and actual sets are different for query >>" + txt + "<<");
     }
@@ -456,7 +456,7 @@ public class TestSimpleQuery extends JPA1Base {
         try {
             Query query = em.createQuery("select d from Department d where d.name = ?1 and d.id = ?2");
             query.setParameter(1, "twenty");
-            query.setParameter(2, Integer.valueOf(20));
+            query.setParameter(2, 20);
             List result = query.getResultList();
             Iterator iter = result.iterator();
             verify(iter.hasNext(), "row not found");
@@ -469,7 +469,7 @@ public class TestSimpleQuery extends JPA1Base {
             verify(entity.equals(dep20), " got wrong department");
             verify(!iter.hasNext(), "too many rows");
             query.setParameter(1, "ten");
-            query.setParameter(2, Integer.valueOf(10));
+            query.setParameter(2, 10);
             result = query.getResultList();
             iter = result.iterator();
             verify(iter.hasNext(), "row not found");
@@ -549,7 +549,7 @@ public class TestSimpleQuery extends JPA1Base {
             em.persist(dep10);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            Department dep = em.find(Department.class, Integer.valueOf(10));
+            Department dep = em.find(Department.class, 10);
             dep.setName("newName");
             em.flush();
             Query query = em.createQuery("select d from Department d where d.name = :name");
@@ -677,7 +677,7 @@ public class TestSimpleQuery extends JPA1Base {
                 query.setFlushMode(flushModeQuery);
             }
             boolean flushExpected = isFlushExpected(flushModeEM, flushModeQuery);
-            Department dep = em.find(Department.class, Integer.valueOf(10));
+            Department dep = em.find(Department.class, 10);
             dep.setName("updated");
             List result = query.getResultList();
             if (flushExpected) {

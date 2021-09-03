@@ -28,10 +28,10 @@ public class ParameterizedBatchUpdatesTestModel extends TopLinkBatchUpdatesTestM
     @Override
     public void addForcedRequiredSystems() {
         DatabasePlatform platform = getSession().getPlatform();
-        wasBatchWriting = Boolean.valueOf(platform.usesBatchWriting());
-        wasJDBCBatchWriting = Boolean.valueOf(platform.usesJDBCBatchWriting());
-        wasBinding = Boolean.valueOf(platform.shouldBindAllParameters());
-        wasStatementCaching = Boolean.valueOf(platform.shouldCacheAllStatements());
+        wasBatchWriting = platform.usesBatchWriting();
+        wasJDBCBatchWriting = platform.usesJDBCBatchWriting();
+        wasBinding = platform.shouldBindAllParameters();
+        wasStatementCaching = platform.shouldCacheAllStatements();
 
         try {
             getSession().getLog().write("WARNING, some JDBC drivers may fail BatchUpdates.");
@@ -55,10 +55,10 @@ public class ParameterizedBatchUpdatesTestModel extends TopLinkBatchUpdatesTestM
         DatabasePlatform platform = getSession().getPlatform();
 
         if (wasBinding != null) {
-            platform.setShouldBindAllParameters(wasBinding.booleanValue());
+            platform.setShouldBindAllParameters(wasBinding);
         }
         if (wasStatementCaching != null) {
-            platform.setShouldCacheAllStatements(wasStatementCaching.booleanValue());
+            platform.setShouldCacheAllStatements(wasStatementCaching);
         }
     }
 

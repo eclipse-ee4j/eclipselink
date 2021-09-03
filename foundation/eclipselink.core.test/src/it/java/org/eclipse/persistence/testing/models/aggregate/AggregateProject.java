@@ -1532,8 +1532,8 @@ public class AggregateProject extends org.eclipse.persistence.sessions.Project {
         descriptor.getDescriptorInheritancePolicy().setShouldReadSubclasses(true);
         descriptor.getDescriptorInheritancePolicy().setClassIndicatorFieldName("TYPE");
         descriptor.getDescriptorInheritancePolicy().setShouldUseClassNameAsIndicator(false);
-        descriptor.getDescriptorInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.aggregate.Car.class, Integer.valueOf(1));
-        descriptor.getDescriptorInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.aggregate.Bicycle.class, Integer.valueOf(2));
+        descriptor.getDescriptorInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.aggregate.Car.class, 1);
+        descriptor.getDescriptorInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.aggregate.Bicycle.class, 2);
 
         // SECTION: COPY POLICY
         descriptor.createCopyPolicy("constructor");

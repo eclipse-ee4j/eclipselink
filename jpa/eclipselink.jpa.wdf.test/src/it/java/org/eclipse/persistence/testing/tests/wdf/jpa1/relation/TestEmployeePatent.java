@@ -38,8 +38,8 @@ import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
 import org.junit.Test;
 
 public class TestEmployeePatent extends JPA1Base {
-    private static final Integer EDISON = Integer.valueOf(26);
-    private static final Integer TESLA = Integer.valueOf(32);
+    private static final Integer EDISON = 26;
+    private static final Integer TESLA = 32;
 
     @Override
     public void setup() {
@@ -49,8 +49,8 @@ public class TestEmployeePatent extends JPA1Base {
             env.beginTransaction(em);
             Department dep = new Department(25, "R&D");
             em.persist(dep);
-            em.persist(new Employee(EDISON.intValue(), "Thomas Alva", "Edison", dep));
-            em.persist(new Employee(TESLA.intValue(), "Nikola", "Tesla", dep));
+            em.persist(new Employee(EDISON, "Thomas Alva", "Edison", dep));
+            em.persist(new Employee(TESLA, "Nikola", "Tesla", dep));
             for (int i = 0; i < TEST_DATA.length; i++) {
                 em.persist(TEST_DATA[i]);
             }

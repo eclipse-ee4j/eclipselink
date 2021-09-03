@@ -76,7 +76,7 @@ public class ReadOnlyClassOneToManyTestCase extends AutoVerifyTestCase {
         Company cloneCompany = (Company)uow.registerObject(originalCompany);
 
         // Change the one of the Company's Vehicles
-        ((Vehicle)((Vector)cloneCompany.getVehicles().getValue()).firstElement()).setPassengerCapacity(Integer.valueOf(origCapacity.intValue() + 1));
+        ((Vehicle)((Vector)cloneCompany.getVehicles().getValue()).firstElement()).setPassengerCapacity(origCapacity + 1);
     }
 
     @Override

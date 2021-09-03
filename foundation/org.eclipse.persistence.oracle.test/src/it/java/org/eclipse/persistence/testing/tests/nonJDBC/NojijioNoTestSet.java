@@ -191,7 +191,7 @@ public class NojijioNoTestSet {
         ((DatabaseSession)s).login();
         Object o = null;
         Vector queryArgs = new NonSynchronizedVector();
-        queryArgs.add(Integer.valueOf(104));
+        queryArgs.add(104);
         queryArgs.add("FOO");
         boolean worked = false;
         String msg = null;

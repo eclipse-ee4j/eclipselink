@@ -30,8 +30,8 @@ public class Employee2 implements Serializable {
     public static Employee2 example1() {
         Employee2 example = new Employee2();
 
-        example.setId(Integer.valueOf(1));
-        example.setEmployeeNumber(Integer.valueOf(2));
+        example.setId(1);
+        example.setEmployeeNumber(2);
         example.setEmployeeNumberB(example.getEmployeeNumber());
         example.setExtraInfo("Extra info string");
         example.setFirstName("Jan");
@@ -42,8 +42,8 @@ public class Employee2 implements Serializable {
     public static Employee2 example2() {
         Employee2 example = new Employee2();
 
-        example.setId(Integer.valueOf(4));
-        example.setEmployeeNumber(Integer.valueOf(8));
+        example.setId(4);
+        example.setEmployeeNumber(8);
         example.setEmployeeNumberB(example.getEmployeeNumber());
         example.setExtraInfo("Whatever");
         example.setFirstName("Ursula");

@@ -48,7 +48,7 @@ public class EmployeeSeqDeadlockClient extends EmployeeClient {
                     uow.commit();
 
                     if (fifoOut != null) {
-                        fifoOut.insertTail(Integer.valueOf(i));
+                        fifoOut.insertTail(i);
                     }
                 }
             } catch (Exception e) {
@@ -64,7 +64,7 @@ public class EmployeeSeqDeadlockClient extends EmployeeClient {
         this.server = null;
 
         if (fifoOut != null) {
-            fifoOut.insertTail(Integer.valueOf(-1));
+            fifoOut.insertTail(-1);
         }
     }
 }

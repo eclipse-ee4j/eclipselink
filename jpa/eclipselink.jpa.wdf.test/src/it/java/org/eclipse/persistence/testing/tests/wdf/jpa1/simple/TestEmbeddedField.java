@@ -36,9 +36,9 @@ public class TestEmbeddedField extends JPA1Base {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
         try {
-            final Integer employeeId = Integer.valueOf(25);
+            final Integer employeeId = 25;
             final Department department = new Department(9, "R&D");
-            final Employee employee = new Employee(employeeId.intValue(), "Emil", "Bahr", department);
+            final Employee employee = new Employee(employeeId, "Emil", "Bahr", department);
             final EmploymentPeriod period = new EmploymentPeriod();
             final Date startDate = new Date((System.currentTimeMillis() / MYSQL_TIMESTAMP_PRECISION)
                     * MYSQL_TIMESTAMP_PRECISION);
@@ -70,9 +70,9 @@ public class TestEmbeddedField extends JPA1Base {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
         try {
-            final Integer employeeId = Integer.valueOf(26);
+            final Integer employeeId = 26;
             final Department department = new Department(10, "R&D");
-            final Employee employee = new Employee(employeeId.intValue(), "Emil", "Bahr", department);
+            final Employee employee = new Employee(employeeId, "Emil", "Bahr", department);
             env.beginTransaction(em);
             em.persist(department);
             em.persist(employee);
@@ -108,9 +108,9 @@ public class TestEmbeddedField extends JPA1Base {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
         try {
-            final Integer employeeId = Integer.valueOf(27);
+            final Integer employeeId = 27;
             final Department department = new Department(11, "R&D");
-            final Employee employee = new Employee(employeeId.intValue(), "Emil", "Bahr", department);
+            final Employee employee = new Employee(employeeId, "Emil", "Bahr", department);
             final EmploymentPeriod period = new EmploymentPeriod();
             final Date startDate = new Date((System.currentTimeMillis() / MYSQL_TIMESTAMP_PRECISION)
                     * MYSQL_TIMESTAMP_PRECISION);

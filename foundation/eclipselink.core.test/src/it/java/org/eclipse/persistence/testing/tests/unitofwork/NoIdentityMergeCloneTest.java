@@ -47,7 +47,7 @@ public class NoIdentityMergeCloneTest extends TransactionalTestCase {
         Enumeration enumtr = checkCacheState.keys();
         while (enumtr.hasMoreElements()) {
             ClassDescriptor key = (ClassDescriptor)enumtr.nextElement();
-            key.getQueryManager().getDoesExistQuery().setExistencePolicy(((Integer)checkCacheState.get(key)).intValue());
+            key.getQueryManager().getDoesExistQuery().setExistencePolicy((Integer) checkCacheState.get(key));
         }
         enumtr = identityMapTypes.keys();
         while (enumtr.hasMoreElements()) {
@@ -70,7 +70,7 @@ public class NoIdentityMergeCloneTest extends TransactionalTestCase {
         while (iterator.hasNext()) {
             ClassDescriptor descriptor = (ClassDescriptor)iterator.next();
             checkCacheState.put(descriptor,
-                                Integer.valueOf(descriptor.getQueryManager().getDoesExistQuery().getExistencePolicy()));
+                    descriptor.getQueryManager().getDoesExistQuery().getExistencePolicy());
             if(descriptor.requiresInitialization((AbstractSession) getSession())) {
                 // identityMapClass is null for AggregateObject, AggregateMapping and Interface descriptors.
                 identityMapTypes.put(descriptor, descriptor.getIdentityMapClass());

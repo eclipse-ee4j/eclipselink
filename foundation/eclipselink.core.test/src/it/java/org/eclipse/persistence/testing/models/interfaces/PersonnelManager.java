@@ -33,7 +33,7 @@ public class PersonnelManager implements ManagerialJob, java.io.Serializable {
         PersonnelManager example = new PersonnelManager();
 
         example.setDepartment("Division A");
-        example.setSalary(Float.valueOf(77235.00f));
+        example.setSalary(77235.00f);
 
         Vector employees = new Vector(5);
         employees.addElement(CourseDeveloper.example1());
@@ -51,7 +51,7 @@ public class PersonnelManager implements ManagerialJob, java.io.Serializable {
         PersonnelManager example = new PersonnelManager();
 
         example.setDepartment("Division B");
-        example.setSalary(Float.valueOf(97235.00f));
+        example.setSalary(97235.00f);
 
         Vector employees = new Vector(5);
         employees.addElement(CourseDeveloper.example2());
@@ -69,7 +69,7 @@ public class PersonnelManager implements ManagerialJob, java.io.Serializable {
         PersonnelManager example = new PersonnelManager();
 
         example.setDepartment("Division C");
-        example.setSalary(Float.valueOf(87265.00f));
+        example.setSalary(87265.00f);
 
         Vector employees = new Vector(5);
         employees.addElement(CourseDeveloper.example3());

@@ -55,7 +55,7 @@ public class BindingWithShallowInsertTest extends TestCase {
             // "NA" is the null value, so this will cause a null to be written
             headProject.setName("NA");
             headProject.setTitle("");
-            headProject.setBudget(Integer.valueOf(-1));
+            headProject.setBudget(-1);
 
             // adding the project to both mappings will cause a shallow insert because
             // foreign keys will have to be updated on both tables

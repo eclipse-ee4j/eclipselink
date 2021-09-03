@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -2390,7 +2390,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         // this also helps the field indexing match.
         int fieldStartIndex;
         if (value instanceof Integer) {
-            fieldStartIndex = ((Integer)value).intValue();
+            fieldStartIndex = (Integer) value;
         } else {
             // must be Map of classes to Integers
             Map map = (Map)value;
@@ -2400,7 +2400,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             } else {
                 cls = getDescriptor().getJavaClass();
             }
-            fieldStartIndex = ((Integer)map.get(cls)).intValue();
+            fieldStartIndex = (Integer) map.get(cls);
         }
         Vector trimedFields = new NonSynchronizedSubVector(row.getFields(), fieldStartIndex, row.size());
         Vector trimedValues = new NonSynchronizedSubVector(row.getValues(), fieldStartIndex, row.size());

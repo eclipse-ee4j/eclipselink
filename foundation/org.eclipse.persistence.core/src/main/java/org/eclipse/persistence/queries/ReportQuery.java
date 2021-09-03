@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -947,7 +947,7 @@ public class ReportQuery extends ReadAllQuery {
         Vector fieldExpressions = NonSynchronizedVector.newInstance(getItems().size());
 
         if (shouldSelectValue1()) {
-            Expression one = new ConstantExpression(Integer.valueOf(1), new ExpressionBuilder());
+            Expression one = new ConstantExpression(1, new ExpressionBuilder());
             this.addItem("one", one);
             this.dontUseDistinct();
             fieldExpressions.addElement(one);

@@ -383,8 +383,8 @@ public ClassDescriptor buildPowerSupplyUnitClassDescriptor() {
     onMapping.setFieldName("on->DIRECT");
     ObjectTypeConverter onMappingConverter = new ObjectTypeConverter();
     onMappingConverter.setDefaultAttributeValue(Boolean.valueOf("false"));
-    onMappingConverter.addConversionValue(Character.valueOf('F'), Boolean.valueOf("false"));
-    onMappingConverter.addConversionValue(Character.valueOf('T'), Boolean.valueOf("true"));
+    onMappingConverter.addConversionValue('F', Boolean.valueOf("false"));
+    onMappingConverter.addConversionValue('T', Boolean.valueOf("true"));
     onMapping.setConverter(onMappingConverter);
     descriptor.addMapping(onMapping);
 

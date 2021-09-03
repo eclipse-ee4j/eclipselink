@@ -718,8 +718,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         int lastIndex = firstName.length();
         List employees = em.createQuery("SELECT object(e) FROM Employee e where e.firstName = substring(:p1, :p2, :p3)").
             setParameter("p1", firstName).
-            setParameter("p2", Integer.valueOf(firstIndex)).
-            setParameter("p3", Integer.valueOf(lastIndex)).
+            setParameter("p2", firstIndex).
+            setParameter("p3", lastIndex).
             getResultList();
 
         // clean up
@@ -2561,12 +2561,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         query.setHint(QueryHints.READ_ONLY, Boolean.FALSE);
         assertFalse("Read-only not set.", olrQuery.isReadOnly());
 
-        query.setHint(QueryHints.JDBC_TIMEOUT, Integer.valueOf(100));
+        query.setHint(QueryHints.JDBC_TIMEOUT, 100);
         assertTrue("Timeout not set.", olrQuery.getQueryTimeout() == 100);
-        query.setHint(QueryHints.JDBC_FETCH_SIZE, Integer.valueOf(101));
+        query.setHint(QueryHints.JDBC_FETCH_SIZE, 101);
         assertTrue("Fetch-size not set.", olrQuery.getFetchSize() == 101);
 
-        query.setHint(QueryHints.JDBC_MAX_ROWS, Integer.valueOf(103));
+        query.setHint(QueryHints.JDBC_MAX_ROWS, 103);
         assertTrue("Max-rows not set.", olrQuery.getMaxRows() == 103);
         query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.NoCascading);
         assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.NoCascading);
@@ -3503,7 +3503,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em = createEntityManager();
         beginTransaction(em);
         try {
-            employee = em.find(Employee.class, Integer.valueOf(id));
+            employee = em.find(Employee.class, id);
             address = employee.getAddress();
 
             assertTrue("The address was not persisted.", employee.getAddress() != null);
@@ -3540,7 +3540,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         int addressId = address.getId();
 
         beginTransaction(em);
-        employee = em.find(Employee.class, Integer.valueOf(id));
+        employee = em.find(Employee.class, id);
         employee.getAddress();
 
         address = new Address();
@@ -3560,13 +3560,13 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em = createEntityManager();
         beginTransaction(em);
         try {
-            employee = em.find(Employee.class, Integer.valueOf(id));
+            employee = em.find(Employee.class, id);
             address = employee.getAddress();
 
             assertTrue("The address was not persisted.", employee.getAddress() != null);
             assertTrue("The address was not correctly persisted.", employee.getAddress().getCity().equals("Metropolis"));
         } finally {
-            Address initialAddress = em.find(Address.class, Integer.valueOf(addressId));
+            Address initialAddress = em.find(Address.class, addressId);
             employee.setAddress(null);
             employee.setManager(null);
             em.remove(address);
@@ -3621,13 +3621,13 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em = createEntityManager();
         beginTransaction(em);
         try {
-            employee = em.find(Employee.class, Integer.valueOf(id));
+            employee = em.find(Employee.class, id);
             address = employee.getAddress();
 
             assertTrue("The address was not persisted.", employee.getAddress() != null);
             assertTrue("The address was not correctly persisted.", employee.getAddress().getCity().equals("Metropolis"));
         } finally {
-            Address initialAddress = em.find(Address.class, Integer.valueOf(addressId));
+            Address initialAddress = em.find(Address.class, addressId);
             employee.setAddress(null);
             employee.setManager(null);
             em.remove(address);
@@ -3663,7 +3663,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em = createEntityManager();
 
         beginTransaction(em);
-        employee = em.find(Employee.class, Integer.valueOf(id));
+        employee = em.find(Employee.class, id);
         employee.getAddress();
 
         address = new Address();
@@ -3683,14 +3683,14 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em = createEntityManager();
         beginTransaction(em);
         try {
-            employee = em.find(Employee.class, Integer.valueOf(id));
+            employee = em.find(Employee.class, id);
             address = employee.getAddress();
 
             assertTrue("The address was not persisted.", employee.getAddress() != null);
             assertTrue("The address was not correctly persisted.", employee.getAddress().getCity().equals("Metropolis"));
 
         } finally {
-            Address initialAddress = em.find(Address.class, Integer.valueOf(addressId));
+            Address initialAddress = em.find(Address.class, addressId);
             employee.setAddress(null);
             employee.setManager(null);
             em.remove(address);
@@ -3955,7 +3955,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             if(emp.getAddress() != null) {
                 error = " Employee "+emp.getLastName()+" still has address;";
             }
-            int ind = Integer.valueOf(emp.getLastName()).intValue();
+            int ind = Integer.parseInt(emp.getLastName());
             if(emp.getSalary() != ind) {
                 error = " Employee "+emp.getLastName()+" has wrong salary "+emp.getSalary()+";";
             }
@@ -4415,7 +4415,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             errorMsg = errorMsg + "; em.getDelegate() threw wrong exception: " + ex.getMessage();
         }
         try {
-            em.getReference(Employee.class, Integer.valueOf(1));
+            em.getReference(Employee.class, 1);
             errorMsg = errorMsg + "; em.getReference() didn't throw exception";
         } catch(IllegalStateException ise) {
             // expected

@@ -450,7 +450,7 @@ public class TypesTestSuite extends DBWSTestSuite {
     @Test
     public void echoInteger() {
         Invocation invocation = new Invocation("echoInteger");
-        invocation.setParameter("PINTEGER", Integer.valueOf(128));
+        invocation.setParameter("PINTEGER", 128);
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
         assertNotNull("result is null", result);
@@ -471,7 +471,7 @@ public class TypesTestSuite extends DBWSTestSuite {
     @Test
     public void echoSmallint() {
         Invocation invocation = new Invocation("echoSmallint");
-        invocation.setParameter("PSMALLINT", Integer.valueOf(7));
+        invocation.setParameter("PSMALLINT", 7);
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
         assertNotNull("result is null", result);

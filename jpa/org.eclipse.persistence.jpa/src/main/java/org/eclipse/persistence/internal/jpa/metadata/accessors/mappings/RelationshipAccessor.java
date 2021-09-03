@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -633,7 +633,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * INTERNAL:
      */
     public boolean isCascadeOnDelete() {
-        return m_cascadeOnDelete != null && m_cascadeOnDelete.booleanValue();
+        return m_cascadeOnDelete != null && m_cascadeOnDelete;
     }
 
     /**
@@ -655,7 +655,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * Used for OX mapping.
      */
     public boolean isNonCacheable() {
-        return m_nonCacheable != null && m_nonCacheable.booleanValue();
+        return m_nonCacheable != null && m_nonCacheable;
     }
 
     /**
@@ -663,7 +663,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * Return true is this relationship employs orphanRemoval.
      */
     protected boolean isOrphanRemoval() {
-        return m_orphanRemoval != null && m_orphanRemoval.booleanValue();
+        return m_orphanRemoval != null && m_orphanRemoval;
     }
 
     /**
@@ -671,7 +671,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * Used for OX mapping.
      */
     public boolean isPrivateOwned() {
-        return m_privateOwned != null && m_privateOwned.booleanValue();
+        return m_privateOwned != null && m_privateOwned;
     }
 
     /**

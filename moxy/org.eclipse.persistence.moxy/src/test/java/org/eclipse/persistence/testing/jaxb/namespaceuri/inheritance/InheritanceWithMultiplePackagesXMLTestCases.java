@@ -51,7 +51,7 @@ public class InheritanceWithMultiplePackagesXMLTestCases extends JAXBTestCases {
 
         List objectList = new ArrayList(baseTypes);
         objectList.add(new String("string test"));
-        objectList.add(Integer.valueOf(500));
+        objectList.add(500);
         root.objectList = objectList;
 
         List anyObjectList = new ArrayList(baseTypes);
@@ -61,7 +61,7 @@ public class InheritanceWithMultiplePackagesXMLTestCases extends JAXBTestCases {
         choiceList.add(anotherPackageSubType);
         choiceList.add(subTypeLevel2);
         choiceList.add(new String("choice string test"));
-        choiceList.add(Integer.valueOf(500));
+        choiceList.add(500);
         root.choiceList = choiceList;
         return root;
     }

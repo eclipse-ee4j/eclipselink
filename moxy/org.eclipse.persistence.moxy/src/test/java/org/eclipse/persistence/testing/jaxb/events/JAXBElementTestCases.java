@@ -54,7 +54,7 @@ public class JAXBElementTestCases extends TestCase {
     }
 
     private Object getControlObjectUnmapped() {
-        return new JAXBElement<Integer>(new QName("year"), Integer.class, Integer.valueOf(1942));
+        return new JAXBElement<Integer>(new QName("year"), Integer.class, 1942);
     }
 
     private Object getControlObjectMapped() {

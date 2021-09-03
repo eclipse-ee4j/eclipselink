@@ -36,7 +36,7 @@ public class ChangeObjectNotSentTest extends ConfigurableCacheSyncDistributedTes
 
     public ChangeObjectNotSentTest() {
         super();
-        cacheSyncConfigValues.put(Employee.class, Integer.valueOf(ClassDescriptor.DO_NOT_SEND_CHANGES));
+        cacheSyncConfigValues.put(Employee.class, ClassDescriptor.DO_NOT_SEND_CHANGES);
     }
 
     @Override

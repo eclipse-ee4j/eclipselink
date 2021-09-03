@@ -46,7 +46,7 @@ public class ConcurrencyTest extends AutoVerifyTestCase {
     protected void test() throws Throwable {
         // TODO Auto-generated method stub
         super.test();
-            Integer i = Integer.valueOf(5);
+            Integer i = 5;
             Thread thread1 = new Thread(new Runner1(i,  emp.getId(),project.getId(),getSession()));
             thread1.setName("Runner1");
             Thread thread2 = new Thread(new Runner2(i, emp.getId(),project.getId(),getSession()));

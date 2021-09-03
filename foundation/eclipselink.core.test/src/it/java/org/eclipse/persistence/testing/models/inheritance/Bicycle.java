@@ -19,7 +19,7 @@ public class Bicycle extends NonFueledVehicle {
 
     @Override
     public void change() {
-        this.setPassengerCapacity(Integer.valueOf(100));
+        this.setPassengerCapacity(100);
         this.addPartNumber("NEWBIKEPART 1");
         this.setDescription("This Bike is easy to handle");
 
@@ -28,7 +28,7 @@ public class Bicycle extends NonFueledVehicle {
     public static Bicycle example1(Company company) {
         Bicycle example = new Bicycle();
 
-        example.setPassengerCapacity(Integer.valueOf(1));
+        example.setPassengerCapacity(1);
         example.getOwner().setValue(company);
         example.setDescription("Hercules");
         example.addPartNumber("1288H8HH-f");
@@ -39,7 +39,7 @@ public class Bicycle extends NonFueledVehicle {
     public static Bicycle example2(Company company) {
         Bicycle example = new Bicycle();
 
-        example.setPassengerCapacity(Integer.valueOf(2));
+        example.setPassengerCapacity(2);
         example.getOwner().setValue(company);
         example.setDescription("Atlas");
         example.addPartNumber("176339GT-a");
@@ -51,7 +51,7 @@ public class Bicycle extends NonFueledVehicle {
     public static Bicycle example3(Company company) {
         Bicycle example = new Bicycle();
 
-        example.setPassengerCapacity(Integer.valueOf(3));
+        example.setPassengerCapacity(3);
         example.getOwner().setValue(company);
         example.setDescription("Aone");
         example.addPartNumber("188181TT-a");

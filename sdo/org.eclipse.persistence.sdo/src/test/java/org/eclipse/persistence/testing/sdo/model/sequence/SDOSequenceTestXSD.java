@@ -772,7 +772,7 @@ public class SDOSequenceTestXSD extends SDOSequenceTestCases {
         assertNotNull(aPOSequence);
         // get sequence id
         int sequenceIndex = getNthSequenceIndexFor(aPOSequence, PO_POID_NAME);
-        int poid2 = ((Integer)aPOSequence.getValue(sequenceIndex)).intValue();
+        int poid2 = (Integer) aPOSequence.getValue(sequenceIndex);
         assertEquals(nextPOID, poid2);
 
     }

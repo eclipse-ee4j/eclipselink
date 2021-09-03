@@ -44,7 +44,7 @@ public class TestGetReference extends JPA1Base {
     private final Department _dep = new Department(1, "eins");
     private final Department _dep2 = new Department(2, "zwei");
     private final Employee _emp = new Employee(7, "first", "last", _dep);
-    private final Cubicle _cub = new Cubicle(Integer.valueOf(1), Integer.valueOf(2), "yellow", _emp);
+    private final Cubicle _cub = new Cubicle(1, 2, "yellow", _emp);
     private final Patent _pat = new Patent("12345", 2007, "whatever", Date.valueOf("2007-01-01"));
     private final CreditCardAccount _ccacc = new CreditCardAccount();
 
@@ -78,7 +78,7 @@ public class TestGetReference extends JPA1Base {
         final EntityManager em = env.getEntityManager();
         try {
             env.beginTransaction(em);
-            Employee emp = em.getReference(Employee.class, Integer.valueOf(7));
+            Employee emp = em.getReference(Employee.class, 7);
             verify(em.contains(emp), "Object not managed");
             env.commitTransactionAndClear(em);
         } finally {
@@ -92,13 +92,13 @@ public class TestGetReference extends JPA1Base {
         final EntityManager em = env.getEntityManager();
         try {
             env.beginTransaction(em);
-            Employee emp = em.getReference(Employee.class, Integer.valueOf(7));
+            Employee emp = em.getReference(Employee.class, 7);
             verify(em.contains(emp), "Object not managed");
             verify(emp.getId() == 7, "wrong id");
             verify(emp.getDepartment().getName().equals("eins"), "wrong department");
-            emp = em.getReference(Employee.class, Integer.valueOf(7));
+            emp = em.getReference(Employee.class, 7);
             verify(emp.getId() == 7, "wrong id");
-            Department dep = em.getReference(Department.class, Integer.valueOf(1));
+            Department dep = em.getReference(Department.class, 1);
             verify(em.contains(dep), "Object not loaded");
             verify(dep.getId() == 1, "wrong id");
             env.rollbackTransactionAndClear(em);
@@ -111,13 +111,13 @@ public class TestGetReference extends JPA1Base {
     public void testPositivNonTx() {
         final EntityManager em = getEnvironment().getEntityManager();
         try {
-            Employee emp = em.getReference(Employee.class, Integer.valueOf(7));
+            Employee emp = em.getReference(Employee.class, 7);
             try {
                 verify(emp.getId() == 7, "wrong id");
                 verify(emp.getDepartment().getName().equals("eins"), "wrong department");
-                emp = em.getReference(Employee.class, Integer.valueOf(7));
+                emp = em.getReference(Employee.class, 7);
                 verify(emp.getId() == 7, "wrong id");
-                Department dep = em.getReference(Department.class, Integer.valueOf(1));
+                Department dep = em.getReference(Department.class, 1);
                 verify(dep.getId() == 1, "wrong id");
             } catch (PersistenceException e) {
                 if (getEnvironment().usesExtendedPC()) {
@@ -137,7 +137,7 @@ public class TestGetReference extends JPA1Base {
         final EntityManager em = env.getEntityManager();
         try {
             env.beginTransaction(em);
-            Department dep = em.getReference(Department.class, Integer.valueOf(1));
+            Department dep = em.getReference(Department.class, 1);
             verify(em.contains(dep), "Object not managed");
             verify(dep.getId() == 1, "wrong id");
             verify(dep.getName().equals("eins"), "wrong name");
@@ -151,7 +151,7 @@ public class TestGetReference extends JPA1Base {
     public void testPositivNonTxPropertyAccess() {
         final EntityManager em = getEnvironment().getEntityManager();
         try {
-            Department dep = em.getReference(Department.class, Integer.valueOf(1));
+            Department dep = em.getReference(Department.class, 1);
             verify(dep.getId() == 1, "wrong id");
             try {
                 verify(dep.getName().equals("eins"), "wrong name");
@@ -181,7 +181,7 @@ public class TestGetReference extends JPA1Base {
             boolean operationFailed = false;
             env.beginTransaction(em);
             try {
-                employee = em.getReference(Employee.class, Integer.valueOf(17 + 4));
+                employee = em.getReference(Employee.class, 17 + 4);
             } catch (EntityNotFoundException e) {
                 // $JL-EXC$ expected behavior
                 operationFailed = true;
@@ -210,7 +210,7 @@ public class TestGetReference extends JPA1Base {
         final EntityManager em = getEnvironment().getEntityManager();
         try {
             try {
-                em.getReference(String.class, Integer.valueOf(17 + 4));
+                em.getReference(String.class, 17 + 4);
                 flop("no IllegalArgumentException thrown");
             } catch (IllegalArgumentException ex) {
                 verify(true, "");
@@ -244,8 +244,8 @@ public class TestGetReference extends JPA1Base {
         final EntityManager em = env.getEntityManager();
         try {
             env.beginTransaction(em);
-            Integer one = Integer.valueOf(1);
-            Integer two = Integer.valueOf(2);
+            Integer one = 1;
+            Integer two = 2;
             CubiclePrimaryKeyClass cubKey = new CubiclePrimaryKeyClass(one, two);
             Cubicle cub = em.getReference(Cubicle.class, cubKey);
             verify(cub.getFloor().equals(one) && cub.getPlace().equals(two), "wrong cubicle");
@@ -291,9 +291,9 @@ public class TestGetReference extends JPA1Base {
             Employee employee = null;
             Department nonExistingDepartment = null;
             env.beginTransaction(em);
-            employee = em.find(Employee.class, Integer.valueOf(7));
+            employee = em.find(Employee.class, 7);
             try {
-                nonExistingDepartment = em.getReference(Department.class, Integer.valueOf(999));
+                nonExistingDepartment = em.getReference(Department.class, 999);
             } catch (EntityNotFoundException e) {
                 // $JL-EXC$ expected behavior
                 return; // getReference checks -> fail fast
@@ -312,13 +312,13 @@ public class TestGetReference extends JPA1Base {
         final EntityManager em = env.getEntityManager();
         try {
             env.beginTransaction(em);
-            CreditCardAccount acc = em.getReference(CreditCardAccount.class, Long.valueOf(1));
+            CreditCardAccount acc = em.getReference(CreditCardAccount.class, 1L);
             // verify method declared by superclass
             verify("me".equals(acc.getOwner()), "wrong owner");
             env.rollbackTransactionAndClear(em);
 
             env.beginTransaction(em);
-            acc = (CreditCardAccount) em.getReference(Account.class, Long.valueOf(1));
+            acc = (CreditCardAccount) em.getReference(Account.class, 1L);
             // verify method declared by subclass of Account
             verify(Long.valueOf(123).equals(acc.getCardNumber()), "wrong card number");
             env.rollbackTransactionAndClear(em);
@@ -341,7 +341,7 @@ public class TestGetReference extends JPA1Base {
             boolean operationFailed = false;
             env.beginTransaction(em);
             try {
-                account = em.getReference(CreditCardAccount.class, Long.valueOf(999)); // does not exist
+                account = em.getReference(CreditCardAccount.class, 999L); // does not exist
             } catch (EntityNotFoundException e) {
                 // $JL-EXC$ expected behavior
                 operationFailed = true;
@@ -370,7 +370,7 @@ public class TestGetReference extends JPA1Base {
             boolean operationFailed = false;
             env.beginTransaction(em);
             try {
-                emp = em.getReference(Employee.class, Integer.valueOf(99));
+                emp = em.getReference(Employee.class, 99);
             } catch (EntityNotFoundException e) {
                 // $JL-EXC$ expected behavior
                 operationFailed = true;
@@ -410,32 +410,32 @@ public class TestGetReference extends JPA1Base {
 
             // update to increase version counter
             env.beginTransaction(em);
-            dep = em.find(Department.class, Integer.valueOf(11));
+            dep = em.find(Department.class, 11);
             dep.setName("updated");
-            rev = em.find(Review.class, Integer.valueOf(11));
+            rev = em.find(Review.class, 11);
             rev.setReviewText("updated");
             env.commitTransactionAndClear(em);
 
             env.beginTransaction(em);
-            emp = em.getReference(Employee.class, Integer.valueOf(11));
+            emp = em.getReference(Employee.class, 11);
             em.remove(emp);
             em.flush();
             env.commitTransactionAndClear(em);
-            verify(em.find(Employee.class, Integer.valueOf(11)) == null, "employee not removed");
+            verify(em.find(Employee.class, 11) == null, "employee not removed");
 
             env.beginTransaction(em);
-            dep = em.getReference(Department.class, Integer.valueOf(11));
+            dep = em.getReference(Department.class, 11);
             em.remove(dep);
             em.flush();
             env.commitTransactionAndClear(em);
-            verify(em.find(Department.class, Integer.valueOf(11)) == null, "department not removed");
+            verify(em.find(Department.class, 11) == null, "department not removed");
 
             env.beginTransaction(em);
-            rev = em.getReference(Review.class, Integer.valueOf(11));
+            rev = em.getReference(Review.class, 11);
             em.remove(rev);
             em.flush();
             env.commitTransactionAndClear(em);
-            verify(em.find(Review.class, Integer.valueOf(11)) == null, "review not removed");
+            verify(em.find(Review.class, 11) == null, "review not removed");
         } finally {
             closeEntityManager(em);
         }
@@ -448,7 +448,7 @@ public class TestGetReference extends JPA1Base {
         try {
             env.beginTransaction(em);
             try {
-                Employee emp = em.getReference(Employee.class, Integer.valueOf(99)); // versioning, entity does not exist
+                Employee emp = em.getReference(Employee.class, 99); // versioning, entity does not exist
                 em.remove(emp);
                 em.flush();
                 flop("PersistenceException not thrown as expected");
@@ -459,7 +459,7 @@ public class TestGetReference extends JPA1Base {
 
             env.beginTransaction(em);
             try {
-                Department dep = em.getReference(Department.class, Integer.valueOf(99)); // versioning, entity does not exist
+                Department dep = em.getReference(Department.class, 99); // versioning, entity does not exist
                 em.remove(dep);
                 em.flush();
                 flop("PersistenceException not thrown as expected");
@@ -481,13 +481,13 @@ public class TestGetReference extends JPA1Base {
 
             // case 1: hollow entity is managed
             env.beginTransaction(em);
-            emp = em.getReference(Employee.class, Integer.valueOf(7));
+            emp = em.getReference(Employee.class, 7);
             em.merge(emp);
             em.flush();
             env.rollbackTransactionAndClear(em);
 
             // case 2: hollow entity is detached
-            emp = em.getReference(Employee.class, Integer.valueOf(7));
+            emp = em.getReference(Employee.class, 7);
             boolean shouldFail = isHollow(emp);
             env.beginTransaction(em);
             try {
@@ -525,17 +525,17 @@ public class TestGetReference extends JPA1Base {
             em.persist(emp);
             env.commitTransactionAndClear(em);
 
-            Employee empDetached = em.find(Employee.class, Integer.valueOf(id));
+            Employee empDetached = em.find(Employee.class, id);
             em.clear(); // detach entity
             empDetached.setFirstName("updated");
 
             env.beginTransaction(em);
-            emp = em.getReference(Employee.class, Integer.valueOf(id));
+            emp = em.getReference(Employee.class, id);
             em.merge(empDetached);
             em.flush();
             env.commitTransactionAndClear(em);
 
-            emp = em.find(Employee.class, Integer.valueOf(id));
+            emp = em.find(Employee.class, id);
             verify("updated".equals(emp.getFirstName()), "wrong first name: " + emp.getFirstName());
         } finally {
             closeEntityManager(em);
@@ -549,7 +549,7 @@ public class TestGetReference extends JPA1Base {
         try {
             Employee emp = null;
             env.beginTransaction(em);
-            emp = em.getReference(Employee.class, Integer.valueOf(7));
+            emp = em.getReference(Employee.class, 7);
             em.refresh(emp);
             em.flush();
             env.rollbackTransactionAndClear(em);
@@ -564,7 +564,7 @@ public class TestGetReference extends JPA1Base {
         final EntityManager em = env.getEntityManager();
         try {
             env.beginTransaction(em);
-            Department dep = em.getReference(Department.class, Integer.valueOf(1));
+            Department dep = em.getReference(Department.class, 1);
             em.lock(dep, LockModeType.READ);
             em.flush();
             env.rollbackTransactionAndClear(em);
@@ -579,12 +579,12 @@ public class TestGetReference extends JPA1Base {
         final EntityManager em = env.getEntityManager();
         try {
             env.beginTransaction(em);
-            Department dep = em.find(Department.class, Integer.valueOf(1));
+            Department dep = em.find(Department.class, 1);
             int version = dep.getVersion();
             env.rollbackTransactionAndClear(em);
 
             env.beginTransaction(em);
-            dep = em.getReference(Department.class, Integer.valueOf(1));
+            dep = em.getReference(Department.class, 1);
             em.lock(dep, LockModeType.WRITE);
             em.flush();
             verify(dep.getVersion() > version, "version not incremented");
@@ -608,13 +608,13 @@ public class TestGetReference extends JPA1Base {
             env.commitTransactionAndClear(em);
 
             env.beginTransaction(em);
-            parent = em.getReference(CascadingNode.class, Integer.valueOf(1));
+            parent = em.getReference(CascadingNode.class, 1);
             em.remove(parent);
             em.flush();
             env.commitTransactionAndClear(em);
-            parent = em.find(CascadingNode.class, Integer.valueOf(1));
+            parent = em.find(CascadingNode.class, 1);
             verify(parent == null, "parent not removed");
-            child = em.find(CascadingNode.class, Integer.valueOf(2));
+            child = em.find(CascadingNode.class, 2);
             verify(child == null, "child not removed");
         } finally {
             closeEntityManager(em);
@@ -635,7 +635,7 @@ public class TestGetReference extends JPA1Base {
             env.commitTransactionAndClear(em);
 
             env.beginTransaction(em);
-            em.getReference(CascadingNode.class, Integer.valueOf(11));
+            em.getReference(CascadingNode.class, 11);
             em.flush();
             env.rollbackTransactionAndClear(em);
 
@@ -656,7 +656,7 @@ public class TestGetReference extends JPA1Base {
         final EntityManager em = env.getEntityManager();
         try {
             // case 1: entity with standard serialization
-            Employee emp = em.getReference(Employee.class, Integer.valueOf(7));
+            Employee emp = em.getReference(Employee.class, 7);
             // load entity
             emp.getFirstName();
             Employee resultEmp = AbstractBaseTest.serializeDeserialize(emp);
@@ -665,7 +665,7 @@ public class TestGetReference extends JPA1Base {
             em.clear();
 
             // case 2: entity with writeReplace
-            Department dep = em.getReference(Department.class, Integer.valueOf(1));
+            Department dep = em.getReference(Department.class, 1);
             // load entity
             dep.getName();
             Department resultDep = AbstractBaseTest.serializeDeserialize(dep);
@@ -674,9 +674,9 @@ public class TestGetReference extends JPA1Base {
             em.clear();
 
             // case 3: related entities
-            emp = em.getReference(Employee.class, Integer.valueOf(7));
+            emp = em.getReference(Employee.class, 7);
             emp.getFirstName();
-            dep = em.getReference(Department.class, Integer.valueOf(2));
+            dep = em.getReference(Department.class, 2);
             dep.getName();
             emp.setDepartment(dep);
             Cubicle cub = em.getReference(Cubicle.class, new CubiclePrimaryKeyClass(1, 2));
@@ -698,7 +698,7 @@ public class TestGetReference extends JPA1Base {
         final EntityManager em = env.getEntityManager();
         try {
             // case 1: entity with standard serialization
-            Employee emp = em.getReference(Employee.class, Integer.valueOf(7));
+            Employee emp = em.getReference(Employee.class, 7);
             boolean shouldFail = isHollow(emp);
             try {
                 Employee resultEmp = AbstractBaseTest.serializeDeserialize(emp);
@@ -712,7 +712,7 @@ public class TestGetReference extends JPA1Base {
             em.clear();
 
             // case 2: entity with writeReplace
-            Department dep = em.getReference(Department.class, Integer.valueOf(1));
+            Department dep = em.getReference(Department.class, 1);
             shouldFail = isHollow(dep);
             try {
                 Department resultDep = AbstractBaseTest.serializeDeserialize(dep);

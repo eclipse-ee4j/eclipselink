@@ -170,7 +170,7 @@ public class SDODataObjectGetCharacterConversionTest extends SDODataObjectConver
         property.setType(SDOConstants.SDO_STRING);
 
         char str = 'c';
-        Character B_STR = Character.valueOf(str);
+        Character B_STR = str;
         dataObject.setString(property, B_STR.toString());// add it to instance list
 
         assertEquals(str, dataObject.getChar(property));

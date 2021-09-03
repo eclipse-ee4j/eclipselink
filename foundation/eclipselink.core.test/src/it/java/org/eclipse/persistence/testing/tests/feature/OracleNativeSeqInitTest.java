@@ -135,9 +135,9 @@ public class OracleNativeSeqInitTest extends AutoVerifyTestCase {
 
         lastSeqNumberOriginal = getSession().getNextSequenceNumberValue(Employee.class).intValue() - 1;
 
-        usesBatchWritingOriginal = Boolean.valueOf(getSession().getPlatform().usesBatchWriting());
+        usesBatchWritingOriginal = getSession().getPlatform().usesBatchWriting();
 
-        shouldCacheAllStatementsOriginal = Boolean.valueOf(getSession().getPlatform().shouldCacheAllStatements());
+        shouldCacheAllStatementsOriginal = getSession().getPlatform().shouldCacheAllStatements();
 
         getDatabaseSession().getSequencingControl().initializePreallocated();
 
@@ -288,10 +288,10 @@ public class OracleNativeSeqInitTest extends AutoVerifyTestCase {
         getSession().getPlatform().getSequence(getSession().getDescriptor(Employee.class).getSequenceNumberName()).setPreallocationSize(seqPreallocationSizeOriginal);
 
         if (shouldCacheAllStatementsOriginal != null) {
-            getSession().getPlatform().setShouldCacheAllStatements(shouldCacheAllStatementsOriginal.booleanValue());
+            getSession().getPlatform().setShouldCacheAllStatements(shouldCacheAllStatementsOriginal);
         }
         if (usesBatchWritingOriginal != null) {
-            getSession().getPlatform().setUsesBatchWriting(usesBatchWritingOriginal.booleanValue());
+            getSession().getPlatform().setUsesBatchWriting(usesBatchWritingOriginal);
         }
 
         if ((usesNativeSequencingOriginal != null) && !usesNativeSequencingOriginal) {

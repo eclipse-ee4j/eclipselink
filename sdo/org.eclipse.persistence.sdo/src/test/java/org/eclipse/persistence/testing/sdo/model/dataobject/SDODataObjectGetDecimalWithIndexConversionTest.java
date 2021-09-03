@@ -94,7 +94,7 @@ public class SDODataObjectGetDecimalWithIndexConversionTest extends SDODataObjec
         property.setName(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_FLOAT);
 
-        Float fl = Float.valueOf(12);
+        Float fl = 12F;
         BigDecimal bd = new BigDecimal(fl);
         dataObject.setFloat(PROPERTY_INDEX, fl);// add it to instance list
 

@@ -36,8 +36,8 @@ import org.junit.Test;
 public class BufferReadTest extends JPA1Base {
 
     private static final long SECONDS = 0;
-    private static final Integer KEY = Integer.valueOf(1);
-    private static final Integer MISS = Integer.valueOf(2);
+    private static final Integer KEY = 1;
+    private static final Integer MISS = 2;
     private static final boolean PRINTLN = false;
     private EntityManager em;
 
@@ -132,7 +132,7 @@ public class BufferReadTest extends JPA1Base {
             @Override
             public void prepare() {
                 query = em.createQuery("select d from Department d where d.id = ?1");
-                query.setParameter(1, Integer.valueOf(1));
+                query.setParameter(1, 1);
                 query.getSingleResult();
             }
 
@@ -165,7 +165,7 @@ public class BufferReadTest extends JPA1Base {
             public void prepare() {
                 getEnvironment().beginTransaction(myEm);
                 query = myEm.createQuery("select d from Department d where d.id = ?1");
-                query.setParameter(1, Integer.valueOf(1));
+                query.setParameter(1, 1);
             }
 
             @Override
@@ -199,7 +199,7 @@ public class BufferReadTest extends JPA1Base {
                 getEnvironment().beginTransaction(myEm);
                 query = myEm
                         .createQuery("select new org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department(d.id, d.name) from Department d where d.id = ?1");
-                query.setParameter(1, Integer.valueOf(1));
+                query.setParameter(1, 1);
             }
 
             @Override
@@ -220,7 +220,7 @@ public class BufferReadTest extends JPA1Base {
             public void run() {
                 em.clear();
                 Query query = em.createNamedQuery("getDepartmentById");
-                query.setParameter(1, Integer.valueOf(1));
+                query.setParameter(1, 1);
                 query.getSingleResult();
             }
 
@@ -262,7 +262,7 @@ public class BufferReadTest extends JPA1Base {
             public void prepare() {
                 getEnvironment().beginTransaction(myEm);
                 query = myEm.createNamedQuery("getDepartmentById");
-                query.setParameter(1, Integer.valueOf(1));
+                query.setParameter(1, 1);
             }
 
             @Override

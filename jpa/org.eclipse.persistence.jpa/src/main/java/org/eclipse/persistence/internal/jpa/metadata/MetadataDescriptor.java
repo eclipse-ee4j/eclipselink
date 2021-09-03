@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1401,7 +1401,7 @@ public class MetadataDescriptor {
      */
     public boolean isCacheableTrue() {
         if (m_cacheable != null) {
-            return m_cacheable.booleanValue();
+            return m_cacheable;
         } else if (isInheritanceSubclass()) {
             return getInheritanceParentDescriptor().isCacheableTrue();
         }
@@ -1416,7 +1416,7 @@ public class MetadataDescriptor {
      */
     public boolean isCacheableFalse() {
         if (m_cacheable != null) {
-            return ! m_cacheable.booleanValue();
+            return !m_cacheable;
         } else if (isInheritanceSubclass()) {
             return getInheritanceParentDescriptor().isCacheableFalse();
         }
@@ -1912,7 +1912,7 @@ public class MetadataDescriptor {
      * INTERNAL:
      */
     public boolean usesCascadedOptimisticLocking() {
-        return m_usesCascadedOptimisticLocking != null && m_usesCascadedOptimisticLocking.booleanValue();
+        return m_usesCascadedOptimisticLocking != null && m_usesCascadedOptimisticLocking;
     }
 
     /**

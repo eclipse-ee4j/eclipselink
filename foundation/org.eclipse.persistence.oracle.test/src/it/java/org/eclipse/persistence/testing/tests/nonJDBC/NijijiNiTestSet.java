@@ -189,10 +189,10 @@ public class NijijiNiTestSet {
         s.dontLogMessages();
         ((DatabaseSession)s).login();
         Vector queryArgs = new NonSynchronizedVector();
-        queryArgs.add(Integer.valueOf(0));
+        queryArgs.add(0);
         queryArgs.add("test");
         queryArgs.add(Float.parseFloat("12.75"));
-        queryArgs.add(Integer.valueOf(13));
+        queryArgs.add(13);
         boolean worked = false;
         String msg = null;
         try {

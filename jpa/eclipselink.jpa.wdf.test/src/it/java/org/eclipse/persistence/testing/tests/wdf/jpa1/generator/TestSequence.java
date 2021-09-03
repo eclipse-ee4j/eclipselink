@@ -64,7 +64,7 @@ public class TestSequence extends JPA1Base {
             em.getTransaction().begin();
             final Animal firstDove = new Animal("dove ");
             em.persist(firstDove);
-            final int offset = firstDove.getId().intValue();
+            final int offset = firstDove.getId();
             for (int i = 1; i < 100; i++) {
                 final Animal dove = new Animal("dove " + i);
                 em.persist(dove);

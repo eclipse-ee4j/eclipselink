@@ -177,8 +177,8 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
         beginTransaction(em);
 
         Bus bus = new Bus();
-        bus.setPassengerCapacity(Integer.valueOf(50));
-        bus.setFuelCapacity(Integer.valueOf(175));
+        bus.setPassengerCapacity(50);
+        bus.setFuelCapacity(175);
         bus.setDescription("OC Transpo Bus");
         bus.setFuelType("Diesel");
 

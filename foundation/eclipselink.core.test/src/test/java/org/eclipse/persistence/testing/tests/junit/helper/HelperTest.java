@@ -72,7 +72,7 @@ public class HelperTest {
 
         aVector.clear();
         for (int i = 0; i < 3; i++) {
-            aVector.add(i, Integer.valueOf(i));
+            aVector.add(i, i);
         }
 
         Vector reverseVector = Helper.reverseVector(aVector);
@@ -95,7 +95,7 @@ public class HelperTest {
     @Test
     public void checkAreVectorTypesAssignableWithNullVectorTest() {
         Vector v1 = new Vector();
-        v1.addElement(Integer.valueOf(1));
+        v1.addElement(1);
         Assert.assertFalse("An exception should not have been thrown when checking if vectors are assignable - when one of the vectors is null.",
                 Helper.areTypesAssignable(v1, null));
     }
@@ -135,8 +135,8 @@ public class HelperTest {
         Integer[] array2 = new Integer[3];
         Integer[] array3 = new Integer[3];
         for (int count = 0; count < 3; count++) {
-            Integer counter = Integer.valueOf(count);
-            Integer counter2 = Integer.valueOf(count + 9);
+            Integer counter = count;
+            Integer counter2 = count + 9;
             array1[count] = counter;
             array2[count] = counter;
             array3[count] = counter2;
@@ -154,12 +154,12 @@ public class HelperTest {
         Integer[] array2 = new Integer[2];
         Integer[] array3 = new Integer[3];
         for (int count = 0; count < 2; count++) {
-            Integer counter = Integer.valueOf(count);
+            Integer counter = count;
             array1[count] = counter;
             array2[count] = counter;
             array3[count] = counter;
         }
-        array3[2] = Integer.valueOf(10);
+        array3[2] = 10;
 
         Assert.assertTrue("Helper.compareArrays(Object[] array1, Object[] array2) does not recognize that object arrays are of same length.",
                 Helper.compareArrays(array1, array2));
@@ -195,7 +195,7 @@ public class HelperTest {
     public void timeFromDateTest() {
         boolean optimizedDatesState = Helper.shouldOptimizeDates();
         try {
-            Date testDate = Helper.utilDateFromLong(Long.valueOf(System.currentTimeMillis()));
+            Date testDate = Helper.utilDateFromLong(System.currentTimeMillis());
             String testTime = new Time(testDate.getTime()).toString();
 
             Helper.setShouldOptimizeDates(false);
@@ -214,8 +214,8 @@ public class HelperTest {
     public void TimeFromLongTest() {
         boolean optimizedDatesState = Helper.shouldOptimizeDates();
         try {
-            Long currentTime = Long.valueOf(System.currentTimeMillis());
-            Time expectedTestTime = new Time(currentTime.longValue());
+            Long currentTime = System.currentTimeMillis();
+            Time expectedTestTime = new Time(currentTime);
 
             Helper.setShouldOptimizeDates(false);
             Time actualTime = Helper.timeFromLong(currentTime);
@@ -257,7 +257,7 @@ public class HelperTest {
     public void timestampFromDateTest() {
         boolean optimizedDatesState = Helper.shouldOptimizeDates();
         try {
-            Date currentTime = Helper.utilDateFromLong(Long.valueOf(System.currentTimeMillis()));
+            Date currentTime = Helper.utilDateFromLong(System.currentTimeMillis());
             String testTime = new Timestamp(currentTime.getTime()).toString();
 
             Helper.setShouldOptimizeDates(true);
@@ -272,8 +272,8 @@ public class HelperTest {
     public void timestampFromLongTest() {
         boolean optimizedDatesState = Helper.shouldOptimizeDates();
         try {
-            Long currentTime = Long.valueOf(System.currentTimeMillis());
-            String testTime = new Timestamp(currentTime.longValue()).toString();
+            Long currentTime = System.currentTimeMillis();
+            String testTime = new Timestamp(currentTime).toString();
 
             Helper.setShouldOptimizeDates(true);
             Assert.assertEquals("Failed to convert Long to java.sql.Timestamp when shouldOptimizedDates is on",

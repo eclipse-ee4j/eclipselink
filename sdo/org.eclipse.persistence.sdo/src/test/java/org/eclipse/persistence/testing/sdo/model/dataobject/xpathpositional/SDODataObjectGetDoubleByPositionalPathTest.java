@@ -346,7 +346,7 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
         double delta = 0.0;
         dataObject_a.setString(propertyPath_a_b_c, str);// add it to instance list
 
-        assertEquals(s_d.doubleValue(), dataObject_a.getDouble(propertyPath_a_b_c), delta);
+        assertEquals(s_d, dataObject_a.getDouble(propertyPath_a_b_c), delta);
     }
 
     //16. purpose: getDouble with Undefined string Property

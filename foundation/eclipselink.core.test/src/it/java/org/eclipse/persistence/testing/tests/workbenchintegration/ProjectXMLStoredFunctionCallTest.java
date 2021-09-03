@@ -63,8 +63,8 @@ public class ProjectXMLStoredFunctionCallTest extends TestCase {
     @Override
     public void test() {
         Vector parameters = new Vector();
-        Long p_inout = Long.valueOf(99);
-        Long p_in = Long.valueOf(100);
+        Long p_inout = 99L;
+        Long p_in = 100L;
         parameters.add(p_inout);
         parameters.add(p_in);
         result = getSession().executeQuery(query, parameters);
@@ -74,17 +74,17 @@ public class ProjectXMLStoredFunctionCallTest extends TestCase {
     public void verify() {
       DatabaseRecord row = (DatabaseRecord)((Vector)result).firstElement();
       Long p_inout = (Long)row.get("P_INOUT");
-      if (!p_inout.equals(Long.valueOf(100))) {
+      if (!p_inout.equals(100L)) {
         throw new TestErrorException(
           "The stored function did not execute correctly. Expected: [P_INOUT = 100]");
       }
         Long p_out = (Long)row.get("P_OUT");
-      if (!p_out.equals(Long.valueOf(99))) {
+      if (!p_out.equals(99L)) {
         throw new TestErrorException(
           "The stored function did not execute correctly. Expected: [P_OUT = 99]");
       }
         Long returnValue = (Long)row.getValues().firstElement();
-      if (!returnValue.equals(Long.valueOf(99))) {
+      if (!returnValue.equals(99L)) {
         throw new TestErrorException(
           "The stored function did not execute correctly. Expected: [return value = 99]");
       }

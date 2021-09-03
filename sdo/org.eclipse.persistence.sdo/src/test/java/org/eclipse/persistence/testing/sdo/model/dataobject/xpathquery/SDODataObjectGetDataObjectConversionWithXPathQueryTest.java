@@ -77,7 +77,7 @@ public class SDODataObjectGetDataObjectConversionWithXPathQueryTest extends SDOD
 
         DataObject sampleDataObject = dataFactory.create(theType);
         Property prop = sampleDataObject.getInstanceProperty("testProp");
-        sampleDataObject.set(prop,Boolean.valueOf(true));
+        sampleDataObject.set(prop, Boolean.TRUE);
 
         try {
 

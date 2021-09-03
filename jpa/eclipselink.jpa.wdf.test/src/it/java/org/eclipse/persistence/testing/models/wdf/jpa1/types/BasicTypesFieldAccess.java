@@ -264,13 +264,13 @@ public class BasicTypesFieldAccess {
         primitiveFloat = 1.5f;
         primitiveDouble = 2.5;
         wrapperBoolean = Boolean.TRUE;
-        wrapperByte = Byte.valueOf((byte) 1);
-        wrapperCharacter = Character.valueOf('A');
-        wrapperShort = Short.valueOf((short) 2);
-        wrapperInteger = Integer.valueOf(3);
-        wrapperLong = Long.valueOf(4);
-        wrapperFloat = Float.valueOf(1.5f);
-        wrapperDouble = Double.valueOf(2.5);
+        wrapperByte = (byte) 1;
+        wrapperCharacter = 'A';
+        wrapperShort = (short) 2;
+        wrapperInteger = 3;
+        wrapperLong = 4L;
+        wrapperFloat = 1.5f;
+        wrapperDouble = 2.5;
         string2Varchar = "VARCHAR";
         string2Clob = "CLOB";
         bigDecimal = new BigDecimal("42.42");
@@ -291,26 +291,26 @@ public class BasicTypesFieldAccess {
             primitiveByteArray2Blob[i] = (byte) i;
         }
 
-        wrapperByteArray2Binary = new Byte[] { Byte.valueOf((byte) 0), Byte.valueOf((byte) 1), Byte.valueOf((byte) 2), Byte.valueOf((byte) 3),
-                Byte.valueOf((byte) 4), Byte.valueOf((byte) 5), Byte.valueOf((byte) 6), Byte.valueOf((byte) 7) };
+        wrapperByteArray2Binary = new Byte[] {(byte) 0, (byte) 1, (byte) 2, (byte) 3,
+                (byte) 4, (byte) 5, (byte) 6, (byte) 7};
 
         wrapperByteArray2Longvarbinary = new Byte[1111];
         for (int i = 0; i < wrapperByteArray2Longvarbinary.length; i++) {
-            wrapperByteArray2Longvarbinary[i] = Byte.valueOf((byte) i);
+            wrapperByteArray2Longvarbinary[i] = (byte) i;
         }
 
         wrapperByteArray2Blob = new Byte[3333];
         for (int i = 0; i < wrapperByteArray2Blob.length; i++) {
-            wrapperByteArray2Blob[i] = Byte.valueOf((byte) i);
+            wrapperByteArray2Blob[i] = (byte) i;
         }
 
         primitiveCharArray2Varchar = new char[] { 'V', 'A', 'R', 'C', 'A', 'R' };
         primitiveCharArray2Clob = new char[] { 'C', 'L', 'O', 'B' };
 
-        wrapperCharacterArray2Varchar = new Character[] { Character.valueOf('V'), Character.valueOf('A'), Character.valueOf('R'),
-                Character.valueOf('C'), Character.valueOf('H'), Character.valueOf('A'), Character.valueOf('R') };
-        wrapperCharacterArray2Clob = new Character[] { Character.valueOf('C'), Character.valueOf('L'), Character.valueOf('O'),
-                Character.valueOf('B') };
+        wrapperCharacterArray2Varchar = new Character[] {'V', 'A', 'R',
+                'C', 'H', 'A', 'R'};
+        wrapperCharacterArray2Clob = new Character[] {'C', 'L', 'O',
+                'B'};
         serializable = new UserDefinedSerializable("REGEN"); // BLOB
 
         setEnumOrdinal(UserDefinedEnum.EMIL);

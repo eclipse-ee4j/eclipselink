@@ -774,7 +774,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
                 Class[] parameterTypes = new Class[1];
                 parameterTypes[0] = String[].class;
                 Method method = mainClass.getMethod("compile", parameterTypes);
-                int result = ((Integer) method.invoke(null, params)).intValue();
+                int result = (Integer) method.invoke(null, params);
                 if (result != 0) {
                     throw new RuntimeException(
                             "Java code compile failed. This could either be a legitimate compile "

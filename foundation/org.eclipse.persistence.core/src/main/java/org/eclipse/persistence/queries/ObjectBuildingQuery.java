@@ -542,7 +542,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * with an object the acquires deferred locks behaves the same as its owner
      */
     public boolean requiresDeferredLocks() {
-        return requiresDeferredLocks != null && requiresDeferredLocks.booleanValue();
+        return requiresDeferredLocks != null && requiresDeferredLocks;
     }
 
     /**
@@ -611,7 +611,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
         if (session != null && session.getProject().isQueryCacheForceDeferredLocks()) {
             this.requiresDeferredLocks = true;
         } else {
-            this.requiresDeferredLocks = Boolean.valueOf(cascadeDeferredLocks);
+            this.requiresDeferredLocks = cascadeDeferredLocks;
         }
     }
 

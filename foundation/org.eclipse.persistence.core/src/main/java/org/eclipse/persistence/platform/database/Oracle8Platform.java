@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -177,13 +177,13 @@ public class Oracle8Platform extends OraclePlatform {
             java.sql.Blob blob = (java.sql.Blob) resultSet.getObject(field.getName());
             blob.setBytes(1, (byte[]) value);
             //impose the localization
-            session.log(SessionLog.FINEST, SessionLog.SQL, "write_BLOB", Long.valueOf(blob.length()), field.getName());
+            session.log(SessionLog.FINEST, SessionLog.SQL, "write_BLOB", blob.length(), field.getName());
         } else if (isClob(field.getType())) {
             // change for 338585 to use getName instead of getNameDelimited
             java.sql.Clob clob = (java.sql.Clob) resultSet.getObject(field.getName());
             clob.setString(1, (String) value);
             //impose the localization
-            session.log(SessionLog.FINEST, SessionLog.SQL, "write_CLOB", Long.valueOf(clob.length()), field.getName());
+            session.log(SessionLog.FINEST, SessionLog.SQL, "write_CLOB", clob.length(), field.getName());
         } else {
             // do nothing for now, open to BFILE or NCLOB types
         }

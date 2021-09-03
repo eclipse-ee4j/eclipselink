@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -255,7 +255,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         cacheSyncMapping.setGetMethodName("getCacheSync");
         cacheSyncMapping.setSetMethodName("setCacheSync");
         cacheSyncMapping.setXPath("cache-sync/text()");
-        cacheSyncMapping.setNullValue(Boolean.valueOf(CACHE_SYNC_DEFAULT));
+        cacheSyncMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(cacheSyncMapping);
 
         return descriptor;
@@ -270,7 +270,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         exclusiveConnectionMapping.setGetMethodName("getUseExclusiveConnection");
         exclusiveConnectionMapping.setSetMethodName("setUseExclusiveConnection");
         exclusiveConnectionMapping.setXPath("exclusive-connection/text()");
-        exclusiveConnectionMapping.setNullValue(Boolean.valueOf(EXCLUSIVE_CONNECTION_DEFAULT));
+        exclusiveConnectionMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(exclusiveConnectionMapping);
 
         XMLDirectMapping lazyMapping = new XMLDirectMapping();
@@ -278,7 +278,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         lazyMapping.setGetMethodName("getLazy");
         lazyMapping.setSetMethodName("setLazy");
         lazyMapping.setXPath("lazy/text()");
-        lazyMapping.setNullValue(Boolean.valueOf(LAZY_DEFAULT));
+        lazyMapping.setNullValue(Boolean.TRUE);
         descriptor.addMapping(lazyMapping);
 
         return descriptor;
@@ -300,7 +300,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         maxConnectionsMapping.setGetMethodName("getMaxConnections");
         maxConnectionsMapping.setSetMethodName("setMaxConnections");
         maxConnectionsMapping.setXPath("max-connections/text()");
-        maxConnectionsMapping.setNullValue(Integer.valueOf(CONNECTION_POOL_MAX_DEFAULT));
+        maxConnectionsMapping.setNullValue(CONNECTION_POOL_MAX_DEFAULT);
         descriptor.addMapping(maxConnectionsMapping);
 
         XMLDirectMapping minConnectionsMapping = new XMLDirectMapping();
@@ -308,7 +308,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         minConnectionsMapping.setGetMethodName("getMinConnections");
         minConnectionsMapping.setSetMethodName("setMinConnections");
         minConnectionsMapping.setXPath("min-connections/text()");
-        minConnectionsMapping.setNullValue(Integer.valueOf(CONNECTION_POOL_MIN_DEFAULT));
+        minConnectionsMapping.setNullValue(CONNECTION_POOL_MIN_DEFAULT);
         descriptor.addMapping(minConnectionsMapping);
 
         XMLCompositeObjectMapping loginConfigMapping = new XMLCompositeObjectMapping();
@@ -375,11 +375,11 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         lookupTypeMapping.setAttributeName("m_lookupType");
         lookupTypeMapping.setGetMethodName("getLookupType");
         lookupTypeMapping.setSetMethodName("setLookupType");
-        lookupTypeMapping.setNullValue(Integer.valueOf(DATASOURCE_LOOKUP_TYPE_DEFAULT));
+        lookupTypeMapping.setNullValue(DATASOURCE_LOOKUP_TYPE_DEFAULT);
         ObjectTypeConverter converter = new ObjectTypeConverter();
-        converter.addConversionValue("string", Integer.valueOf(JNDIConnector.STRING_LOOKUP));
-        converter.addConversionValue("composite-name", Integer.valueOf(JNDIConnector.COMPOSITE_NAME_LOOKUP));
-        converter.addConversionValue("compound-name", Integer.valueOf(JNDIConnector.COMPOUND_NAME_LOOKUP));
+        converter.addConversionValue("string", JNDIConnector.STRING_LOOKUP);
+        converter.addConversionValue("composite-name", JNDIConnector.COMPOSITE_NAME_LOOKUP);
+        converter.addConversionValue("compound-name", JNDIConnector.COMPOUND_NAME_LOOKUP);
         lookupTypeMapping.setConverter(converter);
         lookupTypeMapping.setXPath("datasource/@lookup");
         descriptor.addMapping(lookupTypeMapping);
@@ -389,7 +389,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         bindAllParametersMapping.setGetMethodName("getBindAllParameters");
         bindAllParametersMapping.setSetMethodName("setBindAllParameters");
         bindAllParametersMapping.setXPath("bind-all-parameters/text()");
-        bindAllParametersMapping.setNullValue(Boolean.valueOf(BIND_ALL_PARAMETERS_DEFAULT));
+        bindAllParametersMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(bindAllParametersMapping);
 
         XMLDirectMapping cacheAllStatementsMapping = new XMLDirectMapping();
@@ -397,7 +397,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         cacheAllStatementsMapping.setGetMethodName("getCacheAllStatements");
         cacheAllStatementsMapping.setSetMethodName("setCacheAllStatements");
         cacheAllStatementsMapping.setXPath("cache-all-statements/text()");
-        cacheAllStatementsMapping.setNullValue(Boolean.valueOf(CACHE_ALL_STATEMENTS_DEFAULT));
+        cacheAllStatementsMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(cacheAllStatementsMapping);
 
         XMLDirectMapping byteArrayBindingMapping = new XMLDirectMapping();
@@ -405,7 +405,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         byteArrayBindingMapping.setGetMethodName("getByteArrayBinding");
         byteArrayBindingMapping.setSetMethodName("setByteArrayBinding");
         byteArrayBindingMapping.setXPath("byte-array-binding/text()");
-        byteArrayBindingMapping.setNullValue(Boolean.valueOf(BYTE_ARRAY_BINDING_DEFAULT));
+        byteArrayBindingMapping.setNullValue(Boolean.TRUE);
         descriptor.addMapping(byteArrayBindingMapping);
 
         XMLDirectMapping stringBindingMapping = new XMLDirectMapping();
@@ -413,7 +413,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         stringBindingMapping.setGetMethodName("getStringBinding");
         stringBindingMapping.setSetMethodName("setStringBinding");
         stringBindingMapping.setXPath("string-binding/text()");
-        stringBindingMapping.setNullValue(Boolean.valueOf(STRING_BINDING_DEFAULT));
+        stringBindingMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(stringBindingMapping);
 
         XMLDirectMapping streamsForBindingMapping = new XMLDirectMapping();
@@ -421,7 +421,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         streamsForBindingMapping.setGetMethodName("getStreamsForBinding");
         streamsForBindingMapping.setSetMethodName("setStreamsForBinding");
         streamsForBindingMapping.setXPath("streams-for-binding/text()");
-        streamsForBindingMapping.setNullValue(Boolean.valueOf(STREAMS_FOR_BINDING_DEFAULT));
+        streamsForBindingMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(streamsForBindingMapping);
 
         XMLDirectMapping forceFieldNamesToUppercaseMapping = new XMLDirectMapping();
@@ -429,7 +429,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         forceFieldNamesToUppercaseMapping.setGetMethodName("getForceFieldNamesToUppercase");
         forceFieldNamesToUppercaseMapping.setSetMethodName("setForceFieldNamesToUppercase");
         forceFieldNamesToUppercaseMapping.setXPath("force-field-names-to-upper-case/text()");
-        forceFieldNamesToUppercaseMapping.setNullValue(Boolean.valueOf(FORCE_FIELD_NAMES_TO_UPPERCASE_DEFAULT));
+        forceFieldNamesToUppercaseMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(forceFieldNamesToUppercaseMapping);
 
         XMLDirectMapping optimizeDataConversionMapping = new XMLDirectMapping();
@@ -437,7 +437,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         optimizeDataConversionMapping.setGetMethodName("getOptimizeDataConversion");
         optimizeDataConversionMapping.setSetMethodName("setOptimizeDataConversion");
         optimizeDataConversionMapping.setXPath("optimize-data-conversion/text()");
-        optimizeDataConversionMapping.setNullValue(Boolean.valueOf(OPTIMIZE_DATA_CONVERSION_DEFAULT));
+        optimizeDataConversionMapping.setNullValue(Boolean.TRUE);
         descriptor.addMapping(optimizeDataConversionMapping);
 
         XMLDirectMapping trimStringsMapping = new XMLDirectMapping();
@@ -445,7 +445,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         trimStringsMapping.setGetMethodName("getTrimStrings");
         trimStringsMapping.setSetMethodName("setTrimStrings");
         trimStringsMapping.setXPath("trim-strings/text()");
-        trimStringsMapping.setNullValue(Boolean.valueOf(TRIM_STRINGS_DEFAULT));
+        trimStringsMapping.setNullValue(Boolean.TRUE);
         descriptor.addMapping(trimStringsMapping);
 
         XMLDirectMapping batchWritingMapping = new XMLDirectMapping();
@@ -453,7 +453,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         batchWritingMapping.setGetMethodName("getBatchWriting");
         batchWritingMapping.setSetMethodName("setBatchWriting");
         batchWritingMapping.setXPath("batch-writing/text()");
-        batchWritingMapping.setNullValue(Boolean.valueOf(BATCH_WRITING_DEFAULT));
+        batchWritingMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(batchWritingMapping);
 
         XMLDirectMapping jdbc20BatchWritingMapping = new XMLDirectMapping();
@@ -461,7 +461,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         jdbc20BatchWritingMapping.setGetMethodName("getJdbcBatchWriting");
         jdbc20BatchWritingMapping.setSetMethodName("setJdbcBatchWriting");
         jdbc20BatchWritingMapping.setXPath("jdbc-batch-writing/text()");
-        jdbc20BatchWritingMapping.setNullValue(Boolean.valueOf(JDBC20_BATCH_WRITING_DEFAULT));
+        jdbc20BatchWritingMapping.setNullValue(Boolean.TRUE);
         descriptor.addMapping(jdbc20BatchWritingMapping);
 
         XMLDirectMapping maxBatchWritingSizeMapping = new XMLDirectMapping();
@@ -469,7 +469,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         maxBatchWritingSizeMapping.setGetMethodName("getMaxBatchWritingSize");
         maxBatchWritingSizeMapping.setSetMethodName("setMaxBatchWritingSize");
         maxBatchWritingSizeMapping.setXPath("max-batch-writing-size/text()");
-        maxBatchWritingSizeMapping.setNullValue(Integer.valueOf(MAX_BATCH_WRITING_SIZE_DEFAULT));
+        maxBatchWritingSizeMapping.setNullValue(MAX_BATCH_WRITING_SIZE_DEFAULT);
         descriptor.addMapping(maxBatchWritingSizeMapping);
 
         XMLDirectMapping nativeSQLMapping = new XMLDirectMapping();
@@ -477,7 +477,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         nativeSQLMapping.setGetMethodName("getNativeSQL");
         nativeSQLMapping.setSetMethodName("setNativeSQL");
         nativeSQLMapping.setXPath("native-sql/text()");
-        nativeSQLMapping.setNullValue(Boolean.valueOf(NATIVE_SQL_DEFAULT));
+        nativeSQLMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(nativeSQLMapping);
 
         XMLCompositeObjectMapping structConverterConfigMapping = new XMLCompositeObjectMapping();
@@ -627,7 +627,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         multicastPortMapping.setGetMethodName("getMulticastPort");
         multicastPortMapping.setSetMethodName("setMulticastPort");
         multicastPortMapping.setXPath("multicast-port/text()");
-        multicastPortMapping.setNullValue(Integer.valueOf(MULTICAST_PORT_DEFAULT));
+        multicastPortMapping.setNullValue(MULTICAST_PORT_DEFAULT);
         descriptor.addMapping(multicastPortMapping);
 
         XMLDirectMapping announcementDelayMapping = new XMLDirectMapping();
@@ -635,7 +635,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         announcementDelayMapping.setGetMethodName("getAnnouncementDelay");
         announcementDelayMapping.setSetMethodName("setAnnouncementDelay");
         announcementDelayMapping.setXPath("announcement-delay/text()");
-        announcementDelayMapping.setNullValue(Integer.valueOf(ANNOUNCEMENT_DELAY_DEFAULT));
+        announcementDelayMapping.setNullValue(ANNOUNCEMENT_DELAY_DEFAULT);
         descriptor.addMapping(announcementDelayMapping);
 
         XMLDirectMapping packetTimeToLiveMapping = new XMLDirectMapping();
@@ -643,7 +643,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         packetTimeToLiveMapping.setGetMethodName("getPacketTimeToLive");
         packetTimeToLiveMapping.setSetMethodName("setPacketTimeToLive");
         packetTimeToLiveMapping.setXPath("packet-time-to-live/text()");
-        packetTimeToLiveMapping.setNullValue(Integer.valueOf(PACKET_TIME_TO_LIVE_DEFAULT));
+        packetTimeToLiveMapping.setNullValue(PACKET_TIME_TO_LIVE_DEFAULT);
         descriptor.addMapping(packetTimeToLiveMapping);
 
         return descriptor;
@@ -926,7 +926,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         externalConnectionPoolMapping.setGetMethodName("getExternalConnectionPooling");
         externalConnectionPoolMapping.setSetMethodName("setExternalConnectionPooling");
         externalConnectionPoolMapping.setXPath("external-connection-pooling/text()");
-        externalConnectionPoolMapping.setNullValue(Boolean.valueOf(EXTERNAL_CONNECTION_POOL_DEFAULT));
+        externalConnectionPoolMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(externalConnectionPoolMapping);
 
         XMLDirectMapping externalTransactionControllerMapping = new XMLDirectMapping();
@@ -934,7 +934,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         externalTransactionControllerMapping.setGetMethodName("getExternalTransactionController");
         externalTransactionControllerMapping.setSetMethodName("setExternalTransactionController");
         externalTransactionControllerMapping.setXPath("external-transaction-controller/text()");
-        externalTransactionControllerMapping.setNullValue(Boolean.valueOf(EXTERNAL_TRANSACTION_CONTROLLER_DEFAULT));
+        externalTransactionControllerMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(externalTransactionControllerMapping);
 
         XMLCompositeObjectMapping sequencingMapping = new XMLCompositeObjectMapping();
@@ -1126,7 +1126,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         maxConnectionsMapping.setGetMethodName("getMaxConnections");
         maxConnectionsMapping.setSetMethodName("setMaxConnections");
         maxConnectionsMapping.setXPath("max-connections/text()");
-        maxConnectionsMapping.setNullValue(Integer.valueOf(READ_CONNECTION_POOL_MAX_DEFAULT));
+        maxConnectionsMapping.setNullValue(READ_CONNECTION_POOL_MAX_DEFAULT);
         descriptor.addMapping(maxConnectionsMapping);
 
         XMLDirectMapping minConnectionsMapping = new XMLDirectMapping();
@@ -1134,7 +1134,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         minConnectionsMapping.setGetMethodName("getMinConnections");
         minConnectionsMapping.setSetMethodName("setMinConnections");
         minConnectionsMapping.setXPath("min-connections/text()");
-        minConnectionsMapping.setNullValue(Integer.valueOf(READ_CONNECTION_POOL_MIN_DEFAULT));
+        minConnectionsMapping.setNullValue(READ_CONNECTION_POOL_MIN_DEFAULT);
         descriptor.addMapping(minConnectionsMapping);
 
         XMLCompositeObjectMapping loginConfigMapping = new XMLCompositeObjectMapping();
@@ -1150,7 +1150,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         exclusiveMapping.setGetMethodName("getExclusive");
         exclusiveMapping.setSetMethodName("setExclusive");
         exclusiveMapping.setXPath("exclusive/text()");
-        exclusiveMapping.setNullValue(Boolean.valueOf(EXCLUSIVE_DEFAULT));
+        exclusiveMapping.setNullValue(Boolean.TRUE);
         descriptor.addMapping(exclusiveMapping);
 
         return descriptor;
@@ -1211,7 +1211,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         enableRuntimeServicesMapping.setGetMethodName("getEnableRuntimeServices");
         enableRuntimeServicesMapping.setSetMethodName("setEnableRuntimeServices");
         enableRuntimeServicesMapping.setXPath("enable-runtime-services/text()");
-        enableRuntimeServicesMapping.setNullValue(Boolean.valueOf(ENABLE_RUNTIME_SERVICES_DEFAULT));
+        enableRuntimeServicesMapping.setNullValue(Boolean.TRUE);
         descriptor.addMapping(enableRuntimeServicesMapping);
 
         XMLDirectMapping enableJTAMapping = new XMLDirectMapping();
@@ -1219,7 +1219,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         enableJTAMapping.setGetMethodName("getEnableJTA");
         enableJTAMapping.setSetMethodName("setEnableJTA");
         enableJTAMapping.setXPath("enable-jta/text()");
-        enableJTAMapping.setNullValue(Boolean.valueOf(ENABLE_JTA_DEFAULT));
+        enableJTAMapping.setNullValue(Boolean.TRUE);
         descriptor.addMapping(enableJTAMapping);
 
         return descriptor;
@@ -1483,7 +1483,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         preallocationSizeMapping.setGetMethodName("getPreallocationSize");
         preallocationSizeMapping.setSetMethodName("setPreallocationSize");
         preallocationSizeMapping.setXPath("preallocation-size/text()");
-        preallocationSizeMapping.setNullValue(Integer.valueOf(50));
+        preallocationSizeMapping.setNullValue(50);
         descriptor.addMapping(preallocationSizeMapping);
 
         return descriptor;

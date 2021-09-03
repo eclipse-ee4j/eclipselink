@@ -39,10 +39,10 @@ public class SendNewObjectCacheSyncTest extends ConfigurableCacheSyncDistributed
         this.shouldSendObject = shouldSendObject;
         if (shouldSendObject) {
             setName("SendNewObjectCacheSyncTest - SEND_NEW_OBJECTS_WITH_CHANGES");
-            cacheSyncConfigValues.put(Employee.class, Integer.valueOf(ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES));
+            cacheSyncConfigValues.put(Employee.class, ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES);
         } else {
             setName("SendNewObjectCacheSyncTest - SEND_OBJECT_CHANGES");
-            cacheSyncConfigValues.put(Employee.class, Integer.valueOf(ClassDescriptor.SEND_OBJECT_CHANGES));
+            cacheSyncConfigValues.put(Employee.class, ClassDescriptor.SEND_OBJECT_CHANGES);
         }
     }
 

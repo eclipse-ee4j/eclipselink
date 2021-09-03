@@ -69,7 +69,7 @@ public class EmulatedResultSet implements ResultSet {
 
     @Override
     public boolean getBoolean(int columnIndex) {
-        return ((Boolean) getObject(columnIndex)).booleanValue();
+        return (Boolean) getObject(columnIndex);
     }
 
     @Override
@@ -155,7 +155,7 @@ public class EmulatedResultSet implements ResultSet {
 
     @Override
     public boolean getBoolean(String columnName) {
-        return ((Boolean) getObject(columnName)).booleanValue();
+        return (Boolean) getObject(columnName);
     }
 
     @Override

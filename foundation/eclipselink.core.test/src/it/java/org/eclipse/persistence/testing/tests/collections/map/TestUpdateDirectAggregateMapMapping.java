@@ -28,10 +28,10 @@ public class TestUpdateDirectAggregateMapMapping extends TestReadDirectAggregate
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holders = uow.readAllObjects(DirectAggregateMapHolder.class, holderExp);
         changedHolder = (DirectAggregateMapHolder)holders.get(0);
-        changedHolder.removeDirectToAggregateMapItem(Integer.valueOf(1));
+        changedHolder.removeDirectToAggregateMapItem(1);
         AggregateMapValue mapValue = new AggregateMapValue();
         mapValue.setValue(3);
-        changedHolder.addDirectToAggregateMapItem(Integer.valueOf(3), mapValue);
+        changedHolder.addDirectToAggregateMapItem(3, mapValue);
         uow.commit();
         Object holderForComparison = uow.readObject(changedHolder);
         if (!compareObjects(changedHolder, holderForComparison)){
@@ -48,10 +48,10 @@ public class TestUpdateDirectAggregateMapMapping extends TestReadDirectAggregate
         if (!compareObjects(holder, changedHolder)){
             throw new TestErrorException("Objects do not match reinitialize");
         }
-        if (holder.getDirectToAggregateMap().containsKey(Integer.valueOf(1))){
+        if (holder.getDirectToAggregateMap().containsKey(1)){
             throw new TestErrorException("Item that was removed is still present in map.");
         }
-        AggregateMapValue value = (AggregateMapValue)holder.getDirectToAggregateMap().get(Integer.valueOf(3));
+        AggregateMapValue value = (AggregateMapValue)holder.getDirectToAggregateMap().get(3);
         if (value.getValue() != 3){
             throw new TestErrorException("Item was not correctly added to map");
         }

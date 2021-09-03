@@ -18,7 +18,7 @@ public class NonFueledVehicle extends Vehicle {
     public static NonFueledVehicle example4(Company company) {
         NonFueledVehicle example = new NonFueledVehicle();
 
-        example.setPassengerCapacity(Integer.valueOf(1));
+        example.setPassengerCapacity(1);
         example.getOwner().setValue(company);
         return example;
     }

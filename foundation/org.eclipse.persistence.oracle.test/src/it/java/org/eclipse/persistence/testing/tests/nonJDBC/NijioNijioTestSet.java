@@ -198,9 +198,9 @@ public class NijioNijioTestSet {
         ((DatabaseSession)s).login();
         Object o = null;
         Vector queryArgs = new NonSynchronizedVector();
-        queryArgs.add(Integer.valueOf(107));
-        queryArgs.add(Integer.valueOf(108));
-        queryArgs.add(Integer.valueOf(1));
+        queryArgs.add(107);
+        queryArgs.add(108);
+        queryArgs.add(1);
         queryArgs.add("MERV");
         boolean worked = false;
         String msg = null;

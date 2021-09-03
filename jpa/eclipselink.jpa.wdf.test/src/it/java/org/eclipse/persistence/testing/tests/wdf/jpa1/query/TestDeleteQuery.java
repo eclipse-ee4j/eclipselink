@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -173,7 +173,7 @@ public class TestDeleteQuery extends JPA1Base {
         EntityManager em = getEnvironment().getEntityManager();
         try {
             init();
-            Department department = em.find(Department.class, Integer.valueOf(10));
+            Department department = em.find(Department.class, 10);
             verifyDeleteEmployeeWithGivenDepartment(em, department);
             em.clear();
             init();
@@ -192,7 +192,7 @@ public class TestDeleteQuery extends JPA1Base {
         verify(count == 1, "wrong update count: " + count);
         getEnvironment().commitTransaction(em);
         getEnvironment().evict(em, Employee.class);
-        verify(null == em.find(Employee.class, Integer.valueOf(1)), "employee found");
+        verify(null == em.find(Employee.class, 1), "employee found");
     }
 
     @Test
@@ -295,10 +295,10 @@ public class TestDeleteQuery extends JPA1Base {
             getEnvironment().beginTransaction(em);
             Query query = em.createQuery("update Department d set d.name = ?1 where d.id = ?2");
             query.setParameter(1, "emil");
-            query.setParameter(2, Integer.valueOf(1));
+            query.setParameter(2, 1);
             query.executeUpdate();
             getEnvironment().commitTransactionAndClear(em);
-            Department found = em.find(Department.class, Integer.valueOf(1));
+            Department found = em.find(Department.class, 1);
             verify("emil".equals(found.getName()), "wrong name: " + found.getName());
         } finally {
             closeEntityManager(em);

@@ -499,12 +499,12 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     public Hashtable maximumNumericValues() {
         Hashtable values = new Hashtable();
 
-        values.put(Integer.class, Integer.valueOf(Integer.MAX_VALUE));
-        values.put(Long.class, Long.valueOf(Integer.MAX_VALUE));
-        values.put(Float.class, Float.valueOf(123456789));
-        values.put(Double.class, Double.valueOf(Float.MAX_VALUE));
-        values.put(Short.class, Short.valueOf(Short.MAX_VALUE));
-        values.put(Byte.class, Byte.valueOf(Byte.MAX_VALUE));
+        values.put(Integer.class, Integer.MAX_VALUE);
+        values.put(Long.class, (long) Integer.MAX_VALUE);
+        values.put(Float.class, 123456789F);
+        values.put(Double.class, (double) Float.MAX_VALUE);
+        values.put(Short.class, Short.MAX_VALUE);
+        values.put(Byte.class, Byte.MAX_VALUE);
         values.put(java.math.BigInteger.class, new java.math.BigInteger("999999999999999"));
         values.put(java.math.BigDecimal.class, new java.math.BigDecimal("0.999999999999999"));
         return values;
@@ -523,12 +523,12 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     public Hashtable minimumNumericValues() {
         Hashtable values = new Hashtable();
 
-        values.put(Integer.class, Integer.valueOf(Integer.MIN_VALUE));
-        values.put(Long.class, Long.valueOf(Integer.MIN_VALUE));
-        values.put(Float.class, Float.valueOf(-123456789));
-        values.put(Double.class, Double.valueOf(Float.MIN_VALUE));
-        values.put(Short.class, Short.valueOf(Short.MIN_VALUE));
-        values.put(Byte.class, Byte.valueOf(Byte.MIN_VALUE));
+        values.put(Integer.class, Integer.MIN_VALUE);
+        values.put(Long.class, (long) Integer.MIN_VALUE);
+        values.put(Float.class, (float) -123456789);
+        values.put(Double.class, (double) Float.MIN_VALUE);
+        values.put(Short.class, Short.MIN_VALUE);
+        values.put(Byte.class, Byte.MIN_VALUE);
         values.put(java.math.BigInteger.class, new java.math.BigInteger("-999999999999999"));
         values.put(java.math.BigDecimal.class, new java.math.BigDecimal("-0.999999999999999"));
         return values;

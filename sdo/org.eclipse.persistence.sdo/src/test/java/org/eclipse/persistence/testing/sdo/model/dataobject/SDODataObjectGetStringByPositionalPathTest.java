@@ -44,7 +44,7 @@ public class SDODataObjectGetStringByPositionalPathTest extends SDODataObjectGet
         dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_BOOLEAN);
 
         boolean str = true;
-        Boolean B_STR = Boolean.valueOf(str);
+        Boolean B_STR = str;
         dataObject_a.setBoolean(propertyPath_a_b_c, str);// add it to instance list
 
         assertEquals(B_STR.toString(), dataObject_a.getString(propertyPath_a_b_c));

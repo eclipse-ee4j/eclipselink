@@ -272,7 +272,7 @@ public class PLSQLrecordOutTestSet  {
         assertNull("MGR is supposed to be null",  record.get("MGR"));
         assertNull("HIREDATE is supposed to be null",  record.get("HIREDATE"));
         assertTrue("incorrect SAL" ,
-            record.get("SAL").equals(Double.valueOf(6000.0)));
+            record.get("SAL").equals(6000.0));
         assertNull("COMM is supposed to be null",  record.get("COMM"));
         assertTrue("incorrect DEPTNO" ,
             record.get("DEPTNO").equals(new BigDecimal(20)));

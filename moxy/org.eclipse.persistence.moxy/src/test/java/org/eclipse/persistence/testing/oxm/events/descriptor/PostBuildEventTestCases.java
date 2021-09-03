@@ -24,8 +24,8 @@ import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 import org.w3c.dom.Document;
 
 public class PostBuildEventTestCases extends XMLMappingTestCases {
-    static Integer EMPLOYEE_POST_BUILD = Integer.valueOf(0);
-    static Integer ADDRESS_POST_BUILD  = Integer.valueOf(1);
+    static Integer EMPLOYEE_POST_BUILD = 0;
+    static Integer ADDRESS_POST_BUILD  = 1;
     EmployeeProject project;
 
     public PostBuildEventTestCases(String name) throws Exception {

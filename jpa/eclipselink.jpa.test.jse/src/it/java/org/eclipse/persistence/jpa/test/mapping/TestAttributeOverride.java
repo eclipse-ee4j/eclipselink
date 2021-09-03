@@ -135,7 +135,7 @@ public class TestAttributeOverride {
 
         em = emf.createEntityManager();
         try {
-            Integer id = Integer.valueOf(41);
+            Integer id = 41;
 
             OverrideEmbeddableB emb1 = new OverrideEmbeddableB(43, 44, new OverrideNestedEmbeddableB(45, 46));
             OverrideEmbeddableB emb2 = new OverrideEmbeddableB(47, 48, new OverrideNestedEmbeddableB(49, 50));

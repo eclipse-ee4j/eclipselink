@@ -20,7 +20,7 @@ package org.eclipse.persistence.testing.models.interfaces;
 public class Show implements Program, java.io.Serializable {
     public String name;
     public String description;
-    public Number duration = Float.valueOf(0);
+    public Number duration = (float) 0;
 
     @Override
     public String getDescription() {
@@ -43,11 +43,11 @@ public class Show implements Program, java.io.Serializable {
     }
 
     public void setDuration(double duration) {
-        this.duration = Double.valueOf(duration);
+        this.duration = duration;
     }
 
     public void setDuration(float duration) {
-        this.duration = Float.valueOf(duration);
+        this.duration = duration;
     }
 
     @Override

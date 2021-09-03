@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -117,7 +117,7 @@ public class PlsqlRecordType extends SqlTypeWithFields {
         data_level++;
         iter = viewCache.getRows(ALL_ARGUMENTS, new String[0], new String[]{OWNER, PACKAGE_NAME,
             OBJECT_NAME, OVERLOAD, DATA_LEVEL}, new Object[]{schema, packageName,
-            methodName, methodNo, Integer.valueOf(data_level)}, new String[]{SEQUENCE});
+            methodName, methodNo, data_level}, new String[]{SEQUENCE});
         viewRows = new ArrayList<ViewRow>();
         while (iter.hasNext()) { // DISTINCT
             UserArguments item = (UserArguments)iter.next();

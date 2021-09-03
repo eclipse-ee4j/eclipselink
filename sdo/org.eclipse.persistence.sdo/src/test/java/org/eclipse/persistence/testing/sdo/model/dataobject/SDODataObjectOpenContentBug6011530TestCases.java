@@ -117,7 +117,7 @@ public class SDODataObjectOpenContentBug6011530TestCases extends SDOTestCase {
 
     public void testSetDefineOpenContentManySimpleProperty() throws Exception {
         List value = new ArrayList();
-        value.add(Integer.valueOf(4));
+        value.add(4);
         rootDataObject.set("addressOpenContent", value);
         Property openProp = rootDataObject.getInstanceProperty("addressOpenContent");
         assertNotNull(openProp);

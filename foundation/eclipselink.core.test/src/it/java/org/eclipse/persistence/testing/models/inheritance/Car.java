@@ -22,8 +22,8 @@ public class Car extends FueledVehicle {
     public static Car example1() {
         Car example = new Car();
 
-        example.setPassengerCapacity(Integer.valueOf(2));
-        example.setFuelCapacity(Integer.valueOf(30));
+        example.setPassengerCapacity(2);
+        example.setFuelCapacity(30);
         example.setDescription("PONTIAC");
         example.setFuelType("Petrol");
         example.addPartNumber("021776RM-b");
@@ -35,8 +35,8 @@ public class Car extends FueledVehicle {
     public static Car example2() {
         Car example = new Car();
 
-        example.setPassengerCapacity(Integer.valueOf(4));
-        example.setFuelCapacity(Integer.valueOf(50));
+        example.setPassengerCapacity(4);
+        example.setFuelCapacity(50);
         example.setDescription("TOYOTA");
         example.setFuelType("Petrol");
         example.addPartNumber("021776TT-a");
@@ -48,8 +48,8 @@ public class Car extends FueledVehicle {
     public static Car example3() {
         Car example = new Car();
 
-        example.setPassengerCapacity(Integer.valueOf(5));
-        example.setFuelCapacity(Integer.valueOf(60));
+        example.setPassengerCapacity(5);
+        example.setFuelCapacity(60);
         example.setDescription("BMW");
         example.setFuelType("Disel");
         example.addPartNumber("021776KM-k");
@@ -61,8 +61,8 @@ public class Car extends FueledVehicle {
     public static Car example4() {
         Car example = new Car();
 
-        example.setPassengerCapacity(Integer.valueOf(8));
-        example.setFuelCapacity(Integer.valueOf(100));
+        example.setPassengerCapacity(8);
+        example.setFuelCapacity(100);
         example.setDescription("Mazda");
         example.setFuelType("Coca-Cola");
         example.addPartNumber("021776KM-k");

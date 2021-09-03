@@ -66,9 +66,9 @@ public class JAXBStringIntegerHashMapTestCases extends JAXBListOfObjectsNoJSONTe
     @Override
     protected Object getControlObject() {
         HashMap<String, Integer> theMap = new HashMap<String, Integer>();
-        theMap.put("thekey", Integer.valueOf(10));
-        theMap.put("thekey2", Integer.valueOf(20));
-        theMap.put("thekey3", Integer.valueOf(30));
+        theMap.put("thekey", 10);
+        theMap.put("thekey2", 20);
+        theMap.put("thekey3", 30);
 
         QName qname = new QName("examplenamespace", "root");
         JAXBElement jaxbElement = new JAXBElement(qname, Object.class, null);

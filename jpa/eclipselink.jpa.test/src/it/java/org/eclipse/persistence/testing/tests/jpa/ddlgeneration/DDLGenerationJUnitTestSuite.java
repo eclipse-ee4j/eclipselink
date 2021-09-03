@@ -2182,8 +2182,8 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             mason.addAward(Helper.timestampFromDate(Helper.dateFromYearMonthDate(2009, 1, 1)), "Best pointer");
             mason.addAward(Helper.timestampFromDate(Helper.dateFromYearMonthDate(2010, 5, 9)), "Least screw-ups");
 
-            mason.addHoursWorked(Helper.timestampFromDate(Helper.dateFromYearMonthDate(2009, 1, 1)), Integer.valueOf(10));
-            mason.addHoursWorked(Helper.timestampFromDate(Helper.dateFromYearMonthDate(2010, 5, 9)), Integer.valueOf(11));
+            mason.addHoursWorked(Helper.timestampFromDate(Helper.dateFromYearMonthDate(2009, 1, 1)), 10);
+            mason.addHoursWorked(Helper.timestampFromDate(Helper.dateFromYearMonthDate(2010, 5, 9)), 11);
 
             mason.addUniSelf(Helper.timestampFromDate(Helper.dateFromYearMonthDate(2010, 5, 9)), mason);
 

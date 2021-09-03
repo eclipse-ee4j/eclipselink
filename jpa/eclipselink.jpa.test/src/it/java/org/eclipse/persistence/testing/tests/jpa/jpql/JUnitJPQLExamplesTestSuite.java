@@ -449,7 +449,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
 
         subQuery.setReferenceClass(Employee.class);
         Expression managerExpression = employeeBuilder.get("manager").get("id").equal(managerBuilder.get("id"));
-        subQuery.addAttribute("one", new ConstantExpression(Integer.valueOf(1), subQuery.getExpressionBuilder()));
+        subQuery.addAttribute("one", new ConstantExpression(1, subQuery.getExpressionBuilder()));
         subQuery.setSelectionCriteria(managerExpression);
         Expression employeeExpression = employeeBuilder.exists(subQuery);
 

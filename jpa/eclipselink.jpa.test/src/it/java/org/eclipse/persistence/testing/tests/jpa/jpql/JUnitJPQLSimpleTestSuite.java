@@ -1015,10 +1015,10 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         // \ is always treated as escape in MySQL.  Therefore ESCAPE '\' is considered a syntax error
             if (getServerSession().getPlatform().isMySQL()) {
             patternString = "234 RUBY $_Way";
-            escChar = Character.valueOf('$');
+            escChar = '$';
         } else {
             patternString = "234 RUBY \\_Way";
-            escChar = Character.valueOf('\\');
+            escChar = '\\';
         }
 
         List result = em.createQuery(ejbqlString).setParameter("pattern", patternString).setParameter("esc", escChar).getResultList();
@@ -1370,7 +1370,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         Vector expectedResult = (Vector)getServerSession().executeQuery(raq);
 
-        double salarySquareRoot = Math.sqrt((Double.valueOf(((Employee)expectedResult.firstElement()).getSalary()).doubleValue()));
+        double salarySquareRoot = Math.sqrt(((double) ((Employee) expectedResult.firstElement()).getSalary()));
 
         clearCache();
 
@@ -1423,7 +1423,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         Vector expectedResult = (Vector)getServerSession().executeQuery(raq);
 
-        double salarySquareRoot = Math.sqrt((Double.valueOf(((Employee)expectedResult.firstElement()).getSalary()).doubleValue()));
+        double salarySquareRoot = Math.sqrt(((double) ((Employee) expectedResult.firstElement()).getSalary()));
 
         clearCache();
 
@@ -1589,11 +1589,11 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         serverSession.login();
         UnitOfWork unitOfWork = serverSession.acquireUnitOfWork();
         Employee newEmployee = new Employee();
-        newEmployee.setId(Integer.valueOf(9000));
+        newEmployee.setId(9000);
         unitOfWork.registerObject(newEmployee);
 
         Vector testV = new Vector();
-        testV.addElement(Integer.valueOf(9000));
+        testV.addElement(9000);
 
         Employee result = (Employee)unitOfWork.executeQuery(readObjectQuery, testV);
 
@@ -2150,7 +2150,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         try {
             jakarta.persistence.Query query = em.createNamedQuery("findEmployeeByPK");
             query.setParameter("id", emp1.getId());
-            query.setHint("lockMode", Short.valueOf((short)1));
+            query.setHint("lockMode", (short) 1);
 
             emp2 = (Employee)query.getSingleResult();
         } catch (Exception e) {

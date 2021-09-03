@@ -51,7 +51,7 @@ public class JPAUpdateAddressPerformanceComparisonTest extends PerformanceRegres
     public void test() throws Exception {
         EntityManager manager = createEntityManager();
         manager.getTransaction().begin();
-        Address address = manager.find(Address.class, Long.valueOf(this.addressId));
+        Address address = manager.find(Address.class, this.addressId);
         count++;
         address.setStreet(street + count);
         manager.getTransaction().commit();

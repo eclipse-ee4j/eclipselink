@@ -247,13 +247,13 @@ public class TestVariation {
                 if (getters[i] != null) {
                     Object[] args = {  };
                     Boolean res = (Boolean)getters[i].invoke(object, args);
-                    original[i] = res.booleanValue();
+                    original[i] = res;
                 } else {
                     original[i] = fields[i].getBoolean(object);
                 }
 
                 if (setters[i] != null) {
-                    Object[] args = { Boolean.valueOf(required[i]) };
+                    Object[] args = {required[i]};
                     setters[i].invoke(object, args);
                 } else {
                     fields[i].setBoolean(object, required[i]);
@@ -267,7 +267,7 @@ public class TestVariation {
             super.reset();
             for (int i = required.length - 1; i >= 0; i--) {
                 if (setters[i] != null) {
-                    Object[] args = { Boolean.valueOf(original[i]) };
+                    Object[] args = {original[i]};
                     setters[i].invoke(object, args);
                 } else {
                     fields[i].setBoolean(object, original[i]);

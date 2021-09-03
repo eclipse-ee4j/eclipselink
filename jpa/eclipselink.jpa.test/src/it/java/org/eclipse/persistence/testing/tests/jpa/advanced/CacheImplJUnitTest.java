@@ -316,7 +316,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             // HockeyGear(Abstract Entity) << GoalieGear (Concrete MappedSuperclass) << ChestProtector (Concrete Entity)
             ChestProtector e1 = new ChestProtector();
             e1.setDescription("chest_protector");
-            e1.setSerialNumber(Integer.valueOf(ID_PADS));
+            e1.setSerialNumber(ID_PADS);
             em.persist(e1);
             commitTransaction(em);
             // do not close the entityManager between transactions or you will get bug# 307445
@@ -325,7 +325,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             // HockeyGear(Abstract Entity) << GoalieGear (Concrete MappedSuperclass) << ChestProtector (Concrete Entity)
             Pads p1 = new Pads();
             p1.setDescription("pads");
-            p1.setSerialNumber(Integer.valueOf(ID_CHESTPROTECTOR));
+            p1.setSerialNumber(ID_CHESTPROTECTOR);
             em.persist(p1);
             commitTransaction(em);
             closeEntityManager(em);
@@ -390,7 +390,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             // HockeyGear(Abstract Entity) << GoalieGear (Concrete MappedSuperclass) << ChestProtector (Concrete Entity)
             ChestProtector e1 = new ChestProtector();
             e1.setDescription("chest_protector");
-            e1.setSerialNumber(Integer.valueOf(ID_PADS));
+            e1.setSerialNumber(ID_PADS);
             em.persist(e1);
             commitTransaction(em);
             // do not close the entityManager between transactions or you will get bug# 307445
@@ -399,7 +399,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             // HockeyGear(Abstract Entity) << GoalieGear (Concrete MappedSuperclass) << ChestProtector (Concrete Entity)
             Pads p1 = new Pads();
             p1.setDescription("pads");
-            p1.setSerialNumber(Integer.valueOf(ID_CHESTPROTECTOR));
+            p1.setSerialNumber(ID_CHESTPROTECTOR);
             em.persist(p1);
             commitTransaction(em);
             closeEntityManager(em);
@@ -463,7 +463,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             // HockeyGear(Abstract Entity) << GoalieGear (Concrete MappedSuperclass) << ChestProtector (Concrete Entity)
             ChestProtector e1 = new ChestProtector();
             e1.setDescription("chest_protector");
-            e1.setSerialNumber(Integer.valueOf(ID_PADS));
+            e1.setSerialNumber(ID_PADS);
             em.persist(e1);
             commitTransaction(em);
             // do not close the entityManager between transactions or you will get bug# 307445
@@ -472,7 +472,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             // HockeyGear(Abstract Entity) << GoalieGear (Concrete MappedSuperclass) << ChestProtector (Concrete Entity)
             Pads p1 = new Pads();
             p1.setDescription("pads");
-            p1.setSerialNumber(Integer.valueOf(ID_CHESTPROTECTOR));
+            p1.setSerialNumber(ID_CHESTPROTECTOR);
             em.persist(p1);
             commitTransaction(em);
             closeEntityManager(em);
@@ -531,7 +531,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             // HockeyGear(Abstract Entity) << GoalieGear (Concrete MappedSuperclass) << ChestProtector (Concrete Entity)
             ChestProtector e1 = new ChestProtector();
             e1.setDescription("chest_protector");
-            e1.setSerialNumber(Integer.valueOf(ID_PADS));
+            e1.setSerialNumber(ID_PADS);
             em.persist(e1);
             commitTransaction(em);
             // do not close the entityManager between transactions or you will get bug# 307445
@@ -539,7 +539,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             beginTransaction(em);
             Pads p1 = new Pads();
             p1.setDescription("pads");
-            p1.setSerialNumber(Integer.valueOf(ID_CHESTPROTECTOR));
+            p1.setSerialNumber(ID_CHESTPROTECTOR);
             em.persist(p1);
             commitTransaction(em);
             closeEntityManager(em);
@@ -591,7 +591,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             // HockeyGear(Abstract Entity) << GoalieGear (Concrete MappedSuperclass) << ChestProtector (Concrete Entity)
             ChestProtector e1 = new ChestProtector();
             e1.setDescription("gear");
-            e1.setSerialNumber(Integer.valueOf(ID));
+            e1.setSerialNumber(ID);
             em.persist(e1);
             commitTransaction(em);
             closeEntityManager(em);
@@ -663,7 +663,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             EntityManager em1 = createEntityManager();
             JpaCache anEclipseLinkCache = (JpaCache)getEntityManagerFactory().getCache();
             try {
-                anEclipseLinkCache.getId(Integer.valueOf(1));
+                anEclipseLinkCache.getId(1);
             } catch (IllegalArgumentException iae) {
                 _exceptionThrown = true;
             } finally {

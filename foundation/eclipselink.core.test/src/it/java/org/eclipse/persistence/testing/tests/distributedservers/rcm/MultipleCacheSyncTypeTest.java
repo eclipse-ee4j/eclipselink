@@ -41,12 +41,12 @@ public class MultipleCacheSyncTypeTest extends ConfigurableCacheSyncDistributedT
 
     public MultipleCacheSyncTypeTest() {
         super();
-        cacheSyncConfigValues.put(Employee.class, Integer.valueOf(ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES));
-        cacheSyncConfigValues.put(Project.class, Integer.valueOf(ClassDescriptor.INVALIDATE_CHANGED_OBJECTS));
-        cacheSyncConfigValues.put(SmallProject.class, Integer.valueOf(ClassDescriptor.INVALIDATE_CHANGED_OBJECTS));
-        cacheSyncConfigValues.put(LargeProject.class, Integer.valueOf(ClassDescriptor.INVALIDATE_CHANGED_OBJECTS));
-        cacheSyncConfigValues.put(Address.class, Integer.valueOf(ClassDescriptor.DO_NOT_SEND_CHANGES));
-        cacheSyncConfigValues.put(PhoneNumber.class, Integer.valueOf(ClassDescriptor.SEND_OBJECT_CHANGES));
+        cacheSyncConfigValues.put(Employee.class, ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES);
+        cacheSyncConfigValues.put(Project.class, ClassDescriptor.INVALIDATE_CHANGED_OBJECTS);
+        cacheSyncConfigValues.put(SmallProject.class, ClassDescriptor.INVALIDATE_CHANGED_OBJECTS);
+        cacheSyncConfigValues.put(LargeProject.class, ClassDescriptor.INVALIDATE_CHANGED_OBJECTS);
+        cacheSyncConfigValues.put(Address.class, ClassDescriptor.DO_NOT_SEND_CHANGES);
+        cacheSyncConfigValues.put(PhoneNumber.class, ClassDescriptor.SEND_OBJECT_CHANGES);
     }
 
     /**

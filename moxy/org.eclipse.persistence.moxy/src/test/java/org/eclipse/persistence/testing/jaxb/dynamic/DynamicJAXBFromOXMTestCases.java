@@ -516,7 +516,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
 
         company.set("name", "ACME International");
         company.set("address", "165 Main St, Anytown US, 93012");
-        company.set("id", Integer.valueOf(882));
+        company.set("id", 882);
 
         person.set("name", "Bob Dobbs");
         person.set("company", company);
@@ -1029,7 +1029,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
 
         // Ensure that properties were set on the Descriptor and Mapping
         XMLDescriptor d = jaxbContext.getXMLContext().getDescriptor(new QName("mynamespace", "person"));
-        assertEquals("Descriptor property not present.", Integer.valueOf(101), d.getProperty("identifier"));
+        assertEquals("Descriptor property not present.", 101, d.getProperty("identifier"));
         assertEquals("Descriptor property not present.", Boolean.FALSE, d.getProperty("active"));
 
         XMLDirectMapping m = (XMLDirectMapping) d.getMappingForAttributeName("name");

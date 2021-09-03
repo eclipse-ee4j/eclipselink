@@ -4373,7 +4373,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                         if ((attributeValue != null) && mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).usesIndirection() && (!((ForeignReferenceMapping)mapping).getIndirectionPolicy().objectIsInstantiated(attributeValue))) {
                             if (mapping.isObjectReferenceMapping() && ((ObjectReferenceMapping)mapping).isForeignKeyRelationship() && !mapping.isPrimaryKeyMapping()) {
                                 if (isUntriggeredResultSetRecord == null) {
-                                    isUntriggeredResultSetRecord = Boolean.valueOf(databaseRow instanceof ResultSetRecord && ((ResultSetRecord)databaseRow).hasResultSet());
+                                    isUntriggeredResultSetRecord = databaseRow instanceof ResultSetRecord && ((ResultSetRecord) databaseRow).hasResultSet();
                                 }
                                 if (isUntriggeredResultSetRecord) {
                                     for (DatabaseField field : mapping.getFields()) {

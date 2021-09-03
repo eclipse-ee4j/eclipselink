@@ -23,8 +23,8 @@ public class Secretary extends AdministrativeJob {
         Secretary example = new Secretary();
 
         example.setDepartment("Finance");
-        example.setSalary(Float.valueOf(33500.00f));
-        example.setMinimumSalary(Float.valueOf(31000.00f));
+        example.setSalary(33500.00f);
+        example.setMinimumSalary(31000.00f);
 
         return example;
     }
@@ -33,8 +33,8 @@ public class Secretary extends AdministrativeJob {
         Secretary example = new Secretary();
 
         example.setDepartment("Employment");
-        example.setSalary(Float.valueOf(33500.00f));
-        example.setMinimumSalary(Float.valueOf(31000.00f));
+        example.setSalary(33500.00f);
+        example.setMinimumSalary(31000.00f);
 
         return example;
     }
@@ -43,8 +43,8 @@ public class Secretary extends AdministrativeJob {
         Secretary example = new Secretary();
 
         example.setDepartment("Public Relations");
-        example.setSalary(Float.valueOf(35000.00f));
-        example.setMinimumSalary(Float.valueOf(31000.00f));
+        example.setSalary(35000.00f);
+        example.setMinimumSalary(31000.00f);
 
         return example;
     }

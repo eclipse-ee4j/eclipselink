@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,9 +19,9 @@ import static java.lang.Integer.MIN_VALUE;
 
 public class PLSQLargument{
 
-    public static final Integer IN = Integer.valueOf(1);
-    public static final Integer OUT = Integer.valueOf(2);
-    public static final Integer INOUT = Integer.valueOf(3);
+    public static final Integer IN = 1;
+    public static final Integer OUT = 2;
+    public static final Integer INOUT = 3;
 
     public String name;
     public int index = MIN_VALUE;

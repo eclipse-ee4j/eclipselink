@@ -122,28 +122,28 @@ public class JAXBListOfObjectsNonRootTestCases extends JAXBListOfObjectsNoJSONTe
         listofObjects.setEmpList(empList);
 
         boolean[] booleans = new boolean[4];
-        booleans[0] = Boolean.TRUE.booleanValue();
-        booleans[1] = Boolean.TRUE.booleanValue();
-        booleans[2] = Boolean.FALSE.booleanValue();
-        booleans[3] = Boolean.FALSE.booleanValue();
+        booleans[0] = true;
+        booleans[1] = true;
+        booleans[2] = false;
+        booleans[3] = false;
         listofObjects.setBooleanArray(booleans);
 
         HashMap<String, Integer> stringIntegerMap = new HashMap<String, Integer>();
-        stringIntegerMap.put("string1", Integer.valueOf(10));
-        stringIntegerMap.put("string2", Integer.valueOf(20));
-        stringIntegerMap.put("string3", Integer.valueOf(30));
+        stringIntegerMap.put("string1", 10);
+        stringIntegerMap.put("string2", 20);
+        stringIntegerMap.put("string3", 30);
         listofObjects.setStringIntegerHashMap(stringIntegerMap);
 
         ConcurrentHashMap<String, Integer> stringIntegerConcurrentMap = new ConcurrentHashMap<String, Integer>();
-        stringIntegerConcurrentMap.put("string1", Integer.valueOf(10));
-        stringIntegerConcurrentMap.put("string2", Integer.valueOf(20));
-        stringIntegerConcurrentMap.put("string3", Integer.valueOf(30));
+        stringIntegerConcurrentMap.put("string1", 10);
+        stringIntegerConcurrentMap.put("string2", 20);
+        stringIntegerConcurrentMap.put("string3", 30);
         listofObjects.setStringIntegerConcurrentMap(stringIntegerConcurrentMap);
 
         LinkedList<Integer> integersLinkedList = new LinkedList<Integer>();
-        integersLinkedList.add(Integer.valueOf(5));
-        integersLinkedList.add(Integer.valueOf(15));
-        integersLinkedList.add(Integer.valueOf(25));
+        integersLinkedList.add(5);
+        integersLinkedList.add(15);
+        integersLinkedList.add(25);
         listofObjects.setIntegerLinkedList(integersLinkedList);
 
         Hashtable<String, Employee> stringEmployeeTable = new Hashtable<String, Employee>();

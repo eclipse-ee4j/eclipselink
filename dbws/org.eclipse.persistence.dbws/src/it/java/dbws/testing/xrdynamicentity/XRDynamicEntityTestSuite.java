@@ -124,7 +124,7 @@ public class XRDynamicEntityTestSuite {
         // test #2
         DynamicEntity e = entity1.set(FIELD_1, TEST_STRING);
         assertSame(e, entity1);
-        e = entity1.set(FIELD_2, Integer.valueOf(17));
+        e = entity1.set(FIELD_2, 17);
         assertSame(e, entity1);
         // test #3
         String test = entity1.<String>get(FIELD_1);

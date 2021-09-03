@@ -111,11 +111,11 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     protected static final Vector NO_FIELDS = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(0);
 
     /** Used to share integer instance to reduce memory. */
-    protected static final Integer NO_WEIGHT = Integer.valueOf(Integer.MAX_VALUE);
-    protected static final Integer WEIGHT_DIRECT = Integer.valueOf(1);
-    protected static final Integer WEIGHT_TRANSFORM = Integer.valueOf(100);
-    protected static final Integer WEIGHT_AGGREGATE = Integer.valueOf(200);
-    protected static final Integer WEIGHT_TO_ONE = Integer.valueOf(400);
+    protected static final Integer NO_WEIGHT = Integer.MAX_VALUE;
+    protected static final Integer WEIGHT_DIRECT = 1;
+    protected static final Integer WEIGHT_TRANSFORM = 100;
+    protected static final Integer WEIGHT_AGGREGATE = 200;
+    protected static final Integer WEIGHT_TO_ONE = 400;
 
     /** ClassDescriptor to which this mapping belongs to */
     protected ClassDescriptor descriptor;

@@ -78,7 +78,7 @@ public class WriteChangesFailed_StatementCountTestCase extends AutoVerifyTestCas
                         throw new TestErrorException("The write statments count property should be set if writechanges get failed.");
                     }else {
                         writeStatementsCount =
-                                ((Integer)uow.getProperties().get(DatasourceAccessor.WRITE_STATEMENTS_COUNT_PROPERTY)).intValue();
+                                (Integer) uow.getProperties().get(DatasourceAccessor.WRITE_STATEMENTS_COUNT_PROPERTY);
                     }
                     if (uow.getProperties().get(DatasourceAccessor.STOREDPROCEDURE_STATEMENTS_COUNT_PROPERTY) == null) {
                         throw new TestErrorException("The store procedure statments count property should be set if writechanges get failed.");

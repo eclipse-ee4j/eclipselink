@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -612,7 +612,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 getActiveBatchWritingMechanism(session).appendCall(session, dbCall);
                 //bug 4241441: passing 1 back to avoid optimistic lock exceptions since there
                 // is no way to know if it succeeded on the DB at this point.
-                return Integer.valueOf(1);
+                return 1;
             } else {
                 getActiveBatchWritingMechanism(session).executeBatchedStatements(session);
             }
@@ -915,7 +915,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             }
         }
 
-        return Integer.valueOf(rowCount);
+        return rowCount;
     }
 
     /**
@@ -1369,23 +1369,23 @@ public class DatabaseAccessor extends DatasourceAccessor {
 
         // Optimize numeric values to avoid conversion into big-dec and back to primitives.
         if ((fieldType == ClassConstants.PLONG) || (fieldType == ClassConstants.LONG)) {
-            value = Long.valueOf(resultSet.getLong(columnNumber));
-            isPrimitive = ((Long)value).longValue() == 0l;
+            value = resultSet.getLong(columnNumber);
+            isPrimitive = (Long) value == 0l;
         } else if ((fieldType == ClassConstants.INTEGER) || (fieldType == ClassConstants.PINT)) {
-            value = Integer.valueOf(resultSet.getInt(columnNumber));
-            isPrimitive = ((Integer)value).intValue() == 0;
+            value = resultSet.getInt(columnNumber);
+            isPrimitive = (Integer) value == 0;
         } else if ((fieldType == ClassConstants.FLOAT) || (fieldType == ClassConstants.PFLOAT)) {
-            value = Float.valueOf(resultSet.getFloat(columnNumber));
-            isPrimitive = ((Float)value).floatValue() == 0f;
+            value = resultSet.getFloat(columnNumber);
+            isPrimitive = (Float) value == 0f;
         } else if ((fieldType == ClassConstants.DOUBLE) || (fieldType == ClassConstants.PDOUBLE)) {
-            value = Double.valueOf(resultSet.getDouble(columnNumber));
-            isPrimitive = ((Double)value).doubleValue() == 0d;
+            value = resultSet.getDouble(columnNumber);
+            isPrimitive = (Double) value == 0d;
         } else if ((fieldType == ClassConstants.SHORT) || (fieldType == ClassConstants.PSHORT)) {
-            value = Short.valueOf(resultSet.getShort(columnNumber));
-            isPrimitive = ((Short)value).shortValue() == 0;
+            value = resultSet.getShort(columnNumber);
+            isPrimitive = (Short) value == 0;
         } else if ((fieldType == ClassConstants.BOOLEAN) || (fieldType == ClassConstants.PBOOLEAN))  {
-            value = Boolean.valueOf(resultSet.getBoolean(columnNumber));
-            isPrimitive = ((Boolean)value).booleanValue() == false;
+            value = resultSet.getBoolean(columnNumber);
+            isPrimitive = (Boolean) value == false;
         } else if ((type == Types.TIME) || (type == Types.DATE) || (type == Types.TIMESTAMP)) {
             if (Helper.shouldOptimizeDates) {
                 // Optimize dates by avoid conversion to timestamp then back to date or time or util.date.

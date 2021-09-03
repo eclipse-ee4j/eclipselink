@@ -30,11 +30,11 @@ public class VariableOneToOneInsertTest extends TransactionalTestCase {
         this.company = new Company();
         Company c = (Company)uow.registerObject(this.company);
         c.setName("Company One");
-        c.setId(Integer.valueOf(54));
+        c.setId(54);
         Email email = new Email();
         email.setAddress("@Blather.ca");
         email.setHolder(c);
-        email.setId(Integer.valueOf(45));
+        email.setId(45);
         c.setContact(email);
         c.email = email;
 

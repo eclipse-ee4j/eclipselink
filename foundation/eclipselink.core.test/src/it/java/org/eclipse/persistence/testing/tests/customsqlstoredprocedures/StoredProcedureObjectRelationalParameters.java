@@ -38,7 +38,7 @@ public class StoredProcedureObjectRelationalParameters extends TestCase{
     Object result = null;
     Vector results2, results3 = null;
     Address originalAddress;
-    Long policyHolderIdToUse = Long.valueOf(12345);
+    Long policyHolderIdToUse = 12345L;
     boolean useCustomSQL;
 
     public StoredProcedureObjectRelationalParameters() {
@@ -75,7 +75,7 @@ public class StoredProcedureObjectRelationalParameters extends TestCase{
         Vector args = new Vector();
         args.addElement(policyHolderIdToUse);//ssn
         args.addElement(null);//occupation
-        args.addElement(Character.valueOf('M'));//sex
+        args.addElement('M');//sex
         args.addElement("Chris");//firstName
         args.addElement(null);//birthDate
         args.addElement("Random");//lastName

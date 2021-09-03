@@ -334,7 +334,7 @@ public class DB2ZPlatform extends DB2Platform {
         } else if (parameter instanceof Boolean) {
             methodName = "setJccBooleanAtName";
             methodArgs = new Class[] {String.class, boolean.class};
-            parameters = new Object[] {name, ((Boolean) parameter).booleanValue()};
+            parameters = new Object[] {name, (Boolean) parameter};
         } else if (parameter == null) {
             // Normally null is passed as a DatabaseField so the type is included, but in some case may be passed directly.
             methodName = "setJccNullAtName";

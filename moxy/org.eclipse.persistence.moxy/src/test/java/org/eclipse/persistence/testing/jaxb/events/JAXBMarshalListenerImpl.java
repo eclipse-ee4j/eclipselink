@@ -20,12 +20,12 @@ import jakarta.xml.bind.*;
 
 
 public class JAXBMarshalListenerImpl extends Marshaller.Listener {
-    static Integer EMPLOYEE_BEFORE_MARSHAL = Integer.valueOf(0);
-    static Integer ADDRESS_BEFORE_MARSHAL = Integer.valueOf(1);
-    static Integer PHONE_BEFORE_MARSHAL = Integer.valueOf(2);
-    static Integer EMPLOYEE_AFTER_MARSHAL = Integer.valueOf(3);
-    static Integer ADDRESS_AFTER_MARSHAL = Integer.valueOf(4);
-    static Integer PHONE_AFTER_MARSHAL = Integer.valueOf(5);
+    static Integer EMPLOYEE_BEFORE_MARSHAL = 0;
+    static Integer ADDRESS_BEFORE_MARSHAL = 1;
+    static Integer PHONE_BEFORE_MARSHAL = 2;
+    static Integer EMPLOYEE_AFTER_MARSHAL = 3;
+    static Integer ADDRESS_AFTER_MARSHAL = 4;
+    static Integer PHONE_AFTER_MARSHAL = 5;
 
     public ArrayList events = null;
 

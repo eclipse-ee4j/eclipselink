@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -127,7 +127,7 @@ public class TestSetFunctions extends JPA1Base {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
         try {
-            verifyDouble(em, "select avg(e.salary) from Employee e", Double.valueOf(7000));
+            verifyDouble(em, "select avg(e.salary) from Employee e", 7000.0);
         } finally {
             closeEntityManager(em);
         }

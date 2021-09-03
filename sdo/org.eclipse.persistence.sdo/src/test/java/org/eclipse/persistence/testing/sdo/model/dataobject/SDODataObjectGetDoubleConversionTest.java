@@ -228,7 +228,7 @@ public class SDODataObjectGetDoubleConversionTest extends SDODataObjectConversio
         double delta = 0.0;
         dataObject.setString(property, str);// add it to instance list
 
-        assertEquals(s_d.doubleValue(), dataObject.getDouble(property), delta);
+        assertEquals(s_d, dataObject.getDouble(property), delta);
     }
 
     //16. purpose: getDouble with Undefined string Property

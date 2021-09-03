@@ -33,10 +33,10 @@ public class TestBidirectionalOneToOne extends JPA1Base {
 
     private static final int HANS_ID_VALUE = 1;
     private static final int FRED_ID_VALUE = 2;
-    private static final Integer HANS_ID = Integer.valueOf(HANS_ID_VALUE);
-    private static final Integer FRED_ID = Integer.valueOf(FRED_ID_VALUE);
-    private static final CubiclePrimaryKeyClass GREEN_CUBICLE_ID = new CubiclePrimaryKeyClass(Integer.valueOf(10), Integer.valueOf(20));
-    private static final CubiclePrimaryKeyClass BLUE_CUBICLE_ID = new CubiclePrimaryKeyClass(Integer.valueOf(33), Integer.valueOf(44));
+    private static final Integer HANS_ID = HANS_ID_VALUE;
+    private static final Integer FRED_ID = FRED_ID_VALUE;
+    private static final CubiclePrimaryKeyClass GREEN_CUBICLE_ID = new CubiclePrimaryKeyClass(10, 20);
+    private static final CubiclePrimaryKeyClass BLUE_CUBICLE_ID = new CubiclePrimaryKeyClass(33, 44);
 
     @Before
     public void seedDataModel() throws SQLException {

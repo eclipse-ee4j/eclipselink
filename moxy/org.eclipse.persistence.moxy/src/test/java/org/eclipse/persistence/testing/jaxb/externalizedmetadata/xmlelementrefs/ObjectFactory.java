@@ -23,7 +23,7 @@ public class ObjectFactory {
 
     @jakarta.xml.bind.annotation.XmlElementDecl(namespace="myns", name="integer-root")
     public jakarta.xml.bind.JAXBElement<Integer> createIntegerRoot() {
-        return new jakarta.xml.bind.JAXBElement<Integer>(new javax.xml.namespace.QName("myns", "integer-root"), Integer.class, Integer.valueOf(0));
+        return new jakarta.xml.bind.JAXBElement<Integer>(new javax.xml.namespace.QName("myns", "integer-root"), Integer.class, 0);
     }
 
     @jakarta.xml.bind.annotation.XmlElementDecl(name="a")

@@ -32,7 +32,7 @@ public class SDODataObjectGetListByPositionalPathTest extends SDODataObjectGetBy
         dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_BOOLEAN);
         dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setMany(true);
 
-        Boolean bb = Boolean.valueOf(true);
+        Boolean bb = Boolean.TRUE;
         List b = new ArrayList();
 
         //b.add(bb);

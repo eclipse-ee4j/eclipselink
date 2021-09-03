@@ -65,16 +65,16 @@ public class BooleanJUnitTestCase extends JUnitTestCase {
         WrapperTypes[] wrapperTypes = new WrapperTypes[4];
         wrapperTypes[0] = new WrapperTypes(BigDecimal.ZERO, BigInteger.ZERO, Boolean.FALSE,
                             Byte.valueOf("0"), 'A', Short.valueOf("0"),
-                0, 0L, Float.valueOf(0.0f), 0.0, "A String");
+                0, 0L, 0.0f, 0.0, "A String");
         wrapperTypes[1] = new WrapperTypes(BigDecimal.ONE, BigInteger.ONE, Boolean.TRUE,
                 Byte.valueOf("1"), 'B', Short.valueOf("1"),
-                1, 1L, Float.valueOf(1.0f), 1.0, "B String");
+                1, 1L, 1.0f, 1.0, "B String");
         wrapperTypes[2] = new WrapperTypes(new BigDecimal(2), new BigInteger("2"), Boolean.FALSE,
                 Byte.valueOf("2"), 'C', Short.valueOf("2"),
-                2, 2L, Float.valueOf(2.0f), 2.0, "C String");
+                2, 2L, 2.0f, 2.0, "C String");
         wrapperTypes[3] = new WrapperTypes(new BigDecimal(3), new BigInteger("3"), Boolean.TRUE,
                 Byte.valueOf("3"), 'D', Short.valueOf("3"),
-                3, 3L, Float.valueOf(3.0f), 3.0, "D String");
+                3, 3L, 3.0f, 3.0, "D String");
         for (WrapperTypes wrapperType: wrapperTypes) {
             em.persist(wrapperType);
         }

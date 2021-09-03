@@ -38,7 +38,7 @@ public class ListTest extends PerformanceComparisonTestCase {
     public void test() throws Exception {
         Vector vector = new Vector(10);
         for (int index = 0; index < size; index++) {
-            vector.add(Integer.valueOf(index));
+            vector.add(index);
         }
         for (int index = 0; index < size; index++) {
             Object result = vector.get(index);
@@ -54,7 +54,7 @@ public class ListTest extends PerformanceComparisonTestCase {
             public void test() {
                 List list = new ArrayList(10);
                 for (int index = 0; index < size; index++) {
-                    list.add(Integer.valueOf(index));
+                    list.add(index);
                 }
                 for (int index = 0; index < size; index++) {
                     Object result = list.get(index);
@@ -75,7 +75,7 @@ public class ListTest extends PerformanceComparisonTestCase {
             public void test() {
                 List list = new LinkedList();
                 for (int index = 0; index < size; index++) {
-                    list.add(Integer.valueOf(index));
+                    list.add(index);
                 }
                 for (int index = 0; index < size; index++) {
                     Object result = list.get(index);

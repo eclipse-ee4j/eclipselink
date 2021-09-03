@@ -338,7 +338,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
 
         try {
             Blue blue = new Blue();
-            blue.setAlcoholContent(Float.valueOf(5.3f));
+            blue.setAlcoholContent(5.3f);
             em.persist(blue);
             m_blueId = blue.getId();
             blue.setUniqueKey(m_blueId.toBigInteger());
@@ -1110,7 +1110,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         consumer.setName("Keith Alexander");
 
         BlueLight blueLight = new BlueLight();
-        blueLight.setAlcoholContent(Float.valueOf(4.0f));
+        blueLight.setAlcoholContent(4.0f);
         blueLight.setUniqueKey(new BigInteger((Long.valueOf(System.currentTimeMillis()).toString())));
         em.persist(blueLight);
         consumer.addBlueLightBeerToConsume(blueLight);

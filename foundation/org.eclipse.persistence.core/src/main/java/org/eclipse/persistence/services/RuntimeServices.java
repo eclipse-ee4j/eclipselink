@@ -262,8 +262,8 @@ public abstract class RuntimeServices {
         if (ClassConstants.ServerSession_Class.isAssignableFrom(getSession().getClass())) {
             ConnectionPool connectionPool = ((ServerSession)getSession()).getConnectionPool(poolName);
             if (connectionPool != null) {
-                results.add(Integer.valueOf(connectionPool.getMaxNumberOfConnections()));
-                results.add(Integer.valueOf(connectionPool.getMinNumberOfConnections()));
+                results.add(connectionPool.getMaxNumberOfConnections());
+                results.add(connectionPool.getMinNumberOfConnections());
             }
         }
         return results;
@@ -346,7 +346,7 @@ public abstract class RuntimeServices {
      */
     public Integer getNumberOfObjectsInIdentityMap(String className) throws ClassNotFoundException {
         Class classToChange = (Class)getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
-        return Integer.valueOf(getSession().getIdentityMapAccessorInstance().getIdentityMap(classToChange).getSize());
+        return getSession().getIdentityMapAccessorInstance().getIdentityMap(classToChange).getSize();
     }
 
     /**
@@ -377,12 +377,12 @@ public abstract class RuntimeServices {
      */
     public Integer getNumberOfObjectsInIdentityMapSubCache(String className) throws ClassNotFoundException {
         //This needs to use the Session's active class loader (not implemented yet)
-        Integer result = Integer.valueOf(0);
+        Integer result = 0;
         Class classToChange = (Class)getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
         IdentityMap map = getSession().getIdentityMapAccessorInstance().getIdentityMap(classToChange);
         if (map.getClass().isAssignableFrom(ClassConstants.HardCacheWeakIdentityMap_Class)) {
             List subCache = ((HardCacheWeakIdentityMap)map).getReferenceCache();
-            result = Integer.valueOf(subCache.size());
+            result = subCache.size();
         }
         return result;
     }
@@ -478,7 +478,7 @@ public abstract class RuntimeServices {
        *        This will log at the INFO level a summary of all elements in the profile.
        */
        public void printProfileSummary() {
-           if (!this.getUsesEclipseLinkProfiling().booleanValue()) {
+           if (!this.getUsesEclipseLinkProfiling()) {
                return;
            }
            PerformanceProfiler performanceProfiler = (PerformanceProfiler)getSession().getProfiler();
@@ -509,7 +509,7 @@ public abstract class RuntimeServices {
        *        by Class.
        */
        public void printProfileSummaryByClass() {
-           if (!this.getUsesEclipseLinkProfiling().booleanValue()) {
+           if (!this.getUsesEclipseLinkProfiling()) {
                return;
            }
            PerformanceProfiler performanceProfiler = (PerformanceProfiler)getSession().getProfiler();
@@ -523,7 +523,7 @@ public abstract class RuntimeServices {
        *        by Query.
        */
        public void printProfileSummaryByQuery() {
-           if (!this.getUsesEclipseLinkProfiling().booleanValue()) {
+           if (!this.getUsesEclipseLinkProfiling()) {
                return;
            }
            PerformanceProfiler performanceProfiler = (PerformanceProfiler)getSession().getProfiler();
@@ -535,7 +535,7 @@ public abstract class RuntimeServices {
         *   Possible values are: "EclipseLink" or "None".
         */
         public synchronized String getProfilingType() {
-            if (getUsesEclipseLinkProfiling().booleanValue()) {
+            if (getUsesEclipseLinkProfiling()) {
                 return EclipseLink_Product_Name;
             } else {
                 return "None";
@@ -559,7 +559,7 @@ public abstract class RuntimeServices {
         *        This method is used to turn on EclipseLink Performance Profiling
         */
         public void setUseEclipseLinkProfiling() {
-            if (getUsesEclipseLinkProfiling().booleanValue()) {
+            if (getUsesEclipseLinkProfiling()) {
                 return;
             }
             getSession().setProfiler(new PerformanceProfiler());
@@ -577,7 +577,7 @@ public abstract class RuntimeServices {
         *        This method answers true if EclipseLink Performance Profiling is on.
         */
         public Boolean getUsesEclipseLinkProfiling() {
-            return Boolean.valueOf(getSession().getProfiler() instanceof PerformanceProfiler);
+            return getSession().getProfiler() instanceof PerformanceProfiler;
         }
 
         /**
@@ -888,7 +888,7 @@ public abstract class RuntimeServices {
          if (!(getSession().getDatasourceLogin() instanceof DatabaseLogin)) {
              return Boolean.FALSE;
          }
-         return Boolean.valueOf(((DatabaseLogin)getSession().getDatasourceLogin()).shouldBindAllParameters());
+         return ((DatabaseLogin) getSession().getDatasourceLogin()).shouldBindAllParameters();
      }
 
      /**
@@ -898,19 +898,19 @@ public abstract class RuntimeServices {
        */
      public Integer getStringBindingSize() {
          if (!(getSession().getDatasourceLogin() instanceof DatabaseLogin)) {
-             return Integer.valueOf(0);
+             return 0;
          }
          if (!getSession().getDatasourceLogin().getPlatform().usesStringBinding()) {
-             return Integer.valueOf(0);
+             return 0;
          }
-         return Integer.valueOf(((DatabaseLogin)getSession().getDatasourceLogin()).getStringBindingSize());
+         return ((DatabaseLogin) getSession().getDatasourceLogin()).getStringBindingSize();
      }
 
      /**
        *        This method will return if batchWriting is in use or not.
        */
      public Boolean getUsesBatchWriting() {
-         return Boolean.valueOf(getSession().getDatasourceLogin().getPlatform().usesBatchWriting());
+         return getSession().getDatasourceLogin().getPlatform().usesBatchWriting();
      }
 
      /**
@@ -918,7 +918,7 @@ public abstract class RuntimeServices {
        *   session connected to the database.
        */
      public Long getTimeConnectionEstablished() {
-         return Long.valueOf(((DatabaseSessionImpl)getSession()).getConnectedTime());
+         return ((DatabaseSessionImpl) getSession()).getConnectedTime();
      }
 
      /**
@@ -928,7 +928,7 @@ public abstract class RuntimeServices {
          if (!(getSession().getDatasourceLogin().getDatasourcePlatform() instanceof DatabasePlatform)) {
              return Boolean.FALSE;
          }
-         return Boolean.valueOf(getSession().getDatasourceLogin().getPlatform().usesJDBCBatchWriting());
+         return getSession().getDatasourceLogin().getPlatform().usesJDBCBatchWriting();
      }
 
      /**
@@ -938,7 +938,7 @@ public abstract class RuntimeServices {
          if (!(getSession().getDatasourceLogin().getDatasourcePlatform() instanceof DatabasePlatform)) {
              return Boolean.FALSE;
          }
-         return Boolean.valueOf(getSession().getDatasourceLogin().getPlatform().usesByteArrayBinding());
+         return getSession().getDatasourceLogin().getPlatform().usesByteArrayBinding();
      }
 
      /**
@@ -948,7 +948,7 @@ public abstract class RuntimeServices {
          if (!(getSession().getDatasourceLogin().getDatasourcePlatform() instanceof DatabasePlatform)) {
              return Boolean.FALSE;
          }
-         return Boolean.valueOf(getSession().getDatasourceLogin().getPlatform().usesNativeSQL());
+         return getSession().getDatasourceLogin().getPlatform().usesNativeSQL();
      }
 
      /**
@@ -958,7 +958,7 @@ public abstract class RuntimeServices {
          if (!(getSession().getDatasourceLogin().getDatasourcePlatform() instanceof DatabasePlatform)) {
              return Boolean.FALSE;
          }
-         return Boolean.valueOf(getSession().getDatasourceLogin().getPlatform().usesStreamsForBinding());
+         return getSession().getDatasourceLogin().getPlatform().usesStreamsForBinding();
      }
 
      /**
@@ -968,7 +968,7 @@ public abstract class RuntimeServices {
          if (!(getSession().getDatasourceLogin() instanceof DatabaseLogin)) {
              return Boolean.FALSE;
          }
-         return Boolean.valueOf(getSession().getDatasourceLogin().getPlatform().usesStringBinding());
+         return getSession().getDatasourceLogin().getPlatform().usesStringBinding();
      }
 
      /**
@@ -978,7 +978,7 @@ public abstract class RuntimeServices {
          if (!(getSession().getDatasourceLogin() instanceof DatabaseLogin)) {
              return Boolean.FALSE;
          }
-         return Boolean.valueOf(((DatabaseLogin)getSession().getDatasourceLogin()).shouldCacheAllStatements());
+         return ((DatabaseLogin) getSession().getDatasourceLogin()).shouldCacheAllStatements();
      }
 
      /**
@@ -1019,10 +1019,10 @@ public abstract class RuntimeServices {
          if (ClassConstants.ServerSession_Class.isAssignableFrom(getSession().getClass())) {
              ConnectionPool connectionPool = ((ServerSession)getSession()).getConnectionPool(poolName);
              if (connectionPool != null) {
-                 return Integer.valueOf(connectionPool.getMaxNumberOfConnections());
+                 return connectionPool.getMaxNumberOfConnections();
              }
          }
-         return Integer.valueOf(-1);
+         return -1;
      }
 
      /**
@@ -1034,10 +1034,10 @@ public abstract class RuntimeServices {
          if (ClassConstants.ServerSession_Class.isAssignableFrom(getSession().getClass())) {
              ConnectionPool connectionPool = ((ServerSession)getSession()).getConnectionPool(poolName);
              if (connectionPool != null) {
-                 return Integer.valueOf(connectionPool.getMinNumberOfConnections());
+                 return connectionPool.getMinNumberOfConnections();
              }
          }
-         return Integer.valueOf(-1);
+         return -1;
      }
 
      /**
@@ -1151,14 +1151,14 @@ public abstract class RuntimeServices {
          //Check if there aren't any classes registered
          if (classesRegistered.size() == 0) {
              ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_no_identity_maps_in_session");
-             return Integer.valueOf(0);
+             return 0;
          }
 
          //get each identity map, and log the size
          for (int index = 0; index < classesRegistered.size(); index++) {
              registeredClassName = (String)classesRegistered.elementAt(index);
              try {
-                 sum += this.getNumberOfObjectsInIdentityMap(registeredClassName).intValue();
+                 sum += this.getNumberOfObjectsInIdentityMap(registeredClassName);
              } catch (ClassNotFoundException classNotFound) {
                  //we are enumerating registered classes, so this shouldn't happen. Print anyway
                  classNotFound.printStackTrace();
@@ -1166,7 +1166,7 @@ public abstract class RuntimeServices {
              }
          }
 
-         return Integer.valueOf(sum);
+         return sum;
      }
 
      /**
@@ -1186,7 +1186,7 @@ public abstract class RuntimeServices {
              }
          }
 
-         return Integer.valueOf(classesTable.size());
+         return classesTable.size();
      }
 
      /**

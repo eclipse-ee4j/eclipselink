@@ -54,7 +54,7 @@ public class Birthday {
 
     public int hashCode() {
         String hc = year.toString() + month.toString() + day.toString();
-        return Integer.valueOf(hc).intValue();
+        return Integer.parseInt(hc);
     }
 
     public void setDay(Integer day) {

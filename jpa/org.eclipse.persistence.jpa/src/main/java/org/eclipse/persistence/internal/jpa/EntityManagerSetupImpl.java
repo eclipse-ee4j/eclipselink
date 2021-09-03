@@ -2403,11 +2403,11 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 SchemaPerMultitenantPolicy policy = new SchemaPerMultitenantPolicy();
                 String prop = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.MULTITENANT_SHARED_EMF, m, session);
                 if (prop != null) {
-                    policy.setShouldUseSharedEMF(Boolean.valueOf(prop));
+                    policy.setShouldUseSharedEMF(Boolean.parseBoolean(prop));
                 }
                 prop = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.MULTITENANT_SHARED_CACHE, m, session);
                 if (prop != null) {
-                    policy.setShouldUseSharedCache(Boolean.valueOf(prop));
+                    policy.setShouldUseSharedCache(Boolean.parseBoolean(prop));
                 }
                 session.getProject().setMultitenantPolicy(policy);
             } else {
@@ -4699,7 +4699,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      */
     protected void writeDDLToDatabase(SchemaManager mgr, TableCreationType ddlType) {
         String str = getConfigPropertyAsString(PersistenceUnitProperties.JAVASE_DB_INTERACTION, null ,"true");
-        boolean interactWithDB = Boolean.valueOf(str.toLowerCase()).booleanValue();
+        boolean interactWithDB = Boolean.parseBoolean(str.toLowerCase());
         if (!interactWithDB){
             return;
         }

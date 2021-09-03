@@ -157,7 +157,7 @@ public class Ni4TestSet {
         s.dontLogMessages();
         ((DatabaseSession)s).login();
         Vector queryArgs = new NonSynchronizedVector();
-        queryArgs.add(Integer.valueOf(4));
+        queryArgs.add(4);
         boolean worked = false;
         String msg = null;
         try {
