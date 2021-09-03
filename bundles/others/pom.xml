@@ -55,7 +55,7 @@
             <artifactId>org.eclipse.persistence.parent</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
-            <classifier>common-license.zip</classifier>
+            <classifier>common-license</classifier>
             <scope>provided</scope>
         </dependency>
         <dependency>

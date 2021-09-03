@@ -113,8 +113,6 @@
         <project.build.testReports.summaryFile>test-summary</project.build.testReports.summaryFile>
         <project.build.licenceResourceDirectory>${project.build.directory}/license</project.build.licenceResourceDirectory>
 
-        <!--Common properties-->
-        <common.licenceFiles>LICENSE.md, NOTICE.md</common.licenceFiles>
         <!--Integration test sources/resources directory. Relative directory to ${project.basedir}
         !!!Can't start with / character!!!-->
         <integration.test.directory>src/it/</integration.test.directory>
@@ -1211,7 +1209,7 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>common-license.zip</id>
+                        <id>common-license</id>
                         <phase>generate-resources</phase>
                         <goals>
                             <goal>single</goal>
@@ -1224,7 +1222,7 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>test-defaults.zip</id>
+                        <id>test-defaults</id>
                         <phase>initialize</phase>
                         <goals>
                             <goal>single</goal>
@@ -1254,7 +1252,7 @@
                                     <groupId>${project.groupId}</groupId>
                                     <artifactId>org.eclipse.persistence.parent</artifactId>
                                     <version>${project.version}</version>
-                                    <classifier>common-license.zip</classifier>
+                                    <classifier>common-license</classifier>
                                     <type>zip</type>
                                     <outputDirectory>${project.build.licenceResourceDirectory}</outputDirectory>
                                 </artifactItem>
@@ -1273,7 +1271,7 @@
                                     <groupId>${project.groupId}</groupId>
                                     <artifactId>org.eclipse.persistence.parent</artifactId>
                                     <version>${project.version}</version>
-                                    <classifier>test-defaults.zip</classifier>
+                                    <classifier>test-defaults</classifier>
                                     <type>zip</type>
                                     <outputDirectory>${test.properties.default.directory}</outputDirectory>
                                 </artifactItem>
@@ -1334,8 +1332,8 @@
                         <configuration>
                             <resources>
                                 <resource>
-                                    <directory>${project.build.licenceResourceDirectory}</directory>
-                                    <includes>${common.licenceFiles}</includes>
+                                    <directory>${project.build.licenceResourceDirectory}/md</directory>
+                                    <includes>*</includes>
                                     <targetPath>META-INF</targetPath>
                                 </resource>
                             </resources>

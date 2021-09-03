@@ -28,14 +28,12 @@
             <scope>provided</scope>
             <outputDirectory>moxy</outputDirectory>
             <includes>
-                <include>${project.groupId}:org.eclipse.persistence.parent:zip:common-license.zip</include>
+                <include>${project.groupId}:org.eclipse.persistence.parent:zip:common-license</include>
             </includes>
             <unpack>true</unpack>
             <unpackOptions>
                 <includes>
-                    <include>about.html</include>
-                    <include>license.html</include>
-                    <include>readme.html</include>
+                    <include>*.html</include>
                 </includes>
             </unpackOptions>
         </dependencySet>
