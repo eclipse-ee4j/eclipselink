@@ -21,10 +21,22 @@
         <format>zip</format>
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
-    <componentDescriptors>
-        <componentDescriptor>src/main/assembly/common-license.xml</componentDescriptor>
-    </componentDescriptors>
     <dependencySets>
+        <!--License files-->
+        <dependencySet>
+            <useProjectArtifact>false</useProjectArtifact>
+            <scope>provided</scope>
+            <outputDirectory>.</outputDirectory>
+            <includes>
+                <include>${project.groupId}:org.eclipse.persistence.parent:zip:common-license</include>
+            </includes>
+            <unpack>true</unpack>
+            <unpackOptions>
+                <includes>
+                    <include>*.html</include>
+                </includes>
+            </unpackOptions>
+        </dependencySet>
         <dependencySet>
             <includes>
                 <include>org.eclipse.persistence:org.eclipse.persistence.nosql</include>

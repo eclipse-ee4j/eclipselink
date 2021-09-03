@@ -187,6 +187,14 @@
         <!-- included artifacts -->
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.parent</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+            <classifier>common-license</classifier>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.asm</artifactId>
             <scope>provided</scope>
         </dependency>

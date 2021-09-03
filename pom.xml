@@ -111,9 +111,8 @@
         <bundle.version>${project.version}.${build.qualifier}</bundle.version>
         <project.build.testReports.subdirectory>test-reports</project.build.testReports.subdirectory>
         <project.build.testReports.summaryFile>test-summary</project.build.testReports.summaryFile>
+        <project.build.licenceResourceDirectory>${project.build.directory}/license</project.build.licenceResourceDirectory>
 
-        <!--Common properties-->
-        <common.licenceFiles>LICENSE.md, NOTICE.md</common.licenceFiles>
         <!--Integration test sources/resources directory. Relative directory to ${project.basedir}
         !!!Can't start with / character!!!-->
         <integration.test.directory>src/it/</integration.test.directory>
@@ -137,7 +136,7 @@
         <!--Default test DB is Derby-->
         <test.properties.file>${user.home}/${test.derby.properties.file}</test.properties.file>
         <test.properties.fileName>${test.derby.properties.file}</test.properties.fileName>
-        <test.properties.default.directory>${project.root.location}/etc</test.properties.default.directory>
+        <test.properties.default.directory>${project.build.directory}/test-default-properties</test.properties.default.directory>
         <test.database>derby</test.database>
         <!--false: to start In-Memory database, true: not start (MySQL, Oracle)-->
         <test.skip.in-memory.db>false</test.skip.in-memory.db>
@@ -1126,11 +1125,6 @@
                     <artifactId>xml-maven-plugin</artifactId>
                     <version>1.0.2</version>
                 </plugin>
-                <plugin>
-                    <groupId>org.commonjava.maven.plugins</groupId>
-                    <artifactId>directory-maven-plugin</artifactId>
-                    <version>0.3.1</version>
-                </plugin>
                 <!--This plugin (g:org.kuali.maven.plugins) is used instead typical org.codehaus.mojo:properties-maven-plugin:1.0.0
                     due bug: "Circular property definition" if expression like this is used in the Maven pom
                     "<server.testrunner.prefix>${modelname}/${modelname}_ejb/</server.testrunner.prefix>"
@@ -1211,17 +1205,77 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.commonjava.maven.plugins</groupId>
-                <artifactId>directory-maven-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>find-project-root</id>
-                        <phase>validate</phase>
+                        <id>common-license</id>
+                        <phase>generate-resources</phase>
                         <goals>
-                            <goal>highest-basedir</goal>
+                            <goal>single</goal>
+                        </goals>
+                        <inherited>false</inherited>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/main/assembly/common-license.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>test-defaults</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <inherited>false</inherited>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/main/assembly/test-defaults.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-legal-resource</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
                         </goals>
                         <configuration>
-                            <property>project.root.location</property>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>org.eclipse.persistence.parent</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>common-license</classifier>
+                                    <type>zip</type>
+                                    <outputDirectory>${project.build.licenceResourceDirectory}</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-test-properties</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>org.eclipse.persistence.parent</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>test-defaults</classifier>
+                                    <type>zip</type>
+                                    <outputDirectory>${test.properties.default.directory}</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
                         </configuration>
                     </execution>
                 </executions>
@@ -1278,8 +1332,8 @@
                         <configuration>
                             <resources>
                                 <resource>
-                                    <directory>${project.root.location}</directory>
-                                    <includes>${common.licenceFiles}</includes>
+                                    <directory>${project.build.licenceResourceDirectory}/md</directory>
+                                    <includes>*</includes>
                                     <targetPath>META-INF</targetPath>
                                 </resource>
                             </resources>
