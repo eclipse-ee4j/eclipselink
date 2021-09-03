@@ -10,10 +10,18 @@
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
 
+/**
+ * Support for Oracle NoSQL DBs
+ */
 module org.eclipse.persistence.oracle.nosql {
 
-    requires jakarta.transaction;
+//    requires transitive jakarta.resource.api;
 
-    requires org.eclipse.persistence.core;
+    requires transitive org.eclipse.persistence.core;
 
+    exports org.eclipse.persistence.eis.adapters.aq;
+    exports org.eclipse.persistence.nosql.adapters.nosql;
+
+    //exported through PUBLIC API
+    exports org.eclipse.persistence.internal.nosql.adapters.nosql;
 }

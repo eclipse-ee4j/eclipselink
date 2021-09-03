@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for a string expression.
  *
- * <div><b>BNF:</b> <code>string_expression ::= string_primary | (subquery)</code><p></p></div>
+ * <div><b>BNF:</b> <code>string_expression ::= string_primary | (subquery)</code></div>
  *
  * @version 2.4
  * @since 2.3

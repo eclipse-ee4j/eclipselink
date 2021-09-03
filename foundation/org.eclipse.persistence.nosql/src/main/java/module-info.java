@@ -15,7 +15,7 @@ module org.eclipse.persistence.nosql {
     requires jakarta.transaction;
     requires jakarta.annotation;
 
-    requires org.eclipse.persistence.core;
+    requires transitive org.eclipse.persistence.core;
 
     exports org.eclipse.persistence.eis.adapters.jms;
     exports org.eclipse.persistence.eis.adapters.xmlfile;

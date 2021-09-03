@@ -55,7 +55,7 @@ public abstract class BroadcastRemoteConnection extends RemoteConnection {
     // (so that a new array is not created each time).
     protected Object[] infoExt;
 
-    public BroadcastRemoteConnection(RemoteCommandManager rcm) {
+    protected BroadcastRemoteConnection(RemoteCommandManager rcm) {
         this.serviceId = rcm.getServiceId();
         this.rcm = rcm;
         this.topicName = ((BroadcastTransportManager)rcm.getTransportManager()).getTopicName();

@@ -30,6 +30,12 @@ package org.eclipse.persistence.jpa.jpql.parser;
 public abstract class AbstractEclipseLinkExpressionVisitor extends AbstractExpressionVisitor
                                                            implements EclipseLinkExpressionVisitor {
 
+    /**
+     * Default constructor.
+     */
+    protected AbstractEclipseLinkExpressionVisitor() {
+    }
+
     @Override
     public void visit(AsOfClause expression) {
     }

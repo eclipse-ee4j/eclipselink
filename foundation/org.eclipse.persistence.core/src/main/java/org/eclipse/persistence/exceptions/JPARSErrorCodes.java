@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,7 @@
 //     gonural - Initial implementation
 package org.eclipse.persistence.exceptions;
 
-public class JPARSErrorCodes {
+public final class JPARSErrorCodes {
     // Next range should start from LAST_ERROR_CODE (62000).
     // The JPA-RS uses error codes between 61000-61999 (both inclusive).
     public static final int ENTITY_NOT_FOUND = 61000;
@@ -42,4 +42,8 @@ public class JPARSErrorCodes {
     public static final int AN_EXCEPTION_OCCURRED = 61999;
     // end marker for JPA-RS error codes
     public static final int LAST_ERROR_CODE = 62000;
+
+    private JPARSErrorCodes() {
+        //no instance please
+    }
 }

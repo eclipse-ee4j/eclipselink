@@ -204,7 +204,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * PUBLIC:
      * Default constructor.
      */
-    public DatabaseMapping() {
+    protected DatabaseMapping() {
         this.isOptional = true;
         this.isReadOnly = false;
         this.attributeAccessor = new InstanceVariableAttributeAccessor();

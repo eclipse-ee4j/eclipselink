@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -74,14 +74,14 @@ public abstract class Cursor implements Enumeration, Iterator, java.io.Serializa
      * INTERNAL:
      * Default constructor.
      */
-    public Cursor() {
+    protected Cursor() {
         super();
     }
 
     /**
      * INTERNAL:
      */
-    public Cursor(DatabaseCall call, CursorPolicy policy) {
+    protected Cursor(DatabaseCall call, CursorPolicy policy) {
         ReadQuery query = policy.getQuery();
         this.query = query;
         this.session = query.getSession();

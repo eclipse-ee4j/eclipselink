@@ -26,6 +26,12 @@ package org.eclipse.persistence.jpa.jpql.parser;
  */
 public abstract class AbstractTraverseChildrenVisitor extends AnonymousExpressionVisitor {
 
+    /**
+     * Default constructor.
+     */
+    protected AbstractTraverseChildrenVisitor() {
+    }
+
     @Override
     protected final void visit(Expression expression) {
         expression.acceptChildren(this);

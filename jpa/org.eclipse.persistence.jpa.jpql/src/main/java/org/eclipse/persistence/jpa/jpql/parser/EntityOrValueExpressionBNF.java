@@ -19,7 +19,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * The query BNF for a entity or value expression.
  *
  * <div><b>BNF:</b> <code>entity_or_value_expression ::= single_valued_object_path_expression |
- * state_field_path_expression | simple_entity_or_value_expression</code><p></p></div>
+ * state_field_path_expression | simple_entity_or_value_expression</code></div>
  *
  * @version 2.4
  * @since 2.3

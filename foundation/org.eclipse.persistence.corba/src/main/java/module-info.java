@@ -10,14 +10,20 @@
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
 
+/**
+ * CORBA support for EclipseLink.
+ */
 module org.eclipse.persistence.corba {
 
-    requires java.rmi;
+    requires transitive java.rmi;
 
-    requires org.eclipse.persistence.core;
+    requires transitive org.eclipse.persistence.core;
 
     exports org.eclipse.persistence.sessions.coordination.corba;
     exports org.eclipse.persistence.sessions.coordination.corba.sun;
     exports org.eclipse.persistence.sessions.remote.corba.sun;
     exports org.eclipse.persistence.sessions.remote.rmi.iiop;
+
+    //exported through PUBLIC API
+    exports org.eclipse.persistence.internal.sessions.coordination.corba;
 }

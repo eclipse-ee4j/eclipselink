@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for a enum expression.
  *
- * <div><b>BNF:</b> <code>enum_expression ::= enum_primary | (subquery)</code><p></p></div>
+ * <div><b>BNF:</b> <code>enum_expression ::= enum_primary | (subquery)</code></div>
  *
  * @version 2.4
  * @since 2.3

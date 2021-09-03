@@ -90,6 +90,12 @@ public abstract class TransportManager {
     public static final String DEFAULT_USER_NAME = "admin";
 
     /**
+     * Default constructor.
+     */
+    protected TransportManager() {
+    }
+
+    /**
      * INTERNAL:
      * Return a remote connection to the specified service
      */

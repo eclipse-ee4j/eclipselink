@@ -22,7 +22,6 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                            scalar_expression |
  *                                                            aggregate_expression |
  *                                                            identification_variable</code></div>
- * <p></p>
  *
  * @version 2.4
  * @since 2.3

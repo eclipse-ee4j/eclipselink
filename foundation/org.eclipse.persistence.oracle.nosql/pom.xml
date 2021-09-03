@@ -31,6 +31,7 @@
     </parent>
 
     <properties>
+        <jdoc.doclint>all,-missing</jdoc.doclint>
         <test-skip-oracle-nosql>${skipTests}</test-skip-oracle-nosql>
     </properties>
 

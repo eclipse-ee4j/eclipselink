@@ -40,6 +40,9 @@ public class KryoSerializer extends AbstractSerializer {
     transient Method inputCloseMethod;
     transient Method outputCloseMethod;
 
+    /**
+     * Default constructor.
+     */
     public KryoSerializer() {
         try {
             Class<?> kryoClass = Class.forName("com.esotericsoftware.kryo.Kryo");
@@ -63,6 +66,11 @@ public class KryoSerializer extends AbstractSerializer {
         return byte[].class;
     }
 
+    /**
+     * Return an instance of {@code com.esotericsoftware.kryo.Kryo}.
+     *
+     * @return the instance of {@code com.esotericsoftware.kryo.Kryo}
+     */
     public Object getKryo() {
         Object value = this.kryo.get();
         if (value == null) {

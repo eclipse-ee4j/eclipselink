@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,7 @@ import org.junit.Test;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries2_0.*;
 
 /**
- * This tests the automatic creation by the builder of a {@link StateObject} by converting the
+ * This tests the automatic creation by the builder of a {@link org.eclipse.persistence.jpa.jpql.tools.model.query.StateObject} by converting the
  * parsed representation of a JPQL query using the JPQL grammar defined in JPA 2.0.
  *
  * @version 2.4

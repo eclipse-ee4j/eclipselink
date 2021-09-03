@@ -19,7 +19,6 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * The query BNF for the order by clause.
  *
  * <div><b>BNF:</b> <code>union_clause ::= { UNION | INTERSECT | EXCEPT } [ALL] subquery</code></div>
- * <p></p>
  *
  * @version 2.4
  * @since 2.4

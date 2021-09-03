@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,6 +39,12 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 public abstract class PartitioningPolicy implements java.io.Serializable {
     /** The persistent unit unique name for the policy. */
     protected String name;
+
+    /**
+     * Default constructor.
+     */
+    protected PartitioningPolicy() {
+    }
 
     public abstract List<Accessor> getConnectionsForQuery(AbstractSession session, DatabaseQuery query, AbstractRecord arguments);
 

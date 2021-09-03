@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2010, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -147,7 +147,7 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
      *
      * @param newDatabaseSession The instance of DatabaseSession that I am helping.
      */
-    public JMXServerPlatformBase(DatabaseSession newDatabaseSession) {
+    protected JMXServerPlatformBase(DatabaseSession newDatabaseSession) {
         super(newDatabaseSession);
     }
 

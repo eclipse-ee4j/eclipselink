@@ -48,7 +48,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  * ordering be used. Ascending ordering is the default.
  * <p>
  * JPA 1.0: <div><b>BNF:</b> <code>orderby_item ::= state_field_path_expression [ ASC | DESC ]</code></div>
- * <p>
+ * <br>
  * JPA 2.0 <div><p><b>BNF:</b> <code>orderby_item ::= state_field_path_expression | result_variable [ ASC | DESC ]</code></p></div>
  *
  * @see OrderByItem

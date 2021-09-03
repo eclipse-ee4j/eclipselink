@@ -3089,6 +3089,12 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
          */
         protected CollectionValuedPathExpression expression;
 
+        /**
+         * Default constructor.
+         */
+        protected CollectionValuedPathExpressionVisitor() {
+        }
+
         @Override
         public void visit(CollectionValuedPathExpression expression) {
             this.expression = expression;
@@ -3100,6 +3106,12 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 
         protected IdentificationVariable expression;
         public boolean result;
+
+        /**
+         * Default constructor.
+         */
+        protected ComparingEntityTypeLiteralVisitor() {
+        }
 
         @Override
         public void visit(ComparisonExpression expression) {
@@ -3212,6 +3224,12 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 
         protected boolean valid;
 
+        /**
+         * Default constructor.
+         */
+        protected FirstDeclarationVisitor() {
+        }
+
         @Override
         public void visit(AbstractSchemaName expression) {
             valid = true;
@@ -3306,6 +3324,12 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
          */
         protected StateFieldPathExpression expression;
 
+        /**
+         * Default constructor.
+         */
+        protected StateFieldPathExpressionVisitor() {
+        }
+
         @Override
         public void visit(StateFieldPathExpression expression) {
             this.expression = expression;
@@ -3315,6 +3339,12 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
     // Made static final for performance reasons.
     protected static final class SubqueryFirstDeclarationVisitor extends FirstDeclarationVisitor {
 
+        /**
+         * Default constructor.
+         */
+        protected SubqueryFirstDeclarationVisitor() {
+        }
+
         @Override
         public void visit(CollectionValuedPathExpression expression) {
             valid = true;
@@ -3323,6 +3353,12 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 
     // Made static for performance reasons.
     protected static class TopLevelFirstDeclarationVisitor extends FirstDeclarationVisitor {
+
+        /**
+         * Default constructor.
+         */
+        protected TopLevelFirstDeclarationVisitor() {
+        }
 
         @Override
         public void visit(AbstractSchemaName expression) {

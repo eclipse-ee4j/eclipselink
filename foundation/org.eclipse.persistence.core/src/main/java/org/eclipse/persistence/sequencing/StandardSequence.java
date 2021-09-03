@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,19 +28,19 @@ import org.eclipse.persistence.exceptions.DatabaseException;
  * </p>
  */
 public abstract class StandardSequence extends Sequence {
-    public StandardSequence() {
+    protected StandardSequence() {
         super();
     }
 
-    public StandardSequence(String name) {
+    protected StandardSequence(String name) {
         super(name);
     }
 
-    public StandardSequence(String name, int size) {
+    protected StandardSequence(String name, int size) {
         super(name, size);
     }
 
-    public StandardSequence(String name, int size, int initialValue) {
+    protected StandardSequence(String name, int size, int initialValue) {
         super(name, size, initialValue);
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -25,7 +25,7 @@ import java.util.ListResourceBundle;
  * INTERNAL:
  * <b>Purpose:</b><p>English ResourceBundle for JAXBException.</p>
  */
-public class JAXBExceptionResource extends ListResourceBundle {
+public final class JAXBExceptionResource extends ListResourceBundle {
     static final Object[][] contents = {
         {"50000", "The context path {0} contains no ObjectFactory or jaxb.index, no external metadata was found in properties Map, and sessions.xml was found or was invalid."},
         {"50001", "The class {0} requires a zero argument constructor or a specified factory method.  Note that non-static inner classes do not have zero argument constructors and are not supported."},
@@ -124,6 +124,13 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50095", "The property {0} of type {1} on the class {2} is not valid for a XmlVariableNode.  Only properties of type String or QName are allowed."},
         {"50096", "The @XmlAttribute property {0} in type {1} must reference a type that maps to text in XML.  {2} cannot be mapped to a text value."}
     };
+
+    /**
+     * Default constructor.
+     */
+    public JAXBExceptionResource() {
+        // for reflection
+    }
 
     /**
      * Return the lookup table.

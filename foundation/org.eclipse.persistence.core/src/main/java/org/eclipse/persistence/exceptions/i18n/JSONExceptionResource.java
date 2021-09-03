@@ -20,10 +20,17 @@ import java.util.ListResourceBundle;
  * INTERNAL:
  * <b>Purpose:</b><p>English ResourceBundle for JSONException.</p>
  */
-public class JSONExceptionResource extends ListResourceBundle {
+public final class JSONExceptionResource extends ListResourceBundle {
     public static final Object[][] contents = {
             {"60001", "Input JSON document is invalid or doesn't match target object graph."},
     };
+
+    /**
+     * Default constructor.
+     */
+    public JSONExceptionResource() {
+        // for reflection
+    }
 
     /**
      * Return the lookup table.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -999,7 +999,7 @@ public class SessionsFactory {
             try {
                 // Can no longer reference class directly as in a different project.
                 Class xmlClass = Class.forName("org.eclipse.persistence.eis.adapters.xmlfile.XMLFileSequence");
-                Sequence sequence = (Sequence)xmlClass.newInstance();
+                Sequence sequence = (Sequence)xmlClass.getConstructor().newInstance();
                 sequence.setName(name);
                 sequence.setInitialValue(size);
                 return sequence;
@@ -1239,7 +1239,7 @@ public class SessionsFactory {
             // use ConversionManager to avoid loading the JDK 1.4 class unless it is needed.
             ConversionManager conversionManager = new ConversionManager();
             conversionManager.setLoader(getClass().getClassLoader());
-            javaLog = (SessionLog)((Class)conversionManager.convertObject("org.eclipse.persistence.logging.JavaLog", Class.class)).newInstance();
+            javaLog = (SessionLog)((Class)conversionManager.convertObject("org.eclipse.persistence.logging.JavaLog", Class.class)).getConstructor().newInstance();
             javaLog.setSession(session);
         } catch (Exception exception) {
             throw ValidationException.unableToLoadClass("org.eclipse.persistence.logging.JavaLog", exception);

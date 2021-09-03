@@ -21,8 +21,8 @@ import org.eclipse.persistence.jpa.jpql.tools.model.ISimpleSelectExpressionState
 /**
  * This state object represents a subquery, which has at least a <code><b>SELECT</b></code> clause
  * and a <code><b>FROM</b></code> clause. The other clauses are optional.
- * <p>
- * <b>BNF:</b> <code>subquery ::= simple_select_clause subquery_from_clause [where_clause] [groupby_clause] [having_clause]</code><p>
+ * <br>
+ * <div><b>BNF:</b> <code>subquery ::= simple_select_clause subquery_from_clause [where_clause] [groupby_clause] [having_clause]</code></div>
  *
  * @see SimpleSelectStatement
  *

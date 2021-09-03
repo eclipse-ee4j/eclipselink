@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,7 +57,7 @@ public abstract class ModifyAllQuery extends ModifyQuery {
     /**
      * PUBLIC:
      */
-    public ModifyAllQuery() {
+    protected ModifyAllQuery() {
         super();
         shouldDeferExecutionInUOW = true;
     }
@@ -66,7 +66,7 @@ public abstract class ModifyAllQuery extends ModifyQuery {
      * PUBLIC:
      * Create a new update all query for the class specified.
      */
-    public ModifyAllQuery(Class referenceClass) {
+    protected ModifyAllQuery(Class referenceClass) {
         this();
         setReferenceClass(referenceClass);
     }
@@ -76,7 +76,7 @@ public abstract class ModifyAllQuery extends ModifyQuery {
      * Create a new update all query for the class and the selection criteria
      * specified.
      */
-    public ModifyAllQuery(Class referenceClass, Expression selectionCriteria) {
+    protected ModifyAllQuery(Class referenceClass, Expression selectionCriteria) {
         this();
         setReferenceClass(referenceClass);
         setSelectionCriteria(selectionCriteria);

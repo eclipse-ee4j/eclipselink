@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -26,7 +26,7 @@ import java.util.ListResourceBundle;
  * Creation date: (12/6/00 9:47:38 AM)
  * @author Rick Barkhouse
  */
-public class ConversionExceptionResource extends ListResourceBundle {
+public final class ConversionExceptionResource extends ListResourceBundle {
     static final Object[][] contents = {
                                            { "3001", "The object [{0}], of class [{1}], could not be converted to [{2}]." },
                                            { "3002", "The object [{0}], of class [{1}], from mapping [{2}] with descriptor [{3}], could not be converted to [{4}]." },
@@ -38,6 +38,13 @@ public class ConversionExceptionResource extends ListResourceBundle {
                                            { "3008", "Incorrect date-time format: [{0}] (expected [YYYY-MM-DD''T''HH:MM:SS])" },
                                            { "3009", "Unable to set {0} properties [{1}] into [{2}]." }
     };
+
+    /**
+     * Default constructor.
+     */
+    public ConversionExceptionResource() {
+        // for reflection
+    }
 
     /**
      * Return the lookup table.

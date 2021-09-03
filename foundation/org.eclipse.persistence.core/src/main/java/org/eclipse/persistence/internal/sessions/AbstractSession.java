@@ -380,7 +380,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * method may also be used to connect the session, this allows for the user name and password
      * to be given at login but for the other database information to be provided when the session is created.
      */
-    public AbstractSession(Login login) {
+    protected AbstractSession(Login login) {
         this(new org.eclipse.persistence.sessions.Project(login));
     }
 
@@ -392,7 +392,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * method may also be used to connect the session, this allows for the user name and password
      * to be given at login but for the other database information to be provided when the session is created.
      */
-    public AbstractSession(org.eclipse.persistence.sessions.Project project) {
+    protected AbstractSession(org.eclipse.persistence.sessions.Project project) {
         this();
         this.project = project;
         if (project.getDatasourceLogin() == null) {
@@ -789,7 +789,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                 ++retryCount;
                 try {
                     // Give the failover time to recover.
-                    Thread.currentThread().sleep(getLogin().getDelayBetweenConnectionAttempts());
+                    Thread.sleep(getLogin().getDelayBetweenConnectionAttempts());
                     Object[] args = new Object[1];
                     args[0] = exceptionToThrow;
                     log(SessionLog.INFO, SessionLog.TRANSACTION, "communication_failure_attempting_begintransaction_retry", args, null);
@@ -1910,7 +1910,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                     if (retryCount > 1) {
                         // We are retrying more than once lets wait to give connection time to restart.
                         //Give the failover time to recover.
-                        Thread.currentThread().sleep(getLogin().getDelayBetweenConnectionAttempts());
+                        Thread.sleep(getLogin().getDelayBetweenConnectionAttempts());
                     }
                     return executionSession.executeQuery(query, row, retryCount);
                 } catch (DatabaseException newException){
@@ -2261,7 +2261,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * chained and each session can have its own Cache/IdentityMap.  Entities can be stored
      * at different levels based on Cache Isolation.  This method will return the correct Session
      * for a particular Entity class based on the Isolation Level and the attributes provided.
-     * <p>
+     *
      * @param canReturnSelf true when method calls itself.  If the path
      * starting at <code>this</code> is acceptable.  Sometimes true if want to
      * move to the first valid session, i.e. executing on ClientSession when really

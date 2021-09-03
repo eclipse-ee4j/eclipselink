@@ -59,7 +59,7 @@ public abstract class Sequence implements Serializable, Cloneable {
     // note that even if set to false sequence always overrides if shouldAcquireValueAfterInsert returns true.
     protected boolean shouldAlwaysOverrideExistingValue;
 
-    public Sequence() {
+    protected Sequence() {
         super();
         setName("SEQUENCE");
     }
@@ -67,7 +67,7 @@ public abstract class Sequence implements Serializable, Cloneable {
     /**
      * Create a new sequence with the name.
      */
-    public Sequence(String name) {
+    protected Sequence(String name) {
         this();
         setName(name);
     }
@@ -75,13 +75,13 @@ public abstract class Sequence implements Serializable, Cloneable {
     /**
      * Create a new sequence with the name and sequence pre-allocation size.
      */
-    public Sequence(String name, int size) {
+    protected Sequence(String name, int size) {
         this();
         setName(name);
         setPreallocationSize(size);
     }
 
-    public Sequence(String name, int size, int initialValue) {
+    protected Sequence(String name, int size, int initialValue) {
         this();
         setName(name);
         setPreallocationSize(size);

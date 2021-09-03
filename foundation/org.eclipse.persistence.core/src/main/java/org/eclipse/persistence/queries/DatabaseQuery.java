@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -339,7 +339,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /**
      * PUBLIC: Initialize the state of the query
      */
-    public DatabaseQuery() {
+    protected DatabaseQuery() {
         this.shouldMaintainCache = true;
         // bug 3524620: lazy-init query mechanism
         // this.queryMechanism = new ExpressionQueryMechanism(this);

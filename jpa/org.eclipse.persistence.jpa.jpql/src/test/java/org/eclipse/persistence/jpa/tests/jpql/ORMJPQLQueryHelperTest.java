@@ -21,7 +21,7 @@ import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
 
 /**
- * This unit-test tests {@link AbstractJPQLQueryHelper} when the queries are global and owned by an
+ * This unit-test tests {@link org.eclipse.persistence.jpa.jpql.tools.AbstractJPQLQueryHelper} when the queries are global and owned by an
  * ORM configuration.
  *
  * @version 2.4

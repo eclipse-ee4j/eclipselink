@@ -37,7 +37,7 @@ public abstract class AbstractOrderByClause extends AbstractExpression {
     private boolean hasSpaceAfterIdentifier;
 
     /**
-     * The actual <b></b> identifier found in the string representation of the JPQL query.
+     * The actual identifier found in the string representation of the JPQL query.
      */
     private String identifier;
 

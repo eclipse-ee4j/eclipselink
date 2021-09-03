@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -168,7 +168,7 @@ public class XPathEngine <
     *
     * @return The last <code>XMLNode</code> in the path
     *
-    * @exception org.eclipse.persistence.oxm.exceptions.XMLMarshalException Thrown if passed an invalid XPath string
+    * @throws XMLMarshalException Thrown if passed an invalid XPath string
     */
     private NodeList createCollection(Field xmlField, Node element, Object value, Field lastUpdated, DocumentPreservationPolicy docPresPolicy, CoreAbstractSession session) throws XMLMarshalException {
         XMLNodeList createdElements = new XMLNodeList();
@@ -378,16 +378,14 @@ public class XPathEngine <
     * Will overwrite if an element already exists at that position.  Currently only supports
     * integer indices.
     *
-    * @param xpathString element and index to create (in the form 'element[index]')
-    * @param namespaceResolover namespaceResolover of the element being created
+    * @param fragment element and index to create (in the form 'element[index]')
     * @param parent Parent element
-    * @param schemaType schemaType for the new node
     * @param value Value for the new node
     * @param forceCreate If true, create a new element even if one with the same name currently exists
     *
     * @return The <code>XMLElement</code> that was created/found
     *
-    * @exception org.eclipse.persistence.oxm.exceptions.XMLMarshalException Thrown if passed an invalid XPath string
+    * @throws XMLMarshalException Thrown if passed an invalid XPath string
     */
     private Node addIndexedElement(XPathFragment fragment, Field xmlField, Node parent, Object value, boolean forceCreate, CoreAbstractSession session) throws XMLMarshalException {
         String element = fragment.getShortName();
@@ -434,7 +432,7 @@ public class XPathEngine <
     * Add a new <code>element</code> to the <code>parent</code> element.  If an element with
     * this name already exists, return it (unless <code>forceCreate</code> is <code>true</code>).
     *
-    * @param element Name of element to create
+    * @param fragment Name of element to create
     * @param parent Parent element
     * @param value Value for the new node
     * @param forceCreate If true, create a new element even if one with the same name currently exists
@@ -458,9 +456,7 @@ public class XPathEngine <
     * this name already exists, return it (unless <code>forceCreate</code> is <code>true</code>).
     *
     * @param fragment Name of element to create
-    * @param namespace namespace of element to create
     * @param parent Parent element
-    * @param schemaType schemaType of element to create
     * @param value Value for the new node
     * @param forceCreate If true, create a new element even if one with the same name currently exists
 
@@ -566,7 +562,7 @@ public class XPathEngine <
     * Creates a new Element and appends a value to an element.
     *
     * @param parent Element which will own the newly created element
-    * @param elementName tag name for the new element
+    * @param fragment tag name for the new element
     * @param value Object to add
     */
     private Node createElement(Node parent, XPathFragment fragment, Field xmlField, Object value, CoreAbstractSession session) {
@@ -650,7 +646,6 @@ public class XPathEngine <
     * for the value.
     *
     * @param elements NodeList which will have a type attribute added to them
-    * @param simpleTypeTranslator SimpleTypeTranslator to perform lookup in
     * @param value Object to base the lookup on
     * @param schemaInstancePrefix the prefix representing the schema instance namespace
     */
@@ -711,7 +706,7 @@ public class XPathEngine <
     * Creates a new Element and appends a value to an element.
     *
     * @param parent Element which will own the newly created element
-    * @param elementName tag name for the new element
+    * @param fragment tag name for the new element
     * @param value Node to add
     *
     */
@@ -760,7 +755,7 @@ public class XPathEngine <
     /**
     * Add a new attribute to an element.  If the attribute already exists, return the element.
     *
-    * @param attributeName Name of the attribute to add
+    * @param attributeFragment Name of the attribute to add
     * @param parent Element to create the attribute on
     * @param value Value for the new attribute
     *

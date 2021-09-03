@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for the CAST function.
  *
- * <div><b>BNF:</b> <code>cast ::= CAST(value AS type)</code><p></p></div>
+ * <div><b>BNF:</b> <code>cast ::= CAST(value AS type)</code></div>
  *
  * @version 2.4
  * @since 2.4

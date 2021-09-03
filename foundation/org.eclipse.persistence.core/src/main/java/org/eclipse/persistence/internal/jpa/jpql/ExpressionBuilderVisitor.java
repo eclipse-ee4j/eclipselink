@@ -158,9 +158,8 @@ import org.eclipse.persistence.mappings.querykeys.QueryKey;
 import org.eclipse.persistence.queries.ReportQuery;
 
 /**
- * This {@link ExpressionVisitor} visits an {@link org.eclipse.persistence.jpa.jpql.parser.Expression
- * JPQL Expression} and creates the corresponding {@link org.eclipse.persistence.expressions.
- * Expression EclipseLink Expression}.
+ * This {@link org.eclipse.persistence.jpa.jpql.parser.ExpressionVisitor} visits an {@link org.eclipse.persistence.jpa.jpql.parser.Expression
+ * JPQL Expression} and creates the corresponding {@link org.eclipse.persistence.expressions.Expression EclipseLink Expression}.
  *
  * @version 2.6
  * @since 2.3
@@ -193,8 +192,8 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
     private final JPQLQueryContext queryContext;
 
     /**
-     * The EclipseLink {@link Expression} that represents a visited parsed {@link org.eclipse
-     * persistence.jpa.query.parser.Expression Expression}
+     * The EclipseLink {@link Expression} that represents a visited parsed
+     * {@link org.eclipse persistence.jpa.query.parser.Expression Expression}
      */
     private Expression queryExpression;
 
@@ -255,8 +254,8 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
     }
 
     /**
-     * Creates a new EclipseLink {@link Expression} by visiting the given JPQL {@link org.eclipse.
-     * persistence.jpa.jpql.parser.Expression Expression}.
+     * Creates a new EclipseLink {@link Expression} by visiting the given JPQL
+     * {@link org.eclipse.persistence.jpa.jpql.parser.Expression Expression}.
      *
      * @param expression The {@link org.eclipse.persistence.jpa.jpql.parser.Expression Expression} to
      * convert into an EclipseLink {@link Expression}

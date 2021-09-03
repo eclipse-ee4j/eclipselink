@@ -551,7 +551,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
                 NodeList children = ((DOMRecord)nestedRow).getDOM().getChildNodes();
                 for(int i=0; i< children.getLength(); i++){
                     Node nextNode = children.item(i);
-                    if(nextNode.getNodeType() == nextNode.ELEMENT_NODE){
+                    if(nextNode.getNodeType() == Node.ELEMENT_NODE){
                         //complex child
                         String type = ((Element) ((DOMRecord)nestedRow).getDOM()).getAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
                         if(type != null && type.length() > 0) {

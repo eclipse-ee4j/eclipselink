@@ -11,7 +11,8 @@
  */
 
 module org.eclipse.persistence.oracle {
-    requires org.eclipse.persistence.core;
+
+    requires transitive org.eclipse.persistence.core;
 
     exports org.eclipse.persistence.platform.database.oracle;
     exports org.eclipse.persistence.platform.database.oracle.converters;
@@ -19,4 +20,7 @@ module org.eclipse.persistence.oracle {
     exports org.eclipse.persistence.platform.database.oracle.ucp;
     exports org.eclipse.persistence.platform.xml.xdk;
     exports org.eclipse.persistence.tools.profiler.oracle;
+
+    //exported through PUBLIC API
+    exports org.eclipse.persistence.internal.platform.database.oracle;
 }

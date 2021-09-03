@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,7 @@ public abstract class DeferredContentHandler implements ExtendedContentHandler, 
     private boolean charactersOccurred;
     private boolean attributesOccurred;
 
-    public DeferredContentHandler(UnmarshalRecord parentRecord) {
+    protected DeferredContentHandler(UnmarshalRecord parentRecord) {
         levelIndex = 0;
         events = new ArrayList<>();
         this.parent = parentRecord;
@@ -103,7 +103,7 @@ public abstract class DeferredContentHandler implements ExtendedContentHandler, 
         startOccurred = true;
     }
 
-    protected AttributeList buildAttributeList(Attributes attrs) throws SAXException {
+    protected Attributes buildAttributeList(Attributes attrs) throws SAXException {
         int attrsLength = attrs.getLength();
         AttributeList attributes = new AttributeList(attrsLength);
         for (int i = 0; i < attrsLength; i++) {

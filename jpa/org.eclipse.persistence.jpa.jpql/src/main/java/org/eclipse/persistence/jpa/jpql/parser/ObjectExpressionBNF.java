@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for an object expression.
  *
- * <div><b>BNF:</b> <code>OBJECT(identification_variable)</code><p></p></div>
+ * <div><b>BNF:</b> <code>OBJECT(identification_variable)</code></div>
  *
  * @version 2.4
  * @since 2.3

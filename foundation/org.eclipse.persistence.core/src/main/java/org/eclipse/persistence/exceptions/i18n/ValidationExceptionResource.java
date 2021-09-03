@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -54,7 +54,7 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
  * Creation date: (12/6/00 9:47:38 AM)
  * @author Xi Chen
  */
-public class ValidationExceptionResource extends ListResourceBundle {
+public final class ValidationExceptionResource extends ListResourceBundle {
     static final Object[][] contents = {
                                            { "7001", "You must login to the ServerSession before acquiring ClientSessions." },
                                            { "7002", "The pool named [{0}] does not exist." },
@@ -125,8 +125,16 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7099", "The deployment project XML resource [{0}] was not found on the resource path.  Check that the resource name/path and classloader passed to the XMLProjectReader are correct.  The project XML should be included in the root of the application''s deployed jar, if the project XML is deployed in a sub-directory in the application''s jar ensure that the correct resource path using \"/\" not \"\\\" is used." },
                                            { "7100", "Could not find the session with the name [{0}] in the session.xml file [{1}]" },
                                            { "7101", "No \"meta-inf/eclipselink-ejb-jar.xml\" could be found in your classpath.  The CMP session could not be read in from file." },
-                                           { "7102", "Encountered a null value for a cache key while attempting to remove" + "{2}an object from the identity map: [{0}]" + "{2}containing an object of class: [{1}] (or a class in this hierarchy)" + "{2}The most likely cause of this situation is that the object has already been garbage-" + "{2}collected and therefore does not exist within the identity map." + "{2}Consider using an alternative identity map to prevent this situation." + "{2}Refer to the EclipseLink documentation for more details regarding identity maps ." },
-                                           { "7103", "A null reference was encountered while attempting to invoke" + "{1}method: [{0}] on an object which uses proxy indirection." + "{1}Check that this object is not null before invoking its methods." },
+                                           { "7102", "Encountered a null value for a cache key while attempting to remove" +
+                                                   "{2}an object from the identity map: [{0}]" +
+                                                   "{2}containing an object of class: [{1}] (or a class in this hierarchy)" +
+                                                   "{2}The most likely cause of this situation is that the object has already been garbage-" +
+                                                   "{2}collected and therefore does not exist within the identity map." +
+                                                   "{2}Consider using an alternative identity map to prevent this situation." +
+                                                   "{2}Refer to the EclipseLink documentation for more details regarding identity maps ." },
+                                           { "7103", "A null reference was encountered while attempting to invoke" +
+                                                   "{1}method: [{0}] on an object which uses proxy indirection." +
+                                                   "{1}Check that this object is not null before invoking its methods." },
                                            { "7104", "Sequencing login should not use External Transaction Controller." },
                                            { "7105", "Error encountered converting encrypting class: [{0}]" },
                                            { "7106", "Error encountered during string encryption." },
@@ -364,6 +372,13 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7356", "Procedure: [{1}] cannot be executed because {0} does not currently support multiple out parameters"},
                                            { "7357", "URL [{0}] for resource [{1}] does not belong to a valid persistence root (as per JPA Specification)"},
  };
+
+    /**
+     * Default constructor.
+     */
+    public ValidationExceptionResource() {
+        // for reflection
+    }
 
     /**
      * Return the lookup table.

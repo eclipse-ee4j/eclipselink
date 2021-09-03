@@ -42,7 +42,7 @@ public abstract class JPQLCoreTest extends JPQLBasicTest {
 
     /**
      * Retrieves the external form of the ORM configuration with the name retrieved from
-     * {@link #ormXmlFileName()}.
+     * {@code ormXmlFileName}.
      *
      * @param ormXmlFileName The relative path of the orm.xml to load
      * @return The external form of the ORM configuration.

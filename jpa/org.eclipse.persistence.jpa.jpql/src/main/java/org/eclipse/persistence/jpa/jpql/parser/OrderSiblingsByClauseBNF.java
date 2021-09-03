@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for the order siblings by clause.
  *
- * <div><b>BNF:</b> <code>order_sibling_by_clause ::= ORDER SIBLINGS BY orderby_item {, orderby_item}*</code><p></p></div>
+ * <div><b>BNF:</b> <code>order_sibling_by_clause ::= ORDER SIBLINGS BY orderby_item {, orderby_item}*</code></div>
  *
  * @version 2.5
  * @since 2.5

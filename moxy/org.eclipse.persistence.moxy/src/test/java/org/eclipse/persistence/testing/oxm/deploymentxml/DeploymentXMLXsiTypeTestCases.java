@@ -40,7 +40,6 @@ public class DeploymentXMLXsiTypeTestCases extends XMLTestCase {
     }
 
     public void testDeploymentXmlConversion() {
-       XMLProjectReader reader = new XMLProjectReader();
        XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
        XMLParser parser = xmlPlatform.newXMLParser();
        InputStream stream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/oxm/deploymentxml/db-adapter-toplink-mapping-file.xml");

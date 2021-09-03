@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -87,7 +87,6 @@ public final class JavaVersion {
 
     /**
      * Invoke {@code Runtime.Version} method with given name ({@code major} or {@code minor}) to retrieve version numbers.
-     * @param vClass {@code Runtime.Version} class.
      * @param vObj {@code Runtime.Version} class instance containing JDK version information.
      * @param name name of {@code Runtime.Version} instance method to invoke.
      */
@@ -123,11 +122,11 @@ public final class JavaVersion {
     /**
      * Parse Java specification version from JDK system property provided as an argument.
      * Version string should look like:<ul>
-     * <li/><code>"MA.MI"</code>
+     * <li><code>"MA.MI"</code>
      * </ul>
      * Where<ul>
-     * <li/>MA is major version number,
-     * <li/>MI is minor version number
+     * <li>MA is major version number,
+     * <li>MI is minor version number
      * </ul>
      * Label <code>java version</code> is parsed as non case sensitive.
      * @return Current JDK version for any JDK from system property.

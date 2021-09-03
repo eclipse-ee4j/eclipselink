@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -26,7 +26,7 @@ import java.util.ListResourceBundle;
  * Creation date: (12/6/00 9:47:38 AM)
  * @author Xi Chen
  */
-public class ConcurrencyExceptionResource extends ListResourceBundle {
+public final class ConcurrencyExceptionResource extends ListResourceBundle {
     static final Object[][] contents = {
                                            { "2001", "Wait was interrupted. {0}Message: [{1}]" },
                                            { "2002", "Wait failure on ServerSession." },
@@ -40,6 +40,13 @@ public class ConcurrencyExceptionResource extends ListResourceBundle {
                                            { "2010", "Lock has already been transitioned to a Deferred Lock.  A second attempt to transition the lock has been requested by thread: {0} during merge."}
 
     };
+
+    /**
+     * Default constructor.
+     */
+    public ConcurrencyExceptionResource() {
+        // for reflection
+    }
 
     /**
      * Return the lookup table.

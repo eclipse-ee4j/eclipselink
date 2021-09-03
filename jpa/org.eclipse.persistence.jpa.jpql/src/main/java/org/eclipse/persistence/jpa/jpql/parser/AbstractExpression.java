@@ -224,11 +224,10 @@ public abstract class AbstractExpression implements Expression {
      * the visitor. The method signature should be:
      *
      * <div><code>{public|protected|private} void visit(ThirdPartyExpression expression)</code></div>
-     * <p>
+     * <br>
      * or
      *
      * <div><code>{public|protected|private} void visit(Expression expression)</code></div>
-     * <p>
      *
      * @param visitor The {@link ExpressionVisitor} to visit this {@link Expression} programmatically
      * @param type The type found in the hierarchy of the given {@link ExpressionVisitor} that will

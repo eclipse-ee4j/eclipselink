@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -433,7 +433,6 @@ public class ClientSession extends AbstractSession {
      * chained and each session can have its own Cache/IdentityMap.  Entities can be stored
      * at different levels based on Cache Isolation.  This method will return the correct Session
      * for a particular Entity class based on the Isolation Level and the attributes provided.
-     * <p>
      * @param canReturnSelf true when method calls itself.  If the path
      * starting at <code>this</code> is acceptable.  Sometimes true if want to
      * move to the first valid session, i.e. executing on ClientSession when really
@@ -794,7 +793,7 @@ public class ClientSession extends AbstractSession {
                 if (retryCount > 1) {
                     // We are retrying more than once lets wait to give connection time to restart.
                     //Give the failover time to recover.
-                    Thread.currentThread().sleep(login.getDelayBetweenConnectionAttempts());
+                    Thread.sleep(login.getDelayBetweenConnectionAttempts());
                 }
                 getWriteConnections().put(poolName, writeConnection);
                 writeConnection.createCustomizer(this);

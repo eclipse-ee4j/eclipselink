@@ -101,12 +101,10 @@ public class DocumentPreservationTestCases extends XMLMappingTestCases {
                 return xmlContext;
             }
             StringWriter stringWriter = new StringWriter();
-            XMLProjectWriter writer = new XMLProjectWriter();
             XMLProjectWriter.write(new EmployeeProject(), stringWriter);
 
             StringReader reader = new StringReader(stringWriter.toString());
 
-            XMLProjectReader projectReader = new XMLProjectReader();
             Project newProject = XMLProjectReader.read(reader);
 
             XMLContext newContext = new XMLContext(newProject);

@@ -36,8 +36,8 @@ final class ReportQueryVisitor extends ReadAllQueryVisitor {
 
     /**
      * This array is used to store the type of the select {@link org.eclipse.persistence.jpa.jpql
-     * parser.Expression JPQL Expression} that is converted into an {@link org.eclipse.persistence.
-     * expressions.Expression EclipseLink Expression}.
+     * parser.Expression JPQL Expression} that is converted into an
+     * {@link org.eclipse.persistence.expressions.Expression EclipseLink Expression}.
      */
     Class<?> type;
 

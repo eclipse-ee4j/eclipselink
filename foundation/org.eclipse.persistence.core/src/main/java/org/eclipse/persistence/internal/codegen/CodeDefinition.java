@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,7 +33,7 @@ public abstract class CodeDefinition {
     protected static final String JAVA_UTIL_PACKAGE_NAME = "java.util";
     protected static final String TOPLINK_INDIRECTION_PACKAGE_NAME = "org.eclipse.persistence.indirection";
 
-    public CodeDefinition() {
+    protected CodeDefinition() {
         this.accessLevel = new AccessLevel();
         this.name = "";
         this.comment = "";

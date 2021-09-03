@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -58,7 +58,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
      * INTERNAL:
      * Construct a new policy.
      */
-    public InterfaceContainerPolicy() {
+    protected InterfaceContainerPolicy() {
         super();
     }
 
@@ -66,7 +66,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
      * INTERNAL:
      * Construct a new policy for the specified class.
      */
-    public InterfaceContainerPolicy(Class containerClass) {
+    protected InterfaceContainerPolicy(Class containerClass) {
         setContainerClass(containerClass);
     }
 
@@ -74,7 +74,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
      * INTERNAL:
      * Construct a new policy for the specified class name.
      */
-    public InterfaceContainerPolicy(String containerClassName) {
+    protected InterfaceContainerPolicy(String containerClassName) {
         setContainerClassName(containerClassName);
     }
 

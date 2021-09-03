@@ -23,10 +23,10 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * contain multiple identification variable declarations separated by a comma (,).
  * <p>
  * JPA 1.0, 2.0, 2.1, EclipseLink 1.0 - 2.4:
- * <div><b>BNF:</b> <code>from_clause ::= FROM identification_variable_declaration {, {identification_variable_declaration | collection_member_declaration}}*</code><p></p></div>
+ * <div><b>BNF:</b> <code>from_clause ::= FROM identification_variable_declaration {, {identification_variable_declaration | collection_member_declaration}}*</code></div>
  *
  * EclipseLink 2.5:
- * <div><b>BNF:</b> <code>from_clause ::= FROM identification_variable_declaration {, {identification_variable_declaration | collection_member_declaration}}* [hierarchical_query_clause] [asof_clause]</code><p></p></div>
+ * <div><b>BNF:</b> <code>from_clause ::= FROM identification_variable_declaration {, {identification_variable_declaration | collection_member_declaration}}* [hierarchical_query_clause] [asof_clause]</code></div>
  *
  * @version 2.5
  * @since 2.3

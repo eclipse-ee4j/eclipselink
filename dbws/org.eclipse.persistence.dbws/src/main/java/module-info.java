@@ -48,10 +48,16 @@ module org.eclipse.persistence.dbws {
     exports org.eclipse.persistence.jpa.rs.util.metadatasources;
     exports org.eclipse.persistence.jpa.rs.util.xmladapters;
 
-    // dbws builder
-    exports org.eclipse.persistence.internal.dbws;
+    //exported through DBWS PUBLIC API
+    exports org.eclipse.persistence.internal.jpa.rs.metadata.model;
+    exports org.eclipse.persistence.internal.jpa.rs.weaving;
     exports org.eclipse.persistence.internal.xr;
+
+    //exported through DBWS INTERNAL API
     exports org.eclipse.persistence.internal.xr.sxf;
+
+    //INTERNAL ONLY exports
+    exports org.eclipse.persistence.internal.dbws to org.eclipse.persistence.dbws.builder;
 
     uses org.eclipse.persistence.jpa.rs.PersistenceContextFactoryProvider;
 }

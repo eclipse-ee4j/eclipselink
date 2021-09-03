@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,8 +37,7 @@ public class UCPUnitOfWorkTests extends UnitOfWorkClientSessionTestModel {
     @Override
     public Server buildServerSession() {
         try {
-            PoolDataSourceFactory factory = new oracle.ucp.jdbc.PoolDataSourceFactory();
-            PoolDataSource dataSource = factory.getPoolDataSource();
+            PoolDataSource dataSource = PoolDataSourceFactory.getPoolDataSource();
             //dataSource.setONSConfiguration("nodes=adcdbc01-r.us.oracle.com:6200");
             dataSource.setConnectionFactoryClassName("oracle.jdbc.pool.OracleDataSource");
             dataSource.setURL(getSession().getLogin().getConnectionString());

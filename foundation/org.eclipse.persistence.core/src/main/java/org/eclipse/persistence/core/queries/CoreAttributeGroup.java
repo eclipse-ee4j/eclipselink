@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -151,7 +151,7 @@ public class CoreAttributeGroup<
     /**
      * Add an attribute and the corresponding list of AttributeGroups.
      * Multiple groups are added in the case of inheritance
-     * <p>
+     *
      * @param attributeNameOrPath
      *            A simple attribute, array or attributes forming a path
      * @param groups - a collection of AttributeGroups to be added.

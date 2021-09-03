@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2015, 2020 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1084,7 +1084,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
                 // database error.
                 try {
                     // Give the failover time to recover.
-                    Thread.currentThread().sleep(getLogin().getDelayBetweenConnectionAttempts());
+                    Thread.sleep(getLogin().getDelayBetweenConnectionAttempts());
                     Object[] args = new Object[1];
                     args[0] = ex;
                     log(SessionLog.INFO, SessionLog.QUERY, "communication_failure_attempting_query_retry", args, null);

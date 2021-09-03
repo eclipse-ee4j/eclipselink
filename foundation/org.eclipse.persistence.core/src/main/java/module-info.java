@@ -12,10 +12,10 @@
 
 module org.eclipse.persistence.core {
 
-    requires java.desktop;
-    requires java.management;
-    requires java.naming;
-    requires java.rmi;
+    requires transitive java.desktop;
+    requires transitive java.management; //server platforms
+    requires transitive java.naming;
+    requires transitive java.rmi;
     requires transitive java.sql;
     requires transitive java.xml;
 
@@ -127,7 +127,7 @@ module org.eclipse.persistence.core {
     exports org.eclipse.persistence.transaction.was;
     exports org.eclipse.persistence.transaction.wls;
 
-    exports org.eclipse.persistence.internal.cache;
+    //exported through PUBLIC API
     exports org.eclipse.persistence.internal.codegen;
     exports org.eclipse.persistence.internal.core.databaseaccess;
     exports org.eclipse.persistence.internal.core.descriptors;
@@ -140,52 +140,66 @@ module org.eclipse.persistence.core {
     exports org.eclipse.persistence.internal.dynamic;
     exports org.eclipse.persistence.internal.expressions;
     exports org.eclipse.persistence.internal.helper;
-    exports org.eclipse.persistence.internal.helper.linkedlist;
-    exports org.eclipse.persistence.internal.helper.type;
-    exports org.eclipse.persistence.internal.history;
     exports org.eclipse.persistence.internal.identitymaps;
     exports org.eclipse.persistence.internal.indirection;
-    exports org.eclipse.persistence.internal.jpa.jpql;
-    exports org.eclipse.persistence.internal.localization;
-    exports org.eclipse.persistence.internal.mappings.converters;
     exports org.eclipse.persistence.internal.oxm;
-    exports org.eclipse.persistence.internal.oxm.accessor;
-    exports org.eclipse.persistence.internal.oxm.conversion;
-    exports org.eclipse.persistence.internal.oxm.documentpreservation;
     exports org.eclipse.persistence.internal.oxm.mappings;
-    exports org.eclipse.persistence.internal.oxm.record;
-    exports org.eclipse.persistence.internal.oxm.record.deferred;
-    exports org.eclipse.persistence.internal.oxm.record.json;
     exports org.eclipse.persistence.internal.oxm.record.namespaces;
-    exports org.eclipse.persistence.internal.oxm.schema;
-    exports org.eclipse.persistence.internal.oxm.schema.model;
+    exports org.eclipse.persistence.internal.oxm.record;
     exports org.eclipse.persistence.internal.oxm.unmapped;
-    exports org.eclipse.persistence.internal.platform.database;
     exports org.eclipse.persistence.internal.queries;
     exports org.eclipse.persistence.internal.security;
     exports org.eclipse.persistence.internal.sequencing;
-    exports org.eclipse.persistence.internal.sessions;
-    exports org.eclipse.persistence.internal.sessions.cdi;
     exports org.eclipse.persistence.internal.sessions.coordination;
-    exports org.eclipse.persistence.internal.sessions.coordination.broadcast;
     exports org.eclipse.persistence.internal.sessions.coordination.jms;
-    exports org.eclipse.persistence.internal.sessions.coordination.rmi;
     exports org.eclipse.persistence.internal.sessions.factories;
     exports org.eclipse.persistence.internal.sessions.factories.model;
+    exports org.eclipse.persistence.internal.sessions.remote;
+    exports org.eclipse.persistence.internal.sessions;
+
+    //exported through INTERNAL API
+    exports org.eclipse.persistence.internal.helper.linkedlist;
+    exports org.eclipse.persistence.internal.helper.type;
+    exports org.eclipse.persistence.internal.sessions.cdi;
+    exports org.eclipse.persistence.internal.sessions.coordination.broadcast;
     exports org.eclipse.persistence.internal.sessions.factories.model.event;
     exports org.eclipse.persistence.internal.sessions.factories.model.log;
     exports org.eclipse.persistence.internal.sessions.factories.model.login;
     exports org.eclipse.persistence.internal.sessions.factories.model.platform;
     exports org.eclipse.persistence.internal.sessions.factories.model.pool;
     exports org.eclipse.persistence.internal.sessions.factories.model.project;
-    exports org.eclipse.persistence.internal.sessions.factories.model.property;
-    exports org.eclipse.persistence.internal.sessions.factories.model.rcm;
     exports org.eclipse.persistence.internal.sessions.factories.model.rcm.command;
+    exports org.eclipse.persistence.internal.sessions.factories.model.rcm;
     exports org.eclipse.persistence.internal.sessions.factories.model.sequencing;
     exports org.eclipse.persistence.internal.sessions.factories.model.session;
     exports org.eclipse.persistence.internal.sessions.factories.model.transport;
     exports org.eclipse.persistence.internal.sessions.factories.model.transport.discovery;
     exports org.eclipse.persistence.internal.sessions.factories.model.transport.naming;
-    exports org.eclipse.persistence.internal.sessions.remote;
-    exports org.eclipse.persistence.internal.weaving;
+
+    //INTERNAL ONLY exports
+    exports org.eclipse.persistence.internal.jpa.jpql to org.eclipse.persistence.jpa;
+    exports org.eclipse.persistence.internal.localization to
+            org.eclipse.persistence.dbws,
+            org.eclipse.persistence.jpa,
+            org.eclipse.persistence.jpa.modelgen,
+            org.eclipse.persistence.moxy,
+            org.eclipse.persistence.oracle,
+            org.eclipse.persistence.sdo;
+    exports org.eclipse.persistence.internal.mappings.converters to org.eclipse.persistence.jpa;
+    exports org.eclipse.persistence.internal.weaving to org.eclipse.persistence.jpa;
+    exports org.eclipse.persistence.internal.cache to org.eclipse.persistence.moxy;
+    exports org.eclipse.persistence.internal.oxm.schema to
+            org.eclipse.persistence.dbws,
+            org.eclipse.persistence.dbws.builder,
+            org.eclipse.persistence.moxy,
+            org.eclipse.persistence.sdo;
+    exports org.eclipse.persistence.internal.oxm.schema.model to
+            org.eclipse.persistence.dbws,
+            org.eclipse.persistence.dbws.builder,
+            org.eclipse.persistence.moxy,
+            org.eclipse.persistence.sdo;
+    exports org.eclipse.persistence.internal.oxm.conversion to org.eclipse.persistence.dbws;
+    exports org.eclipse.persistence.internal.sessions.coordination.rmi to org.eclipse.persistence.corba;
+    exports org.eclipse.persistence.internal.platform.database to org.eclipse.persistence.oracle;
+
 }

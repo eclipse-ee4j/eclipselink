@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -101,7 +101,7 @@ public class SerializedObjectConverter implements Converter, ClassNameConversion
                 } else {
                     serializerClass = PrivilegedAccessHelper.getClassForName(this.serializerClassName, true, classLoader);
                 }
-                this.serializer = (Serializer)serializerClass.newInstance();
+                this.serializer = (Serializer)serializerClass.getConstructor().newInstance();
             }
         } catch (Exception exception){
             throw ValidationException.classNotFoundWhileConvertingClassNames(this.serializerClassName, exception);

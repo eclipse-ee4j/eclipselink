@@ -21,7 +21,6 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * <div><b>BNF:</b> <code>general_identification_variable ::= identification_variable |
  *                                                                   KEY(identification_variable) |
  *                                                                   VALUE(identification_variable)</code></div>
- * <p></p>
  *
  * @version 2.5
  * @since 2.3

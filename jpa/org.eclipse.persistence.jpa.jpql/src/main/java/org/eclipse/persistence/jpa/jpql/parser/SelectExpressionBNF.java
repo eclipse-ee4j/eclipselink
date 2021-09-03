@@ -24,7 +24,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                     identification_variable |
  *                                                     OBJECT(identification_variable) |
  *                                                     constructor_expression</code></div>
- * <p>
+ * <br>
  * JPA 2.0:
  * <div><b>BNF:</b> <code>select_expression ::= single_valued_path_expression |
  *                                                     scalar_expression |
@@ -32,8 +32,6 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                     identification_variable |
  *                                                     OBJECT(identification_variable) |
  *                                                     constructor_expression</code></div>
- * <p></p>
- *
  * @version 2.5
  * @since 2.3
  * @author Pascal Filion

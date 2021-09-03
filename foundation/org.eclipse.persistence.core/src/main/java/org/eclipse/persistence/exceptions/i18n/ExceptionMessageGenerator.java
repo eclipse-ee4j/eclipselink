@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -33,8 +33,12 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
  * Creation date: (12/7/00 10:30:38 AM)
  * @author Rick Barkhouse
  */
-public class ExceptionMessageGenerator {
+public final class ExceptionMessageGenerator {
     private final static String CR = PrivilegedAccessHelper.getSystemProperty("line.separator");
+
+    private ExceptionMessageGenerator() {
+        // for reflection
+    }
 
     /**
      * Return the loader for loading the resource bundles.

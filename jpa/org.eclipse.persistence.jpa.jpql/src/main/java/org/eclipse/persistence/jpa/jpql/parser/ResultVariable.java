@@ -23,7 +23,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 /**
  * A result variable may be used to name a select item in the query result.
  *
- * <div><b>BNF:</b> <code>select_item ::= select_expression [[AS] result_variable]</code><p></p></div>
+ * <div><b>BNF:</b> <code>select_item ::= select_expression [[AS] result_variable]</code></div>
  *
  * @version 2.5
  * @since 2.3

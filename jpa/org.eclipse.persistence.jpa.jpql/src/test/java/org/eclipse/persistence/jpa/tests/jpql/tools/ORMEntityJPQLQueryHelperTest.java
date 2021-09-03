@@ -22,7 +22,7 @@ import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
 
 /**
- * This unit-test tests {@link AbstractJPQLQueryHelper} when the queries are on entities managed by
+ * This unit-test tests {@link org.eclipse.persistence.jpa.jpql.tools.AbstractJPQLQueryHelper} when the queries are on entities managed by
  * an ORM configuration.
  *
  * @version 2.4

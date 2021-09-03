@@ -23,10 +23,10 @@ import java.util.List;
  * <p>
  * JPA 1.0:
  * <div><b>BNF:</b> <code>expression ::= CONCAT(string_primary, string_primary)</code></div>
- * <p>
+ * <br>
  * JPA 2.0:
  * <div><b>BNF:</b> <code>expression ::= CONCAT(string_primary, string_primary {, string_primary}*)</code></div>
- * <p>
+ * <br>
  * JPA 2.1:
  * <div><b>BNF:</b> <code>expression ::= CONCAT(string_expression, string_expression {, string_expression}*)</code></div>
  *

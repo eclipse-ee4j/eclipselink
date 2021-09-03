@@ -986,6 +986,12 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
          */
         protected boolean subExpression;
 
+        /**
+         * Default constructor.
+         */
+        protected NestedArrayVisitor() {
+        }
+
         @Override
         public void visit(CollectionExpression expression) {
             nestedArraySize = subExpression ? expression.childrenSize() : -1;
@@ -1100,6 +1106,12 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
         public UpdateStatement updateStatement;
 
         /**
+         * Default constructor.
+         */
+        protected OwningStatementVisitor() {
+        }
+
+        /**
          * Disposes the internal data.
          */
         protected void dispose() {
@@ -1139,6 +1151,12 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
          * The subquery is the visited {@link Expression} is a subquery.
          */
         private SimpleSelectStatement expression;
+
+        /**
+         * Default constructor.
+         */
+        protected SubqueryVisitor() {
+        }
 
         @Override
         public void visit(SimpleSelectStatement expression) {

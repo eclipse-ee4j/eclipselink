@@ -19,12 +19,12 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * The <b>OR</b> logical operator chains multiple criteria together. A valid operand of an <b>OR</b>
  * operator must be one of: <b>TRUE</b>, <b>FALSE</b>, and <b>NULL</b>. The <b>OR</b> operator has
  * a lower precedence than the <b>AND</b> operator.
- * <p></p>
+ * <br>
  * <b>NULL</b> represents unknown. Therefore, if one operand is <b>NULL</b> and the other operand is
  * <b>TRUE</b> the result is <b>TRUE</b>, because one <b>TRUE</b> operand is sufficient for a
  * <b>TRUE</b> result. If one operand is <b>NULL</b> and the other operand is either <b>FALSE</b> or
  * <b>NULL</b>, the result is <b>NULL</b> (unknown).
- * <p></p>
+ * <br>
  *
  * <table border="1" style="border:1px outset darkgrey;">
  * <caption>The following table shows how the <code><b>OR</b></code> operator is evaluated based on its two operands:</caption>
@@ -34,7 +34,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * <tr><td><b>NULL</b></td><td>TRUE</td><td>NULL</td><td>NULL</td></tr>
  * </table>
  *
- * <div><b>BNF:</b> <code>conditional_expression ::= conditional_expression OR conditional_term</code><p></p></div>
+ * <div><b>BNF:</b> <code>conditional_expression ::= conditional_expression OR conditional_term</code></div>
  *
  * @version 2.5
  * @since 2.3

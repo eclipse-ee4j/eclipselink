@@ -26,9 +26,9 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * position of a string is denoted by 1. The <code><b>SUBSTRING</b></code> function returns a string.
  * <p>
  * JPA 1.0:
- * <div><b>BNF</b> ::= SUBSTRING(string_primary, simple_arithmetic_expression, simple_arithmetic_expression)<p></div>
+ * <div><b>BNF</b> ::= SUBSTRING(string_primary, simple_arithmetic_expression, simple_arithmetic_expression)</div>
  * JPA 2.0:
- * <div><b>BNF</b> ::= SUBSTRING(string_primary, simple_arithmetic_expression [, simple_arithmetic_expression])<p></div>
+ * <div><b>BNF</b> ::= SUBSTRING(string_primary, simple_arithmetic_expression [, simple_arithmetic_expression])</div>
  *
  * @see SubstringExpression
  *

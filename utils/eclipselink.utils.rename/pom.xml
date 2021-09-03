@@ -29,4 +29,8 @@
         <version>3.1.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
+
+    <properties>
+        <comp.xdoclint>-Xdoclint:-missing</comp.xdoclint>
+    </properties>
 </project>

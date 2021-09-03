@@ -32,7 +32,7 @@ import org.eclipse.persistence.jpa.jpql.parser.OrExpression;
  * one <code><b>TRUE</b></code> operand is sufficient for a <code><b>TRUE</b></code> result. If one
  * operand is <code><b>NULL</b></code> and the other operand is either <code><b>FALSE</b></code> or
  * <code><b>NULL</b></code>, the result is <code><b>NULL</b></code> (unknown).
- * <p>
+ *
  *
  * <table border="1" style="border:1px outset darkgrey;">
  * <caption>The following table shows how the <code><b>OR</b></code> operator is evaluated based on its two operands:</caption>

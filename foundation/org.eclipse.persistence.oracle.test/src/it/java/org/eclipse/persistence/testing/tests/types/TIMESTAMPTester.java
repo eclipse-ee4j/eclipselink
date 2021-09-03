@@ -463,7 +463,7 @@ public abstract class TIMESTAMPTester extends TypeTester {
                 dbCal = TIMESTAMPHelper.printCalendar(fromDatabase.getCalToTSTZ());
                 // indicates whether the original and read back from the db calendars are equal
                 boolean areEqual = true;
-                if(this.isTimestampInGmt) {
+                if(isTimestampInGmt) {
                     // 0 if and only if the two calendars refer to the same time
                     int compareCalToTSTZ = calToTSTZ.compareTo(fromDatabase.getCalToTSTZ());
                     boolean timeZonesEqual = calToTSTZ.getTimeZone().equals(fromDatabase.getCalToTSTZ().getTimeZone());

@@ -27,7 +27,7 @@ package org.eclipse.persistence.jpa.tests.jpql.parser;
 public interface JPQLQueryStringFormatter {
 
     /**
-     * The default implementation of {@link QueryStringFormatter}, which returns the JPQL query
+     * The default implementation of {@link JPQLQueryStringFormatter}, which returns the JPQL query
      * without formatting it.
      */
     public static JPQLQueryStringFormatter DEFAULT = new JPQLQueryStringFormatter() {

@@ -398,6 +398,7 @@ public class DeclarationResolver extends Resolver {
      * @return <code>true</code> if the given identification variable maps a collection-valued field
      * defined in a <code>JOIN</code> or <code>IN</code> expression; <code>false</code> otherwise
      */
+    @SuppressWarnings("fallthrough")
     protected boolean isCollectionIdentificationVariableImp(String variableName) {
 
         for (Declaration declaration : declarations) {

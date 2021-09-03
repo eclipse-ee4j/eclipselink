@@ -30,9 +30,9 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * type specified as a result of navigation to a collection-valued association-field of an entity
  * abstract schema type.
  *
- * <div><b>BNF:</b> <code>collection_member_declaration ::= IN(collection_valued_path_expression) [AS] identification_variable</code><p></p></div>
+ * <div><b>BNF:</b> <code>collection_member_declaration ::= IN(collection_valued_path_expression) [AS] identification_variable</code></div>
  * or
- * <div><b>BNF:</b> <code>derived_collection_member_declaration ::= IN superquery_identification_variable.{single_valued_object_field.}*collection_valued_field</code><p></p></div>
+ * <div><b>BNF:</b> <code>derived_collection_member_declaration ::= IN superquery_identification_variable.{single_valued_object_field.}*collection_valued_field</code></div>
  * <p>
  * Example: <code><b>SELECT</b> t <b>FROM</b> Player p, <b>IN</b> (p.teams) AS t</code>
  *

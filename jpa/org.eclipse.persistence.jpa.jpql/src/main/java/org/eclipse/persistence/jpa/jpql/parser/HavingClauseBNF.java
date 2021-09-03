@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for the having clause.
  *
- * <div><b>BNF:</b> <code>having_clause ::= HAVING conditional_expression</code><p></p></div>
+ * <div><b>BNF:</b> <code>having_clause ::= HAVING conditional_expression</code></div>
  *
  * @version 2.4
  * @since 2.3

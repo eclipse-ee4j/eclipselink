@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +20,13 @@ package org.eclipse.persistence.oxm;
  * each instance of XMLMarshaller to use different namespace prefixes.
  */
 public abstract class NamespacePrefixMapper extends org.eclipse.persistence.internal.oxm.NamespacePrefixMapper {
+
+    /**
+     * Default constructor.
+     */
+    protected NamespacePrefixMapper() {
+        super();
+    }
 
     /**
      * Return true if this prefix mapper applies to the media type provided.

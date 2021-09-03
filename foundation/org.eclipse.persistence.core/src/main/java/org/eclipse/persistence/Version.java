@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ import java.util.ResourceBundle;
  * @author Eric Gwin
  * @since 1.0,
  */
-public class Version {
+public final class Version {
     // The current version of EclipseLink.
     // This will be used by all product components and included in exceptions.
     private static String product = "Eclipse Persistence Services";
@@ -49,6 +49,9 @@ public class Version {
 
     private static Properties versionProperties;
 
+    private Version() {
+        //no instance please
+    }
 
     /**
      * Returns version {@link String} containing three part version number

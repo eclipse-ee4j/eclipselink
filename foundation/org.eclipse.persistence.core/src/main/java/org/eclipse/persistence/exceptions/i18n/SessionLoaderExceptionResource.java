@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ import java.util.ListResourceBundle;
  * Creation date: (12/6/00 9:47:38 AM)
  * @author Gordon Yorke
  */
-public class SessionLoaderExceptionResource extends ListResourceBundle {
+public final class SessionLoaderExceptionResource extends ListResourceBundle {
     static final Object[][] contents = {
                                            { "9000", "Several [{0}] SessionLoaderExceptions were thrown:" },
                                            { "9001", "Unknown tag name: [{0}] in XML node: [{1}]." },
@@ -41,6 +41,13 @@ public class SessionLoaderExceptionResource extends ListResourceBundle {
                                            { "9011", "Server platform class {0} has been removed and the corresponding application server version is no longer supported" },
                                            { "9012", "Unable to load session-xml file either because it contains invalid format or the format of XML is not supported." }
     };
+
+    /**
+     * Default constructor.
+     */
+    public SessionLoaderExceptionResource() {
+        // for reflection
+    }
 
     /**
      * Return the lookup table.

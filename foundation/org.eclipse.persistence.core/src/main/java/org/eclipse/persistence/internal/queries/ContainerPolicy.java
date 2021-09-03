@@ -116,7 +116,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
     /**
      * Default constructor.
      */
-    public ContainerPolicy() {
+    protected ContainerPolicy() {
     }
 
     /**

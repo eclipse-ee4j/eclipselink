@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -39,13 +39,21 @@ import org.eclipse.persistence.config.QueryHints;
  *
  * @author Xi Chen
  */
-public class QueryExceptionResource extends ListResourceBundle {
+public final class QueryExceptionResource extends ListResourceBundle {
     static final Object[][] contents = {
        { "6001", "Cursored SQL queries must provide an additional query to retrieve the size of the result set." },
        { "6002", "Aggregated objects cannot be written/deleted/queried independently from their owners. {1}Descriptor: [{0}]" },
        { "6003", "The number of arguments provided to the query for execution does not match the number of arguments in the query definition." },
-       { "6004", "The object [{0}], of class [{1}], with identity hashcode (System.identityHashCode()) [{2}], {3}is not from this UnitOfWork object space, but the parent session''s.  The object was never registered in this UnitOfWork, {3}but read from the parent session and related to an object registered in the UnitOfWork.  Ensure that you are correctly" + "{3}registering your objects.  If you are still having problems, you can use the UnitOfWork.validateObjectSpace() method to {3}help debug where the error occurred.  For more information, see the manual or FAQ." },
-       { "6005", "The object [{0}], of class [{1}], with identity hashcode (System.identityHashCode()) [{2}], {3}is the original to a registered new object.  The UnitOfWork clones registered new objects, so you must ensure that an object {3}is registered before it is referenced by another object.  If you do not want the new object to be cloned, use the" + "{3}UnitOfWork.registerNewObject(Object) API.  If you are still having problems, you can use the UnitOfWork.validateObjectSpace() {3}method to help debug where the error occurred.  For more information, see the manual or FAQ." },
+       { "6004", "The object [{0}], of class [{1}], with identity hashcode (System.identityHashCode()) [{2}], {3} is not from this UnitOfWork object space, but the parent session''s. " +
+               "The object was never registered in this UnitOfWork, {3} but read from the parent session and related to an object registered in the UnitOfWork. " +
+               "Ensure that you are correctly {3} registering your objects. " +
+               "If you are still having problems, you can use the UnitOfWork.validateObjectSpace() method to {3} help debug where the error occurred. " +
+               "For more information, see the manual or FAQ." },
+       { "6005", "The object [{0}], of class [{1}], with identity hashcode (System.identityHashCode()) [{2}], {3} is the original to a registered new object. " +
+               "The UnitOfWork clones registered new objects, so you must ensure that an object {3} is registered before it is referenced by another object. " +
+               "If you do not want the new object to be cloned, use the {3}UnitOfWork.registerNewObject(Object) API. " +
+               "If you are still having problems, you can use the UnitOfWork.validateObjectSpace() {3} method to help debug where the error occurred. " +
+               "For more information, see the manual or FAQ." },
        { "6006", "The mapping [{0}] does not support batch reading." },
        { "6007", "Missing descriptor for [{0}]." },
        { "6008", "Missing descriptor for [{0}] for query named [{1}]." },
@@ -124,7 +132,11 @@ public class QueryExceptionResource extends ListResourceBundle {
        { "6098", "Unexpected Invocation Exception: {0}." },
        { "6099", "Joining across inheritance class with multiple table subclasses not supported: {0}, {1}" },
        { "6100", "Multiple values detected for single-object read query." },
-       { "6101", "Executing this query could violate the integrity of the global session cache which must contain only the latest versions of objects.  In order to execute a query that returns objects as of a past time, try one of the following: Use a HistoricalSession (acquireSessionAsOf), all objects read will be cached and automatically read as of the same time.  This will apply even to triggering object relationships.  Set shouldMaintainCache to false.  You may make any object expression as of a past time, " + "provided none of its fields are represented in the result set (i.e. used only in the where clause)." },
+       { "6101", "Executing this query could violate the integrity of the global session cache which must contain only the latest versions of objects. " +
+               "In order to execute a query that returns objects as of a past time, try one of the following: Use a HistoricalSession (acquireSessionAsOf), " +
+               "all objects read will be cached and automatically read as of the same time.  This will apply even to triggering object relationships. " +
+               "Set shouldMaintainCache to false.  You may make any object expression as of a past time, " +
+               "provided none of its fields are represented in the result set (i.e. used only in the where clause)." },
        { "6102", "At present historical queries only work with Oracle 9R2 or later databases, as it uses Oracle''s Flashback feature." },
        { "6103", "You may not execute a WriteQuery from inside a read-only HistoricalSession.  To restore past objects, try the following: read the same object as it is now with a UnitOfWork and commit the UnitOfWork." },
        { "6104", "The object, {0}, does not exist in the cache." },
@@ -208,6 +220,13 @@ public class QueryExceptionResource extends ListResourceBundle {
        { "6183",  "The mapping type {1} for attribute {2} from {0} is not supported with Query By Example functionality.  If the attribute can safely be ignored then add it to the ignore list or set example validation to false in the policy."}
 
     };
+
+    /**
+     * Default constructor.
+     */
+    public QueryExceptionResource() {
+        // for reflection
+    }
 
     /**
      * Return the lookup table.

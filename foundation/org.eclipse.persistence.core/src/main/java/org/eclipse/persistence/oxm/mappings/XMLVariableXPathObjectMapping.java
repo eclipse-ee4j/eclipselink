@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -72,8 +72,9 @@ public class XMLVariableXPathObjectMapping extends XMLCompositeObjectMapping  im
                 getConverter().initialize(this, session);
             }
         }
-        if(null != getContainerAccessor()) {
-            getContainerAccessor().initializeAttributes(this.referenceClass);
+        final XMLInverseReferenceMapping inverseReferenceMapping = getInverseReferenceMapping();
+        if (null != inverseReferenceMapping && null != inverseReferenceMapping.getAttributeAccessor()) {
+            inverseReferenceMapping.getAttributeAccessor().initializeAttributes(this.referenceClass);
         }
 
         if(variableAttributeName != null){

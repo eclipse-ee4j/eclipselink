@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for the <code><b>START WITH</b></code> clause.
  *
- * <div><b>BNF:</b> <code>start_with_clause ::= START WITH conditional_expression</code><p></p></div>
+ * <div><b>BNF:</b> <code>start_with_clause ::= START WITH conditional_expression</code></div>
  *
  * @version 2.5
  * @since 2.5

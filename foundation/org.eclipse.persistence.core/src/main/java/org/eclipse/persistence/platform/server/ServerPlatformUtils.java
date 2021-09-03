@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2015 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -53,6 +53,10 @@ public final class ServerPlatformUtils {
 
     private static final String UNKNOWN_MARKER = "UNKNOWN";
     private static String SERVER_PLATFORM_CLS;
+
+    private ServerPlatformUtils() {
+        // no instance please
+    }
 
     /**
      * @param session

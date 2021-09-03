@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,7 +50,7 @@ public abstract class DistributedSession extends DatabaseSessionImpl {
      * Creates a DistributedSession.
      * @param remoteConnection remote session requires a remote connection. This must be accessed remotely from the client through RMI or CORBA.
      */
-    public DistributedSession(RemoteConnection remoteConnection) {
+    protected DistributedSession(RemoteConnection remoteConnection) {
         this.remoteConnection = remoteConnection;
         this.remoteConnection.initialize(this);
         this.project = new org.eclipse.persistence.sessions.Project();

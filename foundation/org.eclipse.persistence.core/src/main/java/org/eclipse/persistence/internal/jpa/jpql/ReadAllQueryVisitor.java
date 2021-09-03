@@ -39,7 +39,7 @@ class ReadAllQueryVisitor extends AbstractObjectLevelReadQueryVisitor {
      *
      * @param queryContext The context used to query information about the application metadata and
      * cached information
-     * @param query The {@link ReportQuery} to populate by using this visitor to visit the parsed
+     * @param query The {@link org.eclipse.persistence.queries.ReportQuery} to populate by using this visitor to visit the parsed
      * tree representation of the JPQL query
      */
     ReadAllQueryVisitor(JPQLQueryContext queryContext, ReadAllQuery query) {

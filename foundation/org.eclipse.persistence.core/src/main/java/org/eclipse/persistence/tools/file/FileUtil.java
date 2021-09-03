@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,10 @@ import org.eclipse.persistence.logging.SessionLog;
  * @author Steven Vo
  * @since TopLink 4.5
  */
-public class FileUtil {
+public final class FileUtil {
+
+    private FileUtil() {
+    }
 
     /* Copy file to another file or copy content of a directory to another directory
      *

@@ -24,7 +24,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * <p>
  * JPA 1.0, 2.0:
  * <div><b>BNF:</b> <code>expression ::= ABS(simple_arithmetic_expression)</code></div>
- * <p>
+ * <br>
  * JPA 2.1:
  * <div><b>BNF:</b> <code>expression ::= ABS(arithmetic_expression)</code></div>
  * <p>

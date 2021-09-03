@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -189,7 +189,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
      * Example: To find all projects without a budget set <code>budget</code> to 0 in the
      * example object and call <code>alwaysIncludeAttribute(Project.class, "budget")</code>
      * on the policy.
-     * <p>
+     *
      * @param exampleClass The class that the attribute belongs to, normally this is the example class unless using nested QBE.
      * @param attributeName The name of a mapped attribute.
      */
@@ -466,7 +466,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
      * Considers all attributes set to a previously excluded value on the example object.
      * <p>
      * Primitive values to be removed must first be wrapped inside an Object.
-     * <p>
+     *
      * @param value No attributes set to <code>value</code> will be excluded from a Query By Example.
      * <code>value.getClass()</code> is a key of the Hashtable returned by {@link #getValuesToExclude}.
      * <p>Note: There is a distinction between an attribute and the value
@@ -517,7 +517,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
 
     /**
      * PUBLIC:
-     * The special operations to use in place of <code>equal</code>.<p>
+     * The special operations to use in place of <code>equal</code>.
      * @param newOperations A hashtable where the keys are <code>Class</code> objects and the values
      * are the names of operations to use for attributes of that <code>Class</code>.
      * @see #addSpecialOperation
@@ -593,7 +593,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
      * attribute <code>address</code> to <code>null</code> in the example object,
      * call <code>alwaysIncludeAttribute(Employee.class, "address")</code> and then
      * call <code>setShouldUseEqualityForNulls(false)</code>.
-     * <p>
+     *
      * @return If true (by default) uses <code>isNull</code> else <code>notNull</code>.
      * @see #addSpecialOperation addSpecialOperation
      * @see #alwaysIncludeAttribute alwaysIncludeAttribute

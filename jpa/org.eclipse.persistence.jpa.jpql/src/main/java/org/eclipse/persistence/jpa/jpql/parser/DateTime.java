@@ -32,7 +32,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * The JDBC escape syntax may be used for the specification of date, time, and timestamp literals.
  *
- * <div><b>BNF:</b> <code>expression ::= {d 'yyyy-mm-dd'} | {t 'hh:mm:ss'} | {ts 'yyyy-mm-dd hh:mm:ss.f...'}</code><p></p></div>
+ * <div><b>BNF:</b> <code>expression ::= {d 'yyyy-mm-dd'} | {t 'hh:mm:ss'} | {ts 'yyyy-mm-dd hh:mm:ss.f...'}</code></div>
  *
  * @version 2.4
  * @since 2.3

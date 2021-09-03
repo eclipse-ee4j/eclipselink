@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -26,7 +26,7 @@ import java.util.ListResourceBundle;
  *
  * @author Steven Vo
  */
-public class RemoteCommandManagerExceptionResource extends ListResourceBundle {
+public final class RemoteCommandManagerExceptionResource extends ListResourceBundle {
     static final Object[][] contents = {
                                            { "22101", "Could not obtain JNDI context, check your properties are set correctly." },
                                            { "22102", "Could not post connection in local naming service under name {0}" },
@@ -48,6 +48,13 @@ public class RemoteCommandManagerExceptionResource extends ListResourceBundle {
                                            { "22118", "Failed to create JGroups connection using config file: {0}" },
                                            { "22119", "Error initializing {0}, add org.eclipse.persistence.corba.jar to your classpath." }
     };
+
+    /**
+     * Default constructor.
+     */
+    public RemoteCommandManagerExceptionResource() {
+        // for reflection
+    }
 
     /**
      * Return the lookup table.

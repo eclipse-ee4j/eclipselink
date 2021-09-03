@@ -95,13 +95,13 @@ public class JPQLQueryHelper {
     /**
      * Retrieves the class names and the attribute names mapped to their types that are used in the
      * constructor expressions defined in the <code><b>SELECT</b></code> clause.
-     * <p>
+     * <br>
      * For instance, from the following JPQL query:
-     * <p>
+     * <br>
      * <pre><code> SELECT new test.example.Employee(e.name, e.id),
      *        new test.example.Address(a.zipcode)
      * FROM Employee e, Address a</code></pre>
-     * <p>
+     * <br>
      * The return object is
      * <pre><code> |- test.example.Employee
      * |-   |- name : String
@@ -130,10 +130,10 @@ public class JPQLQueryHelper {
      * constructor expressions defined in the <code><b>SELECT</b></code> clause.
      * <p>
      * For instance, from the following JPQL query:
-     * <p>
+     * <br>
      * <pre><code> SELECT new test.example.Address(a.streetName, a.zipcode)
      * FROM Address a</code></pre>
-     * <p>
+     * <br>
      * The return object is
      * <pre><code> test.example.Address
      *    |- BasicMapping(streetName) : String

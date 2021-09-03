@@ -34,7 +34,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * JPA 1.0:
  * <div><b>BNF:</b> <code>in_expression ::= state_field_path_expression [NOT] IN(in_item {, in_item}* | subquery)</code></div>
- * <p>
+ * <br>
  * JPA 2.0:
  * <div><b>BNF:</b> <code>in_expression ::= {state_field_path_expression | type_discriminator} [NOT] IN { ( in_item {, in_item}* ) | (subquery) | collection_valued_input_parameter }</code></div>
  * <p>
@@ -338,7 +338,7 @@ public final class InExpression extends AbstractExpression {
     /**
      * Determines whether what was parsed after the <code>IN</code> identifier is a single input
      * parameter:
-     * <div><b>BNF:</b> <code>in_expression ::= {state_field_path_expression | type_discriminator} [NOT] IN collection_valued_input_parameter</code><p></p></div>
+     * <div><b>BNF:</b> <code>in_expression ::= {state_field_path_expression | type_discriminator} [NOT] IN collection_valued_input_parameter</code></div>
      *
      * @return <code>true</code> if what is following the <code>IN</code> identifier is a single
      * input parameter (without the left or right parenthesis); <code>false</code> otherwise

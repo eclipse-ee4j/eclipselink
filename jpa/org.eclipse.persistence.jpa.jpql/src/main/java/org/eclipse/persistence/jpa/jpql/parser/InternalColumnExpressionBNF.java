@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for the items of a <b>COLUMN</b> expression.
  *
- * <div><b>BNF:</b> <code>column_expression ::= COLUMN('function' {, [single_valued_object_path_expression | identification_variable]}+)</code><p></p></div>
+ * <div><b>BNF:</b> <code>column_expression ::= COLUMN('function' {, [single_valued_object_path_expression | identification_variable]}+)</code></div>
  *
  * @version 2.5
  * @since 2.4

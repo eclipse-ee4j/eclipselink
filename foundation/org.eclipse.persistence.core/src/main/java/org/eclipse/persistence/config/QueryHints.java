@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -919,4 +919,8 @@ public class QueryHints {
      * @see org.eclipse.persistence.queries.ResultSetMappingQuery#shouldReturnNameValuePairs()
      */
     public static final String RETURN_NAME_VALUE_PAIRS = "eclipselink.query-return-name-value-pairs";
+
+    private QueryHints() {
+        // no instance please
+    }
 }

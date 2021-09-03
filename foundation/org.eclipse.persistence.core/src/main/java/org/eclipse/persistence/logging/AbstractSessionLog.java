@@ -183,7 +183,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * PUBLIC:
      * Create a new AbstractSessionLog
      */
-    public AbstractSessionLog() {
+    protected AbstractSessionLog() {
         this.writer = new PrintWriter(System.out);
         this.level = getDefaultLoggingLevel();
     }

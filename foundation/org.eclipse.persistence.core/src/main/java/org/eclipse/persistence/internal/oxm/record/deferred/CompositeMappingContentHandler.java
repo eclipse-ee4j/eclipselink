@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ public abstract class CompositeMappingContentHandler extends DeferredContentHand
     protected XPathFragment xPathFragment;
     protected Descriptor xmlDescriptor;
 
-    public CompositeMappingContentHandler(UnmarshalRecord parentRecord, Mapping aMapping, Attributes atts, AbstractNullPolicy aNullPolicy, XPathFragment aFragment, Descriptor aDescriptor) {
+    protected CompositeMappingContentHandler(UnmarshalRecord parentRecord, Mapping aMapping, Attributes atts, AbstractNullPolicy aNullPolicy, XPathFragment aFragment, Descriptor aDescriptor) {
         super(parentRecord);
         mapping = aMapping;
         nullPolicy = aNullPolicy;

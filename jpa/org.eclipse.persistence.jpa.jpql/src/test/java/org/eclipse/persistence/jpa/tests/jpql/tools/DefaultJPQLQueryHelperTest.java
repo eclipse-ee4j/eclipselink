@@ -21,7 +21,7 @@ import org.eclipse.persistence.jpa.tests.jpql.UniqueSignature;
 import static org.junit.Assert.*;
 
 /**
- * This unit-test tests {@link AbstractJPQLQueryHelper} when the queries are on entities managed by
+ * This unit-test tests {@link org.eclipse.persistence.jpa.jpql.tools.AbstractJPQLQueryHelper} when the queries are on entities managed by
  * a persistence unit.
  *
  * @version 2.5

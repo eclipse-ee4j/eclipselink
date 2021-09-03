@@ -22,8 +22,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation is used to inject a concrete instance of {@link org.eclipse.persistence.jpa.jpql.
- * AbstractJPQLQueryHelper AbstractJPQLQueryHelper} into the unit-test before it is run. It allows
+ * This annotation is used to inject a concrete instance of
+ * {@link org.eclipse.persistence.jpa.jpql.tools.AbstractJPQLQueryHelper AbstractJPQLQueryHelper}
+ * into the unit-test before it is run. It allows
  * using multiple instances and the unit-tests are run with each of them separately.
  * <ul>
  * <li>Method in a test suite: Request the concrete instances that will be injected into the

@@ -1254,7 +1254,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      * This method returns a dateTime string representing a given
      * java.util.Date.
      *
-     * BC dates (sourceDate.getTime() < YEAR_ONE_AD_TIME) are handled
+     * BC dates {@code (sourceDate.getTime() < YEAR_ONE_AD_TIME)} are handled
      * as follows: '2007 BC' --> '-2006 AD'
      *
      * @param sourceDate
@@ -1419,7 +1419,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      * This method returns a dateTime string representing a given
      * Timestamp.
      *
-     * BC dates (sourceDate.getTime() < YEAR_ONE_AD_TIME) are handled
+     * BC dates {@code (sourceDate.getTime() < YEAR_ONE_AD_TIME)} are handled
      * as follows: '2007 BC' --> '-2006 AD'
      *
      * @param sourceDate
@@ -1451,7 +1451,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      * This method returns a string representing a given Timestamp
      * based on a given schema type QName.
      *
-     * BC dates (sourceDate.getTime() < YEAR_ONE_AD_TIME) are handled
+     * BC dates {@code (sourceDate.getTime() < YEAR_ONE_AD_TIME)} are handled
      * as follows: '2007 BC' --> '-2006 AD'.
      *
      * @param sourceDate
@@ -1894,7 +1894,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      * time to a given string.
      *
      * @param string
-     * @param time
+     * @param ts
      * @return
      */
     private String appendNanos(String string, Timestamp ts) {

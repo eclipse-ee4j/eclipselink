@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -247,7 +247,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * INTERNAL:
      * Initialize the state of the query
      */
-    public ObjectLevelReadQuery() {
+    protected ObjectLevelReadQuery() {
         this.shouldRefreshIdentityMapResult = false;
         this.distinctState = UNCOMPUTED_DISTINCT;
         this.cacheUsage = UseDescriptorSetting;

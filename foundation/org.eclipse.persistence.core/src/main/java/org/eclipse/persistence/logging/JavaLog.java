@@ -60,12 +60,12 @@ public class JavaLog extends AbstractSessionLog {
     private Map nameSpaceMap  = new HashMap();
 
     /**
-     * Stores the namespace for session, i.e."org.eclipse.persistence.session.<sessionname>".
+     * Stores the namespace for session, i.e."{@code org.eclipse.persistence.session.<sessionname>}".
      */
     private String sessionNameSpace;
 
     /**
-     * Stores the Logger for session namespace, i.e. "org.eclipse.persistence.session.<sessionname>".
+     * Stores the Logger for session namespace, i.e. "{@code org.eclipse.persistence.session.<sessionname>}".
      */
     private Logger sessionLogger;
 

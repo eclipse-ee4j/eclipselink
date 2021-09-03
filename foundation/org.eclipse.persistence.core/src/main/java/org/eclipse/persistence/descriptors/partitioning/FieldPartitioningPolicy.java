@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,16 +37,16 @@ public abstract class FieldPartitioningPolicy extends PartitioningPolicy {
     /** If query does not have the partition field in it, should the query be sent to all databases. */
     protected boolean unionUnpartitionableQueries = false;
 
-    public FieldPartitioningPolicy() {
+    protected FieldPartitioningPolicy() {
         super();
     }
 
-    public FieldPartitioningPolicy(String partitionField) {
+    protected FieldPartitioningPolicy(String partitionField) {
         super();
         this.partitionField = new DatabaseField(partitionField);
     }
 
-    public FieldPartitioningPolicy(String partitionField, boolean unionUnpartitionableQueries) {
+    protected FieldPartitioningPolicy(String partitionField, boolean unionUnpartitionableQueries) {
         this(partitionField);
         this.unionUnpartitionableQueries = unionUnpartitionableQueries;
     }

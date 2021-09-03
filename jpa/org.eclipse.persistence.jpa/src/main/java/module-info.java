@@ -29,12 +29,12 @@ module org.eclipse.persistence.jpa {
     exports org.eclipse.persistence.jpa.metadata;
     exports org.eclipse.persistence.tools.weaving.jpa;
 
-
+    //exported through JPA PUBLIC API
     exports org.eclipse.persistence.internal.jpa;
     exports org.eclipse.persistence.internal.jpa.deployment; // exp metadata/metadata.objects
     exports org.eclipse.persistence.internal.jpa.metadata.xml;
 
-    //internals accessible through o.e.p.internal.jpa.metadata.xml
+    //exported through JPA INTERNAL API
     exports org.eclipse.persistence.internal.jpa.metadata;
     exports org.eclipse.persistence.internal.jpa.metadata.accessors;
     exports org.eclipse.persistence.internal.jpa.metadata.accessors.classes;

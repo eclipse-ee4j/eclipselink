@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for the EclipseLink's function expression.
  *
- * <div><b>BNF:</b> <code>func_expression ::= FUNCTION('function_name' {, func_item}*)</code><p></p></div>
+ * <div><b>BNF:</b> <code>func_expression ::= FUNCTION('function_name' {, func_item}*)</code></div>
  *
  * @version 2.4
  * @since 2.4
