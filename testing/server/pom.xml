@@ -30,6 +30,10 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
+    <properties>
+        <spotbugs.skip>true</spotbugs.skip>
+    </properties>
+
     <build>
         <plugins>
             <!--Download and unpack JEE server automatically if property skip.jee.server.installation=false-->
