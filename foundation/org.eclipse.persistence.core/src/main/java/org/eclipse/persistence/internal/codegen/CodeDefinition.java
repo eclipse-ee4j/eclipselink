@@ -158,7 +158,7 @@ public abstract class CodeDefinition {
      * Assumes that typeName contains only a package name (optional) and a short name,
      * potentially with subtended brackets.
      *
-     * (e.g. int -> int, java.util.Vector -> Vector, java.lang.Boolean[] -> Boolean, etc.)
+     * (e.g. {@code int -> int}, {@code java.util.Vector -> Vector}, {@code java.lang.Boolean[] -> Boolean}, etc.)
      */
     private static String shortName(String typeName) {
         int shortNameStartIndex = typeName.lastIndexOf('.') + 1;

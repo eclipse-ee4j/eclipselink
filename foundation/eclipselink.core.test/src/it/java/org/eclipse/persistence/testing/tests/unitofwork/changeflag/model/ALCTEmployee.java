@@ -37,16 +37,16 @@ import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 public class ALCTEmployee implements Serializable, ChangeTracker {
     // implements ChangeTracker for testing
 
-    /** Primary key, maped as a direct-to-field, BigDecimal -> NUMBER, that makes use of sequence numbers to generate the id. */
+    /** Primary key, maped as a direct-to-field, BigDecimal -{@literal >} NUMBER, that makes use of sequence numbers to generate the id. */
     public BigDecimal id;
 
-    /** Direct-to-field mapping, String -> VARCHAR. */
+    /** Direct-to-field mapping, String -{@literal >} VARCHAR. */
     public String firstName;
 
-    /** Direct-to-field mapping, String -> VARCHAR. */
+    /** Direct-to-field mapping, String -{@literal >} VARCHAR. */
     public String lastName;
 
-    /** Object-type mapping, maps "Male" -> "M", "Female" -> "F". */
+    /** Object-type mapping, maps "Male" -{@literal >} "M", "Female" -{@literal >} "F". */
     public String gender;
 
     /** Aggregate-object mapping, stores the object in the employee's table. */
@@ -151,7 +151,7 @@ public class ALCTEmployee implements Serializable, ChangeTracker {
     }
 
     /**
-     * Print the first & last name
+     * Print the first &amp; last name
      */
     public String toString() {
         StringWriter writer = new StringWriter();

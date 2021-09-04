@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,7 +53,7 @@ public class AnnotationProxy implements InvocationHandler {
      * in the <code>Map</code> based on the return type of the associated
      * <code>Method</code> Note that the preferred method of obtaining an
      * instance of this proxy class is via
-     * <code>getProxy(Map, Class<A>, ClassLoader, ConversionManager)</code>
+     * {@code getProxy(Map, Class<A>, ClassLoader, ConversionManager)}
      *
      * @param components
      *            <code>Map</code> of method name to value pairs

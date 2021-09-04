@@ -60,7 +60,7 @@ public class RedefineTestCases extends TestCase {
     }
 
     private InputStream getSchema(String resource) {
-        return Thread.currentThread().getContextClassLoader().getSystemResourceAsStream(resource);
+        return ClassLoader.getSystemResourceAsStream(resource);
     }
 
 }

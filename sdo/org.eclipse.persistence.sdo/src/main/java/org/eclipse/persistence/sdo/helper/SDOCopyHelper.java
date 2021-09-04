@@ -502,7 +502,7 @@ public class SDOCopyHelper implements CopyHelper {
      *
      * @param anOriginalCS
      * @param aCopyCS
-     * @param doMap (map of original do's (CS1) to their copy do's in (CS2))
+     * @param origDOCS1toCopyDOCS2Map (map of original do's (CS1) to their copy do's in (CS2))
      */
     private void copyChangeSummary(ChangeSummary anOriginalCS, ChangeSummary aCopyCS,//
                                    Map origDOCS1toCopyDOCS2Map) {
@@ -824,7 +824,7 @@ public class SDOCopyHelper implements CopyHelper {
      * Recurse the tree in preorder traversal (root, child1-n)
      * Scope: We do not have to check the copyTree scope when iterating opposites since
      * we will not enter any opposite property dataTree that is outside of the copyTree scope
-     * @param doMap (cache original -> copy DataObject instances to set non-containment properties after tree construction)
+     * @param doMap (cache original -{@literal >} copy DataObject instances to set non-containment properties after tree construction)
      * @param ncPropMap (cache original DO:non-containment property values to be set after tree construction)
      */
     private SDODataObject copyPrivate(SDODataObject dataObject, HashMap doMap,//
@@ -909,8 +909,8 @@ public class SDOCopyHelper implements CopyHelper {
      * @param copy
      * @param property
      * @param value
-     * @param doMap (cache original -> copy DataObject instances to set non-containment properties after tree construction)
-     * @param propMap (cache original DO:non-containment property values to be set after tree construction)
+     * @param doMap (cache original -{@literal >} copy DataObject instances to set non-containment properties after tree construction)
+     * @param ncPropMap (cache original DO:non-containment property values to be set after tree construction)
      */
     private void copyContainmentPropertyValue(SDODataObject copy, SDOProperty property, Object value,//
                                               HashMap doMap, HashMap ncPropMap, SDOChangeSummary cs) {

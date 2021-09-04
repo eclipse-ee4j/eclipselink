@@ -19,7 +19,7 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 /**
- * <p>Purpose<b></b>:This is a JUnit Test wrapper for TopLink.
+ * <p><b>Purpose</b>:This is a JUnit Test wrapper for TopLink.
  * It simply calls the method corresponding to the test name.
  * Setup: Performs setUp().
  * Test: Runs the named Test.

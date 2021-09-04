@@ -40,7 +40,7 @@ import dbws.testing.DBWSTestSuite;
 
 /**
  * Tests %ROWTYPE support. If, in a PL/SQL package, you want a record
- * with fields (names & types, but not constraints) that mirror a
+ * with fields (names &amp; types, but not constraints) that mirror a
  * JDBC table, without defining the record in the package, %ROWTYPE
  * can be used, i.e. "PARAM1 OUT MYTABLE%ROWTYPE".
  *

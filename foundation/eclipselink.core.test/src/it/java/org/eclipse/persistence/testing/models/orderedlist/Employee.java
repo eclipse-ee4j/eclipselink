@@ -29,13 +29,13 @@ import org.eclipse.persistence.descriptors.changetracking.*;
 public class Employee implements ChangeTracker {
     // implements ChangeTracker for testing
 
-    /** Primary key, mapped as a direct-to-field, BigDecimal -> NUMBER, that makes use of sequence numbers to generate the id. */
+    /** Primary key, mapped as a direct-to-field, BigDecimal -{@literal >} NUMBER, that makes use of sequence numbers to generate the id. */
     public BigDecimal id;
 
-    /** Direct-to-field mapping, String -> VARCHAR. */
+    /** Direct-to-field mapping, String -{@literal >} VARCHAR. */
     public String firstName;
 
-    /** Direct-to-field mapping, String -> VARCHAR. */
+    /** Direct-to-field mapping, String -{@literal >} VARCHAR. */
     public String lastName;
 
     /** One-to-one mapping (same class relationship), employee references its manager through a foreign key. */
@@ -343,7 +343,7 @@ public class Employee implements ChangeTracker {
     }
 
     /**
-     * Print the first & last name
+     * Print the first &amp; last name
      */
     public String toString() {
         StringWriter writer = new StringWriter();

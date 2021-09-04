@@ -22,7 +22,7 @@ import java.util.Vector;
 
 /**
  * Test for bug 2612366: Conform results in UnitOfWork extremely slow.
- * <p><b>Test Description:<b>
+ * <p><b>Test Description:</b>
  * <ul>
  * <li>Conform results test using a wrapper policy.
  * <li>Insure that the number of times unwrap is called is linear to the

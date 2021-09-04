@@ -119,7 +119,7 @@ public class WriteObjectTest extends TransactionalTestCase {
          * Not a primary key mapping
          * Must be direct to field
          * Must be a string field
-         * Must not have a converter (i.e. Male-->M, Female-->F, Unknown-->U)
+         * Must not have a converter (i.e. Male--{@literal >}M, Female--{@literal >}F, Unknown--{@literal >}U)
          * The loop exits once an appropriate mapping is found or the list of
          * mappings has been fully parsed (whichever occurs first)
          */

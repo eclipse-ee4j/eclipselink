@@ -165,7 +165,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
     }
 
     /**
-     * connEtoC1:  (UpButton.action.actionPerformed(java.awt.event.ActionEvent) --> LoadBuildDisplayPanel.up()V)
+     * connEtoC1:  (UpButton.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} LoadBuildDisplayPanel.up()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private void connEtoC1(java.awt.event.ActionEvent arg1) {
@@ -177,7 +177,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
     }
 
     /**
-     * connEtoC2:  (LoadErrorTestResultButton.action.actionPerformed(java.awt.event.ActionEvent) --> LoadBuildDisplayPanel.loadErrorTestResults()V)
+     * connEtoC2:  (LoadErrorTestResultButton.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} LoadBuildDisplayPanel.loadErrorTestResults()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private void connEtoC2(java.awt.event.ActionEvent arg1) {
@@ -189,7 +189,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
     }
 
     /**
-     * connEtoC3:  (InspectButton1.action.actionPerformed(java.awt.event.ActionEvent) --> LoadBuildDisplayPanel.inspectSelectedLoadBuild()V)
+     * connEtoC3:  (InspectButton1.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} LoadBuildDisplayPanel.inspectSelectedLoadBuild()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private void connEtoC3(java.awt.event.ActionEvent arg1) {
@@ -201,7 +201,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
     }
 
     /**
-     * connEtoC4:  (JButton1.action.actionPerformed(java.awt.event.ActionEvent) --> LoadBuildDisplayPanel.viewStackTrace()V)
+     * connEtoC4:  (JButton1.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} LoadBuildDisplayPanel.viewStackTrace()V)
      * @param arg1 java.awt.event.ActionEvent
      */
 
@@ -222,7 +222,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
     }
 
     /**
-     * connEtoC9:  (DeleteButton.action.actionPerformed(java.awt.event.ActionEvent) --> LoadBuildDisplayPanel.deleteLoadBuild()V)
+     * connEtoC9:  (DeleteButton.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} LoadBuildDisplayPanel.deleteLoadBuild()V)
      * @param arg1 java.awt.event.ActionEvent
      */
 

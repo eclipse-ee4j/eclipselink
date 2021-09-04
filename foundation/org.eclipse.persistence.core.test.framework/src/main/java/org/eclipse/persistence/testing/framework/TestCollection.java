@@ -21,7 +21,7 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.sessions.*;
 
 /**
- * <p>Purpose<b></b>: TestCollection is a collection of test suites and models. When a test collection is executed
+ * <p><b>Purpose</b>: TestCollection is a collection of test suites and models. When a test collection is executed
  * all the test entities registered with it are executed one by one.
  */
 public abstract class TestCollection extends junit.framework.TestSuite implements TestEntity {

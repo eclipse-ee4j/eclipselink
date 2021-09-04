@@ -25,7 +25,6 @@ public class SqlArrayType extends SqlCollectionType {
 
     /**
      * Determines if this Type represents an Array type.
-     * <p/>
      */
     @Override
     public boolean isArray() {

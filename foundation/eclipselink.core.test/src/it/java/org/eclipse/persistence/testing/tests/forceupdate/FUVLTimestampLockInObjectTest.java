@@ -44,7 +44,7 @@ import org.eclipse.persistence.testing.framework.*;
 
     Test 3: (Test method removeForceUpdateToVersionField())
     UOW1 updates employee's address,
-    calls forceUpdateToVersionField(cloneFromUOW1,true),COMMIT&RESUMEs.
+    calls forceUpdateToVersionField(cloneFromUOW1,true),COMMIT&amp;RESUMEs.
     It calls removeForceUpdateToVersionField(cloneFromUOW1),
     updates employee's address again and commits.
     UOW2 reads employee after the first commit of UOW1,updates the emplyee's salary

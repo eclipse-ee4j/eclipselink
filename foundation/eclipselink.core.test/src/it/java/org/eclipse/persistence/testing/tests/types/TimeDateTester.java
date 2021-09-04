@@ -23,7 +23,7 @@ import org.eclipse.persistence.tools.schemaframework.*;
 import org.eclipse.persistence.testing.framework.*;
 
 /**
- * This class will test Date, Time, & Timestamp capabilities
+ * This class will test Date, Time, &amp; Timestamp capabilities
  */
 public class TimeDateTester extends TypeTester {
     public java.sql.Date sqlDate;

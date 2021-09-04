@@ -3959,7 +3959,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
 
-    /** ToDo: move these to a memory test suite.
+    /* ToDo: move these to a memory test suite.
     // gf3596: transactions never release memory until commit, so JVM eventually crashes.
     // Attempts to compare memory consumption between the two FlushClearCache modes.
     // If the values changed to be big enough (in TopLink I tried nFlashes = 30 , nInsertsPerFlush = 10000)

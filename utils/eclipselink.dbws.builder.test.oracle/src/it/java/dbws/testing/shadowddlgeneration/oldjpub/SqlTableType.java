@@ -23,7 +23,6 @@ public class SqlTableType extends SqlCollectionType {
 
     /**
      * Determines if this Type represents a table type.
-     * <p/>
      */
     @Override
     public boolean isTable() {

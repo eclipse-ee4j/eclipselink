@@ -93,10 +93,10 @@ public class Employee implements Serializable {
     private static final String SCOTIABANK = "Scotiabank";
     private static final String TORONTO_DOMINION = "TorontoDominion";
 
-    /** Transformation mapping, a two(2) element array holding the employee's normal working hours (START_TIME & END_TIME),
+    /** Transformation mapping, a two(2) element array holding the employee's normal working hours (START_TIME &amp; END_TIME),
     this is stored into two different fields in the employee table. */
     private Time[] normalHours;
-    /** Transformation mapping, a two(2) element array holding the employee's overtime hours (OVERTIME_START_TIME & OVERTIME_END_TIME),
+    /** Transformation mapping, a two(2) element array holding the employee's overtime hours (OVERTIME_START_TIME &amp; OVERTIME_END_TIME),
     this is stored into two different fields in the employee table. */
     private Time[] overtimeHours;
 

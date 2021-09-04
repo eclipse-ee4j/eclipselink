@@ -45,7 +45,7 @@ import org.eclipse.persistence.testing.tests.employee.EmployeeBasicTestModel;
  * Intended for use with external transaction controllers, as any exception can
  * be received directly by the caller, toplink/custom exceptions are often lost
  * in the beforeCompletion/afterCompletion callbacks.
- * @see org.eclipse.persistence.testing.threetier.tests.externaltransaction For more the testing scenarios customers are likely to actually use.
+ * (see org.eclipse.persistence.testing.threetier.tests.externaltransaction For more the testing scenarios customers are likely to actually use.)
  * @see org.eclipse.persistence.sessions.UnitOfWork#writeChanges
  *  @version $Header: UnitOfWorkWriteChangesTestModel.java 17-nov-2005.13:31:29 gyorke Exp $
  *  @author  smcritch

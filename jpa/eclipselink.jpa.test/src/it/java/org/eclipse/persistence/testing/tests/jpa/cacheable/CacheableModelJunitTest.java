@@ -884,7 +884,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     }
 
     /**
-     * Verifies the cacheable settings when caching (from persistence.xml) is set to ALL using <shared-cache-mode>.
+     * Verifies the cacheable settings when caching (from persistence.xml) is set to ALL using {@code <shared-cache-mode>}.
      */
     public void testCachingOnALL() {
         assertCachingOnALL(getPUServerSession("ALL"));
@@ -932,7 +932,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     }
 
     /**
-     * Verifies the cacheable settings when caching (from persistence.xml) is set to NONE using <shared-cache-mode>.
+     * Verifies the cacheable settings when caching (from persistence.xml) is set to NONE using {@code <shared-cache-mode>}.
      */
     public void testCachingOnNONE() {
         assertCachingOnNONE(getPUServerSession("NONE"));
@@ -957,9 +957,9 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     }
     
     /**
-     * Verifies that when the <shared-cache-mode> and jakarta.persistence.sharedCache.mode property
+     * Verifies that when the {@code <shared-cache-mode>} and jakarta.persistence.sharedCache.mode property
      * are set, the jakarta.persistence.sharedCache.mode property will win. In the persistence.xml,
-     * jakarta.persistence.sharedCache.mode property is set to NONE while <shared-cache-mode> is set to
+     * jakarta.persistence.sharedCache.mode property is set to NONE while {@code <shared-cache-mode>} is set to
      * ALL.
      */
     public void testCachingOnNONEPropertyConflict() {
@@ -1001,7 +1001,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     }
 
     /**
-     * Verifies the cacheable settings when caching (from persistence.xml) is set to ENABLE_SELECTIVE using <shared-cache-mode>.
+     * Verifies the cacheable settings when caching (from persistence.xml) is set to ENABLE_SELECTIVE using {@code <shared-cache-mode>}.
      */
     public void testCachingOnENABLE_SELECTIVE() {
         assertCachingOnENABLE_SELECTIVE(getPUServerSession("ENABLE_SELECTIVE"));
@@ -1046,7 +1046,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     }
 
     /**
-     * Verifies the cacheable settings when caching (from persistence.xml) is set to DISABLE_SELECTIVE using <shared-cache-mode>.
+     * Verifies the cacheable settings when caching (from persistence.xml) is set to DISABLE_SELECTIVE using {@code <shared-cache-mode>}.
      */
     public void testCachingOnDISABLE_SELECTIVE() {
         assertCachingOnDISABLE_SELECTIVE(getPUServerSession("DISABLE_SELECTIVE"));
@@ -1091,7 +1091,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     }
 
     /**
-     * Verifies the cacheable settings when caching (from persistence.xml) is set to UNSPECIFIED using <shared-cache-mode>.
+     * Verifies the cacheable settings when caching (from persistence.xml) is set to UNSPECIFIED using {@code <shared-cache-mode>}.
      */
     public void testCachingOnUNSPECIFIED() {
         assertCachingOnUNSPECIFIED(getPUServerSession("UNSPECIFIED"));

@@ -100,8 +100,8 @@ final class RangeDeclaration extends AbstractRangeDeclaration {
      * Converts the given {@link Declaration} from being set as a range variable declaration to
      * a path expression declaration.
      * <p>
-     * In this query "<code>UPDATE Employee SET firstName = 'MODIFIED' WHERE (SELECT COUNT(m) FROM
-     * managedEmployees m) > 0</code>" <em>managedEmployees</em> is an unqualified collection-valued
+     * In this query "{@code UPDATE Employee SET firstName = 'MODIFIED' WHERE (SELECT COUNT(m) FROM
+     * managedEmployees m) > 0}" <em>managedEmployees</em> is an unqualified collection-valued
      * path expression (<code>employee.managedEmployees</code>).
      */
     private void convertUnqualifiedDeclaration() {

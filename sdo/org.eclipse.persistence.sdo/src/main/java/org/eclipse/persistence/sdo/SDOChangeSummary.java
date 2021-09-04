@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -72,10 +72,10 @@ public class SDOChangeSummary implements ChangeSummary {
     private Map oldContainer;// Key is DataObject, value is DataObject
     private Map oldContainmentProperty;// Key is DataObject, value is Property
 
-    /** Cache map of originalSequences Map<DataObject, Sequence> */
+    /** Cache map of originalSequences {@code Map<DataObject, Sequence>} */
     private Map oldSequences;// Key is DataObject, value is Sequence
 
-    /** Map of originalSequence Map<DataObject, Sequence> */
+    /** Map of originalSequence {@code Map<DataObject, Sequence>} */
     private Map originalSequences;// Key is DataObject, value is Sequence
     private Map unsetOCPropsMap;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,16 +34,16 @@ import org.eclipse.persistence.indirection.*;
  */
 public class IsolatedEmployee implements Serializable {
 
-    /** Primary key, maped as a direct-to-field, BigDecimal -> NUMBER, that makes use of sequence numbers to generate the id. */
+    /** Primary key, maped as a direct-to-field, BigDecimal -{@literal >} NUMBER, that makes use of sequence numbers to generate the id. */
     public BigDecimal id;
 
-    /** Direct-to-field mapping, String -> VARCHAR. */
+    /** Direct-to-field mapping, String -{@literal >} VARCHAR. */
     public String firstName;
 
-    /** Direct-to-field mapping, String -> VARCHAR. */
+    /** Direct-to-field mapping, String -{@literal >} VARCHAR. */
     public String lastName;
 
-    /** Object-type mapping, maps "Male" -> "M", "Female" -> "F". */
+    /** Object-type mapping, maps "Male" -{@literal >} "M", "Female" -{@literal >} "F". */
     public String gender;
 
     /** Aggregate-object mapping, stores the object in the employee's table. */
@@ -67,11 +67,11 @@ public class IsolatedEmployee implements Serializable {
     /** Direct-collection mapping, employee stores its collection of plain Strings in an intermediate table. */
     public ValueHolderInterface responsibilitiesList;
 
-    /** Transformation mapping, a two(2) element array holding the employee's normal working hours (START_TIME & END_TIME),
+    /** Transformation mapping, a two(2) element array holding the employee's normal working hours (START_TIME &amp; END_TIME),
         this is stored into two different fields in the employee table. */
     public Time[] normalHours;
 
-    /** Direct-to-field mapping, int -> NUMBER, salary of the employee in dollars. */
+    /** Direct-to-field mapping, int -{@literal >} NUMBER, salary of the employee in dollars. */
     public int salary;
     public boolean hasChanges = false;
 
@@ -647,7 +647,7 @@ public class IsolatedEmployee implements Serializable {
     }
 
     /**
-     * Print the first & last name
+     * Print the first &amp; last name
      */
     public String toString() {
         StringWriter writer = new StringWriter();

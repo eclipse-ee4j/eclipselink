@@ -20,7 +20,7 @@ import java.util.TreeMap;
 import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
- * Adapter that converts between Map<Integer, String> and MapEntry.
+ * Adapter that converts between {@code Map<Integer, String>} and {@code MapEntry}.
  *
  */
 public class MapEntryAdapter extends XmlAdapter<MapEntry, Map<Integer, String>> {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,8 +26,9 @@ import static jakarta.persistence.DiscriminatorType.*;
  * Bean class: ProjectBean Remote interface: Project Primary key class:
  * ProjectPK Home interface: ProjectHome
  *
- * >Employees have a many-to-many relationship with Projects through the
- * projects attribute. >Projects refer to Employees through the employees
+ * {@literal >}Employees have a many-to-many relationship with Projects through the
+ * projects attribute.
+ * {@literal >}Projects refer to Employees through the employees
  * attribute.
  */
 @Entity(name = "XMLIncompleteMergeProject")

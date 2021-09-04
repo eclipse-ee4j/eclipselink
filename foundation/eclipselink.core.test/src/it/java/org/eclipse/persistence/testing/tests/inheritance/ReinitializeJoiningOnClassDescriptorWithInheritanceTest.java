@@ -23,7 +23,7 @@ import org.eclipse.persistence.testing.models.inheritance.*;
  *
  * Test to ensure that no exceptions are thrown when reInitializeJoinedAttributes() is
  * invoked on a ClassDescriptor when inheritance is involved.
- * Although this method is internal, it is invoked by OneToOneMapping>>setUsesJoining()
+ * Although this method is internal, it is invoked by OneToOneMapping{@literal >>}setUsesJoining()
  * which is a deprecated method. This test invokes this API directly for this reason.
  * @author dminsky
  */

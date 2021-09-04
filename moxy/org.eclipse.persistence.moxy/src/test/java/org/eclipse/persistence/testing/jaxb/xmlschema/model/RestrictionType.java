@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,23 +34,23 @@ import javax.xml.namespace.QName;
  *
  * <p>The following schema fragment specifies the expected content contained within this class.
  *
- * <pre>
- * &lt;complexType name="restrictionType">
- *   &lt;complexContent>
- *     &lt;extension base="{http://www.w3.org/2001/XMLSchema}annotated">
- *       &lt;sequence>
- *         &lt;choice minOccurs="0">
- *           &lt;group ref="{http://www.w3.org/2001/XMLSchema}typeDefParticle"/>
- *           &lt;group ref="{http://www.w3.org/2001/XMLSchema}simpleRestrictionModel"/>
- *         &lt;/choice>
- *         &lt;group ref="{http://www.w3.org/2001/XMLSchema}attrDecls"/>
- *       &lt;/sequence>
- *       &lt;attribute name="base" use="required" type="{http://www.w3.org/2001/XMLSchema}QName" />
- *       &lt;anyAttribute processContents='lax' namespace='##other'/>
- *     &lt;/extension>
- *   &lt;/complexContent>
- * &lt;/complexType>
- * </pre>
+ * <pre>{@code
+ * <complexType name="restrictionType">
+ *   <complexContent>
+ *     <extension base="{http://www.w3.org/2001/XMLSchema}annotated">
+ *       <sequence>
+ *         <choice minOccurs="0">
+ *           <group ref="{http://www.w3.org/2001/XMLSchema}typeDefParticle"/>
+ *           <group ref="{http://www.w3.org/2001/XMLSchema}simpleRestrictionModel"/>
+ *         </choice>
+ *         <group ref="{http://www.w3.org/2001/XMLSchema}attrDecls"/>
+ *       </sequence>
+ *       <attribute name="base" use="required" type="{http://www.w3.org/2001/XMLSchema}QName" />
+ *       <anyAttribute processContents='lax' namespace='##other'/>
+ *     </extension>
+ *   </complexContent>
+ * </complexType>
+ * }</pre>
  *
  *
  */
@@ -235,7 +235,7 @@ public class RestrictionType
      * For example, to add a new item, do as follows:
      * <pre>
      *    getFacets().add(newItem);
-     * </pre>
+     * }</pre>
      *
      *
      * <p>
@@ -275,7 +275,7 @@ public class RestrictionType
      * For example, to add a new item, do as follows:
      * <pre>
      *    getAttributeOrAttributeGroup().add(newItem);
-     * </pre>
+     * }</pre>
      *
      *
      * <p>

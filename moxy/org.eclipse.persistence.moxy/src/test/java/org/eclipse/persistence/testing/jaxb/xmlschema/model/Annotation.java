@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,20 +34,20 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *
  * <p>The following schema fragment specifies the expected content contained within this class.
  *
- * <pre>
- * &lt;complexType>
- *   &lt;complexContent>
- *     &lt;extension base="{http://www.w3.org/2001/XMLSchema}openAttrs">
- *       &lt;choice maxOccurs="unbounded" minOccurs="0">
- *         &lt;element ref="{http://www.w3.org/2001/XMLSchema}appinfo"/>
- *         &lt;element ref="{http://www.w3.org/2001/XMLSchema}documentation"/>
- *       &lt;/choice>
- *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" />
- *       &lt;anyAttribute processContents='lax' namespace='##other'/>
- *     &lt;/extension>
- *   &lt;/complexContent>
- * &lt;/complexType>
- * </pre>
+ * <pre>{@code
+ * <complexType>
+ *   <complexContent>
+ *     <extension base="{http://www.w3.org/2001/XMLSchema}openAttrs">
+ *       <choice maxOccurs="unbounded" minOccurs="0">
+ *         <element ref="{http://www.w3.org/2001/XMLSchema}appinfo"/>
+ *         <element ref="{http://www.w3.org/2001/XMLSchema}documentation"/>
+ *       </choice>
+ *       <attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" />
+ *       <anyAttribute processContents='lax' namespace='##other'/>
+ *     </extension>
+ *   </complexContent>
+ * </complexType>
+ * }</pre>
  *
  *
  */
@@ -84,7 +84,7 @@ public class Annotation
      * For example, to add a new item, do as follows:
      * <pre>
      *    getAppinfoOrDocumentation().add(newItem);
-     * </pre>
+     * }</pre>
      *
      *
      * <p>

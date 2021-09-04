@@ -102,7 +102,7 @@ public class EmploymentPeriod implements Serializable, ChangeTracker, Cloneable 
     }
 
     /**
-     * Print the start & end date
+     * Print the start &amp; end date
      */
     public String toString() {
         StringWriter writer = new StringWriter();

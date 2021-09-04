@@ -37,7 +37,7 @@ import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
- * Tests relationship mapping configuration via XmlJoinNode & XmlJoinNodes.
+ * Tests relationship mapping configuration via XmlJoinNode &amp; XmlJoinNodes.
  *
  */
 public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {

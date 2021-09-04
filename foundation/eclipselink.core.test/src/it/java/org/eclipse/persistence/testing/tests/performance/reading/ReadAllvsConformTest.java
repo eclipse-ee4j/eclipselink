@@ -46,7 +46,7 @@ public class ReadAllvsConformTest extends PerformanceComparisonTestCase {
     }
 
     /**
-     * Read all employees with salary > 0.
+     * Read all employees with salary {@literal >} 0.
      */
     @Override
     public void test() throws Exception {

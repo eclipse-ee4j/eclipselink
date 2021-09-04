@@ -29,7 +29,7 @@ import org.eclipse.persistence.sessions.server.Server;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
 /**
- * <p>Purpose<b></b>:
+ * <p><b>Purpose</b>:
  * All the test cases are subclassed from this class.
  * Each test case tests single feature of TopLink. Ideally a test case consists of five steps.
  * Setup: Performs all the initial setup that is required by the test,

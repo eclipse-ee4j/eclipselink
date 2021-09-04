@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -38,7 +38,7 @@ public class TestCoalesceFunction {
     private EntityManagerFactory emf;
 
     /**
-     * Test for javax.persistence.criteria.CriteriaBuilder.coalesce(Expression<? extends Y> x, Y y)
+     * Test for {@code jakarta.persistence.criteria.CriteriaBuilder.coalesce(Expression<? extends Y> x, Y y)}
      */
     @Test
     public void testCoalesceFunction3Long() throws Exception {
@@ -101,7 +101,7 @@ public class TestCoalesceFunction {
     }
 
     /**
-     * Test for javax.persistence.criteria.CriteriaBuilder.coalesce(Expression<? extends Y> x, Y y)
+     * Test for {@code jakarta.persistence.criteria.CriteriaBuilder.coalesce(Expression<? extends Y> x, Y y)}
      */
     @Test
     public void testCoalesceFunction3BigDecimal() throws Exception {
@@ -164,7 +164,7 @@ public class TestCoalesceFunction {
     }
 
     /**
-     * Test for javax.persistence.criteria.CriteriaBuilder.coalesce(Expression<? extends Y> x, Y y)
+     * Test for {@code jakarta.persistence.criteria.CriteriaBuilder.coalesce(Expression<? extends Y> x, Y y)}
      */
     @Test
     public void testCoalesceFunction3Date() throws Exception {

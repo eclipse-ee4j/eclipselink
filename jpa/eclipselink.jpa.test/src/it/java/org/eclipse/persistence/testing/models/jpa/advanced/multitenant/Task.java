@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,7 +51,7 @@ import static org.eclipse.persistence.annotations.MultitenantType.VPD;
  * be picked up from other test persistence unit classes that do not exclude
  * unlisted classes.
  *
- * @see Related mapping file:
+ * see Related mapping file:
  * trunk\jpa\eclipselink.jpa.test\resource\eclipselink-annotation-model\multitenant-vpd.xml
  *
  * Multi-tenant to do list.

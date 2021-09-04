@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -82,7 +82,7 @@ public class Order implements java.io.Serializable {
 
     /**
      * Quantity is mapped in XML as follows:
-     *  <basic name="quantity"/>
+     *  {@code <basic name="quantity"/>}
      *
      * Note, no column definition meaning it should default to QUANTITY.
      * The Column annotation below should be ignored. If it is not and is
@@ -109,7 +109,7 @@ public class Order implements java.io.Serializable {
 
     /**
      * Customer is mapped in XML as follows:
-     *  <many-to-one name="customer" target-entity="Customer" fetch="LAZY"/>
+     *  <pre>{@code </pre><many-to-one name="customer" target-entity="Customer" fetch="LAZY"/>}</pre>
      *
      * Note, no join columns are specified and therefore they should default
      * and the annotation should be ignored. If JoinColumn is processed, the

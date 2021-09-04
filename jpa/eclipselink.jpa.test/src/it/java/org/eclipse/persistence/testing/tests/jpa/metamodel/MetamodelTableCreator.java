@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -826,8 +826,8 @@ DROP TABLE CMP3_MM_COMPUTER
      * This table defines a MappedSuperclass chain that defines a composite PK
      * that is distributed along the MappedSuperclass hierarchy of the form.
      * Root (MappedSuperclass)
-     *   --> Center (MappedSuperclass)
-     *             --> Leaf (Entity)
+     *   --{@literal >} Center (MappedSuperclass)
+     *             --{@literal >} Leaf (Entity)
      */
     public static TableDefinition buildMS_MS_Entity_Leaf_Table() {
         TableDefinition table = new TableDefinition();

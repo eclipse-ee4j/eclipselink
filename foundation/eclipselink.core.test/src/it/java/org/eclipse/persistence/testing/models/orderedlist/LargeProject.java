@@ -21,7 +21,7 @@ import java.sql.Timestamp;
 /**
  * <b>Purpose</b>: Larger scale projects within the Employee Demo
  * <p><b>Description</b>: LargeProject is a concrete subclass of Project. It is instantiated for Projects with type = 'L'. The additional
- * information (budget, & milestoneVersion) are mapped from the LPROJECT table.
+ * information (budget, &amp; milestoneVersion) are mapped from the LPROJECT table.
  * @see Project
  */
 public class LargeProject extends Project {

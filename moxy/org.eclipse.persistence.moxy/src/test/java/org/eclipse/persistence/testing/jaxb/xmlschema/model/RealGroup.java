@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,23 +25,23 @@ import jakarta.xml.bind.annotation.XmlType;
  *
  * <p>The following schema fragment specifies the expected content contained within this class.
  *
- * <pre>
- * &lt;complexType name="realGroup">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}group">
- *       &lt;sequence>
- *         &lt;element ref="{http://www.w3.org/2001/XMLSchema}annotation" minOccurs="0"/>
- *         &lt;choice minOccurs="0">
- *           &lt;element ref="{http://www.w3.org/2001/XMLSchema}all"/>
- *           &lt;element ref="{http://www.w3.org/2001/XMLSchema}choice"/>
- *           &lt;element ref="{http://www.w3.org/2001/XMLSchema}sequence"/>
- *         &lt;/choice>
- *       &lt;/sequence>
- *       &lt;anyAttribute processContents='lax' namespace='##other'/>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
- * </pre>
+ * <pre>{@code
+ * <complexType name="realGroup">
+ *   <complexContent>
+ *     <restriction base="{http://www.w3.org/2001/XMLSchema}group">
+ *       <sequence>
+ *         <element ref="{http://www.w3.org/2001/XMLSchema}annotation" minOccurs="0"/>
+ *         <choice minOccurs="0">
+ *           <element ref="{http://www.w3.org/2001/XMLSchema}all"/>
+ *           <element ref="{http://www.w3.org/2001/XMLSchema}choice"/>
+ *           <element ref="{http://www.w3.org/2001/XMLSchema}sequence"/>
+ *         </choice>
+ *       </sequence>
+ *       <anyAttribute processContents='lax' namespace='##other'/>
+ *     </restriction>
+ *   </complexContent>
+ * </complexType>
+ * }</pre>
  *
  *
  */

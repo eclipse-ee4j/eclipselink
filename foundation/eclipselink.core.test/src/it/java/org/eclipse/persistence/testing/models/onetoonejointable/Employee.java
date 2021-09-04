@@ -34,16 +34,16 @@ import org.eclipse.persistence.descriptors.changetracking.*;
 public class Employee implements Serializable, ChangeTracker {
     // implements ChangeTracker for testing
 
-    /** Primary key, mapped as a direct-to-field, BigDecimal -> NUMBER, that makes use of sequence numbers to generate the id. */
+    /** Primary key, mapped as a direct-to-field, BigDecimal -{@literal >} NUMBER, that makes use of sequence numbers to generate the id. */
     public BigDecimal id;
 
-    /** Direct-to-field mapping, String -> VARCHAR. */
+    /** Direct-to-field mapping, String -{@literal >} VARCHAR. */
     public String firstName;
 
-    /** Direct-to-field mapping, String -> VARCHAR. */
+    /** Direct-to-field mapping, String -{@literal >} VARCHAR. */
     public String lastName;
 
-    /** Object-type mapping, maps "Male" -> "M", "Female" -> "F". */
+    /** Object-type mapping, maps "Male" -{@literal >} "M", "Female" -{@literal >} "F". */
     public String gender;
 
     /** One-to-one mapping, employee references its address through a foreign key. */
@@ -60,7 +60,7 @@ public class Employee implements Serializable, ChangeTracker {
     /** Direct-collection mapping, employee stores its collection of plain Strings in an intermediate table. */
     public List<String> responsibilitiesList;
 
-    /** Direct-to-field mapping, int -> NUMBER, salary of the employee in dollars. */
+    /** Direct-to-field mapping, int -{@literal >} NUMBER, salary of the employee in dollars. */
     public int salary;
 
     /** One-to-many mapping, employee references its collection of children arranged by age.
@@ -316,7 +316,7 @@ public class Employee implements Serializable, ChangeTracker {
     }
 
     /**
-     * Print the first & last name
+     * Print the first &amp; last name
      */
     public String toString() {
         StringWriter writer = new StringWriter();

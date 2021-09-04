@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.framework;
 
 
 /**
- * <p>Purpose<b></b>:A wrapper around TestCase.
+ * <p><b>Purpose</b>:A wrapper around TestCase.
  * Use it to aggregate test instead of inheriting from it.
  * Suppose we need to amend in the same way
  * setup and reset for unspecified number of TestCase's subclasses.

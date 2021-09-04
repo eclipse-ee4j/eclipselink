@@ -27,7 +27,7 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.descriptors.changetracking.*;
 
 /**
- * <b>Purpose</b>: Abstract superclass for Large & Small projects in Employee Demo
+ * <b>Purpose</b>: Abstract superclass for Large &amp; Small projects in Employee Demo
  * <p><b>Description</b>:     Project is an example of an abstract superclass. It demonstrates how class inheritance can be mapped to database tables.
  * It's subclasses are concrete and may or may not add columns through additional tables. The PROJ_TYPE field in the
  * database table indicates which subclass to instantiate. Projects are involved in a M:M relationship with employees.

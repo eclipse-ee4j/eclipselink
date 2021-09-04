@@ -20,7 +20,7 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 /**
- * <p>Purpose<b></b>:Creates several variations of the passed TestCase
+ * <p><b>Purpose</b>:Creates several variations of the passed TestCase
  * (or of each member of a Vector of TestCases) using all combinations
  * of values of the specified boolean attributes on the specified object.
  * Suppose we want to run an existing test with four different DatabasePlatform settings:

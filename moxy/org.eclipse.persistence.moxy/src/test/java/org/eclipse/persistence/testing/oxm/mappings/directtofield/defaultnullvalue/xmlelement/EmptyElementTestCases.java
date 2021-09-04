@@ -31,7 +31,7 @@ public class EmptyElementTestCases extends XMLMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/directtofield/defaultnullvalue/xmlelement/EmptyElement.xml";
     private final static String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/directtofield/defaultnullvalue/xmlelement/EmptyElementWrite.xml";
 
-    /**
+    /*
      * Empty Element single tag With nullValue=EMPTY_STRING "<employee/>", "<employee/>",
      * true, false); // Expected result "<employee><first-name/></employee>", true, false); // Input document
      */

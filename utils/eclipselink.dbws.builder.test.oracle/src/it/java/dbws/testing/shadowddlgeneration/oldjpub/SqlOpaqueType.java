@@ -23,7 +23,6 @@ public class SqlOpaqueType extends SqlType {
 
     /**
      * Determines if this Type represents an Opaque type.
-     * <p/>
      */
     @Override
     public boolean isOpaque() {

@@ -67,10 +67,10 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     /** Map containing wrapper types */
     private Map<QName, SDOType> wrappersHashMap;
 
-    /** Map of interfaces -> SDOType */
+    /** Map of interfaces -{@literal >} SDOType */
     private Map<Class, SDOType> interfacesToSDOTypeHashMap;
 
-    /** Map of impl classes -> SDOType */
+    /** Map of impl classes -{@literal >} SDOType */
     private Map<Class, SDOType> implClassesToSDOType = new HashMap<Class, SDOType>();
 
     /** Map containing built-in types for primitive and SDO types */
@@ -1222,7 +1222,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
 
     /**
      * INTERNAL:
-     * @param propertyQName
+     * @param propertyUri
      * @param property
      */
     private void defineOpenContentProperty(String propertyUri, String propertyName, Property property) {

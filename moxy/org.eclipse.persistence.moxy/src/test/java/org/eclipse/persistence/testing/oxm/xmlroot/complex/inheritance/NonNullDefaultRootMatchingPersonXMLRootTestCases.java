@@ -28,7 +28,7 @@ import org.xml.sax.InputSource;
 
 public class NonNullDefaultRootMatchingPersonXMLRootTestCases extends XMLMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/xmlroot/complex/inheritance/personNonNullRootMatchingXMLRoot.xml";
-    /**
+    /*
       <?xml version="1.0" encoding="UTF-8"?>
       <oxm:pRoot xsi:type="oxm:person" xmlns:oxm="test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
         <name>Joe Smith</name>

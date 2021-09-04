@@ -22,9 +22,9 @@ import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
  * The Descriptor for Root has a Namepace Resolver with "myns" in it
  * The document has some attributes in the anyattribute mapping with a new prefix/uri
  * ie: (in this case ns0, "www.example.com/test.xsd" are not in any NR)
- * <myns:root ns0:first-name="Matt" ns0:last-name="MacIvor"
+ * <pre>{@code<myns:root ns0:first-name="Matt" ns0:last-name="MacIvor"
  *        xmlns:myns="www.example.com/some-dir/some.xsd"
- *        xmlns:ns0="www.example.com/test.xsd"/>
+ *        xmlns:ns0="www.example.com/test.xsd"/>}</pre>
  */
 public class AnyAttributeNotInNRTestCases extends XMLMappingTestCases {
     public AnyAttributeNotInNRTestCases(String name) throws Exception {

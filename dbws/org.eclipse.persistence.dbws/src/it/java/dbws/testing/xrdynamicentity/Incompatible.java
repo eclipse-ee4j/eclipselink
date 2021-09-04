@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,7 @@
 package dbws.testing.xrdynamicentity;
 
 /**
- * Test class - when created by a {@link XRDynamicClassLoader}, should throw {@link IllegalArgumentException}
+ * Test class - when created by a {@link org.eclipse.persistence.internal.xr.XRDynamicClassLoader}, should throw {@link IllegalArgumentException}
  * @author mnorman
  *
  */

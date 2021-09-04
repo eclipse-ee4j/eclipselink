@@ -77,7 +77,7 @@ public class NumericTester extends TypeTester {
     /**
      * Assumes that if size is allowed that the sum of the scale and the precision
      * must be less than or equal to the maximum precision.
-     *    If building sizes it splits the number (ie. 38 -> 19,19 or 19 -> 10, 9)
+     *    If building sizes it splits the number (ie. 38 -{@literal >} 19,19 or 19 -{@literal >} 10, 9)
      */
     private static void addDoubleField(TableDefinition definition, DatabasePlatform platform) {
         FieldTypeDefinition fieldDef = platform.getFieldTypes().get(Double.class);
@@ -95,7 +95,7 @@ public class NumericTester extends TypeTester {
     /**
      * Assumes that if size is allowed that the sum of the scale and the precision
      * must be less than or equal to the maximum precision.
-     *    If building sizes it splits the number (ie. 38 -> 19,19 or 19 -> 10, 9)
+     *    If building sizes it splits the number (ie. 38 -{@literal >} 19,19 or 19 -{@literal >} 10, 9)
      */
     private static void addFloatField(TableDefinition definition, DatabasePlatform platform) {
         FieldTypeDefinition fieldDef = platform.getFieldTypes().get(Float.class);

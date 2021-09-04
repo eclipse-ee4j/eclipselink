@@ -207,7 +207,7 @@ public class TestProcessor {
      * Verify logging output suppression
      * @param testName name of the test
      * @param pu persistence unit {@code String}
-     * @param whether there should be logging messages in the output or not
+     * @param haveMsgs there should be logging messages in the output or not
      * @param options compiler options
      * @throws Exception
      */

@@ -270,7 +270,7 @@ public class SqlType extends TypeClass {
 
     /**
      * Returns the PL/SQL function to be used for converting this PL/SQL into a SQL type.
-     * <p/>
+     * <br>
      * Returns null if this is not a PL/SQL type or if it does not have user-defined conversions.
      */
     //static Hashtable m_convFuns = new Hashtable();
@@ -286,7 +286,7 @@ public class SqlType extends TypeClass {
 
     /**
      * Returns the PL/SQL function to be used for converting a SQL type into this PL/SQL type.
-     * <p/>
+     * <br>
      * Returns null if this is not a PL/SQL type or if it does not have user-defined conversions.
      */
     @Override

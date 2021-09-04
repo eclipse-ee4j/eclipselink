@@ -67,7 +67,6 @@ public class SqlObjectType extends SqlTypeWithMethods {
 
     /**
      * Determines if this Type represents an object type.
-     * <p/>
      */
     @Override
     public boolean isObject() {

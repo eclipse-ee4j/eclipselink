@@ -259,6 +259,7 @@ public class BeanValidationPlugin extends Plugin {
      * Processes an xsd value in form of xsd attribute from extended base.
      * <p>
      * Example:
+     * <pre>{@code
      * <xsd:complexType name="Employee">
      * <xsd:simpleContent>
      * <xsd:extension base="a:ShortId">  <- xsd extension base
@@ -272,7 +273,7 @@ public class BeanValidationPlugin extends Plugin {
      * <xsd:minLength value="1"/>        <- This is a special field that is added to the generated class, called "value" (corresponds to the valuePropertyName),
      * <xsd:maxLength value="5"/>           it gets processed by this method and the "value" field receives @Size(min = 1, max = 5).
      * </xsd:restriction>
-     * </xsd:simpleType>
+     * </xsd:simpleType>}</pre>
      */
     private void processValueFromExtendedBase(CValuePropertyInfo valueProperty, ClassOutline classOutline, List<FacetCustomization> customizations) {
         String valuePropertyName = valueProperty.getName(false);
@@ -287,13 +288,14 @@ public class BeanValidationPlugin extends Plugin {
      * Processes an xsd attribute.
      * <p>
      * Example:
+     * <pre>{@code
      * <xsd:complexType name="Employee">
      * <xsd:simpleContent>
      * <xsd:extension base="a:Person">
      * <xsd:attribute name="id" type="xsd:string" use="optional"/>   << "id" is the attributePropertyName
      * </xsd:extension>
      * </xsd:simpleContent>
-     * </xsd:complexType>
+     * </xsd:complexType>}</pre>
      */
     private void processAttribute(CAttributePropertyInfo attributeProperty, ClassOutline classOutline, List<FacetCustomization> customizations) {
         String attributePropertyName = attributeProperty.getName(false);
@@ -314,7 +316,7 @@ public class BeanValidationPlugin extends Plugin {
      * Processes an xsd element.
      * <p>
      * Example:
-     * <xsd:element name="someCollection" minOccurs="1" maxOccurs="unbounded"/>
+     * {@code <xsd:element name="someCollection" minOccurs="1" maxOccurs="unbounded"/>}
      */
     private void processElement(CElementPropertyInfo propertyInfo, ClassOutline co, List<FacetCustomization> customizations) {
         XSParticle particle = (XSParticle) propertyInfo.getSchemaComponent();

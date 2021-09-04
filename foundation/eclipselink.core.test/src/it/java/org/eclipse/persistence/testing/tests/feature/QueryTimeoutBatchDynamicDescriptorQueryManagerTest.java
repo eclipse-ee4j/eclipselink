@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.tests.feature;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 
 /**
- * Bug 214910:  Add query timeout support to batched update queries (Oracle DB 9.0.1+)</p>
+ * Bug 214910:  Add query timeout support to batched update queries (Oracle DB 9.0.1+)<br>
  * Test the query timeout feature in batch queries.
  * For data queries , a queryTimeout on the largest DatabaseQuery of the batch will be used.
  * For object queries, a queryTimeout on the largest DescriptorQueryManager (parent) or DatabaseQuery

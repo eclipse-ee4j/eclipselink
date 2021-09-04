@@ -149,8 +149,8 @@ final class DeclarationResolver {
      * Converts the given {@link Declaration} from being set as a range variable declaration to
      * a path expression declaration.
      * <p>
-     * In this query "<code>UPDATE Employee SET firstName = 'MODIFIED' WHERE (SELECT COUNT(m) FROM
-     * managedEmployees m) > 0</code>" <em>managedEmployees</em> is an unqualified collection-valued
+     * In this query "{@code UPDATE Employee SET firstName = 'MODIFIED' WHERE (SELECT COUNT(m) FROM
+     * managedEmployees m) > 0}" <em>managedEmployees</em> is an unqualified collection-valued
      * path expression (<code>employee.managedEmployees</code>).
      *
      * @param declaration The {@link Declaration} that was parsed to range over an abstract schema

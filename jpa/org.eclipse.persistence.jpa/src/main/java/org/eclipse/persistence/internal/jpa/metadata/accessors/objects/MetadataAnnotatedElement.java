@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -118,8 +118,8 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * This is a list of class/type names from the class/field/method signature.
      * The size of the list varies depending on how many generics are present,
      * i.e.
-     * - Map<String, Long> -> ["java.util.Map", "java.lang.String", "java.lang.Long"]
-     * - Beverage<T> extends Object -> [T, :, java.lang.Object, java.lang.Object]
+     * - {@code Map<String, Long> -> ["java.util.Map", "java.lang.String", "java.lang.Long"]}
+     * - {@code Beverage<T> extends Object -> [T, :, java.lang.Object, java.lang.Object]}
      */
     private List<String> m_genericType;
 

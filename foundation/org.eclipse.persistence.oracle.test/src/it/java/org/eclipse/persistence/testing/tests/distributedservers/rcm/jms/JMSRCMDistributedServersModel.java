@@ -36,7 +36,7 @@ public class JMSRCMDistributedServersModel extends BroadcastDistributedServersMo
         connect sys/password@james as sysdba
 
         2 - might need to install aq procesures?
-        - in sqlplus - @@<orahome>\ora92\rdbms\admin\catproc.sql
+        - in sqlplus - {@code @@<orahome>\ora92\rdbms\admin\catproc.sql}
 
         3 - create aquser with aquser password
         grant connect, resource , aq_administrator_role to aquser identified by aquser

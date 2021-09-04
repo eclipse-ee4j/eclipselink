@@ -3247,7 +3247,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
     }
     
     /**
-     * Bug 470007 - NPE in normalize() when querying on ElementCollection->CollectionTable, with query results caching enabled
+     * Bug 470007 - NPE in normalize() when querying on ElementCollection-{@literal >}CollectionTable, with query results caching enabled
      * Tests querying across an Entity (ToDoList) containing an ElementCollection with a CollectionTable, referencing a
      * basic type (String). A NullPointerException was previously observed when query results caching is enabled on the query.  
      */

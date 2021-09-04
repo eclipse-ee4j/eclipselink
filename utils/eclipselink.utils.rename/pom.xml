@@ -30,7 +30,4 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <properties>
-        <comp.xdoclint>-Xdoclint:-missing</comp.xdoclint>
-    </properties>
 </project>

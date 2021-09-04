@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,25 +31,25 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *
  * <p>The following schema fragment specifies the expected content contained within this class.
  *
- * <pre>
- * &lt;complexType name="wildcard">
- *   &lt;complexContent>
- *     &lt;extension base="{http://www.w3.org/2001/XMLSchema}annotated">
- *       &lt;attribute name="namespace" type="{http://www.w3.org/2001/XMLSchema}namespaceList" default="##any" />
- *       &lt;attribute name="processContents" default="strict">
- *         &lt;simpleType>
- *           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}NMTOKEN">
- *             &lt;enumeration value="skip"/>
- *             &lt;enumeration value="lax"/>
- *             &lt;enumeration value="strict"/>
- *           &lt;/restriction>
- *         &lt;/simpleType>
- *       &lt;/attribute>
- *       &lt;anyAttribute processContents='lax' namespace='##other'/>
- *     &lt;/extension>
- *   &lt;/complexContent>
- * &lt;/complexType>
- * </pre>
+ * <pre>{@code
+ * <complexType name="wildcard">
+ *   <complexContent>
+ *     <extension base="{http://www.w3.org/2001/XMLSchema}annotated">
+ *       <attribute name="namespace" type="{http://www.w3.org/2001/XMLSchema}namespaceList" default="##any" />
+ *       <attribute name="processContents" default="strict">
+ *         <simpleType>
+ *           <restriction base="{http://www.w3.org/2001/XMLSchema}NMTOKEN">
+ *             <enumeration value="skip"/>
+ *             <enumeration value="lax"/>
+ *             <enumeration value="strict"/>
+ *           </restriction>
+ *         </simpleType>
+ *       </attribute>
+ *       <anyAttribute processContents='lax' namespace='##other'/>
+ *     </extension>
+ *   </complexContent>
+ * </complexType>
+ * }</pre>
  *
  *
  */
@@ -82,7 +82,7 @@ public class Wildcard
      * For example, to add a new item, do as follows:
      * <pre>
      *    getNamespace().add(newItem);
-     * </pre>
+     * }</pre>
      *
      *
      * <p>

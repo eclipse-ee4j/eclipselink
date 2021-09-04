@@ -132,7 +132,7 @@ public class ExpressionPanel extends JPanel {
     }
 
     /**
-     * connEtoC1:  (OrButton.action.actionPerformed(java.awt.event.ActionEvent) --> ExpressionPanel.orExpression()V)
+     * connEtoC1:  (OrButton.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} ExpressionPanel.orExpression()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private
@@ -153,7 +153,7 @@ public class ExpressionPanel extends JPanel {
     }
 
     /**
-     * connEtoC2:  (AndButton.action.actionPerformed(java.awt.event.ActionEvent) --> ExpressionPanel.andExpression()V)
+     * connEtoC2:  (AndButton.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} ExpressionPanel.andExpression()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private
@@ -174,7 +174,7 @@ public class ExpressionPanel extends JPanel {
     }
 
     /**
-     * connEtoC3:  (NotBuuton.action.actionPerformed(java.awt.event.ActionEvent) --> ExpressionPanel.notExpression()V)
+     * connEtoC3:  (NotBuuton.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} ExpressionPanel.notExpression()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private
@@ -195,7 +195,7 @@ public class ExpressionPanel extends JPanel {
     }
 
     /**
-     * connEtoC4:  (ClearButton.action.actionPerformed(java.awt.event.ActionEvent) --> ExpressionPanel.clearExpression()V)
+     * connEtoC4:  (ClearButton.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} ExpressionPanel.clearExpression()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private

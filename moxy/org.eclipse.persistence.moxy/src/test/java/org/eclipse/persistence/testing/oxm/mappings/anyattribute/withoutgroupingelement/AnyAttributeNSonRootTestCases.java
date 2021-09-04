@@ -23,9 +23,10 @@ import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
  * The Descriptor for Wrapper has a Namepace Resolver with "myns" in it and for ns0
  * The document has some attributes in the anyattribute mapping with a  prefix/uriof ns0 that is on the root
  * ie: (in this case ns0, "www.example.com/test.xsd" is on the root)
+ * <pre>{@code
 *  <myns:wrapper xmlns:myns="www.example.com/some-dir/some.xsd" xmlns:ns0="www.example.com/test.xsd">
  *   <myns:root ns0:first-name="Matt" ns0:last-name="MacIvor"/>
- * </myns:wrapper>
+ * </myns:wrapper>}</pre>
  */
 public class AnyAttributeNSonRootTestCases extends XMLMappingTestCases {
     public AnyAttributeNSonRootTestCases(String name) throws Exception {

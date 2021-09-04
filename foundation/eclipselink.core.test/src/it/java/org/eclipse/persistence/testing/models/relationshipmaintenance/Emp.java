@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,8 +21,8 @@ import org.eclipse.persistence.indirection.ValueHolderInterface;
 public class Emp implements Serializable {
 
     /**
-     * Map deptno <-> model.Dept
-     * @associates <{model.Dept}>
+     * Map deptno {@literal <}-{@literal >} model.Dept
+     * associates {@code <{model.Dept}>}
      */
     public ValueHolderInterface deptno;
     public Double empno;

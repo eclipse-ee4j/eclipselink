@@ -88,8 +88,8 @@ public class ExceptionHandlingTestCases extends OXTestCase {
     }
 
     /**
-     * Tests an invalid parameter type by setting Map<String, Class> instead
-     * of Map<String, Source>.
+     * Tests an invalid parameter type by setting {@code Map<String, Class>} instead
+     * of {@code Map<String, Source>}.
      *
      * Negative test.
      */
@@ -129,7 +129,7 @@ public class ExceptionHandlingTestCases extends OXTestCase {
     }
 
     /**
-     * Tests associating something other than Map<String, Source> with the key
+     * Tests associating something other than {@code Map<String, Source>} with the key
      * 'eclipselink-oxm-xml' in the properties map.
      *
      * Negative test.

@@ -46,11 +46,12 @@ import org.eclipse.persistence.testing.models.aggregate.Responsibility;
  *                                <li>    <i>3 Level Aggregation</i>, modifying object at third level
  *                                <li> <i>1 Level Aggregation's 1:1 Mapping</i>, replacing object with new object
  *                                <li>    <i>1 Level Aggregation's 1:1 Mapping</i>, Replacing with a new object
- *                                <li>    <i>1 Level Aggregation's 1:M Mapping<i>, Deletion of an object
+ *                                <li>    <i>1 Level Aggregation's 1:M Mapping</i>, Deletion of an object
  *                                <li>    <i>1 Level Aggregation's 1:M Mapping</i>,Addition of a new element
  *                                <li> <i>1 Level Aggregation's M:M Mapping </i>, Deleting an Object
  *                                <li> <i>1 Level Aggregation's M:M Mapping</i>, Modifying an object
  *                                <li>    <i>1 Level Aggregation's M:M Mapping</i>, Replacing with a new object
+ *                                </ul>
  *
  */
 public class UnitOfWorkTest extends WriteObjectTest {

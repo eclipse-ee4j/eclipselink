@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -445,7 +445,7 @@ public class SDOMarshalListener implements XMLMarshalListener {
     * Performance: This function is O(log n) where n=# of children in the tree
     *
     * @param currentPath
-    * @param targetObject
+    * @param targetDO
     * @param currentObject
     * @param aSeparator (XPath separator is written only between elements - not for the first call)
     * @return String (representing the XPath)

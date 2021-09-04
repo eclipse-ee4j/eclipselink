@@ -40,7 +40,7 @@ import org.eclipse.persistence.testing.models.jpa.datatypes.arraypks.PrimitiveAr
  * <li> Run tests for caching of Entities with primitive array types for primary keys
  * in TopLink's JPA implementation.
  * </ul>
- * @see org.eclipse.persistence.essentials.testing.models.cmp3.datatypes.arraypks.PrimitiveArraysAsPrimaryKeyTableCreator
+ * @see PrimitiveArraysAsPrimaryKeyTableCreator
  */
 public class PrimitiveArrayPKCachingJUnitTestCase extends JUnitTestCase{
     public PrimitiveArrayPKCachingJUnitTestCase() {

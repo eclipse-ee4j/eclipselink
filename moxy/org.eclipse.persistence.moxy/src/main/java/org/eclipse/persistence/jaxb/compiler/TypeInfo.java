@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -573,7 +573,7 @@ public class TypeInfo {
 
     /**
      * Convenience method that adds non-null, non-transient properties to a given
-     * List<Property>.  The propertyName parameter is used to lookup the Property.
+     * {@code List<Property>}.  The propertyName parameter is used to lookup the Property.
      * If propertyNamesCopy is non-null, the Property will be removed from that
      * List.  Any additional properties that exist for propertyName (as in the
      * case of multiple mappings to the same field) will be added as well.

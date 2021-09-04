@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,20 +26,20 @@ import jakarta.xml.bind.annotation.XmlType;
  *
  * <p>The following schema fragment specifies the expected content contained within this class.
  *
- * <pre>
- * &lt;complexType>
- *   &lt;complexContent>
- *     &lt;extension base="{http://www.w3.org/2001/XMLSchema}annotated">
- *       &lt;choice>
- *         &lt;element name="restriction" type="{http://www.w3.org/2001/XMLSchema}complexRestrictionType"/>
- *         &lt;element name="extension" type="{http://www.w3.org/2001/XMLSchema}extensionType"/>
- *       &lt;/choice>
- *       &lt;attribute name="mixed" type="{http://www.w3.org/2001/XMLSchema}boolean" />
- *       &lt;anyAttribute processContents='lax' namespace='##other'/>
- *     &lt;/extension>
- *   &lt;/complexContent>
- * &lt;/complexType>
- * </pre>
+ * <pre>{@code
+ * <complexType>
+ *   <complexContent>
+ *     <extension base="{http://www.w3.org/2001/XMLSchema}annotated">
+ *       <choice>
+ *         <element name="restriction" type="{http://www.w3.org/2001/XMLSchema}complexRestrictionType"/>
+ *         <element name="extension" type="{http://www.w3.org/2001/XMLSchema}extensionType"/>
+ *       </choice>
+ *       <attribute name="mixed" type="{http://www.w3.org/2001/XMLSchema}boolean" />
+ *       <anyAttribute processContents='lax' namespace='##other'/>
+ *     </extension>
+ *   </complexContent>
+ * </complexType>
+ * }</pre>
  *
  *
  */

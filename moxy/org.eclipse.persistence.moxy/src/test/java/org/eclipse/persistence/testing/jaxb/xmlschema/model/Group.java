@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,18 +40,18 @@ import javax.xml.namespace.QName;
  *
  * <p>The following schema fragment specifies the expected content contained within this class.
  *
- * <pre>
- * &lt;complexType name="group">
- *   &lt;complexContent>
- *     &lt;extension base="{http://www.w3.org/2001/XMLSchema}annotated">
- *       &lt;group ref="{http://www.w3.org/2001/XMLSchema}particle" maxOccurs="unbounded" minOccurs="0"/>
- *       &lt;attGroup ref="{http://www.w3.org/2001/XMLSchema}defRef"/>
- *       &lt;attGroup ref="{http://www.w3.org/2001/XMLSchema}occurs"/>
- *       &lt;anyAttribute processContents='lax' namespace='##other'/>
- *     &lt;/extension>
- *   &lt;/complexContent>
- * &lt;/complexType>
- * </pre>
+ * <pre>{@code
+ * <complexType name="group">
+ *   <complexContent>
+ *     <extension base="{http://www.w3.org/2001/XMLSchema}annotated">
+ *       <group ref="{http://www.w3.org/2001/XMLSchema}particle" maxOccurs="unbounded" minOccurs="0"/>
+ *       <attGroup ref="{http://www.w3.org/2001/XMLSchema}defRef"/>
+ *       <attGroup ref="{http://www.w3.org/2001/XMLSchema}occurs"/>
+ *       <anyAttribute processContents='lax' namespace='##other'/>
+ *     </extension>
+ *   </complexContent>
+ * </complexType>
+ * }</pre>
  *
  *
  */
@@ -102,7 +102,7 @@ public abstract class Group
      * For example, to add a new item, do as follows:
      * <pre>
      *    getParticle().add(newItem);
-     * </pre>
+     * }</pre>
      *
      *
      * <p>

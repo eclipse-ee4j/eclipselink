@@ -29,7 +29,7 @@ import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 /**
  * <p><b>Purpose</b>: Represents the mailing address on an Employee
  * <p><b>Description</b>: Held in a private 1:1 relationship from Employee
- * @see Employee
+ * @see ConcurrentPerson
  */
 public class ConcurrentAddress implements Serializable, Cloneable {
     public BigDecimal id;

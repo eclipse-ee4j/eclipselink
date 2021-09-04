@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,7 @@ import java.sql.Time;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 
 /**
- * <p><b>Purpose</b>: Represent a employee of a fictional organization for eaxample & testing purposes.
+ * <p><b>Purpose</b>: Represent a employee of a fictional organization for eaxample &amp; testing purposes.
  * <p><b>Description</b>: An Employee is a root object in the EmployeeDemo. It maintains relationships to all
  * of the other objects in the system.
  */

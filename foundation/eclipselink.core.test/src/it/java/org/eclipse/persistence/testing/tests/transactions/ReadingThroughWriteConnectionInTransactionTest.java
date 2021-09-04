@@ -22,11 +22,12 @@ import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.models.mapping.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.testing.tests.clientserver.ClientServerTest;
 
 /**
  * Tests using the client's write connection when in transaction to
  * maintain the proper isolation levels, even for reads.
- * @see CR#4334, SAM
+ * (see CR#4334, SAM)
  */
 public class ReadingThroughWriteConnectionInTransactionTest extends org.eclipse.persistence.testing.framework.AutoVerifyTestCase {
     protected boolean multipleClients = false;
@@ -352,7 +353,7 @@ public class ReadingThroughWriteConnectionInTransactionTest extends org.eclipse.
 
     /**
      * Creates a new server session with same login and descriptors as test session.
-     * @see ClientServerTest setup()
+     * @see ClientServerTest#setup()
      */
     @Override
     public void setup() {

@@ -363,7 +363,7 @@ public abstract class JUnitTestCase extends TestCase {
                 serverPlatform = new JEEPlatform();
             } else {
                 try {
-                    serverPlatform = (ServerPlatform)Class.forName(platformClass).newInstance();
+                    serverPlatform = (ServerPlatform)Class.forName(platformClass).getConstructor().newInstance();
                 } catch (Exception notFound) {
                     throw new RuntimeException(notFound);
                 }

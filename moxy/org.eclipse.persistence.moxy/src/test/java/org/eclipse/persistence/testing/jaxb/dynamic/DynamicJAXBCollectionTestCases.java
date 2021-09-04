@@ -70,7 +70,7 @@ public class DynamicJAXBCollectionTestCases extends TestCase {
         InputStream schemaStream = ClassLoader.getSystemResourceAsStream(XSD_MULTI);
         jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(schemaStream, null, null, null);
 
-        InputStream xmlStream = Thread.currentThread().getContextClassLoader().getSystemResourceAsStream(XSD_MULTI_INSTANCE);
+        InputStream xmlStream = ClassLoader.getSystemResourceAsStream(XSD_MULTI_INSTANCE);
         JAXBElement<DynamicEntity> jaxbElement = (JAXBElement<DynamicEntity>) jaxbContext.createUnmarshaller().unmarshal(xmlStream);
 
         DynamicEntity customer = jaxbElement.getValue();

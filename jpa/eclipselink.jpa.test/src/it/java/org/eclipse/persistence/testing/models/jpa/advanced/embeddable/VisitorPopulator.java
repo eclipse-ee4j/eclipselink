@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,7 @@ public class VisitorPopulator {
 
     /**
      * First sample instance.
-     * @return Initialized sample instance of {@see Visitor} class.
+     * @return Initialized sample instance of {@link Visitor} class.
      */
     public static Visitor visitorExample1() {
         return new Visitor("1", "Alan E. Frechette",
@@ -34,7 +34,7 @@ public class VisitorPopulator {
 
     /**
      * Second sample instance.
-     * @return Initialized sample instance of {@see Visitor} class.
+     * @return Initialized sample instance of {@link Visitor} class.
      */
     public static Visitor visitorExample2() {
         return new Visitor("2", "Arthur D. Frechette",

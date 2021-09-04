@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,13 +27,13 @@ import org.eclipse.persistence.indirection.*;
  * STI_Employee is a simplified version of Employee.
  */
 public class STI_Employee implements Serializable {
-    /** Primary key, maped as a direct-to-field, BigDecimal -> NUMBER, that makes use of sequence numbers to generate the id. */
+    /** Primary key, maped as a direct-to-field, BigDecimal -{@literal >} NUMBER, that makes use of sequence numbers to generate the id. */
     public BigDecimal id;
 
-    /** Direct-to-field mapping, String -> VARCHAR. */
+    /** Direct-to-field mapping, String -{@literal >} VARCHAR. */
     public String firstName;
 
-    /** Direct-to-field mapping, String -> VARCHAR. */
+    /** Direct-to-field mapping, String -{@literal >} VARCHAR. */
     public String lastName;
 
     /** One-to-one mapping (same class relationship), employee references its manager through a foreign key. */
@@ -159,7 +159,7 @@ public class STI_Employee implements Serializable {
     }
 
     /**
-     * Print the first & last name
+     * Print the first &amp; last name
      */
     public String toString() {
         StringWriter writer = new StringWriter();
