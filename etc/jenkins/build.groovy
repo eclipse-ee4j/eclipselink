@@ -163,6 +163,16 @@ spec:
                 }
             }
         }
+        // Spotbugs analyze
+        stage('Spotbugs analyze') {
+            steps {
+                container('el-build') {
+                    sh """
+                            etc/jenkins/spotbugs.sh
+                        """
+                }
+            }
+        }
         // Publish to nightly
         stage('Publish to nightly') {
             steps {
