@@ -104,6 +104,12 @@
         <comp.xdoclint>-Xdoclint:none</comp.xdoclint>
         <warn.limit>150</warn.limit>
 
+        <spotbugs.common>${project.build.directory}/spotbugs-exclude-common.xml</spotbugs.common>
+        <spotbugs.exclude/>
+        <spotbugs.skip>false</spotbugs.skip>
+        <spotbugs.threshold>Normal</spotbugs.threshold>
+        <spotbugs.version>4.3.0</spotbugs.version>
+
         <!-- PROJECT Properties -->
         <build.type>SNAPSHOT</build.type>
         <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
@@ -1187,6 +1193,17 @@
                         </checkstyleRules>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>com.github.spotbugs</groupId>
+                    <artifactId>spotbugs-maven-plugin</artifactId>
+                    <version>${spotbugs.version}</version>
+                    <configuration>
+                        <skip>${spotbugs.skip}</skip>
+                        <threshold>${spotbugs.threshold}</threshold>
+                        <excludeFilterFile>${spotbugs.common},${spotbugs.exclude}</excludeFilterFile>
+                        <fork>true</fork>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -1214,20 +1231,7 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>common-license</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <inherited>false</inherited>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>src/main/assembly/common-license.xml</descriptor>
-                            </descriptors>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>test-defaults</id>
+                        <id>build-resources</id>
                         <phase>initialize</phase>
                         <goals>
                             <goal>single</goal>
@@ -1235,7 +1239,9 @@
                         <inherited>false</inherited>
                         <configuration>
                             <descriptors>
+                                <descriptor>src/main/assembly/common-license.xml</descriptor>
                                 <descriptor>src/main/assembly/test-defaults.xml</descriptor>
+                                <descriptor>src/main/assembly/spotbugs-filter.xml</descriptor>
                             </descriptors>
                         </configuration>
                     </execution>
@@ -1279,6 +1285,25 @@
                                     <classifier>test-defaults</classifier>
                                     <type>zip</type>
                                     <outputDirectory>${test.properties.default.directory}</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-spotbugs-filter</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>org.eclipse.persistence.parent</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>spotbugs-filter</classifier>
+                                    <type>zip</type>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>

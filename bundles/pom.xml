@@ -33,6 +33,7 @@
     <properties>
         <eclipselink.unzip.subdir>stage</eclipselink.unzip.subdir>
         <jdoc.doclint>-missing</jdoc.doclint>
+        <spotbugs.skip>true</spotbugs.skip>
     </properties>
 
     <modules>
