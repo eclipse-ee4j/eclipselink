@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Tests marshall/unmarshal List of Strings (List<String>).
+ * Tests marshall/unmarshal List of Strings ({@code List<String>}).
  *
  * @author Radek Felcman
  *

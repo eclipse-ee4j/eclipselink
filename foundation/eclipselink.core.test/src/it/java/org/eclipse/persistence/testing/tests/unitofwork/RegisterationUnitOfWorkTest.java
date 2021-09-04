@@ -38,10 +38,11 @@ import org.eclipse.persistence.testing.framework.WriteObjectTest;
  * <p>
  * <b>Paths Covered</b>: Within the unit of work, different parts of the employee were set with clones:
  * <ul>
- * <li><i> Think they are equal but are unequal, clones are different
- * <li> Think they are equal and are equal, clones are identical
- * <li> Think they are unequal but are equal, clones are identical
- * <li> Think they are unequal and are unequal, clones are different </i>
+ * <li> <i>Think they are equal but are unequal, clones are different</i>
+ * <li> <i>Think they are equal and are equal, clones are identical</i>
+ * <li> <i>Think they are unequal but are equal, clones are identical</i>
+ * <li> <i>Think they are unequal and are unequal, clones are different</i>
+ * </ul>
  */
 public class RegisterationUnitOfWorkTest extends WriteObjectTest {
     public Object unitOfWorkWorkingCopy;

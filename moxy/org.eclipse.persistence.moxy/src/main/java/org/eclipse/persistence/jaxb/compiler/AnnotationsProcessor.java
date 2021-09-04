@@ -298,7 +298,6 @@ public final class AnnotationsProcessor {
     /**
      * Generate TypeInfo instances for a given array of JavaClasses.
      *
-     * @param classes
      */
     void processClassesAndProperties(JavaClass[] classes, TypeMappingInfo[] typeMappingInfos) {
         init(classes, typeMappingInfos);
@@ -433,8 +432,6 @@ public final class AnnotationsProcessor {
      * precedence over the annotation array; if there is an xml-element the
      * Array of Annotations will be ignored.
      *
-     * @param tmInfo
-     * @return
      */
     private java.lang.annotation.Annotation[] getAnnotations(TypeMappingInfo tmInfo) {
         if (tmInfo.getXmlElement() != null) {
@@ -544,8 +541,6 @@ public final class AnnotationsProcessor {
      * this method have been modified (if necessary) postBuildTypeInfo and
      * processJavaClasses should be called to finish processing.
      *
-     * @param javaClasses
-     * @return
      */
     public Map<String, TypeInfo> preBuildTypeInfo(JavaClass[] javaClasses) {
         for (JavaClass javaClass : javaClasses) {
@@ -762,7 +757,6 @@ public final class AnnotationsProcessor {
      * is typically called after init and preBuildTypeInfo have
      * been called.
      *
-     * @param javaClasses
      * @return updated array of JavaClasses, made up of the original classes
      * plus any additional ones
      */
@@ -795,8 +789,6 @@ public final class AnnotationsProcessor {
      * instances. This method assumes that init, preBuildTypeInfo, and
      * postBuildTypeInfo have been called.
      *
-     * @param allClasses
-     * @return
      */
     private Map<String, TypeInfo> buildTypeInfo(JavaClass[] allClasses) {
         for (JavaClass javaClass : allClasses) {
@@ -1114,7 +1106,6 @@ public final class AnnotationsProcessor {
     /**
      * Process a given TypeInfo instance's properties.
      *
-     * @param info
      */
     private void processTypeInfoProperties(JavaClass javaClass, TypeInfo info) {
         List<Property> properties = info.getPropertyList();
@@ -1176,8 +1167,6 @@ public final class AnnotationsProcessor {
      * Process any additional classes, such as inner classes, @XmlRegistry or
      * from @XmlSeeAlso.
      *
-     * @param classes
-     * @return
      */
     private JavaClass[] processAdditionalClasses(JavaClass[] classes) {
         ArrayList<JavaClass> extraClasses = new ArrayList<JavaClass>();
@@ -1316,8 +1305,6 @@ public final class AnnotationsProcessor {
      *
      * See @XmlRegistry or @XmlSeeAlso.
      *
-     * @param javaClass
-     * @param classesToProcess
      */
     private void processClass(JavaClass javaClass, ArrayList<JavaClass> classesToProcess) {
         if (shouldGenerateTypeInfo(javaClass)) {
@@ -1340,7 +1327,6 @@ public final class AnnotationsProcessor {
      * Process an @XmlSeeAlso annotation. TypeInfo instances will be created for
      * each class listed.
      *
-     * @param javaClass
      */
     private void processXmlSeeAlso(JavaClass javaClass, TypeInfo info) {
         // reflectively load @XmlSeeAlso class to avoid dependency
@@ -1375,8 +1361,6 @@ public final class AnnotationsProcessor {
     /**
      * Process any factory methods.
      *
-     * @param javaClass
-     * @param info
      */
     private void processFactoryMethods(JavaClass javaClass, TypeInfo info) {
         JavaMethod factoryMethod = this.factoryMethods.get(javaClass.getRawName());
@@ -1399,8 +1383,6 @@ public final class AnnotationsProcessor {
     /**
      * Process any package-level @XmlJavaTypeAdapters.
      *
-     * @param javaClass
-     * @param info
      */
     private void processPackageLevelAdapters(JavaClass javaClass, TypeInfo info) {
         JavaPackage pack = javaClass.getPackage();
@@ -1431,8 +1413,6 @@ public final class AnnotationsProcessor {
     /**
      * Process any class-level @XmlJavaTypeAdapters.
      *
-     * @param javaClass
-     * @param info
      */
     private void processClassLevelAdapters(JavaClass javaClass, TypeInfo info) {
         if (helper.isAnnotationPresent(javaClass, XmlJavaTypeAdapter.class)) {
@@ -1453,8 +1433,6 @@ public final class AnnotationsProcessor {
     /**
      * Process any @XmlSchemaType(s).
      *
-     * @param javaClass
-     * @param info
      */
     private void processSchemaTypes(JavaClass javaClass, TypeInfo info) {
         JavaPackage pack = javaClass.getPackage();
@@ -1472,8 +1450,6 @@ public final class AnnotationsProcessor {
     /**
      * Process @XmlRootElement annotation on a given JavaClass.
      *
-     * @param javaClass
-     * @param info
      */
     private void processXmlRootElement(JavaClass javaClass, TypeInfo info) {
         if (helper.isAnnotationPresent(javaClass, XmlRootElement.class)) {
@@ -1488,8 +1464,6 @@ public final class AnnotationsProcessor {
     /**
      * Process @XmlExtensible annotation on a given JavaClass.
      *
-     * @param javaClass
-     * @param info
      */
     private void processXmlExtensible(JavaClass javaClass, TypeInfo info) {
         if (helper.isAnnotationPresent(javaClass, XmlVirtualAccessMethods.class)) {
@@ -1507,9 +1481,6 @@ public final class AnnotationsProcessor {
      * for pre-processing. Note that if no @XmlType annotation is present we
      * still create a new XmlType an set it on the TypeInfo.
      *
-     * @param javaClass
-     * @param info
-     * @param packageNamespace
      */
     private void preProcessXmlType(JavaClass javaClass, TypeInfo info, NamespaceInfo packageNamespace) {
         org.eclipse.persistence.jaxb.xmlmodel.XmlType xmlType = new org.eclipse.persistence.jaxb.xmlmodel.XmlType(); // 14 xmlType=XmlType - default settings: name=null, namespace=null, factoryClass=null, factoryMethod=null, propOrder=null.
@@ -1549,9 +1520,6 @@ public final class AnnotationsProcessor {
      * has an XmlType set - typically via preProcessXmlType or XmlProcessor
      * override.
      *
-     * @param javaClass
-     * @param info
-     * @param packageNamespace
      */
     private void postProcessXmlType(JavaClass javaClass, TypeInfo info, PackageInfo packageNamespace) {
         // assumes that the TypeInfo has an XmlType set from
@@ -1614,9 +1582,6 @@ public final class AnnotationsProcessor {
      * Process @XmlAccessorType annotation on a given JavaClass and update the
      * TypeInfo for pre-processing.
      *
-     * @param javaClass
-     * @param info
-     * @param packageNamespace
      */
     private void preProcessXmlAccessorType(JavaClass javaClass, TypeInfo info, NamespaceInfo packageNamespace) {
         org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType xmlAccessType;
@@ -1631,7 +1596,6 @@ public final class AnnotationsProcessor {
      * Post process XmlAccessorType. In some cases, such as @XmlSeeAlso classes,
      * the access type may not have been set
      *
-     * @param info
      */
     private void postProcessXmlAccessorType(TypeInfo info, PackageInfo packageNamespace) {
         if (!info.isSetXmlAccessType()) {
@@ -1658,9 +1622,6 @@ public final class AnnotationsProcessor {
      * Process package and class @XmlAccessorOrder. Class level annotation
      * overrides a package level annotation.
      *
-     * @param javaClass
-     * @param info
-     * @param packageNamespace
      */
     private void preProcessXmlAccessorOrder(JavaClass javaClass, TypeInfo info, NamespaceInfo packageNamespace) {
         XmlAccessorOrder order = null;
@@ -1676,8 +1637,6 @@ public final class AnnotationsProcessor {
      * TypeInfo has already had its order set (via annotations in
      * preProcessXmlAccessorOrder or via xml metadata override in XMLProcessor).
      *
-     * @param info
-     * @param packageNamespace
      */
     private void postProcessXmlAccessorOrder(TypeInfo info, PackageInfo packageNamespace) {
         if (!info.isSetXmlAccessOrder()) {
@@ -1691,7 +1650,6 @@ public final class AnnotationsProcessor {
     /**
      * Process @XmlElement annotation on a given property.
      *
-     * @param property
      */
     private void processXmlElement(Property property, TypeInfo info) {
 
@@ -1804,8 +1762,6 @@ public final class AnnotationsProcessor {
     /**
      * Process @XmlID annotation on a given property
      *
-     * @param property
-     * @param info
      */
     private void processXmlID(Property property, JavaClass javaClass, TypeInfo info) {
         if (helper.isAnnotationPresent(property.getElement(), XmlID.class)) {
@@ -1817,7 +1773,6 @@ public final class AnnotationsProcessor {
     /**
      * Process @XmlIDREF on a given property.
      *
-     * @param property
      */
     private void processXmlIDREF(Property property) {
         if (helper.isAnnotationPresent(property.getElement(), XmlIDREF.class)) {
@@ -1828,9 +1783,6 @@ public final class AnnotationsProcessor {
     /**
      * Process @XmlJavaTypeAdapter on a given property.
      *
-     * @param property
-     * @param info
-     * @param javaClass
      */
     private void processXmlJavaTypeAdapter(Property property, TypeInfo info, JavaClass javaClass) {
         JavaClass adapterClass = null;
@@ -1883,8 +1835,6 @@ public final class AnnotationsProcessor {
      * Store a QName (if necessary) based on a given TypeInfo's schema type
      * name.
      *
-     * @param javaClass
-     * @param info
      */
     private void processTypeQName(JavaClass javaClass, TypeInfo info, NamespaceInfo packageNamespace) {
         if(info.isTransient()) {
@@ -2253,8 +2203,6 @@ public final class AnnotationsProcessor {
      * Validation and building of the XmlElement properties will be done during
      * finalizeProperties in the processChoiceProperty method.
      *
-     * @param javaHasAnnotations
-     * @return
      */
     private Property buildChoiceProperty(JavaHasAnnotations javaHasAnnotations) {
         Property choiceProperty = new Property(helper);
@@ -2355,10 +2303,6 @@ public final class AnnotationsProcessor {
      * Each created Property is added to the owning Property's list of choice
      * properties.
      *
-     * @param choiceProperty
-     * @param info
-     * @param cls
-     * @param propertyType
      */
     private void processChoiceProperty(Property choiceProperty, TypeInfo info, JavaClass cls, JavaClass propertyType) {
         String propertyName = choiceProperty.getPropertyName();
@@ -2492,9 +2436,6 @@ public final class AnnotationsProcessor {
      * inheritance (parent classes) and from parent class is reverse reference
      * via @XmlIDREF, @XmlPaths and @XmlElements to the some child classes.
      * In this phase type info is not complete (missing properties).
-     * @param javaClass
-     * @param typeInfo
-     * @return
      */
     private boolean preCheckXmlID(JavaClass javaClass, TypeInfo typeInfo) {
         ArrayList<Property> properties = getPropertiesForClass(javaClass, typeInfo);
@@ -2520,11 +2461,6 @@ public final class AnnotationsProcessor {
      * performed during the finalize property phase via the
      * processReferenceProperty method.
      *
-     * @param info
-     * @param javaHasAnnotations
-     * @param propertyName
-     * @param ptype
-     * @return
      */
     private Property buildReferenceProperty(TypeInfo info, JavaHasAnnotations javaHasAnnotations, String propertyName, JavaClass ptype) {
         Property property = new Property(helper);
@@ -2566,10 +2502,6 @@ public final class AnnotationsProcessor {
     /**
      * Build a reference property.
      *
-     * @param property
-     * @param info
-     * @param cls
-     * @return
      */
     private Property processReferenceProperty(Property property, TypeInfo info, JavaClass cls) {
 
@@ -2857,7 +2789,6 @@ public final class AnnotationsProcessor {
      * for attribute transformers either a transformer class OR method name is
      * set (not both).
      *
-     * @param property
      */
     private void validateXmlTransformationProperty(Property property) {
         if (property.isSetXmlTransformation()) {
@@ -2909,9 +2840,6 @@ public final class AnnotationsProcessor {
      * Compares a JavaModel JavaClass to a Class. Equality is based on the raw
      * name of the JavaClass compared to the canonical name of the Class.
      *
-     * @param src
-     * @param tgt
-     * @return
      */
     protected boolean areEquals(JavaClass src, Class tgt) {
         if (src == null || tgt == null) {
@@ -2983,9 +2911,6 @@ public final class AnnotationsProcessor {
      * Compares a JavaModel JavaClass to a Class. Equality is based on the raw
      * name of the JavaClass compared to the canonical name of the Class.
      *
-     * @param src
-     * @param tgtCanonicalName
-     * @return
      */
     protected boolean areEquals(JavaClass src, String tgtCanonicalName) {
         if (src == null || tgtCanonicalName == null) {
@@ -3342,9 +3267,6 @@ public final class AnnotationsProcessor {
      *
      * {@literal @XmlSchemaType(s)} annotation or xml-schema-type(s) metadata.
      *
-     * @param name
-     * @param namespace
-     * @param jClassQualifiedName
      */
     public void processSchemaType(String name, String namespace, String jClassQualifiedName) {
         this.userDefinedSchemaTypes.put(jClassQualifiedName, new QName(namespace, name));
@@ -3995,7 +3917,6 @@ public final class AnnotationsProcessor {
     /**
      * Lazy load and return the map of global elements.
      *
-     * @return
      */
     public Map<QName, ElementDeclaration> getGlobalElements() {
         return this.elementDeclarations.get(XmlElementDecl.GLOBAL.class.getName());
@@ -4873,7 +4794,6 @@ public final class AnnotationsProcessor {
      *
      * Map {@literal <String, Map<String, TypeInfo>>}
      *
-     * @param packageName
      * @return List of TypeInfo objects for a given package name
      */
     public Map<String, TypeInfo> getTypeInfosForPackage(String packageName) {
@@ -4892,7 +4812,6 @@ public final class AnnotationsProcessor {
      * Set namespace override info from XML bindings file. This will typically
      * be called from the XMLProcessor.
      *
-     * @param packageToNamespaceMappings
      */
     public void setPackageToNamespaceMappings(HashMap<String, NamespaceInfo> packageToNamespaceMappings) {
         //this.packageToNamespaceMappings = packageToNamespaceMappings;
@@ -4958,7 +4877,6 @@ public final class AnnotationsProcessor {
      * Convenience method which class pre and postBuildTypeInfo for a given set
      * of JavaClasses.
      *
-     * @param javaClasses
      */
     public void buildNewTypeInfo(JavaClass[] javaClasses) {
         preBuildTypeInfo(javaClasses);
@@ -4976,8 +4894,6 @@ public final class AnnotationsProcessor {
      * place in MappingsGenerator's generateProject method, after the
      * descriptors and mappings have been generated.
      *
-     * @param jClass
-     * @param tInfo
      * @see XmlCustomizer
      * @see MappingsGenerator
      */
@@ -4991,7 +4907,6 @@ public final class AnnotationsProcessor {
     /**
      * Lazy load the metadata logger.
      *
-     * @return
      */
     private JAXBMetadataLogger getLogger() {
         if (logger == null) {
@@ -5003,7 +4918,6 @@ public final class AnnotationsProcessor {
     /**
      * Return the Helper object set on this processor.
      *
-     * @return
      */
     Helper getHelper() {
         return this.helper;
@@ -5041,7 +4955,6 @@ public final class AnnotationsProcessor {
      * Convenience method for determining if a given JavaClass should be
      * processed as an ObjectFactory class.
      *
-     * @param javaClass
      * @return true if the JavaClass is annotated with @XmlRegistry or the map
      * of XmlRegistries contains a key equal to the JavaClass' qualified
      * name
@@ -5096,8 +5009,6 @@ public final class AnnotationsProcessor {
      *
      * - DataHandler - byte[] - Byte[] - Image - Source - MimeMultipart
      *
-     * @param property
-     * @return
      */
     public boolean isMtomAttachment(Property property) {
         JavaClass ptype = property.getActualType();

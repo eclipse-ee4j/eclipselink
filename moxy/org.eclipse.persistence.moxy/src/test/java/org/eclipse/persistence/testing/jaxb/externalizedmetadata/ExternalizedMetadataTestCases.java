@@ -148,7 +148,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
      *
      * @param contextPath
      * @param expectedSchemaCount
-     * @param resolver
+     * @param outputResolver
      */
     public void generateSchema(String contextPath, int expectedSchemaCount, MyStreamSchemaOutputResolver outputResolver) {
         try {
@@ -429,7 +429,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * Validates a given instance doc against the generated schema.
      *
      * @param src
-     * @param schemaIndex index in output resolver's list of generated schemas
+     * @param namespace index in output resolver's list of generated schemas
      * @param outputResolver contains one or more schemas to validate against
      */
     protected String validateAgainstSchema(String src, String namespace, MySchemaOutputResolver outputResolver) {
@@ -454,7 +454,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * Validates a given instance doc against the generated schema.
      *
      * @param src
-     * @param schemaIndex index in output resolver's list of generated schemas
+     * @param namespace index in output resolver's list of generated schemas
      * @param outputResolver contains one or more schemas to validate against
      */
     protected String validateAgainstSchema(InputStream src, String namespace, MySchemaOutputResolver outputResolver) {
@@ -503,7 +503,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * Validates a given instance doc against the generated schema.
      *
      * @param src
-     * @param schemaIndex index in output resolver's list of generated schemas
+     * @param namespace index in output resolver's list of generated schemas
      * @param outputResolver contains one or more schemas to validate against
      */
     protected String validateAgainstSchema(String src, String namespace, MyStreamSchemaOutputResolver outputResolver) {

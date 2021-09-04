@@ -22,7 +22,7 @@ import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 public class NullDefaultRootXMLRootTestCases extends XMLMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/xmlroot/complex/inheritance/employeeNullRoot.xml";
 
-    /**
+    /*
       <?xml version="1.0" encoding="UTF-8"?>
       <oxm:blah xsi:type="oxm:emp" xmlns:oxm="test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
         <name>Joe Smith</name>

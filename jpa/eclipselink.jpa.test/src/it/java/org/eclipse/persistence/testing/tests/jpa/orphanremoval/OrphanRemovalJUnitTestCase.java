@@ -1007,10 +1007,10 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
 
     /**
      * use case:
-     * A ---> B : the relationship between A and B is privately owned and cascade persist
+     * A {@literal --->} B : the relationship between A and B is privately owned and cascade persist
      * Create an instance of A and B. Persist A
      * Load A and update an attribute of B. Persist A
-     * => the attribute is not changed in DB.
+     * ={@literal >} the attribute is not changed in DB.
      */
     public void test121ChangeFromExistingObject() {
         EntityManager em = createEntityManager();

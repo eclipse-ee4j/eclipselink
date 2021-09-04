@@ -48,11 +48,11 @@ import org.eclipse.persistence.testing.models.aggregate.ProjectDescription;
  *                                <li>    <i>First and Last Name</i>, Direct To Field
  *                                <li> <i>Project's Description</i>, Aggregate Objects, Direct To Field
  *                                <li>    <i>Period</i>, Third level Aggregate Object replaced
- *                                <li>    <i>Computer<i>, Aggregate Object's 1 to 1 mapped object
+ *                                <li>    <i>Computer</i>, Aggregate Object's 1 to 1 mapped object
  *                                <li>    <i>Responsibilities</i>,Aggregate objects 1:M mapping
  *                                <li> <i>Language Modified</i>, Aggregate objects M:M mapping
  *                                <li> <i>null added to languages</i>, Aggregate objects M:M mapping
- *
+ *                                </ul>
  */
 public class CheckForNullUnitOfWorkTest extends WriteObjectTest {
     public Object unitOfWorkWorkingCopy;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,6 +23,7 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.models.order.Address;
 import org.eclipse.persistence.testing.models.order.LineItem;
 import org.eclipse.persistence.testing.models.order.Order;
+import org.eclipse.persistence.testing.tests.eis.aq.JMSDirectInteractionTest;
 
 /**
  * Test model helper methods.
@@ -111,7 +112,7 @@ public class ModelHelper {
     }
 
     /**
-     * Setup {@code "order_queue"} for {@link #testReadUOW()}.
+     * Setup {@code "order_queue"} for {@link JMSDirectInteractionTest#testQueue()}.
      * @param session Relational database session (will not work with AQ connection specifications based session).
      */
     public static void setupOrderQueue(final DatabaseSession session) {
@@ -125,7 +126,7 @@ public class ModelHelper {
     }
 
     /**
-     * Reset {@code "order_queue"} for {@link #testReadUOW()}.
+     * Reset {@code "order_queue"} for {@link JMSDirectInteractionTest#testQueue()}.
      * @param session Relational database session (will not work with AQ connection specifications based session).
      */
     public static void resetOrderQueue(final DatabaseSession session) {
@@ -138,7 +139,7 @@ public class ModelHelper {
     }
 
     /**
-     * Setup {@code "order_topic"} for {@link #testReadUOW()}.
+     * Setup {@code "order_topic"} for {@link JMSDirectInteractionTest#testTopic()}.
      * @param session Relational database session (will not work with AQ connection specifications based session).
      */
     public static void setupOrderTopic(final DatabaseSession session) {
@@ -151,7 +152,7 @@ public class ModelHelper {
     }
 
     /**
-     * Reset {@code "order_topic"} for {@link #testReadUOW()}.
+     * Reset {@code "order_topic"} for {@link JMSDirectInteractionTest#testTopic()}.
      * @param session Relational database session (will not work with AQ connection specifications based session).
      */
     public static void resetOrderTopic(final DatabaseSession session) {

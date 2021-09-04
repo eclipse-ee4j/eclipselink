@@ -15,7 +15,7 @@
 package dbws.testing.shadowddlgeneration.oldjpub;
 
 /**
- * Instances of the class </code>SerializableType</code> represent Java serializable types.
+ * Instances of the class <code>SerializableType</code> represent Java serializable types.
  */
 public class SerializableType extends SqlType {
     /**

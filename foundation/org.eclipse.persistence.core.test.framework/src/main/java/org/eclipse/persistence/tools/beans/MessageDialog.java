@@ -92,7 +92,7 @@ public class MessageDialog extends JDialog {
     }
 
     /**
-     * connEtoM1:  (OKButton.action.actionPerformed(java.awt.event.ActionEvent) --> MessageDialog.dispose()V)
+     * connEtoM1:  (OKButton.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} MessageDialog.dispose()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private

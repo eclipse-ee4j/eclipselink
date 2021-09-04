@@ -47,18 +47,18 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  *
  * Here's the lifecycle of SequencingManager.
  * InitialState: SequencingManager doesn't exist.
- *   Action: SequencingManager created -> Not connected State.
+ *   Action: SequencingManager created -{@literal >} Not connected State.
  * State: Not connected.
  *        isConnected() returns false;
  *        getSequencingControl() could be used;
  *        getSequencing() == getSequencingServer() == getSequencingCallbackFactory() == null;
- *   Action: onConnect is called -> Connected State.
+ *   Action: onConnect is called -{@literal >} Connected State.
  * State: Connected.
  *        isConnected() returns true;
  *        getSequencingControl() could be used;
  *        getSequencing() could be used;
  *        in case ownwerSession is a ServerSession getSequencingServer() could be used;
- *   Action: onDisconnect is called -> Not connected State.
+ *   Action: onDisconnect is called -{@literal >} Not connected State.
  *
  * Here's a sketch of SequencingManager architecture.
  * The main 4 objects comprising SessionManager are:

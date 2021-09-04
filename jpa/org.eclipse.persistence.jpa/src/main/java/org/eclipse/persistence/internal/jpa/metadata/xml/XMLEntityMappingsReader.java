@@ -431,10 +431,7 @@ public class XMLEntityMappingsReader {
      * hence works for the case where the schema is shipped as part of EclipseLink
      *
      * @param unmarshaller
-     * @param schemaName
-     * @param validateORMSchema
-     * @throws IOException
-     * @throws SAXException
+     * @param schema
      */
     private static void useLocalSchemaForUnmarshaller(XMLUnmarshaller unmarshaller, Schema schema) {
         try {

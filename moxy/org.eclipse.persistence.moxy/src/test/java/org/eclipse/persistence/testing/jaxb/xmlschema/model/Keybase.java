@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,20 +32,20 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *
  * <p>The following schema fragment specifies the expected content contained within this class.
  *
- * <pre>
- * &lt;complexType name="keybase">
- *   &lt;complexContent>
- *     &lt;extension base="{http://www.w3.org/2001/XMLSchema}annotated">
- *       &lt;sequence>
- *         &lt;element ref="{http://www.w3.org/2001/XMLSchema}selector"/>
- *         &lt;element ref="{http://www.w3.org/2001/XMLSchema}field" maxOccurs="unbounded"/>
- *       &lt;/sequence>
- *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}NCName" />
- *       &lt;anyAttribute processContents='lax' namespace='##other'/>
- *     &lt;/extension>
- *   &lt;/complexContent>
- * &lt;/complexType>
- * </pre>
+ * <pre>{@code
+ * <complexType name="keybase">
+ *   <complexContent>
+ *     <extension base="{http://www.w3.org/2001/XMLSchema}annotated">
+ *       <sequence>
+ *         <element ref="{http://www.w3.org/2001/XMLSchema}selector"/>
+ *         <element ref="{http://www.w3.org/2001/XMLSchema}field" maxOccurs="unbounded"/>
+ *       </sequence>
+ *       <attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}NCName" />
+ *       <anyAttribute processContents='lax' namespace='##other'/>
+ *     </extension>
+ *   </complexContent>
+ * </complexType>
+ * }</pre>
  *
  *
  */
@@ -107,7 +107,7 @@ public class Keybase
      * For example, to add a new item, do as follows:
      * <pre>
      *    getField().add(newItem);
-     * </pre>
+     * }</pre>
      *
      *
      * <p>

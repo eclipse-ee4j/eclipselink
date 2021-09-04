@@ -212,7 +212,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
 
     public void testXMLToObjectFromInputStream() throws Exception {
         if(isUnmarshalTest()) {
-            InputStream instream = Thread.currentThread().getContextClassLoader().getSystemResourceAsStream(resourceName);
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
             Object testObject = xmlUnmarshaller.unmarshal(instream);
             instream.close();
             xmlToObjectTest(testObject);
@@ -221,7 +221,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
 
     public void testXMLToObjectFromNode() throws Exception {
         if(isUnmarshalTest()) {
-            InputStream instream = Thread.currentThread().getContextClassLoader().getSystemResourceAsStream(resourceName);
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
             Node node  = parser.parse(instream);
             Object testObject = xmlUnmarshaller.unmarshal(node);
             instream.close();
@@ -231,7 +231,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
 
     public void testXMLToObjectFromXMLStreamReader() throws Exception {
         if(isUnmarshalTest()  && null != XML_INPUT_FACTORY) {
-            InputStream instream = Thread.currentThread().getContextClassLoader().getSystemResourceAsStream(resourceName);
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
             XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(instream);
             XMLStreamReaderReader staxReader = new XMLStreamReaderReader();
             staxReader.setErrorHandler(xmlUnmarshaller.getErrorHandler());
@@ -245,7 +245,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
 
     public void testXMLToObjectFromXMLEventReader() throws Exception {
         if(isUnmarshalTest()  && null != XML_INPUT_FACTORY) {
-            InputStream instream = Thread.currentThread().getContextClassLoader().getSystemResourceAsStream(resourceName);
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
             XMLEventReader xmlEventReader = XML_INPUT_FACTORY.createXMLEventReader(instream);
             XMLEventReaderReader staxReader = new XMLEventReaderReader();
             staxReader.setErrorHandler(xmlUnmarshaller.getErrorHandler());

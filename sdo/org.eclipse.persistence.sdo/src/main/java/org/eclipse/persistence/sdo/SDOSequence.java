@@ -635,7 +635,6 @@ public class SDOSequence implements Sequence {
      * return 2. Although B is at index 4 of the Settings list, it is at index 2
      * of the list of "letters" - [A, C, B, D].
      *
-     * @param property
      * @return index of the value's Setting in the list relative to a given
      *         property or -1 if not found.
      */

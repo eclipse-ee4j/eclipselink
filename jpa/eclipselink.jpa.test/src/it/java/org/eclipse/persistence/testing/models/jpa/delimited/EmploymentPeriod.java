@@ -73,7 +73,7 @@ public class EmploymentPeriod implements Serializable, Cloneable {
     }
 
     /**
-     * Print the start & end date
+     * Print the start &amp; end date
      */
     public String toString() {
         java.io.StringWriter writer = new java.io.StringWriter();

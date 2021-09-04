@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -253,7 +253,7 @@ public class PreLoginMappingAdapter extends SessionEventListener {
      * the newly created XMLInverseMapping in jaxbDescriptor
      * @param jaxbDescriptor
      * @param mapping
-     * @param mappedBy
+     * @param jpaMapping
      */
     private static void convertMappingToXMLInverseReferenceMapping(ClassDescriptor jaxbDescriptor, DatabaseMapping mapping, ForeignReferenceMapping jpaMapping) {
         if ((mapping != null) && (jaxbDescriptor != null)) {

@@ -53,6 +53,7 @@ import org.eclipse.persistence.testing.models.inheritance.Company;
  *                                <li>    <i>Bus added to vehicles</i>, 2L inheritance from vehicle, has own table
  *                                <li>    <i>Vehicle deleted</i>, deletion with inheritance
  *                                <li>    <i>Company name adjusted</i>,
+ *                                </ul>
  *
  * */
 public class UnitOfWorkCommitResumeTest extends WriteObjectTest {

@@ -71,7 +71,7 @@ public class LoginEditorDialog extends JDialog {
     }
 
     /**
-     * connEtoC1:  (CancelButton.action.actionPerformed(java.awt.event.ActionEvent) --> LoginEditorDialog.markCanceled()V)
+     * connEtoC1:  (CancelButton.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} LoginEditorDialog.markCanceled()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private void connEtoC1(java.awt.event.ActionEvent arg1) {
@@ -83,7 +83,7 @@ public class LoginEditorDialog extends JDialog {
     }
 
     /**
-     * connEtoC2:  (OKButton.action. --> LoginEditorDialog.loginOK()V)
+     * connEtoC2:  (OKButton.action. --{@literal >} LoginEditorDialog.loginOK()V)
      */
     private void connEtoC2() {
         try {

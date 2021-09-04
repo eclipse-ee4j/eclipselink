@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,33 +43,33 @@ import javax.xml.namespace.QName;
  *
  * <p>The following schema fragment specifies the expected content contained within this class.
  *
- * <pre>
- * &lt;complexType name="element">
- *   &lt;complexContent>
- *     &lt;extension base="{http://www.w3.org/2001/XMLSchema}annotated">
- *       &lt;sequence>
- *         &lt;choice minOccurs="0">
- *           &lt;element name="simpleType" type="{http://www.w3.org/2001/XMLSchema}localSimpleType"/>
- *           &lt;element name="complexType" type="{http://www.w3.org/2001/XMLSchema}localComplexType"/>
- *         &lt;/choice>
- *         &lt;group ref="{http://www.w3.org/2001/XMLSchema}identityConstraint" maxOccurs="unbounded" minOccurs="0"/>
- *       &lt;/sequence>
- *       &lt;attGroup ref="{http://www.w3.org/2001/XMLSchema}occurs"/>
- *       &lt;attGroup ref="{http://www.w3.org/2001/XMLSchema}defRef"/>
- *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}QName" />
- *       &lt;attribute name="substitutionGroup" type="{http://www.w3.org/2001/XMLSchema}QName" />
- *       &lt;attribute name="default" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="fixed" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="nillable" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
- *       &lt;attribute name="abstract" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
- *       &lt;attribute name="final" type="{http://www.w3.org/2001/XMLSchema}derivationSet" />
- *       &lt;attribute name="block" type="{http://www.w3.org/2001/XMLSchema}blockSet" />
- *       &lt;attribute name="form" type="{http://www.w3.org/2001/XMLSchema}formChoice" />
- *       &lt;anyAttribute processContents='lax' namespace='##other'/>
- *     &lt;/extension>
- *   &lt;/complexContent>
- * &lt;/complexType>
- * </pre>
+ * <pre>{@code
+ * <complexType name="element">
+ *   <complexContent>
+ *     <extension base="{http://www.w3.org/2001/XMLSchema}annotated">
+ *       <sequence>
+ *         <choice minOccurs="0">
+ *           <element name="simpleType" type="{http://www.w3.org/2001/XMLSchema}localSimpleType"/>
+ *           <element name="complexType" type="{http://www.w3.org/2001/XMLSchema}localComplexType"/>
+ *         </choice>
+ *         <group ref="{http://www.w3.org/2001/XMLSchema}identityConstraint" maxOccurs="unbounded" minOccurs="0"/>
+ *       </sequence>
+ *       <attGroup ref="{http://www.w3.org/2001/XMLSchema}occurs"/>
+ *       <attGroup ref="{http://www.w3.org/2001/XMLSchema}defRef"/>
+ *       <attribute name="type" type="{http://www.w3.org/2001/XMLSchema}QName" />
+ *       <attribute name="substitutionGroup" type="{http://www.w3.org/2001/XMLSchema}QName" />
+ *       <attribute name="default" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       <attribute name="fixed" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       <attribute name="nillable" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       <attribute name="abstract" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       <attribute name="final" type="{http://www.w3.org/2001/XMLSchema}derivationSet" />
+ *       <attribute name="block" type="{http://www.w3.org/2001/XMLSchema}blockSet" />
+ *       <attribute name="form" type="{http://www.w3.org/2001/XMLSchema}formChoice" />
+ *       <anyAttribute processContents='lax' namespace='##other'/>
+ *     </extension>
+ *   </complexContent>
+ * </complexType>
+ * }</pre>
  *
  *
  */
@@ -189,7 +189,7 @@ public abstract class Element
      * For example, to add a new item, do as follows:
      * <pre>
      *    getIdentityConstraint().add(newItem);
-     * </pre>
+     * }</pre>
      *
      *
      * <p>
@@ -372,7 +372,7 @@ public abstract class Element
      * For example, to add a new item, do as follows:
      * <pre>
      *    getFinal().add(newItem);
-     * </pre>
+     * }</pre>
      *
      *
      * <p>
@@ -401,7 +401,7 @@ public abstract class Element
      * For example, to add a new item, do as follows:
      * <pre>
      *    getBlock().add(newItem);
-     * </pre>
+     * }</pre>
      *
      *
      * <p>

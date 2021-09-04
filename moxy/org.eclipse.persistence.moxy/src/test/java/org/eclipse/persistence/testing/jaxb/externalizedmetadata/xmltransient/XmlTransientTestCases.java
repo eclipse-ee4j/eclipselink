@@ -120,7 +120,7 @@ public class XmlTransientTestCases extends JAXBWithJSONTestCases{
 
 
     /**
-     * Test a reference to a transient class.  Here, ContactInfo has a List<Address> where
+     * Test a reference to a transient class.  Here, ContactInfo has a {@code List<Address>} where
      * Address is marked transient via XML metadata.  A JAXBException should be thrown.
      *
      * Negative test.

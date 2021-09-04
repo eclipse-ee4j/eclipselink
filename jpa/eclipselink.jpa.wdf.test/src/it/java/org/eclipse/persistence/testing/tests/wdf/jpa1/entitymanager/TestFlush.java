@@ -449,7 +449,7 @@ public class TestFlush extends JPA1Base {
      * <li>Read Project proj1 and remove it.</li>
      * <li>Read Employee emp1 with relationship to proj1 (lazy loading).</li>
      * <li>Assign the set of emp1's projects to a new employee emp2 (forces implicit loading on flush).</li>
-     * <li>Flush -> IllegalStateException expected because of relation emp2 -> proj1 (removed).</li>
+     * <li>Flush -{@literal >} IllegalStateException expected because of relation emp2 -{@literal >} proj1 (removed).</li>
      * </ul>
      */
     @Test

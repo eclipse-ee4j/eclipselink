@@ -31,7 +31,7 @@ import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
 /**
- * Bug 214910:  Add query timeout support to batched update queries</p>
+ * Bug 214910:  Add query timeout support to batched update queries<br>
  * Test the query timeout feature in batch queries.
  * For data queries , a queryTimeout on the largest DatabaseQuery of the batch will be used.
  * For object queries, a queryTimeout on the largest DescriptorQueryManager (parent) or DatabaseQuery

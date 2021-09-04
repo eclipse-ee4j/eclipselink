@@ -55,7 +55,7 @@ public class XPathEngineFindTestCases extends TestCase {
 
     /**
      * Execute the 'self' xpath on the control document - should return the
-     * root element <addressbook>, a.k.a. serachNode
+     * root element {@code <addressbook>}, a.k.a. searchNode
      */
     public void testFindSelf() throws Exception {
         XMLField field = new XMLField(".");
@@ -68,7 +68,7 @@ public class XPathEngineFindTestCases extends TestCase {
 
     /**
      * Execute the 'self' xpath on the control document - should return a
-     * collection containing the root element <addressbook>, a.k.a. serachNode
+     * collection containing the root element {@code <addressbook>}, a.k.a. searchNode
      */
     public void testFindSelfCollection() throws Exception {
         XMLField field = new XMLField(".");

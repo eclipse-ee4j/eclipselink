@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Tests marshall/unmarshal List of Integer (List<Integer>).
+ * Tests marshall/unmarshal List of Integer ({@code List<Integer>}).
  *
  * @author Radek Felcman
  *

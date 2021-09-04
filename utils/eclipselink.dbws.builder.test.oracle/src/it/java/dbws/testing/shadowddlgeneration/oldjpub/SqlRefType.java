@@ -15,7 +15,7 @@
 package dbws.testing.shadowddlgeneration.oldjpub;
 
 /**
- * Instances of the class </code>SqlRefType</code> represent SQL REF types.
+ * Instances of the class <code>SqlRefType</code> represent SQL REF types.
  */
 public class SqlRefType extends SqlType {
 

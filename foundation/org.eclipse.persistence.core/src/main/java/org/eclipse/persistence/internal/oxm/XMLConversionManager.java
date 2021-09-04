@@ -1255,7 +1255,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      * java.util.Date.
      *
      * BC dates {@code (sourceDate.getTime() < YEAR_ONE_AD_TIME)} are handled
-     * as follows: '2007 BC' --> '-2006 AD'
+     * as follows: {@code '2007 BC' --> '-2006 AD'}
      *
      * @param sourceDate
      * @return
@@ -1420,7 +1420,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      * Timestamp.
      *
      * BC dates {@code (sourceDate.getTime() < YEAR_ONE_AD_TIME)} are handled
-     * as follows: '2007 BC' --> '-2006 AD'
+     * as follows: {@code '2007 BC' --> '-2006 AD'}
      *
      * @param sourceDate
      * @return
@@ -1452,7 +1452,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      * based on a given schema type QName.
      *
      * BC dates {@code (sourceDate.getTime() < YEAR_ONE_AD_TIME)} are handled
-     * as follows: '2007 BC' --> '-2006 AD'.
+     * as follows: {@code '2007 BC' --> '-2006 AD'}.
      *
      * @param sourceDate
      * @param schemaType

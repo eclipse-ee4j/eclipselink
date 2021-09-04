@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -159,7 +159,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
      * Java SE (unmanaged) persistence unit.
      * This may occur on certain configurations of Spring or on Java EE 6 Web Profile implementations that are not in compliance
      * with the specification.
-     * See <link>http://bugs.eclipse.org/338837</link>
+     * See http://bugs.eclipse.org/338837
      * @param aType
      * @param clazz
      * @param metamodelType

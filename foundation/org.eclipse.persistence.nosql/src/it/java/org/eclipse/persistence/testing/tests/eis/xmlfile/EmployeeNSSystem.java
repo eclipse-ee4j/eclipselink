@@ -31,7 +31,6 @@ import org.eclipse.persistence.sessions.factories.*;
  * Create and populate the database.
  * </li>
  * </ul>
- * </p>
  */
 public class EmployeeNSSystem extends EmployeeSystem {
     public EmployeeNSSystem() {

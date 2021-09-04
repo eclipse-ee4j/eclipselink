@@ -101,7 +101,7 @@
         <!-- exclude big groups from the Xlint -->
         <comp.xlint>-Xlint:all,-rawtypes,-unchecked,-serial</comp.xlint>
         <!-- -Xdoclint:-missing does not seem to work properly on the infra -->
-        <comp.xdoclint>-Xdoclint:none</comp.xdoclint>
+        <comp.xdoclint>-Xdoclint:all,-missing</comp.xdoclint>
         <warn.limit>150</warn.limit>
 
         <spotbugs.common>${project.build.directory}/spotbugs-exclude-common.xml</spotbugs.common>

@@ -18,7 +18,7 @@ import org.eclipse.persistence.testing.framework.*;
 
 /**
  * Custom WriteObjectTests that will allow the TypeTester object to pass through the calls to:
- * test(), setup(), & verify(). This ius required so the tests can customize according to the platform.
+ * test(), setup(), &amp; verify(). This ius required so the tests can customize according to the platform.
  */
 public class WriteTypeObjectTest extends WriteObjectTest {
 

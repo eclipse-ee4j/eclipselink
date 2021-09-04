@@ -32,17 +32,17 @@ import jakarta.xml.bind.annotation.XmlType;
  *
  * <p>The following schema fragment specifies the expected content contained within this class.
  *
- * <pre>
- * &lt;complexType name="person">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element ref="{myNamespace}name"/>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
- * </pre>
+ * <pre>{@code
+ * <complexType name="person">
+ *   <complexContent>
+ *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       <sequence>
+ *         <element ref="{myNamespace}name"/>
+ *       </sequence>
+ *     </restriction>
+ *   </complexContent>
+ * </complexType>
+ * }</pre>
  *
  *
  */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,18 +30,18 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *
  * <p>The following schema fragment specifies the expected content contained within this class.
  *
- * <pre>
- * &lt;complexType name="simpleType">
- *   &lt;complexContent>
- *     &lt;extension base="{http://www.w3.org/2001/XMLSchema}annotated">
- *       &lt;group ref="{http://www.w3.org/2001/XMLSchema}simpleDerivation"/>
- *       &lt;attribute name="final" type="{http://www.w3.org/2001/XMLSchema}simpleDerivationSet" />
- *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}NCName" />
- *       &lt;anyAttribute processContents='lax' namespace='##other'/>
- *     &lt;/extension>
- *   &lt;/complexContent>
- * &lt;/complexType>
- * </pre>
+ * <pre>{@code
+ * <complexType name="simpleType">
+ *   <complexContent>
+ *     <extension base="{http://www.w3.org/2001/XMLSchema}annotated">
+ *       <group ref="{http://www.w3.org/2001/XMLSchema}simpleDerivation"/>
+ *       <attribute name="final" type="{http://www.w3.org/2001/XMLSchema}simpleDerivationSet" />
+ *       <attribute name="name" type="{http://www.w3.org/2001/XMLSchema}NCName" />
+ *       <anyAttribute processContents='lax' namespace='##other'/>
+ *     </extension>
+ *   </complexContent>
+ * </complexType>
+ * }</pre>
  *
  *
  */
@@ -99,7 +99,7 @@ public abstract class SimpleType
      *
      * @return
      *     possible object is
-     *     {@link org.w3._2001.xmlschema.List }
+     *     {@link List }
      *
      */
     public org.eclipse.persistence.testing.jaxb.xmlschema.model.List getList() {
@@ -111,7 +111,7 @@ public abstract class SimpleType
      *
      * @param value
      *     allowed object is
-     *     {@link org.w3._2001.xmlschema.List }
+     *     {@link List }
      *
      */
     public void setList(org.eclipse.persistence.testing.jaxb.xmlschema.model.List value) {
@@ -155,7 +155,7 @@ public abstract class SimpleType
      * For example, to add a new item, do as follows:
      * <pre>
      *    getFinal().add(newItem);
-     * </pre>
+     * }</pre>
      *
      *
      * <p>

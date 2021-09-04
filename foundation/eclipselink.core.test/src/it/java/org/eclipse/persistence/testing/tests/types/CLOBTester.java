@@ -23,7 +23,7 @@ import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.exceptions.*;
 
 /**
- * Tests the use of Long (> 255) strings
+ * Tests the use of Long ({@literal >} 255) strings
  */
 public class CLOBTester extends TypeTester {
     public String longString;

@@ -4544,7 +4544,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
     /**
      * This test will verify that MapAttribute instance have their elementType set correctly.
      * The elementType corresponds to the 3rd V parameter on the class definition - which is the Map value.
-     * MapAttributeImpl<X, K, V>
+     * {@code MapAttributeImpl<X, K, V>}
      */
     public void testMapAtributeElementTypeWhenMapKeySetButNameAttributeIsDefaulted() {
         boolean exceptionThrown = false;

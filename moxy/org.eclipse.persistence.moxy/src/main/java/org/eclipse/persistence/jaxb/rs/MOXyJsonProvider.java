@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -751,7 +751,6 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     /**
      * Get first non java class if exists.
      *
-     * @param domainClasses
      * @return first domain class or first generic class or just the first class from the list
      */
     public Class<?> getDomainClass(Set<Class<?>> domainClasses) {

@@ -255,7 +255,7 @@ public class ProfileBrowserPanel extends JPanel {
     }
 
     /**
-     * connEtoC1:  (QualifyClassNameCheckbox.action.actionPerformed(java.awt.event.ActionEvent) --> ProfileBrowserPanel.resetProfiles()V)
+     * connEtoC1:  (QualifyClassNameCheckbox.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} ProfileBrowserPanel.resetProfiles()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private void connEtoC1(java.awt.event.ActionEvent arg1) {
@@ -273,7 +273,7 @@ public class ProfileBrowserPanel extends JPanel {
     }
 
     /**
-     * connEtoC2:  (GroupByChoice.item.itemStateChanged(java.awt.event.ItemEvent) --> ProfileBrowserPanel.resetProfiles()V)
+     * connEtoC2:  (GroupByChoice.item.itemStateChanged(java.awt.event.ItemEvent) --{@literal >} ProfileBrowserPanel.resetProfiles()V)
      * @param arg1 java.awt.event.ItemEvent
      */
     private void connEtoC2(java.awt.event.ItemEvent arg1) {

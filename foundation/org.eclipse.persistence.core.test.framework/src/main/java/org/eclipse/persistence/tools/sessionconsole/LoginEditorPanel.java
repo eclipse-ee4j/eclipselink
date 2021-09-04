@@ -205,7 +205,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connEtoC2:  (NativeSequencingCheckbox.action.actionPerformed(java.awt.event.ActionEvent) --> LoginEditorPanel.resetSequenceButtons()V)
+     * connEtoC2:  (NativeSequencingCheckbox.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} LoginEditorPanel.resetSequenceButtons()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private void connEtoC2(java.awt.event.ActionEvent arg1) {
@@ -223,7 +223,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connEtoC3:  (BridgeChoice.item.itemStateChanged(java.awt.event.ItemEvent) --> LoginEditorPanel.bridgeChanged()V)
+     * connEtoC3:  (BridgeChoice.item.itemStateChanged(java.awt.event.ItemEvent) --{@literal >} LoginEditorPanel.bridgeChanged()V)
      * @param arg1 java.awt.event.ItemEvent
      */
     private void connEtoC3(java.awt.event.ItemEvent arg1) {
@@ -241,7 +241,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connEtoC4:  (StringBindingCheckbox.action.actionPerformed(java.awt.event.ActionEvent) --> LoginEditorPanel.resetStringButtons()V)
+     * connEtoC4:  (StringBindingCheckbox.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} LoginEditorPanel.resetStringButtons()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private void connEtoC4(java.awt.event.ActionEvent arg1) {
@@ -259,7 +259,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connEtoC5:  (BlobBindingCheckbox.action.actionPerformed(java.awt.event.ActionEvent) --> LoginEditorPanel.resetStringButtons()V)
+     * connEtoC5:  (BlobBindingCheckbox.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} LoginEditorPanel.resetStringButtons()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private void connEtoC5(java.awt.event.ActionEvent arg1) {
@@ -277,7 +277,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connEtoC7:  (PasswordText.caret.caretUpdate(javax.swing.event.CaretEvent) --> LoginEditorPanel.passwordChanged()V)
+     * connEtoC7:  (PasswordText.caret.caretUpdate(javax.swing.event.CaretEvent) --{@literal >} LoginEditorPanel.passwordChanged()V)
      * @param arg1 javax.swing.event.CaretEvent
      */
     private void connEtoC7(javax.swing.event.CaretEvent arg1) {
@@ -295,7 +295,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP10SetSource:  (LoginBean.usesStreamsForBinding <--> BlobStreamBinding.selected)
+     * connPtoP10SetSource:  (LoginBean.usesStreamsForBinding {@literal <}--{@literal >} BlobStreamBinding.selected)
      */
     private void connPtoP10SetSource() {
         /* Set the source from the target */
@@ -314,14 +314,14 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP10SetTarget:  (LoginBean.usesStreamsForBinding <--> BlobStreamBinding.selected)
+     * connPtoP10SetTarget:  (LoginBean.usesStreamsForBinding {@literal <}--{@literal >} BlobStreamBinding.selected)
      */
     private void connPtoP10SetTarget() {
         /* Set the target from the source */
     }
 
     /**
-     * connPtoP11SetSource:  (LoginBean.usesNativeSequencing <--> NativeSequencingCheckbox.selected)
+     * connPtoP11SetSource:  (LoginBean.usesNativeSequencing {@literal <}--{@literal >} NativeSequencingCheckbox.selected)
      */
     private void connPtoP11SetSource() {
         /* Set the source from the target */
@@ -346,7 +346,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP11SetTarget:  (LoginBean.usesNativeSequencing <--> NativeSequencingCheckbox.selected)
+     * connPtoP11SetTarget:  (LoginBean.usesNativeSequencing {@literal <}--{@literal >} NativeSequencingCheckbox.selected)
      */
     private void connPtoP11SetTarget() {
         /* Set the target from the source */
@@ -365,7 +365,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP12SetSource:  (LoginBean.sequencePreallocationSize <--> SequencePreallocationSizeText.text)
+     * connPtoP12SetSource:  (LoginBean.sequencePreallocationSize {@literal <}--{@literal >} SequencePreallocationSizeText.text)
      */
     private void connPtoP12SetSource() {
         /* Set the source from the target */
@@ -384,7 +384,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP12SetTarget:  (LoginBean.sequencePreallocationSize <--> SequencePreallocationSizeLabel.text)
+     * connPtoP12SetTarget:  (LoginBean.sequencePreallocationSize {@literal <}--{@literal >} SequencePreallocationSizeLabel.text)
      */
     private void connPtoP12SetTarget() {
         /* Set the target from the source */
@@ -403,7 +403,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP13SetSource:  (LoginBean.shouldOptimizeDataConversion <--> OptimizeDataConversionCheckbox.selected)
+     * connPtoP13SetSource:  (LoginBean.shouldOptimizeDataConversion {@literal <}--{@literal >} OptimizeDataConversionCheckbox.selected)
      */
     private void connPtoP13SetSource() {
         /* Set the source from the target */
@@ -422,7 +422,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP13SetTarget:  (LoginBean.shouldOptimizeDataConversion <--> OptimizeDataConversionCheckbox.selected)
+     * connPtoP13SetTarget:  (LoginBean.shouldOptimizeDataConversion {@literal <}--{@literal >} OptimizeDataConversionCheckbox.selected)
      */
     private void connPtoP13SetTarget() {
         /* Set the target from the source */
@@ -508,7 +508,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP17SetSource:  (LoginBean.shouldOptimizeDataConversion <--> OptimizeDataConversionCheckbox.selected)
+     * connPtoP17SetSource:  (LoginBean.shouldOptimizeDataConversion {@literal <}--{@literal >} OptimizeDataConversionCheckbox.selected)
      */
     private void connPtoP17SetSource() {
         /* Set the source from the target */
@@ -527,7 +527,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP17SetTarget:  (LoginBean.shouldOptimizeDataConversion <--> OptimizeDataConversionCheckbox.selected)
+     * connPtoP17SetTarget:  (LoginBean.shouldOptimizeDataConversion {@literal <}--{@literal >} OptimizeDataConversionCheckbox.selected)
      */
     private void connPtoP17SetTarget() {
         /* Set the target from the source */
@@ -546,7 +546,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP18SetSource:  (LoginBean.tableQualifier <--> CreatorText.text)
+     * connPtoP18SetSource:  (LoginBean.tableQualifier {@literal <}--{@literal >} CreatorText.text)
      */
     private void connPtoP18SetSource() {
         /* Set the source from the target */
@@ -565,7 +565,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP18SetTarget:  (LoginBean.tableQualifier <--> CreatorText.text)
+     * connPtoP18SetTarget:  (LoginBean.tableQualifier {@literal <}--{@literal >} CreatorText.text)
      */
     private void connPtoP18SetTarget() {
         /* Set the target from the source */
@@ -584,7 +584,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP19SetSource:  (LoginBean.shouldCacheAllStatements <--> CacheStatementsCheckbox.selected)
+     * connPtoP19SetSource:  (LoginBean.shouldCacheAllStatements {@literal <}--{@literal >} CacheStatementsCheckbox.selected)
      */
     private void connPtoP19SetSource() {
         /* Set the source from the target */
@@ -603,7 +603,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP19SetTarget:  (LoginBean.shouldCacheAllStatements <--> CacheStatementsCheckbox.selected)
+     * connPtoP19SetTarget:  (LoginBean.shouldCacheAllStatements {@literal <}--{@literal >} CacheStatementsCheckbox.selected)
      */
     private void connPtoP19SetTarget() {
         /* Set the target from the source */
@@ -622,7 +622,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP1SetSource:  (LoginEditorPanel.login <--> LoginBean.this)
+     * connPtoP1SetSource:  (LoginEditorPanel.login {@literal <}--{@literal >} LoginBean.this)
      */
     private void connPtoP1SetSource() {
         /* Set the source from the target */
@@ -648,7 +648,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP1SetTarget:  (LoginEditorPanel.login <--> LoginBean.this)
+     * connPtoP1SetTarget:  (LoginEditorPanel.login {@literal <}--{@literal >} LoginBean.this)
      */
     private void connPtoP1SetTarget() {
         /* Set the target from the source */
@@ -671,7 +671,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP20SetSource:  (LoginBean.statementCacheSize <--> StatementCacheSizeText.text)
+     * connPtoP20SetSource:  (LoginBean.statementCacheSize {@literal <}--{@literal >} StatementCacheSizeText.text)
      */
     private void connPtoP20SetSource() {
         /* Set the source from the target */
@@ -690,7 +690,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP20SetTarget:  (LoginBean.statementCacheSize <--> StatementCacheSizeText.text)
+     * connPtoP20SetTarget:  (LoginBean.statementCacheSize {@literal <}--{@literal >} StatementCacheSizeText.text)
      */
     private void connPtoP20SetTarget() {
         /* Set the target from the source */
@@ -709,7 +709,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP21SetSource:  (LoginBean.stringBindingSize <--> StringBindSizeText.text)
+     * connPtoP21SetSource:  (LoginBean.stringBindingSize {@literal <}--{@literal >} StringBindSizeText.text)
      */
     private void connPtoP21SetSource() {
         /* Set the source from the target */
@@ -728,7 +728,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP21SetTarget:  (LoginBean.stringBindingSize <--> StringBindSizeText.text)
+     * connPtoP21SetTarget:  (LoginBean.stringBindingSize {@literal <}--{@literal >} StringBindSizeText.text)
      */
     private void connPtoP21SetTarget() {
         /* Set the target from the source */
@@ -747,7 +747,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP22SetSource:  (LoginBean.usesStringBinding <--> StringBindingCheckbox.selected)
+     * connPtoP22SetSource:  (LoginBean.usesStringBinding {@literal <}--{@literal >} StringBindingCheckbox.selected)
      */
     private void connPtoP22SetSource() {
         /* Set the source from the target */
@@ -766,7 +766,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP22SetTarget:  (LoginBean.usesStringBinding <--> StringBindingCheckbox.selected)
+     * connPtoP22SetTarget:  (LoginBean.usesStringBinding {@literal <}--{@literal >} StringBindingCheckbox.selected)
      */
     private void connPtoP22SetTarget() {
         /* Set the target from the source */
@@ -785,7 +785,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP23SetSource:  (LoginBean.shouldTrimStrings <--> TrimStringsCheckbox.selected)
+     * connPtoP23SetSource:  (LoginBean.shouldTrimStrings {@literal <}--{@literal >} TrimStringsCheckbox.selected)
      */
     private void connPtoP23SetSource() {
         /* Set the source from the target */
@@ -804,7 +804,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP23SetTarget:  (LoginBean.shouldTrimStrings <--> TrimStringsCheckbox.selected)
+     * connPtoP23SetTarget:  (LoginBean.shouldTrimStrings {@literal <}--{@literal >} TrimStringsCheckbox.selected)
      */
     private void connPtoP23SetTarget() {
         /* Set the target from the source */
@@ -823,7 +823,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP24SetSource:  (LoginBean.usesDirectDriverConnect <--> DirectConnectCheckBox.selected)
+     * connPtoP24SetSource:  (LoginBean.usesDirectDriverConnect {@literal <}--{@literal >} DirectConnectCheckBox.selected)
      */
     private void connPtoP24SetSource() {
         /* Set the source from the target */
@@ -846,14 +846,14 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP24SetTarget:  (LoginBean.usesDirectDriverConnect <--> DirectConnectCheckBox.selected)
+     * connPtoP24SetTarget:  (LoginBean.usesDirectDriverConnect {@literal <}--{@literal >} DirectConnectCheckBox.selected)
      */
     private void connPtoP24SetTarget() {
         /* Set the target from the source */
     }
 
     /**
-     * connPtoP25SetSource:  (LoginBean.shouldForceFieldNamesToUpperCase <--> ForceCaseCheckBox.selected)
+     * connPtoP25SetSource:  (LoginBean.shouldForceFieldNamesToUpperCase {@literal <}--{@literal >} ForceCaseCheckBox.selected)
      */
     private void connPtoP25SetSource() {
         /* Set the source from the target */
@@ -872,14 +872,14 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP25SetTarget:  (LoginBean.shouldForceFieldNamesToUpperCase <--> ForceCaseCheckBox.selected)
+     * connPtoP25SetTarget:  (LoginBean.shouldForceFieldNamesToUpperCase {@literal <}--{@literal >} ForceCaseCheckBox.selected)
      */
     private void connPtoP25SetTarget() {
         /* Set the target from the source */
     }
 
     /**
-     * connPtoP2SetSource:  (LoginBean.driverClassName <--> DriverChoice.selectedItem)
+     * connPtoP2SetSource:  (LoginBean.driverClassName {@literal <}--{@literal >} DriverChoice.selectedItem)
      */
     private void connPtoP2SetSource() {
         /* Set the source from the target */
@@ -901,7 +901,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP2SetTarget:  (LoginBean.driverClassName <--> DriverChoice.selectedItem)
+     * connPtoP2SetTarget:  (LoginBean.driverClassName {@literal <}--{@literal >} DriverChoice.selectedItem)
      */
     private void connPtoP2SetTarget() {
         /* Set the target from the source */
@@ -920,7 +920,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP3SetSource:  (LoginBean.driverURLHeader <--> DriverURLText.text)
+     * connPtoP3SetSource:  (LoginBean.driverURLHeader {@literal <}--{@literal >} DriverURLText.text)
      */
     private void connPtoP3SetSource() {
         /* Set the source from the target */
@@ -942,7 +942,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP3SetTarget:  (LoginBean.driverURLHeader <--> DriverURLText.text)
+     * connPtoP3SetTarget:  (LoginBean.driverURLHeader {@literal <}--{@literal >} DriverURLText.text)
      */
     private void connPtoP3SetTarget() {
         /* Set the target from the source */
@@ -961,7 +961,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP4SetSource:  (LoginBean.usesBatchWriting <--> BatchWritingCheckBox.selected)
+     * connPtoP4SetSource:  (LoginBean.usesBatchWriting {@literal <}--{@literal >} BatchWritingCheckBox.selected)
      */
     private void connPtoP4SetSource() {
         /* Set the source from the target */
@@ -980,14 +980,14 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP4SetTarget:  (LoginBean.usesBatchWriting <--> BatchWritingCheckBox.selected)
+     * connPtoP4SetTarget:  (LoginBean.usesBatchWriting {@literal <}--{@literal >} BatchWritingCheckBox.selected)
      */
     private void connPtoP4SetTarget() {
         /* Set the target from the source */
     }
 
     /**
-     * connPtoP5SetSource:  (LoginBean.databaseURL <--> DatabaseURLText.text)
+     * connPtoP5SetSource:  (LoginBean.databaseURL {@literal <}--{@literal >} DatabaseURLText.text)
      */
     private void connPtoP5SetSource() {
         /* Set the source from the target */
@@ -1009,7 +1009,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP5SetTarget:  (LoginBean.databaseURL <--> DatabaseURLText.text)
+     * connPtoP5SetTarget:  (LoginBean.databaseURL {@literal <}--{@literal >} DatabaseURLText.text)
      */
     private void connPtoP5SetTarget() {
         /* Set the target from the source */
@@ -1028,7 +1028,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP6SetSource:  (LoginBean.platformClassName <--> PlatformChoice.selectedItem)
+     * connPtoP6SetSource:  (LoginBean.platformClassName {@literal <}--{@literal >} PlatformChoice.selectedItem)
      */
     private void connPtoP6SetSource() {
         /* Set the source from the target */
@@ -1048,7 +1048,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP6SetTarget:  (LoginBean.platformClassName <--> PlatformChoice.selectedItem)
+     * connPtoP6SetTarget:  (LoginBean.platformClassName {@literal <}--{@literal >} PlatformChoice.selectedItem)
      */
     private void connPtoP6SetTarget() {
         /* Set the target from the source */
@@ -1067,7 +1067,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP7SetSource:  (LoginBean.userName <--> UserText.text)
+     * connPtoP7SetSource:  (LoginBean.userName {@literal <}--{@literal >} UserText.text)
      */
     private void connPtoP7SetSource() {
         /* Set the source from the target */
@@ -1086,7 +1086,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP7SetTarget:  (LoginBean.userName <--> UserText.text)
+     * connPtoP7SetTarget:  (LoginBean.userName {@literal <}--{@literal >} UserText.text)
      */
     private void connPtoP7SetTarget() {
         /* Set the target from the source */
@@ -1105,7 +1105,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP8SetSource:  (LoginBean.usesBinding <--> BlobBindingCheckbox.selected)
+     * connPtoP8SetSource:  (LoginBean.usesBinding {@literal <}--{@literal >} BlobBindingCheckbox.selected)
      */
     private void connPtoP8SetSource() {
         /* Set the source from the target */
@@ -1124,7 +1124,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP8SetTarget:  (LoginBean.usesBinding <--> BlobBindingCheckbox.selected)
+     * connPtoP8SetTarget:  (LoginBean.usesBinding {@literal <}--{@literal >} BlobBindingCheckbox.selected)
      */
     private void connPtoP8SetTarget() {
         /* Set the target from the source */
@@ -1143,7 +1143,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP9SetSource:  (LoginBean.usesNativeSequencing <--> NativeSQLCheckbox.selected)
+     * connPtoP9SetSource:  (LoginBean.usesNativeSequencing {@literal <}--{@literal >} NativeSQLCheckbox.selected)
      */
     private void connPtoP9SetSource() {
         /* Set the source from the target */
@@ -1162,7 +1162,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     }
 
     /**
-     * connPtoP9SetTarget:  (LoginBean.usesNativeSequencing <--> NativeSQLCheckbox.selected)
+     * connPtoP9SetTarget:  (LoginBean.usesNativeSequencing {@literal <}--{@literal >} NativeSQLCheckbox.selected)
      */
     private void connPtoP9SetTarget() {
         /* Set the target from the source */

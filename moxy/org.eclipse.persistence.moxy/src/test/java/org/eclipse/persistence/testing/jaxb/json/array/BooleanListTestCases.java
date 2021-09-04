@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Tests marshall/unmarshal List of Booleans (List<Boolean>).
+ * Tests marshall/unmarshal List of Booleans ({@code List<Boolean>}).
  *
  * @author Radek Felcman
  *

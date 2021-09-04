@@ -47,6 +47,7 @@ import org.eclipse.persistence.testing.models.employee.domain.Employee;
  * <b>Paths Covered</b>: Within the unit of work, different parts listed below were set to null:
  *                                <ul>
  *                                <li>    <i>1:1 mapping, QueryException caught</i>, parents sessions address assigned to child session's employee
+ *                                </ul>
  *
  *
  *

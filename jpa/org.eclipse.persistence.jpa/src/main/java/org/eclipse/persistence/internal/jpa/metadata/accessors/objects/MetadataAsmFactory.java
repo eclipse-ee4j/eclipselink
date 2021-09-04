@@ -575,7 +575,7 @@ public class MetadataAsmFactory extends MetadataFactory {
     /**
      * Process the byte-code argument description and return the array of Java
      * class names. i.e.
-     * "(Lorg/foo/Bar;Z)Ljava/lang/Boolean;"=>[org.foo.Bar,boolean
+     * "(Lorg/foo/Bar;Z)Ljava/lang/Boolean;"={@literal >}[org.foo.Bar,boolean
      * ,java.lang.Boolean]
      */
     private static List<String> processDescription(String desc, boolean isGeneric) {

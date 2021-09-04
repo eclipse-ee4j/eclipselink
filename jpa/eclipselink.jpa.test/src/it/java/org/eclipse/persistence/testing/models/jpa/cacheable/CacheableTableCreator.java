@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -602,9 +602,9 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
     }
 
     /**
-     * Build table for {@see org.eclipse.persistence.testing.models.jpa.cacheable.ProductFalse}
+     * Build table for {@link org.eclipse.persistence.testing.models.jpa.cacheable.ProductFalse}
      * class.
-     * @return Initialized {@see TableDefinition} instance.
+     * @return Initialized {@link TableDefinition} instance.
      */
     public static TableDefinition buildProductFalseTable() {
         TableDefinition table = createTable("PRODUCT_FALSE");
@@ -617,9 +617,9 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
     }
 
     /**
-     * Build table for {@see org.eclipse.persistence.testing.models.jpa.cacheable.ProductTrue}
+     * Build table for {@link org.eclipse.persistence.testing.models.jpa.cacheable.ProductTrue}
      * class.
-     * @return Initialized {@see TableDefinition} instance.
+     * @return Initialized {@link TableDefinition} instance.
      */
     public static TableDefinition buildProductTrueTable() {
         TableDefinition table = createTable("PRODUCT_TRUE");

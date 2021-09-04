@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,34 +30,32 @@ import javax.xml.namespace.QName;
  *
  * <p>The following schema fragment specifies the expected content contained within this class.
  *
- * <pre>
- * &lt;complexType name="attribute">
- *   &lt;complexContent>
- *     &lt;extension base="{http://www.w3.org/2001/XMLSchema}annotated">
- *       &lt;sequence>
- *         &lt;element name="simpleType" type="{http://www.w3.org/2001/XMLSchema}localSimpleType" minOccurs="0"/>
- *       &lt;/sequence>
- *       &lt;attGroup ref="{http://www.w3.org/2001/XMLSchema}defRef"/>
- *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}QName" />
- *       &lt;attribute name="use" default="optional">
- *         &lt;simpleType>
- *           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}NMTOKEN">
- *             &lt;enumeration value="prohibited"/>
- *             &lt;enumeration value="optional"/>
- *             &lt;enumeration value="required"/>
- *           &lt;/restriction>
- *         &lt;/simpleType>
- *       &lt;/attribute>
- *       &lt;attribute name="default" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="fixed" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="form" type="{http://www.w3.org/2001/XMLSchema}formChoice" />
- *       &lt;anyAttribute processContents='lax' namespace='##other'/>
- *     &lt;/extension>
- *   &lt;/complexContent>
- * &lt;/complexType>
- * </pre>
- *
- *
+ * <pre>{@code
+ * <complexType name="attribute">
+ *   <complexContent>
+ *     <extension base="{http://www.w3.org/2001/XMLSchema}annotated">
+ *       <sequence>
+ *         <element name="simpleType" type="{http://www.w3.org/2001/XMLSchema}localSimpleType" minOccurs="0"/>
+ *       </sequence>
+ *       <attGroup ref="{http://www.w3.org/2001/XMLSchema}defRef"/>
+ *       <attribute name="type" type="{http://www.w3.org/2001/XMLSchema}QName" />
+ *       <attribute name="use" default="optional">
+ *         <simpleType>
+ *           <restriction base="{http://www.w3.org/2001/XMLSchema}NMTOKEN">
+ *             <enumeration value="prohibited"/>
+ *             <enumeration value="optional"/>
+ *             <enumeration value="required"/>
+ *           </restriction>
+ *         </simpleType>
+ *       </attribute>
+ *       <attribute name="default" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       <attribute name="fixed" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       <attribute name="form" type="{http://www.w3.org/2001/XMLSchema}formChoice" />
+ *       <anyAttribute processContents='lax' namespace='##other'/>
+ *     </extension>
+ *   </complexContent>
+ * </complexType>
+ * }</pre>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "attribute", propOrder = {

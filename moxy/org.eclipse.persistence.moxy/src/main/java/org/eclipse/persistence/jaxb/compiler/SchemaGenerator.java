@@ -2439,7 +2439,7 @@ public class SchemaGenerator {
      * Replaces Java regexes with their respective XML Regex Shorthands, where applicable.
      * <p>
      * Recognized are Java regexes for the following XML Shorthands, and their negations:
-     * <blockquote><pre>
+     * <blockquote><pre>{@code
      * \i - Matches any character that may be the first character of an XML name.
      *      "[_:A-Za-z]"
      * \c - Matches any character that may occur after the first character in an XML name.
@@ -2473,13 +2473,13 @@ public class SchemaGenerator {
      *      }\\u0E30\\u0E32\\u0E33\\u0E45\\u0EB0\\u0EB2\\u0EB3]]*)|(?s:.))"
      * \R - Carriage return.
      *      "(?:(?>\\u000D\\u000A)|[\\u000A\\u000B\\u000C\\u000D\\u0085\\u2028\\u2029])"
-     * </pre></blockquote>
+     * }</pre></blockquote>
      *
      * CAUTION - ORDER SENSITIVE: Longer patterns should come first, because they may contain one of the shorter pattern.
      * <p>
      * Changes to this class should also be reflected in the opposite {@link org.eclipse.persistence.jaxb.plugins.BeanValidationPlugin.RegexMutator RegexMutator} class within XJC BeanValidation Plugin.
      *
-     * @see <a href="http://stackoverflow.com/questions/4304928/unicode-equivalents-for-w-and-b-in-java-regular-expressions"/>tchrist's work</a>
+     * @see <a href="http://stackoverflow.com/questions/4304928/unicode-equivalents-for-w-and-b-in-java-regular-expressions">tchrist's work</a>
      * @see <a href="http://www.regular-expressions.info/shorthand.html#xml">Special shorthands in XML Schema.</a>
      */
     private static final class RegexMutator {

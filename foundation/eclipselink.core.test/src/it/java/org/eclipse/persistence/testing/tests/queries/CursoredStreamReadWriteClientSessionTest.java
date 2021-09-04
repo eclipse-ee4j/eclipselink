@@ -22,7 +22,7 @@ import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.sessions.server.*;
 
 /**
- * This test verifies if a transaction is committed while using read & write
+ * This test verifies if a transaction is committed while using read &amp; write
  * connections in same client session with cursored stream used in read.
  */
 public class CursoredStreamReadWriteClientSessionTest extends TestCase {
@@ -35,7 +35,7 @@ public class CursoredStreamReadWriteClientSessionTest extends TestCase {
      * CursoredStreamReadWriteClientSessionTest constructor.
      */
     public CursoredStreamReadWriteClientSessionTest() {
-        setDescription("Verifies if a transaction is committed while using read & write connections in same client session with cursored stream used in read.");
+        setDescription("Verifies if a transaction is committed while using read &amp; write connections in same client session with cursored stream used in read.");
     }
 
     @Override
@@ -50,7 +50,7 @@ public class CursoredStreamReadWriteClientSessionTest extends TestCase {
             new org.eclipse.persistence.testing.models.employee.relational.EmployeeProject();
         proj.setDatasourceLogin(getSession().getDatasourceLogin().clone());
 
-        // Set initial & min size of connection in pool to ZERO.
+        // Set initial &amp; min size of connection in pool to ZERO.
         this.serverSession = proj.createServerSession(0, 0, 1);
         this.serverSession.setSessionLog(getSession().getSessionLog());
         this.serverSession.login();

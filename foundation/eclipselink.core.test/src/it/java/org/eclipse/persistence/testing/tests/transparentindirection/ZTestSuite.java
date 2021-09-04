@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,7 +62,7 @@ public class ZTestSuite extends TestSuite {
     /**
      * Return an enumeration on all the method names for the
      * specified class that begin with "test", removing any duplicates.
-     * @param testCaseClass a subclass of <code>TestCase</code>
+     * @param testClass a subclass of <code>TestCase</code>
      */
     public Enumeration methodNamesStartingWithTestFor(Class testClass) {
         Method[] methods = testClass.getMethods();

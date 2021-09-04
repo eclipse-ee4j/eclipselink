@@ -97,7 +97,7 @@ public abstract class ObjectLevelReadQueryTest extends TestCase {
 
     /**
      * {@code [ObjectLevelReadQuery].isCustomQueryUsed} value changer
-     * for {@link #testCheckForCustomQueryRaceConditions()}.
+     * for checkCustomQueryRaceConditionsInReadObjectQuery.
      */
     private static final class ValueChanger extends Thread {
 
@@ -213,7 +213,7 @@ public abstract class ObjectLevelReadQueryTest extends TestCase {
     /**
      * Call {@code [ObjectLevelReadQuery].checkForCustomQuery(AbstractSession, AbstractRecord)} method.
      * @param instance ObjectLevelReadQuery instance on which method is called.
-     * @param mathod   {@code [ObjectLevelReadQuery].checkForCustomQuery(AbstractSession, AbstractRecord)}
+     * @param method   {@code [ObjectLevelReadQuery].checkForCustomQuery(AbstractSession, AbstractRecord)}
      *                 method accessor.
      * @throws Throwable when any exception except NPE in invoked method occurs.
      */

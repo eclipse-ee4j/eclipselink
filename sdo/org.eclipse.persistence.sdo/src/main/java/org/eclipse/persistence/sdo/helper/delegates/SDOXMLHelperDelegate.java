@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -586,11 +586,10 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
          *   save(createDocument(dataObject, rootElementURI, rootElementName),
          *     writer, null);
          *
-         * @param dataObject specifies DataObject to be saved
+         * @param rootObject specifies DataObject to be saved
          * @param rootElementURI the Target Namespace URI of the root XML element
          * @param rootElementName the Name of the root XML element
          * @param writer specifies the Writer to write to.
-         * @throws IOException for stream exceptions.
          * @throws IllegalArgumentException if the dataObject tree
          *    is not closed or has no container.
          */

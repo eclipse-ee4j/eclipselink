@@ -30,7 +30,7 @@ import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
- * Tests inheritance configuration via XmlDiscriminatorNode & XmlDiscriminatorValue.
+ * Tests inheritance configuration via XmlDiscriminatorNode &amp; XmlDiscriminatorValue.
  *
  */
 public class XmlDiscriminatorTestCases extends JAXBWithJSONTestCases {

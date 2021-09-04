@@ -33,7 +33,7 @@ public class InheritanceTestCases extends SDOTestCase {
     @Override
     public void setUp() {
         super.setUp();
-        InputStream xsdInputStream = Thread.currentThread().getContextClassLoader().getSystemResourceAsStream(XSD);
+        InputStream xsdInputStream = ClassLoader.getSystemResourceAsStream(XSD);
         this.aHelperContext.getXSDHelper().define(xsdInputStream, null);
     }
 

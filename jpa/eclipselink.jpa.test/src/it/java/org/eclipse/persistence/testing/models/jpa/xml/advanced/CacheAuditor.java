@@ -133,9 +133,6 @@ public class CacheAuditor extends CacheInterceptor {
         return lastAcquireNoWait;
     }
 
-    /**
-     * @param accessCount the accessCount to set
-     */
     public void resetAccessCount() {
         this.accessCount = 0;
         this.lastAcquireNoWait = null;

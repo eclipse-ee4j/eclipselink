@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2017, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -216,7 +216,6 @@ public class TestQueryHints implements PUPropertiesProvider {
      * Test that setting the Query Hint: QueryHints.SCROLLABLE_CURSOR on a NamedQuery
      * does not cause subsequent Queries, created using the same name, to throw exception.
      *
-     * @throws Exception
      */
     @Test
     public void testMultipleNamedQueryWithScrollableCursor() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,10 +28,11 @@ import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
 /**
+ * <pre>{@code
  * Project --\
  *            ---> Employee --> PhoneNumber
  * Child ----/
- *
+ *}</pre>
  * EL bug 342632
  */
 public class CascadedVersionLockingMultiplePrivateOwnedTest extends TestCase {

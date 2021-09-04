@@ -622,7 +622,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
     /**
      * Bug 501272
      * Test a JPQL query with 'select new' syntax with a named query and query results
-     * cache enabled. Tests if any SQL is generated & correct results after initial query.
+     * cache enabled. Tests if any SQL is generated &amp; correct results after initial query.
      * @see SimpleRoom
      */
     public void testSelectNewJPQLQueryWithQueryResultsCache() {

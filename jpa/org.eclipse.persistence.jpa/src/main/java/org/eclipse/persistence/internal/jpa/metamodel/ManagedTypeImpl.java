@@ -712,7 +712,6 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      * @param attributeElementType - the java element or basic element type
      * @param aReturnCollectionType - the plural return type
      * @throws IllegalArgumentException if either type is wrong
-     * @return void
      */
     private void verifyAttributeTypeAndReturnType(Attribute anAttribute, Class attributeElementType, CollectionType aReturnCollectionType) {
         // Check for plural or singular attribute
@@ -1115,7 +1114,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      * Handle the case where we were unable to determine the element type of the plural attribute.
      * Normally this function is never required and should have a code coverage of 0%.
      * @param managedType
-     * @param colMapping
+     * @param collectionMapping
      * @param validation
      */
     private AttributeImpl initializePluralAttributeTypeNotFound(ManagedTypeImpl managedType, CollectionMapping collectionMapping, boolean validation) {

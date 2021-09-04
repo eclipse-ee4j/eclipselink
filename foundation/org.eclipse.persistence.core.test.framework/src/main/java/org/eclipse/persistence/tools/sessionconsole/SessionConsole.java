@@ -161,7 +161,7 @@ public class SessionConsole extends JFrame {
     }
 
     /**
-     * connEtoC1:  (LoadProjectMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> SessionInspectorFrame.loadProject()V)
+     * connEtoC1:  (LoadProjectMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} SessionInspectorFrame.loadProject()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private
@@ -182,7 +182,7 @@ public class SessionConsole extends JFrame {
     }
 
     /**
-     * connEtoC10:  (ClearSQLMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> SessionInspectorFrame.clearSQL()V)
+     * connEtoC10:  (ClearSQLMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} SessionInspectorFrame.clearSQL()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private
@@ -203,7 +203,7 @@ public class SessionConsole extends JFrame {
     }
 
     /**
-     * connEtoC11:  (LoginMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> SessionInspectorFrame.login()V)
+     * connEtoC11:  (LoginMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} SessionInspectorFrame.login()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private
@@ -224,7 +224,7 @@ public class SessionConsole extends JFrame {
     }
 
     /**
-     * connEtoC12:  (LogoutMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> SessionInspectorFrame.logout()V)
+     * connEtoC12:  (LogoutMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} SessionInspectorFrame.logout()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private
@@ -245,7 +245,7 @@ public class SessionConsole extends JFrame {
     }
 
     /**
-     * connEtoC13:  (InspectSessionMenuItem1.action.actionPerformed(java.awt.event.ActionEvent) --> SessionInspectorFrame.inspectSession()V)
+     * connEtoC13:  (InspectSessionMenuItem1.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} SessionInspectorFrame.inspectSession()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private
@@ -266,7 +266,7 @@ public class SessionConsole extends JFrame {
     }
 
     /**
-     * connEtoC14:  (ExecuteQueryMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> SessionInspectorFrame.executeQuery()V)
+     * connEtoC14:  (ExecuteQueryMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} SessionInspectorFrame.executeQuery()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private
@@ -287,7 +287,7 @@ public class SessionConsole extends JFrame {
     }
 
     /**
-     * connEtoC15:  (CutSQLMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> SessionInspectorFrame.cutSQL()V)
+     * connEtoC15:  (CutSQLMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} SessionInspectorFrame.cutSQL()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private
@@ -308,7 +308,7 @@ public class SessionConsole extends JFrame {
     }
 
     /**
-     * connEtoC16:  (CopySQLMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> SessionInspectorFrame.copySQL()V)
+     * connEtoC16:  (CopySQLMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} SessionInspectorFrame.copySQL()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private
@@ -329,7 +329,7 @@ public class SessionConsole extends JFrame {
     }
 
     /**
-     * connEtoC17:  (PasteSQLMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> SessionInspectorFrame.pasteSQL()V)
+     * connEtoC17:  (PasteSQLMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} SessionInspectorFrame.pasteSQL()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private
@@ -350,7 +350,7 @@ public class SessionConsole extends JFrame {
     }
 
     /**
-     * connEtoC18:  (ClearLogMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> SessionInspectorFrame.clearLog()V)
+     * connEtoC18:  (ClearLogMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} SessionInspectorFrame.clearLog()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private
@@ -371,7 +371,7 @@ public class SessionConsole extends JFrame {
     }
 
     /**
-     * connEtoC19:  (ClearResultsMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> SessionInspectorFrame.clearResults()V)
+     * connEtoC19:  (ClearResultsMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} SessionInspectorFrame.clearResults()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private
@@ -392,7 +392,7 @@ public class SessionConsole extends JFrame {
     }
 
     /**
-     * connEtoC2:  (ExitMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> SessionInspectorFrame.exit()V)
+     * connEtoC2:  (ExitMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} SessionInspectorFrame.exit()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private
@@ -413,7 +413,7 @@ public class SessionConsole extends JFrame {
     }
 
     /**
-     * connEtoC20:  (InspectResultMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> SessionInspectorFrame.inspectResult()V)
+     * connEtoC20:  (InspectResultMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} SessionInspectorFrame.inspectResult()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private
@@ -434,7 +434,7 @@ public class SessionConsole extends JFrame {
     }
 
     /**
-     * connEtoC21:  (InsertSQLMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> SessionInspectorFrame.templateSQLInsert()V)
+     * connEtoC21:  (InsertSQLMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} SessionInspectorFrame.templateSQLInsert()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private
@@ -455,7 +455,7 @@ public class SessionConsole extends JFrame {
     }
 
     /**
-     * connEtoC22:  (UpdateSQLMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> SessionInspectorFrame.templateSQLUpdate()V)
+     * connEtoC22:  (UpdateSQLMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} SessionInspectorFrame.templateSQLUpdate()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private
@@ -476,7 +476,7 @@ public class SessionConsole extends JFrame {
     }
 
     /**
-     * connEtoC23:  (DeleteSQLMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> SessionInspectorFrame.templateSQLDelete()V)
+     * connEtoC23:  (DeleteSQLMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} SessionInspectorFrame.templateSQLDelete()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private
@@ -497,7 +497,7 @@ public class SessionConsole extends JFrame {
     }
 
     /**
-     * connEtoC24:  (SelectSQLMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> SessionInspectorFrame.templateSQLSelect()V)
+     * connEtoC24:  (SelectSQLMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} SessionInspectorFrame.templateSQLSelect()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private
@@ -518,7 +518,7 @@ public class SessionConsole extends JFrame {
     }
 
     /**
-     * connEtoC25:  (BrowseProfileMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> SessionInspectorFrame.browseProfile()V)
+     * connEtoC25:  (BrowseProfileMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} SessionInspectorFrame.browseProfile()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private
@@ -539,7 +539,7 @@ public class SessionConsole extends JFrame {
     }
 
     /**
-     * connEtoC28:  (SessionInspectorFrame.window.windowClosing(java.awt.event.WindowEvent) --> SessionConsole.exit()V)
+     * connEtoC28:  (SessionInspectorFrame.window.windowClosing(java.awt.event.WindowEvent) --{@literal >} SessionConsole.exit()V)
      * @param arg1 java.awt.event.WindowEvent
      */
     private
@@ -560,7 +560,7 @@ public class SessionConsole extends JFrame {
     }
 
     /**
-     * connEtoC3:  (ResetDescriptorsMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> SessionInspectorFrame.resetDescriptors()V)
+     * connEtoC3:  (ResetDescriptorsMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} SessionInspectorFrame.resetDescriptors()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private
@@ -581,7 +581,7 @@ public class SessionConsole extends JFrame {
     }
 
     /**
-     * connEtoC4:  (ClearDescriptorsMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> SessionInspectorFrame.clearDescriptors()V)
+     * connEtoC4:  (ClearDescriptorsMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} SessionInspectorFrame.clearDescriptors()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private
@@ -602,7 +602,7 @@ public class SessionConsole extends JFrame {
     }
 
     /**
-     * connEtoC5:  (InspectDescriptorMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> SessionInspectorFrame.inspectDescriptor()V)
+     * connEtoC5:  (InspectDescriptorMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} SessionInspectorFrame.inspectDescriptor()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private
@@ -623,7 +623,7 @@ public class SessionConsole extends JFrame {
     }
 
     /**
-     * connEtoC6:  (ClearCacheMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> SessionInspectorFrame.clearCache()V)
+     * connEtoC6:  (ClearCacheMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} SessionInspectorFrame.clearCache()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private
@@ -644,7 +644,7 @@ public class SessionConsole extends JFrame {
     }
 
     /**
-     * connEtoC7:  (InspectCacheMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> SessionInspectorFrame.inspectCache()V)
+     * connEtoC7:  (InspectCacheMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} SessionInspectorFrame.inspectCache()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private
@@ -665,7 +665,7 @@ public class SessionConsole extends JFrame {
     }
 
     /**
-     * connEtoC8:  (SQLUpdateMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> SessionInspectorFrame.executeSQLUpdate()V)
+     * connEtoC8:  (SQLUpdateMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} SessionInspectorFrame.executeSQLUpdate()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private
@@ -686,7 +686,7 @@ public class SessionConsole extends JFrame {
     }
 
     /**
-     * connEtoC9:  (SQLSelectMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> SessionInspectorFrame.executeSQLSelect()V)
+     * connEtoC9:  (SQLSelectMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} SessionInspectorFrame.executeSQLSelect()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private
@@ -707,7 +707,7 @@ public class SessionConsole extends JFrame {
     }
 
     /**
-     * connEtoM1:  (CloseMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> SessionInspectorFrame.dispose()V)
+     * connEtoM1:  (CloseMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} SessionInspectorFrame.dispose()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,26 +28,26 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 /**
  *
  *        This type is extended by all types which allow annotation
- *        other than <schema> itself
+ *        other than {@code <schema>} itself
  *
  *
  * <p>Java class for annotated complex type.
  *
  * <p>The following schema fragment specifies the expected content contained within this class.
  *
- * <pre>
- * &lt;complexType name="annotated">
- *   &lt;complexContent>
- *     &lt;extension base="{http://www.w3.org/2001/XMLSchema}openAttrs">
- *       &lt;sequence>
- *         &lt;element ref="{http://www.w3.org/2001/XMLSchema}annotation" minOccurs="0"/>
- *       &lt;/sequence>
- *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" />
- *       &lt;anyAttribute processContents='lax' namespace='##other'/>
- *     &lt;/extension>
- *   &lt;/complexContent>
- * &lt;/complexType>
- * </pre>
+ * <pre>{@code
+ * <complexType name="annotated">
+ *   <complexContent>
+ *     <extension base="{http://www.w3.org/2001/XMLSchema}openAttrs">
+ *       <sequence>
+ *         <element ref="{http://www.w3.org/2001/XMLSchema}annotation" minOccurs="0"/>
+ *       </sequence>
+ *       <attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" />
+ *       <anyAttribute processContents='lax' namespace='##other'/>
+ *     </extension>
+ *   </complexContent>
+ * </complexType>
+ * }</pre>
  *
  *
  */

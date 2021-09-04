@@ -181,7 +181,7 @@ public class SqlName extends Name {
 
     /**
      * Determine the SQL type name for a PL/SQL type. Generate a name in the form of
-     * <prefix>_<name>. The <prefix> term is determined as follows in precedency - java user
+     * {@code <prefix>_<name>}. The {@code <prefix>} term is determined as follows in precedency - java user
      * interface name of the associated PL/SQL package - java base interface name of the associated
      * PL/SQL package - the associated PL/SQL package name Generated names are subject to length and
      * conflict check. If length excceeds PL/SQL identifier limit, the name will be chopped. If
@@ -398,7 +398,7 @@ public class SqlName extends Name {
      * the class that JPub generates. It is different from the use class name, the name of the class
      * name generated when the class is used, rather than declared, if the use class is
      * user-written. The user tells JPub that this is the case by putting the clause
-     * "GENERATE <decl name> AS <use name>" in the input file.
+     * "{@code GENERATE <decl name> AS <use name>}" in the input file.
      *
      * * @return the decl class name of a type.
      */
@@ -411,8 +411,8 @@ public class SqlName extends Name {
      * Returns the declaration package name of an SqlName. The declaration package name is the name
      * of the package that JPub generates. It is different from the use package name, the name of
      * the package name generated when the package is used, rather than declared, if the use package
-     * is user-written. The user tells JPub that this is the case by putting the clause "GENERATE
-     * <decl name> AS <use name> in the input file.
+     * is user-written. The user tells JPub that this is the case by putting the clause "{@code GENERATE
+     * <decl name> AS <use name>}" in the input file.
      *
      * * @return the decl package name of a type.
      */
@@ -753,7 +753,7 @@ public class SqlName extends Name {
 
     /**
      * Returns the PL/SQL function to be used for converting this PL/SQL into a SQL type.
-     * <p/>
+     * <br>
      * Returns null if this is not a PL/SQL type or if it does not have user-defined conversions.
      */
     public String getOutOfConversion() {
@@ -775,7 +775,7 @@ public class SqlName extends Name {
 
     /**
      * Returns the PL/SQL function to be used for converting a SQL type into this PL/SQL type.
-     * <p/>
+     * <br>
      * Returns null if this is not a PL/SQL type or if it does not have user-defined conversions.
      */
     public String getIntoConversion() {

@@ -45,6 +45,7 @@ import org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod;
  * <li> <i>Address</i> 1:1 Mapping
  * <li> <i>Period</i> Simple Aggregate
  * <li> <i>NormalHours</i>
+ * </ul>
  */
 public class MergeUnitOfWorkTest extends org.eclipse.persistence.testing.framework.WriteObjectTest {
     public Object unitOfWorkWorkingCopy;

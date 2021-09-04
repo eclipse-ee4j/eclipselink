@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -464,12 +464,6 @@ public class SDOClassGenerator {
 
     /**
      * INTERNAL:
-     * @param uri
-     * @param ownerName
-     * @param name
-     * @param javaType (always represents the processed javaClass name)
-     * @param many
-     * @param annotation
      */
     private void buildGetterAndSetter(ClassBuffer classBuffer, SDOProperty property) {
         pushIndent();
@@ -485,10 +479,6 @@ public class SDOClassGenerator {
     /**
      * INTERNAL:
      * @param classBuffer
-     * @param name
-     * @param javaType (always represents the processed javaClass name)
-     * @param annotation
-     * @param className
      */
     private void buildGetMethodBuffer(ClassBuffer classBuffer, SDOProperty property, java.util.List documentation) {
         String returnType = SDOUtil.getJavaTypeForProperty(property);
@@ -539,10 +529,6 @@ public class SDOClassGenerator {
     /**
      * INTERNAL:
      * @param classBuffer
-     * @param name
-     * @param javaType (always represents the processed javaClass name)
-     * @param annotation
-     * @param className
      */
     private void buildSetMethodBuffer(ClassBuffer classBuffer, SDOProperty property, java.util.List documentation) {
         if (property.getType().isChangeSummaryType()) {

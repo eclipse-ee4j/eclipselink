@@ -191,11 +191,11 @@ public class ReadAllExpressionTest extends org.eclipse.persistence.testing.frame
     /**
      * This flag has been added to test adding batch attributes to very
      * complex expressions.  This method assumes that the query is on Employee.
-     * @see ExpressionSubSelectTestSuite#addExistsWithBatchAttributeTest
-     * @see ExpressionSubSelectTestSuite#addObjectComparisonWithBatchAttributeTest
-     * @see ExpressionSubSelectTestSuite#addParallelSelectWithBatchAttributeTest
-     * @see ExpressionSubSelectTestSuite#addSubSelectInWithBatchAttributeTest
-     * @see ExpressionSubSelectTestSuite#addOneToManyJoin2WithBatchReadTest
+     * (see ExpressionSubSelectTestSuite#addOneToManyJoin2WithBatchReadTest)
+     * @see ExpressionSubSelectTestSuite#addExistsWithBatchAttributeTest()
+     * @see ExpressionSubSelectTestSuite#addObjectComparisonWithBatchAttributeTest()
+     * @see ExpressionSubSelectTestSuite#addParallelSelectWithBatchAttributeTest()
+     * @see ExpressionSubSelectTestSuite#addSubSelectInWithBatchAttributeTest()
      */
     public void testBatchAttributesOnEmployee() {
             testBatchAttributesOnEmployee = true;

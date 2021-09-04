@@ -42,7 +42,7 @@ public class TestAggregateFunctions {
      * Complex test of the aggregate functions in JPQL. 
      * For this test, there must be zero results in the entity table and the Entity state field 
      * must be a primitive type.
-     * JPA 2.1 specification; Section 4.8.5 states aggregate functions (MIN, MAX, AVG, & SUM) 
+     * JPA 2.1 specification; Section 4.8.5 states aggregate functions (MIN, MAX, AVG, &amp; SUM)
      * must return a result of NULL if there are no values to apply the aggregate function to
      */
     @Test
@@ -87,7 +87,7 @@ public class TestAggregateFunctions {
      * Complex test of the aggregate functions in JPQL. 
      * For this test, there must be zero results in the entity table and the Entity state field 
      * must be a primitive wrapper type.
-     * JPA 2.1 specification; Section 4.8.5 states aggregate functions (MIN, MAX, AVG, & SUM) 
+     * JPA 2.1 specification; Section 4.8.5 states aggregate functions (MIN, MAX, AVG, &amp; SUM)
      * must return a result of NULL if there are no values to apply the aggregate function to
      */
     @Test
@@ -130,7 +130,7 @@ public class TestAggregateFunctions {
 
     /**
      * Complex test of the aggregate functions in JPQL. 
-     * For this test, there must be >0 results in the entity table and the Entity state field 
+     * For this test, there must be {@literal >}0 results in the entity table and the Entity state field
      * must be a primitive type.
      * This test is verification that aggregates return the correct result
      */
@@ -194,7 +194,7 @@ public class TestAggregateFunctions {
 
     /**
      * Complex test of the aggregate functions in JPQL. 
-     * For this test, there must be >0 results in the entity table and the Entity state field 
+     * For this test, there must be {@literal >}0 results in the entity table and the Entity state field
      * must be a primitive wrapper type.
      * This test is verification that aggregates return the correct result
      */

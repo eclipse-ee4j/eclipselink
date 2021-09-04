@@ -108,7 +108,7 @@ public class TestingBrowserFrame extends javax.swing.JFrame implements java.awt.
     }
 
     /**
-     * connEtoC1:  (RunMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> TestingBrowserFrame.testingBrowserPanel1RunTest()V)
+     * connEtoC1:  (RunMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} TestingBrowserFrame.testingBrowserPanel1RunTest()V)
      * @param arg1 java.awt.event.ActionEvent
      */
 
@@ -129,7 +129,7 @@ public class TestingBrowserFrame extends javax.swing.JFrame implements java.awt.
     }
 
     /**
-     * connEtoC10:  (LogResultsMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> TestingBrowserFrame.testingBrowserPanel1LogTestResults()V)
+     * connEtoC10:  (LogResultsMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} TestingBrowserFrame.testingBrowserPanel1LogTestResults()V)
      * @param arg1 java.awt.event.ActionEvent
      */
 
@@ -150,7 +150,7 @@ public class TestingBrowserFrame extends javax.swing.JFrame implements java.awt.
     }
 
     /**
-     * connEtoC2:  (SetupMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> TestingBrowserFrame.testingBrowserPanel1SetupTest()V)
+     * connEtoC2:  (SetupMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} TestingBrowserFrame.testingBrowserPanel1SetupTest()V)
      * @param arg1 java.awt.event.ActionEvent
      */
 
@@ -171,7 +171,7 @@ public class TestingBrowserFrame extends javax.swing.JFrame implements java.awt.
     }
 
     /**
-     * connEtoC3:  (ResetMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> TestingBrowserFrame.testingBrowserPanel1ResetTest()V)
+     * connEtoC3:  (ResetMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} TestingBrowserFrame.testingBrowserPanel1ResetTest()V)
      * @param arg1 java.awt.event.ActionEvent
      */
 
@@ -192,7 +192,7 @@ public class TestingBrowserFrame extends javax.swing.JFrame implements java.awt.
     }
 
     /**
-     * connEtoC4:  (StopMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> TestingBrowserFrame.testingBrowserPanel1StopTest()V)
+     * connEtoC4:  (StopMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} TestingBrowserFrame.testingBrowserPanel1StopTest()V)
      * @param arg1 java.awt.event.ActionEvent
      */
 
@@ -213,7 +213,7 @@ public class TestingBrowserFrame extends javax.swing.JFrame implements java.awt.
     }
 
     /**
-     * connEtoC5:  (QueryResultsMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> TestingBrowserFrame.testingBrowserPanel1QueryLoadBuild()V)
+     * connEtoC5:  (QueryResultsMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} TestingBrowserFrame.testingBrowserPanel1QueryLoadBuild()V)
      * @param arg1 java.awt.event.ActionEvent
      */
 
@@ -234,7 +234,7 @@ public class TestingBrowserFrame extends javax.swing.JFrame implements java.awt.
     }
 
     /**
-     * connEtoC6:  (SaveResultsMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> TestingBrowserFrame.testingBrowserPanel1SaveLoadBuild()V)
+     * connEtoC6:  (SaveResultsMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} TestingBrowserFrame.testingBrowserPanel1SaveLoadBuild()V)
      * @param arg1 java.awt.event.ActionEvent
      */
 
@@ -255,7 +255,7 @@ public class TestingBrowserFrame extends javax.swing.JFrame implements java.awt.
     }
 
     /**
-     * connEtoC7:  (ResetModelsMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> TestingBrowserFrame.testingBrowserPanel1RefreshModels()V)
+     * connEtoC7:  (ResetModelsMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} TestingBrowserFrame.testingBrowserPanel1RefreshModels()V)
      * @param arg1 java.awt.event.ActionEvent
      */
 
@@ -276,7 +276,7 @@ public class TestingBrowserFrame extends javax.swing.JFrame implements java.awt.
     }
 
     /**
-     * connEtoC8:  (RebuildTestsMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> TestingBrowserFrame.testingBrowserPanel1RefreshTests()V)
+     * connEtoC8:  (RebuildTestsMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} TestingBrowserFrame.testingBrowserPanel1RefreshTests()V)
      * @param arg1 java.awt.event.ActionEvent
      */
 
@@ -297,7 +297,7 @@ public class TestingBrowserFrame extends javax.swing.JFrame implements java.awt.
     }
 
     /**
-     * connEtoC9:  (KillMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --> TestingBrowserFrame.testingBrowserPanel1KillTest()V)
+     * connEtoC9:  (KillMenuItem.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} TestingBrowserFrame.testingBrowserPanel1KillTest()V)
      * @param arg1 java.awt.event.ActionEvent
      */
 

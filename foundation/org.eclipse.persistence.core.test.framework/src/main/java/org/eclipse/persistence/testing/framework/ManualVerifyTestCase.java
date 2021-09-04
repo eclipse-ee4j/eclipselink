@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.framework;
 import org.eclipse.persistence.logging.SessionLog;
 
 /**
- * <p>Purpose<b></b>:All the test cases are subclassed from this class. Each test case tests single
+ * <p><b>Purpose</b>:All the test cases are subclassed from this class. Each test case tests single
  * feature of TopLink. Ideally a test case consists of five steps.
  * Setup: Performs all the initial setup that is required by the test, such as setting
  *              up database to some state on which test would run.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,7 +61,7 @@ public class MetadataASMFactoryTest extends JUnitTestCase {
     }
 
     /**
-     * Check meta-annotations graph with cycle A -> B -> C -> A
+     * Check meta-annotations graph with cycle A -{@literal >} B -{@literal >} C -{@literal >} A
      */
     public void testAnnotationsWithCycle() {
         try {
@@ -76,7 +76,7 @@ public class MetadataASMFactoryTest extends JUnitTestCase {
     }
 
     /**
-     * Check meta-annotations graph with primitive cycle Self -> Self
+     * Check meta-annotations graph with primitive cycle Self -{@literal >} Self
      */
     public void testAnnotationsWithPrimitiveCycle() {
         try {

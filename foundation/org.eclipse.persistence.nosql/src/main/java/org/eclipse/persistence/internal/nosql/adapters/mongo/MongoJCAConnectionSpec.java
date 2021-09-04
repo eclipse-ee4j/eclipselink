@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,7 +63,7 @@ public class MongoJCAConnectionSpec implements ConnectionSpec {
      * available. A negative value means to wait indefinitely.
      * </p>
      *
-     * <p>Used by {@link org.eclipse.persistence.testing.tests.jpa.mongo.MongoDatabaseTestSuite} only.
+     * <p>Used by {@code org.eclipse.persistence.testing.tests.jpa.mongo.MongoDatabaseTestSuite} only.
      */
     private int serverSelectionTimeout = 1000 * 30;
 

@@ -125,8 +125,6 @@ public class TestExtendedQueries extends JPA1Base {
      * @param empID
      *            the ID of the employee
      * @return a hobby for the given employee ID
-     * @throws Exception
-     *             is thrown if there are no hobbies left which have not already been assigned to this employee
      */
     protected Hobby getRandomHobby(int empID) {
         boolean matched = false;

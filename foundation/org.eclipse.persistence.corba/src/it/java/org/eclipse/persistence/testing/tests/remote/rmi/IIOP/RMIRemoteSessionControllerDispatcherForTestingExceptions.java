@@ -14,11 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.remote.rmi.IIOP;
 
-import java.rmi.RemoteException;
 import org.eclipse.persistence.internal.sessions.remote.Transporter;
-import org.eclipse.persistence.sessions.remote.rmi.iiop.RMIRemoteSessionControllerDispatcher;
 import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.remote.rmi.iiop.RMIRemoteSessionControllerDispatcher;
 import org.eclipse.persistence.testing.tests.remote.TransporterGenerator;
+
+import java.rmi.RemoteException;
 
 /**
  * RemoteSessionController sits between the remote session and the session. Any interaction between these two classes
@@ -47,8 +48,6 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
 
     /**
      * INTERNAL: This method is intended to be used by by sessions that wish to execute a command on a remote session
-     *
-     * @param remoteCommand RemoteCommand The command to be executed on the remote session
      */
     @Override
     public Transporter processCommand(Transporter remoteTransporter) {
@@ -197,7 +196,6 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
 
     /**
      * Get the default read-only classes
- *
      */
 
     @Override
@@ -251,8 +249,6 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
     /**
      * PUBLIC: Return the writer to which an accessor writes logged messages and SQL. If not set, this reference
      * defaults to a writer on System.out. To enable logging, logMessages must be turned on.
-     *
-     * @see #logMessages()
      */
 
     public Transporter getRemoteLog() {
@@ -271,8 +267,6 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
     /**
      * PUBLIC: Return the session log to which an accessor logs messages and SQL. If not set, this will default to a
      * session log on a writer on System.out. To enable logging, logMessages must be turned on.
-     *
-     * @see #logMessages()
      */
 
     public Transporter getSessionLog() {
@@ -511,8 +505,6 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
     /**
      * PUBLIC: Set the writer to which an accessor writes logged messages and SQL. If not set, this reference defaults
      * to a writer on System.out. To enable logging logMessages() is used.
-     *
-     * @see #logMessages()
      */
 
     public Transporter setLog(Transporter log) {
@@ -538,8 +530,6 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
     /**
      * PUBLIC: Set the session log to which an accessor logs messages and SQL. If not set, this will default to a
      * session log on a writer on System.out. To enable logging, logMessages must be turned on.
-     *
-     * @see #logMessages()
      */
 
     public Transporter setSessionLog(Transporter sessionLog) {
@@ -549,8 +539,6 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
     /**
      * PUBLIC: Set messages logging. Message logging will dump all SQL executed through TopLink to the session's log. By
      * default this is System.out, but can be set to any Writer.
-     *
-     * @see #setLog(Writer)
      */
 
     public Transporter setShouldLogMessages(Transporter shouldLogMessages) {

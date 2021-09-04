@@ -26,7 +26,7 @@ import org.eclipse.persistence.descriptors.changetracking.*;
 /**
  * <p><b>Purpose</b>: Represents the mailing address on an Employee
  * <p><b>Description</b>: Held in a private 1:1 relationship from Employee
- * @see Employee
+ * @see IsolatedEmployee
  */
 public class IsolatedAddress implements Serializable, ChangeTracker {
     // implements ChangeTracker for testing

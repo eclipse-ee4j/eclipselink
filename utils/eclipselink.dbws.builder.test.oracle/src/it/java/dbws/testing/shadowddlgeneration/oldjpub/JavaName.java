@@ -34,7 +34,7 @@ public class JavaName extends LangName {
      * case), the decl name will be the same as the use name. The decl name is the name of the class
      * that JPub generates. It is different from the use name, the name of the class that represents
      * the SQL type, if the class is user-written. The user tells JPub that this is the case by
-     * putting the clause "GENERATE <decl class name> AS <use class name> in the input file.
+     * putting the clause "{@code GENERATE <decl class name> AS <use class name>}" in the input file.
      *
      * * @param package the package in which the class is declared
      *

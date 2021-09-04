@@ -285,7 +285,7 @@ public class SDOTypesGenerator {
     /**
      * INTERNAL:
      * This function is referenced by processImport or processInclude possibly recursively
-     * @param Include theImportOrInclude
+     * @param theImportOrInclude theImportOrInclude
      * @throws Exception
      */
     private void processImportIncludeInternal(Include theImportOrInclude) throws Exception {

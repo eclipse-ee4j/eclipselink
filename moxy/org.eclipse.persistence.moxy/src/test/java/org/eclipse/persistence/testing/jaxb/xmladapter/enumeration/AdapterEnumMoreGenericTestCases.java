@@ -20,7 +20,7 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 /**
  * This test represents scenario when more complicated generic XmlAdapter is used.
  * <p>
- * Example: GenericSuitsAdapterWithT&lt;T extends Enum> extends XmlAdapter&lt;String, T>
+ * Example: {@code GenericSuitsAdapterWithT<T extends Enum> extends XmlAdapter<String, T>}
  * </p>
  */
 public class AdapterEnumMoreGenericTestCases extends JAXBWithJSONTestCases{

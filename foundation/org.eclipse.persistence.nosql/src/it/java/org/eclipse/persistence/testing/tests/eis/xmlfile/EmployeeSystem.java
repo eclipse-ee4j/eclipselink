@@ -37,7 +37,6 @@ import org.eclipse.persistence.testing.framework.*;
  * Create and populate the database.
  * </li>
  * </ul>
- * </p>
  */
 public class EmployeeSystem extends TestSystem {
 

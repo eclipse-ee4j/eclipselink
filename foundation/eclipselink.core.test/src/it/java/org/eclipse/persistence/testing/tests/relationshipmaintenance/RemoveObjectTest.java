@@ -19,9 +19,6 @@ import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.testing.models.relationshipmaintenance.FieldOffice;
 import org.eclipse.persistence.testing.models.relationshipmaintenance.SalesPerson;
 
-/**
- * <class>
- */
 public class RemoveObjectTest extends org.eclipse.persistence.testing.framework.AutoVerifyTestCase {
     public FieldOffice fieldOfficeClone;
     public SalesPerson sales = null;

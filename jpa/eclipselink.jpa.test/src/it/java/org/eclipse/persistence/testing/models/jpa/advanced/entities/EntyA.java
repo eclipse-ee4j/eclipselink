@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -121,7 +121,7 @@ public class EntyA{
     }
 
     /**
-     * @param entyD the entyD to set
+     * @param entyDs the entyD to set
      */
     public void setEntyDs(Collection<EntyD> entyDs) {
         this.entyDs = entyDs;
@@ -139,7 +139,7 @@ public class EntyA{
     }
 
     /**
-     * @param entyE the entyE to set
+     * @param entyEs the entyE to set
      */
     public void setEntyEs(Collection<EntyE> entyEs) {
         this.entyEs = entyEs;

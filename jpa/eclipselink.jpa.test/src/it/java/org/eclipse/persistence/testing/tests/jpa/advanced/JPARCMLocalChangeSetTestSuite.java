@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -55,7 +55,7 @@ import junit.framework.TestSuite;
 
 /**
  * JPARCMLocalChangeSetTestSuite
- * Simple low resource/setup JPA test suite & framework allowing for local 
+ * Simple low resource/setup JPA test suite &amp; framework allowing for local 
  * testing and verification of ChangeSets distributed by RCM.
  * @author dminsky
  */

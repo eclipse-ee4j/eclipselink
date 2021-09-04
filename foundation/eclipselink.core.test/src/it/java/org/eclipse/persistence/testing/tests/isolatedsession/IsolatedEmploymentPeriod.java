@@ -27,7 +27,7 @@ import org.eclipse.persistence.descriptors.changetracking.*;
  * <p><b>Purpose</b>: Defines the period an Employee worked for the organization
  *    <p><b>Description</b>: The period holds the start date and optionally the end date if the employee has left (null otherwise).
  *                                Maintained in an aggregate relationship of Employee
- *    @see Employee
+ *    @see IsolatedEmployee
  */
 public class IsolatedEmploymentPeriod implements Serializable, ChangeTracker {
     // implements ChangeTracker for testing
@@ -94,7 +94,7 @@ public class IsolatedEmploymentPeriod implements Serializable, ChangeTracker {
     }
 
     /**
-     * Print the start & end date
+     * Print the start &amp; end date
      */
     public String toString() {
         StringWriter writer = new StringWriter();

@@ -75,7 +75,7 @@ public class ValidationTestSuite extends JUnitTestCase {
 
     /**
      * This test assumes the persistence unit has the following property set:
-     *       <property name="eclipselink.cache.shared.default" value="false"/>
+     *       <pre>{@code </pre><property name="eclipselink.cache.shared.default" value="false"/>}</pre>
      * @throws Exception
      */
 

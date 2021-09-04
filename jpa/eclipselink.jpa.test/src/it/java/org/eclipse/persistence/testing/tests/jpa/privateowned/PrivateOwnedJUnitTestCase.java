@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -953,10 +953,10 @@ public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
 
     /**
      * use case:
-     * A ---> B : the relationship between A and B is privately owned and cascade persist
+     * A {@literal --->} B : the relationship between A and B is privately owned and cascade persist
      * Create an instance of A and B. Persist A
      * Load A and update an attribute of B. Persist A
-     * => the attribute is not changed in DB.
+     * ={@literal >} the attribute is not changed in DB.
      */
     public void testPrivateOwnedOneToOneChangeFromExistingObject() {
         // Step 1 - Create an object and a related object (p-o)

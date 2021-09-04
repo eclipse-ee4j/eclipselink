@@ -40,7 +40,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * ServerEmployeeTest from JPARS 1.0 adapted for version 2.0.
- * {@see ServerEmployeeTest}
+ * {@link ServerEmployeeTest}
  *
  * @author Dmitry Kornilov
  * @since EclipseLink 2.6.0

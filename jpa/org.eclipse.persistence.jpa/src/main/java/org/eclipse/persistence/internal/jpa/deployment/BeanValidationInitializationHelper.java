@@ -93,7 +93,7 @@ public interface BeanValidationInitializationHelper {
          * @param validationGroups Array of "," deliminated fully qualified class names
          * @param appClassLoader The classloader for application
          * @return Array of classes corresponding to classnames in given <code>validationGroups</code>.
-         *         <code>null<code> if given <code>validationGroups</code> is null or empty
+         *         <code>null</code> if given <code>validationGroups</code> is null or empty
          */
         private Class[] translateValidationGroups(String validationGroups, ClassLoader appClassLoader) {
             Class[] validationGroupsClasses = null;

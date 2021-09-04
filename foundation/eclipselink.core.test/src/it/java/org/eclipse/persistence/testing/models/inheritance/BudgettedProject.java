@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,7 @@ import java.io.StringWriter;
 /**
  * <b>Purpose</b>: Larger scale projects within the Employee Demo
  * <p><b>Description</b>:     LargeProject is a concrete subclass of Project. It is instantiated for Projects with type = 'L'. The additional
- *                                information (budget, & milestoneVersion) are mapped from the LPROJECT table.
+ *                                information (budget, &amp; milestoneVersion) are mapped from the LPROJECT table.
  *    @see Project
  */
 /**

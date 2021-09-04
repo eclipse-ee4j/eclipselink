@@ -367,7 +367,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * connEtoC14:
-     * (LogProfileCheckbox.item.itemStateChanged(java.awt.event.ItemEvent) -->
+     * (LogProfileCheckbox.item.itemStateChanged(java.awt.event.ItemEvent) --{@literal >}
      * SessionInspectorPanel.logProfileChanged()V)
      *
      * @param arg1
@@ -383,7 +383,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * connEtoC15:
-     * (ProfileCheckbox.item.itemStateChanged(java.awt.event.ItemEvent) -->
+     * (ProfileCheckbox.item.itemStateChanged(java.awt.event.ItemEvent) --{@literal >}
      * SessionInspectorPanel.profileChanged()V)
      *
      * @param arg1
@@ -405,7 +405,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * connEtoC16: (LogCheckbox.item.itemStateChanged(java.awt.event.ItemEvent)
-     * --> SessionInspectorPanel.loggingChanged()V)
+     * --{@literal >} SessionInspectorPanel.loggingChanged()V)
      *
      * @param arg1
      *                java.awt.event.ItemEvent
@@ -425,7 +425,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     }
 
     /**
-     * connEtoC18: (SQLText.mouse.mouseReleased(java.awt.event.MouseEvent) -->
+     * connEtoC18: (SQLText.mouse.mouseReleased(java.awt.event.MouseEvent) --{@literal >}
      * SessionInspectorPanel.genericPopupDisplay(Ljava.awt.event.MouseEvent;LJPopupMenu;)V)
      *
      * @param arg1
@@ -447,7 +447,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * connEtoC19: (CacheTable.mouse.mouseReleased(java.awt.event.MouseEvent)
-     * -->
+     * --{@literal >}
      * SessionInspectorPanel.genericPopupDisplay(Ljava.awt.event.MouseEvent;LJPopupMenu;)V)
      *
      * @param arg1
@@ -463,7 +463,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * connEtoC20:
-     * (ResultsScrollPane.mouse.mouseReleased(java.awt.event.MouseEvent) -->
+     * (ResultsScrollPane.mouse.mouseReleased(java.awt.event.MouseEvent) --{@literal >}
      * SessionInspectorPanel.genericPopupDisplay(Ljava.awt.event.MouseEvent;LJPopupMenu;)V)
      *
      * @param arg1
@@ -484,7 +484,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     }
 
     /**
-     * connEtoC21: (ClassList.mouse.mouseReleased(java.awt.event.MouseEvent) -->
+     * connEtoC21: (ClassList.mouse.mouseReleased(java.awt.event.MouseEvent) --{@literal >}
      * SessionInspectorPanel.genericPopupDisplay(Ljava.awt.event.MouseEvent;LJPopupMenu;)V)
      *
      * @param arg1
@@ -507,7 +507,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * connEtoC3:
-     * (ClassList.listSelection.valueChanged(event.ListSelectionEvent) -->
+     * (ClassList.listSelection.valueChanged(event.ListSelectionEvent) --{@literal >}
      * SessionInspectorPanel.resetCache()V)
      *
      * @param arg1
@@ -522,7 +522,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     }
 
     /**
-     * connEtoC40: (QueryPage.mouse.mouseReleased(java.awt.event.MouseEvent) -->
+     * connEtoC40: (QueryPage.mouse.mouseReleased(java.awt.event.MouseEvent) --{@literal >}
      * SessionInspectorPanel.genericPopupDisplay(Ljava.awt.event.MouseEvent;LJPopupMenu;)V)
      *
      * @param arg1
@@ -544,7 +544,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     }
 
     /**
-     * connEtoC41: (LogText.mouse.mouseReleased(java.awt.event.MouseEvent) -->
+     * connEtoC41: (LogText.mouse.mouseReleased(java.awt.event.MouseEvent) --{@literal >}
      * SessionInspectorPanel.genericPopupDisplay(Ljava.awt.event.MouseEvent;LJPopupMenu;)V)
      *
      * @param arg1
@@ -566,7 +566,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     }
 
     /**
-     * connEtoC42: (LoginPage.mouse.mouseReleased(java.awt.event.MouseEvent) -->
+     * connEtoC42: (LoginPage.mouse.mouseReleased(java.awt.event.MouseEvent) --{@literal >}
      * SessionInspectorPanel.genericPopupDisplay(Ljava.awt.event.MouseEvent;LJPopupMenu;)V)
      *
      * @param arg1
@@ -588,7 +588,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     }
 
     /**
-     * connPtoP1SetTarget: (BrowseProfileMenuItem.enabled <-->
+     * connPtoP1SetTarget: (BrowseProfileMenuItem.enabled {@literal <}--{@literal >}
      * BrowseProfileButton.enabled)
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -607,7 +607,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     }
 
     /**
-     * connPtoP2SetTarget: (LogProfileMenuItem.selected <-->
+     * connPtoP2SetTarget: (LogProfileMenuItem.selected {@literal <}--{@literal >}
      * LogProfileCheckbox.selected)
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -626,7 +626,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     }
 
     /**
-     * connPtoP3SetTarget: (ProfileCheckbox.selected <-->
+     * connPtoP3SetTarget: (ProfileCheckbox.selected {@literal <}--{@literal >}
      * LogProfileMenuItem1.selected)
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -645,7 +645,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     }
 
     /**
-     * connPtoP4SetTarget: (LogSQLMenuItem.selected <--> LogCheckbox.selected)
+     * connPtoP4SetTarget: (LogSQLMenuItem.selected {@literal <}--{@literal >} LogCheckbox.selected)
      */
     private void connPtoP4SetTarget() {
         try {
