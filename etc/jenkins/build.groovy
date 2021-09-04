@@ -133,6 +133,16 @@ spec:
                 }
             }
         }
+        // Spotbugs analyze
+        stage('Spotbugs analyze') {
+            steps {
+                container('el-build') {
+                    sh """
+                            etc/jenkins/spotbugs.sh
+                        """
+                }
+            }
+        }
         // LRG tests
         stage('Tests') {
             steps {
