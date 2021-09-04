@@ -26,7 +26,6 @@ public class SDOTestSuite {
 
     /**
      *
-     * @param args
      */
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
@@ -35,8 +34,7 @@ public class SDOTestSuite {
     /**
     *  Inherited suite method for generating all test cases.
     *  When not running via Ant
-    * @return
-    */
+     */
     public static Test suite() {
         TestSuite suite = new TestSuite("All SDO Tests");
         SDOHelperTestSuite htsu = new SDOHelperTestSuite();

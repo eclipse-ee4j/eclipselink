@@ -26,7 +26,7 @@ import org.eclipse.persistence.testing.models.transparentindirection.MappedOrder
 
 /**
  * Test the IndirectMap with assorted DatabaseSessions and UnitsOfWork.
- * @author: Big Country
+ * @author Big Country
  */
 public class IndirectMapTestDatabase extends IndirectContainerTestDatabase {
     public IndirectMapTestDatabase(String name) {

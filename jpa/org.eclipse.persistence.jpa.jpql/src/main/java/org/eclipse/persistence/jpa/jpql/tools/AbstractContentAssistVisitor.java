@@ -1915,8 +1915,6 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     /**
      * Determines whether
      *
-     * @param expression
-     * @return
      */
     protected boolean isAppendableToCollection(Expression expression) {
         IncompleteCollectionExpressionVisitor visitor = getIncompleteCollectionExpressionVisitor();
@@ -2213,7 +2211,6 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
      * Determines whether the given {@link Expression} part is an expression of the given query BNF.
      *
      * @param expression The {@link Expression} to validate based on the query BNF
-     * @param queryBNF
      * @return <code>true</code> if the {@link Expression} part is a child of the given query BNF;
      * <code>false</code> otherwise
      */
@@ -2232,7 +2229,6 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
      * Determines whether the given {@link Expression} part is an expression of the given query BNF.
      *
      * @param expression The {@link Expression} to validate based on the query BNF
-     * @param queryBNFId
      * @return <code>true</code> if the {@link Expression} part is a child of the given query BNF;
      * <code>false</code> otherwise
      */
@@ -4535,7 +4531,6 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
      * Visits the given {@link AbstractSelectStatement} and checks to see if the identifiers of the
      * following clauses can be added a valid proposals.
      *
-     * @param expression
      * @param helper This helper handles one clause from the given <code><b>SELECT</b></code> statement
      */
     @SuppressWarnings("unchecked")
@@ -7003,7 +6998,6 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         /**
          * Returns the new {@link QueryPosition} that was created.
          *
-         * @return
          */
         public QueryPosition getQueryPosition() {
             return queryPosition;

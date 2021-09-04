@@ -28,7 +28,6 @@ import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date September 27, 2004
  */
 public class SessionManagerGetSessionStringStringTest extends AutoVerifyTestCase {
     DatabaseSession m_session = null;

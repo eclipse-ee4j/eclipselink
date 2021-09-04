@@ -1458,7 +1458,6 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
 
     /**
      * Returns a List of strings representing the lines within the fileName.
-     * @param fileName
      * @return {@code List<String>}
      */
     public List<String> getDDLFile(String fileName){

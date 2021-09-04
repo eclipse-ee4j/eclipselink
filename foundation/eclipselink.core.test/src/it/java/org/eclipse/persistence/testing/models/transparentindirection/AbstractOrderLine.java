@@ -18,7 +18,7 @@ import java.io.*;
 
 /**
  * Simple order line object. Just a test fixture.
- * @author: Big Country
+ * @author Big Country
  */
 public abstract class AbstractOrderLine implements Serializable, Cloneable {
     public int id;

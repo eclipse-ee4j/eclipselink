@@ -35,7 +35,6 @@ public class SDOHelperTestSuite extends TestCase {
 
     /**
      *  Inherited suite method for generating all test cases.
-     * @return
      */
     public static Test suite() {
         TestSuite suite = new TestSuite("All Helper Tests");

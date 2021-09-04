@@ -48,7 +48,6 @@ public class QuerySQLTracker extends SessionEventAdapter {
     /**
      * Constructs and installs the event listener and sql tracking session log
      *
-     * @param session
      */
     private QuerySQLTracker(Session session) {
         session.getEventManager().addListener(this);

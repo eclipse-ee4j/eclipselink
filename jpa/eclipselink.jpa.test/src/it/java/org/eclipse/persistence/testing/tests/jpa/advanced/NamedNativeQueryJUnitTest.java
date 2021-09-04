@@ -54,8 +54,6 @@ public class NamedNativeQueryJUnitTest extends JUnitTestCase {
 
     /**
      * Adds test, similar to suite() but without adding a setup.  used from JUnitNativeQueryTestSuite
-     * @param suite
-     * @return
      */
     public static Test addNamedNativeQueryTests(TestSuite suite){
         suite.setName("NamedNativeQueryJUnitTest");

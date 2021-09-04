@@ -33,7 +33,6 @@ import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date March 11, 2005
  */
 public class ProjectXMLOrderByQueryKeysTest extends TestCase {
     private List m_queryKeyExpressionsAfterWrite;

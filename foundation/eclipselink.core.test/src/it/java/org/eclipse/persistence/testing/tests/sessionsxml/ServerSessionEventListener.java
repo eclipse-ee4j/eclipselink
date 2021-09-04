@@ -27,7 +27,6 @@ import org.eclipse.persistence.sessions.SessionEventAdapter;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date July 15, 2004
  */
 public class ServerSessionEventListener extends SessionEventAdapter {
     public static final String FILENAME = "ServerSessionEventListener";

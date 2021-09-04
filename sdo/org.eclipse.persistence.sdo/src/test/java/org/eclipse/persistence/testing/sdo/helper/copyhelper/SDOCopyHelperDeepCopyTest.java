@@ -108,9 +108,6 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
 
     /**
      * Spec 8.4 "Properties that are bi-directional require that no more than one end has containment=true"
-     * @param oppositeProperty1
-     * @param oppositeProperty2
-     * @return
      */
     private boolean areBothBidirectionalOppositePropertiesContainmentTrue(//
     SDOProperty oppositeProperty1, SDOProperty oppositeProperty2) {

@@ -169,7 +169,6 @@ public abstract class AbstractIdentificationVariableDeclarationStateObject exten
     /**
      * Creates
      *
-     * @return
      */
     protected abstract AbstractRangeVariableDeclarationStateObject buildRangeVariableDeclarationStateObject();
 

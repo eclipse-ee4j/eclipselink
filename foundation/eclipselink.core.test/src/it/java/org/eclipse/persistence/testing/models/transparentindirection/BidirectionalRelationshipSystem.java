@@ -20,7 +20,6 @@ import org.eclipse.persistence.testing.framework.TestSystem;
 /**
  * @author Guy Pelletier
  * @version 1.0
- * @date March 21, 2005
  */
 public class BidirectionalRelationshipSystem extends TestSystem {
     public BidirectionalRelationshipSystem() {

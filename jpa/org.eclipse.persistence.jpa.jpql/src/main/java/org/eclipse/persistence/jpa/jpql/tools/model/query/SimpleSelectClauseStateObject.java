@@ -108,7 +108,6 @@ public class SimpleSelectClauseStateObject extends AbstractSelectClauseStateObje
     /**
      * Returns
      *
-     * @return
      */
     public StateObject getSelectItem() {
         return stateObject;

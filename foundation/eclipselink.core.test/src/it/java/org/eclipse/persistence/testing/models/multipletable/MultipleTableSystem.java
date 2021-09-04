@@ -24,7 +24,6 @@ import org.eclipse.persistence.tools.schemaframework.PopulationManager;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date June 17, 2005
  */
 public class MultipleTableSystem extends TestSystem {
     public MultipleTableSystem() {

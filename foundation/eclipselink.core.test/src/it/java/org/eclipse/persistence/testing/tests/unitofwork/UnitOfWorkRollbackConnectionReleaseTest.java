@@ -27,7 +27,6 @@ import org.eclipse.persistence.sessions.server.ClientSession;
  * Tests the release of a write connection on a client session that is null
  *
  * @author Guy Pelletier
- * @date August 9, 2004
  */
 public class UnitOfWorkRollbackConnectionReleaseTest extends AutoVerifyTestCase {
     Accessor accessor;

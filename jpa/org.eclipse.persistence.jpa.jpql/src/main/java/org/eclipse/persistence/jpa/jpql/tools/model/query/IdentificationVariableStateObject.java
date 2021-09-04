@@ -164,7 +164,6 @@ public class IdentificationVariableStateObject extends SimpleStateObject {
     /**
      * Returns
      *
-     * @return
      */
     public IMapping getMapping() {
         if ((managedType == null) && (mapping == null)) {
@@ -235,7 +234,6 @@ public class IdentificationVariableStateObject extends SimpleStateObject {
     /**
      * Resolves
      *
-     * @return
      */
     protected IMapping resolveMapping() {
         return null;

@@ -131,7 +131,6 @@ public class SDOSequenceTestXSD extends SDOSequenceTestCases {
      * by using the standard spec SDODataObject generation method on page
      *
      * The existing getControlTypes() uses non-public Property constructors
-     * @throws Exception
      */
     public DataObject createRootObject(boolean viaXML, List types, boolean withChangeSummary) {
         DataObject aRoot = null;
@@ -1249,7 +1248,6 @@ public class SDOSequenceTestXSD extends SDOSequenceTestCases {
      * Updates through DataObject and the Lists or Sequences returned
      * from DataObject operate on the same data.
      * When getType().isSequencedType() == false, null is returned.
-     * @return the <code>Sequence</code> or null.
      */
     public void testSequenceReturnFrom_SDODataObject_getSequence() {
         defineAndLoadRoot(false, false);
@@ -1259,7 +1257,6 @@ public class SDOSequenceTestXSD extends SDOSequenceTestCases {
     /**
      * Returns the value of a <code>Sequence</code> property identified by the specified path.
      * @param path the path to a valid object and property.
-     * @return the <code>Sequence</code> value of the specified property.
      * @see #get(String)
      * @deprecated in 2.1.0.
      */
@@ -1294,7 +1291,6 @@ public class SDOSequenceTestXSD extends SDOSequenceTestCases {
     /**
      * Returns the value of a <code>Sequence</code> property identified by the specified property index.
      * @param propertyIndex the index of the property.
-     * @return the <code>Sequence</code> value of the specified property.
      * @see #get(int)
      * @deprecated in 2.1.0.
      */
@@ -1378,7 +1374,6 @@ public class SDOSequenceTestXSD extends SDOSequenceTestCases {
     /**
      * Returns the value of the specified <code>Sequence</code> property.
      * @param property the property to get.
-     * @return the <code>Sequence</code> value of the specified property.
      * @see #get(Property)
      * @deprecated in 2.1.0.
      */
@@ -1499,7 +1494,6 @@ public class SDOSequenceTestXSD extends SDOSequenceTestCases {
 
     /**
      * Returns the number of entries in the sequence.
-     * @return the number of entries.
      */
     public void test_intReturnFrom_size() {
     }
@@ -3966,7 +3960,6 @@ public class SDOSequenceTestXSD extends SDOSequenceTestCases {
      * Returns the property for the given entry index.
      * Returns <code>null</code> for mixed text entries.
      * @param index the index of the entry.
-     * @return the property or <code>null</code> for the given entry index.
      */
     public void test_PropertyReturnFrom_getProperty() {
         // int index) {
@@ -4011,7 +4004,6 @@ public class SDOSequenceTestXSD extends SDOSequenceTestCases {
     /**
      * Returns the property value for the given entry index.
      * @param index the index of the entry.
-     * @return the value for the given entry index.
      */
     public void test_ObjectReturnFrom_getValue() {
         // int index) {

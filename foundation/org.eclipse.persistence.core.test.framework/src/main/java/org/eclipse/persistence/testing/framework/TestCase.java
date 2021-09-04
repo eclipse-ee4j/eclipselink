@@ -640,8 +640,6 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
      * Same as strongAssert but only throws a warning.  I.e. if the check
      * is how the feature is implemented but not really crucial to how it works,
      * just throw a warning and fix the test later.
-     * @param assertion
-     * @param warningMessage
      */
     public void weakAssert(boolean assertion, String warningMessage) {
         if (!assertion) {

@@ -27,7 +27,6 @@ import org.eclipse.persistence.mappings.converters.*;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date March 04, 2003
  */
 public class DirectMapMappingsProject extends Project {
     public DirectMapMappingsProject() {

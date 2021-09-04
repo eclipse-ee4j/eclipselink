@@ -4433,9 +4433,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         /**
          * Validates
          *
-         * @param expression
-         * @param index
-         * @return
          */
         abstract boolean validateSeparator(CollectionExpression expression, int index);
 

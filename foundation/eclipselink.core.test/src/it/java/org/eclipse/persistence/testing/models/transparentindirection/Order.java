@@ -18,7 +18,7 @@ import java.util.*;
 
 /**
  * Simple order object. Just a test fixture.
- * @author: Big Country
+ * @author Big Country
  */
 public class Order extends AbstractOrder {
     public Collection salesReps;

@@ -27,7 +27,6 @@ import org.eclipse.persistence.sessions.factories.SessionManager;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date Septmeber 28, 2004
  */
 public class MWConfigModelEncryptionTest extends AutoVerifyTestCase {
     DatabaseSessionConfig m_sessionConfig1;

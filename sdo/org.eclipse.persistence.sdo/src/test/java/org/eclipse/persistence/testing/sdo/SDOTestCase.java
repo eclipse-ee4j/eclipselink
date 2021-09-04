@@ -545,8 +545,6 @@ public class SDOTestCase extends junit.framework.TestCase {
      */
     /**
      *
-     * @param currentDO
-     * @param isCSonAncestor
      */
     public void assertChangeSummaryStatusIfClearedIfCSIsAncestor(DataObject currentDO, boolean isCSonAncestor) {
         if (currentDO != null) {
@@ -585,9 +583,6 @@ public class SDOTestCase extends junit.framework.TestCase {
 
     /**
      *
-     * @param aChangeSummary
-     * @param undoneDO
-     * @param originalDO
      */
     protected void assertUndoChangesEqualToOriginal(ChangeSummary aChangeSummary,//
     DataObject undoneDO, DataObject originalDO) {
@@ -609,7 +604,6 @@ public class SDOTestCase extends junit.framework.TestCase {
 
     /**
      *
-     * @param aRootObject
      */
     // test undo when logging is off (with previous changes)
     protected void assertValueStoresInitializedAfterLoggingOn(DataObject aRootObject) {
@@ -625,8 +619,6 @@ public class SDOTestCase extends junit.framework.TestCase {
 
     /**
      *
-     * @param aRootObject
-     * @param aCurrentValueStoreAfterLoggingFirstOnParam
      */
     protected void assertValueStoresCopiedAndSwappedAfterFirstModifyOperation(DataObject aRootObject, ValueStore aCurrentValueStoreAfterLoggingFirstOnParam) {
         // verify logging is on
@@ -652,8 +644,6 @@ public class SDOTestCase extends junit.framework.TestCase {
 
     /**
      *
-     * @param aRootObject
-     * @param aCurrentValueStoreAfterLoggingFirstOnParam
      */
     protected void assertValueStoresReturnedToStartStateAfterUndoChanges(DataObject aRootObject, ValueStore aCurrentValueStoreAfterLoggingFirstOnParam) {
         // verify logging is on
@@ -668,8 +658,6 @@ public class SDOTestCase extends junit.framework.TestCase {
 
     /**
      *
-     * @param aRootObject
-     * @param aCurrentSequenceAfterLoggingFirstOnParam
      */
     protected void assertSequencesReturnedToStartStateAfterUndoChanges(DataObject aRootObject, Sequence aCurrentSequenceAfterLoggingFirstOnParam) {
         // verify logging is on
@@ -691,10 +679,6 @@ public class SDOTestCase extends junit.framework.TestCase {
      * values are ignored but should be defaults. Note: A setting object should
      * handle its own isEqual() behavior
      *
-     * @param aSequence
-     * @param aSequenceCopy
-     * @param isDeep
-     * @return
      */
     public boolean compareSequences(SDOSequence aSequence, SDOSequence aSequenceCopy, boolean isDeep) {
         // corner case: isSequenced set to true after type definition had not
@@ -815,8 +799,6 @@ public class SDOTestCase extends junit.framework.TestCase {
      * suite on windows without assertEquals() failing. Use the system property
      * -DignoreCRLF=true
      *
-     * @param control
-     * @param test
      * @param removeCRLF
      *            void
      *
@@ -832,11 +814,6 @@ public class SDOTestCase extends junit.framework.TestCase {
 
     /**
      *
-     * @param parentType
-     * @param name
-     * @param propType
-     * @param isContainment
-     * @return
      */
     protected DataObject addProperty(DataObject parentType, String name, Type propType, boolean isContainment) {
         DataObject newProperty = addProperty(parentType, name, propType);
@@ -846,12 +823,6 @@ public class SDOTestCase extends junit.framework.TestCase {
 
     /**
      *
-     * @param parentType
-     * @param name
-     * @param propType
-     * @param isContainment
-     * @param isMany
-     * @return
      */
     protected DataObject addProperty(DataObject parentType, String name, Type propType, boolean isContainment, boolean isMany) {
         DataObject newProperty = addProperty(parentType, name, propType, isContainment);
@@ -902,9 +873,6 @@ public class SDOTestCase extends junit.framework.TestCase {
 
     /**
      *
-     * @param uri
-     * @param name
-     * @return
      */
     protected DataObject defineType(String uri, String name) {
         DataObject newType = aHelperContext.getDataFactory().create(SDO_URL, TYPE);
@@ -1047,10 +1015,6 @@ public class SDOTestCase extends junit.framework.TestCase {
      * Write to the output stream and return a success flag if no exceptions
      * thrown
      *
-     * @param anObject
-     * @param uri
-     * @param typename
-     * @param aStream
      * @return success flag
      */
     public boolean writeXML(DataObject anObject, String uri, String typename, OutputStream aStream) {

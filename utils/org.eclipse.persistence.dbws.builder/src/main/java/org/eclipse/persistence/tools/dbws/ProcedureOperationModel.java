@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -141,7 +141,6 @@ public class ProcedureOperationModel extends ModelWithBuildSql {
      * List. It is also assumed the each entry in a given DatabaseType[] corresponds
      * to an argument in the associated stored procedure at the same index.
      *
-     * @param dbTypes
      */
     public void addArgumentTypes(DatabaseType[] dbTypes) {
         if (argumentTypes == null) {
@@ -157,7 +156,6 @@ public class ProcedureOperationModel extends ModelWithBuildSql {
      * List. It is also assumed the each entry in a given DatabaseType[] corresponds
      * to an argument in the associated stored procedure at the same index.
      *
-     * @param argumentTypes
      */
     public void setArgumentTypes(List<DatabaseType[]> argumentTypes) {
         this.argumentTypes = argumentTypes;
@@ -175,7 +173,6 @@ public class ProcedureOperationModel extends ModelWithBuildSql {
     /**
      * Set the DatabaseType of the stored function's return argument.
      *
-     * @param dbStoredFunctionReturnType
      */
     public void setDbStoredFunctionReturnType(DatabaseType dbStoredFunctionReturnType) {
         this.dbStoredFunctionReturnType = dbStoredFunctionReturnType;

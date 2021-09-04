@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,7 +36,7 @@ public interface IManagedTypeProvider extends IExternalForm {
      * Returns the collection of possible abstract schema types.
      *
      * @return The {@link IEntity entities} defined in the persistence context
-     * @version 2.4
+     * @since 2.4
      */
     Iterable<IEntity> entities();
 
@@ -102,7 +102,7 @@ public interface IManagedTypeProvider extends IExternalForm {
      *
      * @param typeName The fully qualified type name of the {@link IManagedType} to retrieve
      * @return The {@link IManagedType} for the given type, if one exists, <code>null</code> otherwise
-     * @version 2.4
+     * @since 2.4
      */
     IManagedType getManagedType(String typeName);
 

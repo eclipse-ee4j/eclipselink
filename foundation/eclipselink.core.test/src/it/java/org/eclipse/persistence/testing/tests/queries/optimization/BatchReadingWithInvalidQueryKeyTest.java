@@ -26,7 +26,6 @@ import org.eclipse.persistence.testing.framework.*;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date October 5, 2004
  */
 public class BatchReadingWithInvalidQueryKeyTest extends TestCase {
     private ValidationException m_validationException;

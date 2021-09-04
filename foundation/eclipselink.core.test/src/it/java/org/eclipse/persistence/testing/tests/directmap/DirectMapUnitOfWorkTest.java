@@ -23,7 +23,6 @@ import org.eclipse.persistence.testing.models.directmap.DirectMapMappings;
 
 /**
  * @author Gordon Yorke
- * @date May 11, 2005
  */
 public class DirectMapUnitOfWorkTest extends AutoVerifyTestCase {
     boolean m_exceptionCaught;

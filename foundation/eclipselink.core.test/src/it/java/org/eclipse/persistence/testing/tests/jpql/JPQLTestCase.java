@@ -103,9 +103,6 @@ public class JPQLTestCase extends TransactionalTestCase {
      * Return the first employee that has a long enough name for the test.
      * If no match is found throw a warning exception.
      * See bug 223005
-     * @param minFirstNameLength
-     * @param testName
-     * @return
      */
     public Employee getEmployeeWithRequiredNameLength(int minFirstNameLength, String testName) {
         return getEmployeeWithRequiredNameLength(getSomeEmployees(), minFirstNameLength, testName);
@@ -115,10 +112,6 @@ public class JPQLTestCase extends TransactionalTestCase {
      * Return the first employee that has a long enough name for the test.
      * If no match is found throw a warning exception.
      * See bug 223005
-     * @param vectorOfEmployees
-     * @param minFirstNameLength
-     * @param testName
-     * @return
      */
     public Employee getEmployeeWithRequiredNameLength(Vector vectorOfEmployees, int minFirstNameLength, String testName) {
         Employee empMatch = null;
@@ -212,7 +205,6 @@ public class JPQLTestCase extends TransactionalTestCase {
 
     /**
      * Set the ejbql string to the passed value
-     * @param theEjbqlString
      */
     public void setEjbqlString(String theEjbqlString) {
         this.ejbql = theEjbqlString;

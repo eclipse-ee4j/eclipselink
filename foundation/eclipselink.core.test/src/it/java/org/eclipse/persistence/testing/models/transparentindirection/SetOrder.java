@@ -20,7 +20,7 @@ import java.util.*;
  * Simple order object. Just a test fixture.
  * Collections are held in Sets.
  * this should only be used in jdk1.2+
- * @author: Big Country
+ * @author Big Country
  */
 public class SetOrder extends Order {
 

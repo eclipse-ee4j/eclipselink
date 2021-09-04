@@ -27,7 +27,6 @@ import org.eclipse.persistence.testing.models.directmap.DirectMapMappings;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date July 26, 2005
  */
 public class DirectMapMappingHashMapTest extends AutoVerifyTestCase {
     private NullPointerException m_exception;

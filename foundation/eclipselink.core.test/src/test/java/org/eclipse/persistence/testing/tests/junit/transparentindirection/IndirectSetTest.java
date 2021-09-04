@@ -46,7 +46,7 @@ import org.junit.runners.Parameterized.Parameters;
 /**
  * Test a simple IndirectSet.
  * this should only be used in jdk1.2+
- * @author: Big Country
+ * @author Big Country
  */
 @RunWith(Parameterized.class)
 public class IndirectSetTest {

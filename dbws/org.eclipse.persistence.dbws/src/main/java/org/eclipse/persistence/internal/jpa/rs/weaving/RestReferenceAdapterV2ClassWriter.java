@@ -75,10 +75,6 @@ public class RestReferenceAdapterV2ClassWriter implements EclipseLinkClassWriter
      *      }
      *  }
      *
-     * @param loader
-     * @param className
-     * @return
-     * @throws ClassNotFoundException
      */
     @Override
     public byte[] writeClass(DynamicClassLoader loader, String className)

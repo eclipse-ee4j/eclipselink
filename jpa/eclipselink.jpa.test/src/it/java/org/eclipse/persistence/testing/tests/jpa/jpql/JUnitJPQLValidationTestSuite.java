@@ -970,7 +970,6 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
      * This is a known error in the MySQL db, and this method will be removed
      * when this error is resolved.
      *
-     * @param exception
      * @return true if this exception is a specific known MySQL failure
      */
     public boolean isKnownMySQLIssue(Throwable exception) {

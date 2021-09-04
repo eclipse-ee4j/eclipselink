@@ -55,8 +55,7 @@ public class TestCriteriaBuilder {
     /**
      * Merging ElementCollections on Oracle fails when EclipseLink generates 
      * a DELETE SQL statement with a WHERE clause containing a CLOB.
-     * 
-     * @throws Exception
+     *
      */
     @Test
     public void testCriteriaCompoundSelectionModel() throws Exception {

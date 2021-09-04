@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2018, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -44,8 +44,7 @@ public class TestLobMerge {
     /**
      * Merging ElementCollections on Oracle fails when EclipseLink generates 
      * a DELETE SQL statement with a WHERE clause containing a CLOB.
-     * 
-     * @throws Exception
+     *
      */
     @Test
     public void testLobMerge() throws Exception {

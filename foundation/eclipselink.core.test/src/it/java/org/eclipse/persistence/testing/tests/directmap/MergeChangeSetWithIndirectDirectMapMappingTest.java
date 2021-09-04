@@ -26,7 +26,6 @@ import org.eclipse.persistence.testing.models.directmap.*;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date March 04, 2003
  */
 public class MergeChangeSetWithIndirectDirectMapMappingTest extends TransactionalTestCase {
     boolean m_exceptionCaught;

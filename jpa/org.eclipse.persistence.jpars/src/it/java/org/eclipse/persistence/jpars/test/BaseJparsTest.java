@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -85,7 +85,6 @@ public abstract class BaseJparsTest {
      * @param rel       link 'rel'
      * @param href       link 'href'
      * @return true if link is found
-     * @throws URISyntaxException
      */
     protected boolean checkLinkXml(String response, String rel, String href) throws URISyntaxException {
         final String link = "<links rel=\"" + rel + "\" href=\"" + getServerURI() + href + "\"/>";
@@ -99,7 +98,6 @@ public abstract class BaseJparsTest {
      * @param rel       link 'rel'
      * @param href       link 'href'
      * @return true if link is found
-     * @throws URISyntaxException
      */
     protected boolean checkLinkJson(String response, String rel, String href) throws URISyntaxException {
         final String link = "{\"rel\":\"" + rel + "\",\"href\":\"" + getServerURI() + href + "\"}";
@@ -112,7 +110,6 @@ public abstract class BaseJparsTest {
      * @param response  JSON response string
      * @param rel       link 'rel'
      * @return true if link is found
-     * @throws URISyntaxException
      */
     protected boolean checkLinkJson(String response, String rel) throws URISyntaxException {
         return response.contains("{\"rel\":\"" + rel);

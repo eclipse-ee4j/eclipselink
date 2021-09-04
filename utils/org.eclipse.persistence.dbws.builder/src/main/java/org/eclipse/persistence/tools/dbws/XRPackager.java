@@ -475,7 +475,6 @@ public class XRPackager implements DBWSPackager {
      * If an invalid log level is set, a warning will be thrown
      * and the default level "fine" will be set.
      *
-     * @param logLevel
      */
     private boolean isValidLogLevel(String logLevel) {
         return (logLevel.equalsIgnoreCase(OFF)

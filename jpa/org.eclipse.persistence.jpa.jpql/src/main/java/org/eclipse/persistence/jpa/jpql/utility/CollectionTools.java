@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -133,7 +133,6 @@ public final class CollectionTools {
      *
      * @param array The array to convert into a {@link List}
      * @return An instance of a {@link List} containing the elements of the given array
-     * @param <E>
      * @since 2.5
      */
     public static <E> List<E> list(E... array) {

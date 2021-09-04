@@ -111,7 +111,6 @@ public class DefineAndGenerateBidirectionalTestCases extends XSDHelperDefineAndG
      * by using the standard spec SDODataObject generation method on page
      *
      * The existing getControlTypes() uses non-public Property constructors
-     * @throws Exception
      */
     public void testDefineAndGenerateUsingSpecMethod() throws Exception {
         boolean useXSD = false;

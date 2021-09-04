@@ -44,7 +44,7 @@ public class JavaVersionTest {
 
     /**
      * Test Java version retrieval from {@code Runtime.Version}. It just calls {@code JavaVersion#runtimeVersion()} method
-     * on current Java SE when {@literal>}9 and checks that no exception is thrown.
+     * on current Java SE when {@literal >}9 and checks that no exception is thrown.
      */
     @Test
     public void testRuntimeVersion() {

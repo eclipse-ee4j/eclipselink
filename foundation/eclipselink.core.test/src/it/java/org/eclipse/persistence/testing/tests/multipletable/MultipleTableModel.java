@@ -30,7 +30,6 @@ import org.eclipse.persistence.testing.models.multipletable.MultipleTableSystem;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date May 28, 2007
  */
 public class MultipleTableModel extends TestModel {
     public MultipleTableModel() {

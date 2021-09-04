@@ -121,7 +121,6 @@ public class SDOSequenceTest extends SDOSequenceTestCases {
      * by using the standard spec SDODataObject generation method on page
      *
      * The existing getControlTypes() uses non-public Property constructors
-     * @throws Exception
      */
     public DataObject createRootObject(boolean viaXML, List types) {
         DataObject aRoot = null;
@@ -403,7 +402,6 @@ public class SDOSequenceTest extends SDOSequenceTestCases {
      * Updates through DataObject and the Lists or Sequences returned
      * from DataObject operate on the same data.
      * When getType().isSequencedType() == false, null is returned.
-     * @return the <code>Sequence</code> or null.
      */
     public void testSequenceReturnFrom_SDODataObject_getSequence() {
         getRootViaDefineViaDataObjectandLoadViaDataFactory();

@@ -19,7 +19,7 @@ import java.util.*;
 /**
  * Simple order object. Just a test fixture.
  * Collections are held in Maps.
- * @author: Big Country
+ * @author Big Country
  */
 public class MappedOrder extends AbstractOrder {
     public Map salesReps;

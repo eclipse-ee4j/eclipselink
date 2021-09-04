@@ -209,7 +209,6 @@ public class TestProcessor {
      * @param pu persistence unit {@code String}
      * @param haveMsgs there should be logging messages in the output or not
      * @param options compiler options
-     * @throws Exception
      */
     private void verifyLogging(final String testName, final String pu, final boolean haveMsgs, final String... options) throws Exception {
         File runDir = new File(System.getProperty("run.dir"), testName);

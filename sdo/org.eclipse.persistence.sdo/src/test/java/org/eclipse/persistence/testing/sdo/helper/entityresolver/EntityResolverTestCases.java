@@ -42,7 +42,6 @@ public class EntityResolverTestCases extends TestCase {
     /**
      * The main schema simply has a DOCTYPE definition that will trigger the resolveEntity method on the
      * internal SchemaResolver class
-     * @return
      */
     private String getSchema() {
         return "<?xml version='1.0' encoding='UTF-8'?>\n" + "<!DOCTYPE xs:schema PUBLIC \"-//W3C//DTD XMLSCHEMA 200102//EN\" \"SomeSchema.dtd\" []>\n"
@@ -52,7 +51,6 @@ public class EntityResolverTestCases extends TestCase {
     /**
      * The schema dtd simply has an ENTITY declaration that will trigger the resolveEntity method on the
      * internal SchemaResolver class
-     * @return
      */
     private String getSchemaDtd() {
         return "<!ENTITY % xs-datatypes PUBLIC 'somedatatypes' 'SomeDatatypes.dtd' >\n" + "%xs-datatypes;";
@@ -60,7 +58,6 @@ public class EntityResolverTestCases extends TestCase {
 
     /**
      * The datatype dtd simply has an ENTITY declaration that affects nothing
-     * @return
      */
     private String getDatatypesDtd() {
         return "<!ENTITY % simpleThings \"\">";

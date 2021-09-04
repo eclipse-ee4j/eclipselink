@@ -22,7 +22,6 @@ import org.eclipse.persistence.testing.models.directmap.DirectMapMappingsSystem;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date March 04, 2003
  */
 public class DirectMapMappingModel extends TestModel {
     public DirectMapMappingModel() {

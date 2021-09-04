@@ -22,7 +22,6 @@ import org.eclipse.persistence.descriptors.InheritancePolicy;
  *
  * @author John Vandale
  * @version 1.0
- * @date Jan 20, 2010
  */
 public class ProjectClassGeneratorInheritanceMappingTest extends ProjectClassGeneratorResultFileTest {
 

@@ -26,7 +26,6 @@ import org.eclipse.persistence.testing.models.employee.domain.*;
  * Test to ensure a remote object is invalidated when updated and its
  * descriptor is configured to INVALIDATE_CHANGED_OBJECTS
  * @author dminsky
- * @date May-01-2008
  */
 public class UpdateObjectInvalidationTest extends ConfigurableCacheSyncDistributedTest {
 

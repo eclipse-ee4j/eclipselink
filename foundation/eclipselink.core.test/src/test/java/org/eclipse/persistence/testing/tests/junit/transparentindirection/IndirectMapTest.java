@@ -54,7 +54,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 /**
  * Test a simple IndirectMap.
- * @author: Big Country
+ * @author Big Country
  */
 @RunWith(Parameterized.class)
 public class IndirectMapTest {

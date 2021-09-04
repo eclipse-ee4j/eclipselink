@@ -25,7 +25,6 @@ import org.eclipse.persistence.testing.framework.TestErrorException;
 /**
  * @author Guy Pelletier
  * @version 1.0
- * @date June 25, 2003
  */
 public class ConversionExceptionFromMappingTest extends AutoVerifyTestCase {
     ConversionException m_exception;

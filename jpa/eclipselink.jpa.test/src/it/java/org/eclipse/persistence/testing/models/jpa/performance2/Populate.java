@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -617,8 +617,6 @@ public class Populate {
      * Verify that the provided entity type has no rows in the database using a
      * native ReportQuery.
      *
-     * @param entityClass
-     * @param count
      */
     public void assertCount(EntityManager em, Class entityClass, int count) {
         CriteriaBuilder cb = em.getCriteriaBuilder();

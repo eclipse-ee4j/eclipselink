@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,7 +38,6 @@ public class SecurableBackwardsCompatibilityTest {
     
     /**
      * Test the decryption of a String encrypted with DES ECB.
-     * @throws Exception
      */
     @Test
     public void testStringDecryption_DES_ECB() throws Exception {
@@ -54,7 +53,6 @@ public class SecurableBackwardsCompatibilityTest {
     
     /**
      * Test the decryption of a String encrypted with AES CBC.
-     * @throws Exception
      */
     @Test
     public void testStringDecryption_AES_CBC() throws Exception {
@@ -70,7 +68,6 @@ public class SecurableBackwardsCompatibilityTest {
     
     /**
      * Test the decryption of a String encrypted with AES ECB.
-     * @throws Exception
      */
     @Test
     public void testStringDecryption_AES_ECB() throws Exception {
@@ -86,7 +83,6 @@ public class SecurableBackwardsCompatibilityTest {
     
     /**
      * Test the decryption/processing of a plaintext String.
-     * @throws Exception
      */
     @Test
     public void testStringDecryption_PlainText() throws Exception {
@@ -99,7 +95,6 @@ public class SecurableBackwardsCompatibilityTest {
     
     /**
      * Test the decryption/processing of a null parameter.
-     * @throws Exception
      */
     @Test
     public void testNullParameterDecryption() throws Exception {
@@ -110,7 +105,6 @@ public class SecurableBackwardsCompatibilityTest {
     
     /**
      * Test the encryption of a null parameter.
-     * @throws Exception
      */
     @Test
     public void testNullParameterEncryption() throws Exception {

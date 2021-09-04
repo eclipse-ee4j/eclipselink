@@ -227,8 +227,6 @@ public class PreLoginMappingAdapter extends SessionEventListener {
 
     /**
      * Update the targetMapping to have the same accessor as the originMapping
-     * @param originMapping
-     * @param targetMapping
      */
     private static void copyAccessorToMapping(DatabaseMapping originMapping, DatabaseMapping targetMapping) {
         if (originMapping.getAttributeAccessor().isVirtualAttributeAccessor()) {
@@ -251,9 +249,6 @@ public class PreLoginMappingAdapter extends SessionEventListener {
     /**
      * Build an XMLInverseMapping based on a particular mapping and replace that mapping with
      * the newly created XMLInverseMapping in jaxbDescriptor
-     * @param jaxbDescriptor
-     * @param mapping
-     * @param jpaMapping
      */
     private static void convertMappingToXMLInverseReferenceMapping(ClassDescriptor jaxbDescriptor, DatabaseMapping mapping, ForeignReferenceMapping jpaMapping) {
         if ((mapping != null) && (jaxbDescriptor != null)) {

@@ -30,7 +30,6 @@ import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date July 15, 2004
  */
 public class SessionsXMLSessionEventListenerTest extends AutoVerifyTestCase {
     SessionBroker m_sessionBroker;

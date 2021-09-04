@@ -69,7 +69,6 @@ public class SDODataGraphDataObjectTestCases extends SDOTestCase {
      * by using the standard spec SDODataObject generation method on page
      *
      * The existing getControlTypes() uses non-public Property constructors
-     * @throws Exception
      */
     public DataObject createRootObject(List<Type> types) {
         DataObject aRoot = null;
