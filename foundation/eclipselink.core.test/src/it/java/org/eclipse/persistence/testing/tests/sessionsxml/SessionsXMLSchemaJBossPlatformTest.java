@@ -26,7 +26,6 @@ import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
  * Tests server platform tag for JBoss.
  *
  * @version 1.0
- * @date July 22, 2005
  */
 public class SessionsXMLSchemaJBossPlatformTest extends AutoVerifyTestCase {
     Exception m_exceptionCaught;

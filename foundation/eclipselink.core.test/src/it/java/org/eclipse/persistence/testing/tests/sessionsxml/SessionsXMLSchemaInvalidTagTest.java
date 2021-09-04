@@ -26,7 +26,6 @@ import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
  *
  * @author Edwin Tang
  * @version 1.0
- * @date December 2, 2004
  */
 public class SessionsXMLSchemaInvalidTagTest extends TestCase {
     Exception exception = null;

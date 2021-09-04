@@ -123,7 +123,6 @@ public abstract class QueryTimeoutBatchTestCase extends TestCase {
     /**
      * Setup the platform to perform batch inserts
      * Return to previous state after running
-     * @return
      */
     protected UnitOfWork setupPlatform() {
         Session session = getSession();

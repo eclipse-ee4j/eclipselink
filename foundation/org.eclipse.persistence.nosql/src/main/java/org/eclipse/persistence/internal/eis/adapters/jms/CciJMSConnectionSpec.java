@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -103,7 +103,6 @@ public class CciJMSConnectionSpec implements ConnectionSpec {
     /**
      * Set the username to be used when getting a queue connection.
      *
-     * @param name
      */
     public void setUsername(String name) {
         username = name;
@@ -126,7 +125,6 @@ public class CciJMSConnectionSpec implements ConnectionSpec {
     /**
      * Set the password to be used when getting a queue connection.
      *
-     * @param pass
      */
     public void setPassword(String pass) {
         // Bug 4117441 - Secure programming practices, store password in char[]
@@ -168,7 +166,6 @@ public class CciJMSConnectionSpec implements ConnectionSpec {
     /**
      * Set the JNDI lookup name of the connection factory.
      *
-     * @param jndiName
      */
     public void setConnectionFactoryURL(String jndiName) {
         connectionFactoryURL = jndiName;

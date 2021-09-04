@@ -34,9 +34,7 @@ import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
  * BUG #3455771 and 3454653
  *
  * @author Guy Pelletier
- * @revisor Edwin Tang
  * @version 2.0
- * @date December 08, 2004
  */
 public class SessionsXMLSchemaDefaultValueTest extends AutoVerifyTestCase {
     DatabaseSession employeeSession;

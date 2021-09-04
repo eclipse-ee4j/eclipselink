@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -668,7 +668,6 @@ public interface Expression {
     /**
      * The constant for 'WHERE'.
      *
-     * @version 2.5
      */
     String START_WITH = "START WITH";
 
@@ -882,7 +881,7 @@ public interface Expression {
     /**
      * Returns a string representation of this {@link Expression} and its children. The expression
      * should contain whitespace even if the beautified version would not have any. For instance,
-     * "SELECT e " should be returned where {@link Expression#toParsedText()} would return "SELECT e".
+     * "SELECT e " should be returned where {@link Expression#toActualText()} would return "SELECT e".
      *
      * @return The string representation of this {@link Expression}
      */

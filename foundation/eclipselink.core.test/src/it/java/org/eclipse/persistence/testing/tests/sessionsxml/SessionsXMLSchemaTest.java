@@ -29,7 +29,6 @@ import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date November 18, 2003
  */
 public class SessionsXMLSchemaTest extends AutoVerifyTestCase {
     DatabaseSession employeeSession;

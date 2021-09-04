@@ -36,7 +36,6 @@ import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
  *
  * @author Andrei Ilitchev
  * @version 1.0
- * @date June 11, 2004
  */
 public class SessionsXMLSchemaSequencingTest extends AutoVerifyTestCase {
     final int numSessions = 4;

@@ -187,7 +187,6 @@ public class DBWSTestSuite {
     /**
      * This method is to be used when sessions xml should not be generated.
      *
-     * @throws WSDLException
      */
     public static void setUp() throws WSDLException {
         setUp(null, false);
@@ -198,7 +197,6 @@ public class DBWSTestSuite {
      * to DBWS_SESSION_STREAM.
      *
      * @param stageDir sessions xml will be generated and written out if non-null
-     * @throws WSDLException
      */
     public static void setUp(String stageDir) throws WSDLException {
         setUp(stageDir, false);
@@ -209,7 +207,6 @@ public class DBWSTestSuite {
      * to DBWS_SESSION_STREAM.
      *
      * @param stageDir sessions xml will be generated and written out if non-null
-     * @throws WSDLException
      */
     public static void setUp(String stageDir, boolean useLogger) throws WSDLException {
         comparer.setIgnoreOrder(true);

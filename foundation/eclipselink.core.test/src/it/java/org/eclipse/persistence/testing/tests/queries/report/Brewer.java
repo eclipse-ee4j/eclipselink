@@ -19,7 +19,7 @@ import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 /**
  * Insert the type's description here.
  * Creation date: (3/2/2003 8:51:02 AM)
- * @author: Administrator
+ * @author Administrator
  */
 public class Brewer implements Cloneable, java.io.Serializable {
     protected String key = null;

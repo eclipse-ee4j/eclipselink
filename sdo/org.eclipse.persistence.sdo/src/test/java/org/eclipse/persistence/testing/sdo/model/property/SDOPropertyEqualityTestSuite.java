@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,6 @@ public class SDOPropertyEqualityTestSuite extends TestCase {
 
     /**
      * Inherited suite method for generating all test cases.
-     * @return
      */
     public static Test suite() {
         TestSuite suite = new TestSuite("SDOProperty Equality Test Suite");

@@ -77,10 +77,6 @@ public class RestCollectionAdapterClassWriter implements EclipseLinkClassWriter,
      *     }
      * }
      *
-     * @param loader
-     * @param className
-     * @return
-     * @throws ClassNotFoundException
      */
     @Override
     public byte[] writeClass(DynamicClassLoader loader, String className) throws ClassNotFoundException {

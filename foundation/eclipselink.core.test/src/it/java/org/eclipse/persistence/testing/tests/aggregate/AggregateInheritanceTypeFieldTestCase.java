@@ -23,7 +23,7 @@ import org.eclipse.persistence.testing.models.aggregate.Transport;
 /**
  * Test to ensure that the type field in an aggregate with inheritance is not updated when it is
  * not changed
- * @author: Tom Ware
+ * @author Tom Ware
  */
 public class AggregateInheritanceTypeFieldTestCase extends org.eclipse.persistence.testing.framework.AutoVerifyTestCase {
     public AggregateUpdateDescriptorListener listener = null;

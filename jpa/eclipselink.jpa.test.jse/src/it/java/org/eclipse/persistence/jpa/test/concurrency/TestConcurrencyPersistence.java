@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -47,8 +47,7 @@ public class TestConcurrencyPersistence {
      * This test spins up threads and runs them multiple times to replicate the race condition. 
      * This test should pass everytime it's run, but there exists the possibility that it 
      * passes when none of the threads actually test the collision.
-     * 
-     * @throws Exception
+     *
      */
     @Test
     public void testInsertConcurrency() throws Exception {

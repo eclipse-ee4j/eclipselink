@@ -23,7 +23,6 @@ import org.eclipse.persistence.mappings.CollectionMapping;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date March 11, 2005
  */
 public class ProjectClassGeneratorOrderByQueryKeysTest extends ProjectClassGeneratorResultFileTest {
     public static final String ATTRIBUTE_NAME = "phoneNumbers";

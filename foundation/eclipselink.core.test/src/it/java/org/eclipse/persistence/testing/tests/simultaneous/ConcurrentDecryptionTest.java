@@ -21,7 +21,6 @@ import org.eclipse.persistence.internal.security.JCEEncryptor;
 
 /**
  * @author Chris Delahunt
- * @date June 26, 2003
  *  Test fix for 318187:
  *  java.lang.NegativeArraySizeException is thrown when threads concurrently access the
  *  JCEEncryptor.decrypt(password)

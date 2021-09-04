@@ -38,7 +38,6 @@ public class QuerySQLTracker extends DefaultSessionLog {
     /**
      * Instantiating a QuerySQLTracker will replace the session's log with the QuerySQLTracker
      * and store the old log.  The old log will be replaced when remove() is called.
-     * @param session
      */
     public QuerySQLTracker(Session session) {
         this.originalLog = session.getSessionLog();

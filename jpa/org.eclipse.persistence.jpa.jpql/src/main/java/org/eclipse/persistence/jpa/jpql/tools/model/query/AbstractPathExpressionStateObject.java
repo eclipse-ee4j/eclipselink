@@ -266,7 +266,6 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
     /**
      * Returns
      *
-     * @return
      */
     public IManagedType getManagedType() {
         if (managedType == null) {
@@ -278,7 +277,6 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
     /**
      * Returns
      *
-     * @return
      */
     public IMapping getMapping() {
         resolveMappings();
@@ -437,7 +435,6 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
     /**
      * Resolves
      *
-     * @return
      */
     protected abstract IManagedType resolveManagedType();
 

@@ -134,7 +134,6 @@ public abstract class AbstractLiteralExpressionFactory extends ExpressionFactory
     /**
      * Determines
      *
-     * @return
      */
     protected boolean isCollection() {
         return false;

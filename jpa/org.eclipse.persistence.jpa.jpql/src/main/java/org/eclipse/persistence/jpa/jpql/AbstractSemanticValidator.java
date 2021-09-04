@@ -518,7 +518,6 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
      * identification variable declarations.
      *
      * @param expression The {@link AbstractFromClause} to validate
-     * @param visitor
      */
     protected void validateAbstractFromClause(AbstractFromClause expression,
                                               FirstDeclarationVisitor visitor) {

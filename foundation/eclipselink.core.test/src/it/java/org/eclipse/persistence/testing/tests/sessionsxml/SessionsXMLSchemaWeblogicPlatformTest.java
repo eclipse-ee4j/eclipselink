@@ -28,7 +28,6 @@ import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date September 4, 2008
  */
 public class SessionsXMLSchemaWeblogicPlatformTest extends AutoVerifyTestCase {
     Exception m_exceptionCaught;

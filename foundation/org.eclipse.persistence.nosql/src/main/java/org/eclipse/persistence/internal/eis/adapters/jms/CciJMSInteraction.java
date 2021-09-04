@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,7 +43,6 @@ public class CciJMSInteraction implements Interaction {
      *
      * @param spec - the interaction spec
      * @param input - the input record
-     * @throws EISException
      */
     @Override
     public jakarta.resource.cci.Record execute(InteractionSpec spec, jakarta.resource.cci.Record input) throws EISException {
@@ -60,7 +59,6 @@ public class CciJMSInteraction implements Interaction {
      * @param spec - the interaction spec
      * @param input - the input record
      * @param output - the output record
-     * @throws EISException
      */
     @Override
     public boolean execute(InteractionSpec spec, jakarta.resource.cci.Record input, jakarta.resource.cci.Record output) throws EISException {
@@ -106,7 +104,6 @@ public class CciJMSInteraction implements Interaction {
      * @param spec - the send interaction spec
      * @param input - the input record
      * @param output - the output record
-     * @throws EISException
      */
     protected void executeSendInteraction(CciJMSSendInteractionSpec spec, CciJMSRecord input, CciJMSRecord output) throws EISException {
         // verify input record
@@ -149,7 +146,6 @@ public class CciJMSInteraction implements Interaction {
      * @param spec - the receive interaction spec
      * @param input - the input record
      * @param output - the output record
-     * @throws EISException
      */
     protected void executeReceiveInteraction(CciJMSReceiveInteractionSpec spec, CciJMSRecord input, CciJMSRecord output) throws EISException {
         try {
@@ -189,7 +185,6 @@ public class CciJMSInteraction implements Interaction {
      * @param spec - the send/receive interaction spec
      * @param input - the input record
      * @param output - the output record
-     * @throws EISException
      */
     protected void executeSendReceiveInteraction(CciJMSSendReceiveInteractionSpec spec, CciJMSRecord input, CciJMSRecord output) throws EISException {
         // verify input record

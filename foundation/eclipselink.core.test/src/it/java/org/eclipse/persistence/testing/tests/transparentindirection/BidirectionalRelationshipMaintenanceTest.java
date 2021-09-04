@@ -26,7 +26,6 @@ import org.eclipse.persistence.testing.models.transparentindirection.Team;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date March 21, 2005
  */
 public class BidirectionalRelationshipMaintenanceTest extends AutoVerifyTestCase {
     boolean m_exceptionCaught;

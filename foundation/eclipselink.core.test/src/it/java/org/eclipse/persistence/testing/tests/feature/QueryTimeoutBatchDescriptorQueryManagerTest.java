@@ -77,7 +77,6 @@ public abstract class QueryTimeoutBatchDescriptorQueryManagerTest extends QueryT
 
        /**
         * Iterate and register a number of objects in the unitOfWork
-        * @param uow
         */
        @Override
        protected List<Employee>  registerObjects(UnitOfWork uow) {

@@ -166,8 +166,6 @@ public class DefineWithImportsNoSchemaLocationTestCases extends XSDHelperDefineT
          * Satisfy EntityResolver interface implementation.
          * Allow resolution of external entities.
          *
-         * @param publicId
-         * @param systemId
          * @return null
          */
         @Override

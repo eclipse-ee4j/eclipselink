@@ -55,7 +55,6 @@ public abstract class CoreDescriptor<
 
     /**
      * Adds the attribute group to this descriptor.
-     * @param group
      */
     public void addAttributeGroup(ATTRIBUTE_GROUP group) {
         if (this.attributeGroups == null){

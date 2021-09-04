@@ -21,7 +21,7 @@ import org.eclipse.persistence.testing.framework.*;
 /**
  * Insert the type's description here.
  * Creation date: (6/5/00 2:38:36 PM)
- * @author: Administrator
+ * @author Administrator
  */
 public class NullPasswordLoginTest extends org.eclipse.persistence.testing.framework.AutoVerifyTestCase {
 

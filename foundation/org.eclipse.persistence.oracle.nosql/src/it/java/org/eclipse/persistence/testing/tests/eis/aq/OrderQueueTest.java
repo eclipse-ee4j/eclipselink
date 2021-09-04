@@ -43,7 +43,7 @@ import org.junit.Test;
 import oracle.AQ.AQDequeueOption;
 
 /**
- * Tests based on {@link Order} and {@AAddress} entities and {@code raw_order_queue} model.
+ * Tests based on {@link Order} and {@link Address} entities and {@code raw_order_queue} model.
  */
 public class OrderQueueTest {
 

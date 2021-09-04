@@ -136,8 +136,6 @@ public class SqlName extends Name {
      * Create a SqlName instance for a PL/SQL type, which requires extra identifying information,
      * such the names for the package and method that mentions this PL/SQL type.
      *
-     * @param schema
-     * @param type
      * @param parentType
      *            The PL/SQL package type that references to the SqlType for which the SqlName is
      *            created for

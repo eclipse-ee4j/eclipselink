@@ -70,7 +70,6 @@ public class CacheImplJUnitTest extends JUnitTestCase {
     /**
      * Note: These tests are setup with ID generation - but it is not used.
      * We set the Id manually so we can test cache operations like eviction properly.
-     * @return
      */
     public static Test suite() {
         TestSuite suite = new TestSuite();

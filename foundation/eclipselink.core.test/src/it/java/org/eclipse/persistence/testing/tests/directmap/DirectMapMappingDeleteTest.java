@@ -27,7 +27,6 @@ import org.eclipse.persistence.testing.models.directmap.DirectMapMappings;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date June 12, 2003
  */
 public class DirectMapMappingDeleteTest extends AutoVerifyTestCase {
     DirectMapMappings queryResult;

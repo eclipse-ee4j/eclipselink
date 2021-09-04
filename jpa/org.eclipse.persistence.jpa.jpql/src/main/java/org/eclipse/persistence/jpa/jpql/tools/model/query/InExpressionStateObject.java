@@ -95,7 +95,6 @@ public class InExpressionStateObject extends AbstractListHolderStateObject<State
      * Creates a new <code>InExpressionStateObject</code>.
      *
      * @param parent The parent of this state object, which cannot be <code>null</code>
-     * @param path
      * @param not Determines whether the <code><b>NOT</b></code> identifier is part of the expression
      * or not
      * @param items The list of JPQL fragments that will be parsed and converted into {@link
@@ -115,7 +114,6 @@ public class InExpressionStateObject extends AbstractListHolderStateObject<State
      * Creates a new <code>InExpressionStateObject</code>.
      *
      * @param parent The parent of this state object, which cannot be <code>null</code>
-     * @param path
      * @param not Determines whether the <code><b>NOT</b></code> identifier is part of the expression
      * or not
      * @param parameter The
@@ -136,10 +134,8 @@ public class InExpressionStateObject extends AbstractListHolderStateObject<State
      * Creates a new <code>InExpressionStateObject</code>.
      *
      * @param parent The parent of this state object, which cannot be <code>null</code>
-     * @param stateObject
      * @param not Determines whether the <code><b>NOT</b></code> identifier is part of the expression
      * or not
-     * @param items
      * @exception NullPointerException The given parent cannot be <code>null</code>
      */
     public InExpressionStateObject(StateObject parent,
@@ -156,8 +152,6 @@ public class InExpressionStateObject extends AbstractListHolderStateObject<State
      * Creates a new <code>InExpressionStateObject</code>.
      *
      * @param parent The parent of this state object, which cannot be <code>null</code>
-     * @param stateFieldPath
-     * @param items
      * @exception NullPointerException The given parent cannot be <code>null</code>
      */
     public InExpressionStateObject(StateObject parent,
@@ -171,7 +165,6 @@ public class InExpressionStateObject extends AbstractListHolderStateObject<State
      * Creates a new <code>InExpressionStateObject</code>.
      *
      * @param parent The parent of this state object, which cannot be <code>null</code>
-     * @param path
      * @param items The list of JPQL fragments that will be parsed and converted into {@link
      * StateObject}
      * @exception NullPointerException The given parent cannot be <code>null</code>
@@ -216,7 +209,6 @@ public class InExpressionStateObject extends AbstractListHolderStateObject<State
     /**
      * Returns
      *
-     * @return
      */
     public StateObject getStateObject() {
         return stateObject;
@@ -235,7 +227,6 @@ public class InExpressionStateObject extends AbstractListHolderStateObject<State
     /**
      * Determines whether
      *
-     * @return
      */
     public boolean hasStateObject() {
         return stateObject != null;
@@ -327,7 +318,6 @@ public class InExpressionStateObject extends AbstractListHolderStateObject<State
     /**
      * Sets
      *
-     * @param stateObject
      */
     public void setStateObject(StateObject stateObject) {
         StateObject oldStateObject = this.stateObject;

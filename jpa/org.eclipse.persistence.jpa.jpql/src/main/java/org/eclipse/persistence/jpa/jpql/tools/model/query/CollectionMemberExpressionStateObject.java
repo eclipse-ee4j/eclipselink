@@ -89,11 +89,8 @@ public class CollectionMemberExpressionStateObject extends AbstractStateObject {
      * Creates a new <code>CollectionMemberExpressionStateObject</code>.
      *
      * @param parent The parent of this state object, which cannot be <code>null</code>
-     * @param entityStateObject
      * @param not Determines whether the <code><b>NOT</b></code> identifier is part of the expression
      * or not
-     * @param of
-     * @param collectionValuedPath
      * @exception NullPointerException The given parent cannot be <code>null</code>
      */
     public CollectionMemberExpressionStateObject(StateObject parent,
@@ -113,8 +110,6 @@ public class CollectionMemberExpressionStateObject extends AbstractStateObject {
      * Creates a new <code>CollectionMemberExpressionStateObject</code>.
      *
      * @param parent The parent of this state object, which cannot be <code>null</code>
-     * @param entityStateObject
-     * @param collectionValuedPath
      * @exception NullPointerException The given parent cannot be <code>null</code>
      */
     public CollectionMemberExpressionStateObject(StateObject parent,
@@ -236,7 +231,6 @@ public class CollectionMemberExpressionStateObject extends AbstractStateObject {
     /**
      * Sets
      *
-     * @param entityStateObject
      */
     public void setEntityStateObject(StateObject entityStateObject) {
         StateObject oldEntityStateObject = entityStateObject;

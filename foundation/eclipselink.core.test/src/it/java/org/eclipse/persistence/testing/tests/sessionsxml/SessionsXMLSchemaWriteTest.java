@@ -45,7 +45,6 @@ import org.eclipse.persistence.internal.sessions.factories.model.transport.namin
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date November 18, 2003
  */
 public class SessionsXMLSchemaWriteTest extends AutoVerifyTestCase {
     private File m_resource;

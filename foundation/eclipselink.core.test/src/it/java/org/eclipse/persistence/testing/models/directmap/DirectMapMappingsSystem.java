@@ -22,7 +22,6 @@ import org.eclipse.persistence.testing.framework.TestSystem;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date March 04, 2003
  */
 public class DirectMapMappingsSystem extends TestSystem {
     public DirectMapMappingsSystem() {

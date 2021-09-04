@@ -27,7 +27,6 @@ import org.eclipse.persistence.internal.helper.Helper;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date May 28/07
  */
 public class MultipleTableTest extends AutoVerifyTestCase {
     private Object m_testObject;

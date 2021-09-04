@@ -30,8 +30,6 @@ public class RestAdapterClassWriter implements EclipseLinkClassWriter, Opcodes {
     /**
      * Creates a class name that can be used for a ReferenceAdapter subclass for the given
      * classname.
-     * @param className
-     * @return
      */
     public static String constructClassNameForReferenceAdapter(String className){
         String packageName = className.lastIndexOf('.') >= 0 ? className.substring(0, className.lastIndexOf('.')) : "";

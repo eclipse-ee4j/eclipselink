@@ -1291,7 +1291,6 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
 
     /**
      * Write an object representation of the SDODataObject to the stream
-     * @param anObject
      * @return
      * String
      *

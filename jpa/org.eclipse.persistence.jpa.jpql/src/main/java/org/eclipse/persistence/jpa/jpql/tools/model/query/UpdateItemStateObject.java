@@ -177,7 +177,6 @@ public class UpdateItemStateObject extends AbstractStateObject {
     /**
      * Returns
      *
-     * @return
      */
     public StateFieldPathExpressionStateObject getStateFieldPath() {
         return stateFieldPath;

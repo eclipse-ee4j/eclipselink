@@ -174,8 +174,6 @@ public final class JPQLQueryBuilder {
      *
      * @param jpqlQuery The string to format
      * @param jpqlGrammar The {@link JPQLGrammar} is used to properly format the string
-     * @param exactMatch
-     * @param style
      * @return The formatted JPQL query
      * @see #toActualText(String, JPQLGrammar)
      * @see #toParsedText(String, JPQLGrammar)

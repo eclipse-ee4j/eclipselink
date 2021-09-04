@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -58,8 +58,6 @@ public class SDOResolvableTestCases extends SDOTestCase {
     /**
      * This wrapper function around the ObjectOutputStream.writeObject(object) method
      * will invoke the Externalizable framework
-     * @param anObject
-     * @param filename
      * @throws IOException
      *             void
      *
@@ -115,8 +113,6 @@ public class SDOResolvableTestCases extends SDOTestCase {
      * Use our SDO DataObjectInputStream class in order to pass in a custom context
      * so we have type preservation across JVM instances.
      *
-     * @param filename
-     * @return
      * @throws IOException
      *             SDODataObject
      */
@@ -199,7 +195,6 @@ public class SDOResolvableTestCases extends SDOTestCase {
 
     /**
      * Write an object representation of the SDODataObject to the stream
-     * @param anObject
      * @return
      * String
      *

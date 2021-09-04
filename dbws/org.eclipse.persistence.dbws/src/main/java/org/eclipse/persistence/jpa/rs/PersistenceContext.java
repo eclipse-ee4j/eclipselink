@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -263,8 +263,6 @@ public class PersistenceContext {
      * For each package in the EntityManagerFactory, a MetadataSource that is capable of building a JAXBContext
      * that creates the same mappings in JAXB is created.  These MetadataSources are used to constuct the JAXContext
      * that is used for JSON and XML translation.
-     * @param metadataSources
-     * @param session
      */
     protected void addDynamicXMLMetadataSources(List<Object> metadataSources, AbstractSession session) {
         Set<String> packages = new HashSet<String>();
@@ -287,9 +285,6 @@ public class PersistenceContext {
     /**
      * A part of the facade over the JPA API.
      * Persist an entity in JPA and commit.
-     * @param tenantId
-     * @param entity
-     * @throws Exception
      */
     public void create(Map<String, String> tenantId, Object entity) throws Exception {
         EntityManager em = getEmf().createEntityManager(tenantId);
@@ -309,8 +304,6 @@ public class PersistenceContext {
 
     /**
      * Create a JAXBContext based on the EntityManagerFactory for this PersistenceContext.
-     * @param session
-     * @return
      */
     protected JAXBContext createDynamicJAXBContext(AbstractSession session) throws JAXBException, IOException {
         final ServiceVersion cachedContextVersion = (ServiceVersion) session.getProperty(SESSION_VERSION_PROPERTY);
@@ -332,9 +325,6 @@ public class PersistenceContext {
     /**
      * A part of the facade over the JPA API.
      * Create an EntityManagerFactory using the given PersistenceUnitInfo and properties.
-     * @param info
-     * @param properties
-     * @return
      */
     protected EntityManagerFactoryImpl createEntityManagerFactory(PersistenceUnitInfo info, Map<String, ?> properties) {
         PersistenceProvider provider = new PersistenceProvider();
@@ -345,8 +335,6 @@ public class PersistenceContext {
     /**
      * A part of the facade over the JPA API
      * Create an EntityManager from the EntityManagerFactory wrapped by this persistence context
-     * @param tenantId
-     * @return
      */
     protected EntityManager createEntityManager(String tenantId) {
         return getEmf().createEntityManager();
@@ -355,9 +343,6 @@ public class PersistenceContext {
     /**
      * Build the set of properties used to create the JAXBContext based on the EntityManagerFactory that
      * this PersistenceContext wraps
-     * @param session
-     * @return
-     * @throws IOException
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected Map<String, Object> createJAXBProperties(AbstractSession session) throws IOException {
@@ -446,9 +431,6 @@ public class PersistenceContext {
     /**
      * A part of the facade over the JPA API
      * Find an entity with the given name and id in JPA
-     * @param entityName
-     * @param id
-     * @return
      */
     public Object find(String entityName, Object id) {
         return find(null, entityName, id);
@@ -457,10 +439,6 @@ public class PersistenceContext {
     /**
      * A part of the facade over the JPA API
      * Find an entity with the given name and id in JPA
-     * @param tenantId
-     * @param entityName
-     * @param id
-     * @return
      */
     public Object find(Map<String, String> tenantId, String entityName, Object id) {
         return find(tenantId, entityName, id, null);
@@ -469,11 +447,7 @@ public class PersistenceContext {
     /**
      * A part of the facade over the JPA API
      * Find an entity with the given name and id in JPA
-     * @param tenantId
-     * @param entityName
-     * @param id
      * @param properties - query hints used on the find
-     * @return
      */
     public Object find(Map<String, String> tenantId, String entityName, Object id, Map<String, Object> properties) {
         EntityManager em = getEmf().createEntityManager(tenantId);
@@ -548,8 +522,6 @@ public class PersistenceContext {
      * @param entityName the entity name
      * @param id the id
      * @param attribute the attribute
-     * @param listItemId
-     * @param entity
      * @param partner the partner
      * @return the object
      *
@@ -678,8 +650,6 @@ public class PersistenceContext {
     /**
      * Look-up the given entity name in the EntityManagerFactory and return the class
      * is describes
-     * @param entityName
-     * @return
      */
     public Class<?> getClass(String entityName) {
         ClassDescriptor descriptor = getDescriptor(entityName);
@@ -715,8 +685,6 @@ public class PersistenceContext {
      * This method will look first in the EntityManagerFactory wrapped by this persistence context
      * and return that descriptor.  If one does not exist, it search the JAXBContext and return
      * a descriptor from there.
-     * @param entityName
-     * @return
      */
     public ClassDescriptor getDescriptor(String entityName) {
         DatabaseSession session = getServerSession();
@@ -802,9 +770,6 @@ public class PersistenceContext {
      * Call jpa merge on the given object and commit
      * If the passed object is a list, we will iterate through the
      * list and merge each member
-     * @param tenantId
-     * @param entity
-     * @return
      */
     @SuppressWarnings("rawtypes")
     public Object merge(Map<String, String> tenantId, Object entity) {
@@ -835,8 +800,6 @@ public class PersistenceContext {
 
     /**
      * A convenience method to create a new dynamic entity of the given type
-     * @param type
-     * @return
      */
     public DynamicEntity newEntity(String type) {
         return newEntity(null, type);
@@ -844,9 +807,6 @@ public class PersistenceContext {
 
     /**
      * A convenience method to create a new dynamic entity of the given type
-     * @param tenantId
-     * @param type
-     * @return
      */
     public DynamicEntity newEntity(Map<String, String> tenantId, String type) {
         JPADynamicHelper helper = new JPADynamicHelper(getEmf());
@@ -1115,8 +1075,6 @@ public class PersistenceContext {
     /**
      * Make adjustments to an unmarshalled entity based on what is found in the weaved fields
      *
-     * @param entity
-     * @return
      */
     protected Object wrap(Object entity) {
         if ((entity != null) && (PersistenceWeavedRest.class.isAssignableFrom(entity.getClass()))) {
@@ -1150,10 +1108,6 @@ public class PersistenceContext {
      * Marshall an entity to either JSON or XML
      * Calling this method, will treat relationships as unfetched in the XML/JSON and marshall them as links
      * rather than attempting to marshall the data in those relationships
-     * @param object
-     * @param mediaType
-     * @param output
-     * @throws JAXBException
      */
     public void marshallEntity(Object object, MediaType mediaType, OutputStream output) throws JAXBException {
         JPARSLogger.entering(getSessionLog(), CLASS_NAME, "marshallEntity", new Object[] { object, mediaType });
@@ -1168,7 +1122,6 @@ public class PersistenceContext {
      * @param filter the filter (included/excluded fields) to use.
      * @param mediaType the media type (XML/JSON).
      * @param output the result.
-     * @throws JAXBException
      */
     public void marshallEntity(Object object, FieldsFilter filter, MediaType mediaType, OutputStream output) throws JAXBException {
         JPARSLogger.entering(getSessionLog(), CLASS_NAME, "marshallEntity", new Object[] { object, filter, mediaType });
@@ -1179,12 +1132,8 @@ public class PersistenceContext {
     /**
      * Marshall an entity to either JSON or XML.
      *
-     * @param object
-     * @param mediaType
-     * @param output
      * @param sendRelationships if this is set to true, relationships will be sent as links instead of sending.
      * the actual objects in the relationships
-     * @throws JAXBException
      */
     public void marshall(Object object, MediaType mediaType, OutputStream output, boolean sendRelationships) throws JAXBException {
         marshall(object, mediaType, output, sendRelationships, null);
@@ -1199,7 +1148,6 @@ public class PersistenceContext {
      * @param sendRelationships if this is set to true, relationships will be sent as links instead of sending
      *                          the actual objects in the relationships.
      * @param fieldsFilter      Specifies fields to include/exclude from the response.
-     * @throws JAXBException
      */
     public void marshall(final Object object, final MediaType mediaType, final OutputStream output, boolean sendRelationships, final FieldsFilter fieldsFilter) throws JAXBException {
         if (version.compareTo(ServiceVersion.VERSION_2_0) < 0 && sendRelationships) {
@@ -1260,7 +1208,6 @@ public class PersistenceContext {
     /**
      * Process an entity and add any additional data that needs to be added prior to marshalling
      * This method will both single entities and lists of entities
-     * @param object
      */
     @SuppressWarnings("rawtypes")
     protected void preMarshallEntity(Object object) {
@@ -1276,7 +1223,6 @@ public class PersistenceContext {
     /**
      * Add any data required prior to marshalling an entity to XML or JSON
      * In general, this will only affect fields that have been weaved into the object
-     * @param entity
      */
     @SuppressWarnings("rawtypes")
     protected void preMarshallIndividualEntity(Object entity) {

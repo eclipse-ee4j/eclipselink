@@ -26,7 +26,7 @@ import org.eclipse.persistence.testing.models.transparentindirection.SetSalesRep
 /**
  * Test the IndirectList with assorted DatabaseSessions and UnitsOfWork.
  * this should only be used in jdk1.2+
- * @author: Big Country
+ * @author Big Country
  */
 public class IndirectSetTestDatabase extends IndirectContainerTestDatabase {
 

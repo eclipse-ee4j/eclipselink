@@ -22,7 +22,6 @@ import org.eclipse.persistence.exceptions.*;
 /**
  * Generic test to ensure that the correct exceptions are being thrown for bad expressions.
  * @author Peter O'Blenis
- * @date Feb. 3/99
  */
 public class BadExpressionTest extends AutoVerifyTestCase {
     // Expression to test

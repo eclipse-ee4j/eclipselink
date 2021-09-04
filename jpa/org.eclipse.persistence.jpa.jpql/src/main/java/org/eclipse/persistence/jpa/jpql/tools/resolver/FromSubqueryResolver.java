@@ -97,7 +97,6 @@ public class FromSubqueryResolver extends Resolver {
      * @param parent The parent of this resolver, which is never <code>null</code>
      * @param queryContext The context used to query information about the application metadata and
      * cached information
-     * @param subquery
      * @exception NullPointerException If the parent is <code>null</code>
      */
     public FromSubqueryResolver(Resolver parent,
@@ -318,9 +317,6 @@ public class FromSubqueryResolver extends Resolver {
         /**
          * Creates
          *
-         * @param name
-         * @param resolver
-         * @return
          */
         protected IMapping buildMapping(String name, Resolver resolver) {
             return new VirtualMapping(parent, name, resolver, mappingType);

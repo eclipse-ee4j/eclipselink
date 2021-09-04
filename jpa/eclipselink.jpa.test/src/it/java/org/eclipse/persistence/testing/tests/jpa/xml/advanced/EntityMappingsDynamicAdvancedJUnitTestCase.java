@@ -218,7 +218,6 @@ public class EntityMappingsDynamicAdvancedJUnitTestCase extends JUnitTestCase {
 
     /**
      * Return the dynamic test suite.
-     * @return
      */
     public static Test suite() {
         // This test suite should only be called when we are using the

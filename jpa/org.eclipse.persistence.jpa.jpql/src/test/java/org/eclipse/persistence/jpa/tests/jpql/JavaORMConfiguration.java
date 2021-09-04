@@ -51,8 +51,6 @@ public class JavaORMConfiguration extends JavaManagedTypeProvider
     /**
      * Creates a new <code>JavaORMConfiguration</code>.
      *
-     * @param mappingBuilder
-     * @param ormXmlFileName
      */
     public JavaORMConfiguration(IMappingBuilder<Member> mappingBuilder, String ormXmlFileName) {
         super(mappingBuilder);

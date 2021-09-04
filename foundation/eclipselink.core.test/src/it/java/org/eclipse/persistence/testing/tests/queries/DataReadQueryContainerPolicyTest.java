@@ -30,7 +30,7 @@ import org.eclipse.persistence.sessions.factories.XMLProjectReader;
  *
  * See BUG# 3337003
  *
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0 January 12/04
  */
 public class DataReadQueryContainerPolicyTest extends TestCase {

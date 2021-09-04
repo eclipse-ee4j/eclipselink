@@ -314,8 +314,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
     /**
      * Perform a test by "Not" caching the EMF and letting the test close the EMF to
      * verify variant use cases that may throw an IAE on a closed EntityManger
-     * @param overrideEMFCachingForTesting
-     * @return
      */
     private EntityManager privateTestSetup(boolean overrideEMFCachingForTesting) {
         EntityManagerFactory emf = null;

@@ -164,19 +164,8 @@ public class PlsqlTableType extends SqlCollectionType {
      * Create a PL/SQL table type. If -plsqlindexbytable is set and whenever possible, the method
      * will return predefined scalar index-by table types, which will be mapped into Java arrays.
      *
-     * @param sqlName
-     * @param typeCode
-     * @param elemInfo
-     * @param elemType
-     * @param details
-     * @param generateMe
-     * @param parentType
-     * @param isGrandparent
-     * @param reflector
      * @return either a newly defined PL/SQL Table type or a predefined scalar PL/SQL index-by table
      *         type
-     * @throws SQLException
-     * @throws PublisherException
      */
 
     public static SqlType newInstance(SqlName sqlName, int typeCode, ElemInfo elemInfo,

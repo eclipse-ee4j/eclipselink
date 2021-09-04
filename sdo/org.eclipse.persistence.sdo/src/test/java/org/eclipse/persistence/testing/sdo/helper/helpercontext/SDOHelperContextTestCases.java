@@ -102,7 +102,6 @@ public class SDOHelperContextTestCases extends SDOTestCase {
 
     /**
      * Write an object representation of the SDODataObject to the stream
-     * @param anObject
      * @return
      * String
      */

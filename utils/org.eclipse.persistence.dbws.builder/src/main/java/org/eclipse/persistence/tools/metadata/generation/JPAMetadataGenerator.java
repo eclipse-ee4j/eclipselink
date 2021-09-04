@@ -1054,7 +1054,6 @@ public class JPAMetadataGenerator {
      * If set to true, NamedNativeQueryMetadata for CRUD operations (create, findAll, findByPk,
      * update and delete) will be generated for each Entity.  The default is false.
      *
-     * @param generateCRUDOps
      */
     protected void setGenerateCRUDOps(boolean generateCRUDOps) {
         this.generateCRUDOps = generateCRUDOps;

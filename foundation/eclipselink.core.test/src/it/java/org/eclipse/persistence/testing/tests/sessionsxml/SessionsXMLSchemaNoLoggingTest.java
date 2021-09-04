@@ -26,7 +26,6 @@ import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date February 13, 2004
  */
 public class SessionsXMLSchemaNoLoggingTest extends AutoVerifyTestCase {
     boolean m_exceptionCaught;

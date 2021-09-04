@@ -43,7 +43,6 @@ public class TransientCompatibleAnnotations {
      * PUBLIC:
      * Return a list of classnames of annotations that are compatible with the jakarta.persistence.Transient
      * annotation.
-     * @return
      */
     public static List<String> getTransientCompatibleAnnotations(){
         return transientCompatibleAnnotations;

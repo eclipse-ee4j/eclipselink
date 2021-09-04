@@ -19,13 +19,12 @@ import org.eclipse.persistence.exceptions.IntegrityChecker;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 
-/*
+/**
  * Tests that the integrityChecker is lazily initialized on the session after
  * calling getIntegrityChecker()
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date January 28, 2003
  */
 public class IntegrityCheckerLazyCreationTest extends AutoVerifyTestCase {
     IntegrityChecker integrityChecker;

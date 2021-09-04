@@ -108,8 +108,6 @@ public class ComplexImportsAndIncludesTestCases extends XSDHelperTestCases {
          * Satisfy EntityResolver interface implementation.
          * Allow resolution of external entities.
          *
-         * @param publicId
-         * @param systemId
          * @return null
          */
         @Override

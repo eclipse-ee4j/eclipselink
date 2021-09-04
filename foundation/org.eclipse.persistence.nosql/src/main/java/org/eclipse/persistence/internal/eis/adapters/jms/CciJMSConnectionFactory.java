@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,6 @@ public class CciJMSConnectionFactory implements jakarta.resource.cci.ConnectionF
      * Return the connection.
      *
      * @return the CCI connection
-     * @throws EISException
      */
     @Override
     public jakarta.resource.cci.Connection getConnection() throws EISException {
@@ -51,7 +50,6 @@ public class CciJMSConnectionFactory implements jakarta.resource.cci.ConnectionF
      * Return the connection.
      *
      * @return the CCI connection
-     * @throws EISException
      */
     @Override
     public jakarta.resource.cci.Connection getConnection(ConnectionSpec spec) throws EISException {
@@ -127,7 +125,6 @@ public class CciJMSConnectionFactory implements jakarta.resource.cci.ConnectionF
     /**
      * Does nothing - for interface implementation
      *
-     * @param reference
      */
     @Override
     public void setReference(Reference reference) {

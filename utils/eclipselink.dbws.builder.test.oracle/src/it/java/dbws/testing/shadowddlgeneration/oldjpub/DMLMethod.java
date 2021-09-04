@@ -24,7 +24,7 @@ public class DMLMethod extends SqlStmtMethod {
     /**
      * Construct a Method that is a DML (which returns an int)
      * <br>
-     * m_isBatched {@literal<}= isBatched
+     * m_isBatched {@literal <}= isBatched
      */
     public DMLMethod(String name, int modifiers, String sqlStmt, boolean isBatched,
         SqlReflector reflector) throws SQLException,

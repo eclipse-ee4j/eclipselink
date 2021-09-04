@@ -23,7 +23,6 @@ import org.eclipse.persistence.expressions.*;
  * Generic test to check if any results were returned as the result of a expression query.
  * If result vector is empty then throw an exception with specified message.
  * @author Peter O'Blenis
- * @date Feb. 3/99
  */
 public class SearchTest extends AutoVerifyTestCase {
     // Expression to test

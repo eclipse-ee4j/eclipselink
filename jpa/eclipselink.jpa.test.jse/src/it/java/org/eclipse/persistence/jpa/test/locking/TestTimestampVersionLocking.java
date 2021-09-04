@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2015 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -62,8 +62,7 @@ public class TestTimestampVersionLocking {
     /**
      * Check that setting the property "true" will get the local system time
      * instead of the default behavior of contacting the server.
-     * 
-     * @throws Exception
+     *
      */
     @Test
     public void testLocalTimestampProperty() throws Exception {
@@ -98,8 +97,7 @@ public class TestTimestampVersionLocking {
     /**
      * Check that setting the property "false" will get the server system time
      * just like the default behavior.
-     * 
-     * @throws Exception
+     *
      */
     @Test
     public void testLocalTimestampPropertyFalse() throws Exception {
@@ -134,8 +132,7 @@ public class TestTimestampVersionLocking {
     /**
      * Check that setting the value SERVER on the OptimisticLockingPolicy in a
      * DescriptorCustomizer will override the persistence property value.
-     * 
-     * @throws Exception
+     *
      */
     @Test
     public void testLocalTimestampPropertyCustomizer() throws Exception {
@@ -172,8 +169,7 @@ public class TestTimestampVersionLocking {
     /**
      * Check that setting the value LOCAL on the OptimisticLockingPolicy in a
      * DescriptorCustomizer will override the persistence property value.
-     * 
-     * @throws Exception
+     *
      */
     @Test
     public void testLocalTimestampPropertyFalseCustomizer() throws Exception {

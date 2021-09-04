@@ -26,7 +26,6 @@ import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date July 22, 2005
  */
 public class SessionsXMLSchemaWebsphere61PlatformTest extends AutoVerifyTestCase {
     Exception m_exceptionCaught;

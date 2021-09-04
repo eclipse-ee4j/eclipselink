@@ -73,9 +73,6 @@ public class DynamicXMLMetadataSource implements MetadataSource {
      * For static classes, JAXB annotations, xml and defaults will be used to map the class.
      * For Dynamic classes we create properties for each JPA mapping on the class
      * thing we create is a
-     * @param classDescriptor
-     * @param objectFactory
-     * @return
      */
     private JavaType createJAXBType(ClassDescriptor classDescriptor, ObjectFactory objectFactory) {
         JavaType javaType = new JavaType();
@@ -114,11 +111,6 @@ public class DynamicXMLMetadataSource implements MetadataSource {
      * Create a JAXB property for a particular mapping.
      * This will only create JAXBProperties for mappings that are virtual - either because their
      * parent object is a dynamic class, or because the owning static class has virtual properties
-     * @param mapping
-     * @param objectFactory
-     * @param owningType
-     * @param isDynamic
-     * @return
      */
     private JAXBElement<XmlElement> createJAXBProperty(DatabaseMapping mapping, ObjectFactory objectFactory, JavaType owningType, boolean isDynamic) {
         if (!mapping.getAttributeAccessor().isVirtualAttributeAccessor() &&

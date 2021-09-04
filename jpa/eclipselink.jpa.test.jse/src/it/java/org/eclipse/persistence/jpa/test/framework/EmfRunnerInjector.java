@@ -64,7 +64,6 @@ public class EmfRunnerInjector {
     /**
      * This method will create / inject EntityManagerFactory and SQLListeners into test instances
      *
-     * @param testInstance
      */
     public void inject(Object testInstance) throws Exception {
         if (testInstance == null) {

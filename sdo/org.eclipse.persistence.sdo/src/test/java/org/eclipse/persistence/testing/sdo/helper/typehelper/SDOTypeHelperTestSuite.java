@@ -25,7 +25,6 @@ public class SDOTypeHelperTestSuite {
 
     /**
      *
-     * @param args
      */
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
@@ -33,7 +32,6 @@ public class SDOTypeHelperTestSuite {
 
     /**
      * Inherited suite method for generating all test cases.
-     * @return
      */
     public static Test suite() {
         TestSuite suite = new TestSuite("All TypHelper Tests");

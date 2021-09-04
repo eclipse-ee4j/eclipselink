@@ -389,7 +389,6 @@ public class WSDLGenerator {
     /**
      * Build the inline schema that will make up the content of the
      * {@code <wsdl:types>} section of the WSDL.
-     * @return
      */
     @SuppressWarnings("unchecked")
     private org.w3c.dom.Element createInlineSchema() {

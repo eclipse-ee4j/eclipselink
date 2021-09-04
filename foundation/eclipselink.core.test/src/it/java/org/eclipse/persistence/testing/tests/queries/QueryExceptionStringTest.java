@@ -23,7 +23,6 @@ import org.eclipse.persistence.testing.framework.TestErrorException;
  * domain class, if available.
  *
  * @author Guy Pelletier
- * @date January 21, 2003
  */
 public class QueryExceptionStringTest extends MultiNameQueriesTestCase {
     private DatabaseSession session;

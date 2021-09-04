@@ -22,7 +22,7 @@ import org.eclipse.persistence.testing.tests.transparentindirection.TestHashtabl
 
 /**
  * Simple order object. Just a test fixture.
- * @author: Big Country
+ * @author Big Country
  */
 public abstract class AbstractOrder implements Serializable {
     public int id;

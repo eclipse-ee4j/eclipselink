@@ -48,7 +48,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 /**
  * Test a simple IndirectList.
- * @author: Big Country
+ * @author Big Country
  */
 @RunWith(Parameterized.class)
 public class IndirectListTest {

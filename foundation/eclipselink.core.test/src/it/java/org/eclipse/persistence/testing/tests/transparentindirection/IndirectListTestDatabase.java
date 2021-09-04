@@ -22,7 +22,7 @@ import org.eclipse.persistence.testing.models.transparentindirection.*;
 
 /**
  * Test the IndirectList with assorted DatabaseSessions and UnitsOfWork.
- * @author: Big Country
+ * @author Big Country
  */
 public class IndirectListTestDatabase extends IndirectContainerTestDatabase {
 

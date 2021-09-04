@@ -96,9 +96,6 @@ public class CollectionProxyClassWriter implements EclipseLinkClassWriter, Opcod
      *      }
      *  }
      *
-     * @param loader
-     * @param className
-     * @return
      */
     @Override
     public byte[] writeClass(DynamicClassLoader loader, String className) {
