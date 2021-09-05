@@ -67,8 +67,6 @@ public abstract class BatchWritingMechanism implements Cloneable, Serializable {
      * INTERNAL:
      * This function caches the largest query timeout encountered within all the calls in this batch,
      * or uses the parent timeout if one of the calls references the parent.
-     * @param session
-     * @param dbCall
      */
     protected void cacheQueryTimeout(AbstractSession session, DatabaseCall dbCall) {
         int callTimeout = dbCall.getQueryTimeout();

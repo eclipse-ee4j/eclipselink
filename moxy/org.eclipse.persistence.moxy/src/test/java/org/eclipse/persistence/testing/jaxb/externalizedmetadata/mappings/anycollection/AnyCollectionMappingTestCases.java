@@ -40,7 +40,6 @@ public class AnyCollectionMappingTestCases extends JAXBWithJSONTestCases {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public AnyCollectionMappingTestCases(String name) throws Exception {
         super(name);

@@ -716,7 +716,6 @@ public class ExpressionOperator implements Serializable {
      * INTERNAL:
      * Compare like in memory.
      * This only works for % not _.
-     * @author Christian Weeks aka ChristianLink
      */
     public boolean conformLike(Object left, Object right) {
         if ((right == null) && (left == null)) {

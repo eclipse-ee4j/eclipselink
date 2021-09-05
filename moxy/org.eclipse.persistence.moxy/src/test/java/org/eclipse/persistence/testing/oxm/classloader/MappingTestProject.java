@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -97,7 +97,7 @@ public class MappingTestProject extends Project {
         addMapping.setSetMethodName("setAddresses");
         ContainerPolicy listPolicy;
         try {
-            listPolicy = (ContainerPolicy) listContainerPolicyClass.newInstance();
+            listPolicy = (ContainerPolicy) listContainerPolicyClass.getConstructor().newInstance();
             Method meth = listContainerPolicyClass.getDeclaredMethod("setContainerClassName", new Class[] { String.class });
             meth.invoke(listPolicy, new Object[] { "java.util.ArrayList" });
         } catch (Exception e) {
@@ -119,7 +119,7 @@ public class MappingTestProject extends Project {
         aamapping.setSetMethodName("setAnyAttribute");
         ContainerPolicy mapPolicy;
         try {
-            mapPolicy = (ContainerPolicy) mapContainerPolicyClass.newInstance();
+            mapPolicy = (ContainerPolicy) mapContainerPolicyClass.getConstructor().newInstance();
             Method meth = mapContainerPolicyClass.getDeclaredMethod("setContainerClassName", new Class[] { String.class });
             meth.invoke(mapPolicy, new Object[] { "java.util.HashMap" });
         } catch (Exception e) {
@@ -199,7 +199,7 @@ public class MappingTestProject extends Project {
         XMLCollectionReferenceMapping addressesMapping = new XMLCollectionReferenceMapping();
         ContainerPolicy listPolicy;
         try {
-            listPolicy = (ContainerPolicy) listContainerPolicyClass.newInstance();
+            listPolicy = (ContainerPolicy) listContainerPolicyClass.getConstructor().newInstance();
             Method meth = listContainerPolicyClass.getDeclaredMethod("setContainerClassName", new Class[] { String.class });
             meth.invoke(listPolicy, new Object[] { "java.util.ArrayList" });
         } catch (Exception e) {
@@ -215,7 +215,7 @@ public class MappingTestProject extends Project {
         responsibilitiesMapping.setAttributeName("responsibilities");
         ContainerPolicy listPolicy1;
         try {
-            listPolicy1 = (ContainerPolicy) listContainerPolicyClass.newInstance();
+            listPolicy1 = (ContainerPolicy) listContainerPolicyClass.getConstructor().newInstance();
             Method meth = listContainerPolicyClass.getDeclaredMethod("setContainerClassName", new Class[] { String.class });
             meth.invoke(listPolicy1, new Object[] { "java.util.ArrayList" });
         } catch (Exception e) {

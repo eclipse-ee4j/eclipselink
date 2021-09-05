@@ -39,7 +39,6 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * criteria API.
  * <p>
  * <b>Description</b>: This class represents an In predicate.
- * <p>
  *
  * @see jakarta.persistence.criteria Join
  *

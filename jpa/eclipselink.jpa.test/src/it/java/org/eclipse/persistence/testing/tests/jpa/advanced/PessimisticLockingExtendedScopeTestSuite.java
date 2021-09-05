@@ -53,7 +53,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
  * <b>Purpose</b>: Test Pessimistic Locking Extended Scope functionality.
  * <p>
  * <b>Description</b>: Test the relationship will be locked or unlocked under different situations
- * <p>
+ *
  */
  public class PessimisticLockingExtendedScopeTestSuite extends JUnitTestCase {
 

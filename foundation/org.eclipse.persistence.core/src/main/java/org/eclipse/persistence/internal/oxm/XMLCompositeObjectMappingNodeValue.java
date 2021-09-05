@@ -98,13 +98,6 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
     /**
      * Marshal any 'self' mapped attributes.
      *
-     * @param xPathFragment
-     * @param marshalRecord
-     * @param object
-     * @param session
-     * @param namespaceResolver
-     * @param marshaller
-     * @return
      */
     @Override
     public boolean marshalSelfAttributes(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, Marshaller marshaller) {

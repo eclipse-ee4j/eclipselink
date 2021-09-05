@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -1235,8 +1235,6 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
     /**
      * INTERNAL
      *
-     * @param args
-     * @param direction
      * @return list of arguments with the specified direction
      */
     protected static List<PLSQLargument> getArguments(List<PLSQLargument> args, Integer direction) {

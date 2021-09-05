@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -508,7 +508,6 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
      * Indicates that this mapping should normalize all string values before adding them
      * to the collection on unmarshal. Normalize replaces any CR, LF or Tab characters with a
      * single space character.
-     * @param normalize
      */
     @Override
     public void setNormalizingStringValues(boolean normalize) {
@@ -521,7 +520,6 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
      * Indicates that this mapping should collapse all string values before adding them
      * to the collection on unmarshal. Collapse removes leading and trailing whitespaces, and replaces
      * any sequence of whitespace characters with a single space.
-     * @param collapse
      */
     @Override
     public void setCollapsingStringValues(boolean collapse) {

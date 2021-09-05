@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -286,8 +286,6 @@ public class EntityManagerSetupException extends EclipseLinkException {
     /**
      * INTERNAL:
      * The implementation of getNewTempClassLoader is returning null instead of a temporary ClassLoader instance.<br>
-     * @param PUName
-     * @return
      */
     public static EntityManagerSetupException noTemporaryClassLoaderAvailable(String PUName) {
         Object[] args = { PUName };
@@ -300,7 +298,6 @@ public class EntityManagerSetupException extends EclipseLinkException {
     /**
      * INTERNAL:
      * Our OSGI persistence provider does not support a JavaEE-type deployment
-     * @return
      */
     public static EntityManagerSetupException createContainerEntityManagerFactoryNotSupportedInOSGi() {
         EntityManagerSetupException setupException = new EntityManagerSetupException(ExceptionMessageGenerator.buildMessage(//
@@ -312,8 +309,6 @@ public class EntityManagerSetupException extends EclipseLinkException {
     /**
      * INTERNAL:
      * An OSGi application is trying to instantiate a persistence unit for which a bundle does not exist
-     * @param persistenceUnitName
-     * @return
      */
     public static EntityManagerSetupException couldNotFindPersistenceUnitBundle(String persistenceUnitName) {
         Object[] args = { persistenceUnitName };
@@ -326,8 +321,6 @@ public class EntityManagerSetupException extends EclipseLinkException {
     /**
      * INTERNAL:
      * Persistence unit tries to use sessions.xml and to be a composite.
-     * @param persistenceUnitName
-     * @return
      */
     public static EntityManagerSetupException compositeIncompatibleWithSessionsXml(String persistenceUnitName) {
         Object[] args = { persistenceUnitName };
@@ -340,8 +333,6 @@ public class EntityManagerSetupException extends EclipseLinkException {
     /**
      * INTERNAL:
      * Persistence unit tries to use sessions.xml and to be a composite.
-     * @param persistenceUnitName
-     * @return
      */
     public static EntityManagerSetupException compositeMemberCannotBeUsedStandalone(String persistenceUnitName) {
         Object[] args = { persistenceUnitName };
@@ -354,7 +345,6 @@ public class EntityManagerSetupException extends EclipseLinkException {
     /**
      * INTERNAL:
      * Reflective call with doPrivileged to create temporary classloader instance failed.<br>
-     * @return
      */
     public static EntityManagerSetupException failedToInstantiateTemporaryClassLoader(Exception exception) {
         Object[] args = {  };

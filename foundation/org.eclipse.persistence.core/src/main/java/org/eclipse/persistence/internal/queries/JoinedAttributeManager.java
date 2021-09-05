@@ -559,10 +559,6 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
      *  all intermediate steps.
      *  Example expression "emp.project.pk" with a clone Employee will trigger indirection and return
      *  the project pk value.
-     * @param session
-     * @param clone
-     * @param expression
-     * @return
      */
     public Object getValueFromObjectForExpression(AbstractSession session, Object clone, ObjectExpression expression){
         if (!expression.isExpressionBuilder()){
@@ -791,10 +787,6 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     /**
      * adds expression and its base expressions recursively to the expressionList in groups, so that an expression is never listed before
      * its base expression
-     * @param expression
-     * @param expressionlist
-     * @param lastJoinedAttributeBaseExpression
-     * @return
      */
     protected Expression addExpressionAndBaseToGroupedList(Expression expression, List expressionlist, Expression lastJoinedAttributeBaseExpression){
         if(!expressionlist.contains(expression)) {

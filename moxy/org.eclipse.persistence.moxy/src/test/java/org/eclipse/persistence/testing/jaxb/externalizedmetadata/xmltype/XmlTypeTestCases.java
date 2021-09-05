@@ -40,7 +40,6 @@ public class XmlTypeTestCases extends JAXBWithJSONTestCases {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public XmlTypeTestCases(String name) throws Exception {
         super(name);

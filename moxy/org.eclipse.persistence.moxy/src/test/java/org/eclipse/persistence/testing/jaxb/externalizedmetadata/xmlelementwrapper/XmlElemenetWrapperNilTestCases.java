@@ -33,8 +33,6 @@ public class XmlElemenetWrapperNilTestCases extends JAXBWithJSONTestCases{
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
-     * @throws Exception
      */
     public XmlElemenetWrapperNilTestCases(String name) throws Exception {
         super(name);

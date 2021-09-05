@@ -238,13 +238,13 @@ public class UnmarshallerTestCases extends TestCase  {
     public void testJAXBClassLoader() throws Exception {
         // Determine the directory that Employee.class is in
         URL classURL = ClassLoader.getSystemClassLoader().getResource("org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee.class");
-        URL directoryURL = new File(classURL.getFile()).getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().toURL();
+        URL directoryURL = new File(classURL.getFile()).getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().toURI().toURL();
 
         // Create a URLClassLoader specifically for this class
         URLClassLoader classLoader = new URLClassLoader(new URL[] { directoryURL });
 
         // Set up a control object using this ClassLoader
-        Object controlObject = Class.forName("org.eclipse.persistence.testing.jaxb.xmlmarshaller.Employee", true, classLoader).newInstance();
+        Object controlObject = Class.forName("org.eclipse.persistence.testing.jaxb.xmlmarshaller.Employee", true, classLoader).getConstructor().newInstance();
         Method setMethod = controlObject.getClass().getMethod("setName", new Class[] { String.class });
         setMethod.invoke(controlObject, new Object[] { CONTROL_EMPLOYEE_NAME });
 

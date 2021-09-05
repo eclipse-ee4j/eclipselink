@@ -237,8 +237,6 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
     /**
      * Allow subclasses to add additional state to the dynamic entity.
      *
-     * @param cw
-     * @param parentClassType
      */
     protected void addFields(ClassWriter cw, String parentClassType) {
     }
@@ -246,8 +244,6 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
     /**
      * Allow subclasses to add additional methods to the dynamic entity.
      *
-     * @param cw
-     * @param parentClassType
      */
     protected void addMethods(ClassWriter cw, String parentClassType) {
     }
@@ -355,8 +351,6 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
      * the case of {@link DynamicClassWriter} this will ensure that the class is
      * a subclass of the {@link #parentClass}
      *
-     * @param dynamicClass
-     * @throws ClassNotFoundException
      */
     protected boolean verify(Class<?> dynamicClass, ClassLoader loader) throws ClassNotFoundException {
         Class<?> parent = getParentClass(loader);

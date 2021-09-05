@@ -4905,7 +4905,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     /**
      * INTERNAL:
      * Used to set the collections of all objects in the UnitOfWork.
-     * @param objects
      */
     protected void setAllClonesCollection(Map objects) {
         this.allClones = objects;
@@ -6010,7 +6009,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     /**
      * This method is used internally to create a map to hold the persistenceContexts.  A weak map is returned if ReferenceMode is weak.
      *
-     *  @param size
      */
     protected Map createMap(int size){
         if (this.referenceMode != null && this.referenceMode != ReferenceMode.HARD) return new IdentityWeakHashMap(size);

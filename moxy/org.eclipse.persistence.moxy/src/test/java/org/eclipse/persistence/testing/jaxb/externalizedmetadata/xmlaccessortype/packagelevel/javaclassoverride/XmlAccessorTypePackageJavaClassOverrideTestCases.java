@@ -42,7 +42,6 @@ public class XmlAccessorTypePackageJavaClassOverrideTestCases extends JAXBWithJS
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public XmlAccessorTypePackageJavaClassOverrideTestCases(String name) throws Exception{
         super(name);

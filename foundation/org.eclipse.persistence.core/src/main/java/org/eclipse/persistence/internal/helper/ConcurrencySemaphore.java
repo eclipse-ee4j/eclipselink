@@ -34,7 +34,7 @@ public class ConcurrencySemaphore {
     private Object outerObject;
 
     /**
-     * Constructor to create {@link #ConcurrencySemaphore}
+     * Constructor to create {@code ConcurrencySemaphore}
      * @param threadLocalVarControlIfCurrentThreadHasAcquiredSemaphore
      *          Thread local variable that the code to acquire a semaphore can check to make sure it does not try to acquire
      *          twice the same semaphore (e.g. in case the object building algorithm is recursive).

@@ -266,8 +266,6 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
     /**
      * Internal: factored out of getIndicatingNoEntry(String) to reduce complexity and have
      * get(string) use get(DatabaseField) instead of getIndicatingNoEntry and then doing an extra check
-     * @param fieldName
-     * @return
      */
     protected DatabaseField getLookupField(String fieldName){
         if (this.lookupField == null) {

@@ -782,7 +782,6 @@ public class Helper extends CoreHelper implements Serializable {
      *  @param originalVector - original vector
      *  @param startIndex - starting position in vector
      *  @param stopIndex - ending position in vector
-     *  @exception EclipseLinkException
      */
     public static Vector copyVector(List originalVector, int startIndex, int stopIndex) throws ValidationException {
         Vector newVector;
@@ -802,8 +801,6 @@ public class Helper extends CoreHelper implements Serializable {
 
     /**
      * Copy an array of strings to a new array
-     * @param original
-     * @return
      */
     public static String[] copyStringArray(String[] original){
         if (original == null){
@@ -818,8 +815,6 @@ public class Helper extends CoreHelper implements Serializable {
 
     /**
      * Copy an array of int to a new array
-     * @param original
-     * @return
      */
     public static int[] copyIntArray(int[] original){
         if (original == null){
@@ -1227,9 +1222,6 @@ public class Helper extends CoreHelper implements Serializable {
      * Used by our byte code weaving to enable users who are debugging to output
      * the generated class to a file
      *
-     * @param className
-     * @param classBytes
-     * @param outputPath
      */
     public static void outputClassFile(String className, byte[] classBytes,
             String outputPath) {
@@ -2114,7 +2106,6 @@ public class Helper extends CoreHelper implements Serializable {
 
     /**
      * Convert dotted format class name to slashed format class name.
-     * @param dottedClassName
      * @return String
      */
     public static String toSlashedClassName(String dottedClassName){

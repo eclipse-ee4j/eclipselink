@@ -790,7 +790,6 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
     /**
      * Add an entry for both an XML Conversion and a Java Conversion entry
      * @param qname The qualified name of the XML schema type
-     * @param javaClass
      */
     public void addConversion(QName qname, Class javaClass) {
         addJavaConversion(javaClass, qname);
@@ -799,7 +798,6 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
 
     /**
      * Remove an XML to Java Conversion entry
-     * @param qname
      */
     public void removeXMLConversion(QName qname) {
         getUserXMLTypes().remove(qname);
@@ -808,7 +806,6 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
     /**
      * Remove a Java to XML Conversion entry
      *
-     * @param javaClass
      */
     public void removeJavaConversion(Class javaClass) {
         getUserJavaTypes().remove(javaClass);
@@ -817,8 +814,6 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
     /**
      * Remove both a Java to XML Conversion and the corresponding XML to Java Conversion entry
      *
-     * @param qname
-     * @param javaClass
      */
     public void removeConversion(QName qname, Class javaClass) {
         removeJavaConversion(javaClass);
@@ -828,7 +823,6 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
     /**
      * Assumes type is in the format prefix:localPart, or localPart.
      *
-     * @param type
      */
     public void setLeafElementType(QName type) {
         leafElementType = type;
@@ -847,7 +841,6 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
 
     /**
      * INTERNAL:
-     * @return
      */
     @Override
     public boolean hasLastXPathFragment() {
@@ -877,7 +870,6 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
 
     /**
      * INTERNAL:
-     * @param CDATA
      */
     @Override
     public void setIsCDATA(boolean CDATA) {
@@ -886,7 +878,6 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
 
     /**
      * INTERNAL:
-     * @return
      */
     @Override
     public boolean isCDATA() {

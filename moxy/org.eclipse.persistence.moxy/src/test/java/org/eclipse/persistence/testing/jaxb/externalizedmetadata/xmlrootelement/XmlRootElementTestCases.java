@@ -38,7 +38,6 @@ public class XmlRootElementTestCases extends JAXBWithJSONTestCases {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public XmlRootElementTestCases(String name) throws Exception {
         super(name);

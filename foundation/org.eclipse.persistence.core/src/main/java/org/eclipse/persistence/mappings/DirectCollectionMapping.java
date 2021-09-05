@@ -936,7 +936,6 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * Convert all the class-name-based settings in this mapping to actual class-based
      * settings
      * This method is implemented by subclasses as necessary.
-     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader) {
@@ -1929,7 +1928,6 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     /**
      * INTERNAL:
      * Return whether this mapping should be traversed when we are locking
-     * @return
      */
     @Override
     public boolean isLockableMapping(){

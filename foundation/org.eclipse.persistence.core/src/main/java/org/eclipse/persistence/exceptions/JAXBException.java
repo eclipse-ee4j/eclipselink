@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -284,7 +284,6 @@ public class JAXBException extends EclipseLinkException {
      * eclipselink-oxm.xml).  This exception applies to the case where the Key parameter type of the package name to
      * metadata source map is something other than String.  We require {@literal Map<String, Source>}.
      *
-     * @return
      */
     public static JAXBException incorrectKeyParameterType() {
         Object[] args = {};
@@ -298,7 +297,6 @@ public class JAXBException extends EclipseLinkException {
      * eclipselink-oxm.xml).  This exception applies to the case where the Value parameter type (of the package
      * name to metadata source map) is something other than Source.  We require {@literal Map<String, Source>}.
      *
-     * @return
      */
     public static JAXBException incorrectValueParameterType() {
         Object[] args = {};
@@ -312,7 +310,6 @@ public class JAXBException extends EclipseLinkException {
      * eclipselink-oxm.xml).  This exception applies to the case where the Value parameter type associated with
      * the 'eclipselink-oxm-xml' Key (in the properties map) is something other than {@literal Map<String, Source>}.
      *
-     * @return
      */
     public static JAXBException incorrectValueParameterTypeForOxmXmlKey() {
         Object[] args = {};
@@ -326,8 +323,6 @@ public class JAXBException extends EclipseLinkException {
      * eclipselink-oxm.xml).  This exception applies to the case where the Value (in the package name
      * to metadata source map) is null.
      *
-     * @param key
-     * @return
      */
     public static JAXBException nullMetadataSource(String key) {
         Object[] args = { key };
@@ -341,7 +336,6 @@ public class JAXBException extends EclipseLinkException {
      * eclipselink-oxm.xml).  This exception applies to the case where the handle to the OXM metadata file is
      * null.
      *
-     * @return
      */
     public static JAXBException nullMetadataSource() {
         Object[] args = { };
@@ -356,7 +350,6 @@ public class JAXBException extends EclipseLinkException {
      * not been passes in with an associated String (for package name) and the unmarshalled XmlBindings object
      * does not have a package-name set.
      *
-     * @return
      */
     public static JAXBException packageNotSetForBindingException() {
         Object[] args = { };
@@ -370,7 +363,6 @@ public class JAXBException extends EclipseLinkException {
      * eclipselink-oxm.xml).  This exception applies to the case where the Key (in the package name
      * to metadata source map) is null.
      *
-     * @return
      */
     public static JAXBException nullMapKey() {
         Object[] args = {};
@@ -384,8 +376,6 @@ public class JAXBException extends EclipseLinkException {
      * eclipselink-oxm.xml).  This exception applies to the case where a class that is declared in the metadata
      * file cannot be loaded by the classloader.
      *
-     * @param classname
-     * @return
      */
     public static JAXBException couldNotLoadClassFromMetadata(String classname) {
         Object[] args = { classname };
@@ -399,7 +389,6 @@ public class JAXBException extends EclipseLinkException {
      * eclipselink-oxm.xml).  This exception applies to the case where JAXBContext creation fails for our
      * XmlModel.
      *
-     * @return
      */
     public static JAXBException couldNotCreateContextForXmlModel() {
         Object[] args = {};
@@ -413,8 +402,6 @@ public class JAXBException extends EclipseLinkException {
      * eclipselink-oxm.xml).  This exception applies to the case where JAXBContext creation fails for our
      * XmlModel.
      *
-     * @param ex
-     * @return
      */
     public static JAXBException couldNotCreateContextForXmlModel(Exception ex) {
         Object[] args = { ex };
@@ -428,8 +415,6 @@ public class JAXBException extends EclipseLinkException {
      * eclipselink-oxm.xml).  This exception applies to the case where an exception occurs while unmarshalling
      * the eclipselink metadata file.
      *
-     * @param e
-     * @return
      */
     public static JAXBException couldNotUnmarshalMetadata(Exception e) {
         Object[] args = {};
@@ -441,9 +426,6 @@ public class JAXBException extends EclipseLinkException {
     /**
      * This exception should be used when a descriptor customizer instance cannot be created.
      *
-     * @param e
-     * @param customizerClassName
-     * @return
      */
     public static JAXBException couldNotCreateCustomizerInstance(Exception e, String customizerClassName) {
         Object[] args = { customizerClassName };
@@ -456,9 +438,6 @@ public class JAXBException extends EclipseLinkException {
      * This exception would typically be thrown when a customizer class is set
      * that is not an instance of DescriptorCustomizer.
      *
-     * @param e
-     * @param customizerClassName
-     * @return
      */
     public static JAXBException invalidCustomizerClass(Exception e, String customizerClassName) {
         Object[] args = { customizerClassName };
@@ -474,7 +453,6 @@ public class JAXBException extends EclipseLinkException {
      * @param propertyName attempting to set this property as ID
      * @param idPropertyName existing ID property
      * @param className class in question
-     * @return
      */
     public static JAXBException idAlreadySet(String propertyName, String idPropertyName, String className) {
         Object[] args = { propertyName, className, idPropertyName };
@@ -490,7 +468,6 @@ public class JAXBException extends EclipseLinkException {
      * @param propertyName attempting to set this property as XmlValue
      * @param xmlValuePropertyName existing XmlValue property
      * @param className class in question
-     * @return
      */
     public static JAXBException xmlValueAlreadySet(String propertyName, String xmlValuePropertyName, String className) {
         Object[] args = { className, propertyName, xmlValuePropertyName };
@@ -506,7 +483,6 @@ public class JAXBException extends EclipseLinkException {
      * @param propertyName attempting to set this property as XmlAnyElement
      * @param xmlAnyElementPropertyName existing XmlAnyElement property
      * @param className class in question
-     * @return
      */
     public static JAXBException xmlAnyElementAlreadySet(String propertyName, String xmlAnyElementPropertyName, String className) {
         Object[] args = { className, propertyName, xmlAnyElementPropertyName };
@@ -518,10 +494,6 @@ public class JAXBException extends EclipseLinkException {
     /**
      * This exception should be used when DomHandlerConverter initialization fails.
      *
-     * @param nestedException
-     * @param domHandlerClassName
-     * @param propertyName
-     * @return
      */
     public static JAXBException couldNotInitializeDomHandlerConverter(Exception nestedException, String domHandlerClassName, String propertyName) {
         Object[] args = { domHandlerClassName, propertyName };
@@ -534,9 +506,6 @@ public class JAXBException extends EclipseLinkException {
      * This exception should be used when an @XmlAttributeRef or xml-attribute-ref appears
      * on a non-DataHandler property.
      *
-     * @param propertyName
-     * @param className
-     * @return
      */
     public static JAXBException invalidAttributeRef(String propertyName, String className) {
         Object[] args = { propertyName, className };
@@ -550,9 +519,6 @@ public class JAXBException extends EclipseLinkException {
      * but one or more of the XmlElement entries in the list has a type that does not
      * have an XmlID property.
      *
-     * @param propertyName
-     * @param elementName
-     * @return
      */
     public static JAXBException invalidXmlElementInXmlElementsList(String propertyName, String elementName) {
         Object[] args = { propertyName, elementName };
@@ -563,8 +529,6 @@ public class JAXBException extends EclipseLinkException {
 
     /**
      * This exception should be used when a TypeMappingInfo is specified but the Type is not set on it.
-     * @param tagName
-     * @return
      */
     public static JAXBException nullTypeOnTypeMappingInfo(QName tagName) {
         Object[] args = { tagName };
@@ -575,9 +539,6 @@ public class JAXBException extends EclipseLinkException {
 
     /**
      * This exception should be used when a TypeMappingInfo is specified but the Type is not set on it.
-     * @param javaTypePackage
-     * @param bindingsPackage
-     * @return
      */
     public static JAXBException javaTypeNotAllowedInBindingsFile(String javaTypePackage, String bindingsPackage) {
         Object[] args = { javaTypePackage, bindingsPackage };
@@ -943,7 +904,6 @@ public class JAXBException extends EclipseLinkException {
      *
      * @param propertyName name of the Property containing the XmlElementsJoinNodes
      * @param className name of the owning class
-     * @return
      */
     public static JAXBException incorrectNumberOfXmlJoinNodesOnXmlElements(String propertyName, String className) {
         Object[] args = { propertyName, className };
@@ -959,7 +919,6 @@ public class JAXBException extends EclipseLinkException {
      * @param propertyName name of the Property containing the XmlPaths
      * @param className name of the owning class
      * @param xpath the offending XmlPath
-     * @return
      */
     public static JAXBException invalidXmlPathWithAttribute(String propertyName, String className, String xpath) {
         Object[] args = { propertyName, className, xpath };

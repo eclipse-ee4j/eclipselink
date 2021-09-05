@@ -41,19 +41,19 @@ public class ConversionManagerOracleTestModel extends TestModel {
 
         try{
             Class testCaseClass = Class.forName("org.eclipse.persistence.testing.tests.conversion.DataTypesConvertedFromAClassTest");
-            junit.framework.Test testCase = (junit.framework.Test)testCaseClass.newInstance();
+            junit.framework.Test testCase = (junit.framework.Test)testCaseClass.getConstructor().newInstance();
             suite.addTest(testCase);
 
             testCaseClass = Class.forName("org.eclipse.persistence.testing.tests.conversion.DataTypesConvertedToAClassTest");
-            testCase = (junit.framework.Test)testCaseClass.newInstance();
+            testCase = (junit.framework.Test)testCaseClass.getConstructor().newInstance();
             suite.addTest(testCase);
 
             testCaseClass = Class.forName("org.eclipse.persistence.testing.tests.conversion.DataTypesConvertedFromAClassForOracle9Test");
-            testCase = (junit.framework.Test)testCaseClass.newInstance();
+            testCase = (junit.framework.Test)testCaseClass.getConstructor().newInstance();
             suite.addTest(testCase);
 
             testCaseClass = Class.forName("org.eclipse.persistence.testing.tests.conversion.DataTypesConvertedToAClassForOracle9Test");
-            testCase = (junit.framework.Test)testCaseClass.newInstance();
+            testCase = (junit.framework.Test)testCaseClass.getConstructor().newInstance();
             suite.addTest(testCase);
         } catch (Exception e){
             getSession().logMessage("Unable to load Oracle-specific conversion tests.  This usually occurs when the tests were compiled " +

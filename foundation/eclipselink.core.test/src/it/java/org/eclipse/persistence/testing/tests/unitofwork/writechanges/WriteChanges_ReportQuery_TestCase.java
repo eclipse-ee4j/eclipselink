@@ -29,7 +29,7 @@ import org.eclipse.persistence.testing.models.employee.domain.Employee;
  * This test case is basically subsumed under WriteChanges_IssueSQL_TestCase.
  * Executing a ReportQuery after writeChanges must work for other tests that
  * need to verify database state.
- * <p>
+ *
  * @author  smcritch
  */
 public class WriteChanges_ReportQuery_TestCase extends AutoVerifyTestCase {

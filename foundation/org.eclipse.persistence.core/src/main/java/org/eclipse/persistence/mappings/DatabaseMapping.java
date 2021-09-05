@@ -1254,7 +1254,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     /**
      * INTERNAL:
      * Return whether this mapping should be traversed when we are locking
-     * @return
      */
     public boolean isLockableMapping(){
         return false;

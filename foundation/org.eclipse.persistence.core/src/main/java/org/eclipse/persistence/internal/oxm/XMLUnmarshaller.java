@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -239,7 +239,6 @@ public class XMLUnmarshaller<
      * Set the MediaType for this xmlUnmarshaller.
      * See org.eclipse.persistence.oxm.MediaType for the media types supported by EclipseLink MOXy
      * @since 2.4
-     * @param mediaType
      */
     public void setMediaType(MEDIA_TYPE mediaType) {
         if(this.mediaType != mediaType){
@@ -335,7 +334,6 @@ public class XMLUnmarshaller<
     /**
      * Set the class that will be instantiated to handled unmapped content
      * Class must implement the org.eclipse.persistence.oxm.unmapped.UnmappedContentHandler interface
-     * @param aClass
      */
     public void setUnmappedContentHandlerClass(Class aClass) {
         this.unmappedContentHandlerClass = aClass;
@@ -625,7 +623,6 @@ public class XMLUnmarshaller<
      * Return a properties object for a given instance of the
      * XMLUnmarshaller.
      *
-     * @return
      */
     public Properties getProperties() {
         if(null == unmarshalProperties) {
@@ -637,8 +634,6 @@ public class XMLUnmarshaller<
     /**
      * Return the property for a given key, if one exists.
      *
-     * @param key
-     * @return
      */
     @Override
     public Object getProperty(Object key) {
@@ -738,7 +733,6 @@ public class XMLUnmarshaller<
     /**
      * Value that will be used to prefix attributes.
      * Ignored unmarshalling XML.
-     * @return
      * @since 2.4
      */
     @Override
@@ -798,7 +792,6 @@ public class XMLUnmarshaller<
     /**
      * Determine if the @XMLRootElement should be marshalled when present.
      * Ignored unmarshalling XML.
-     * @return
      * @since 2.4
      */
     @Override

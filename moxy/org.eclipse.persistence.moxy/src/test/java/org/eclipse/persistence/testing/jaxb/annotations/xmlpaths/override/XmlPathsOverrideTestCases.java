@@ -39,8 +39,6 @@ public class XmlPathsOverrideTestCases extends JAXBWithJSONTestCases{
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
-     * @throws Exception
      */
     public XmlPathsOverrideTestCases(String name) throws Exception {
         super(name);
@@ -65,7 +63,6 @@ public class XmlPathsOverrideTestCases extends JAXBWithJSONTestCases{
     /**
      * Return the control Employee.
      *
-     * @return
      */
     @Override
     public Employee getControlObject() {

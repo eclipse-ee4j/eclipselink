@@ -30,6 +30,12 @@ public class PersistenceXML {
     private List<SEPersistenceUnitInfo> persistenceUnitInfos = new ArrayList<>();
 
     /**
+     * Default constructor.
+     */
+    public PersistenceXML() {
+    }
+
+    /**
      * INTERNAL:
      */
     public List<SEPersistenceUnitInfo> getPersistenceUnitInfos() {

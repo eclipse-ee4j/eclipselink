@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -155,7 +155,6 @@ public class Setting {
     /**
      * Set the value on the Setting.  This method will also update the corresponding
      * domain object using the specified mapping.
-     * @param value
      */
     public void setValue(Object value) {
         setValue(value, true);
@@ -179,9 +178,6 @@ public class Setting {
     }
 
     /**
-     * @param value
-     * @param updateObject
-     * @param container
      */
     public void addValue(Object value, boolean updateObject, Object container) {
         this.value = value;

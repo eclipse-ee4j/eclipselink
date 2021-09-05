@@ -45,7 +45,6 @@ public class SchemaGenTestCases extends TestCase {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public SchemaGenTestCases(String name) {
         super(name);
@@ -54,9 +53,6 @@ public class SchemaGenTestCases extends TestCase {
     /**
      * Generate one or more schemas from deployment xml.
      *
-     * @param contextPath
-     * @param outputResolver
-     * @param additionalGlobalElements
      */
     protected void generateSchema(String contextPath, MySchemaOutputResolver outputResolver, Map<QName, Type> additionalGlobalElements) {
         JAXBContext jaxbContext;
@@ -71,9 +67,6 @@ public class SchemaGenTestCases extends TestCase {
     /**
      * Generate one or more schemas from an array of Classes.
      *
-     * @param classesToBeBound
-     * @param outputResolver
-     * @param additionalGlobalElements
      */
     protected void generateSchema(Class[] classesToBeBound, MySchemaOutputResolver outputResolver, Map<QName, Type> additionalGlobalElements) throws Exception {
         JAXBContext jaxbContext;
@@ -88,9 +81,6 @@ public class SchemaGenTestCases extends TestCase {
     /**
      * Generate one or more schemas from an array of Types.
      *
-     * @param typesToBeBound
-     * @param outputResolver
-     * @param additionalGlobalElements
      */
     protected void generateSchema(Type[] typesToBeBound, MySchemaOutputResolver outputResolver, Map<QName, Type> additionalGlobalElements) {
         JAXBContext jaxbContext;
@@ -115,7 +105,6 @@ public class SchemaGenTestCases extends TestCase {
     /**
      * Validates a given instance doc against the generated schema.
      *
-     * @param src
      * @param schemaIndex index in output resolver's list of generated schemas
      * @param outputResolver contains one or more schemas to validate against
      */

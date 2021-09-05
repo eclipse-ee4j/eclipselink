@@ -50,7 +50,6 @@ public class XmlNullPolicyNoXmlElementTestCases extends JAXBTestCases {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public XmlNullPolicyNoXmlElementTestCases(String name) throws Exception{
         super(name);

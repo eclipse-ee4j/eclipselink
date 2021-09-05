@@ -319,7 +319,6 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * @param pkList List of Entity PKs to extract from the cache
      * @param descriptor Descriptor type to be retrieved.
      * @return Map of Entity PKs associated to the Entities that were retrieved
-     * @throws QueryException
      */
     public Map<Object, Object> getAllFromIdentityMapWithEntityPK(Object[] pkList, ClassDescriptor descriptor){
         return getIdentityMapManager().getAllFromIdentityMapWithEntityPK(pkList, descriptor, getSession());
@@ -332,7 +331,6 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * @param pkList List of Entity PKs to extract from the cache
      * @param descriptor Descriptor type to be retrieved.
      * @return Map of Entity PKs associated to the Entities that were retrieved
-     * @throws QueryException
      */
     public Map<Object, CacheKey> getAllCacheKeysFromIdentityMapWithEntityPK(Object[] pkList, ClassDescriptor descriptor){
         return getIdentityMapManager().getAllCacheKeysFromIdentityMapWithEntityPK(pkList, descriptor, getSession());

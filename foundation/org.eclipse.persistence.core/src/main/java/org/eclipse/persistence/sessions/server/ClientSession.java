@@ -344,7 +344,6 @@ public class ClientSession extends AbstractSession {
     /**
      * INTERNAL:
      * Release (if required) connection after call.
-     * @param query
      */
     @Override
     public void releaseConnectionAfterCall(DatabaseQuery query) {

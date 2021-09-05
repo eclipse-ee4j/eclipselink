@@ -1179,7 +1179,6 @@ public class SQLSelectStatement extends SQLStatement {
     /**
      * INTERNAL:
      * returns outerJoinExpressionHolders representing outerjoin expressions.
-     * @return
      */
     public List<OuterJoinExpressionHolder> getOuterJoinExpressionsHolders() {
         if (outerJoinExpressionHolders == null) {
@@ -1196,7 +1195,6 @@ public class SQLSelectStatement extends SQLStatement {
      * @param outerJoinedMappingCriteria - used for querykey mapping expressions
      * @param outerJoinedAdditionalJoinCriteria - additional tables/expressions to join.  Usually for multitableInheritance join expressions
      * @param descriptor - descriptor to use if this is for reading in subclasses in one query.
-     * @return
      */
     public Integer addOuterJoinExpressionsHolders(ObjectExpression joinExpression, Expression outerJoinedMappingCriteria,
             Map<DatabaseTable, Expression> outerJoinedAdditionalJoinCriteria, ClassDescriptor descriptor) {

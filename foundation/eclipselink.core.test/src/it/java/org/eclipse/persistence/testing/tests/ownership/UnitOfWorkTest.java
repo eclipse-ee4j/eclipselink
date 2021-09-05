@@ -24,7 +24,7 @@ import org.eclipse.persistence.testing.models.ownership.*;
  * <b>Purpose</b>: This test checks to see if the Unit of Work functions with the private-owned mappings
  * <p>
  * <b>Motivation </b>: This test was written to test a new feature: the UOW.
- * <p>
+ *
  */
 public class UnitOfWorkTest extends WriteObjectTest {
     public Object unitOfWorkWorkingCopy;

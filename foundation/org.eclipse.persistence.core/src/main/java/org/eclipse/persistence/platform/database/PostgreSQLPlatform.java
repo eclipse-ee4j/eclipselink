@@ -111,9 +111,6 @@ public class PostgreSQLPlatform extends DatabasePlatform {
      * PostGreSQL uses case #2 and therefore the maxResults has to be altered
      * based on the firstResultIndex
      *
-     * @param firstResultIndex
-     * @param maxResults
-     *
      * @see org.eclipse.persistence.platform.database.MySQLPlatform
      */
     @Override

@@ -104,11 +104,6 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
      * INTERNAL:
      * Code was moved from UnitOfWork.internalExecuteQuery
      *
-     * @param unitOfWork
-     * @param translationRow
-     * @return
-     * @throws org.eclipse.persistence.exceptions.DatabaseException
-     * @throws org.eclipse.persistence.exceptions.OptimisticLockException
      */
     @Override
     protected Object executeInUnitOfWorkObjectLevelModifyQuery(UnitOfWorkImpl unitOfWork, AbstractRecord translationRow) throws DatabaseException, OptimisticLockException {

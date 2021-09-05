@@ -602,7 +602,6 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * @param pkList List of Entity PKs to extract from the cache
      * @param descriptor Descriptor type to be retrieved.
      * @return Map of Entity PKs associated to the Entities that were retrieved
-     * @throws QueryException
      */
     public Map<Object, Object> getAllFromIdentityMapWithEntityPK(Object[] pkList, ClassDescriptor descriptor, AbstractSession session){
         return getIdentityMap(descriptor).getAllFromIdentityMapWithEntityPK(pkList, descriptor, session);
@@ -615,7 +614,6 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * @param pkList List of Entity PKs to extract from the cache
      * @param descriptor Descriptor type to be retrieved.
      * @return Map of Entity PKs associated to the Entities that were retrieved
-     * @throws QueryException
      */
     public Map<Object, CacheKey> getAllCacheKeysFromIdentityMapWithEntityPK(Object[] pkList, ClassDescriptor descriptor, AbstractSession session){
         return getIdentityMap(descriptor).getAllCacheKeysFromIdentityMapWithEntityPK(pkList, descriptor, session);

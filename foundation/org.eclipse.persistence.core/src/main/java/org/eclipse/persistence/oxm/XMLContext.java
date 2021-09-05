@@ -425,8 +425,6 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
     /**
      * INTERNAL:
      * Return the DocumentPreservationPolicy associated with this session
-     * @param session
-     * @return
      */
     public DocumentPreservationPolicy getDocumentPreservationPolicy(AbstractSession session) {
         if (session == null) {
@@ -966,7 +964,6 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
     /**
      * Returns descriptor for given object.
      *
-     * @param object
      * @return descriptor for given object
      */
     public Descriptor getDescriptorForObject(Object object) {

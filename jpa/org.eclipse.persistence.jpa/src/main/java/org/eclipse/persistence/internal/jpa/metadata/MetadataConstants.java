@@ -182,7 +182,7 @@ public final class MetadataConstants {
     public static final String JPA_GENERATION_AUTO = "AUTO";
 
     /**
-     * Metamodel processing for MappedSuperclasses non-functional names.<p>
+     * Metamodel processing for MappedSuperclasses non-functional names.
      * @see MetadataProject#addMetamodelMappedSuperclass(org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor, MetadataDescriptor)
      **/
     public static final String MAPPED_SUPERCLASS_RESERVED_PK_NAME = "__PK_METAMODEL_RESERVED_IN_MEM_ONLY_FIELD_NAME";

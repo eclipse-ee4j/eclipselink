@@ -124,7 +124,6 @@ public class DatabaseLogin extends DatasourceLogin {
      * ADVANCED:
      * Add a StructConverter
      * @see org.eclipse.persistence.platform.database.converters.StructConverter
-     * @param converter
      */
     public void addStructConverter(StructConverter converter){
         getPlatform().addStructConverter(converter);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -641,7 +641,6 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
     /**
      * INTERNAL:
      * Release (if required) connection after call.
-     * @param query
      */
     @Override
     public void releaseConnectionAfterCall(DatabaseQuery query) {
@@ -958,7 +957,6 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
     /**
      * INTERNAL:
      * Set the current number of connections being used that are not from a connection pool.
-     * @param numberOfNonPooledConnectionsUsed
      */
     public void setNumberOfNonPooledConnectionsUsed(int numberOfNonPooledConnectionsUsed) {
         this.numberOfNonPooledConnectionsUsed = numberOfNonPooledConnectionsUsed;

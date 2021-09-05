@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2020 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -295,8 +295,6 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * This method is used for removal of private owned relationships.
      * AggregateObjectMappings are dealt with in their parent delete, so this is a no-op.
      *
-     * @param object
-     * @param deletedObjects
      */
     @Override
     public void addKeyToDeletedObjectsList(Object object, Map deletedObjects){
@@ -495,7 +493,6 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * Wrap the aggregate represented by this mapping in a cachekey so it can be processed my
      * methods down the stack.
      * @param owningCacheKey - the cache key holding the object to extract the aggregate from
-     * @return
      */
     protected CacheKey buildWrapperCacheKeyForAggregate(CacheKey owningCacheKey, boolean targetIsProtected) {
         if (!this.descriptor.getCachePolicy().isProtectedIsolation()) {
@@ -740,14 +737,6 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     /**
      * INTERNAL:
      * Build a clone of the given element in a unitOfWork
-     * @param attributeValue
-     * @param parent
-     * @param parentCacheKey
-     * @param refreshCascade
-     * @param cloningSession
-     * @param isExisting
-     * @param isFromSharedCache
-     * @return
      */
     @Override
     public Object buildElementClone(Object attributeValue, Object parent, CacheKey parentCacheKey, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting, boolean isFromSharedCache){
@@ -819,7 +808,6 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * INTERNAL:
      * Certain key mappings favor different types of selection query.  Return the appropriate
      * type of selectionQuery
-     * @return
      */
     @Override
     public ReadQuery buildSelectionQueryForDirectCollectionKeyMapping(ContainerPolicy containerPolicy){
@@ -1008,7 +996,6 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * Convert all the class-name-based settings in this mapping to actual
      * class-based settings. This method is used when converting a project that
      * has been built with class names to a project with classes.
-     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader) {
@@ -1071,7 +1058,6 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     /**
      * INTERNAL:
      * Create a query key that links to the map key
-     * @return
      */
     @Override
     public QueryKey createQueryKeyForMapKey(){
@@ -1085,8 +1071,6 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * This method is used for removal of private owned relationships.
      * AggregateObjectMappings are dealt with in their parent delete, so this is a no-op.
      *
-     * @param objectDeleted
-     * @param session
      */
     @Override
     public void deleteMapKey(Object objectDeleted, AbstractSession session){
@@ -1158,7 +1142,6 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     /**
      * INTERNAL:
      * Return any tables that will be required when this mapping is used as part of a join query
-     * @return
      */
     @Override
     public List<DatabaseTable> getAdditionalTablesForJoinQuery(){
@@ -1171,7 +1154,6 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * is a map key.
      *
      * AggregateObjectMappings do not need any additional selection criteria when they are map keys
-     * @return
      */
     @Override
     public Expression getAdditionalSelectionCriteriaForMapKey(){
@@ -1237,7 +1219,6 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * Return the fields that make up the identity of the mapped object.  For mappings with
      * a primary key, it will be the set of fields in the primary key.  For mappings without
      * a primary key it will likely be all the fields
-     * @return
      */
     @Override
     public List<DatabaseField> getIdentityFieldsForMapKey(){
@@ -1262,7 +1243,6 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     /**
      * INTERNAL:
      * Return a Map of any foreign keys defined within the the MapKey
-     * @return
      */
     @Override
     public Map<DatabaseField, DatabaseField> getForeignKeyFieldsForMapKey(){
@@ -1294,7 +1274,6 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * Return the query that is used when this mapping is part of a joined relationship
      *
      * This method is used when this mapping is used to map the key in a Map
-     * @return
      */
     @Override
     public ObjectLevelReadQuery getNestedJoinQuery(JoinedAttributeManager joinManager, ObjectLevelReadQuery query, AbstractSession session){
@@ -1332,7 +1311,6 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * If required, get the targetVersion of the source object from the merge manager.
      *
      * Used with MapKeyContainerPolicy to abstract getting the target version of a source key
-     * @return
      */
     @Override
     public Object getTargetVersionOfSourceObject(Object object, Object parent, MergeManager mergeManager, AbstractSession targetSession){
@@ -1347,7 +1325,6 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     /**
      * INTERNAL:
      * Return the class this key mapping maps or the descriptor for it
-     * @return
      */
     @Override
     public Object getMapKeyTargetType(){
@@ -1602,8 +1579,6 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     /**
      * INTERNAL:
      * Called when iterating through descriptors to handle iteration on this mapping when it is used as a MapKey
-     * @param iterator
-     * @param element
      */
     @Override
     public void iterateOnMapKey(DescriptorIterator iterator, Object element){
@@ -1613,7 +1588,6 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     /**
      * INTERNAL:
      * Return whether this mapping should be traversed when we are locking
-     * @return
      */
     @Override
     public boolean isLockableMapping(){

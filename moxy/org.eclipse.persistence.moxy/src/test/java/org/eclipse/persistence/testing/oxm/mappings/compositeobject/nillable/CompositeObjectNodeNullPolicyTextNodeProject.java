@@ -24,7 +24,6 @@ public class CompositeObjectNodeNullPolicyTextNodeProject extends Project {
     /**
      * Construct a project with a descriptor setup for all fields that do not use a default NodeNullPolicy
      * The firstname field of the composite object "manager" is a text() field
-     * @param fieldsAsElements
      */
     public CompositeObjectNodeNullPolicyTextNodeProject(boolean fieldsAsElements) {
         XMLDescriptor aTeamDescriptor = getTeamDescriptor(fieldsAsElements);
@@ -73,7 +72,6 @@ public class CompositeObjectNodeNullPolicyTextNodeProject extends Project {
     }
 
     /**
-     * @return
      */
     private XMLDescriptor getEmployeeDescriptor(boolean fieldsAsElements) {
         // if all fields are attributes the use XPath format @id otherwise use id/text()

@@ -36,7 +36,6 @@ public class ObjectReferenceMappingWriteOnlyTestCases extends JAXBWithJSONTestCa
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public ObjectReferenceMappingWriteOnlyTestCases(String name) throws Exception {
         super(name);

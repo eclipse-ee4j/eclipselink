@@ -1,4 +1,5 @@
-/********************************************************************************
+/*
+ * Copyright (c) 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2018, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -8,12 +9,11 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
- ******************************************************************************/
+ */
 
 // Contributors:
 //     07/09/2018-2.6 Jody Grassel
 //        - 536853: MapsID processing sets up to fail validation
-
 package org.eclipse.persistence.jpa.compositeid;
 
 import static org.junit.Assert.assertEquals;

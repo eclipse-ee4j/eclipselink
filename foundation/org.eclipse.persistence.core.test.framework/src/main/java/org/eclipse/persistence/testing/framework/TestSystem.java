@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -496,7 +496,7 @@ public class TestSystem {
         DatabasePlatform platform = null;
         try{
             Class platformClass = Class.forName("org.eclipse.persistence.platform.database.oracle.Oracle9Platform");
-            platform = (DatabasePlatform)platformClass.newInstance();
+            platform = (DatabasePlatform)platformClass.getConstructor().newInstance();
         } catch (Exception e){
             platform = new org.eclipse.persistence.platform.database.OraclePlatform();
         }
@@ -520,7 +520,7 @@ public class TestSystem {
         DatabasePlatform platform = null;
         try{
             Class platformClass = Class.forName("org.eclipse.persistence.platform.database.oracle.Oracle8Platform");
-            platform = (DatabasePlatform)platformClass.newInstance();
+            platform = (DatabasePlatform)platformClass.getConstructor().newInstance();
         } catch (Exception e){
             platform = new org.eclipse.persistence.platform.database.OraclePlatform();
         }
@@ -628,7 +628,7 @@ public class TestSystem {
     public void useTimesTen(String userName) {
         DatabaseLogin login = new DatabaseLogin();
         try {
-            login.usePlatform((org.eclipse.persistence.internal.databaseaccess.DatabasePlatform)Class.forName("org.eclipse.persistence.platform.database.TimesTenPlatform").newInstance());
+            login.usePlatform((org.eclipse.persistence.internal.databaseaccess.DatabasePlatform)Class.forName("org.eclipse.persistence.platform.database.TimesTenPlatform").getConstructor().newInstance());
         } catch (Exception e) {}
         login.setDriverClassName("com.timesten.jdbc.TimesTenDriver");
         login.setDriverURLHeader("jdbc:timesten:client:");
@@ -647,7 +647,7 @@ public class TestSystem {
     public void useSymfowareRDB2_TCP() {
         DatabaseLogin login = new DatabaseLogin();
         try {
-            login.usePlatform((org.eclipse.persistence.internal.databaseaccess.DatabasePlatform)Class.forName("org.eclipse.persistence.platform.database.SymfowarePlatform").newInstance());
+            login.usePlatform((org.eclipse.persistence.internal.databaseaccess.DatabasePlatform)Class.forName("org.eclipse.persistence.platform.database.SymfowarePlatform").getConstructor().newInstance());
         } catch (Exception e) {
             e.printStackTrace();
         }

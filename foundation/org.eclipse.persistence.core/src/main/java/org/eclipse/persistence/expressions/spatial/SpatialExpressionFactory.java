@@ -131,10 +131,6 @@ public final class SpatialExpressionFactory {
      * A utility method to build a SpatialExpression
      *
      * @param operator the ordinal of the operator
-     * @param geom1
-     * @param geom2
-     * @param params
-     * @return
      */
     public static Expression getSpatialExpression(int operator, Expression geom1, Object geom2, String params) {
         Vector vParameters = new Vector(2);

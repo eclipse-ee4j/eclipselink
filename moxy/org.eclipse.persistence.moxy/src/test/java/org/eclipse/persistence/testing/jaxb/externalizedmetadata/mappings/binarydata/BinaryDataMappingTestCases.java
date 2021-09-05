@@ -50,7 +50,6 @@ public class BinaryDataMappingTestCases extends JAXBWithJSONTestCases  {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public BinaryDataMappingTestCases(String name) throws Exception {
         super(name);
@@ -65,7 +64,6 @@ public class BinaryDataMappingTestCases extends JAXBWithJSONTestCases  {
     /**
      * Return the control MyData.
      *
-     * @return
      */
     @Override
     public Object getControlObject() {

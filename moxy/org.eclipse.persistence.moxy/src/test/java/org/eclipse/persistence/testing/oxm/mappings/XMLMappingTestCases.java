@@ -166,8 +166,6 @@ public abstract class XMLMappingTestCases extends OXTestCase {
 
     /**
      * Override this function to implement different read/write control documents.
-     * @return
-     * @throws Exception
      */
     protected Document getWriteControlDocument() throws Exception {
         if(writeControlDocument != null){
@@ -183,8 +181,6 @@ public abstract class XMLMappingTestCases extends OXTestCase {
     /**
      * Provide an alternative write version of the control document when rountrip is not enabled.
      * If this function is not called and getWriteControlDocument() is not overridden then the write and read control documents are the same.
-     * @param xmlResource
-     * @throws Exception
      */
     protected void setWriteControlDocument(String xmlResource) throws Exception {
         writeControlDocumentLocation = xmlResource;

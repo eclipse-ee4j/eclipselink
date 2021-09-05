@@ -40,7 +40,6 @@ public class XmlRegistryTestCases extends JAXBWithJSONTestCases {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public XmlRegistryTestCases(String name) throws Exception {
         super(name);

@@ -1427,7 +1427,6 @@ public abstract class DatabaseCall extends DatasourceCall {
      * @param statement SQL/JDBC statement to call stored procedure/function
      * @param index 0-based index in the argument list
      * @param session Active database session (in connected state).
-     * @return
      */
     public Object getOutputParameterValue(CallableStatement statement, int index, AbstractSession session) throws SQLException {
         return session.getPlatform().getParameterValueFromDatabaseCall(statement, index + 1, session);
@@ -1441,7 +1440,6 @@ public abstract class DatabaseCall extends DatasourceCall {
      * @param statement SQL/JDBC statement to call stored procedure/function
      * @param name parameter name
      * @param session Active database session (in connected state).
-     * @return
      */
     public Object getOutputParameterValue(CallableStatement statement, String name, AbstractSession session) throws SQLException {
         return session.getPlatform().getParameterValueFromDatabaseCall(statement, name, session);

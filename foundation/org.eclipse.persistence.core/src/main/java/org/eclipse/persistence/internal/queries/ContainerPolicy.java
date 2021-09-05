@@ -230,10 +230,6 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      *
      * @see MappedKeyMapContainerPolicy
      *
-     * @param valuesIterator
-     * @param toCollection
-     * @param mapping
-     * @param isExisting
      */
     public void addNextValueFromIteratorInto(Object valuesIterator, Object parent, CacheKey parentCacheKey, Object toCollection, CollectionMapping mapping, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting, boolean isFromSharedCache){
         Object cloneValue = mapping.buildElementClone(next(valuesIterator, cloningSession), parent, parentCacheKey, refreshCascade, cloningSession, isExisting, isFromSharedCache);
@@ -249,10 +245,6 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * Build a clone for the key of a Map represented by this container policy if necessary.
      * By default, the key is not cloned since in standard EclipseLink Mappings it will not be
      * an Entity
-     * @param key
-     * @param cloningSession
-     * @param isExisting
-     * @return
      */
     public Object buildCloneForKey(Object key, Object parent , CacheKey parentCacheKey, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting, boolean isCacheCheckComplete){
         return key;
@@ -266,9 +258,6 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * contains the key and the value
      *
      * @see MappedKeyMapContainerPolicy
-     * @param objectAdded
-     * @param changeSet
-     * @return
      */
     public Object buildCollectionEntry(Object objectAdded, ObjectChangeSet changeSet){
         return objectAdded;
@@ -290,10 +279,6 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
     /**
      * Extract the key for the map from the provided row
      * overridden by subclasses that deal with map keys
-     * @param row
-     * @param query
-     * @param session
-     * @return
      */
     public Object buildKey(AbstractRecord row, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected){
         return null;
@@ -325,10 +310,6 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
     /**
      * Extract the key for the map from the provided row
      * overridden by subclasses that deal with map keys
-     * @param row
-     * @param query
-     * @param session
-     * @return
      */
     public Object buildKeyFromJoinedRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected){
         return null;
@@ -389,7 +370,6 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * This
      * Certain key mappings favor different types of selection query.  Return the appropriate
      * type of selectionQuery
-     * @return
      */
     public ReadQuery buildSelectionQueryForDirectCollectionMapping(){
         DirectReadQuery query = new DirectReadQuery();
@@ -480,10 +460,6 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * INTERNAL:
      * Create change sets that contain map keys.
      * This method will be overridden by subclasses that handle map keys
-     * @param originalKeyValues
-     * @param changeRecord
-     * @param session
-     * @param referenceDescriptor
      */
     protected void createChangeSetForKeys(Map originalKeyValues, CollectionChangeRecord changeRecord, AbstractSession session, ClassDescriptor referenceDescriptor){
     }
@@ -492,12 +468,6 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * INTERNAL:
      * Iterate over the list of new objects and create change sets for them
      * This method is overridden by subclasses to handle map keys
-     * @param originalKeyValues
-     * @param cloneKeyValues
-     * @param newCollection
-     * @param changeRecord
-     * @param session
-     * @param referenceDescriptor
      */
     protected void collectObjectForNewCollection(Map originalKeyValues, Map cloneKeyValues, Object newCollection, CollectionChangeRecord changeRecord, AbstractSession session, ClassDescriptor referenceDescriptor){
         Object cloneIter = iteratorFor(newCollection);
@@ -745,7 +715,6 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * Convert all the class-name-based settings in this ContainerPolicy to actual class-based
      * settings
      * This method is implemented by subclasses as necessary.
-     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){}
 
@@ -756,11 +725,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * on what is required by the container policy.
      *
      * @see MappedKeyMapContainerPolicy
-     * @param wrappedObject
      * @param parent if this is an aggregate, the owner of the aggregate
-     * @param referenceDescriptor
-     * @param mergeManager
-     * @return
      */
     public Object createWrappedObjectFromExistingWrappedObject(Object wrappedObject, Object parent, ClassDescriptor referenceDescriptor, MergeManager mergeManager, AbstractSession targetSession){
         return referenceDescriptor.getObjectBuilder().wrapObject(mergeManager.getTargetVersionOfSourceObject(unwrapIteratorResult(wrappedObject), referenceDescriptor, targetSession), mergeManager.getSession());
@@ -772,8 +737,6 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * This may be overridden by subclasses to deal with composite objects
      *
      * @see MappedKeyMapContainerPolicy
-     * @param objectDeleted
-     * @param session
      */
     public void deleteWrappedObject(Object objectDeleted, AbstractSession session){
         session.deleteObject(objectDeleted);
@@ -1476,7 +1439,6 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * INTERNAL:
      * Returns whether this ContainerPolicy should requires data modification events when
      * objects are added or deleted during update
-     * @return
      */
     public boolean requiresDataModificationEvents(){
         return false;
@@ -1541,7 +1503,6 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * INTERNAL:
      * Indicates whether addAll method should be called to add entire collection,
      * or it's possible to call addInto multiple times instead.
-     * @return
      */
     public boolean shouldAddAll(){
         return false;
@@ -1720,7 +1681,6 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * INTERNAL:
      * convenience method to copy the keys and values from a Map into an AbstractRecord
      * @param mappingData a Map containing a database field as the key and the value of that field as the value
-     * @param databaseRow
      */
     public static void copyMapDataToRow(Map mappingData, AbstractRecord databaseRow){
         if (mappingData != null){

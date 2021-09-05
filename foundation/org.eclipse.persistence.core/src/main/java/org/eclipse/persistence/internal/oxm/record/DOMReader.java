@@ -108,7 +108,6 @@ public class DOMReader extends XMLReaderAdapter {
      * attribute.  Using a stack ensures that the parent nodes are
      * processed top down.
      *
-     * @param element
      */
     protected void processParentNamespaces(Element element) throws SAXException {
         Node parent = element.getParentNode();

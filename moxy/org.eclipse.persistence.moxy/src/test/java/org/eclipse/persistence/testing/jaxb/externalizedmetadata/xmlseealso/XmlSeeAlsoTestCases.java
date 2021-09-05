@@ -29,7 +29,7 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
  * Tests generation for Employee when xml-see-also is defined.  Overrides the
- * @XmlSeeAlso on Employee (XmlSeeAlsoTestCases.class) with (MySimpleClass,
+ * {@code @XmlSeeAlso} on Employee (XmlSeeAlsoTestCases.class) with (MySimpleClass,
  * MyOtherClass)
  *
  * Positive test.
@@ -41,7 +41,6 @@ public class XmlSeeAlsoTestCases extends JAXBWithJSONTestCases {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public XmlSeeAlsoTestCases(String name) throws Exception{
         super(name);

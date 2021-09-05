@@ -1282,7 +1282,6 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
     /**
      * ADVANCED
      * Returns true if this ObjectChangeSet should be recalculated after changes in event
-     * @return
      */
     @Override
     public boolean shouldRecalculateAfterUpdateEvent() {

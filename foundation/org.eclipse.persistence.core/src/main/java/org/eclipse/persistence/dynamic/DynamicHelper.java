@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -95,8 +95,6 @@ public class DynamicHelper {
     /**
      * Provide access to the entity's type.
      *
-     * @param entity
-     * @return
      * @throws ClassCastException
      *             if entity is not an instance of {@link DynamicEntityImpl}
      */
@@ -112,7 +110,6 @@ public class DynamicHelper {
      * are concurrent processes using this type when it is removed some
      * exceptions may occur.
      *
-     * @param typeName
      */
     public void removeType(String typeName) {
         DynamicType type = getType(typeName);
@@ -193,9 +190,6 @@ public class DynamicHelper {
      * Add one or more EntityType instances to a session and optionally generate
      * needed tables with or without FK constraints.
      *
-     * @param createMissingTables
-     * @param generateFKConstraints
-     * @param types
      */
     public void addTypes(boolean createMissingTables, boolean generateFKConstraints, DynamicType... types) {
         if (types == null || types.length == 0) {

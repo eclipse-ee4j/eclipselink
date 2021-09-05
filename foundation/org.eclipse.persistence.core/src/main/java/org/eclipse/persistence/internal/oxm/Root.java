@@ -238,7 +238,6 @@ public class Root {
      * Sets that this XMLRoot object is nil.  If setNil(true) is explicitly called then isNil() will
      * return true even if rootObject is not null.
      *
-     * @param nil
      */
     public void setNil(boolean nil) {
         this.nil = nil;

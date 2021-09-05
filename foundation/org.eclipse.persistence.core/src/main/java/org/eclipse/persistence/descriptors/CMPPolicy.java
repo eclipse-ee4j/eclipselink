@@ -127,7 +127,6 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
      * PUBLIC:
      * Define the mapped class. This is the class which was originally mapped in the MW
      *
-     * @param newMappedClass
      */
     public void setMappedClass(Class newMappedClass) {
         mappedClass = newMappedClass;
@@ -156,7 +155,6 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
      * PUBLIC:
      * Configure bean pessimistic locking
      *
-     * @param policy
      * @see org.eclipse.persistence.descriptors.PessimisticLockingPolicy
      */
     public void setPessimisticLockingPolicy(PessimisticLockingPolicy policy) {
@@ -196,7 +194,6 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
      * this type.  NOTE: if set to true, then updateAllFields must also be set
      * to true
      *
-     * @param shouldForceUpdate
      */
     public void setForceUpdate(boolean shouldForceUpdate) {
         this.forceUpdate = shouldForceUpdate;
@@ -217,7 +214,6 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
      * Configure whether TopLink should update all fields for an object of this
      * type when an update occurs.
      *
-     * @param shouldUpdatAllFields
      */
     public void setUpdateAllFields(boolean shouldUpdatAllFields) {
         this.updateAllFields = shouldUpdatAllFields;
@@ -356,7 +352,6 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
      * Convert all the class-name-based settings in this object to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
     }
@@ -594,8 +589,6 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
      * Check to see if there is a single key element.  Iterate through the list of primary key elements
      * and count only keys that are not part of the Multitenant identifier.
      *
-     * @param pkElementArray
-     * @return
      */
     protected boolean isSingleKey(KeyElementAccessor[] pkElementArray){
         if ((pkElementArray.length == 1) && (pkElementArray[0] instanceof KeyIsElementAccessor)) {

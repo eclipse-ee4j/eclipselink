@@ -89,7 +89,6 @@ public class SerializedObjectConverter implements Converter, ClassNameConversion
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
      * This method is implemented by subclasses as necessary.
-     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader) {

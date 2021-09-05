@@ -581,7 +581,7 @@ public class MetadataProject {
      *  This method is referenced by EntityAccessor.addPotentialMappedSuperclass()
      *  during an initial predeploy() and later during a deploy()
      *  </p>
-     * @param accessor - The mappedSuperclass accessor for the field on the mappedSuperclass<p>
+     * @param accessor - The mappedSuperclass accessor for the field on the mappedSuperclass
      * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation
      */
     public void addMetamodelMappedSuperclass(MappedSuperclassAccessor accessor, MetadataDescriptor childDescriptor) {

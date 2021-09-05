@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -39,7 +39,6 @@ public class XMLPlatformFactory {
      * INTERNAL:
      * Return the singleton instance of XMLPlatformContext.
      * @return the the singleton instance of XMLPlatformContext.
-     * @throws XMLPlatformException
      */
     public static XMLPlatformFactory getInstance() throws XMLPlatformException {
         if (null == instance) {
@@ -52,7 +51,6 @@ public class XMLPlatformFactory {
      * INTERNAL:
      * Return the implementation class for the XMLPlatform.
      * @return the implementation class for the XMLPlatform.
-     * @throws XMLPlatformException
      */
     public Class getXMLPlatformClass() throws XMLPlatformException {
         if (null != xmlPlatformClass) {
@@ -102,7 +100,6 @@ public class XMLPlatformFactory {
      * INTERNAL:
      * Return the XMLPlatform based on the toplink.xml.platform System property.
      * @return an instance of XMLPlatform
-     * @throws XMLPlatformException
      */
     public XMLPlatform getXMLPlatform() throws XMLPlatformException {
         try {

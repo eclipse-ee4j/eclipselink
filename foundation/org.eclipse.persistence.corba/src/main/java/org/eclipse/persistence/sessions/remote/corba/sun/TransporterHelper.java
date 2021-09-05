@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,12 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 */
 abstract public class TransporterHelper {
     private static final String _id = "IDL:org/eclipse/persistence/internal/remote/Transporter:1.0";
+
+    /**
+     * Default constructor.
+     */
+    public TransporterHelper() {
+    }
 
     public static void insert(org.omg.CORBA.Any a, org.eclipse.persistence.internal.sessions.remote.Transporter that) {
         org.omg.CORBA.portable.OutputStream out = a.create_output_stream();

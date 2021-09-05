@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -257,7 +257,6 @@ public class Restriction implements SimpleDerivation {
      * Overwrites attributes of this restriction with attributes of the argument,
      * if they are not null.
      *
-     * @param restriction
      */
     public void mergeWith(Restriction restriction) {
         if (restriction.getAll() != null) this.setAll(restriction.getAll());

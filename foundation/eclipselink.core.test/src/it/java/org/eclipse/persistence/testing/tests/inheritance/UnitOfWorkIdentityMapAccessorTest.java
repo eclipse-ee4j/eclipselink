@@ -28,13 +28,10 @@ import org.eclipse.persistence.testing.models.inheritance.BudgettedProject;
  * <p>
  * <b>Purpose</b>: This test checks to see if the Unit of Work Identity Map functions with the Inheritance mappings.
  * <p>
- * <p>
  * <b>Motivation </b>: This test was written to test inheritance using UnitOfWorkIdentityMapAccessor.
  * <p>
  * <b>Responsibilities</b>: Check if the unit of work identity map works correctly with inheritance.
- * <p>
- * <p>
- * */
+ */
 public class UnitOfWorkIdentityMapAccessorTest extends AutoVerifyTestCase {
 
     private UnitOfWork unitOfWork;

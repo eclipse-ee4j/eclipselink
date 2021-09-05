@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,12 +38,19 @@ public class _RMIRemoteSessionControllerDispatcher_Tie extends ObjectImpl implem
     private RMIRemoteSessionControllerDispatcher target = null;
     private static final String[] _type_ids = { "RMI:org.eclipse.persistence.sessions.remote.rmi.iiop.RMIRemoteSessionController:0000000000000000" };
 
+    /**
+     * Default constructor.
+     */
+    public _RMIRemoteSessionControllerDispatcher_Tie() {
+    }
+
     @Override
     public String[] _ids() {
         return _type_ids;
     }
 
     @Override
+    @SuppressWarnings({"fallthrough"})
     public OutputStream _invoke(String method, InputStream _in, ResponseHandler reply) throws SystemException {
         try {
             org.omg.CORBA_2_3.portable.InputStream in = (org.omg.CORBA_2_3.portable.InputStream)_in;

@@ -40,8 +40,6 @@ public class XmlElementWrapperTestCases extends JAXBWithJSONTestCases{
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
-     * @throws Exception
      */
     public XmlElementWrapperTestCases(String name) throws Exception {
         super(name);
@@ -98,7 +96,6 @@ public class XmlElementWrapperTestCases extends JAXBWithJSONTestCases{
      * so the class annotations should be used to generate the schema.
      *
      * Positive test.
-     * @throws Exception
      */
     public void testXmlElementWrapperNoOverrideSchemaGen() throws Exception {
          JAXBContext ctx = JAXBContextFactory.createContext(new Class[] { Employee.class }, null);
@@ -129,14 +126,13 @@ public class XmlElementWrapperTestCases extends JAXBWithJSONTestCases{
      * Tests @XmlElementWrapper via eclipselink-oxm.xml.  Here, a number of
      * overrides are performed.
      *
-     * Here, @XmlElementWrapper.namespace() is not "##default" and different
+     * Here, {@code @XmlElementWrapper.namespace()} is not "{@code ##default}" and different
      * from the target namespace of the enclosing class.  An element declaration
      * whose name is @XmlElementWrapper.name() and target namespace is
-     * @XmlElementWrapper.namespace() should be generated.  Note: The element
+     * {@code @XmlElementWrapper.namespace()} should be generated.  Note: The element
      * declaration is assumed to already exist and is not created.
      *
      * Positive test.
-     * @throws Exception
      */
     public void testXmlElementWrapperNSSchemaGen() throws Exception {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementwrapper/eclipselink-oxm-ns.xml");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -81,7 +81,6 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
      * Test global complex type and global element generation.  Element form default
      * is qualified.
      *
-     * @throws Exception
      */
     public void testElementFormQualified() throws Exception {
         Schema generatedSchema = null;
@@ -120,7 +119,6 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
      * Test global element and anonymous complex type generation. Element form
      * default is qualified.
      *
-     * @throws Exception
      */
     public void testElementFormQualifiedNoSchemaContext() throws Exception {
         Schema generatedSchema = null;
@@ -157,7 +155,6 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
     /**
      * Test global complex type generation.  Element form default is qualified.
      *
-     * @throws Exception
      */
     public void testElementFormQualifiedNoDefaultRootElement() throws Exception {
         Schema generatedSchema = null;
@@ -221,7 +218,6 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
      * is unqualified.  Element refs will be generated for local elements whose
      * type is that of a global complex type.
      *
-     * @throws Exception
      */
     public void testElementFormUnqualified() throws Exception {
         Schema generatedSchema = null;
@@ -260,7 +256,6 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
      * Element refs will be generated for local elements - the global
      * elements they refer to will have anonymous complex types generated.
      *
-     * @throws Exception
      */
     public void testElementFormUnqualifiedNoSchemaContext() throws Exception {
         Schema generatedSchema = null;
@@ -300,7 +295,6 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
      * a global complex type.  In these cases, global elements will be
      * generated for the refs.
      *
-     * @throws Exception
      */
     public void testElementFormUnqualifiedNoDefaultRootElement() throws Exception {
         Schema generatedSchema = null;
@@ -363,8 +357,6 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
      * Add the Employee, Address and PhoneNumber descriptors to the List of descriptors
      * to be processed by the schema model generator.
      *
-     * @param prj
-     * @return
      */
     private List<Descriptor> setupDescriptorList(Project prj) {
         List<Descriptor> descriptorsToProcess = new ArrayList<Descriptor>();

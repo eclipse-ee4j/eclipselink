@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -427,7 +427,6 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * INTERNAL:
      * Certain key mappings favor different types of selection query.  Return the appropriate
      * type of selectionQuery
-     * @return
      */
     @Override
     public ReadQuery buildSelectionQueryForDirectCollectionKeyMapping(ContainerPolicy containerPolicy){
@@ -604,7 +603,6 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     /**
      * INTERNAL:
      * Create a query key that links to the map key
-     * @return
      */
     @Override
     public QueryKey createQueryKeyForMapKey(){
@@ -621,8 +619,6 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      *
      * This method is used for removal of private owned relationships
      *
-     * @param objectDeleted
-     * @param session
      */
     @Override
     public void deleteMapKey(Object objectDeleted, AbstractSession session){
@@ -864,7 +860,6 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * INTERNAL:
      * Return the selection criteria necessary to select the target object when this mapping
      * is a map key.
-     * @return
      */
     @Override
     public Expression getAdditionalSelectionCriteriaForMapKey(){
@@ -957,7 +952,6 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     /**
      * INTERNAL:
      * Return a Map of any foreign keys defined within the the MapKey
-     * @return
      */
     @Override
     public Map<DatabaseField, DatabaseField> getForeignKeyFieldsForMapKey(){
@@ -969,7 +963,6 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * Return the fields that make up the identity of the mapped object.  For mappings with
      * a primary key, it will be the set of fields in the primary key.  For mappings without
      * a primary key it will likely be all the fields
-     * @return
      */
     @Override
     public List<DatabaseField> getIdentityFieldsForMapKey(){
@@ -1090,7 +1083,6 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * If required, get the targetVersion of the source object from the merge manager
      *
      * Used with MapKeyContainerPolicy to abstract getting the target version of a source key
-     * @return
      */
     @Override
     public Object getTargetVersionOfSourceObject(Object object, Object parent, MergeManager mergeManager, AbstractSession targetSession){
@@ -1100,7 +1092,6 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     /**
      * INTERNAL:
      * Return the class this key mapping maps or the descriptor for it
-     * @return
      */
     @Override
     public Class getMapKeyTargetType(){

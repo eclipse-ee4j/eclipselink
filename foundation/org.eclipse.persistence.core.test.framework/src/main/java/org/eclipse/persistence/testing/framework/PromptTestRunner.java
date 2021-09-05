@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -76,7 +76,7 @@ public class PromptTestRunner {
         getLoginProperties();
         DatabaseLogin login = new org.eclipse.persistence.sessions.DatabaseLogin();
         try {
-            login.usePlatform((DatabasePlatform)Class.forName(this.databasePlatform).newInstance());
+            login.usePlatform((DatabasePlatform)Class.forName(this.databasePlatform).getConstructor().newInstance());
         } catch (Exception e) {
             e.printStackTrace();
             printUsageAndExit();
@@ -165,7 +165,7 @@ public class PromptTestRunner {
                 this.testModel = TestRunModel.buildLRGTestModel();
             } else {
                 try {
-                    this.testModel = (TestModel)(Class.forName(testModelName).newInstance());
+                    this.testModel = (TestModel)(Class.forName(testModelName).getConstructor().newInstance());
                 } catch (Exception e) {
                     e.printStackTrace();
                     printUsageAndExit();
@@ -174,7 +174,7 @@ public class PromptTestRunner {
         } else if (arg.startsWith(TEST_ENTITY_FLAG)) {
             String testEntityName = arg.substring(TEST_ENTITY_FLAG.length());
             try {
-                this.testEntity = (TestEntity)Class.forName(testEntityName).newInstance();
+                this.testEntity = (TestEntity)Class.forName(testEntityName).getConstructor().newInstance();
             } catch (Exception e) {
                 e.printStackTrace();
                 printUsageAndExit();

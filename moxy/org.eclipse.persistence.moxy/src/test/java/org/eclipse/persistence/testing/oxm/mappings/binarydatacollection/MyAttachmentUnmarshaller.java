@@ -12,11 +12,6 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-
-/**
- *  @author  mfobrien
- *  @since   11.1
- */
 package org.eclipse.persistence.testing.oxm.mappings.binarydatacollection;
 
 import java.io.IOException;

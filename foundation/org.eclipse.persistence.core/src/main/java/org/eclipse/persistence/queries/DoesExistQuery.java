@@ -427,7 +427,6 @@ public class DoesExistQuery extends DatabaseQuery {
      * INTERNAL:
      * Sets checkCacheFirst flag.  If true, existence check will first go to the
      * cache.  It will then check other options if it is not found in the cache
-     * @param checkCacheFirst
      */
     public void setCheckCacheFirst(boolean checkCacheFirst){
         this.checkCacheFirst = checkCacheFirst;
@@ -444,7 +443,6 @@ public class DoesExistQuery extends DatabaseQuery {
      * Sets checkDatabaseIfInvalid flag.  If true, query will go to the
      * database when it finds the object in the cache and it is invalid.
      * This is only valid when it checks the cache, and is true by default
-     * @param checkCacheFirst
      */
     public void setCheckDatabaseIfInvalid(boolean checkCacheFirst){
         this.checkCacheFirst = checkCacheFirst;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -179,7 +179,6 @@ public class XMLFragmentReader extends DOMReader {
      * Returns the namespace resolver in the map of temporary namespace
      * resolvers for a given element
      *
-     * @param elem
      * @return the namespace resolver in the map for elem, or a new
      * resolver if none exists
      */
@@ -196,7 +195,6 @@ public class XMLFragmentReader extends DOMReader {
      * Remove any temporary namespace resolvers created while processing
      * a given element.
      *
-     * @param elem
      */
     protected void cleanupNamespaceResolvers(Element elem) {
         NamespaceResolver tmpresolver = tmpresolverMap.get(elem);
@@ -210,7 +208,6 @@ public class XMLFragmentReader extends DOMReader {
      * Convenience method that iterates over each namespace resolver
      * in the resolver list until it locates a uri for 'prefix' or
      * the final resolver is reached w/o success.
-     * @param prefix
      * @return true if a URI exists in one of the resolvers in the
      * list, false otherwise
      */
@@ -242,7 +239,6 @@ public class XMLFragmentReader extends DOMReader {
      * XMLNS attribute.  Using a stack ensures that the parent nodes are
      * processed top down.
      *
-     * @param element
      */
     @Override
     protected void processParentNamespaces(Element element) throws SAXException {

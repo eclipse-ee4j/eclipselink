@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,6 @@ public interface WeavedAttributeValueHolderInterface<T> extends ValueHolderInter
      * When a valueholder is triggered, the weaved code will ensure its value is
      * coordinated with the underlying property.  This method allows TopLink to determine
      * if that has happened.
-     * @return
      */
     boolean isCoordinatedWithProperty();
 
@@ -43,7 +42,6 @@ public interface WeavedAttributeValueHolderInterface<T> extends ValueHolderInter
 
     /**
      * This method returns whether this valueholder has been newly instantiated by weaved code.
-     * @return
      */
     boolean isNewlyWeavedValueHolder();
 
@@ -51,7 +49,6 @@ public interface WeavedAttributeValueHolderInterface<T> extends ValueHolderInter
      * TopLink weaving calls this method on any valueholder it weaves into a class to indicate
      * that it is new and it's value should not be considered.  The method is also called when coordination
      * with the underlying value occurs to indicate the value can now be trusted.
-     * @param isNew
      */
     void setIsNewlyWeavedValueHolder(boolean isNew);
 

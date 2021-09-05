@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,16 +46,12 @@ public interface UnmarshalContext {
     /**
      * The UnmarshalContext is responsible for assigning values to the object being
      * built.
-     * @param unmarshalRecord
-     * @param value
-     * @param mapping
      */
     void setAttributeValue(UnmarshalRecord unmarshalRecord, Object value, Mapping mapping);
 
     /**
      * When a collection mapping is processed the UnmarshalContext is responsible for
      * handling the values one at a time.
-     * @param unmarshalRecord
      * @param containerValue A container object such as a java.util.ArrayList, to which
      * the value will be added.
      * @param value The value to be added to the container,
@@ -65,11 +61,9 @@ public interface UnmarshalContext {
     /**
      * When a collection mapping is processed the UnmarshalContext is responsible for
      * handling the values one at a time.
-     * @param unmarshalRecord
      * @param containerValue A container object such as a java.util.ArrayList, to which
      * the value will be added.
      * @param value The value to be added to the container,
-     * @param collection
      */
     void addAttributeValue(UnmarshalRecord unmarshalRecord, ContainerValue containerValue, Object value, Object collection);
 

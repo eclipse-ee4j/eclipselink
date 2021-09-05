@@ -189,7 +189,6 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * INTERNAL:
      * This method was added to allow JPA project caching so that DescriptorEventListeners could be
      * serialized and re-added to the EventManager using a SerializableDescriptorEventHolder.
-     * @param classLoader
      */
     public void processDescriptorEventHolders(AbstractSession session, ClassLoader classLoader) {
         if (this.descriptorEventHolders != null) {

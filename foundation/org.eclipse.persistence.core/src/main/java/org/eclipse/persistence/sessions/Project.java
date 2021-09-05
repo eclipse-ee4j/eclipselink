@@ -369,7 +369,6 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     }
     /**
      * INTERNAL:
-     * @param queries
      */
     public void setQueries(List<DatabaseQuery> queries) {
         this.queries = queries;
@@ -984,7 +983,6 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * INTERNAL:
      * Return whether this project has a descriptor that is both Isolated and
      * has a cache isolation level other than ISOLATE_CACHE_ALWAYS
-     * @return
      */
     public boolean hasIsolatedCacheClassWithoutUOWIsolation(){
         // checked cached boolean to avoid iteration
@@ -1451,7 +1449,6 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     /**
      * INTERNAL:
      * Return whether there any mappings that are mapped superclasses.
-     * @return
      * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation
      */
     public boolean hasMappedSuperclasses() {
@@ -1461,8 +1458,6 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     /**
      * INTERNAL:
      * Return whether the given class is mapped as superclass.
-     * @param className
-     * @return
      * @since EclipseLink 2.3 for the JPA 2.0 Reference Implementation
      */
     public boolean hasMappedSuperclass(String className) {

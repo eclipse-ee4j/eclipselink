@@ -59,7 +59,6 @@ public final class ServerPlatformUtils {
     }
 
     /**
-     * @param session
      * @return The target-server class string that represents platform that is
      *         currently running. Return null if unknown.
      */

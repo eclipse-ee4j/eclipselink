@@ -77,7 +77,6 @@ public class CacheKeyToThreadRelationships {
     /**
      * Create a new CacheKeyToThreadRelationships.
      *
-     * @param cacheKeyBeingDescribed
      */
     public CacheKeyToThreadRelationships(ConcurrencyManager cacheKeyBeingDescribed) {
         super();

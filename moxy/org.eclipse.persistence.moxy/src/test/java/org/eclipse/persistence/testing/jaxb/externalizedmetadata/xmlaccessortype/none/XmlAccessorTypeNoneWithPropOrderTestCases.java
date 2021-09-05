@@ -37,7 +37,6 @@ public class XmlAccessorTypeNoneWithPropOrderTestCases extends JAXBWithJSONTestC
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public XmlAccessorTypeNoneWithPropOrderTestCases(String name) throws Exception{
         super(name);

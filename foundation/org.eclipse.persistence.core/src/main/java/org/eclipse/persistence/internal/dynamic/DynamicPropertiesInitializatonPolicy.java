@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,8 +29,6 @@ public class DynamicPropertiesInitializatonPolicy {
 
     /**
      * After entity is created, initialize all required attributes.
-     * @param type
-     * @param entity
      */
     public void initializeProperties(DynamicTypeImpl type, DynamicEntityImpl entity) {
         if (type != null) {
@@ -44,8 +42,6 @@ public class DynamicPropertiesInitializatonPolicy {
      * Initialize the default value handling primitives, collections and
      * indirection.
      *
-     * @param mapping
-     * @param entity
      */
     private void initializeDefaultValue(DatabaseMapping mapping, DynamicEntityImpl entity) {
         Object value = null;

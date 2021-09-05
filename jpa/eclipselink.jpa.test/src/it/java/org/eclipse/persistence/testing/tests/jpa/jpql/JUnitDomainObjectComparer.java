@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,21 +13,6 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 
-
-
- /**
- * <p>
- * <b>Purpose</b>: Compare two objects
- * <p>
- * <b>Description</b>: This class compares the two objects passed. If they are
- * collections it Iterates through them and compares the elements.
- * <p>
- * <b>Responsibilities</b>:
- * <ul>
- * <li> Compare two objects and return true/false
- * </ul>
- */
-
 package org.eclipse.persistence.testing.tests.jpa.jpql;
 
 // Java imports
@@ -40,8 +25,20 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.*;
 
-public class JUnitDomainObjectComparer
-{
+/**
+ * <p>
+ * <b>Purpose</b>: Compare two objects
+ * <p>
+ * <b>Description</b>: This class compares the two objects passed. If they are
+ * collections it Iterates through them and compares the elements.
+ * <p>
+ * <b>Responsibilities</b>:
+ * <ul>
+ * <li> Compare two objects and return true/false
+ * </ul>
+ */
+public class JUnitDomainObjectComparer  {
+
     AbstractSession theSession;
     public boolean compareObjects(Object obj1, Object obj2) {
         if((obj1 == null) && (obj2 == null)) {

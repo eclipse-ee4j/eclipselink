@@ -87,7 +87,6 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      *
      * Return the DatatypeFactory instance.
      *
-     * @return
      */
     protected DatatypeFactory getDatatypeFactory() {
         if (datatypeFactory == null) {
@@ -295,8 +294,6 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     /**
      * Build a valid instance of XMLGregorianCalendar from the provided sourceObject.
      *
-     * @param sourceObject
-     * @param schemaTypeQName
      */
     protected XMLGregorianCalendar convertObjectToXMLGregorianCalendar(Object sourceObject, QName schemaTypeQName) throws ConversionException {
         if (sourceObject instanceof XMLGregorianCalendar) {
@@ -312,7 +309,6 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     /**
      * Build a valid instance of XMLGregorianCalendar from the provided sourceObject.
      *
-     * @param sourceObject
      */
     protected XMLGregorianCalendar convertObjectToXMLGregorianCalendar(Object sourceObject) throws ConversionException {
         if (sourceObject instanceof XMLGregorianCalendar) {
@@ -328,7 +324,6 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     /**
      * Build a valid instance of Duration from the provided sourceObject.
      *
-     * @param sourceObject
      */
     protected Duration convertObjectToDuration(Object sourceObject) throws ConversionException {
         if (sourceObject instanceof Duration) {
@@ -343,7 +338,6 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     /**
      * Build a valid instance of Character from the provided sourceObject.
      *
-     * @param sourceObject
      */
     protected Character convertObjectToChar(Object sourceObject, QName schemaTypeQName) throws ConversionException {
 
@@ -365,7 +359,6 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     /**
      * Build a valid instance of Character from the provided sourceObject.
      *
-     * @param sourceObject
      */
     @Override
     protected Character convertObjectToChar(Object sourceObject) throws ConversionException {
@@ -379,9 +372,6 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     /**
      * Convert a String to a URI.
      *
-     * @param sourceObject
-     * @return
-     * @throws ConversionException
      */
     protected java.net.URI convertObjectToURI(Object sourceObject) throws ConversionException {
         if (sourceObject instanceof String) {
@@ -823,8 +813,6 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     /**
      * Return an XMLGregorianCalander created with a given date string
      *
-     * @param sourceString
-     * @return
      */
     public XMLGregorianCalendar convertStringToXMLGregorianCalendar(String sourceString) {
         // Trim in case of leading or trailing whitespace
@@ -874,8 +862,6 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     /**
      * Return a Duration created with a given date string.
      *
-     * @param sourceString
-     * @return
      */
     public Duration convertStringToDuration(String sourceString) {
         if(sourceString == null || sourceString.length() == 0) {
@@ -1155,8 +1141,6 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      * The string is assumed to be in dateTime or time format, as returned by
      * XMLGregorianCalendar.toXMLFormat().
      *
-     * @param xmlFormat
-     * @return
      */
     private String truncateMillis(String xmlFormat) {
         String result = xmlFormat;
@@ -1257,8 +1241,6 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      * BC dates {@code (sourceDate.getTime() < YEAR_ONE_AD_TIME)} are handled
      * as follows: {@code '2007 BC' --> '-2006 AD'}
      *
-     * @param sourceDate
-     * @return
      */
     private String stringFromDate(java.util.Date sourceDate) {
         GregorianCalendar cal = new GregorianCalendar(getTimeZone());
@@ -1277,9 +1259,6 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      * BC dates (sourceDate.getTime() &lt; YEAR_ONE_AD_TIME) are handled
      * as follows: '2007 BC' --&gt; '-2006 AD'.
      *
-     * @param sourceDate
-     * @param schemaType
-     * @return
      */
     public String stringFromDate(java.util.Date sourceDate, QName schemaType) {
 
@@ -1422,8 +1401,6 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      * BC dates {@code (sourceDate.getTime() < YEAR_ONE_AD_TIME)} are handled
      * as follows: {@code '2007 BC' --> '-2006 AD'}
      *
-     * @param sourceDate
-     * @return
      */
     private String stringFromTimestamp(Timestamp sourceDate) {
         Calendar cal = Calendar.getInstance(getTimeZone());
@@ -1454,9 +1431,6 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      * BC dates {@code (sourceDate.getTime() < YEAR_ONE_AD_TIME)} are handled
      * as follows: {@code '2007 BC' --> '-2006 AD'}.
      *
-     * @param sourceDate
-     * @param schemaType
-     * @return
      */
     private String stringFromTimestamp(Timestamp sourceDate, QName schemaType) {
 
@@ -1893,9 +1867,6 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      * Convenience method that appends nanosecond values from a given
      * time to a given string.
      *
-     * @param string
-     * @param ts
-     * @return
      */
     private String appendNanos(String string, Timestamp ts) {
         StringBuilder strBldr = new StringBuilder(string);
@@ -1908,9 +1879,6 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      * Convenience method that appends millisecond values from a given
      * time to a given string.
      *
-     * @param string
-     * @param time
-     * @return
      */
     private String appendMillis(String string, long time) {
         StringBuilder strBldr = new StringBuilder(string);

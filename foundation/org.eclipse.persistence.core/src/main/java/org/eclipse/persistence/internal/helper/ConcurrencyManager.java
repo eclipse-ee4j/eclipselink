@@ -835,7 +835,6 @@ public class ConcurrencyManager implements Serializable {
      * this flag may inadvertently remove the deadlock because of the change in timings.
      *
      * There is also a system level property for this setting. "eclipselink.cache.record-stack-on-lock"
-     * @param shouldTrackStack
      */
     public static void setShouldTrackStack(boolean shouldTrackStack) {
         ConcurrencyManager.shouldTrackStack = shouldTrackStack;

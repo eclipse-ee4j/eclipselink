@@ -105,7 +105,7 @@ public class ProxyAuthenticationOCITestModel extends TestModel {
                 proxyTestHelper = (ProxyTestHelper)proxyTestHelperMap.get(proxyTestHelperClassName);
                 if (proxyTestHelper == null) {
                     try {
-                        proxyTestHelper = (ProxyTestHelper)Class.forName(proxyTestHelperClassName).newInstance();
+                        proxyTestHelper = (ProxyTestHelper)Class.forName(proxyTestHelperClassName).getConstructor().newInstance();
                     } catch (Exception ex) {
                         throw new TestProblemException("Failed to instantiate proxyTestHelperClass " + proxyTestHelperClassName, ex);
                     }

@@ -36,8 +36,6 @@ public class XmlEnumInheritanceTestCases extends JAXBWithJSONTestCases{
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
-     * @throws Exception
      */
     public XmlEnumInheritanceTestCases(String name) throws Exception {
         super(name);

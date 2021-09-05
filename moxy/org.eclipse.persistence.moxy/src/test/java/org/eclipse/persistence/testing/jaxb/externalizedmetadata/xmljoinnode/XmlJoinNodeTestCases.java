@@ -55,7 +55,6 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public XmlJoinNodeTestCases(String name) throws Exception{
         super(name);

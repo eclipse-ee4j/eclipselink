@@ -36,8 +36,6 @@ public final class JMSPublishingHelper {
      * Processes the received RCM messaged from a JMS provider for cache coordination.
      * This will use the local connection from the configured TransportManager from the session's RemoteCommandManager.
      *
-     * @param message
-     * @param session
      *
      *
      */

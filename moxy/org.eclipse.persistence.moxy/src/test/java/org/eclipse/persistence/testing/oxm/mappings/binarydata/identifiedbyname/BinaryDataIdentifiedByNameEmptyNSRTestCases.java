@@ -12,20 +12,6 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-
-/* $Header: BinaryDataIdentifiedByNameEmptyNSRTestCases.java 20-oct-2006.16:41:05 mfobrien Exp $ */
-/*
-   DESCRIPTION
-
-   MODIFIED    (MM/DD/YY)
-    mfobrien    10/20/06 - Creation
- */
-
-/**
- *  @version $Header: BinaryDataIdentifiedByNameEmptyNSRTestCases.java 20-oct-2006.16:41:05 mfobrien Exp $
- *  @author  mfobrien
- *  @since  11.1
- */
 package org.eclipse.persistence.testing.oxm.mappings.binarydata.identifiedbyname;
 
 import java.util.Vector;

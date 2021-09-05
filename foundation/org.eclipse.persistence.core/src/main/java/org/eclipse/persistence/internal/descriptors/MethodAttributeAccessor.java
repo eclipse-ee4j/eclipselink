@@ -121,7 +121,6 @@ public class MethodAttributeAccessor extends AttributeAccessor {
      * INTERNAL:
      * Return the GetMethod return type for this MethodAttributeAccessor.
      * A special check is made to determine if a missing method is a result of failed weaving.
-     * @return
      */
     // Note: SDO overrides this method and will handle a null GetMethod
     public Class getGetMethodReturnType() throws DescriptorException {

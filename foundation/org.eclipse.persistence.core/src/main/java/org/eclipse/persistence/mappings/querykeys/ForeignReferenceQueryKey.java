@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,7 +50,6 @@ public class ForeignReferenceQueryKey extends QueryKey {
      * INTERNAL:
      * Convert all the class-name-based settings in this project to actual class-based
      * settings
-     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
@@ -135,7 +134,6 @@ public class ForeignReferenceQueryKey extends QueryKey {
      * PUBLIC:
      * Set the reference class name for this relationship
      * This is used when projects are built without using classes
-     * @param referenceClassName
      */
     public void setReferenceClassName(String referenceClassName) {
         this.referenceClassName = referenceClassName;

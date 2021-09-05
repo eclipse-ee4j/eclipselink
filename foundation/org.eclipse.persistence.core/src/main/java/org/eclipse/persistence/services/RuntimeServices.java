@@ -424,7 +424,6 @@ public abstract class RuntimeServices {
 
     /**
      * Return the DMS sensor weight
-     * @return
      */
     public int getProfileWeight() {
         if (getSession().isInProfile()) {
@@ -700,7 +699,6 @@ public abstract class RuntimeServices {
       * Return whether this session is an EclipseLink JPA session.
       * The absence of this function or a value of false will signify that the session
       * belongs to a provider other than EclipseLink.
-      * @return
       */
      public boolean isJPASession() {
          return true;
@@ -1342,7 +1340,6 @@ public abstract class RuntimeServices {
       * @param tdata the TabularData to be converted
       * @param names the order of the columns
       * @return a two-dimensional array
-      * @throws Exception
       */
      private Object[][] tabularDataTo2DArray(TabularData tdata, String[] names) throws Exception {
          if(tdata==null){

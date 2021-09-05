@@ -61,6 +61,10 @@ import commonj.sdo.impl.HelperProvider;
  */
 public class SDOHelper {
 
+    private SDOHelper() {
+        //no instance please
+    }
+
     /**
      * Return the EclipseLink implementation of Type. The given Type is assumed to be an instance of
      * {@link org.eclipse.persistence.sdo.SDOType}. If not, an exception will be thrown.

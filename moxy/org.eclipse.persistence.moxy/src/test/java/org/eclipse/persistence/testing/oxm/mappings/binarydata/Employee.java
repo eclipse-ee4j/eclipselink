@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,24 +12,8 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-
-/* $Header: Employee.java 12-dec-2006.16:06:40 mmacivor Exp $ */
-/*
-   DESCRIPTION
-
-   MODIFIED    (MM/DD/YY)
-    mmacivor    12/12/06 -
-    mfobrien    10/23/06 - Creation
- */
-
-/**
- *  @version $Header: Employee.java 12-dec-2006.16:06:40 mmacivor Exp $
- *  @author  mfobrien
- *  @since   11.1
- */
 package org.eclipse.persistence.testing.oxm.mappings.binarydata;
 
-import java.awt.Image;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 

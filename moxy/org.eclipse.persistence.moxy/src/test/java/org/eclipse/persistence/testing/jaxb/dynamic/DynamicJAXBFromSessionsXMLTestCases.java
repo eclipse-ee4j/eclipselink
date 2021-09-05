@@ -30,15 +30,10 @@ import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
-import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Text;
+import org.w3c.dom.*;
 
 public class DynamicJAXBFromSessionsXMLTestCases extends JAXBTestCases {
 
@@ -261,15 +256,15 @@ public class DynamicJAXBFromSessionsXMLTestCases extends JAXBTestCases {
 
             boolean equal = true;
             try {
-                if (testElement.getNodeType() == controlElement.ATTRIBUTE_NODE && controlElement.getNodeType() == controlElement.ATTRIBUTE_NODE) {
+                if (testElement.getNodeType() == Node.ATTRIBUTE_NODE && controlElement.getNodeType() == Node.ATTRIBUTE_NODE) {
                     Attr att1 = (Attr) testElement;
                     Attr att2 = (Attr) controlElement;
                     equal = equal && att1.getNodeValue().equals(att2.getNodeValue());
-                } else if (testElement.getNodeType() == controlElement.TEXT_NODE && controlElement.getNodeType() == controlElement.TEXT_NODE) {
+                } else if (testElement.getNodeType() == Node.TEXT_NODE && controlElement.getNodeType() == Node.TEXT_NODE) {
                     Text text1 = (Text) testElement;
                     Text text2 = (Text) controlElement;
                     equal = equal && text1.getNodeValue().equals(text2.getNodeValue());
-                } else if (testElement.getNodeType() == controlElement.ELEMENT_NODE && controlElement.getNodeType() == controlElement.ELEMENT_NODE) {
+                } else if (testElement.getNodeType() == Node.ELEMENT_NODE && controlElement.getNodeType() == Node.ELEMENT_NODE) {
                     Element elem1 = testElement;
                     Element elem2 = controlElement;
                     equal = equal && elem1.getNodeName().equals(elem2.getNodeName());

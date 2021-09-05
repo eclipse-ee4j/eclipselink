@@ -54,7 +54,6 @@ public class TypeArraySchemaGenTestCases extends SchemaGenTestCases {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public TypeArraySchemaGenTestCases(String name) throws Exception {
         super(name);
@@ -109,7 +108,6 @@ public class TypeArraySchemaGenTestCases extends SchemaGenTestCases {
     /**
      * Tests user-set additional global element generation (Employee).
      *
-     * @throws Exception
      */
     public void testSchemaGenFromTypesArrayWithElements() throws Exception {
         String src = PATH + "ASingleEmployee.xml";
@@ -128,7 +126,6 @@ public class TypeArraySchemaGenTestCases extends SchemaGenTestCases {
     /**
      * Tests user-set additional global element generation (String)
      *
-     * @throws Exception
      */
     public void testSchemaGenFromTypesArrayWithStringElement() throws Exception {
         generateSchema();
@@ -139,7 +136,6 @@ public class TypeArraySchemaGenTestCases extends SchemaGenTestCases {
     /**
      * Tests user-set additional global element generation (int)
      *
-     * @throws Exception
      */
     public void testSchemaGenFromTypesArrayWithIntElement() throws Exception {
         generateSchema();
@@ -150,7 +146,6 @@ public class TypeArraySchemaGenTestCases extends SchemaGenTestCases {
     /**
      * Tests user-set additional global element generation ({@code List<Employee>})
      *
-     * @throws Exception
      */
     public void testSchemaGenFromTypesArrayWithParameterizedElement() throws Exception {
         generateSchema();
@@ -169,7 +164,6 @@ public class TypeArraySchemaGenTestCases extends SchemaGenTestCases {
     /**
      * Tests user-set additional global element generation (Employee[])
      *
-     * @throws Exception
      */
     public void testSchemaGenFromTypesArrayWithArrayElement() throws Exception {
         generateSchema();

@@ -250,8 +250,6 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * The method validateAttributeOfInstantiatedObject(Object attributeValue) fixes the value of the attributeValue
      * in cases where it is null and indirection requires that it contain some specific data structure.  Return whether this will happen.
      * This method is used to help determine if indirection has been triggered
-     * @param attributeValue
-     * @return
      * @see validateAttributeOfInstantiatedObject(Object attributeValue)
      */
     public boolean isAttributeValueFullyBuilt(Object attributeValue){
@@ -354,9 +352,6 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * INTERNAL:
      * Same functionality as setRealAttributeValueInObject(Object target, Object attributeValue) but allows
      * overridden behavior for IndirectionPolicies that track changes
-     * @param target
-     * @param attributeValue
-     * @param allowChangeTracking
      */
     public void setRealAttributeValueInObject(Object target, Object attributeValue, boolean allowChangeTracking) {
         setRealAttributeValueInObject(target, attributeValue);

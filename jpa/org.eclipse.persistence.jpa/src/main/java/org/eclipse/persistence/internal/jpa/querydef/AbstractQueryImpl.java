@@ -39,7 +39,6 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
  * <b>Description</b>: This is the container class for the components that
  * define a query. This is the superclass of both the CriteriaQuery and the
  * SubQuery.
- * <p>
  *
  * @see jakarta.persistence.criteria CriteriaQuery
  *

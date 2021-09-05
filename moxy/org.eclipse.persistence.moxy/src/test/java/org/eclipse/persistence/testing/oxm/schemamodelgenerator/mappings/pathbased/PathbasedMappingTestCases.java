@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -129,8 +129,6 @@ public class PathbasedMappingTestCases extends GenerateSchemaTestCases {
      * Add the Customer, Address and PhoneNumber descriptors to the List of descriptors
      * to be processed by the schema model generator.
      *
-     * @param prj
-     * @return
      */
     private List<Descriptor> setupDescriptorList(Project prj) {
         List<Descriptor> descriptorsToProcess = new ArrayList<Descriptor>();

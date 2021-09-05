@@ -2319,6 +2319,12 @@ public class SDOTypesGenerator {
         private String propertyTypeURI;
         private String oppositePropName;
 
+        /**
+         * Default constructor.
+         */
+        public NonContainmentReference() {
+        }
+
         public void setOwningType(SDOType owningType) {
             this.owningType = owningType;
         }
@@ -2366,6 +2372,12 @@ public class SDOTypesGenerator {
         private String uri;
         private String localName;
         private Property property;
+
+        /**
+         * Default constructor.
+         */
+        protected GlobalRef() {
+        }
 
         public void setOwningType(SDOType owningType) {
             this.owningType = owningType;

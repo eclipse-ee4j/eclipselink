@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -159,7 +159,7 @@ public class TestRunModel extends TestModel {
 
         for (int index = 0; index < tests.size(); ++index) {
             try {
-                addTest((TestModel)Class.forName((String)tests.elementAt(index)).newInstance());
+                addTest((TestModel)Class.forName((String)tests.elementAt(index)).getConstructor().newInstance());
             } catch (Throwable exception) {
                 System.out.println("Failed to set up " + tests.elementAt(index) + " \n" + exception);
                 //exception.printStackTrace();
@@ -186,7 +186,7 @@ public class TestRunModel extends TestModel {
         Vector models = new Vector();
 
         try {
-            models.add(Class.forName("org.eclipse.persistence.testing.tests.SRGTestModel").newInstance());
+            models.add(Class.forName("org.eclipse.persistence.testing.tests.SRGTestModel").getConstructor().newInstance());
         } catch (Exception exception) {
             System.out.println("Failed to set up org.eclipse.persistence.testing.tests.SRGTestModel" + " \n" + exception);
         }
@@ -207,7 +207,7 @@ public class TestRunModel extends TestModel {
         manual.setName("Manual Tests");
         for (int index = 0; index < manualTest.size(); ++index) {
             try {
-                manual.addTest((TestModel)Class.forName((String)manualTest.elementAt(index)).newInstance());
+                manual.addTest((TestModel)Class.forName((String)manualTest.elementAt(index)).getConstructor().newInstance());
             } catch (Exception exception) {
                 System.out.println("Failed to set up " + manualTest.elementAt(index) + " \n" + exception);
             }
@@ -228,7 +228,7 @@ public class TestRunModel extends TestModel {
         model.setName("JPA Tests");
         for (int index = 0; index < tests.size(); ++index) {
             try {
-                model.addTest((TestModel)Class.forName((String)tests.get(index)).newInstance());
+                model.addTest((TestModel)Class.forName((String)tests.get(index)).getConstructor().newInstance());
             } catch (Throwable exception) {
                 System.out.println("Failed to set up " + tests.get(index) + " \n" + exception);
             }
@@ -255,7 +255,7 @@ public class TestRunModel extends TestModel {
             try {
                 cls = Class.forName((String)tests.get(index));
                 if(TestModel.class.isAssignableFrom(cls)) {
-                    model.addTest((TestModel)cls.newInstance());
+                    model.addTest((TestModel)cls.getConstructor().newInstance());
                 } else {
                     Method suite = cls.getDeclaredMethod("suite", new Class[]{});
                     model.addTest((Test)suite.invoke(null, new Object[]{}));
@@ -284,7 +284,7 @@ public class TestRunModel extends TestModel {
             try {
                 cls = Class.forName((String)tests.get(index));
                 if(TestModel.class.isAssignableFrom(cls)) {
-                    model.addTest((TestModel)cls.newInstance());
+                    model.addTest((TestModel)cls.getConstructor().newInstance());
                 } else {
                     Method suite = cls.getDeclaredMethod("suite", new Class[]{});
                     model.addTest((Test)suite.invoke(null, new Object[]{}));
@@ -312,7 +312,7 @@ public class TestRunModel extends TestModel {
             try {
                 cls = Class.forName((String)tests.get(index));
                 if(TestModel.class.isAssignableFrom(cls)) {
-                    model.addTest((TestModel)cls.newInstance());
+                    model.addTest((TestModel)cls.getConstructor().newInstance());
                 } else {
                     Method suite = cls.getDeclaredMethod("suite", new Class[]{});
                     model.addTest((Test)suite.invoke(null, new Object[]{}));
@@ -411,7 +411,7 @@ public class TestRunModel extends TestModel {
         performanceModel.setName("Performance Tests");
         for (int index = 0; index < performanceTests.size(); ++index) {
             try {
-                performanceModel.addTest((TestModel)Class.forName((String)performanceTests.elementAt(index)).newInstance());
+                performanceModel.addTest((TestModel)Class.forName((String)performanceTests.elementAt(index)).getConstructor().newInstance());
             } catch (Exception exception) {
                 System.out.println("Failed to set up " + performanceTests.elementAt(index) + " \n" + exception);
             }
@@ -431,7 +431,7 @@ public class TestRunModel extends TestModel {
         performanceModel.setName("JPA Performance Tests");
         for (int index = 0; index < performanceTests.size(); ++index) {
             try {
-                performanceModel.addTest((TestModel)Class.forName((String)performanceTests.elementAt(index)).newInstance());
+                performanceModel.addTest((TestModel)Class.forName((String)performanceTests.elementAt(index)).getConstructor().newInstance());
             } catch (Exception exception) {
                 System.out.println("Failed to set up " + performanceTests.elementAt(index) + " \n" + exception);
             }

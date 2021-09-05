@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -421,7 +421,6 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
      * INTERNAL:
      * Convert all the class-name-based settings in this ContainerPolicy to actual class-based
      * settings
-     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader) {
@@ -846,7 +845,6 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
     /**
      * INTERNAL:
      * Some map keys must be obtained from the database.  This query is used to obtain the key
-     * @param keyQuery
      */
     public void setKeyQuery(DatabaseQuery keyQuery) {
         this.keyQuery = keyQuery;

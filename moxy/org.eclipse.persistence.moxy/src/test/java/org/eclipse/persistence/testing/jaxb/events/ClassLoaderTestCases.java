@@ -52,7 +52,7 @@ public class ClassLoaderTestCases extends TestCase {
         // Write Constructor:
         MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
         mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, ClassLoaderRoot.class.getName().replace('.', '/'), "<init>", "()V");
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, ClassLoaderRoot.class.getName().replace('.', '/'), "<init>", "()V", false);
         mv.visitInsn(Opcodes.RETURN);
         mv.visitMaxs(1, 1);
         mv.visitEnd();
@@ -65,7 +65,7 @@ public class ClassLoaderTestCases extends TestCase {
     public void testMarshalJSON() throws Exception {
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
-        ClassLoaderRoot classLoaderChild = (ClassLoaderRoot) classLoaderChildClass.newInstance();
+        ClassLoaderRoot classLoaderChild = (ClassLoaderRoot) classLoaderChildClass.getConstructor().newInstance();
 
         assertEquals(0, classLoaderChild.beforeMarshalCalled);
         assertEquals(0, classLoaderChild.afterMarshalCalled);
@@ -76,7 +76,7 @@ public class ClassLoaderTestCases extends TestCase {
 
     public void testMarshalXML() throws Exception {
         Marshaller marshaller = jaxbContext.createMarshaller();
-        ClassLoaderRoot classLoaderChild = (ClassLoaderRoot) classLoaderChildClass.newInstance();
+        ClassLoaderRoot classLoaderChild = (ClassLoaderRoot) classLoaderChildClass.getConstructor().newInstance();
 
         assertEquals(0, classLoaderChild.beforeMarshalCalled);
         assertEquals(0, classLoaderChild.afterMarshalCalled);

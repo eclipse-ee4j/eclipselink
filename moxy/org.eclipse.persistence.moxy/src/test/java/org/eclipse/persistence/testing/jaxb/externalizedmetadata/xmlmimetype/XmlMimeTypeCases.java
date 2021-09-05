@@ -38,7 +38,6 @@ public class XmlMimeTypeCases extends JAXBWithJSONTestCases {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public XmlMimeTypeCases(String name) throws Exception {
         super(name);

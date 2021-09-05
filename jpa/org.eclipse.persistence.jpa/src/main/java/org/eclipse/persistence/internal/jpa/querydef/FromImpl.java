@@ -56,7 +56,6 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * <p>
  * <b>Description</b>: This class represents a from clause element which could
  * be the root of the query of the end node of a join statement.
- * <p>
  *
  * @see jakarta.persistence.criteria From
  *

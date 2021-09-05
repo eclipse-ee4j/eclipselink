@@ -203,7 +203,6 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * ADVANCED: Allows the retrieval of the owning mapping for a particular
      * mapping. Note: This will only be set for JPA models
      *
-     * @return
      */
     public String getMappedBy() {
         return mappedBy;
@@ -1338,8 +1337,6 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * The method validateAttributeOfInstantiatedObject(Object attributeValue) fixes the value of the attributeValue
      * in cases where it is null and indirection requires that it contain some specific data structure.  Return whether this will happen.
      * This method is used to help determine if indirection has been triggered
-     * @param object
-     * @return
      * @see org.eclipse.persistence.internal.indirection.IndirectionPolicy#validateAttributeOfInstantiatedObject(Object)
      */
     public boolean isAttributeValueFullyBuilt(Object object){
@@ -2026,7 +2023,6 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * INTERNAL: Called by JPA metadata processing to store the owning mapping
      * for this mapping
      *
-     * @param mappedBy
      */
     public void setMappedBy(String mappedBy) {
         this.mappedBy = mappedBy;

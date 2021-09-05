@@ -30,7 +30,7 @@ import org.eclipse.persistence.sessions.server.*;
 
 /**
  * <b>Purpose:</b>One stop shopping for all your history needs.
- * <p>
+ *
  * @author Stephen McRitchie
  * @since Oracle 10g AS
  */

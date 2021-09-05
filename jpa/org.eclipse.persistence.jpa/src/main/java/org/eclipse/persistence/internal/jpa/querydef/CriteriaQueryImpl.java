@@ -51,7 +51,6 @@ import org.eclipse.persistence.queries.ReportQuery;
  * <p>
  * <b>Description</b>: This is the container class for the components that
  * define a query.
- * <p>
  *
  * @see jakarta.persistence.criteria CriteriaQuery
  *

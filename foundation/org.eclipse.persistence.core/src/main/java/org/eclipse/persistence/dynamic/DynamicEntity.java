@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -58,8 +58,6 @@ public interface DynamicEntity {
      * @param
      *      propertyName the name of a mapped property
      *      If the property cannot be found, a {@link DynamicException} will be thrown.
-     * @throws
-     *      DynamicException
      * @return
      *      persistent value or relationship container of the specified type
      */
@@ -73,8 +71,6 @@ public interface DynamicEntity {
      *      If the property cannot be found, a {@link DynamicException} will be thrown.
      * @param
      *      value the specified object
-     * @throws
-     *      DynamicException
      * @return
      *      the same DynamicEntity instance
      */
@@ -88,8 +84,6 @@ public interface DynamicEntity {
      *      If the property cannot be found, a {@link DynamicException} will be thrown.
      * @return
      *      true if the property has been set
-     * @throws
-     *      DynamicException
      */
     boolean isSet(String propertyName) throws DynamicException;
 

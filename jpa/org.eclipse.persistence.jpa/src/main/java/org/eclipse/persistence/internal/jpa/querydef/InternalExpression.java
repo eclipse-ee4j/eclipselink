@@ -17,7 +17,6 @@
  * <b>Description</b>: Expressions are expression nodes that can not be joined from
  * and may or not be the result of a Path expression.  The SubQuery is a special type of expression that
  * requires certain methods but can not extend ExpressionImpl.  This interface provide a common API.
- * <p>
  *
  * @see jakarta.persistence.criteria Expression
  *

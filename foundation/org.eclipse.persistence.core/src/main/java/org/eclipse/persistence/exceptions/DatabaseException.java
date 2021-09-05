@@ -377,8 +377,6 @@ public class DatabaseException extends EclipseLinkException {
      * The connection returned from this driver was null, the driver may be
      * missing(using the default) or the wrong one for the database.
      *
-     * @param driver
-     * @return
      */
     public static DatabaseException unableToAcquireConnectionFromDriverException(
             String driver, String user, String url) {
@@ -394,9 +392,6 @@ public class DatabaseException extends EclipseLinkException {
      * The connection returned from this driver was null, the driver may be
      * missing(using the default) or the wrong one for the database.
      *
-     * @param exception
-     * @param driver
-     * @return
      */
     public static DatabaseException unableToAcquireConnectionFromDriverException(SQLException exception,
             String driver, String user, String url) {

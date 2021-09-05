@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,7 +30,6 @@ public interface XMLPlatform {
     /**
      * Creates a new document.
      * @return the new document
-     * @throws XMLPlatformException
      */
     Document createDocument() throws XMLPlatformException;
 
@@ -42,7 +41,6 @@ public interface XMLPlatform {
      *         publicIdentifier the public identifier
      *         systemIdentifier the system identifier
      * @return the new document
-     * @throws XMLPlatformException
      */
     Document createDocumentWithPublicIdentifier(String name, String publicIdentifier, String systemIdentifier) throws XMLPlatformException;
 
@@ -52,7 +50,6 @@ public interface XMLPlatform {
      * @param  name the name of the root element
      *         systemIdentifier the system identifier
      * @return the new document
-     * @throws XMLPlatformException
      */
     Document createDocumentWithSystemIdentifier(String name, String systemIdentifier) throws XMLPlatformException;
 
@@ -70,7 +67,6 @@ public interface XMLPlatform {
      *         URI
      *         namespacePrefix the namespace prefix
      * @return the namespace URI for the specified prefix
-     * @throws XMLPlatformException
      */
     String resolveNamespacePrefix(Node contextNode, String namespacePrefix) throws XMLPlatformException;
 
@@ -82,17 +78,11 @@ public interface XMLPlatform {
      *         namespaceResolver used to resolve namespace prefixes
      *         to the corresponding namespace URI
      * @return the XPath result
-     * @throws XMLPlatformException
      */
     NodeList selectNodesAdvanced(Node contextNode, String xPath, XMLNamespaceResolver xmlNamespaceResolver) throws XMLPlatformException;
 
     /**
      * Execute advanced XPath statements that are required for TopLink EIS.
-     * @param contextNode
-     * @param xPath
-     * @param xmlNamespaceResolver
-     * @return
-     * @throws XMLPlatformException
      */
     Node selectSingleNodeAdvanced(Node contextNode, String xPath, XMLNamespaceResolver xmlNamespaceResolver) throws XMLPlatformException;
 
@@ -123,7 +113,6 @@ public interface XMLPlatform {
      * @param  xmlSchemaURL the XML Schema
      * @param  errorHandler a mechanism for selectively ignoring errors
      * @return true if the document is valid, else false
-     * @throws XMLPlatformException
      */
     boolean validateDocument(Document document, URL xmlSchemaURL, ErrorHandler errorHandler) throws XMLPlatformException;
 

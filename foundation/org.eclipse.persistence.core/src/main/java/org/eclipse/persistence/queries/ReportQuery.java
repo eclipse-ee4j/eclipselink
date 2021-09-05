@@ -594,7 +594,6 @@ public class ReportQuery extends ReadAllQuery {
 
     /**
      * PUBLIC: Call a constructor for the given class with the results of this query.
-     * @param constructorClass
      */
     public ConstructorReportItem beginAddingConstructorArguments(Class constructorClass){
         ConstructorReportItem citem = new ConstructorReportItem(constructorClass.getName());
@@ -608,7 +607,6 @@ public class ReportQuery extends ReadAllQuery {
     }
     /**
      * PUBLIC: Call a constructor for the given class with the results of this query.
-     * @param constructorClass
      * @param constructorArgTypes - sets the argument types to be passed to the constructor.
      */
     public ConstructorReportItem beginAddingConstructorArguments(Class constructorClass, Class[] constructorArgTypes){
@@ -633,7 +631,6 @@ public class ReportQuery extends ReadAllQuery {
     /**
      * INTERNAL:
      * Construct a result from a row. Either return a ReportQueryResult or just the attribute.
-     * @param row
      * @param toManyJoinData All rows fetched by query.  It is required to be not null.
      */
     public Object buildObject(AbstractRecord row, Vector toManyJoinData) {

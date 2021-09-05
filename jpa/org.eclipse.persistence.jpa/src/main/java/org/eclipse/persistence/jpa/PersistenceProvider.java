@@ -201,7 +201,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
      * <p>
      * Called by the Persistence class when schema generation is to occur as a
      * separate phase from creation of the entity manager factory.
-     * <p>
+     *
      * @param info the name of the persistence unit
      * @param properties properties for schema generation; these may also
      *        contain provider-specific properties. The value of these
@@ -228,7 +228,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
      * <p>
      * Called by the Persistence class when schema generation is to occur as a
      * separate phase from creation of the entity manager factory.
-     * <p>
+     *
      * @param persistenceUnitName the name of the persistence unit
      * @param properties properties for schema generation; these may also
      *        contain provider-specific properties. The value of these

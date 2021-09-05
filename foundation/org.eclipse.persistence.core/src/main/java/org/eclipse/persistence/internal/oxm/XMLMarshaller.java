@@ -444,7 +444,6 @@ public abstract class XMLMarshaller<
     /**
      * Determine if the @XMLRootElement should be marshalled when present.
      * Ignored marshalling XML.
-     * @return
      * @since 2.4
      */
     @Override
@@ -1327,7 +1326,6 @@ public abstract class XMLMarshaller<
     /**
      * Set the MediaType for this xmlMarshaller.
      * See org.eclipse.persistence.oxm.MediaType for the media types supported by EclipseLink MOXy
-     * @param mediaType
      */
     public void setMediaType(MEDIA_TYPE mediaType) {
         this.mediaType = mediaType;

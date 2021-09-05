@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -335,7 +335,6 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
     /**
      * Set the table name.
      * Used when aliasing table names.
-     * @param name
      */
     public void setName(String name) {
         setName(name, null, null);
@@ -348,7 +347,6 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
      * If the name contains database delimiters, they will be stripped and a flag will be set to have them
      * added when the DatabaseTable is written to SQL
      *
-     * @param name
      */
     public void setName(String name, String startDelimiter, String endDelimiter) {
         if (name != null && (startDelimiter != null) && (endDelimiter != null) && !startDelimiter.equals("")&& !endDelimiter.equals("") && name.startsWith(startDelimiter) && name.endsWith(endDelimiter)){
@@ -365,7 +363,6 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
      * project xml, we must check if it is fully qualified and split the
      * actual name from the qualifier.
      *
-     * @param possiblyQualifiedName
      */
     public void setPossiblyQualifiedName(String possiblyQualifiedName) {
         setPossiblyQualifiedName(possiblyQualifiedName, null, null);

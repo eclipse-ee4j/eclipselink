@@ -34,8 +34,6 @@ public class XmlElementWrapperElementOverrideTestCases extends JAXBWithJSONTestC
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
-     * @throws Exception
      */
     public XmlElementWrapperElementOverrideTestCases(String name) throws Exception {
         super(name);
