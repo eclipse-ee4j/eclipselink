@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -69,7 +69,7 @@ public class CollectionHolderWrappersOverrideTestCases extends JAXBWithJSONTestC
 
         // test override of 'old' context factory property - if the override
         // fails we will get errors
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new HashMap<String, Source>());
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, new HashMap<String, Source>());
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         return properties;

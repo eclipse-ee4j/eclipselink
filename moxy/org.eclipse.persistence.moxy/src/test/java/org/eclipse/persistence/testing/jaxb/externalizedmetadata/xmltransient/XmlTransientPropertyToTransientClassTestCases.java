@@ -25,6 +25,7 @@ import java.util.Map;
 import javax.xml.transform.dom.DOMSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 
@@ -109,7 +110,7 @@ public class XmlTransientPropertyToTransientClassTestCases extends JAXBWithJSONT
             overrides.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient", src);
 
             Map props = new HashMap();
-            props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
+            props.put(JAXBContextProperties.OXM_METADATA_SOURCE, overrides);
             return props;
         }
 

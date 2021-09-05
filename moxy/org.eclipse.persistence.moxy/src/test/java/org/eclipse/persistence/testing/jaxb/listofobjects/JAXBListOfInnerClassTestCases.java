@@ -25,6 +25,7 @@ import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.listofobjects.ClassWithInnerClass.MyInner;
 
 public class JAXBListOfInnerClassTestCases extends JAXBListOfObjectsTestCases {
@@ -95,7 +96,7 @@ public class JAXBListOfInnerClassTestCases extends JAXBListOfObjectsTestCases {
     @Override
     public Map getProperties() {
         Map props = new HashMap();
-        props.put(JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY, "listOfObjectsNamespace");
+        props.put(JAXBContextProperties.DEFAULT_TARGET_NAMESPACE, "listOfObjectsNamespace");
         return props;
     }
 }

@@ -108,7 +108,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.dynamic", new StreamSource(iStream));
 
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         // Have to include a path to a jaxb.properties, so just reusing a context path that does contain one.
         DynamicJAXBContext jaxbContext = (DynamicJAXBContext) JAXBContext.newInstance("org.eclipse.persistence.testing.jaxb.dynamic", classLoader, properties);
@@ -460,7 +460,6 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
 
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new HashMap<String, Source>());
 
         DynamicJAXBContext jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 

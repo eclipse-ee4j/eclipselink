@@ -25,6 +25,7 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.pkg2.Thing;
@@ -99,7 +100,7 @@ public class DefaultTargetNamespaceConflictTestCases extends TypeMappingInfoWith
     @Override
     protected Map getProperties() {
         HashMap props = new HashMap();
-        props.put(JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY, "namespace1");
+        props.put(JAXBContextProperties.DEFAULT_TARGET_NAMESPACE, "namespace1");
 
         return props;
     }

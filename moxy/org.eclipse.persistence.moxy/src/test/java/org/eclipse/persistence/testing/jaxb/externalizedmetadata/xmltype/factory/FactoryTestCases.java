@@ -26,6 +26,7 @@ import org.eclipse.persistence.exceptions.IntegrityException;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 
 import junit.framework.TestCase;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 
 public class FactoryTestCases extends TestCase {
 
@@ -49,7 +50,7 @@ public class FactoryTestCases extends TestCase {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         InputStream bindings = classLoader.getResourceAsStream(NORMAL_FACTORY);
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, bindings);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, bindings);
 
         jaxbContext = JAXBContextFactory.createContext(classes, properties);
 
@@ -67,7 +68,7 @@ public class FactoryTestCases extends TestCase {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         InputStream bindings = classLoader.getResourceAsStream(ABSTRACTFACTORY);
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, bindings);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, bindings);
 
         jaxbContext = JAXBContextFactory.createContext(classes, properties);
 
@@ -85,7 +86,7 @@ public class FactoryTestCases extends TestCase {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         InputStream bindings = classLoader.getResourceAsStream(ABSTRACTFACTORY_ERROR);
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, bindings);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, bindings);
 
         Exception caughtException = null;
         try {
@@ -117,7 +118,7 @@ public class FactoryTestCases extends TestCase {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         InputStream bindings = classLoader.getResourceAsStream(NODEFAULTCONSTRUCTOR);
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, bindings);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, bindings);
 
         jaxbContext = JAXBContextFactory.createContext(classes, properties);
 
@@ -135,7 +136,7 @@ public class FactoryTestCases extends TestCase {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         InputStream bindings = classLoader.getResourceAsStream(NODEFAULTCONSTRUCTOR_ERROR);
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, bindings);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, bindings);
 
         Exception caughtException = null;
         try {
@@ -167,7 +168,7 @@ public class FactoryTestCases extends TestCase {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         InputStream bindings = classLoader.getResourceAsStream(DOMAINCLASSFACTORYMETHOD);
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, bindings);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, bindings);
 
         jaxbContext = JAXBContextFactory.createContext(classes, properties);
 
@@ -185,7 +186,7 @@ public class FactoryTestCases extends TestCase {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         InputStream bindings = classLoader.getResourceAsStream(DOMAINCLASSFACTORYMETHOD_ERROR);
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, bindings);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, bindings);
 
         Exception caughtException = null;
         try {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,7 @@ import java.util.Map;
 import jakarta.xml.bind.JAXBException;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class NoneTestCases extends JAXBWithJSONTestCases {
@@ -58,7 +59,7 @@ public class NoneTestCases extends JAXBWithJSONTestCases {
 
         Map<String, Object> properties = new HashMap<String, Object>(1);
         InputStream binding = Thread.currentThread().getContextClassLoader().getResourceAsStream(BINDING_RESOURCE);
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, binding);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, binding);
 
         try {
             JAXBContextFactory.createContext(classes, properties);

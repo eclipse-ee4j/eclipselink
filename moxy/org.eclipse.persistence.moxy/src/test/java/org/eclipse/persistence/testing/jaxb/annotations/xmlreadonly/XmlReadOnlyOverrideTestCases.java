@@ -21,6 +21,7 @@ import javax.xml.transform.dom.DOMSource;
 
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
@@ -75,7 +76,7 @@ public class XmlReadOnlyOverrideTestCases extends JAXBWithJSONTestCases {
         HashMap<String, Source> overrides = new HashMap<String, Source>();
         overrides.put("org.eclipse.persistence.testing.jaxb.annotations.xmlreadonly", src);
         HashMap properties = new HashMap();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, overrides);
         return properties;
     }
 

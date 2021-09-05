@@ -28,6 +28,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.oxm.XMLTestCase;
 import org.w3c.dom.Document;
@@ -73,7 +74,7 @@ public class NamespaceTestCases extends XMLTestCase {
     public void testBasicNamespaces() throws Exception {
         InputStream bindings = ClassLoader.getSystemResourceAsStream(BINDINGS1);
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, bindings);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, bindings);
 
         JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{ Customer.class }, properties);
 
@@ -100,7 +101,7 @@ public class NamespaceTestCases extends XMLTestCase {
     public void testNonDefaultRootElement() throws Exception {
         InputStream bindings = ClassLoader.getSystemResourceAsStream(BINDINGS2);
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, bindings);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, bindings);
 
         JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{ Customer.class }, properties);
 

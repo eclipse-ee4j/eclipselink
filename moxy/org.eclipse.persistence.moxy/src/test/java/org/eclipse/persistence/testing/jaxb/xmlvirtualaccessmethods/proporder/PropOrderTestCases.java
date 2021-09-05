@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class PropOrderTestCases extends JAXBWithJSONTestCases {
@@ -38,7 +39,7 @@ public class PropOrderTestCases extends JAXBWithJSONTestCases {
         Map<String, Object> properties = new HashMap<String, Object>();
         Map<String, Object> overrides = new HashMap<String, Object>();
         overrides.put("org.eclipse.persistence.testing.jaxb.xmlvirtualaccessmethods.proporder", "org/eclipse/persistence/testing/jaxb/xmlvirtualaccessmethods/proporder/binding.xml");
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, overrides);
         return properties;
     }
 

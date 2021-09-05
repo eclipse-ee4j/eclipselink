@@ -25,6 +25,7 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
@@ -128,7 +129,7 @@ public class MultipleBindingsFourFilesTestCases extends JAXBWithJSONTestCases {
             overrides.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.simple", bindingsList);
 
             Map props = new HashMap();
-            props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
+            props.put(JAXBContextProperties.OXM_METADATA_SOURCE, overrides);
             return props;
         }
 

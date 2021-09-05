@@ -26,6 +26,7 @@ import jakarta.xml.bind.annotation.XmlList;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.Employee;
@@ -147,7 +148,7 @@ public class ConflictingListTypeTestCases extends TypeMappingInfoWithJSONTestCas
     @Override
     public Map getProperties() {
         Map props = new HashMap();
-        props.put(JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY, "someUri");
+        props.put(JAXBContextProperties.DEFAULT_TARGET_NAMESPACE, "someUri");
         return props;
     }
 

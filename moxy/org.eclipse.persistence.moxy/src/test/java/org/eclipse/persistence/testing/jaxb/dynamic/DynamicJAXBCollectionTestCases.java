@@ -32,6 +32,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.dynamic.util.MyList;
@@ -101,7 +102,7 @@ public class DynamicJAXBCollectionTestCases extends TestCase {
         metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -138,7 +139,7 @@ public class DynamicJAXBCollectionTestCases extends TestCase {
         metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -173,7 +174,7 @@ public class DynamicJAXBCollectionTestCases extends TestCase {
         metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -210,7 +211,7 @@ public class DynamicJAXBCollectionTestCases extends TestCase {
         metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -248,7 +249,7 @@ public class DynamicJAXBCollectionTestCases extends TestCase {
         metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         JaxbClassLoader jcl = new JaxbClassLoader(classLoader);
 

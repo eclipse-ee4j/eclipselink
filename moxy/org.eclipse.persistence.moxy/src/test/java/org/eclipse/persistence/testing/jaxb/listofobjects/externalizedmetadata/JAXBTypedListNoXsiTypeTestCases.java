@@ -30,6 +30,7 @@ import javax.xml.transform.dom.DOMSource;
 
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.listofobjects.JAXBListOfObjectsTestCases;
 import org.w3c.dom.Document;
 
@@ -68,7 +69,7 @@ public class JAXBTypedListNoXsiTypeTestCases  extends JAXBListOfObjectsTestCases
         HashMap<String, Source> overrides = new HashMap<String, Source>();
         overrides.put(pkg, generateXmlSchemaOxm());
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, overrides);
         return properties;
     }
 

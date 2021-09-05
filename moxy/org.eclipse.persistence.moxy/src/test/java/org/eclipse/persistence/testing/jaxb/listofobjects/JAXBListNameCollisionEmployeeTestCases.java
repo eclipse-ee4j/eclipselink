@@ -128,7 +128,7 @@ JAXBListOfObjectsNoJSONTestCases {
 
         // test override of 'old' context factory property - if the override
         // fails we will get errors
-        props.put(JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY, "listOfObjectsNamespaceWRONG");
+        props.put(JAXBContextProperties.DEFAULT_TARGET_NAMESPACE, "listOfObjectsNamespaceWRONG");
         props.put(JAXBContextProperties.DEFAULT_TARGET_NAMESPACE, "listOfObjectsNamespace");
         return props;
     }

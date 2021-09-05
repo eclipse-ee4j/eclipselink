@@ -192,10 +192,10 @@ public class SimpleTypeWithEnumTestSuite {
         DynamicEntity foundEntity = find(dynamicHelper, session, 1);
 
         assertNotNull(foundEntity);
-        assertEquals(simpleInstance.get("id"), foundEntity.get("id"));
-        assertEquals(simpleInstance.get("value1"), foundEntity.get("value1"));
-        assertEquals(simpleInstance.get("value2"), foundEntity.get("value2"));
-        assertSame(simpleInstance.get("color"), foundEntity.get("color"));
+        assertEquals(simpleInstance.<Integer>get("id"), foundEntity.<Integer>get("id"));
+        assertEquals(simpleInstance.<String>get("value1"), foundEntity.<String>get("value1"));
+        assertEquals(simpleInstance.<Boolean>get("value2"), foundEntity.<Boolean>get("value2"));
+        assertSame(simpleInstance.<Enum>get("color"), foundEntity.<Enum>get("color"));
 
         session.release();
 

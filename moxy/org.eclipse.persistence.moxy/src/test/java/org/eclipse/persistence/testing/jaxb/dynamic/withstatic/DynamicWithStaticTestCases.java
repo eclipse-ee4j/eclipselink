@@ -23,6 +23,7 @@ import java.util.Map;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
@@ -87,7 +88,7 @@ public class DynamicWithStaticTestCases extends JAXBWithJSONTestCases {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContext(PACKAGE, null, properties);
         xmlContext = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext();

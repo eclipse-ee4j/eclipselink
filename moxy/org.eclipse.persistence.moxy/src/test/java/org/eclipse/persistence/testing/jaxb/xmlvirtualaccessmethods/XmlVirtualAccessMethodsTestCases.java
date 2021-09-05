@@ -32,6 +32,7 @@ import javax.xml.validation.Validator;
 
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.testing.oxm.XMLTestCase;
 import org.w3c.dom.*;
@@ -62,7 +63,7 @@ public class XmlVirtualAccessMethodsTestCases extends XMLTestCase {
             "org/eclipse/persistence/testing/jaxb/xmlvirtualaccessmethods/basic-eclipselink-oxm.xml");
 
         Map<String, Object> ctxProperties = new HashMap<String, Object>();
-        ctxProperties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, oxm);
+        ctxProperties.put(JAXBContextProperties.OXM_METADATA_SOURCE, oxm);
 
         /**
          * Employee extensions:
@@ -112,7 +113,7 @@ public class XmlVirtualAccessMethodsTestCases extends XMLTestCase {
             "org/eclipse/persistence/testing/jaxb/xmlvirtualaccessmethods/eclipselink-oxm.xml");
 
         Map<String, Object> ctxProperties = new HashMap<String, Object>();
-        ctxProperties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, oxm);
+        ctxProperties.put(JAXBContextProperties.OXM_METADATA_SOURCE, oxm);
 
         /**
          * Extensions:
@@ -191,7 +192,7 @@ public class XmlVirtualAccessMethodsTestCases extends XMLTestCase {
             "org/eclipse/persistence/testing/jaxb/xmlvirtualaccessmethods/basic-eclipselink-oxm.xml");
 
         Map<String, Object> ctxProperties = new HashMap<String, Object>();
-        ctxProperties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, oxm);
+        ctxProperties.put(JAXBContextProperties.OXM_METADATA_SOURCE, oxm);
 
         ctx = JAXBContextFactory.createContext(new Class[] {Employee.class, PhoneNumber.class}, ctxProperties);
 
@@ -203,7 +204,7 @@ public class XmlVirtualAccessMethodsTestCases extends XMLTestCase {
             "org/eclipse/persistence/testing/jaxb/xmlvirtualaccessmethods/eclipselink-oxm.xml");
 
         Map<String, Object> ctxProperties = new HashMap<String, Object>();
-        ctxProperties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, oxm);
+        ctxProperties.put(JAXBContextProperties.OXM_METADATA_SOURCE, oxm);
 
         ctx = JAXBContextFactory.createContext(new Class[] {ExtObjectRoot.class, ExtObjectA.class,
                 ExtObjectB.class, ExtObjectC.class}, ctxProperties);

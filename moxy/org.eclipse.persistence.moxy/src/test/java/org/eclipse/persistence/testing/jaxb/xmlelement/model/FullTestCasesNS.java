@@ -19,6 +19,7 @@ import java.util.Map;
 import javax.xml.transform.dom.DOMSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.w3c.dom.Document;
@@ -62,7 +63,7 @@ public class FullTestCasesNS extends FullTestCases{
             overrides.put("org.eclipse.persistence.testing.jaxb.xmlelement.model", src);
 
             Map props = new HashMap();
-            props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
+            props.put(JAXBContextProperties.OXM_METADATA_SOURCE, overrides);
         return props;
     }
 }

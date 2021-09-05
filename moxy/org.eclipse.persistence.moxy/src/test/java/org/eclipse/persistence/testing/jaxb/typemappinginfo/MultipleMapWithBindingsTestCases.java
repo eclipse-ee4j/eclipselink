@@ -23,6 +23,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -41,7 +42,7 @@ public class MultipleMapWithBindingsTestCases extends MultipleMapTestCases{
         overrides.put(pkg, getXmlSchemaOxm(pkg));
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, overrides);
         return properties;
     }
 

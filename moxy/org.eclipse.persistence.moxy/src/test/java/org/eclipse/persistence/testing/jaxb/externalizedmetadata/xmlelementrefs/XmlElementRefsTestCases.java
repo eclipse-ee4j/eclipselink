@@ -26,6 +26,7 @@ import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementrefs.collectiontype.Root;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
@@ -126,7 +127,7 @@ public class XmlElementRefsTestCases extends ExternalizedMetadataTestCases {
     public void testCollectionType() {
         try {
             Map<String, Object> properties = new HashMap<>();
-            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new File(Thread.currentThread().getContextClassLoader().getResource(PATH + "collectiontype/oxm.xml").toURI()));
+            properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, new File(Thread.currentThread().getContextClassLoader().getResource(PATH + "collectiontype/oxm.xml").toURI()));
             JAXBContextFactory.createContext(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementrefs.collectiontype.ObjectFactory.class, Root.class }, properties);
         } catch (Exception e) {
             e.printStackTrace();
