@@ -27,10 +27,7 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.jaxb.MarshallerProperties;
-import org.eclipse.persistence.jaxb.UnmarshallerProperties;
+import org.eclipse.persistence.jaxb.*;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
@@ -104,7 +101,7 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode", new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         return properties;
     }
@@ -149,7 +146,7 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
             HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
             metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode", new StreamSource(inputStream));
             Map<String, Map<String, Source>> invalidProperties = new HashMap<String, Map<String, Source>>();
-            invalidProperties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+            invalidProperties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
             JAXBContextFactory.createContext(new Class[] { Company.class }, invalidProperties);
         } catch (JAXBException e) {
@@ -170,7 +167,7 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
             HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
             metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode", new StreamSource(inputStream));
             Map<String, Map<String, Source>> invalidProperties = new HashMap<String, Map<String, Source>>();
-            invalidProperties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+            invalidProperties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
             JAXBContextFactory.createContext(new Class[] { Company.class }, invalidProperties);
 
@@ -196,7 +193,7 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
             HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
             metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode", new StreamSource(inputStream));
             Map<String, Map<String, Source>> invalidProperties = new HashMap<String, Map<String, Source>>();
-            invalidProperties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+            invalidProperties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
             JAXBContextFactory.createContext(new Class[] { Company.class }, invalidProperties);
 
@@ -216,7 +213,7 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
             HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
             metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode", new StreamSource(inputStream));
             Map<String, Map<String, Source>> invalidProperties = new HashMap<String, Map<String, Source>>();
-            invalidProperties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+            invalidProperties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
             jCtx = (JAXBContext)JAXBContextFactory.createContext(new Class[] { Company.class }, invalidProperties);
 

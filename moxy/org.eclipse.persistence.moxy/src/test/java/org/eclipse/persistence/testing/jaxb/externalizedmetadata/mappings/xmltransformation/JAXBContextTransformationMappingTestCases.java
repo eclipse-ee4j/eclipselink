@@ -25,6 +25,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.compiler.Generator;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
@@ -53,7 +54,7 @@ public class JAXBContextTransformationMappingTestCases extends TestCase{
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmltransformation", new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         try {
             JAXBContext jaxbContext = JAXBContextFactory.createContext(new Class[]{Employee.class}, properties, Thread.currentThread().getContextClassLoader());
@@ -75,7 +76,7 @@ public class JAXBContextTransformationMappingTestCases extends TestCase{
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmltransformation", new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
        try {
             JAXBContext jaxbContext = JAXBContextFactory.createContext(new Class[]{Employee.class}, properties, Thread.currentThread().getContextClassLoader());
@@ -100,7 +101,7 @@ public class JAXBContextTransformationMappingTestCases extends TestCase{
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmltransformation", new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         int exceptionCount = 0;
         try {
@@ -136,7 +137,7 @@ public class JAXBContextTransformationMappingTestCases extends TestCase{
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmltransformation", new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         int exceptionCount = 0;
         // test exception from MappingsGenerator

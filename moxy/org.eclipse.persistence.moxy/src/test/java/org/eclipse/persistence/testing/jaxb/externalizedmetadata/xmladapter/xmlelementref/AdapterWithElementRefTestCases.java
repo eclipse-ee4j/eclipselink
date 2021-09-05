@@ -22,6 +22,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class AdapterWithElementRefTestCases extends JAXBWithJSONTestCases{
@@ -50,7 +51,7 @@ public class AdapterWithElementRefTestCases extends JAXBWithJSONTestCases{
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/xmlelementref/foo-oxm.xml");
 
         HashMap<String, Source> properties = new HashMap<String, Source>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new StreamSource(inputStream));
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, new StreamSource(inputStream));
 
         return properties;
     }

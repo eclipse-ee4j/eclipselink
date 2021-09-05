@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.JAXBHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -53,7 +54,7 @@ public class BinderTestCases extends TestCase {
         metadataStream.close();
 
         Map<String, Object> props = new HashMap<String, Object>(1);
-        props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataDocument);
+        props.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataDocument);
         JAXBContext jc = JAXBContextFactory.createContext(new Class[] {Root.class}, props);
         Binder<Node> binder = jc.createBinder();
 

@@ -27,6 +27,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.w3c.dom.Document;
@@ -108,7 +109,7 @@ public class XmlPathOverrideTestCases extends JAXBTestCases {
         HashMap<String, Source> overrides = new HashMap<String, Source>();
         overrides.put("org.eclipse.persistence.testing.jaxb.annotations.xmlpath", src);
         HashMap properties = new HashMap();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, overrides);
         return properties;
     }
 

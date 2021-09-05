@@ -28,6 +28,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
@@ -62,7 +63,7 @@ public class XmlElementsTestCases extends JAXBWithJSONTestCases{
             HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
             metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelements", new StreamSource(inputStream));
             Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+            properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
             return properties;
         }
@@ -109,7 +110,7 @@ public class XmlElementsTestCases extends JAXBWithJSONTestCases{
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelements", new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         List controlSchemas = new ArrayList();
         InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelements/schema_idref.xsd");
@@ -140,7 +141,7 @@ public class XmlElementsTestCases extends JAXBWithJSONTestCases{
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         // create context
         boolean exception = false;

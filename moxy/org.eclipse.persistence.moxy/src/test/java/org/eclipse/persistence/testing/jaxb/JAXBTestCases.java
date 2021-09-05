@@ -61,11 +61,7 @@ import javax.xml.validation.Validator;
 
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource;
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderReader;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
-import org.eclipse.persistence.jaxb.JAXBUnmarshallerHandler;
-import org.eclipse.persistence.jaxb.MarshallerProperties;
-import org.eclipse.persistence.jaxb.UnmarshallerProperties;
+import org.eclipse.persistence.jaxb.*;
 import org.eclipse.persistence.jaxb.compiler.CompilerHelper;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.oxm.MediaType;
@@ -155,7 +151,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
          this.contextPath = contextPath;
          Map props = getProperties();
          if(props != null){
-             Map overrides = (Map) props.get(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY);
+             Map overrides = (Map) props.get(JAXBContextProperties.OXM_METADATA_SOURCE);
              if(overrides != null){
                  Iterator valuesIter = overrides.values().iterator();
                  while(valuesIter.hasNext()){
@@ -180,7 +176,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
 
         Map props = getProperties();
         if(props != null){
-            Map overrides = (Map) props.get(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY);
+            Map overrides = (Map) props.get(JAXBContextProperties.OXM_METADATA_SOURCE);
             if(overrides != null){
                 Iterator valuesIter = overrides.values().iterator();
                 while(valuesIter.hasNext()){
@@ -207,7 +203,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
 
         if(props !=null){
 
-            Object bindingFilesObject = props.get(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY);
+            Object bindingFilesObject = props.get(JAXBContextProperties.OXM_METADATA_SOURCE);
             if(bindingFilesObject != null){
                 JAXBContext jaxbContext = CompilerHelper.getXmlBindingsModelContext();
                 //unmarshal XML
@@ -262,14 +258,14 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
                         StreamSource newSource = new StreamSource(new StringReader(sw.toString()));
                         bindingFilesList.set(i, newSource);
                     }
-                    props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, bindingFilesList);
+                    props.put(JAXBContextProperties.OXM_METADATA_SOURCE, bindingFilesList);
                 }else{
                     Object unmarshalledFromXML = getXmlBindings(bindingFilesObject);
                     StringWriter sw = new StringWriter();
                     StreamResult newResult = new StreamResult(sw);
                     jsonMarshaller.marshal(unmarshalledFromXML, newResult);
                     StreamSource newSource = new StreamSource(new StringReader(sw.toString()));
-                    props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, newSource);
+                    props.put(JAXBContextProperties.OXM_METADATA_SOURCE, newSource);
 
                 }
 

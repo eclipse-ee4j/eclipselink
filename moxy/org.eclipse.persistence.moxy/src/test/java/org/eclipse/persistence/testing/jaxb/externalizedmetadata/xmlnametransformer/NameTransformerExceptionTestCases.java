@@ -32,6 +32,7 @@ import javax.xml.transform.dom.DOMSource;
 
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.w3c.dom.Document;
@@ -117,7 +118,7 @@ public class NameTransformerExceptionTestCases extends OXTestCase{
         overrides.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnametransformer", src);
 
         Map props = new HashMap();
-        props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
+        props.put(JAXBContextProperties.OXM_METADATA_SOURCE, overrides);
         return props;
     }
 
@@ -143,7 +144,7 @@ protected Map getPropertiesWithException() throws Exception{
         overrides.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnametransformer", src);
 
         Map props = new HashMap();
-        props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
+        props.put(JAXBContextProperties.OXM_METADATA_SOURCE, overrides);
         return props;
     }
 

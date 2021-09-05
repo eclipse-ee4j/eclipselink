@@ -40,6 +40,7 @@ import javax.xml.validation.SchemaFactory;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.dynamic.util.CustomEntityResolver;
@@ -366,7 +367,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
         Map<String, Object> props = new HashMap<String, Object>();
-        props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        props.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(XMLELEMENT);
         jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, null, null, props);

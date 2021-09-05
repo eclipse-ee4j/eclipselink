@@ -27,6 +27,7 @@ import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 
 public class JAXBListNameCollisionEmployee2TestCases extends
 JAXBListOfObjectsNoJSONTestCases {
@@ -135,7 +136,7 @@ JAXBListOfObjectsNoJSONTestCases {
     @Override
     public Map getProperties() {
         Map props = new HashMap();
-        props.put(JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY, "listOfObjectsNamespace");
+        props.put(JAXBContextProperties.DEFAULT_TARGET_NAMESPACE, "listOfObjectsNamespace");
         return props;
     }
 

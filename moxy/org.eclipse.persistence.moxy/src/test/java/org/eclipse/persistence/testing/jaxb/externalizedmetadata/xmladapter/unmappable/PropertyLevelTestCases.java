@@ -22,6 +22,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.unmappable.package1.Container;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.unmappable.package2.Unmappable;
@@ -44,7 +45,7 @@ public class PropertyLevelTestCases extends JAXBWithJSONTestCases {
         metadata.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.unmappable.package1", src);
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadata);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadata);
 
         return properties;
     }

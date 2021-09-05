@@ -182,7 +182,7 @@ public class SimpleTypeTestSuite {
         DynamicEntity foundEntity = find(em, 1);
         assertNotNull(foundEntity);
         assertEquals(simpleInstance.<Number>get("id"), foundEntity.<Number>get("id"));
-        assertEquals(simpleInstance.get("value1"), foundEntity.get("value1"));
+        assertEquals(simpleInstance.<String>get("value1"), foundEntity.<String>get("value1"));
         assertEquals(simpleInstance.<Boolean>get("value2"), foundEntity.<Boolean>get("value2"));
         em.close();
         return simpleInstance;

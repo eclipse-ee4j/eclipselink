@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
 import org.eclipse.persistence.jaxb.metadata.MetadataSource;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
@@ -33,7 +34,7 @@ public class EmptyContextTestCases extends TestCase {
 
     public void testEmptyContext() throws Exception {
         Map<String, Object> properties = new HashMap<String, Object>(1);
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new TestMetadataSource());
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, new TestMetadataSource());
         DynamicJAXBContextFactory.createContextFromOXM(null, properties);
     }
 

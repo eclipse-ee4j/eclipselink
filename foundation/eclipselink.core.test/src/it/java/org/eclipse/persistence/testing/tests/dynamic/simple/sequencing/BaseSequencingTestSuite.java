@@ -84,8 +84,8 @@ public abstract class BaseSequencingTestSuite  {
         DynamicEntity findResult = find(dynamicHelper, session, 1);
 
         assertNotNull(findResult);
-        assertEquals(simpleInstance.get("id"), findResult.get("id"));
-        assertEquals(simpleInstance.get("value1"), findResult.get("value1"));
+        assertEquals(simpleInstance.<Integer>get("id"), findResult.<Integer>get("id"));
+        assertEquals(simpleInstance.<String>get("value1"), findResult.<String>get("value1"));
 
         session.release();
     }
@@ -112,8 +112,8 @@ public abstract class BaseSequencingTestSuite  {
 
         assertNotNull(findResult1);
         assertNotNull(findResult2);
-        assertEquals(simpleInstance1.get("id"), findResult1.get("id"));
-        assertEquals(simpleInstance2.get("value1"), findResult2.get("value1"));
+        assertEquals(simpleInstance1.<Integer>get("id"), findResult1.<Integer>get("id"));
+        assertEquals(simpleInstance2.<String>get("value1"), findResult2.<String>get("value1"));
 
         session.release();
     }

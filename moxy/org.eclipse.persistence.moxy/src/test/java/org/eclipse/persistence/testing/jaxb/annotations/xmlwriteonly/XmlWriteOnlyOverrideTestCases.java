@@ -20,6 +20,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 
@@ -73,7 +74,7 @@ public class XmlWriteOnlyOverrideTestCases extends JAXBWithJSONTestCases  {
         HashMap<String, Source> overrides = new HashMap<String, Source>();
         overrides.put("org.eclipse.persistence.testing.jaxb.annotations.xmlwriteonly", src);
         HashMap properties = new HashMap();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, overrides);
         return properties;
     }
 }

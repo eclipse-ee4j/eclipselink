@@ -117,7 +117,7 @@ public class SimpleTypeCompositeKeyTestSuite extends SimpleTypeTestSuite {
         assertNotNull(foundEntity);
         assertEquals(simpleInstance.<Number>get("id1"), foundEntity.<Number>get("id1"));
         assertEquals(simpleInstance.<Number>get("id2"), foundEntity.<Number>get("id2"));
-        assertEquals(simpleInstance.get("value1"), foundEntity.get("value1"));
+        assertEquals(simpleInstance.<String>get("value1"), foundEntity.<String>get("value1"));
         assertEquals(simpleInstance.<Boolean>get("value2"), foundEntity.<Boolean>get("value2"));
         em.close();
         return simpleInstance;

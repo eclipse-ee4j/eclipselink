@@ -26,6 +26,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 
 /**
@@ -55,7 +56,7 @@ public class ExceptionHandlingTestCases extends OXTestCase {
         Map<Class, Source> metadataSourceMap = new HashMap<Class, Source>();
         metadataSourceMap.put(JAXBContextFactory.class, new StreamSource());
         Map<String, Map<Class, Source>> properties = new HashMap<String, Map<Class, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         try {
             JAXBContextFactory.createContext(CONTEXT_PATH, getClass().getClassLoader(), properties);
@@ -75,7 +76,7 @@ public class ExceptionHandlingTestCases extends OXTestCase {
         Map<Class, Source> metadataSourceMap = new HashMap<Class, Source>();
         metadataSourceMap.put(null, new StreamSource());
         Map<String, Map<Class, Source>> properties = new HashMap<String, Map<Class, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         try {
             JAXBContextFactory.createContext(CONTEXT_PATH, getClass().getClassLoader(), properties);
@@ -96,7 +97,7 @@ public class ExceptionHandlingTestCases extends OXTestCase {
         Map<String, Class> metadataSourceMap = new HashMap<String, Class>();
         metadataSourceMap.put(CONTEXT_PATH, this.getClass());
         Map<String, Map<String, Class>> properties = new HashMap<String, Map<String, Class>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         try {
             JAXBContextFactory.createContext(CONTEXT_PATH, getClass().getClassLoader(), properties);
@@ -116,7 +117,7 @@ public class ExceptionHandlingTestCases extends OXTestCase {
         Map<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put(CONTEXT_PATH, null);
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         try {
             JAXBContextFactory.createContext(CONTEXT_PATH, getClass().getClassLoader(), properties);
@@ -137,7 +138,7 @@ public class ExceptionHandlingTestCases extends OXTestCase {
         Map<String, List<Integer>> properties = new HashMap<String, List<Integer>>();
         ArrayList<Integer> ints = new ArrayList<Integer>();
         ints.add(666);
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, ints);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, ints);
         try {
             JAXBContextFactory.createContext(CONTEXT_PATH, getClass().getClassLoader(), properties);
         } catch (JAXBException e) {
@@ -162,7 +163,7 @@ public class ExceptionHandlingTestCases extends OXTestCase {
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         try {
             JAXBContextFactory.createContext(CONTEXT_PATH, getClass().getClassLoader(), properties);
@@ -188,7 +189,7 @@ public class ExceptionHandlingTestCases extends OXTestCase {
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         try {
             JAXBContextFactory.createContext(CONTEXT_PATH, getClass().getClassLoader(), properties);
@@ -217,7 +218,7 @@ public class ExceptionHandlingTestCases extends OXTestCase {
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("java.util", new StreamSource(iStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         try {
             JAXBContext ctx = JAXBContextFactory.createContext(contextPath, getClass().getClassLoader(), properties);
@@ -241,7 +242,7 @@ public class ExceptionHandlingTestCases extends OXTestCase {
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         try {
             JAXBContextFactory.createContext(CONTEXT_PATH, getClass().getClassLoader(), properties);
@@ -264,7 +265,7 @@ public class ExceptionHandlingTestCases extends OXTestCase {
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put(CONTEXT_PATH, new StreamSource(metadataFile));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         try {
             JAXBContextFactory.createContext(CONTEXT_PATH, getClass().getClassLoader(), properties);

@@ -26,6 +26,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
@@ -56,7 +57,7 @@ public class XmlElementWrapperTestCases extends JAXBWithJSONTestCases{
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementwrapper",
                         new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY,
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE,
                 metadataSourceMap);
 
         return properties;
@@ -141,7 +142,7 @@ public class XmlElementWrapperTestCases extends JAXBWithJSONTestCases{
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementwrapper",
                         new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY,
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE,
                 metadataSourceMap);
 
          JAXBContext ctx = JAXBContextFactory.createContext(new Class[] { Employee.class }, properties);

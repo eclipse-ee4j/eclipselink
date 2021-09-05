@@ -48,7 +48,7 @@ public class SessionEventListenerTestCases extends TestCase {
     public void testOXM() throws Exception {
         Map<String, Object> properties = new HashMap<String, Object>(2);
         properties.put(JAXBContextProperties.SESSION_EVENT_LISTENER, sessionEventListener);
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, "org/eclipse/persistence/testing/jaxb/dynamic/sessioneventlistener/oxm.xml");
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, "org/eclipse/persistence/testing/jaxb/dynamic/sessioneventlistener/oxm.xml");
         JAXBContext jc = DynamicJAXBContextFactory.createContextFromOXM(this.getClass().getClassLoader(), properties);
         unmarshalTest(jc);
     }

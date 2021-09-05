@@ -47,6 +47,7 @@ import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.compiler.Generator;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
@@ -183,7 +184,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
         metadataSourceMap.put(contextPath, new StreamSource(iStream));
         validateBindingsFileAgainstSchema(iStream);
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
         return generateSchema(contextPath, properties, expectedSchemaCount);
     }
 
@@ -210,7 +211,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put(contextPath, new StreamSource(iStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
         return generateSchema(contextPath, properties, expectedSchemaCount);
     }
 
@@ -226,7 +227,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put(contextPath, new StreamSource(iStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
         try {
             generateSchema(classes, properties, outputResolver, loader);
@@ -261,7 +262,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put(contextPath, new StreamSource(iStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         validateBindingsFileAgainstSchema(iStreamCopy);
 
@@ -286,7 +287,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put(contextPath, new StreamSource(iStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
 
         validateBindingsFileAgainstSchema(iStreamCopy);
@@ -326,7 +327,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put(contextPath, new StreamSource(iStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
         try {
             generateSchema(types, properties, outputResolver, classLoader);
@@ -768,7 +769,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put(contextPath, new StreamSource(iStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
 
         validateBindingsFileAgainstSchema(iStreamCopy);

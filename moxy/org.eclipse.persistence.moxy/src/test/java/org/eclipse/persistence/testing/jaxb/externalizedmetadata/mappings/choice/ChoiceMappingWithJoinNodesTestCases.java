@@ -22,10 +22,7 @@ import java.util.Map;
 
 import jakarta.xml.bind.JAXBException;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.jaxb.MarshallerProperties;
-import org.eclipse.persistence.jaxb.UnmarshallerProperties;
+import org.eclipse.persistence.jaxb.*;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choice.reference.Address;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choice.reference.Client;
@@ -88,7 +85,7 @@ public class ChoiceMappingWithJoinNodesTestCases extends JAXBWithJSONTestCases{
         Map<String, Object> props = new HashMap<String, Object>();
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/choice/reference/root-oxm.xml");
 
-        props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, inputStream);
+        props.put(JAXBContextProperties.OXM_METADATA_SOURCE, inputStream);
         return props;
     }
 
@@ -108,7 +105,7 @@ public class ChoiceMappingWithJoinNodesTestCases extends JAXBWithJSONTestCases{
         try {
             Map<String, Object> props = new HashMap<String, Object>();
             InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/choice/reference/root-invalid-oxm.xml");
-            props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, inputStream);
+            props.put(JAXBContextProperties.OXM_METADATA_SOURCE, inputStream);
             JAXBContext ctx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choice.reference.Root.class }, props);
         } catch (JAXBException e1) {
             return;

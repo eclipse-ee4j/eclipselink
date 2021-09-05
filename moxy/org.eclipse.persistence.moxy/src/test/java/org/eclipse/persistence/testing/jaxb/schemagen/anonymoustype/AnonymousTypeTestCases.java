@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,7 @@ import javax.xml.namespace.QName;
 import junit.framework.TestCase;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases.MySchemaOutputResolver;
@@ -46,7 +47,7 @@ public class AnonymousTypeTestCases extends TestCase {
 
         TypeMappingInfo[] types = { t1 };
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY, TYPES_TNS);
+        properties.put(JAXBContextProperties.DEFAULT_TARGET_NAMESPACE, TYPES_TNS);
         JAXBContext cxt = JAXBContextFactory.createContext(types, properties, Thread.currentThread().getContextClassLoader());
 
         MySchemaOutputResolver mysr = new MySchemaOutputResolver();

@@ -25,6 +25,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.eclipse.persistence.exceptions.SessionLoaderException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaClassImpl;
 import org.eclipse.persistence.testing.oxm.classloader.JARClassLoader;
@@ -159,7 +160,7 @@ public class JaxbContextCreationTests extends junit.framework.TestCase {
         InputStream oxm = ClassLoader.getSystemClassLoader().getResourceAsStream(oxmString);
 
         Map<String, Object> props = new HashMap<String, Object>();
-        props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, oxm);
+        props.put(JAXBContextProperties.OXM_METADATA_SOURCE, oxm);
 
         // Specify some other, unrelated context path -- we want to ensure that we don't fail
         // due to lack of ObjectFactory/jaxb.index

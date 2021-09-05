@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class MapElementWrapperExternalTestCases extends JAXBWithJSONTestCases{
@@ -46,7 +47,7 @@ public class MapElementWrapperExternalTestCases extends JAXBWithJSONTestCases{
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.map", new StreamSource(inputStream));
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         return properties;
     }

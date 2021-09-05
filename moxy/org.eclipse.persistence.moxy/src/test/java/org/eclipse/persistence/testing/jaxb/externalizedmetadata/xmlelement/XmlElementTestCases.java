@@ -63,11 +63,11 @@ public class XmlElementTestCases extends JAXBWithJSONTestCases {
             HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
             metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelement", new StreamSource(inputStream));
             Map<String, Object> properties = new HashMap<String, Object>();
-            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+            properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
             // test override of 'old' context factory property - if the override
             // fails we will get a ClassCastException
-            properties.put(JAXBContextFactory.ANNOTATION_HELPER_KEY, "Blah");
+            properties.put(JAXBContextProperties.ANNOTATION_HELPER, "Blah");
             properties.put(JAXBContextProperties.ANNOTATION_HELPER, new AnnotationHelper());
 
             return properties;
@@ -112,7 +112,7 @@ public class XmlElementTestCases extends JAXBWithJSONTestCases {
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelement", new StreamSource(iStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         JAXBContext jContext = (JAXBContext) JAXBContextFactory.createContext(new Class[] { Team.class }, properties, loader);
 
@@ -153,7 +153,7 @@ public class XmlElementTestCases extends JAXBWithJSONTestCases {
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         try {
             JAXBContext jContext = (JAXBContext) JAXBContextFactory.createContext(new Class[] { Team.class }, properties, loader);

@@ -32,11 +32,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.jaxb.JAXBTypeElement;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
-import org.eclipse.persistence.jaxb.TypeMappingInfo;
+import org.eclipse.persistence.jaxb.*;
 import org.eclipse.persistence.oxm.record.XMLStreamWriterRecord;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
@@ -69,7 +65,7 @@ public abstract class JAXBListOfObjectsNoJSONTestCases extends JAXBTestCases{
 
          Map props = getProperties();
                 if(props != null){
-            Map overrides = (Map) props.get(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY);
+            Map overrides = (Map) props.get(JAXBContextProperties.OXM_METADATA_SOURCE);
             if(overrides != null){
                 Iterator valuesIter = overrides.values().iterator();
                 while(valuesIter.hasNext()){
