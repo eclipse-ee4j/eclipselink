@@ -33,8 +33,10 @@
     <properties>
         <dep.sources>${project.build.directory}/generated-sources/dependencies</dep.sources>
         <jdoc.doclint>-missing</jdoc.doclint>
-        <!-- XXX deprecated comes from commonj.sdo which we don't want to touch -->
+        <!-- XXX deprecated comes from commonj.sdo which we don't want to touch,
+             we also do not want to see what has already been reported earlier -->
         <comp.xlint>-Xlint:all,-rawtypes,-unchecked,-serial,-deprecation,-dep-ann</comp.xlint>
+        <comp.test.xlint>-Xlint:all,-rawtypes,-unchecked,-serial,-deprecation,-dep-ann</comp.test.xlint>
         <comp.xdoclint>-Xdoclint:none</comp.xdoclint>
 
         <test-skip-sdo-srg>${skipTests}</test-skip-sdo-srg>
