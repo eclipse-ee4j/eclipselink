@@ -460,7 +460,6 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
 
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
-        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, new HashMap<String, Source>());
 
         DynamicJAXBContext jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
