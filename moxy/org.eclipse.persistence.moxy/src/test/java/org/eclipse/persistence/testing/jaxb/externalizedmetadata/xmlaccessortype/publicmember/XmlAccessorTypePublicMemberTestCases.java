@@ -40,7 +40,6 @@ public class XmlAccessorTypePublicMemberTestCases extends JAXBWithJSONTestCases 
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public XmlAccessorTypePublicMemberTestCases(String name) throws Exception{
         super(name);

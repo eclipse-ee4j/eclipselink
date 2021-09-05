@@ -233,7 +233,6 @@ public interface Server extends org.eclipse.persistence.sessions.DatabaseSession
      * <br>
      * Use this read connection pool to take advantage of concurrent reading.
      *
-     * @param minNumberOfConnections
      * @param maxNumberOfConnections As multiple readers can use the same connection
      * concurrently fewer connections are needed.
      * @see #getReadConnectionPool

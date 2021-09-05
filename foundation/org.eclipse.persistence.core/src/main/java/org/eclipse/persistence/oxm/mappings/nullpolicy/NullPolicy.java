@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -102,10 +102,6 @@ public class NullPolicy extends AbstractNullPolicy {
 
     /**
      * Specific Constructor to set the Unmarshal flags
-     * @param anIsSetMethodName
-     * @param bIsSetPerformedForAbsentNode
-     * @param bIsNullRepresentedByEmptyNode
-     * @param bIsNullRepresentedByXsiNil
      */
     public NullPolicy(String anIsSetMethodName, //
             boolean bIsSetPerformedForAbsentNode, boolean bIsNullRepresentedByEmptyNode, boolean bIsNullRepresentedByXsiNil) {
@@ -117,11 +113,6 @@ public class NullPolicy extends AbstractNullPolicy {
 
     /**
      * Specific Constructor to set both the Marshal enum and the Unmarshal flags
-     * @param anIsSetMethodName
-     * @param bIsSetPerformedForAbsentNode
-     * @param bIsNullRepresentedByEmptyNode
-     * @param bIsNullRepresentedByXsiNil
-     * @param aMarshalNullRepresentation
      */
     public NullPolicy(String anIsSetMethodName, //
             boolean bIsSetPerformedForAbsentNode, boolean bIsNullRepresentedByEmptyNode, boolean bIsNullRepresentedByXsiNil, //
@@ -137,7 +128,6 @@ public class NullPolicy extends AbstractNullPolicy {
 
     /**
      * Set the isSetPerformedForAbsentNode flag
-     * @param performSet
      */
     public void setSetPerformedForAbsentNode(boolean performSet) {
         isSetPerformedForAbsentNode = performSet;

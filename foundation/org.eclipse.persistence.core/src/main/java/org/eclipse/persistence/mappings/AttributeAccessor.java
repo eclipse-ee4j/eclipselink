@@ -122,7 +122,6 @@ public abstract class AttributeAccessor implements CoreAttributeAccessor, Clonea
 
     /**
      * INTERNAL:
-     * @return
      */
     @Override
     public boolean isWriteOnly() {
@@ -131,7 +130,6 @@ public abstract class AttributeAccessor implements CoreAttributeAccessor, Clonea
 
     /**
      * INTERNAL:
-     * @param aBoolean
      */
     @Override
     public void setIsWriteOnly(boolean aBoolean) {
@@ -140,14 +138,12 @@ public abstract class AttributeAccessor implements CoreAttributeAccessor, Clonea
 
     /**
      * INTERNAL
-     * @return
      */
     public boolean isReadOnly() {
         return isReadOnly;
     }
     /**
      * INTERNAL
-     * @param aBoolean
      */
     @Override
     public void setIsReadOnly(boolean aBoolean) {

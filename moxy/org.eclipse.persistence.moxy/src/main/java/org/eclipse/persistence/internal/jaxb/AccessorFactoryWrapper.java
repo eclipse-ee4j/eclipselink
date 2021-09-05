@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
  * The instance can be from either the internal or public package. This class will
  * reflectively invoke the createFieldAccessor and createPropertyAccessor methods
  * on the underlying AccessorFactory to create Accessor instances.
- * <p>
+ *
  * @author mmacivor
  * @since EclipseLink 2.4
  *

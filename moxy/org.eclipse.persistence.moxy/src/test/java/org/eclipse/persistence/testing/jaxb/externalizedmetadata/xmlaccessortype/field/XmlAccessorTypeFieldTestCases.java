@@ -40,7 +40,6 @@ public class XmlAccessorTypeFieldTestCases extends JAXBWithJSONTestCases {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public XmlAccessorTypeFieldTestCases(String name) throws Exception{
         super(name);

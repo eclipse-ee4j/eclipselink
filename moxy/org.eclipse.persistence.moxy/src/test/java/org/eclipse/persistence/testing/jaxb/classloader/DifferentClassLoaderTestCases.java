@@ -61,7 +61,7 @@ public class DifferentClassLoaderTestCases extends JAXBWithJSONTestCases {
     @Override
     protected Object getControlObject() {
         try{
-                    Object classA = rootClass.newInstance();
+                    Object classA = rootClass.getConstructor().newInstance();
             return classA;
         }catch(Exception e){
 

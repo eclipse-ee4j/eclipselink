@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -853,7 +853,6 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
      * unmarshalled does not equal the descriptor's default root
      * element.
      *
-     * @param unmarshalRecord
      * @return object
      */
     @Override
@@ -886,10 +885,6 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
       * unmarshalled does not equal the descriptor's default root
       * element.
       *
-      * @param object
-      * @param elementNamespaceUri
-      * @param elementLocalName
-      * @param elementPrefix
       * @return object
       */
     @Override
@@ -912,7 +907,6 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
 
     /**
      * INTERNAL:
-     * @return
      */
     @Override
     public Object wrapObjectInXMLRoot(Object object, String elementNamespaceUri, String elementLocalName, String elementPrefix, String encoding, String version, boolean forceWrap, boolean isNamespaceAware, XMLUnmarshaller unmarshaller) {
@@ -943,7 +937,6 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
 
     /**
      * INTERNAL:
-     * @return
      */
     public boolean shouldWrapObject(Object object, String elementNamespaceUri, String elementLocalName, String elementPrefix, boolean isNamespaceAware) {
         if(resultAlwaysXMLRoot){
@@ -1014,7 +1007,6 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
      * initialization - a QName will be created and stored on the
      * default root element field during initialize.
      *
-     * @param type
      */
     public void setDefaultRootElementType(QName type) {
         if (defaultRootElementField != null) {
@@ -1144,7 +1136,6 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
      * Convert all the class-name-based settings in this Descriptor to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){

@@ -549,7 +549,6 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * INTERNAL:
      * Convert all the class-name-based settings in this mapping to actual class-based
      * settings
-     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
@@ -1223,7 +1222,6 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
     /**
      * INTERNAL:
      * Set the Attribute Transformer Class Name
-     * @param className
      */
     public void setAttributeTransformerClassName(String className) {
         attributeTransformerClassName = className;

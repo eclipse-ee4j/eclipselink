@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,6 +24,12 @@ package org.eclipse.persistence.sessions.remote.corba.sun;
 */
 abstract public class CORBARemoteSessionControllerHelper {
     private static String _id = "IDL:org/eclipse/persistence/remote/corba/sun/CORBARemoteSessionController:1.0";
+
+    /**
+     * Default constructor.
+     */
+    public CORBARemoteSessionControllerHelper() {
+    }
 
     public static void insert(org.omg.CORBA.Any a, org.eclipse.persistence.sessions.remote.corba.sun.CORBARemoteSessionController that) {
         org.omg.CORBA.portable.OutputStream out = a.create_output_stream();

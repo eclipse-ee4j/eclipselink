@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,14 +12,6 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-
-/* $Header: XMLBinaryDataCollectionMappingTestSuite.java 11-may-2007.15:17:46 dmccann Exp $ */
-
-/**
- *  @version $Header: XMLBinaryDataCollectionMappingTestSuite.java 11-may-2007.15:17:46 dmccann Exp $
- *  @author  mfobrien
- *  @since  11.1
- */
 package org.eclipse.persistence.testing.oxm.mappings.binarydatacollection;
 
 import junit.framework.Test;
@@ -35,6 +27,11 @@ import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.identif
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.identifiedbyname.withgroupingelement.BinaryDataCollectionWithGroupingElementNillableEmptyNSRTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.reuse.BinaryDataCollectionReuseTestCases;
 
+/**
+ *  @version $Header: XMLBinaryDataCollectionMappingTestSuite.java 11-may-2007.15:17:46 dmccann Exp $
+ *  @author  mfobrien
+ *  @since  11.1
+ */
 public class XMLBinaryDataCollectionMappingTestSuite extends TestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite("XMLBinaryDataCollectionMapping Test Suite");

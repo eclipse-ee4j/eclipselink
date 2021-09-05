@@ -1298,7 +1298,6 @@ public class ConversionManager extends CoreConversionManager implements Serializ
 
     /**
      * INTERNAL:
-     * @param classLoader
      */
     public void setLoader(ClassLoader classLoader) {
         shouldUseClassLoaderFromCurrentThread = false;
@@ -1308,7 +1307,6 @@ public class ConversionManager extends CoreConversionManager implements Serializ
     /**
      * INTERNAL:
      * Set the default class loader to use if no instance-level loader is set
-     * @param classLoader
      */
     public static void setDefaultLoader(ClassLoader classLoader) {
         defaultLoader = classLoader;

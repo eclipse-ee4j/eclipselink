@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -125,7 +125,6 @@ public class DBPlatformHelper {
     * any error compiling regExp.
     * @param regExp The regular expression.
     * @param target The target against which we are trying to match regExp.
-    * @param logger
     * @return false if there is error compiling regExp or target does not
     * match regExp. true if regExp matches pattern.
     */

@@ -29,7 +29,6 @@ import jakarta.persistence.metamodel.Metamodel;
  * <p>
  * <b>Description</b>: This class represents root of a path. All paths are
  * created from roots and they correspond to ExpressionBuilders.
- * <p>
  *
  * @see jakarta.persistence.criteria Path
  *

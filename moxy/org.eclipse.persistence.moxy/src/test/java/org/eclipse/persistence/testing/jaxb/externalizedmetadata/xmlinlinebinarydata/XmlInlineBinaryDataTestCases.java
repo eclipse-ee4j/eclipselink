@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,7 +63,6 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
      * we should use an attachment, and not inline the binary data.
      *
      * Positive test.
-     * @throws JAXBException
      */
     public void testClassLevelXmlInlineBinaryOverride() throws JAXBException {
         String metadataFile = PATH + "eclipselink-oxm-class-override.xml";
@@ -129,7 +128,6 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
      * using an attachment.
      *
      * Positive test.
-     * @throws JAXBException
      */
     public void testPropertyLevelXmlInlineBinaryOverride() throws JAXBException {
         String metadataFile = PATH + "eclipselink-oxm-property.xml";
@@ -190,7 +188,6 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
      * Positive test.
      *
      * THIS TEST CAN BE ENABLED UPON RESOLUTION OF BUG# 299948
-     * @throws JAXBException
      */
     public void testClassLevelXmlInlineBinaryNoOverride() throws JAXBException {
         JAXBContext jaxbContext = null;
@@ -259,7 +256,6 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
      * not inline the binary data.
      *
      * Positive test.
-     * @throws JAXBException
      */
     public void testPropertyLevelXmlInlineBinaryOverrideViaMetadata() throws JAXBException {
         String metadataFile = PATH + "eclipselink-oxm-property-override.xml";
@@ -323,7 +319,6 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
      * class annotations, and no property level XML metadata declarations.
      *
      * Positive test.
-     * @throws JAXBException
      */
     public void testClassLevelXmlInlineBinaryViaMetadata() throws JAXBException {
         String metadataFile = PATH + "eclipselink-oxm-class.xml";
@@ -384,7 +379,6 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
      * Positive test.
      *
      * THIS TEST CAN BE ENABLED UPON RESOLUTION OF BUG# 299948
-     * @throws JAXBException
      */
     public void testPropertyLevelXmlInlineBinaryViaMetadata() throws JAXBException {
         String metadataFile = PATH + "eclipselink-oxm.xml";

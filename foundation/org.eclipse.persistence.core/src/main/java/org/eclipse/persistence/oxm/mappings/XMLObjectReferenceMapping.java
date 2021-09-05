@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -78,8 +78,6 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
      * PUBLIC:
      * Add a source-target xpath pair to the map.
      *
-     * @param srcXPath
-     * @param tgtXPath
      */
     @Override
     public void addSourceToTargetKeyFieldAssociation(String srcXPath, String tgtXPath) {
@@ -102,9 +100,6 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
      * Retrieve the target object's primary key value that is mapped to a given
      * source xpath (in the source-target key field association list).
      *
-     * @param targetObject
-     * @param xmlFld
-     * @param session
      * @return null if the target object is null, the reference class is null, or
      * a primary key field name does not exist on the reference descriptor that
      * matches the target field name - otherwise, return the associated primary
@@ -141,10 +136,6 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
      * during the mapping reference resolution phase after unmarshalling is
      * complete.
      *
-     * @param record
-     * @param xmlField
-     * @param object
-     * @param session
      */
     @Override
     public void buildReference(UnmarshalRecord record, XMLField xmlField, Object object, AbstractSession session) {
@@ -248,9 +239,6 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
      * Note:  This method performs the same functionality as 'getSchemaType' in
      * org.eclipse.persistence.internal.oxm.XMLSimpleMappingNodeValue.
      *
-     * @param xmlField
-     * @param value
-     * @return
      */
     protected QName getSchemaType(XMLField xmlField, Object value, AbstractSession session) {
         QName schemaType = null;
@@ -271,9 +259,6 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
      * Note:  This method performs the same functionality as 'getSingleValueToWriteForUnion'
      * in org.eclipse.persistence.internal.oxm.XMLSimpleMappingNodeValue.
      *
-     * @param xmlField
-     * @param value
-     * @return
      */
     protected QName getSingleValueToWriteForUnion(XMLUnionField xmlField, Object value, AbstractSession session) {
         ArrayList schemaTypes = xmlField.getSchemaTypes();
@@ -303,7 +288,6 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
      * INTERNAL:
      * Return a list of source-target xmlfield pairs.
      *
-     * @return
      */
     @Override
     public HashMap getSourceToTargetKeyFieldAssociations() {
@@ -316,9 +300,6 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
      * Note:  This method performs the same functionality as 'getValueToWrite'
      * in org.eclipse.persistence.internal.oxm.XMLSimpleMappingNodeValue.
      *
-     * @param schemaType
-     * @param value
-     * @return
      */
     protected String getValueToWrite(QName schemaType, Object value, AbstractSession session) {
         return (String) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING, schemaType);
@@ -448,7 +429,6 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
     }
 
     /**
-     * @param field
      */
     public void setField(DatabaseField field) {
         // do nothing.

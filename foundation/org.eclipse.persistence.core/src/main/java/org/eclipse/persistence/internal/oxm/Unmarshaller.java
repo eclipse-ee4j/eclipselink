@@ -68,7 +68,6 @@ public abstract class Unmarshaller<
     /**
      * Value that will be used to prefix attributes.
      * Ignored unmarshalling XML.
-     * @return
      */
     public abstract String getAttributePrefix();
 
@@ -117,8 +116,6 @@ public abstract class Unmarshaller<
     /**
      * Return the property for a given key, if one exists.
      *
-     * @param key
-     * @return
      */
     public abstract Object getProperty(Object key);
 
@@ -184,7 +181,6 @@ public abstract class Unmarshaller<
     /**
      * Determine if the @XMLRootElement should be marshalled when present.
      * Ignored unmarshalling XML.
-     * @return
      */
     public abstract boolean isIncludeRoot();
 

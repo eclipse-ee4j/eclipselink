@@ -117,8 +117,6 @@ public class CoreAttributeGroup<
     /**
      * INTERNAL:
      * This constructer is to only be used by EclipseLink internally
-     * @param name
-     * @param type
      */
     public CoreAttributeGroup(String name, Class type, boolean isValidated) {
         this(name);
@@ -225,8 +223,6 @@ public class CoreAttributeGroup<
     /**
      * INTERNAL:
      *    This method is used internally in the clone processing.
-     * @param cloneMap
-     * @return
      */
     public CoreAttributeGroup clone(Map<CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>, CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>> cloneMap){
         CoreAttributeGroup clone = cloneMap.get(this);
@@ -314,7 +310,6 @@ public class CoreAttributeGroup<
      * Convert all the class-name-based settings in this Descriptor to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
         if (this.type == null){
@@ -574,7 +569,6 @@ public class CoreAttributeGroup<
     /**
      * INTERNAL:
      * This method will insert the group into the entity hierarchy just below this AttributeGroup.
-     * @param group
      */
     public void insertSubClass(CoreAttributeGroup group){
         if (this == group){
@@ -607,7 +601,6 @@ public class CoreAttributeGroup<
     /**
      * INTERNAL:
      *    This method is used internally when converting to a copy group.
-     * @return
      */
     public boolean isCopyGroup() {
         return false;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -65,7 +65,6 @@ public class JNDINamingServiceConfig {
      * securable object initialization remains in the constructor with default
      * to JCE and changes only if an encryption class is set.
      *
-     * @param password
      */
     public void setPassword(String password) {
         setEncryptedPassword(password);
@@ -76,7 +75,6 @@ public class JNDINamingServiceConfig {
      * is called only at load time of a schema formatted sessions.xml file. It
      * assumes the password is encrypted.
      *
-     * @param encryptedPassword
      */
     public void setEncryptedPassword(String encryptedPassword) {
         // Bug 4117441 - Secure programming practices, store password in char[]

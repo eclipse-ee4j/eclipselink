@@ -747,7 +747,6 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * Used internally by JPA deployment.
      *
      * @see #setFieldClassification(Class fieldType)
-     * @param className
      */
     public void setFieldClassificationClassName(String className){
         this.fieldClassificationClassName = className;
@@ -884,7 +883,6 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     /**
      * INTERNAL:
      * Return the class this key mapping maps or the descriptor for it
-     * @return
      */
     @Override
     public Class getMapKeyTargetType() {

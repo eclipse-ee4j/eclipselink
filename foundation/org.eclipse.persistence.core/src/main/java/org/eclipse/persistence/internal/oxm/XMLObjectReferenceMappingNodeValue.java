@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,7 +56,6 @@ public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
      * This constructor sets the XMLObjectReferenceMapping member to the provided
      * value.
      *
-     * @param xmlObjectReferenceMapping
      */
     public XMLObjectReferenceMappingNodeValue(ObjectReferenceMapping xmlObjectReferenceMapping) {
         super();
@@ -67,8 +66,6 @@ public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
      * This constructor sets the XMLObjectReferenceMapping and XMLField members to
      * the provided values.
      *
-     * @param xmlObjectReferenceMapping
-     * @param xmlField
      */
     public XMLObjectReferenceMappingNodeValue(ObjectReferenceMapping xmlObjectReferenceMapping, Field xmlField) {
         super();

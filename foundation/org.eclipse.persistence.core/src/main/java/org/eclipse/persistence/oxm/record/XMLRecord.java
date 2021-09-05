@@ -89,10 +89,6 @@ public abstract class XMLRecord extends AbstractRecord implements AbstractMarsha
 
     /**
      * Marshal an attribute for the give namespaceURI, localName, preifx and value
-     * @param namespaceURI
-     * @param localName
-     * @param prefix
-     * @param value
      */
     @Override
     public void attributeWithoutQName(String namespaceURI, String localName, String prefix, String value){
@@ -105,10 +101,6 @@ public abstract class XMLRecord extends AbstractRecord implements AbstractMarsha
 
     /**
      * Marshal an attribute for the give namespaceURI, localName, qualifiedName and value
-     * @param namespaceURI
-     * @param localName
-     * @param qName
-     * @param value
      */
     @Override
     public void attribute(String namespaceURI, String localName, String qName, String value){
@@ -120,8 +112,6 @@ public abstract class XMLRecord extends AbstractRecord implements AbstractMarsha
 
     /**
      * Marshal a namespace declaration for the given prefix and url
-     * @param prefix
-     * @param namespaceURI
      */
     @Override
     public void namespaceDeclaration(String prefix, String namespaceURI){

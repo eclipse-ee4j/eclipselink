@@ -23,7 +23,7 @@ import jakarta.xml.bind.annotation.XmlType;
  * <p>Java class for reducedDerivationControl.
  *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * <p>
+ * <br>
  * <pre>{@code
  * <simpleType name="reducedDerivationControl">
  *   <restriction base="{http://www.w3.org/2001/XMLSchema}derivationControl">

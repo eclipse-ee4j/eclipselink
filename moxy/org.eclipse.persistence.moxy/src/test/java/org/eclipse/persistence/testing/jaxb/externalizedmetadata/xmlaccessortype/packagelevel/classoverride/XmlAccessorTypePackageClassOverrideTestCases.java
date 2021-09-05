@@ -41,7 +41,6 @@ public class XmlAccessorTypePackageClassOverrideTestCases extends JAXBWithJSONTe
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public XmlAccessorTypePackageClassOverrideTestCases(String name) throws Exception{
         super(name);

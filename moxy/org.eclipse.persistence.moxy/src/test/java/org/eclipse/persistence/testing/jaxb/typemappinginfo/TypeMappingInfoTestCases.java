@@ -360,8 +360,6 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
 
         /**
          * Override this function to implement different read/write control documents.
-         * @return
-         * @throws Exception
          */
         protected Document getWriteControlDocument() throws Exception {
             if(writeControlDocument != null){
@@ -377,8 +375,6 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
         /**
          * Provide an alternative write version of the control document when rountrip is not enabled.
          * If this function is not called and getWriteControlDocument() is not overridden then the write and read control documents are the same.
-         * @param xmlResource
-         * @throws Exception
          */
         protected void setWriteControlDocument(String xmlResource) throws Exception {
             writeControlDocumentLocation = xmlResource;
@@ -522,9 +518,6 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
     /**
      * Return an Element for a given xml-element snippet.
      *
-     * @param xmlelement
-     * @return
-     * @throws Exception
      */
     protected Element getXmlElement(String xmlelement) throws Exception {
         StringReader str = new StringReader(xmlelement);

@@ -405,7 +405,6 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
 
     /**
      * If a Wrapper subclasses this CacheKey this method will be used to unwrap the cache key.
-     * @return
      */
     public CacheKey getWrappedCacheKey(){
         return this;

@@ -27,7 +27,7 @@ import org.eclipse.persistence.testing.tests.employee.EmployeeDeleteTest;
  * For NoIdentityMap, the return value of the delete operation should be null.
  * For all other identity maps, the return value of the delete operation should be
  * identical to the original value. For all identity maps, the return value of the
- * subsequent get operation should be null. <p>
+ * subsequent get operation should be null.
  */
 public class DeleteFromIdentityMapTest extends RegisterInIdentityMapTest {
     protected Object deletionResult;

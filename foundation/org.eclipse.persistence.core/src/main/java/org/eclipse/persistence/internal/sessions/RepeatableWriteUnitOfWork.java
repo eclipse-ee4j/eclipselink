@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -267,7 +267,6 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * In this implementation, we check whether the inheritance policy has been configured to allow
      * superclass descriptors to describe subclasses that do not have a descriptor themselves
      *
-     * @param theClass
      * @return ClassDescriptor
      */
     @Override
@@ -712,7 +711,6 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
 
     /**
      * Return whether we are already performing a flush() call
-     * @return
      */
     public boolean isWithinFlush() {
         return isWithinFlush;

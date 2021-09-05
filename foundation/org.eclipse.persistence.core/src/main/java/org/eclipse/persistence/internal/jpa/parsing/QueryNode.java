@@ -53,7 +53,6 @@ public abstract class QueryNode extends MajorNode {
 
   /**
    * Compute the Reference class for this query
-   * @param genContext
    * @return the class this query is querying for
    */
     public Class getReferenceClass(GenerationContext genContext) {

@@ -23,7 +23,7 @@ import jakarta.xml.bind.annotation.XmlType;
  * <p>Java class for formChoice.
  *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * <p>
+ * <br>
  * <pre>{@code
  * <simpleType name="formChoice">
  *   <restriction base="{http://www.w3.org/2001/XMLSchema}NMTOKEN">

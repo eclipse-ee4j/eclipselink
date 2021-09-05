@@ -630,7 +630,6 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
     /**
      * Return whether this collection should attempt do deal with adds and removes without retrieving the
      * collection from the dB
-     * @return
      */
     protected boolean shouldUseLazyInstantiation(){
         return useLazyInstantiation;

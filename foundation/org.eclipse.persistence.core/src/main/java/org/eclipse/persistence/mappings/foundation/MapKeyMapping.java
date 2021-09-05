@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -73,17 +73,11 @@ public interface MapKeyMapping extends MapComponentMapping {
      *
      * This method is used for removal of private owned relationships
      *
-     * @param object
-     * @param deletedObjects
      */
     void addKeyToDeletedObjectsList(Object object, Map deletedObjects);
 
     /**
      * Build a clone of the given element in a unitOfWork
-     * @param element
-     * @param cloningSession
-     * @param isExisting
-     * @return
      */
     Object buildElementClone(Object element, Object parent, CacheKey cacheKey, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting, boolean isFromSharedCache);
 
@@ -91,7 +85,6 @@ public interface MapKeyMapping extends MapComponentMapping {
      * INTERNAL:
      * Depending on the MapKeyMapping, a different selection query may be required to retrieve the
      * map when the map is based on a DirectCollectionMapping
-     * @return
      */
     ReadQuery buildSelectionQueryForDirectCollectionKeyMapping(ContainerPolicy containerPolicy);
 
@@ -123,7 +116,6 @@ public interface MapKeyMapping extends MapComponentMapping {
     /**
      * INTERNAL:
      * Create a query key that links to the map key
-     * @return
      */
     QueryKey createQueryKeyForMapKey();
 
@@ -153,15 +145,12 @@ public interface MapKeyMapping extends MapComponentMapping {
      *
      * This method is used for removal of private owned relationships
      *
-     * @param objectDeleted
-     * @param session
      */
     void deleteMapKey(Object objectDeleted, AbstractSession session);
 
     /**
      * INTERNAL:
      * Return any tables that will be required when this mapping is used as part of a join query
-     * @return
      */
     List<DatabaseTable> getAdditionalTablesForJoinQuery();
 
@@ -174,14 +163,12 @@ public interface MapKeyMapping extends MapComponentMapping {
     /**
      * INTERNAL:
      * Return a Map of any foreign keys defined within the the MapKey
-     * @return
      */
     Map<DatabaseField, DatabaseField> getForeignKeyFieldsForMapKey();
 
     /**
      * INTERNAL:
      * Get the descriptor for the Map Key
-     * @return
      */
     ClassDescriptor getReferenceDescriptor();
 
@@ -190,50 +177,42 @@ public interface MapKeyMapping extends MapComponentMapping {
      * Return the fields that make up the identity of the mapped object.  For mappings with
      * a primary key, it will be the set of fields in the primary key.  For mappings without
      * a primary key it will likely be all the fields
-     * @return
      */
     List<DatabaseField> getIdentityFieldsForMapKey();
 
     /**
      * INTERNAL:
      * Return the query that is used when this mapping is part of a joined relationship
-     * @return
      */
     ObjectLevelReadQuery getNestedJoinQuery(JoinedAttributeManager joinManager, ObjectLevelReadQuery query, AbstractSession session);
 
     /**
      * INTERNAL:
      * Return the selection criteria necessary to select the target object
-     * @return
      */
     Expression getAdditionalSelectionCriteriaForMapKey();
 
     /**
      * INTERNAL:
      * If required, get the targetVersion of the source object from the merge manager
-     * @return
      */
     Object getTargetVersionOfSourceObject(Object object, Object parent, MergeManager mergeManager, AbstractSession targetSession);
 
     /**
      * INTERNAL:
      * Return the class this key mapping maps or the descriptor for it
-     * @return
      */
     Object getMapKeyTargetType();
 
     /**
      * INTERNAL:
      * Called when iterating through descriptors to handle iteration on this mapping when it is used as a MapKey
-     * @param iterator
-     * @param element
      */
     void iterateOnMapKey(DescriptorIterator iterator, Object element);
 
     /**
      * INTERNAL:
      * Extract the fields for the Map key from the object to use in a query
-     * @return
      */
     Map extractIdentityFieldsForQuery(Object key, AbstractSession session);
 
@@ -260,9 +239,6 @@ public interface MapKeyMapping extends MapComponentMapping {
     /**
      * INTERNAL:
      * Allow the key mapping to unwrap the object
-     * @param key
-     * @param session
-     * @return
      */
 
     Object unwrapKey(Object key, AbstractSession session);
@@ -270,9 +246,6 @@ public interface MapKeyMapping extends MapComponentMapping {
     /**
      * INTERNAL:
      * Allow the key mapping to wrap the object
-     * @param key
-     * @param session
-     * @return
      */
     Object wrapKey(Object key, AbstractSession session);
 

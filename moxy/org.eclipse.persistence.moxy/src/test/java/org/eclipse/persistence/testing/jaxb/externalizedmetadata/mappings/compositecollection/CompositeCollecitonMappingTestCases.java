@@ -64,7 +64,6 @@ public class CompositeCollecitonMappingTestCases extends JAXBWithJSONTestCases {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public CompositeCollecitonMappingTestCases(String name) throws Exception{
         super(name);

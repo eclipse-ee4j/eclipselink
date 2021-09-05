@@ -775,7 +775,6 @@ public class ConcurrencyUtil {
      *
      * @param lockManager
      *            the deferred lock manager of the current thread
-     * @return
      */
     private String createStringWithSummaryOfDeferredLocksOnThread(DeferredLockManager lockManager, String threadName) {
         // (a) Make sure the lock manager being passed is not null

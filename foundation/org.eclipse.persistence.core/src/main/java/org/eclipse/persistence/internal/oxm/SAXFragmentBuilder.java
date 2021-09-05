@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -209,8 +209,6 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
      * prefixed qualified name. The determination of a qname is based on the existance of a
      * colon character and the ability to resolve the characters before the colon to a
      * namespace uri.
-     * @param textValue
-     * @param parentNode
      */
     private void processNamespacesForText(String textValue, Element parentNode) {
         //If the text value is a qname, we may need to do namespace processing

@@ -51,8 +51,8 @@ public abstract class Customer {
     public abstract String getNameBridge();
 
     /**
-     * Bridge for {@link org.eclipse.persistence.testing.jaxb.casesensitivity.correctCase.CustomerImpl#equals(Object)} and
-     * {@link org.eclipse.persistence.testing.jaxb.casesensitivity.otherCase.CustomerImpl#equals(Object)}
+     * Bridge for {@link org.eclipse.persistence.testing.jaxb.casesensitivity.correctCase.CustomerImpl} and
+     * {@link org.eclipse.persistence.testing.jaxb.casesensitivity.otherCase.CustomerImpl}
      *
      * @param o Employee object.
      * @return true if the Employee classes' attributes match the same values.
@@ -72,8 +72,8 @@ public abstract class Customer {
     }
 
     /**
-     * Bridge for {@link org.eclipse.persistence.testing.jaxb.casesensitivity.correctCase.CustomerImpl#hashCode()} and
-     * {@link org.eclipse.persistence.testing.jaxb.casesensitivity.otherCase.CustomerImpl#hashCode()}
+     * Bridge for {@link org.eclipse.persistence.testing.jaxb.casesensitivity.correctCase.CustomerImpl} and
+     * {@link org.eclipse.persistence.testing.jaxb.casesensitivity.otherCase.CustomerImpl}
      *
      * @return hashCode
      */

@@ -22,7 +22,6 @@ public class DirectIsSetNodeNullPolicyProject extends Project {
 
     /**
      * Construct a project with a descriptor setup for all fields that do not use a default NullPolicy
-     * @param fieldsAsElements
      */
     public DirectIsSetNodeNullPolicyProject(boolean fieldsAsElements) {
         XMLDescriptor aDescriptor = getEmployeeDescriptor(fieldsAsElements);
@@ -31,7 +30,6 @@ public class DirectIsSetNodeNullPolicyProject extends Project {
 
     /**
      * Set only the mappings that do not have a default NullPolicy
-     * @return
      */
     private XMLDescriptor getEmployeeDescriptor(boolean fieldsAsElements) {
         // if all fields are attributes then use XPath format @id otherwise use id/text()

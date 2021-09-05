@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,7 +35,6 @@ public class SpatialExpressionOperators {
     /**
      * ExpressionOperator for the MDSYS.SDO_WITHIN_DISTANCE Spatial Operator on the Oracle Database
      * Use of this operator requires the Java spatial classes
-     * @return
      */
     public static ExpressionOperator withinDistance() {
         ExpressionOperator operator = ExpressionOperator.simpleThreeArgumentFunction(SDO_WITHIN_DISTANCE, "MDSYS.SDO_WITHIN_DISTANCE");
@@ -46,7 +45,6 @@ public class SpatialExpressionOperators {
     /**
      * ExpressionOperator for the MDSYS.MDSYS.SDO_RELATE Spatial Operator on the Oracle Database
      * Use of this operator requires the Java spatial classes
-     * @return
      */
     public static ExpressionOperator relate() {
         ExpressionOperator operator = ExpressionOperator.simpleThreeArgumentFunction(SDO_RELATE, "MDSYS.SDO_RELATE");
@@ -57,7 +55,6 @@ public class SpatialExpressionOperators {
     /**
      * ExpressionOperator for the MDSYS.SDO_FILTER Spatial Operator on the Oracle Database
      * Use of this operator requires the Java spatial classes
-     * @return
      */
     public static ExpressionOperator filter() {
         ExpressionOperator operator = ExpressionOperator.simpleThreeArgumentFunction(SDO_FILTER, "MDSYS.SDO_FILTER");
@@ -68,7 +65,6 @@ public class SpatialExpressionOperators {
     /**
      * ExpressionOperator for the MDSYS.SDO_NN Spatial Operator on the Oracle Database
      * Use of this operator requires the Java spatial classes
-     * @return
      */
     public static ExpressionOperator nearestNeighbor() {
         ExpressionOperator operator = ExpressionOperator.simpleThreeArgumentFunction(SDO_NN, "MDSYS.SDO_NN");

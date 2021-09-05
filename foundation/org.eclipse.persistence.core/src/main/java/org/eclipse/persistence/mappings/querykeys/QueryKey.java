@@ -60,7 +60,6 @@ public class QueryKey implements Cloneable, Serializable {
      * Convert all the class-name-based settings in this QueryKey to actual class-based
      * settings
      * Will be overridded by subclasses
-     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){}
 

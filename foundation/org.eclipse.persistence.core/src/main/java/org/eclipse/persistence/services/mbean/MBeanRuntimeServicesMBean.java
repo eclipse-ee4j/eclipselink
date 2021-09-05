@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,7 +53,6 @@ public interface MBeanRuntimeServicesMBean {
 
     /**
      *     This method is used to determine if we should be logging when using the Performance Profiler
-     * @return
      */
     boolean getShouldLogPerformanceProfiler();
 
@@ -154,7 +153,6 @@ public interface MBeanRuntimeServicesMBean {
 
     /**
      * Return the DMS sensor weight
-     * @return
      */
     int getProfileWeight();
 
@@ -194,7 +192,6 @@ public interface MBeanRuntimeServicesMBean {
      * Return whether this session is an EclipseLink JPA session.
      * The absence of this function or a value of false will signify that the session
      * belongs to a provider other than EclipseLink.
-     * @return
      */
     boolean isJPASession();
 

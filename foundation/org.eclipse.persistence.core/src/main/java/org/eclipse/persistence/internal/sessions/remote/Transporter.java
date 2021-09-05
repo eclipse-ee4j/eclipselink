@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -99,7 +99,6 @@ public class Transporter implements Serializable {
 
     /**
      *  Set the exception associated with this Transporter
-     *  @param exception
      */
     public void setException(RuntimeException exception) {
         setObject(exception);
@@ -122,7 +121,6 @@ public class Transporter implements Serializable {
 
     /**
      *  Set the query associated with this transporter
-     *  @param query
      */
     public void setQuery(DatabaseQuery query) {
         this.query = query;
@@ -130,7 +128,6 @@ public class Transporter implements Serializable {
 
     /**
      *  Set whether the operation which caused this transporter to be returned was successful.
-     *  @param wasOperationSuccessful
      */
     public void setWasOperationSuccessful(boolean wasOperationSuccessful) {
         this.wasOperationSuccessful = wasOperationSuccessful;

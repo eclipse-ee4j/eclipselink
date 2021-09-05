@@ -58,7 +58,6 @@ public class ChoiceCollectionMappingTestCases extends JAXBWithJSONTestCases {
     /**
      * Return the control Employee.
      *
-     * @return
      */
     @Override
     public Object getWriteControlObject() {

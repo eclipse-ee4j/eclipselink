@@ -274,10 +274,6 @@ public class XMLProjectReader {
     /**
      * Read a project in the format of an ObjectPersistenceRuntimeXMLProject.
      * This could include a TopLink 11.1.1 project or a TopLink 10.1.3 project
-     * @param document
-     * @param classLoader
-     * @param opmProject
-     * @return
      */
     public static Project readObjectPersistenceRuntimeFormat(Document document, ClassLoader classLoader, Project opmProject){
         XMLLogin xmlLogin = new XMLLogin();

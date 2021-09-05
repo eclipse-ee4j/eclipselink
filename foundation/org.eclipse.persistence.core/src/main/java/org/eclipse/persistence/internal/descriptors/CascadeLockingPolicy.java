@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -134,8 +134,6 @@ public class CascadeLockingPolicy {
       * If there is no InheritancePolicy, we return our parentDescriptor
       * If there is inheritance we will search for a descriptor that represents parentObj and
       * return that descriptor
-      * @param parentObj
-      * @return
       */
      protected ClassDescriptor getParentDescriptorFromInheritancePolicy(Object parentObj){
          ClassDescriptor realParentDescriptor = m_parentDescriptor;

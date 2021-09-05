@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,15 +61,15 @@ public class Employee {
           Node next = (Node)nodesIter.next();
           Node next2 = (Node)empNodesIter.next();
            try {
-            if(next2.getNodeType() == next.ATTRIBUTE_NODE && next.getNodeType() == next.ATTRIBUTE_NODE) {
+            if(next2.getNodeType() == Node.ATTRIBUTE_NODE && next.getNodeType() == Node.ATTRIBUTE_NODE) {
                 Attr att1 = (Attr)next2;
                 Attr att2 = (Attr)next;
                 equal = equal && att1.getNodeValue().equals(att2.getNodeValue());
-            } else if(next2.getNodeType() == next.TEXT_NODE && next.getNodeType() == next.TEXT_NODE) {
+            } else if(next2.getNodeType() == Node.TEXT_NODE && next.getNodeType() == Node.TEXT_NODE) {
                 Text text1 = (Text)next2;
                 Text text2 = (Text)next;
                 equal = equal && text1.getNodeValue().equals(text2.getNodeValue());
-            } else if(next2.getNodeType() == next.ELEMENT_NODE && next.getNodeType() == next.ELEMENT_NODE) {
+            } else if(next2.getNodeType() == Node.ELEMENT_NODE && next.getNodeType() == Node.ELEMENT_NODE) {
                 //TODO: Proper comparison. for now just check and and number of children
                 Element elem1 = (Element)next2;
                 Element elem2 = (Element)next;

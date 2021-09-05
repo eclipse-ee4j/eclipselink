@@ -493,7 +493,6 @@ public class XMLObjectBuilder extends ObjectBuilder {
      * Indicates if the object builder's descriptor is an XMLDescriptor.
      * The value is lazily initialized.
      *
-     * @return
      */
     protected boolean isXmlDescriptor() {
         if (isXMLDescriptor == null) {

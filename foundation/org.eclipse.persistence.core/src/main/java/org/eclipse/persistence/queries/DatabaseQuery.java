@@ -736,7 +736,6 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * actual class-based settings This method is implemented by subclasses as
      * necessary.
      *
-     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader) {
         // note: normally we would fix the argument types here, but they are
@@ -957,7 +956,6 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /**
      * INTERNAL:
      * Used to calculate parameter types in JPQL
-     * @return
      */
     public List<ParameterType> getArgumentParameterTypes(){
         if (argumentParameterTypes == null){

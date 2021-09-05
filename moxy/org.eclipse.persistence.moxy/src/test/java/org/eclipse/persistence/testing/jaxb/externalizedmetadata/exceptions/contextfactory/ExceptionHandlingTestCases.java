@@ -40,7 +40,6 @@ public class ExceptionHandlingTestCases extends OXTestCase {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public ExceptionHandlingTestCases(String name) {
         super(name);

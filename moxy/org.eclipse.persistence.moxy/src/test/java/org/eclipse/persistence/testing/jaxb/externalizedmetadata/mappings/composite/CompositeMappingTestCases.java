@@ -58,8 +58,6 @@ public class CompositeMappingTestCases extends JAXBTestCases {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
-     * @throws Exception
      */
     public CompositeMappingTestCases(String name) throws Exception {
         super(name);
@@ -128,7 +126,6 @@ public class CompositeMappingTestCases extends JAXBTestCases {
     /**
      * Return the control Employee.
      *
-     * @return
      */
     @Override
     public Object getControlObject() {

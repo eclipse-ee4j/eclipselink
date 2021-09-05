@@ -256,6 +256,7 @@ public class EmulatedResultSet implements ResultSet {
      * @deprecated
      */
     @Override
+    @Deprecated
     public BigDecimal getBigDecimal(int columnIndex, int scale)throws SQLException {
         return (BigDecimal)getObject(columnIndex);
     }
@@ -383,6 +384,7 @@ public class EmulatedResultSet implements ResultSet {
      *              <code>getUnicodeStream</code>
      */
     @Override
+    @Deprecated
     public java.io.InputStream getUnicodeStream(int columnIndex) throws SQLException {
         return (java.io.InputStream)getObject(columnIndex);
     }
@@ -570,6 +572,7 @@ public class EmulatedResultSet implements ResultSet {
      * @deprecated
      */
     @Override
+    @Deprecated
     public BigDecimal getBigDecimal(String columnName, int scale) throws SQLException {
         return (BigDecimal)getObject(columnName);
     }
@@ -695,6 +698,7 @@ public class EmulatedResultSet implements ResultSet {
      * @deprecated use <code>getCharacterStream</code> instead
      */
     @Override
+    @Deprecated
     public java.io.InputStream getUnicodeStream(String columnName) throws SQLException {
         return (java.io.InputStream)getObject(columnName);
     }

@@ -51,7 +51,7 @@ public class StoredFunctionXMLTypeTest extends TestCase {
 
             String str;
             if (xmlResult instanceof OPAQUE) {
-                str = ((XMLTypeFactory)Class.forName("org.eclipse.persistence.internal.platform.database.oracle.xdb.XMLTypeFactoryImpl").newInstance()).getString((OPAQUE)xmlResult);
+                str = ((XMLTypeFactory)Class.forName("org.eclipse.persistence.internal.platform.database.oracle.xdb.XMLTypeFactoryImpl").getConstructor().newInstance()).getString((OPAQUE)xmlResult);
             } else {
                 str = JavaPlatform.getStringAndFreeSQLXML(xmlResult);
             }

@@ -58,9 +58,6 @@ public class ReadLockAcquisitionMetadata implements Serializable {
     /**
      * Create a new ReadLockAcquisitionMetadata.
      *
-     * @param cacheKeyWhoseNumberOfReadersThreadIsIncrementing
-     * @param numberOfReadersOnCacheKeyBeforeIncrementingByOne
-     * @param currentThreadStackTraceInformation
      */
     public ReadLockAcquisitionMetadata(
             ConcurrencyManager cacheKeyWhoseNumberOfReadersThreadIsIncrementing,

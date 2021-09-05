@@ -46,9 +46,7 @@ public class XmlElementsTestCases extends JAXBWithJSONTestCases{
      /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
-     * @throws Exception
-     */
+      */
     public XmlElementsTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[] { Foo.class });
@@ -103,7 +101,6 @@ public class XmlElementsTestCases extends JAXBWithJSONTestCases{
      * xml-element-wrapper and xml-idref are used.
      *
      * Positive test.
-     * @throws Exception
      */
 
     public void testXmlElementsWithIdRefSchemaGen() throws Exception {

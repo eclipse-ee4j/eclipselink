@@ -93,14 +93,6 @@ public class DeadLockComponent {
     /**
      * Create a new DeadLockComponent.
      *
-     * @param threadNotAbleToAccessResource
-     * @param stuckOnReleaseDeferredLock
-     * @param stuckThreadAcquiringLockForWriting
-     * @param stuckThreadAcquiringLockForReading
-     * @param cacheKeyThreadWantsToAcquireButCannotGet
-     * @param deadLockPotentiallyCausedByCacheKeyWithCorruptedActiveThread
-     * @param deadLockPotentiallyCausedByCacheKeyWithCorruptedNumberOfReaders
-     * @param nextThreadPartOfDeadLock
      */
     public DeadLockComponent(Thread threadNotAbleToAccessResource, boolean stuckOnReleaseDeferredLock,
                                               boolean stuckThreadAcquiringLockForWriting, boolean stuckThreadAcquiringLockForReading,
@@ -126,7 +118,6 @@ public class DeadLockComponent {
      *
      * Create a new DeadLockComponent.
      *
-     * @param threadNotAbleToAccessResource
      */
     public DeadLockComponent(Thread threadNotAbleToAccessResource) {
         // our deadlock has been found

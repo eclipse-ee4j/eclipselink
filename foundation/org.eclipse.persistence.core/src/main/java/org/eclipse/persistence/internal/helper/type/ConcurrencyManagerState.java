@@ -85,16 +85,6 @@ public class ConcurrencyManagerState {
     /**
      * Create a new ConcurrencyManagerState.
      *
-     * @param readLockManagerMapClone
-     * @param deferredLockManagerMapClone
-     * @param unifiedMapOfThreadsStuckTryingToAcquireWriteLock
-     * @param unifiedMapOfThreadsStuckTryingToAcquireWriteLockMethodName
-     * @param mapThreadToWaitOnAcquireReadLockClone
-     * @param mapThreadToWaitOnAcquireReadLockCloneMethodName
-     * @param setThreadWaitingToReleaseDeferredLocksClone
-     * @param mapThreadsThatAreCurrentlyWaitingToReleaseDeferredLocksJustificationClone
-     * @param mapOfCacheKeyToDtosExplainingThreadExpectationsOnCacheKey
-     * @param mapThreadToObjectIdWithWriteLockManagerChangesClone
      */
     public ConcurrencyManagerState(
             Map<Thread, ReadLockManager> readLockManagerMapClone,

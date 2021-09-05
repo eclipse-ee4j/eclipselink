@@ -922,7 +922,6 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     /**
      * Check to see if the descriptor of a superclass can be used to describe this class
      *
-     * @param theClass
      * @return ClassDescriptor
      */
     protected ClassDescriptor checkHierarchyForDescriptor(Class theClass){
@@ -1510,7 +1509,6 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     /**
      * INTERNAL:
      * Release (if required) connection after call.
-     * @param query
      */
     public void releaseConnectionAfterCall(DatabaseQuery query) {
     }
@@ -4127,7 +4125,6 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     /**
      * INTERNAL:
      * Set the user defined properties by shallow copying the propertiesMap.
-     * @param propertiesMap
      */
     public void setProperties(Map<String, Object> propertiesMap) {
         if (null == propertiesMap) {
@@ -5128,7 +5125,6 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     * or have a common inheritance hierarchy mapped root class.
     * The AttributeGroup should correspond to the object type.
     *
-    * @param objectOrCollection
     */
    public void load(Object objectOrCollection, AttributeGroup group) {
        if (objectOrCollection == null || group == null) {
@@ -5152,7 +5148,6 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     * or have a common inheritance hierarchy mapped root class.
     * The AttributeGroup should correspond to the object type.
     *
-    * @param objectOrCollection
     */
    public void load(Object objectOrCollection, AttributeGroup group, ClassDescriptor referenceDescriptor, boolean fromFetchGroup) {
        if (objectOrCollection == null || group == null) {

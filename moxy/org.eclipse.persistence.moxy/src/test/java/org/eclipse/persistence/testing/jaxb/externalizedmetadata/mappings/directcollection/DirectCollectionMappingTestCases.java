@@ -56,7 +56,6 @@ public class DirectCollectionMappingTestCases extends JAXBWithJSONTestCases {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public DirectCollectionMappingTestCases(String name) throws Exception{
         super(name);

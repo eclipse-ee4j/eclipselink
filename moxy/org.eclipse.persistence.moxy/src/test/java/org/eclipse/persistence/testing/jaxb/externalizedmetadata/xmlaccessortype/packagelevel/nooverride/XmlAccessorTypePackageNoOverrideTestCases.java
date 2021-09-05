@@ -35,7 +35,6 @@ public class XmlAccessorTypePackageNoOverrideTestCases extends JAXBWithJSONTestC
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public XmlAccessorTypePackageNoOverrideTestCases(String name) throws Exception{
         super(name);

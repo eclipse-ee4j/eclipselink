@@ -95,7 +95,6 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public JAXBContextFactoryTestCases(String name) {
         super(name);
@@ -369,7 +368,7 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
         URL[] urls = new URL[1];
         File f = new File(Thread.currentThread().getContextClassLoader().
                 getResource("org/eclipse/persistence/testing/jaxb/externalizedmetadata/jaxbcontextfactory/bindingformat/testfolder").toURI());
-        urls[0] = f.toURL();
+        urls[0] = f.toURI().toURL();
         URLClassLoader testLoader = new URLClassLoader(urls);
 
 

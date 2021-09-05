@@ -12,14 +12,6 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-
-/* $Header: BinaryDataCollectionWithGroupingElementIdentifiedByNameXOPonNSRTestCases.java 19-oct-2006.17:10:30 mfobrien Exp $ */
-
-/**
- *  @version $Header: BinaryDataCollectionWithGroupingElementIdentifiedByNameXOPonNSRTestCases.java 19-oct-2006.17:10:30 mfobrien Exp $
- *  @author  mfobrien
- *  @since   11.1
- */
 package org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.identifiedbyname.withgroupingelement;
 
 import org.eclipse.persistence.oxm.NamespaceResolver;

@@ -1478,7 +1478,6 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Convert all the class-name-based settings in this Descriptor to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
         Class redirectorClass = null;
@@ -1992,7 +1991,6 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * additionalAggregateCollectionKeyFields are used by aggregate descriptors to hold additional fields needed when they are stored in an AggregatateCollection
      * These fields are generally foreign key fields that are required in addition to the fields in the descriptor's
      *  mappings to uniquely identify the Aggregate
-     * @return
      */
     public List<DatabaseField> getAdditionalAggregateCollectionKeyFields(){
         if (additionalAggregateCollectionKeyFields == null){
@@ -2016,7 +2014,6 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * INTERNAL:
      * Return a list of fields that are written by map keys
      * Used to determine if there is a multiple writable mappings issue
-     * @return
      */
     public List<DatabaseField> getAdditionalWritableMapKeyFields() {
         if (additionalWritableMapKeyFields == null) {
@@ -3118,7 +3115,6 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     /**
      * INTERNAL:
      *  return whether this descriptor has any relationships through its mappings, through inheritance, or through aggregates
-     * @return
      */
     public boolean hasRelationships() {
         return hasRelationships;
@@ -3130,8 +3126,6 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * an object aside from the one described by descriptor or more than one ForeignReferenceMapping
      * to descriptor.  (i.e. It determines if there is any mapping aside from a backpointer to a mapping
      * defined in descriptor)
-     * @param descriptor
-     * @return
      */
     public boolean hasRelationshipsExceptBackpointer(ClassDescriptor descriptor){
         Iterator<DatabaseMapping> i = mappings.iterator();
@@ -5030,7 +5024,6 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     /**
      * INTERNAL:
      * set whether this descriptor has any relationships through its mappings, through inheritance, or through aggregates
-     * @param hasRelationships
      */
     public void setHasRelationships(boolean hasRelationships) {
         this.hasRelationships = hasRelationships;

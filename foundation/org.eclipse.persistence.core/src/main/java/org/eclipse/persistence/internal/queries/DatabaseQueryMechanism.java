@@ -197,7 +197,6 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
     /**
      * Delete an object
      * This should be overridden by subclasses.
-     * @exception DatabaseException
      * @return the row count.
      */
     public abstract Integer deleteObject() throws DatabaseException;
@@ -205,7 +204,6 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
     /**
      * Execute a execute SQL call.
      * This should be overridden by subclasses.
-     * @exception DatabaseException
      * @return true if the first result is a result set and false if it is an
      *   update count or there are no results other than through INOUT and OUT
      *   parameterts, if any.
@@ -215,7 +213,6 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
     /**
      * Execute a non selecting SQL call
      * This should be overridden by subclasses.
-     * @exception DatabaseException
      * @return the row count.
      */
     public abstract Integer executeNoSelect() throws DatabaseException;
@@ -223,7 +220,6 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
     /**
      * Execute a select SQL call and return the rows.
      * This should be overriden by subclasses.
-     * @exception DatabaseException
      */
     public abstract Vector executeSelect() throws DatabaseException;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -139,8 +139,6 @@ public abstract class XMLSchemaReference implements org.eclipse.persistence.plat
 
     /**
      * INTERNAL:
-     * @param nsResolver
-     * @return
      */
     public QName getSchemaContextAsQName(NamespaceResolver nsResolver) {
         if (schemaContext == null) {
@@ -192,7 +190,6 @@ public abstract class XMLSchemaReference implements org.eclipse.persistence.plat
      * Allow subclasses to perform initialization if required.  This method will
      * typically be called during the owning descriptor's initialization phase.
      *
-     * @param session
      */
     public void initialize(CoreAbstractSession session) {
     }

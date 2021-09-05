@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -204,7 +204,6 @@ public class DynamicClassLoader extends ClassLoader {
     /**
      * Create an adapter for given {@code className}
      *
-     * @param className
      */
     public void createDynamicAdapter(String className) {
         // default no-op
@@ -213,7 +212,6 @@ public class DynamicClassLoader extends ClassLoader {
     /**
      * Create a collection adapter for given {@code className}
      *
-     * @param className
      */
     public void createDynamicCollectionAdapter(String className) {
         // default no-op
@@ -222,7 +220,6 @@ public class DynamicClassLoader extends ClassLoader {
     /**
      * Create a reference for given {@code className}
      *
-     * @param className
      */
     public void createDynamicReferenceAdapter(String className) {
         // default no-op
@@ -263,9 +260,6 @@ public class DynamicClassLoader extends ClassLoader {
      * Converts an array of bytes into an instance of class <code>Class</code>.
      * Before the <code>Class</code> can be used it must be resolved.
      *
-     * @param name
-     * @param b
-     * @throws ClassFormatError
      */
     protected Class<?> defineDynamicClass(String name, byte[] b)  {
         return defineClass(name, b, 0, b.length);
@@ -276,8 +270,6 @@ public class DynamicClassLoader extends ClassLoader {
      * existing ConversionManager is not an instance of DynamicConversionManager
      * then create a new one and replace the existing one.
      *
-     * @param session
-     * @return
      */
     public static DynamicClassLoader lookup(Session session) {
         ConversionManager cm = null;

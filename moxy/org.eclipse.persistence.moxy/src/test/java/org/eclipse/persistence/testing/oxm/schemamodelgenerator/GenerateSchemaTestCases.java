@@ -71,7 +71,6 @@ public class GenerateSchemaTestCases extends TestCase {
     /**
      * Login the session to ensure that the descriptors are initialized.
      *
-     * @param prj
      */
     protected void loginProject(Project prj) {
         XMLPlatform platform = new SAXPlatform();
@@ -90,7 +89,6 @@ public class GenerateSchemaTestCases extends TestCase {
     /**
      * Write the given schema to the T_WORK folder.
      *
-     * @param generatedSchema
      */
     protected void writeSchema(Schema generatedSchema) {
         try {
@@ -112,7 +110,6 @@ public class GenerateSchemaTestCases extends TestCase {
     /**
      * For debugging - write the given schema to System out.
      *
-     * @param generatedSchema
      */
     protected void outputSchema(Schema generatedSchema){
         Project p = new SchemaModelProject();
@@ -132,8 +129,6 @@ public class GenerateSchemaTestCases extends TestCase {
      * Compares a schema model Schema (as a string) against a string representation
      * of an XML schema.
      *
-     * @param generatedSchema
-     * @param controlSchema
      */
     protected boolean compareSchemaStrings(Schema generatedSchema, String controlSchema){
         Project p = new SchemaModelProject();
@@ -152,9 +147,6 @@ public class GenerateSchemaTestCases extends TestCase {
     /**
      * Utility for reading in an XML schema file and returning it as a string.
      *
-     * @param reader
-     * @param available
-     * @return
      */
     protected String getSchemaAsString(BufferedReader reader, int available) {
         StringBuffer sb = new StringBuffer(available);
@@ -175,7 +167,6 @@ public class GenerateSchemaTestCases extends TestCase {
      * Return a Document for a given XML Schema.
      *
      * @param xsdResource indicates the .xsd file to be parsed into a Document
-     * @return
      * @see Document
      */
     protected Document getDocument(String xsdResource) {
@@ -194,8 +185,6 @@ public class GenerateSchemaTestCases extends TestCase {
     /**
      * Return a Document for a given EclipseLink schema model Schema.
      *
-     * @param schema
-     * @return
      * @see Document
      */
     protected Document getDocument(Schema schema) {
@@ -217,7 +206,6 @@ public class GenerateSchemaTestCases extends TestCase {
     /**
      * Removes any empty child text nodes.
      *
-     * @param node
      */
     protected void removeEmptyTextNodes(Node node) {
         NodeList nodeList = node.getChildNodes();

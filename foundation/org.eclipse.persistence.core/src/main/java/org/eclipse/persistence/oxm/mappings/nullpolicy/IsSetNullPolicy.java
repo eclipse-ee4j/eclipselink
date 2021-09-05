@@ -73,7 +73,6 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
 
     /**
      * Specific Constructor to set the name for checking the isSet state of the mapping
-     * @param anIsSetMethodName
      */
     public IsSetNullPolicy(String anIsSetMethodName) {
         this();
@@ -82,10 +81,6 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
 
     /**
      * Specific Constructor to set both the Marshal enum and the Unmarshal flags.
-     * @param anIsSetMethodName
-     * @param bIsNullRepresentedByEmptyNode
-     * @param bIsNullRepresentedByXsiNil
-     * @param aMarshalNullRepresentation
      */
     public IsSetNullPolicy(String anIsSetMethodName, //
             boolean bIsNullRepresentedByEmptyNode, boolean bIsNullRepresentedByXsiNil, //
@@ -162,7 +157,6 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
     /**
      * INTERNAL:
      * Indicates if a null value has been set or not.
-     * @param object
      * @return boolean (isSet status)
      */
     private boolean isSet(Object object) {
@@ -176,7 +170,6 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
 
     /**
      *
-     * @return
      */
     public String getIsSetMethodName() {
         return isSetMethodName;
@@ -184,7 +177,6 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
 
     /**
      *
-     * @param anIsSetMethodName
      */
     public void setIsSetMethodName(String anIsSetMethodName) {
         isSetMethodName = anIsSetMethodName;
@@ -192,7 +184,6 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
 
     /**
      *
-     * @return
      */
     public Class[] getIsSetParameterTypes() {
         return isSetParameterTypes;
@@ -200,7 +191,6 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
 
     /**
      *
-     * @param parameterTypes
      */
     public void setIsSetParameterTypes(Class[] parameterTypes) {
         isSetParameterTypes = parameterTypes;
@@ -208,7 +198,6 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
 
     /**
      *
-     * @return
      */
     public Object[] getIsSetParameters() {
         return isSetParameters;
@@ -216,7 +205,6 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
 
     /**
      *
-     * @param parameters
      */
     public void setIsSetParameters(Object[] parameters) {
         isSetParameters = parameters;

@@ -54,7 +54,6 @@ public class XmlSchemaTestCases extends JAXBWithJSONTestCases {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public XmlSchemaTestCases(String name) throws Exception {
         super(name);

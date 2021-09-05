@@ -21,7 +21,7 @@ import org.eclipse.persistence.testing.framework.*;
 
 /**
  * Register an object in an identity map by the primary key of that object. <p>
- * No exceptions should be thrown when registering an object in an identity map. <p>
+ * No exceptions should be thrown when registering an object in an identity map.
  */
 public class RegisterInIdentityMapTest extends TestCase {
     protected Class identityMapClass;

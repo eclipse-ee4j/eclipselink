@@ -945,7 +945,6 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Convert all the class-name-based settings in this mapping to actual class-based
      * settings
      * This method is implemented by subclasses as necessary.
-     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){

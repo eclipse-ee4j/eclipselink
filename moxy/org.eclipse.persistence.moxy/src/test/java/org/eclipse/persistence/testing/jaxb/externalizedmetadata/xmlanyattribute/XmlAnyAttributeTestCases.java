@@ -45,7 +45,6 @@ public class XmlAnyAttributeTestCases extends JAXBWithJSONTestCases {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public XmlAnyAttributeTestCases(String name) throws Exception{
         super(name);

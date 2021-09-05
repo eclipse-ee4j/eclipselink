@@ -19,7 +19,7 @@ import org.eclipse.persistence.testing.framework.*;
 /**
  * Register a single object in the identity map with a write lock value. <p>
  * The identity map method setWriteLockValue(Vector, Object) sets the lock
- * value of the object whose primary key is in Vector. This class tests this method.<p>
+ * value of the object whose primary key is in Vector. This class tests this method.
  */
 public class SetWriteLockInIdentityMapTest extends RegisterInIdentityMapTest {
     protected Object originalWriteLockValue;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -98,9 +98,6 @@ public class DynamicTypeBuilder {
      *  helper.addTypes(true, true, typeBuilder.getType());<br>
      * </code>
      *
-     * @param dynamicClass
-     * @param parentType
-     * @param tableNames
      */
     public DynamicTypeBuilder(Class<?> dynamicClass, DynamicType parentType, String... tableNames) {
         RelationalDescriptor descriptor = new RelationalDescriptor();
@@ -126,8 +123,6 @@ public class DynamicTypeBuilder {
     /**
      * Create an EntityTypeBuilder for an existing descriptor. This is used
      *
-     * @param dcl
-     * @param descriptor
      * @param parentType
      *            provided since the InheritancePolicy on the descriptor may not
      *            have its parent descriptor initialized.
@@ -317,7 +312,6 @@ public class DynamicTypeBuilder {
      * @param name
      *            attribute name to use in the dynamic entity. Also the property
      *            name used to access the state of the entity
-     * @param refType
      * @param fkFieldNames
      *            the FK field names specified in the same order to match the PK
      *            field names of the target class
@@ -368,7 +362,6 @@ public class DynamicTypeBuilder {
      *            match the PK field names on the source.
      * @return the new mapping configured and initialized (if the descriptor is
      *         already initialized.
-     * @throws IllegalArgumentException
      */
     public DirectCollectionMapping addDirectCollectionMapping(String name, String targetTable, String valueColumn, Class<?> valueType, String... fkFieldNames) throws IllegalArgumentException {
         if (fkFieldNames == null) {
@@ -430,7 +423,6 @@ public class DynamicTypeBuilder {
      *            name used to access the state of the entity
      * @param refType
      *            target dynamic entity
-     * @param relationshipTableName
      */
     public void addManyToManyMapping(String name, DynamicType refType, String relationshipTableName) {
         ManyToManyMapping mapping = new ManyToManyMapping();
@@ -537,9 +529,6 @@ public class DynamicTypeBuilder {
      * Load a dynamic project from deployment XML creating dynamic types for all
      * descriptors where the provided class name does not exist.
      *
-     * @param resourcePath
-     * @param login
-     * @param dynamicClassLoader
      * @return a Project with {@link DynamicClassLoader} and associated
      *         {@link DynamicClassWriter} configured. Ensure if a new
      *         Login/Platform is being configured that the
@@ -547,7 +536,6 @@ public class DynamicTypeBuilder {
      *         <p>
      *         <code>null</code> is returned if the resourcePath cannot locate a
      *         deployment XML
-     * @throws IOException
      */
     public static Project loadDynamicProject(String resourcePath, DatabaseLogin login, DynamicClassLoader dynamicClassLoader) throws IOException {
 
@@ -566,9 +554,6 @@ public class DynamicTypeBuilder {
      * Load a dynamic project from deployment XML creating dynamic types for all
      * descriptors where the provided class name does not exist.
      *
-     * @param resourceStream
-     * @param login
-     * @param dynamicClassLoader
      * @return a Project with {@link DynamicClassLoader} and associated
      *         {@link DynamicClassWriter} configured. Ensure if a new
      *         Login/Platform is being configured that the
@@ -576,7 +561,6 @@ public class DynamicTypeBuilder {
      *         <p>
      *         <code>null</code> is returned if the resourcePath cannot locate a
      *         deployment XML
-     * @throws IOException
      */
     public static Project loadDynamicProject(InputStream resourceStream, DatabaseLogin login, DynamicClassLoader dynamicClassLoader) throws IOException {
 

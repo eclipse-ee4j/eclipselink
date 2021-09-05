@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,7 +51,6 @@ public class DynamicSchemaManager extends SchemaManager {
      * TODO: At present this method will create all tables that do not exist. It
      * needs to be made specific to the entityTypes.
      *
-     * @param entityTypes
      */
     public void createTables(DynamicType... entityTypes) {
         createTables(true, entityTypes);

@@ -19,7 +19,6 @@ import org.eclipse.persistence.testing.models.employee.domain.*;
 
 /**
  * Tests the decoupling of bean-level pessimistic locking and refresh queries.
- * <p>
  *
  * @author  smcritch
  */

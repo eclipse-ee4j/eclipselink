@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +18,7 @@ package dbws.testing.shadowddlgeneration.oldjpub;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class RowtypeInfo extends SequencedInfo {
 
@@ -107,6 +108,11 @@ public class RowtypeInfo extends SequencedInfo {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(argument_name, type_owner, type_name, type_subname, modifier, data_type, data_level, data_length, data_precision, data_scale);
     }
 
     public String toString() {

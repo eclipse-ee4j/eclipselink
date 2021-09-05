@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -111,7 +111,6 @@ public class SchemaGenEmployeeTestCases extends TestCase {
      * not contain a 'firstName' element, which is required as the
      * corresponding field in the Employee class contains the following
      * annotation:  @XmlElement(required = true)
-     * @throws Exception
      */
     public void xtestEmployeeSchemaGenMissingRequiredElement() throws Exception {
         boolean exception = false;
@@ -146,7 +145,6 @@ public class SchemaGenEmployeeTestCases extends TestCase {
      * not contain a 'firstName' element, which is required as the
      * corresponding field in the Employee class contains the following
      * annotation:  @XmlElement(required = true)
-     * @throws Exception
      */
     public void xtestEmployeeSchemaGenMissingRequiredAttribute() throws Exception {
         boolean exception = false;

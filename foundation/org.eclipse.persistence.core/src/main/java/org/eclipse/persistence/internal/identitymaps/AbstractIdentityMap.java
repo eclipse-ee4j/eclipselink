@@ -282,7 +282,6 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * @param pkList List of Entity PKs to extract from the cache
      * @param descriptor Descriptor type to be retrieved.
      * @return Map of Entity PKs associated to the Entities that were retrieved
-     * @throws QueryException
      */
     @Override
     public Map<Object, Object> getAllFromIdentityMapWithEntityPK(Object[] pkList, ClassDescriptor descriptor, AbstractSession session){
@@ -305,7 +304,6 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * @param pkList List of Entity PKs to extract from the cache
      * @param descriptor Descriptor type to be retrieved.
      * @return Map of Entity PKs associated to the Entities that were retrieved
-     * @throws QueryException
      */
     @Override
     public Map<Object, CacheKey> getAllCacheKeysFromIdentityMapWithEntityPK(Object[] pkList, ClassDescriptor descriptor, AbstractSession session){

@@ -30,7 +30,6 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * criteria API.
  * <p>
  * <b>Description</b>: The Selection is the expression describing what should be returned by the query.
- * <p>
  *
  * @see jakarta.persistence.criteria Join
  *

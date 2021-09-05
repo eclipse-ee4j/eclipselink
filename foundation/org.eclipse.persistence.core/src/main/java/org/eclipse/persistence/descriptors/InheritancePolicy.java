@@ -1646,7 +1646,6 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * not have a descriptor, if describesNonPersistenceSubclasses is true
      * Employee's descriptor will be used as the descriptor for Employee
      *
-     * @param describesNonPersistentSubclasses
      */
     public void setDescribesNonPersistentSubclasses(boolean describesNonPersistentSubclasses){
         this.describesNonPersistentSubclasses = describesNonPersistentSubclasses;

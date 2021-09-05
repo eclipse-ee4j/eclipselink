@@ -947,9 +947,6 @@ public abstract class DatasourceCall implements Call {
      * INTERNAL:
      * This method is used to correct parameterTypes which are compared to static values using == equality, which changes
      * during serialization/deserialization.
-     * @param in
-     * @throws IOException
-     * @throws ClassNotFoundException
      */
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();

@@ -376,7 +376,6 @@ public class ConnectionPool {
     /**
      *  INTERNAL:
      *  Set this list of connections available
-     *  @param connectionsAvailable
      */
     protected void setConnectionsAvailable(Vector connectionsAvailable) {
         this.connectionsAvailable = connectionsAvailable;
@@ -385,7 +384,6 @@ public class ConnectionPool {
     /**
      *  INTERNAL:
      *  Set the list of connections being used.
-     *  @param connectionsUsed
      */
     protected void setConnectionsUsed(Vector connectionsUsed) {
         this.connectionsUsed = connectionsUsed;
@@ -464,7 +462,6 @@ public class ConnectionPool {
 
     /**
      *  Set the ServerSession that owns this connection pool
-     *  @param owner
      */
     protected void setOwner(ServerSession owner) {
         this.owner = owner;

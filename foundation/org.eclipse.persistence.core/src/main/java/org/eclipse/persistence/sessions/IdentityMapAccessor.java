@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -105,7 +105,6 @@ public interface IdentityMapAccessor {
      * {@link org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy InMemoryQueryIndirectionPolicy}
      * @param shouldReturnInvalidatedObjects boolean - true if only invalid Objects should be returned
      * @return Vector of Objects
-     * @throws QueryException
      */
     Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, InMemoryQueryIndirectionPolicy valueHolderPolicy, boolean shouldReturnInvalidatedObjects) throws QueryException;
 
@@ -122,7 +121,6 @@ public interface IdentityMapAccessor {
      * {@link org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy InMemoryQueryIndirectionPolicy}
      * @param shouldReturnInvalidatedObjects boolean - true if only invalid Objects should be returned
      * @return Vector of Objects
-     * @throws QueryException
      */
     Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy, boolean shouldReturnInvalidatedObjects) throws QueryException;
 
@@ -136,7 +134,6 @@ public interface IdentityMapAccessor {
      * @param valueHolderPolicy  see
      * {@link org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy InMemoryQueryIndirectionPolicy}
      * @return Vector of Objects with type theClass and matching the selectionCriteria
-     * @throws QueryException
      */
     Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, InMemoryQueryIndirectionPolicy valueHolderPolicy) throws QueryException;
 
@@ -150,7 +147,6 @@ public interface IdentityMapAccessor {
      * @param valueHolderPolicy  see
      * {@link org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy InMemoryQueryIndirectionPolicy}
      * @return Vector of Objects with type theClass and matching the selectionCriteria
-     * @throws QueryException
      */
     Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy) throws QueryException;
 
@@ -212,7 +208,6 @@ public interface IdentityMapAccessor {
      * @param theClass Class
      * @param translationRow Record
      * @return Object from identity map, may be null
-     * @throws QueryException
      */
     Object getFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow) throws QueryException;
 
@@ -228,7 +223,6 @@ public interface IdentityMapAccessor {
      * @param valueHolderPolicy
      * see {@link org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy InMemoryQueryIndirectionPolicy}
      * @return Object from identity map, may be null
-     * @throws QueryException
      */
     Object getFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, InMemoryQueryIndirectionPolicy valueHolderPolicy) throws QueryException;
 
@@ -244,7 +238,6 @@ public interface IdentityMapAccessor {
      * @param valueHolderPolicy
      * see {@link org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy InMemoryQueryIndirectionPolicy}
      * @return Object from identity map, may be null
-     * @throws QueryException
      */
     Object getFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy) throws QueryException;
 

@@ -973,8 +973,6 @@ public class SymfowarePlatform extends DatabasePlatform {
 
     /**
      * Used to allow platforms to define their own index prefixes
-     * @param isUniqueSetOnField
-     * @return
      */
     @Override
     public String getIndexNamePrefix(boolean isUniqueSetOnField){
@@ -1150,8 +1148,6 @@ public class SymfowarePlatform extends DatabasePlatform {
      * On Syfoware, there are situations where the key cannot be used.
      *
      * See: https://bugs.eclipse.org/bugs/show_bug.cgi?id=303396
-     * @param subselect
-     *
      * @see SymfowarePlatform
      */
     @Override

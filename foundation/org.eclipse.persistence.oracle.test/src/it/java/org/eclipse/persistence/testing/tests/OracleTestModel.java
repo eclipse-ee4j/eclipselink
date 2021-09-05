@@ -64,7 +64,7 @@ public class OracleTestModel extends TestModel {
 
         for (int index = 0; index < tests.size(); ++index) {
             try {
-                addTest((TestModel)Class.forName((String)tests.get(index)).newInstance());
+                addTest((TestModel)Class.forName((String)tests.get(index)).getConstructor().newInstance());
             } catch (Throwable exception) {
                 System.out.println("Failed to set up " + tests.get(index) + " \n" + exception);
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2011, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -59,7 +59,6 @@ import org.eclipse.persistence.queries.ReportQuery;
  * <p>
  * <b>Description</b>: This is the container class for the components that define a query to
  * be used in a sub select expression.
- * <p>
  *
  * @see jakarta.persistence.criteria CriteriaQuery
  * @see jakarta.persistence.criteria SubQuery

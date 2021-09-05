@@ -387,7 +387,6 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
      * Set the AbstractNullPolicy on the mapping<br>
      * The default policy is NullPolicy.<br>
      *
-     * @param aNullPolicy
      */
     @Override
     public void setNullPolicy(AbstractNullPolicy aNullPolicy) {
@@ -398,7 +397,6 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
      * INTERNAL:
      * Get the AbstractNullPolicy from the Mapping.<br>
      * The default policy is NullPolicy.<br>
-     * @return
      */
     @Override
     public AbstractNullPolicy getNullPolicy() {

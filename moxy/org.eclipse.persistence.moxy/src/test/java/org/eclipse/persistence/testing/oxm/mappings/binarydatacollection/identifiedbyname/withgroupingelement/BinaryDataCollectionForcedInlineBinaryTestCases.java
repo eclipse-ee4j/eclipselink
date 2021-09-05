@@ -12,14 +12,6 @@
 
 // Contributors:
 //     mmacivor - July 16/2009 - 2.0 - Initial implementation
-
-/* $Header: BinaryDataCollectionWithGroupingElementIdentifiedByNameXOPonNSRTestCases.java 19-oct-2006.17:10:30 mfobrien Exp $ */
-
-/**
- *  @version $Header: BinaryDataCollectionWithGroupingElementIdentifiedByNameXOPonNSRTestCases.java 19-oct-2006.17:10:30 mfobrien Exp $
- *  @author  mfobrien
- *  @since   11.1
- */
 package org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.identifiedbyname.withgroupingelement;
 
 import java.util.Vector;

@@ -22,7 +22,6 @@ package org.eclipse.persistence.internal.jpa.querydef;
  * <b>Description</b>: An InternalSelection has the EclipseLink expression representation of the
  * Criteria API expressions.  A special interface was created because Subqueries can be selections but are not in the
  * ExpressionImpl hierarchy
- * <p>
  *
  * @see jakarta.persistence.criteria Expression
  *

@@ -497,7 +497,6 @@ public class ParseTree {
     /**
      * INTERNAL:
      * Set the class loader for this parse tree
-     * @param loader
      */
     public void setClassLoader(ClassLoader loader){
         this.classLoader = loader;

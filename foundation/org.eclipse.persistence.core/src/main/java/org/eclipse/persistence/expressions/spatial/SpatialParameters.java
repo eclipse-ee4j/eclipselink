@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,7 +62,6 @@ public class SpatialParameters {
      * PUBLIC:
      * Set the PARAMS (String) value. If this value is set then no other param
      * values will be used.
-     * @param params
      * @return this instance of SpatialParameters
      */
     public SpatialParameters setParams(String params) {
@@ -77,7 +76,6 @@ public class SpatialParameters {
     /**
      * PUBLIC:
      * Set the MIN_RESOLUTION parameter
-     * @param minResolution
      * @return this instance of SpatialParameters
      */
     public SpatialParameters setMinResolution(Number minResolution) {
@@ -92,7 +90,6 @@ public class SpatialParameters {
     /**
      * PUBLIC:
      * Set the MAX_RESOLUTION parameter
-     * @param maxResolution
      * @return this instance of SpatialParameters
      */
     public SpatialParameters setMaxResolution(Number maxResolution) {
@@ -122,7 +119,6 @@ public class SpatialParameters {
     /**
      * PUBLIC:
      * Set the DISTANCE parameter
-     * @param distance
      * @return this instance of SpatialParameters
      */
     public SpatialParameters setDistance(Number distance) {
@@ -178,7 +174,6 @@ public class SpatialParameters {
     /**
      * PUBLIC:
      * build a String describing this set of parameters that can be used in conjunction with an Oracle Spatial function
-     * @return
      */
     public String getParameterString() {
         if (getParams() != null) {

@@ -781,7 +781,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
                                     + "failure, or could result if you do not have the tools.jar from your JDK on the classpath.");
                 }
                 Class newClass = Class.forName(className);
-                Object newInstance = newClass.newInstance();
+                Object newInstance = newClass.getConstructor().newInstance();
                 newClass.getField("session").set(newInstance, getSession());
                 Object value;
                 try {

@@ -38,7 +38,6 @@ public class XmlTransientTestCases extends JAXBWithJSONTestCases{
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public XmlTransientTestCases(String name) throws Exception{
         super(name);

@@ -88,7 +88,7 @@ import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitDomainObjectComparer;
  * <b>Purpose</b>: Test advanced JPA Query functionality.
  * <p>
  * <b>Description</b>: This tests query hints, caching and query optimization.
- * <p>
+ *
  */
 public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
 

@@ -28,7 +28,6 @@ import org.eclipse.persistence.queries.ConstructorReportItem;
  * criteria API.  Specifically this class represents the Selection of a Constructor.
  * <p>
  * <b>Description</b>: The Selection is the expression describing what should be returned by the query.
- * <p>
  *
  * @see jakarta.persistence.criteria Join
  *

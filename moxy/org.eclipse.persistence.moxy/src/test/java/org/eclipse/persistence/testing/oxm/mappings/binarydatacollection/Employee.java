@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,20 +12,6 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-
-/* $Header: Employee.java 19-oct-2006.17:22:32 mfobrien Exp $ */
-/*
-   DESCRIPTION
-
-   MODIFIED    (MM/DD/YY)
-    mfobrien    10/19/06 - Creation
- */
-
-/**
- *  @version $Header: Employee.java 19-oct-2006.17:22:32 mfobrien Exp $
- *  @author  mfobrien
- *  @since   11.1
- */
 package org.eclipse.persistence.testing.oxm.mappings.binarydatacollection;
 
 import java.util.Vector;

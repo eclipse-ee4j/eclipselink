@@ -381,7 +381,6 @@ public class DatabasePlatform extends DatasourcePlatform {
      * This StructConverter will be invoked for all writes to the database for the class returned
      * by its getJavaType() method and for all reads from the database for the Structs described
      * by its getStructName() method
-     * @param converter
      */
     public void addStructConverter(StructConverter converter) {
         if (structConverters == null){
@@ -887,9 +886,6 @@ public class DatabasePlatform extends DatasourcePlatform {
      *
      * By default, we assume case 1 and simply return the value of maxResults.  Subclasses
      * may provide an override
-     *
-     * @param firstResultIndex
-     * @param maxResults
      *
      * @see org.eclipse.persistence.platform.database.MySQLPlatform
      */
@@ -1451,8 +1447,6 @@ public class DatabasePlatform extends DatasourcePlatform {
 
     /**
      * Used to allow platforms to define their own index prefixes
-     * @param isUniqueSetOnField
-     * @return
      */
     public String getIndexNamePrefix(boolean isUniqueSetOnField){
         return "IX_";
@@ -1885,8 +1879,6 @@ public class DatabasePlatform extends DatasourcePlatform {
      *
      * On databases where, for some reason we cannot select one of the key fields
      * this method can be overridden
-     * @param subselect
-     *
      * @see SymfowarePlatform
      */
     public void retrieveFirstPrimaryKeyOrOne(ReportQuery subselect){
@@ -2972,7 +2964,6 @@ public class DatabasePlatform extends DatasourcePlatform {
      * Precondition: pkFields contained in usedFields contained in allFields
      * @param writer for writing the sql
      * @param table is original table for which temp table is created.
-     * @param session.
      * @param pkFields primary key fields for the original table.
      * @param usedFields fields that will be used by operation for which temp table is created.
      * @param allFields all mapped fields for the original table.

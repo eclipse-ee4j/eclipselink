@@ -3178,7 +3178,6 @@ public abstract class Expression implements Serializable, Cloneable {
      * the WHERE clause in any query
      *
      * EclipseLink: eb.get("mapAttribute").mapEntry()
-     * @return
      */
     public Expression mapEntry(){
         MapEntryExpression expression = new MapEntryExpression(this);
@@ -3192,7 +3191,6 @@ public abstract class Expression implements Serializable, Cloneable {
      * This expression can be used either in as a return value in a ReportQuery or in the WHERE clause in a query
      *
      * EclipseLink: eb.get("mapAttribute").mapKey()
-     * @return
      */
     public Expression mapKey(){
         return new MapEntryExpression(this);
@@ -4071,7 +4069,6 @@ public abstract class Expression implements Serializable, Cloneable {
      * Set whether this expression should be included in the SELECT clause of a query
      * that uses it in the ORDER BY clause.
      *
-     * @param selectIfOrderedBy
      */
     public void setSelectIfOrderedBy(boolean selectIfOrderedBy) {
         this.selectIfOrderedBy = selectIfOrderedBy;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -123,8 +123,6 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      * source xpath (in the source-target key field association list).
      *
      * @param targetObject - the reference class instance that holds the required pk value
-     * @param xmlFld
-     * @param session
      * @return null if the target object is null, the reference class is null, or
      * a primary key field name does not exist on the reference descriptor that
      * matches the target field name - otherwise, return the associated primary

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -59,8 +59,6 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
     /**
      * INTERNAL:
      * This constructer is to only be used by EclipseLink internally
-     * @param name
-     * @param type
      */
     public AttributeGroup(String name, Class type, boolean isValidated) {
         this(name);
@@ -159,8 +157,6 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
     /**
      * INTERNAL:
      *    This method is used internally when converting to a copy group.
-     * @param cloneMap
-     * @return
      */
 
     public FetchGroup toFetchGroup(Map<AttributeGroup, FetchGroup> cloneMap){
@@ -202,7 +198,6 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
     /**
      * INTERNAL:
      *    This method is used internally when converting to a copy group.
-     * @return
      */
 
     @Override
@@ -224,8 +219,6 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
         /**
          * INTERNAL:
          *    This method is used internally when converting to a copy group.
-         * @param cloneMap
-         * @return
          */
 
         public CopyGroup toCopyGroup(Map<AttributeGroup, CopyGroup> cloneMap, Map copies){

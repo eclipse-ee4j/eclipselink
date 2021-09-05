@@ -35,7 +35,6 @@ import org.eclipse.persistence.queries.UpdateAllQuery;
  * <p>
  * <b>Description</b>: This is the container class for the components that
  * define an Update Query.
- * <p>
  *
  * @see jakarta.persistence.criteria CriteriaUpdate
  *

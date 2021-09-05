@@ -460,7 +460,6 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
 
     /**
      * Remove JMX reserved characters from the session name
-     * @return
      */
     protected String getMBeanSessionName() {
         // Check for a valid session - should never occur though
@@ -484,7 +483,6 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
     /**
      * INTERNAL:
      * Set the cached server specific services MBean
-     * @param runtimeServicesMBean
      */
     protected void setRuntimeServicesMBean(MBeanRuntimeServicesMBean runtimeServicesMBean) {
         this.runtimeServicesMBean = runtimeServicesMBean;
@@ -492,8 +490,6 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
 
     /**
      * INTERNAL:
-     * @param enableDefault
-     * @return
      */
     protected String getModuleName(boolean enableDefault) {
         //Object substring = getModuleOrApplicationName();
@@ -529,7 +525,6 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
 
     /**
      * INTERNAL;
-     * @param aName
      */
     protected void setModuleName(String aName) {
         this.moduleName = aName;
@@ -540,8 +535,6 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
      * Lazy initialize the application name by
      * first checking for a persistence.xml property override and then
      * deferring to a default name in the absence of a platform override of this function
-     * @param enableDefault
-     * @return
      */
     protected String getApplicationName(boolean enableDefault) {
         //Object substring = getModuleOrApplicationName();
@@ -577,7 +570,6 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
 
     /**
      * INTERNAL:
-     * @param aName
      */
     public void setApplicationName(String aName) {
         this.applicationName = aName;

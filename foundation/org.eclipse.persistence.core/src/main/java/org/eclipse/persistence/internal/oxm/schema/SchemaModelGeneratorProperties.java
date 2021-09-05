@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,7 +47,6 @@ public class SchemaModelGeneratorProperties {
 
     /**
      * Lazily initialize the URI-&gt;Properties map
-     * @return
      */
     public Map<String, Properties> getPropertiesMap() {
         if (propMap == null) {
@@ -61,9 +60,6 @@ public class SchemaModelGeneratorProperties {
      * namespace URI.  If no entry exists for the given URI, a Properties object
      * will be created.
      *
-     * @param uri
-     * @param key
-     * @param value
      */
     public void addProperty(String uri, String key, Object value) {
         if (uri == null || key == null || value == null) {
@@ -81,9 +77,6 @@ public class SchemaModelGeneratorProperties {
     /**
      * Return the property value for a given namespace/key pair.
      *
-     * @param uri
-     * @param key
-     * @return
      */
     public Object getProperty(String uri, String key) {
         if (uri == null || key == null) {
@@ -101,7 +94,6 @@ public class SchemaModelGeneratorProperties {
      * Return the Properties object for the given namespace uri.
      * If none exists a new Properties is created and returned.
      *
-     * @return
      */
     public Properties getProperties(String uri) {
         return getPropertiesMap().get(uri);

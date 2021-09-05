@@ -938,7 +938,6 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
     /**
      * Test for element type reference across multiple XML schemas with different namespaces.
      * Validates result after marshalling against XML Schema.
-     * @throws Exception
      */
     public void testXmlSchemaCrossSchema() throws Exception {
         String backupProperty = null;

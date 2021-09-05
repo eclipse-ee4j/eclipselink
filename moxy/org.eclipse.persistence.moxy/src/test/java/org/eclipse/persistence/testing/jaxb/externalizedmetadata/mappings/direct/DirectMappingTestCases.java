@@ -62,7 +62,6 @@ public class DirectMappingTestCases extends JAXBTestCases {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public DirectMappingTestCases(String name) throws Exception{
         super(name);
@@ -194,7 +193,6 @@ public class DirectMappingTestCases extends JAXBTestCases {
     /**
      * Validates user-defined properties set via xml metadata.
      *
-     * @param props
      */
     private void validateProperties(Map props) {
         assertTrue("Expected [" + PROPCOUNT + "] user-defined properties, but there were [" + props.size() + "]", props.size() == PROPCOUNT);

@@ -44,7 +44,6 @@ public class ObjectReferenceMappingTestCases extends JAXBWithJSONTestCases {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public ObjectReferenceMappingTestCases(String name) throws Exception {
         super(name);

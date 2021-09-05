@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,7 +48,6 @@ public abstract class NodeValue {
     /**
      * INTERNAL:
      * Return whether we ignore this node value when marshalling its parent
-     * @return
      */
     public boolean isMarshalOnlyNodeValue() {
         return false;
@@ -56,8 +55,6 @@ public abstract class NodeValue {
 
     /**
      * INTERNAL:
-     * @param xPathFragment
-     * @return
      */
     public boolean isOwningNode(XPathFragment xPathFragment) {
         return null == xPathFragment.getNextFragment();
@@ -65,12 +62,6 @@ public abstract class NodeValue {
 
     /**
      * INTERNAL:
-     * @param xPathFragment
-     * @param marshalRecord
-     * @param object
-     * @param session
-     * @param namespaceResolver
-     * @return
      */
     public abstract boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver);
 
@@ -78,13 +69,6 @@ public abstract class NodeValue {
      * INTERNAL:
      * This method is no longer required as now MarshalRecord maintains a
      * reference to the XMLMarshaller.
-     * @param xPathFragment
-     * @param marshalRecord
-     * @param object
-     * @param session
-     * @param namespaceResolver
-     * @param marshaller
-     * @return
      */
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, Marshaller marshaller) {
         marshalRecord.setMarshaller(marshaller);
@@ -93,12 +77,6 @@ public abstract class NodeValue {
 
     /**
      * INTERNAL:
-     * @param xPathFragment
-     * @param marshalRecord
-     * @param object
-     * @param session
-     * @param namespaceResolver
-     * @return
      */
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext, XPathFragment rootFragment) {
         return this.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, marshalContext);
@@ -108,14 +86,6 @@ public abstract class NodeValue {
      * INTERNAL:
      * This method provides an optimization in cases where the value has already
      * been calculated.
-     * @param xPathFragment
-     * @param marshalRecord
-     * @param object
-     * @param objectValue
-     * @param session
-     * @param namespaceResolver
-     * @param marshalContext
-     * @return
      */
     public abstract boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext);
 
@@ -123,14 +93,6 @@ public abstract class NodeValue {
      * INTERNAL:
      * This method provides an optimization in cases where the value has already
      * been calculated.
-     * @param xPathFragment
-     * @param marshalRecord
-     * @param object
-     * @param objectValue
-     * @param session
-     * @param namespaceResolver
-     * @param marshalContext
-     * @return
      */
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext, XPathFragment rootFragment) {
         return this.marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, marshalContext);
@@ -139,24 +101,13 @@ public abstract class NodeValue {
 /**
      * INTERNAL:
      * Override this method if the NodeValue is applicable to sequenced objects.
-     * @param xPathFragment
-     * @param marshalRecord
-     * @param object
-     * @param session
-     * @param namespaceResolver
-     * @param marshalContext
-     * @return
-     */
+ */
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         return this.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
     }
 
     /**
      * INTERNAL:
-     * @param xPathFragment
-     * @param unmarshalRecord
-     * @param atts
-     * @return
      */
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
         return true;
@@ -164,10 +115,6 @@ public abstract class NodeValue {
 
     /**
      * INTERNAL:
-     * @param unmarshalRecord
-     * @param URI
-     * @param localName
-     * @param value
      */
     public void attribute(UnmarshalRecord unmarshalRecord, String URI, String localName, String value) {
         // No operation for parent
@@ -175,17 +122,12 @@ public abstract class NodeValue {
 
     /**
      * INTERNAL:
-     * @param xPathFragment
-     * @param unmarshalRecord
      */
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
     }
 
     /**
      * INTERNAL:
-     * @param unmarshalRecord
-     * @param atts
-     * @return
      */
     public UnmarshalRecord buildSelfRecord(UnmarshalRecord unmarshalRecord, Attributes atts) {
         return null;
@@ -229,13 +171,6 @@ public abstract class NodeValue {
      * INTERNAL:
      * Marshal any 'self' mapped attributes.
      *
-     * @param xPathFragment
-     * @param marshalRecord
-     * @param object
-     * @param session
-     * @param namespaceResolver
-     * @param marshaller
-     * @return
      */
     public boolean marshalSelfAttributes(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, Marshaller marshaller) {
         return false;
@@ -256,7 +191,6 @@ public abstract class NodeValue {
     /**
      * INTERNAL:
      * Return true if this is the node value representing mixed content.
-     * @return
      */
     public boolean isMixedContentNodeValue() {
         return false;

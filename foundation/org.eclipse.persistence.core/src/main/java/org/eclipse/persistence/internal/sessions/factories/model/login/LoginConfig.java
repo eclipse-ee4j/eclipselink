@@ -69,7 +69,6 @@ public abstract class LoginConfig {
      * securable object initialization remains in the constructor with default
      * to JCE and changes only if an encryption class is set.
      *
-     * @param password
      */
     public void setPassword(String password) {
         setEncryptedPassword(password);
@@ -81,7 +80,6 @@ public abstract class LoginConfig {
      * assumes the password is encrypted. If it is not we will make sure it is
      * encrypted.
      *
-     * @param encryptedPassword
      */
     public void setEncryptedPassword(String encryptedPassword) {
         // Bug 4117441 - Secure programming practices, store password in char[]

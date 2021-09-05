@@ -118,7 +118,6 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      * INTERNAL:
      * If an XPathNode does not have an associated NodeValue then add it to the
      * MarshalRecord as a grouping element.
-     * @param xPathNode
      */
     @Override
     public void addGroupingElement(XPathNode xPathNode) {
@@ -131,7 +130,6 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
     /**
      *
      * INTERNAL:
-     * @param xPathNode
      */
     @Override
     public void removeGroupingElement(XPathNode xPathNode) {
@@ -207,10 +205,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
 
     /**
      * Handle marshal of an empty collection.
-     * @param xPathFragment
-     * @param namespaceResolver
      * @param openGrouping if grouping elements should be marshalled for empty collections
-     * @return
      */
     @Override
     public boolean emptyCollection(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, boolean openGrouping) {
@@ -225,8 +220,6 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
 
     /**
      * Add the specified namespace declaration
-     * @param prefix
-     * @param namespaceURI
      */
     @Override
     public void namespaceDeclaration(String prefix, String namespaceURI){
@@ -235,7 +228,6 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
 
     /**
      * Add the defaultNamespace declaration
-     * @param defaultNamespace
      */
     public void defaultNamespaceDeclaration(String defaultNamespace){
         attribute(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE, javax.xml.XMLConstants.XMLNS_ATTRIBUTE, defaultNamespace);
@@ -715,7 +707,6 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
     /**
      * INTERNAL:
      * Private function to process or create an entry in the NamespaceResolver for the xsi prefix.
-     * @param namespaceResolver
      * @return xsi prefix
      * @since EclipseLink 2.4
 

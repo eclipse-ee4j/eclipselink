@@ -54,16 +54,15 @@ public class MappingClassLoaderTestCases extends OXTestCase {
         classLoader = new JARClassLoader("org/eclipse/persistence/testing/oxm/classloader/MappingTests.jar");
         xmlContext = getXMLContext(new MappingTestProject(classLoader, platform, metadata), classLoader);
         unmarshaller = xmlContext.createUnmarshaller();
-        unmarshaller.setAttachmentUnmarshaller((XMLAttachmentUnmarshaller) classLoader.loadClass(ATTACHMENT_UNMARSHALLER_CLASS).newInstance());
+        unmarshaller.setAttachmentUnmarshaller((XMLAttachmentUnmarshaller) classLoader.loadClass(ATTACHMENT_UNMARSHALLER_CLASS).getConstructor().newInstance());
         marshaller = xmlContext.createMarshaller();
-        marshaller.setAttachmentMarshaller((XMLAttachmentMarshaller) classLoader.loadClass(ATTACHMENT_MARSHALLER_CLASS).newInstance());
+        marshaller.setAttachmentMarshaller((XMLAttachmentMarshaller) classLoader.loadClass(ATTACHMENT_MARSHALLER_CLASS).getConstructor().newInstance());
     }
 
     /**
      * Attempting to create the project with the wrong class loader should
      * cause a ClassNotFoundException.
      *
-     * @throws Exception
      */
     public void testClassLoadFailure() throws Exception {
         boolean exception = false;

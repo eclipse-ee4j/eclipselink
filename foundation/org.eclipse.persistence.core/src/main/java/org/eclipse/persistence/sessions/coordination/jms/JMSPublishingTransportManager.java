@@ -253,7 +253,6 @@ public class JMSPublishingTransportManager extends BroadcastTransportManager {
      *  every executeCommand call.  These objects can potentially used concurrently, which the JMS spec does not force
      *  providers to support.
      *
-     *  @param reuseJMSTopicPublisher
      */
     public void setShouldReuseJMSTopicPublisher(boolean reuseJMSTopicPublisher){
         this.reuseJMSTopicPublisher = reuseJMSTopicPublisher;

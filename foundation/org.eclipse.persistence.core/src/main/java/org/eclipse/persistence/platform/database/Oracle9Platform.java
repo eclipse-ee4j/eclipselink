@@ -30,8 +30,6 @@ public class Oracle9Platform extends Oracle8Platform {
      * Build the hint string used for first rows.
      * 
      * Allows it to be overridden
-     * @param max
-     * @return
      */
     @Override
     protected String buildFirstRowsHint(int max){

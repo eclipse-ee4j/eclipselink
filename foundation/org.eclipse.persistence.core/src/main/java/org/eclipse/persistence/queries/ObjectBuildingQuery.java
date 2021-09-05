@@ -139,7 +139,6 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * Convert all the class-name-based settings in this query to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
@@ -323,8 +322,6 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * INTERNAL:
      * Return the primary key stored in this query if there is one
      * This is overridden by subclasses that actually hold a primary key
-     *
-     * @return
      *
      * @see ReadObjectQuery
      */

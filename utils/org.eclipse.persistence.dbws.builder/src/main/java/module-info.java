@@ -25,7 +25,7 @@ module org.eclipse.persistence.dbws.builder {
     requires org.eclipse.persistence.dbws;
     requires org.eclipse.persistence.jpa;
     requires org.eclipse.persistence.jpa.jpql;
-    requires org.eclipse.persistence.moxy;
+    requires transitive org.eclipse.persistence.moxy;
     requires org.eclipse.persistence.oracleddlparser;
 
     exports org.eclipse.persistence.tools.dbws;

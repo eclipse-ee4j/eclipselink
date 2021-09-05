@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,7 @@ import java.util.Set;
  * </ul>
  */
 public class SDOConstants {
-    // 20070604: use a standard class as opposed to a constant interface (v21.20060731) - see item 17 of (Effective Java)
+// 20070604: use a standard class as opposed to a constant interface (v21.20060731) - see item 17 of (Effective Java)
 
     /** Strings for known uris and default prefix values */
     public static final String SDO_PREFIX = "sdo";
@@ -366,5 +366,9 @@ public class SDOConstants {
         if(null != sdoTypeHelper) {
             sdoTypeHelper.reset();
         }
+    }
+
+    private SDOConstants() {
+        //no instance please
     }
 }

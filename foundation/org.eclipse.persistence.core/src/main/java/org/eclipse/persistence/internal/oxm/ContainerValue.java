@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,13 +36,6 @@ public interface ContainerValue {
 
     /**
      * Marshal only one of the values from the collection.
-     * @param xPathFragment
-     * @param marshalRecord
-     * @param object
-     * @param value
-     * @param session
-     * @param namespaceResolver
-     * @param marshalContext
      */
     boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext);
 

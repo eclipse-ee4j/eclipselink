@@ -47,7 +47,6 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
      * Add a new Expression to the list of arguments.
      * This method will update the list of arguments and any constant strings that are required
      * to be printed with the arguments
-     * @param argument
      */
     @Override
     public synchronized void addChild(Expression argument){
@@ -65,7 +64,6 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
      * Add a child and ensure it is the rightmost in the tree as long as it
      * is in the tree
      * If there is already a node that is set as therightmost node, replace it
-     * @param argument
      */
     public synchronized void addRightMostChild(Expression argument){
         if (hasLastChild != null && hasLastChild){

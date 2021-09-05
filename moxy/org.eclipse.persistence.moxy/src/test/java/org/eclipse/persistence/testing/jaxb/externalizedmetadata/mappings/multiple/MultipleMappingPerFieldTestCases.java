@@ -49,7 +49,6 @@ public class MultipleMappingPerFieldTestCases extends JAXBWithJSONTestCases {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public MultipleMappingPerFieldTestCases(String name) throws Exception{
         super(name);

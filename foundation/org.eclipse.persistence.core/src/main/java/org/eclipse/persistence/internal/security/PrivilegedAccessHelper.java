@@ -148,7 +148,6 @@ public class PrivilegedAccessHelper {
 
     /**
      * Execute a java Class.forName().  Wrap the call in a doPrivileged block if necessary.
-     * @param className
      */
     public static Class getClassForName(final String className) throws ClassNotFoundException {
         // Check for primitive types.
@@ -185,7 +184,6 @@ public class PrivilegedAccessHelper {
      * @param javaClass The class to get the Constructor for
      * @param args An array of classes representing the argument types of the constructor
      * @param shouldSetAccessible whether or not to call the setAccessible API
-     * @throws java.lang.NoSuchMethodException
      */
     public static Constructor getConstructorFor(final Class javaClass, final Class[] args, final boolean shouldSetAccessible) throws NoSuchMethodException {
         Constructor result = null;
@@ -239,7 +237,6 @@ public class PrivilegedAccessHelper {
      * @param javaClass The class to get the Constructor for
      * @param args An array of classes representing the argument types of the constructor
      * @param shouldSetAccessible whether or not to call the setAccessible API
-     * @throws java.lang.NoSuchMethodException
      */
     public static Constructor getDeclaredConstructorFor(final Class javaClass, final Class[] args, final boolean shouldSetAccessible) throws NoSuchMethodException {
         Constructor result = javaClass.getDeclaredConstructor(args);
@@ -259,7 +256,6 @@ public class PrivilegedAccessHelper {
      * @param javaClass The class to get the field from
      * @param fieldName The name of the field
      * @param shouldSetAccessible whether or not to call the setAccessible API
-     * @throws java.lang.NoSuchFieldException
      */
     public static Field getField(final Class javaClass, final String fieldName, final boolean shouldSetAccessible) throws NoSuchFieldException {
         Field field = findDeclaredField(javaClass, fieldName);
@@ -279,7 +275,6 @@ public class PrivilegedAccessHelper {
      * @param javaClass The class to get the field from
      * @param fieldName The name of the field
      * @param shouldSetAccessible whether or not to call the setAccessible API
-     * @throws java.lang.NoSuchFieldException
      */
     public static Field getDeclaredField(final Class javaClass, final String fieldName, final boolean shouldSetAccessible) throws NoSuchFieldException {
         Field field = javaClass.getDeclaredField(fieldName);
@@ -332,7 +327,6 @@ public class PrivilegedAccessHelper {
      * @param methodName The name of the method to get
      * @param methodParameterTypes A list of classes representing the classes of the parameters of the mthod
      * @param shouldSetAccessible whether or not to call the setAccessible API
-     * @throws java.lang.NoSuchMethodException
      */
     public static Method getMethod(final Class javaClass, final String methodName, final Class[] methodParameterTypes, final boolean shouldSetAccessible) throws NoSuchMethodException {
         Method method = findMethod(javaClass, methodName, methodParameterTypes);
@@ -355,7 +349,6 @@ public class PrivilegedAccessHelper {
      * @param methodName The name of the method to get
      * @param methodParameterTypes A list of classes representing the classes of the parameters of the method
      * @param shouldSetAccessible whether or not to call the setAccessible API
-     * @throws java.lang.NoSuchMethodException
      */
     public static Method getPublicMethod(final Class javaClass, final String methodName, final Class[] methodParameterTypes, final boolean shouldSetAccessible) throws NoSuchMethodException {
         // Return the (public) method - will traverse superclass(es) if necessary
@@ -380,7 +373,6 @@ public class PrivilegedAccessHelper {
 
     /**
      * Get the return type for a given method. Wrap the call in doPrivileged if necessary.
-     * @param field
      */
     public static Class getFieldType(final Field field) {
         return field.getType();
@@ -485,7 +477,6 @@ public class PrivilegedAccessHelper {
 
     /**
      * Get the return type for a given method. Wrap the call in doPrivileged if necessary.
-     * @param method
      */
     public static Class getMethodReturnType(final Method method) {
         // 323148: a null method as a possible problem with module ordering breaking weaving - has been trapped by implementors of this method.

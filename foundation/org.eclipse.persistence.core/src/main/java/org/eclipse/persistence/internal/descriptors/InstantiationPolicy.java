@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -459,7 +459,6 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
      * Convert all the class-name-based settings in this InstantiationPolicy to actual class-based
      * settings.  This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
         if (factoryClassName == null){

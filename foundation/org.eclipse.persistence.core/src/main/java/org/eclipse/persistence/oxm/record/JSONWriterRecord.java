@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -127,10 +127,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
 
     /**
      * Handle marshal of an empty collection.
-     * @param xPathFragment
-     * @param namespaceResolver
      * @param openGrouping if grouping elements should be marshalled for empty collections
-     * @return
      */
     @Override
     public boolean emptyCollection(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, boolean openGrouping) {
@@ -216,7 +213,6 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
 
     /**
      * INTERNAL:
-     * @throws IOException
      */
     protected void startCallback() throws IOException{
        if(callbackName != null){

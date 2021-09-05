@@ -291,7 +291,6 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * Convert all the class-name-based settings in this mapping to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){

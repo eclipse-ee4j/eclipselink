@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,6 +23,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 
 /**
@@ -44,15 +45,15 @@ public class Employee {
         boolean equal = this.firstName.equals(emp.firstName);
         equal = equal && this.lastName.equals(emp.lastName);
         try {
-            if(emp.xmlNode.getNodeType() == xmlNode.ATTRIBUTE_NODE && xmlNode.getNodeType() == xmlNode.ATTRIBUTE_NODE) {
+            if(emp.xmlNode.getNodeType() == Node.ATTRIBUTE_NODE && xmlNode.getNodeType() == Node.ATTRIBUTE_NODE) {
                 Attr att1 = (Attr)emp.xmlNode;
                 Attr att2 = (Attr)xmlNode;
                 equal = equal && att1.getNodeValue().equals(att2.getNodeValue());
-            } else if(emp.xmlNode.getNodeType() == xmlNode.TEXT_NODE && xmlNode.getNodeType() == xmlNode.TEXT_NODE) {
+            } else if(emp.xmlNode.getNodeType() == Node.TEXT_NODE && xmlNode.getNodeType() == Node.TEXT_NODE) {
                 Text text1 = (Text)emp.xmlNode;
                 Text text2 = (Text)this.xmlNode;
                 equal = equal && text1.getNodeValue().equals(text2.getNodeValue());
-            } else if(emp.xmlNode.getNodeType() == xmlNode.ELEMENT_NODE && xmlNode.getNodeType() == xmlNode.ELEMENT_NODE) {
+            } else if(emp.xmlNode.getNodeType() == Node.ELEMENT_NODE && xmlNode.getNodeType() == Node.ELEMENT_NODE) {
                 //TODO: Proper comparison. for now just check and and number of children
                 Element elem1 = (Element)emp.xmlNode;
                 Element elem2 = (Element)xmlNode;

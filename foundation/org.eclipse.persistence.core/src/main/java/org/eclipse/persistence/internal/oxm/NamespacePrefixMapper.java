@@ -31,7 +31,6 @@ public abstract class NamespacePrefixMapper {
      * Returns a string array of prefixes and namespace uris that are already available in
      * this context. Only required when marshalling to an output stream or a writer, since
      * it's not possible to determine which namespaces are already in scope.
-     * @return
      */
     public String[] getContextualNamespaceDecls() {
         return new String[0];
@@ -49,7 +48,6 @@ public abstract class NamespacePrefixMapper {
      * Returns a string array of prefixes and namespace uris to be declared at the root of
      * the document. This eliminates the need of implementing both getPredeclaredNamespaceUris
      * and getPreferredPrefix since the prefix and uri can be associated here.
-     * @return
      */
     public String[] getPreDeclaredNamespaceUris2() {
         return new String[0];

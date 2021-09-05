@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -89,7 +89,6 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
      * INTERNAL:
      * Constructor creating either a local or external connection.  Local connections created this way connect to the topicSession and cache
      * the session and subscriber.  External connections cache only the topicConnection and will obtain the session/publisher when needed.
-     * @param rcm
      */
     public JMSTopicRemoteConnection(RemoteCommandManager rcm, TopicConnectionFactory topicConnectionFactory, Topic topic, boolean isLocalConnectionBeingCreated, boolean reuseJMSTopicPublisher) throws JMSException {
         super(rcm);
@@ -123,7 +122,6 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
     /**
      * Creates local connections that do not use a TopicConnection or TopicSession,
      * useful only for processing already received JMS messages
-     * @param rcm
      * @see onMessage
      */
     public JMSTopicRemoteConnection(RemoteCommandManager rcm){

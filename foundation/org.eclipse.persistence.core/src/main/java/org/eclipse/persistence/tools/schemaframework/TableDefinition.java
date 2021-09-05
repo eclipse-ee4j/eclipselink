@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1309,8 +1309,6 @@ public class TableDefinition extends DatabaseObjectDefinition {
 
     /**
      * Execute any statements required after the creation of the object
-     * @param session
-     * @param createSchemaWriter
      */
     @Override
     public void postCreateObject(AbstractSession session, Writer createSchemaWriter, boolean createSQLFiles){
@@ -1321,8 +1319,6 @@ public class TableDefinition extends DatabaseObjectDefinition {
 
     /**
      * Execute any statements required before the deletion of the object
-     * @param session
-     * @param dropSchemaWriter
      */
     @Override
     public void preDropObject(AbstractSession session, Writer dropSchemaWriter, boolean createSQLFiles) {
