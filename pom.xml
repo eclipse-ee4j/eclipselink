@@ -99,10 +99,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jdoc.doclint>all,-missing</jdoc.doclint>
         <!-- exclude big groups from the Xlint -->
-        <comp.xlint>-Xlint:all,-rawtypes,-unchecked,-serial</comp.xlint>
-        <!-- -Xdoclint:-missing does not seem to work properly on the infra -->
+        <comp.xlint>-Xlint:all,-serial</comp.xlint>
         <comp.xdoclint>-Xdoclint:all,-missing</comp.xdoclint>
-        <warn.limit>150</warn.limit>
+        <comp.test.xlint>-Xlint:all,-rawtypes,-unchecked,-serial</comp.test.xlint>
+        <warn.limit>250</warn.limit>
 
         <spotbugs.common>${project.build.directory}/spotbugs-exclude-common.xml</spotbugs.common>
         <spotbugs.exclude/>
@@ -1216,15 +1216,35 @@
                     <release>11</release>
                     <showWarnings>true</showWarnings>
                     <showDeprecation>true</showDeprecation>
-                    <compilerArgs combine.children="append">
-                        <arg>${comp.xlint}</arg>
-                        <arg>${comp.xdoclint}</arg>
-                        <arg>-Xmaxwarns</arg>
-                        <arg>${warn.limit}</arg>
-                        <arg>-Xmaxerrs</arg>
-                        <arg>${warn.limit}</arg>
-                    </compilerArgs>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>default-compile</id>
+                        <configuration>
+                            <compilerArgs combine.children="append">
+                                <arg>${comp.xlint}</arg>
+                                <arg>${comp.xdoclint}</arg>
+                                <arg>-Xmaxwarns</arg>
+                                <arg>${warn.limit}</arg>
+                                <arg>-Xmaxerrs</arg>
+                                <arg>${warn.limit}</arg>
+                            </compilerArgs>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>default-testCompile</id>
+                        <configuration>
+                            <compilerArgs combine.children="append">
+                                <arg>${comp.test.xlint}</arg>
+                                <arg>${comp.xdoclint}</arg>
+                                <arg>-Xmaxwarns</arg>
+                                <arg>${warn.limit}</arg>
+                                <arg>-Xmaxerrs</arg>
+                                <arg>${warn.limit}</arg>
+                            </compilerArgs>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

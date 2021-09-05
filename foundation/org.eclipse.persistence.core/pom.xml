@@ -32,8 +32,9 @@
 
     <properties>
         <!-- Too many to fix -->
-        <comp.xlint>-Xlint:all,-rawtypes,-unchecked,-serial,-exports</comp.xlint>
+        <comp.xlint>-Xlint:all,-serial,-exports</comp.xlint>
     </properties>
+
     <dependencies>
         <!--Other modules-->
         <dependency>

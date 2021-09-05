@@ -31,6 +31,12 @@
     </parent>
 
     <properties>
+        <jdoc.doclint>none</jdoc.doclint>
+        <!-- XXX deprecated comes from commonj.sdo which we don't want to touch -->
+        <comp.xlint>-Xlint:all,-serial,-deprecation,-dep-ann</comp.xlint>
+        <comp.test.xlint>-Xlint:none</comp.test.xlint>
+        <comp.xdoclint>-Xdoclint:none</comp.xdoclint>
+
         <gen.src.dir>${project.build.directory}/generated-sources/dependency-sources</gen.src.dir>
         <gen.zip.dir>${project.build.directory}/generated-sources/zip-sources</gen.zip.dir>
 
