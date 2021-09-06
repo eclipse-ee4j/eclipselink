@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,7 +30,7 @@ import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 public final class TableVariableDeclarationTest extends JPQLParserTest {
 
     @Test
-    public final void buildBuildExpression_01() throws Exception {
+    public final void buildBuildExpression_01() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE('DEPT') d WHERE e.dept = d";
 
@@ -47,7 +47,7 @@ public final class TableVariableDeclarationTest extends JPQLParserTest {
     }
 
     @Test
-    public final void buildBuildExpression_02() throws Exception {
+    public final void buildBuildExpression_02() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE('DEPT') AS d WHERE e.dept = d";
 
@@ -64,7 +64,7 @@ public final class TableVariableDeclarationTest extends JPQLParserTest {
     }
 
     @Test
-    public final void buildBuildExpression_03() throws Exception {
+    public final void buildBuildExpression_03() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE('DEPT') AS WHERE e.dept = d";
 
@@ -90,7 +90,7 @@ public final class TableVariableDeclarationTest extends JPQLParserTest {
     }
 
     @Test
-    public final void buildBuildExpression_04() throws Exception {
+    public final void buildBuildExpression_04() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE() WHERE e.dept = d";
 
@@ -116,7 +116,7 @@ public final class TableVariableDeclarationTest extends JPQLParserTest {
     }
 
     @Test
-    public final void buildBuildExpression_05() throws Exception {
+    public final void buildBuildExpression_05() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE('DEPT' WHERE e.dept = d";
 
@@ -145,7 +145,7 @@ public final class TableVariableDeclarationTest extends JPQLParserTest {
     }
 
     @Test
-    public final void buildBuildExpression_06() throws Exception {
+    public final void buildBuildExpression_06() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE('DEPT' WHERE e.dept = d";
 
@@ -174,7 +174,7 @@ public final class TableVariableDeclarationTest extends JPQLParserTest {
     }
 
     @Test
-    public final void buildBuildExpression_07() throws Exception {
+    public final void buildBuildExpression_07() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE d WHERE e.dept = d";
 
@@ -195,7 +195,7 @@ public final class TableVariableDeclarationTest extends JPQLParserTest {
     }
 
     @Test
-    public final void buildBuildExpression_08() throws Exception {
+    public final void buildBuildExpression_08() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE AS d WHERE e.dept = d";
 
@@ -216,7 +216,7 @@ public final class TableVariableDeclarationTest extends JPQLParserTest {
     }
 
     @Test
-    public final void buildBuildExpression_09() throws Exception {
+    public final void buildBuildExpression_09() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE 'DEPT') AS d WHERE e.dept = d";
 
@@ -237,7 +237,7 @@ public final class TableVariableDeclarationTest extends JPQLParserTest {
     }
 
     @Test
-    public final void buildBuildExpression_10() throws Exception {
+    public final void buildBuildExpression_10() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE WHERE e.dept = d";
 
@@ -267,7 +267,7 @@ public final class TableVariableDeclarationTest extends JPQLParserTest {
     }
 
     @Test
-    public final void buildBuildExpression_11() throws Exception {
+    public final void buildBuildExpression_11() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE, Address a";
 
@@ -288,7 +288,7 @@ public final class TableVariableDeclarationTest extends JPQLParserTest {
     }
 
     @Test
-    public final void buildBuildExpression_12() throws Exception {
+    public final void buildBuildExpression_12() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE";
 
@@ -308,7 +308,7 @@ public final class TableVariableDeclarationTest extends JPQLParserTest {
     }
 
     @Test
-    public final void buildBuildExpression_13() throws Exception {
+    public final void buildBuildExpression_13() {
 
         String jpqlQuery = "SELECT e FROM TABLE('DEPT') d";
 
@@ -321,7 +321,7 @@ public final class TableVariableDeclarationTest extends JPQLParserTest {
     }
 
     @Test
-    public final void buildBuildExpression_14() throws Exception {
+    public final void buildBuildExpression_14() {
 
         String jpqlQuery = "SELECT e FROM TABLE('DEPT') AS d";
 
@@ -334,7 +334,7 @@ public final class TableVariableDeclarationTest extends JPQLParserTest {
     }
 
     @Test
-    public final void buildBuildExpression_15() throws Exception {
+    public final void buildBuildExpression_15() {
 
         String jpqlQuery = "SELECT e FROM TABLE('DEPT') AS d, Employee e";
 

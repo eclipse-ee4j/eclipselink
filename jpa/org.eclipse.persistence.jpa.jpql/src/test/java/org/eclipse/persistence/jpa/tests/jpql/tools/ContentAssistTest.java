@@ -120,11 +120,11 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
                                           Iterable<String> proposals) {
 
         // In case the Iterable is read-only
-        List<String> expectedProposals = new ArrayList<String>();
+        List<String> expectedProposals = new ArrayList<>();
         CollectionTools.addAll(expectedProposals, proposals);
 
         ContentAssistProposals contentAssistProposals = buildContentAssistProposals(jpqlQuery, position);
-        List<String> unexpectedProposals = new ArrayList<String>();
+        List<String> unexpectedProposals = new ArrayList<>();
 
         // Entities
         for (IEntity entity : contentAssistProposals.abstractSchemaTypes()) {
@@ -170,14 +170,14 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
         }
 
         // The remaining proposals were not part of any proposal list
-        List<String> proposalsNotRemoved = new ArrayList<String>();
+        List<String> proposalsNotRemoved = new ArrayList<>();
         CollectionTools.addAll(proposalsNotRemoved, expectedProposals);
 
         return new List[] { proposalsNotRemoved, unexpectedProposals };
     }
 
     protected List<String> classNames() {
-        List<String> classNames = new ArrayList<String>();
+        List<String> classNames = new ArrayList<>();
         classNames.add(Address      .class.getName());
         classNames.add(ArrayList    .class.getName());
         classNames.add(Employee     .class.getName());
@@ -193,7 +193,7 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
 
     protected List<String> columnNames(String tableName) {
 
-        List<String> columnNames = new ArrayList<String>();
+        List<String> columnNames = new ArrayList<>();
 
         if ("EMPLOYEE".equals(tableName)) {
             columnNames.add("ADDRESS");
@@ -245,7 +245,7 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
     }
 
     protected final Iterable<String> entityNames() throws Exception {
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         for (IEntity entity : entities()) {
             names.add(entity.getName());
         }
@@ -254,7 +254,7 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
 
     protected List<String> enumConstants() {
 
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
 
         for (Enum<EnumType> enumType : EnumType.values()) {
             names.add(enumType.name());
@@ -264,7 +264,7 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
     }
 
     protected List<String> enumTypes() {
-        List<String> classNames = new ArrayList<String>();
+        List<String> classNames = new ArrayList<>();
         classNames.add(EnumType  .class.getName());
         classNames.add(AccessType.class.getName());
         return classNames;
@@ -272,7 +272,7 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
 
     protected final Iterable<String> filter(Iterable<String> proposals, String startsWith) {
 
-        List<String> results = new ArrayList<String>();
+        List<String> results = new ArrayList<>();
 
         for (String proposal : proposals) {
             if (ExpressionTools.startWithIgnoreCase(proposal, startsWith)) {
@@ -344,7 +344,7 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
     }
 
     protected final List<String> joinIdentifiers() {
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add(INNER_JOIN);
         proposals.add(INNER_JOIN_FETCH);
         proposals.add(JOIN);
@@ -357,7 +357,7 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
     }
 
     protected final List<String> joinOnlyIdentifiers() {
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add(INNER_JOIN);
         proposals.add(JOIN);
         proposals.add(LEFT_JOIN);
@@ -374,7 +374,7 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
     }
 
     protected final Iterable<String> relationshipAndCollectionFieldNames(Class<?> persistentType) throws Exception {
-        Set<String> uniqueNames = new HashSet<String>();
+        Set<String> uniqueNames = new HashSet<>();
         CollectionTools.addAll(uniqueNames, relationshipFieldNames(persistentType));
         CollectionTools.addAll(uniqueNames, collectionValuedFieldNames(persistentType));
         return uniqueNames;
@@ -407,7 +407,7 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
             return Collections.emptyList();
         }
 
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         IType type = (allowedType != null) ? getPersistenceUnit().getTypeRepository().getType(allowedType) : null;
 
         for (IMapping mapping : managedType.mappings()) {
@@ -455,7 +455,7 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
 
     protected List<String> tableNames() {
 
-        List<String> tableNames = new ArrayList<String>();
+        List<String> tableNames = new ArrayList<>();
         tableNames.add("ADDRESS");
         tableNames.add("EMPLOYEE");
         tableNames.add("EMPLOYEE_SEQ");
@@ -493,7 +493,7 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
 
         List<String>[] results = buildResults(jpqlQuery, position, Collections.<String>emptyList());
         List<String> expectedEroposals = results[1];
-        List<String> unexpectedProposals = new ArrayList<String>();
+        List<String> unexpectedProposals = new ArrayList<>();
 
         for (String proposal : proposals) {
             if (expectedEroposals.remove(proposal)) {

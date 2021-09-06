@@ -319,7 +319,7 @@ public class DeclarationResolver extends Resolver {
      * if none were defined
      */
     public Set<String> getResultVariables() {
-        return new HashSet<String>(resultVariables.values());
+        return new HashSet<>(resultVariables.values());
     }
 
     /**
@@ -364,9 +364,9 @@ public class DeclarationResolver extends Resolver {
      */
     protected void initialize(JPQLQueryContext queryContext) {
         this.queryContext    = queryContext;
-        this.resolvers       = new HashMap<String, Resolver>();
-        this.declarations    = new LinkedList<Declaration>();
-        this.resultVariables = new HashMap<IdentificationVariable, String>();
+        this.resolvers       = new HashMap<>();
+        this.declarations    = new LinkedList<>();
+        this.resultVariables = new HashMap<>();
     }
 
     /**

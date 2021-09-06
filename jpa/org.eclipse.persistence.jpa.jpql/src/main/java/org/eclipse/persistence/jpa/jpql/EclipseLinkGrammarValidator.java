@@ -57,7 +57,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * @author Pascal Filion
  */
 public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
-                                         implements EclipseLinkExpressionVisitor {
+        implements EclipseLinkExpressionVisitor {
 
     private InExpressionVisitor inExpressionVisitor;
     private InExpressionWithNestedArrayVisitor inExpressionWithNestedArrayVisitor;
@@ -106,7 +106,7 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
             protected boolean hasComma(DatabaseType expression) {
                 // If the second expression is not specified, then the comma is not needed
                 return expression.hasComma() ||
-                      !expression.hasSecondExpression();
+                        !expression.hasSecondExpression();
             }
             @Override
             protected boolean hasFirstExpression(DatabaseType expression) {
@@ -121,9 +121,9 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
                 // The parenthesis are optional unless one the following
                 // items is specified, then '(' is required
                 return !(expression.hasFirstExpression()  ||
-                         expression.hasComma()            ||
-                         expression.hasSecondExpression() ||
-                         expression.hasRightParenthesis());
+                        expression.hasComma()            ||
+                        expression.hasSecondExpression() ||
+                        expression.hasRightParenthesis());
             }
             @Override
             public boolean hasRightParenthesis(DatabaseType expression) {
@@ -133,9 +133,9 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
                 // The parenthesis are optional unless one the following
                 // items is specified, then ')' is required
                 return !(expression.hasLeftParenthesis()  ||
-                         expression.hasFirstExpression()  ||
-                         expression.hasComma()            ||
-                         expression.hasSecondExpression());
+                        expression.hasFirstExpression()  ||
+                        expression.hasComma()            ||
+                        expression.hasSecondExpression());
             }
             @Override
             protected boolean hasSecondExpression(DatabaseType expression) {
@@ -182,9 +182,9 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
             @Override
             protected int lengthBeforeEncapsulatedExpression(ExtractExpression expression) {
                 return expression.getDatePart().length() +
-                       (expression.hasSpaceAfterDatePart() ? 1 : 0) +
-                       (expression.hasFrom() ? 4 /* FROM */ : 0) +
-                       (expression.hasSpaceAfterFrom() ? 1 : 0);
+                        (expression.hasSpaceAfterDatePart() ? 1 : 0) +
+                        (expression.hasFrom() ? 4 /* FROM */ : 0) +
+                        (expression.hasSpaceAfterFrom() ? 1 : 0);
             }
             @Override
             public String rightParenthesisMissingKey(ExtractExpression expression) {
@@ -373,8 +373,8 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
         if (!multipleSelectItemsAllowed) {
             Expression parent = expression.getParent();
             multipleSelectItemsAllowed = isOwnedByFromClause  (parent) ||
-                                         isOwnedByUnionClause (parent) ||
-                                         isOwnedByInExpression(parent);
+                    isOwnedByUnionClause (parent) ||
+                    isOwnedByInExpression(parent);
         }
 
         super.validateAbstractSelectClause(expression, multipleSelectItemsAllowed);
@@ -402,12 +402,12 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
                 if (!expression.hasDatabaseType()) {
 
                     int startPosition = position(expression) +
-                                        4 /* CAST */ +
-                                        (expression.hasLeftParenthesis() ? 1 : 0) +
-                                        length(expression.getExpression()) +
-                                        (expression.hasSpaceAfterExpression() ? 1 : 0) +
-                                        (expression.hasAs() ? 2 : 0) +
-                                        (expression.hasSpaceAfterAs() ? 1 : 0);
+                            4 /* CAST */ +
+                            (expression.hasLeftParenthesis() ? 1 : 0) +
+                            length(expression.getExpression()) +
+                            (expression.hasSpaceAfterExpression() ? 1 : 0) +
+                            (expression.hasAs() ? 2 : 0) +
+                            (expression.hasSpaceAfterAs() ? 1 : 0);
 
                     addProblem(expression, startPosition, CastExpression_MissingDatabaseType);
                 }
@@ -438,14 +438,14 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
         }
         else {
 
-                validateAbstractSingleEncapsulatedExpression(expression, extractExpressionHelper());
+            validateAbstractSingleEncapsulatedExpression(expression, extractExpressionHelper());
 
             // Missing date part
             if (expression.hasLeftParenthesis() && !expression.hasDatePart()) {
 
                 int startPosition = position(expression) +
-                                    7 /* EXTRACT */ +
-                                    (expression.hasLeftParenthesis() ? 1 : 0);
+                        7 /* EXTRACT */ +
+                        (expression.hasLeftParenthesis() ? 1 : 0);
 
                 addProblem(expression, startPosition, ExtractExpression_MissingDatePart);
             }
@@ -478,10 +478,10 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
                 int endPosition   = startPosition;
 
                 addProblem(
-                    expression,
-                    startPosition,
-                    endPosition,
-                    RegexpExpression_MissingStringExpression
+                        expression,
+                        startPosition,
+                        endPosition,
+                        RegexpExpression_MissingStringExpression
                 );
             }
             else {
@@ -494,10 +494,10 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
                     int endPosition   = startPosition + length(stringExpression);
 
                     addProblem(
-                        expression,
-                        startPosition,
-                        endPosition,
-                        RegexpExpression_InvalidStringExpression
+                            expression,
+                            startPosition,
+                            endPosition,
+                            RegexpExpression_InvalidStringExpression
                     );
                 }
                 // Validate string expression
@@ -510,10 +510,10 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
             if (!expression.hasPatternValue()) {
 
                 int startPosition = position(expression) +
-                                    length(expression.getStringExpression()) +
-                                    (expression.hasSpaceAfterStringExpression() ? 1 : 0) +
-                                    6 /* REGEXP */ +
-                                    (expression.hasSpaceAfterIdentifier() ? 1 : 0);
+                        length(expression.getStringExpression()) +
+                        (expression.hasSpaceAfterStringExpression() ? 1 : 0) +
+                        6 /* REGEXP */ +
+                        (expression.hasSpaceAfterIdentifier() ? 1 : 0);
 
                 int endPosition = startPosition;
 
@@ -526,18 +526,18 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
                 if (!isValid(patternValue, PatternValueBNF.ID)) {
 
                     int startPosition = position(expression) +
-                                        length(expression.getStringExpression()) +
-                                        (expression.hasSpaceAfterStringExpression() ? 1 : 0) +
-                                        6 /* REGEXP */ +
-                                        (expression.hasSpaceAfterIdentifier() ? 1 : 0);
+                            length(expression.getStringExpression()) +
+                            (expression.hasSpaceAfterStringExpression() ? 1 : 0) +
+                            6 /* REGEXP */ +
+                            (expression.hasSpaceAfterIdentifier() ? 1 : 0);
 
                     int endPosition = startPosition + length(patternValue);
 
                     addProblem(
-                        expression,
-                        startPosition,
-                        endPosition,
-                        RegexpExpression_InvalidPatternValue
+                            expression,
+                            startPosition,
+                            endPosition,
+                            RegexpExpression_InvalidPatternValue
                     );
                 }
                 // Validate pattern value
@@ -576,10 +576,10 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
             if (!expression.hasIdentificationVariable()) {
 
                 int startPosition = position(expression) +
-                                    length(tableExpression) +
-                                    (expression.hasSpaceAfterTableExpression() ? 1 : 0) +
-                                    (expression.hasAs() ? 2 : 0) +
-                                    (expression.hasSpaceAfterAs() ? 1 : 0);
+                        length(tableExpression) +
+                        (expression.hasSpaceAfterTableExpression() ? 1 : 0) +
+                        (expression.hasAs() ? 2 : 0) +
+                        (expression.hasSpaceAfterAs() ? 1 : 0);
 
                 addProblem(expression, startPosition, TableVariableDeclaration_MissingIdentificationVariable);
             }
@@ -601,10 +601,10 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
         else if (!expression.hasQuery()) {
 
             int startPosition = position(expression) +
-                                expression.getIdentifier().length() +
-                                (expression.hasSpaceAfterIdentifier() ? 1 : 0) +
-                                (expression.hasAll() ? 3 : 0) +
-                                (expression.hasSpaceAfterAll() ? 1 : 0);
+                    expression.getIdentifier().length() +
+                    (expression.hasSpaceAfterIdentifier() ? 1 : 0) +
+                    (expression.hasAll() ? 3 : 0) +
+                    (expression.hasSpaceAfterAll() ? 1 : 0);
 
             addProblem(expression, startPosition, UnionClause_MissingExpression);
         }

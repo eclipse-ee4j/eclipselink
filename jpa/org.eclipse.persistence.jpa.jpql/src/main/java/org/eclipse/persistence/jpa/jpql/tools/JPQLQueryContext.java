@@ -270,7 +270,7 @@ public abstract class JPQLQueryContext {
 
         try {
             visitor.parameterName   = parameterName;
-            visitor.inputParameters = new ArrayList<InputParameter>();
+            visitor.inputParameters = new ArrayList<>();
 
             jpqlExpression.accept(visitor);
 
@@ -713,7 +713,7 @@ public abstract class JPQLQueryContext {
         this.tolerant       = true;
         this.currentContext = this;
         this.jpqlGrammar    = jpqlGrammar;
-        this.contexts       = new HashMap<Expression, JPQLQueryContext>();
+        this.contexts       = new HashMap<>();
     }
 
     /**

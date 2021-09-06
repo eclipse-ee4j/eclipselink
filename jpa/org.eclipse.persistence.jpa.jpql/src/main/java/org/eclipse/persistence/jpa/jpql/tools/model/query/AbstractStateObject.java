@@ -277,7 +277,7 @@ public abstract class AbstractStateObject implements StateObject {
         queryBNF.setFallbackBNFId(queryBNFId);
         queryBNF.registerQueryBNF(queryBNFId);
 
-        final List<StateObject> items = new ArrayList<StateObject>();
+        final List<StateObject> items = new ArrayList<>();
 
         try {
             StateObject stateObject = buildStateObject(jpqlFragment, queryBNF.getId());
@@ -316,9 +316,9 @@ public abstract class AbstractStateObject implements StateObject {
 
     @Override
     public final Iterable<StateObject> children() {
-        List<StateObject> children = new ArrayList<StateObject>();
+        List<StateObject> children = new ArrayList<>();
         addChildren(children);
-        return new SnapshotCloneIterable<StateObject>(children);
+        return new SnapshotCloneIterable<>(children);
     }
 
     @Override
@@ -478,7 +478,9 @@ public abstract class AbstractStateObject implements StateObject {
      * @param stateObjects The list of {@link StateObject} to have this one as its parent
      * @return The given list of {@link StateObject}
      */
-    protected <T extends StateObject> T[] parent(T... stateObjects) {
+    @SafeVarargs
+    @SuppressWarnings({"varargs"})
+    protected final <T extends StateObject> T[] parent(T... stateObjects) {
         for (StateObject stateObject : stateObjects) {
             parent(stateObject);
         }

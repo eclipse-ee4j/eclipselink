@@ -60,7 +60,7 @@ public abstract class AbstractListHolderStateObject<T extends StateObject> exten
      */
     protected AbstractListHolderStateObject(StateObject parent, List<? extends T> items) {
         super(parent);
-        this.items = new ArrayList<T>(items);
+        this.items = new ArrayList<>(items);
         parent(items);
     }
 
@@ -71,6 +71,8 @@ public abstract class AbstractListHolderStateObject<T extends StateObject> exten
      * @param items The list of {@link StateObject StateObjects} to add as children to this one
      * @exception NullPointerException The given parent cannot be <code>null</code>
      */
+    @SafeVarargs
+    @SuppressWarnings({"varargs"})
     protected AbstractListHolderStateObject(StateObject parent, T... items) {
         super(parent);
         this.items = new ArrayList<>();
@@ -150,12 +152,12 @@ public abstract class AbstractListHolderStateObject<T extends StateObject> exten
     @Override
     protected void initialize() {
         super.initialize();
-        items = new ArrayList<T>();
+        items = new ArrayList<>();
     }
 
     @Override
     public ListIterable<? extends T> items() {
-        return new SnapshotCloneListIterable<T>(items);
+        return new SnapshotCloneListIterable<>(items);
     }
 
     @Override

@@ -226,7 +226,7 @@ public class CollectionMemberDeclarationStateObject extends AbstractStateObject
 
     @Override
     public ListIterable<IdentificationVariableStateObject> identificationVariables() {
-        return new SingleElementListIterable<IdentificationVariableStateObject>(identificationVariable);
+        return new SingleElementListIterable<>(identificationVariable);
     }
 
     @Override

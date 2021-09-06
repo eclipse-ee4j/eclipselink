@@ -309,7 +309,7 @@ public abstract class AbstractJPQLQueryHelper {
         }
 
         // Now find the closest type for each location
-        TreeSet<IType> types = new TreeSet<IType>(buildNumericTypeComparator());
+        TreeSet<IType> types = new TreeSet<>(buildNumericTypeComparator());
 
         for (InputParameter inputParameter : inputParameters) {
             IType type = queryContext.getParameterType(inputParameter);
@@ -449,7 +449,7 @@ public abstract class AbstractJPQLQueryHelper {
      * problems} if any was found
      */
     public List<JPQLQueryProblem> validate() {
-        List<JPQLQueryProblem> problems = new LinkedList<JPQLQueryProblem>();
+        List<JPQLQueryProblem> problems = new LinkedList<>();
         validate(getJPQLExpression(), problems);
         return problems;
     }
@@ -473,7 +473,7 @@ public abstract class AbstractJPQLQueryHelper {
      * problems} if any was found
      */
     public List<JPQLQueryProblem> validateGrammar() {
-        List<JPQLQueryProblem> problems = new LinkedList<JPQLQueryProblem>();
+        List<JPQLQueryProblem> problems = new LinkedList<>();
         validateGrammar(getJPQLExpression(), problems);
         return problems;
     }
@@ -503,7 +503,7 @@ public abstract class AbstractJPQLQueryHelper {
      * problems} if any was found
      */
     public List<JPQLQueryProblem> validateSemantic() {
-        List<JPQLQueryProblem> problems = new LinkedList<JPQLQueryProblem>();
+        List<JPQLQueryProblem> problems = new LinkedList<>();
         validateSemantic(getJPQLExpression(), problems);
         return problems;
     }

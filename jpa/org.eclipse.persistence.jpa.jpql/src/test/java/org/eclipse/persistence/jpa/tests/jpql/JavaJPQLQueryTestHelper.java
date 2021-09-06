@@ -65,10 +65,10 @@ public abstract class JavaJPQLQueryTestHelper implements JPQLQueryTestHelper {
     protected abstract IMappingBuilder<Member> buildMappingBuilder();
 
     @Override
-    public IORMConfiguration getORMConfiguration(String ormXmlFileName) throws Exception {
+    public IORMConfiguration getORMConfiguration(String ormXmlFileName) {
 
         if (ormConfigurations == null) {
-            ormConfigurations = new HashMap<String, IORMConfiguration>();
+            ormConfigurations = new HashMap<>();
         }
 
         IORMConfiguration ormConfiguration = ormConfigurations.get(ormXmlFileName);
@@ -82,7 +82,7 @@ public abstract class JavaJPQLQueryTestHelper implements JPQLQueryTestHelper {
     }
 
     @Override
-    public IManagedTypeProvider getPersistenceUnit() throws Exception {
+    public IManagedTypeProvider getPersistenceUnit() {
         if (persistenceUnit == null) {
             persistenceUnit = new JavaManagedTypeProvider(buildMappingBuilder());
             initializeManagedTypeProvider();
@@ -111,18 +111,18 @@ public abstract class JavaJPQLQueryTestHelper implements JPQLQueryTestHelper {
     }
 
     @Override
-    public void setUp() throws Exception {
+    public void setUp() {
     }
 
     @Override
-    public void setUpBefore() throws Exception {
+    public void setUpBefore() {
     }
 
     @Override
-    public void tearDown() throws Exception {
+    public void tearDown() {
     }
 
     @Override
-    public void tearDownAfter() throws Exception {
+    public void tearDownAfter() {
     }
 }

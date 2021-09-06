@@ -217,13 +217,13 @@ public abstract class AbstractFromClauseStateObject extends AbstractListHolderSt
      */
     public Iterable<IdentificationVariableStateObject> identificationVariables() {
 
-        List<IdentificationVariableStateObject> stateObjects = new ArrayList<IdentificationVariableStateObject>();
+        List<IdentificationVariableStateObject> stateObjects = new ArrayList<>();
 
         for (VariableDeclarationStateObject stateObject : items()) {
             CollectionTools.addAll(stateObjects, stateObject.identificationVariables());
         }
 
-        return new SnapshotCloneIterable<IdentificationVariableStateObject>(stateObjects);
+        return new SnapshotCloneIterable<>(stateObjects);
     }
 
     @Override

@@ -89,7 +89,7 @@ public class EclipseLinkDeclarationTest extends DeclarationTest {
         return declaration;
     }
 
-    private void test_Declaration_001(boolean tolerant) throws Exception {
+    private void test_Declaration_001(boolean tolerant) {
 
         String jpqlQuery = "select e from Employee e, TABLE('EMP') EMP";
 
@@ -112,7 +112,7 @@ public class EclipseLinkDeclarationTest extends DeclarationTest {
     }
 
     @Test
-    public void test_Declaration_002() throws Exception {
+    public void test_Declaration_002() {
 
         String jpqlQuery = "select e from Employee e, TABLE('EMP')";
 
@@ -124,7 +124,7 @@ public class EclipseLinkDeclarationTest extends DeclarationTest {
         );
     }
 
-    private void test_Declaration_003(boolean tolerant) throws Exception {
+    private void test_Declaration_003(boolean tolerant) {
 
         String jpqlQuery = "select e from TABLE('EMP') EMP";
 
@@ -145,7 +145,7 @@ public class EclipseLinkDeclarationTest extends DeclarationTest {
         test_Declaration_003(true);
     }
 
-    private void test_Declaration_004(boolean tolerant) throws Exception {
+    private void test_Declaration_004(boolean tolerant) {
 
         String jpqlQuery = "select e from jpql.query.Employee emp";
 
@@ -167,7 +167,7 @@ public class EclipseLinkDeclarationTest extends DeclarationTest {
     }
 
     @Test
-    public void test_Declaration_005() throws Exception {
+    public void test_Declaration_005() {
 
         String jpqlQuery = "select e from jpql.query.Employee";
 
@@ -178,7 +178,7 @@ public class EclipseLinkDeclarationTest extends DeclarationTest {
         );
     }
 
-    private void test_Declaration_006(boolean tolerant) throws Exception {
+    private void test_Declaration_006(boolean tolerant) {
 
         String jpqlQuery = "select e from (select a from Address a) e";
 
@@ -204,7 +204,7 @@ public class EclipseLinkDeclarationTest extends DeclarationTest {
         test_Declaration_006(true);
     }
 
-    private void test_Declaration_007(boolean tolerant) throws Exception {
+    private void test_Declaration_007(boolean tolerant) {
 
         String jpqlQuery = "select e from (select a from Address a)";
 
@@ -230,7 +230,7 @@ public class EclipseLinkDeclarationTest extends DeclarationTest {
         test_Declaration_007(true);
     }
 
-    private void test_Declaration_008(boolean tolerant) throws Exception {
+    private void test_Declaration_008(boolean tolerant) {
 
         String jpqlQuery = "select e from Employee e, (select a from Address a) a";
 

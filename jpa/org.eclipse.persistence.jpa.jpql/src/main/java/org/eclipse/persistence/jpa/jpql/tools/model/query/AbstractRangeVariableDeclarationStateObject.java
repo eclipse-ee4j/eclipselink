@@ -187,7 +187,7 @@ public abstract class AbstractRangeVariableDeclarationStateObject extends Abstra
 
     @Override
     public ListIterable<IdentificationVariableStateObject> identificationVariables() {
-        return new SingleElementListIterable<IdentificationVariableStateObject>(identificationVariable);
+        return new SingleElementListIterable<>(identificationVariable);
     }
 
     @Override

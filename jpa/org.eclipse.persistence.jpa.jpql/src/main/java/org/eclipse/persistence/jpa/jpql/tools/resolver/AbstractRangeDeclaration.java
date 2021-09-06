@@ -52,7 +52,7 @@ public abstract class AbstractRangeDeclaration extends Declaration {
      */
     protected void addJoin(Join join) {
         if (joins == null) {
-            joins = new LinkedList<Join>();
+            joins = new LinkedList<>();
         }
         joins.add(join);
     }

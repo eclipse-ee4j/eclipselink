@@ -852,7 +852,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
                 IType type = queryContext.getType(expression);
                 TypeHelper typeHelper = queryContext.getTypeHelper();
                 return typeHelper.isCollectionType(type) ||
-                       typeHelper.isMapType(type);
+                        typeHelper.isMapType(type);
             }
         };
     }
@@ -1034,7 +1034,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         }
 
         // This will filter the property mappings
-        return new AndFilter<IMapping>(new MappingTypeFilter(type, this), filter);
+        return new AndFilter<>(new MappingTypeFilter(type, this), filter);
     }
 
     protected Filter<IMapping> buildMappingFilter(Expression expression) {
@@ -1059,7 +1059,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
                 IType type = queryContext.getType(expression);
                 TypeHelper typeHelper = queryContext.getTypeHelper();
                 return !typeHelper.isCollectionType(type) &&
-                       !typeHelper.isMapType(type);
+                        !typeHelper.isMapType(type);
             }
         };
     }
@@ -1838,16 +1838,16 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
      */
     protected void initialize() {
 
-        helpers = new HashMap<Class<?>, Object>();
-        lockedExpressions = new Stack<Expression>();
+        helpers = new HashMap<>();
+        lockedExpressions = new Stack<>();
 
-        virtualSpaces = new Stack<Integer>();
+        virtualSpaces = new Stack<>();
         virtualSpaces.add(0);
 
-        corrections = new Stack<Integer>();
+        corrections = new Stack<>();
         corrections.add(0);
 
-        identifierFilters = new HashMap<String, Filter<Expression>>();
+        identifierFilters = new HashMap<>();
         identifierFilters.put(DIFFERENT,             VALID_IDENTIFIER_FILTER);
         identifierFilters.put(EQUAL,                 VALID_IDENTIFIER_FILTER);
         identifierFilters.put(MEMBER,                VALID_IDENTIFIER_FILTER);
@@ -8569,7 +8569,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
             if (suffix.length() == 0) {
                 return filter;
             }
-            return new AndFilter<IMapping>(filter, buildMappingNameFilter(suffix));
+            return new AndFilter<>(filter, buildMappingNameFilter(suffix));
         }
 
         protected Filter<IMapping> buildMappingNameFilter(final String suffix) {
@@ -8590,7 +8590,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
                 return Collections.emptyList();
             }
 
-            ArrayList<IMapping> mappings = new ArrayList<IMapping>();
+            ArrayList<IMapping> mappings = new ArrayList<>();
             addFilteredMappings(managedType, mappings);
             return mappings;
         }
@@ -9332,7 +9332,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
                 return CollectionTools.list(ORDER_BY);
             }
 
-            return new LinkedList<String>();
+            return new LinkedList<>();
         }
 
         /**

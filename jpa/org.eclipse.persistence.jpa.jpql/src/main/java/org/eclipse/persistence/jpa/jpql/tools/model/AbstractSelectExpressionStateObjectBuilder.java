@@ -43,7 +43,7 @@ public abstract class AbstractSelectExpressionStateObjectBuilder extends Abstrac
      */
     protected AbstractSelectExpressionStateObjectBuilder(SelectClauseStateObject parent) {
         super(parent);
-        stateObjectList = new ArrayList<StateObject>();
+        stateObjectList = new ArrayList<>();
     }
 
     @Override

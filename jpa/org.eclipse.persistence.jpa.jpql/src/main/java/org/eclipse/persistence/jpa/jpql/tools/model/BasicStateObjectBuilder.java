@@ -322,7 +322,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
     protected <T extends StateObject> List<T> buildChildren(Expression expression) {
 
         StateObject oldStateObject = stateObject;
-        List<T> stateObjects = new ArrayList<T>();
+        List<T> stateObjects = new ArrayList<>();
 
         for (Expression child : children(expression)) {
             child.accept(this);
@@ -1733,7 +1733,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
         }
 
         void reset() {
-            children = new ArrayList<Expression>();
+            children = new ArrayList<>();
         }
 
         @Override

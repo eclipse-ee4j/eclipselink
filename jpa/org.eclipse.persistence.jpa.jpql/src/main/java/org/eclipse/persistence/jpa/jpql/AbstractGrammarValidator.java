@@ -294,7 +294,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             @Override
             public int lengthBeforeEncapsulatedExpression(AvgFunction expression) {
                 return (expression.hasDistinct() ? 8 /* DISTINCT */ : 0) +
-                       (expression.hasSpaceAfterDistinct() ? 1 : 0);
+                        (expression.hasSpaceAfterDistinct() ? 1 : 0);
             }
             @Override
             public String rightParenthesisMissingKey(AvgFunction expression) {
@@ -380,7 +380,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             @Override
             public int lengthBeforeEncapsulatedExpression(CountFunction expression) {
                 return (expression.hasDistinct() ? 8 /* DISTINCT */ : 0) +
-                       (expression.hasSpaceAfterDistinct() ? 1 : 0);
+                        (expression.hasSpaceAfterDistinct() ? 1 : 0);
             }
             @Override
             public String rightParenthesisMissingKey(CountFunction expression) {
@@ -493,19 +493,19 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                 switch (expression.getParameterCount()) {
                     case ONE: {
                         return isValid(
-                            expression.getExpression(),
-                            expression.getEncapsulatedExpressionQueryBNFId()
+                                expression.getExpression(),
+                                expression.getEncapsulatedExpressionQueryBNFId()
                         );
                     }
                     case ONE_OR_MANY: {
                         return isValidWithChildCollectionBypass(
-                            expression.getExpression(),
-                            expression.getEncapsulatedExpressionQueryBNFId()
+                                expression.getExpression(),
+                                expression.getEncapsulatedExpressionQueryBNFId()
                         );
                     }
                     case ZERO_OR_ONE: {
                         return !expression.hasExpression() ||
-                               isValid(expression.getExpression(), expression.getEncapsulatedExpressionQueryBNFId());
+                                isValid(expression.getExpression(), expression.getEncapsulatedExpressionQueryBNFId());
                     }
                     default: {
                         return true;
@@ -519,8 +519,8 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             @Override
             protected int lengthBeforeEncapsulatedExpression(FunctionExpression expression) {
                 return expression.getFunctionName().length() +
-                       (expression.hasComma() ? 1 : 0) +
-                       (expression.hasSpaceAfterComma() ? 1 : 0);
+                        (expression.hasComma() ? 1 : 0) +
+                        (expression.hasSpaceAfterComma() ? 1 : 0);
             }
             @Override
             public String rightParenthesisMissingKey(FunctionExpression expression) {
@@ -687,7 +687,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             @Override
             public int lengthBeforeEncapsulatedExpression(MaxFunction expression) {
                 return (expression.hasDistinct() ? 8 /* DISTINCT */ : 0) +
-                       (expression.hasSpaceAfterDistinct() ? 1 : 0);
+                        (expression.hasSpaceAfterDistinct() ? 1 : 0);
             }
             @Override
             public String rightParenthesisMissingKey(MaxFunction expression) {
@@ -713,7 +713,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             @Override
             public int lengthBeforeEncapsulatedExpression(MinFunction expression) {
                 return (expression.hasDistinct() ? 8 /* DISTINCT */ : 0) +
-                       (expression.hasSpaceAfterDistinct() ? 1 : 0);
+                        (expression.hasSpaceAfterDistinct() ? 1 : 0);
             }
             @Override
             public String rightParenthesisMissingKey(MinFunction expression) {
@@ -930,7 +930,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             @Override
             public int lengthBeforeEncapsulatedExpression(SumFunction expression) {
                 return (expression.hasDistinct() ? 8 /* DISTINCT */ : 0) +
-                       (expression.hasSpaceAfterDistinct() ? 1 : 0);
+                        (expression.hasSpaceAfterDistinct() ? 1 : 0);
             }
             @Override
             public String rightParenthesisMissingKey(SumFunction expression) {
@@ -1240,7 +1240,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         try {
             expression.accept(visitor);
             return visitor.whereClause  != null ||
-                   visitor.havingClause != null;
+                    visitor.havingClause != null;
         }
         finally {
             visitor.dispose();
@@ -1396,7 +1396,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         try {
             expression.accept(visitor);
             return visitor.whereClause  != null ||
-                   visitor.havingClause != null;
+                    visitor.havingClause != null;
         }
         finally {
             visitor.dispose();
@@ -1648,8 +1648,8 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 
             int startPosition = position(expression);
             int endPosition   = startPosition +
-                                expression.getIdentifier().length() +
-                                (expression.hasSpaceAfterIdentifier() ? 1 : 0);
+                    expression.getIdentifier().length() +
+                    (expression.hasSpaceAfterIdentifier() ? 1 : 0);
 
             addProblem(expression, startPosition, endPosition, missingConditionalExpressionMessageKey);
         }
@@ -1686,8 +1686,8 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
      * AbstractDoubleEncapsulatedExpression expression} being validated
      */
     protected <T extends AbstractDoubleEncapsulatedExpression>
-              void validateAbstractDoubleEncapsulatedExpression
-              (T expression, AbstractDoubleEncapsulatedExpressionHelper<T> helper) {
+    void validateAbstractDoubleEncapsulatedExpression
+    (T expression, AbstractDoubleEncapsulatedExpressionHelper<T> helper) {
 
         String identifier = helper.identifier(expression);
 
@@ -1702,8 +1702,8 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             if (!helper.hasFirstExpression(expression)) {
 
                 int startPosition = position(expression) +
-                                    identifier.length() +
-                                    1 /* '(' */;
+                        identifier.length() +
+                        1 /* '(' */;
 
                 addProblem(expression, startPosition, helper.firstExpressionMissingKey());
             }
@@ -1711,11 +1711,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             else if (!helper.isFirstExpressionValid(expression)) {
 
                 int startPosition = position(expression) +
-                                    identifier.length() +
-                                    1 /* ( */;
+                        identifier.length() +
+                        1 /* ( */;
 
                 int endPosition = startPosition +
-                                  helper.firstExpressionLength(expression);
+                        helper.firstExpressionLength(expression);
 
                 addProblem(expression, startPosition, endPosition, helper.firstExpressionInvalidKey());
             }
@@ -1727,9 +1727,9 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             if (!helper.hasComma(expression)) {
 
                 int startPosition = position(expression) +
-                                    identifier.length() +
-                                    1 /* ( */ +
-                                    helper.firstExpressionLength(expression);
+                        identifier.length() +
+                        1 /* ( */ +
+                        helper.firstExpressionLength(expression);
 
                 addProblem(expression, startPosition, helper.missingCommaKey());
             }
@@ -1740,11 +1740,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                 if (!helper.hasSecondExpression(expression)) {
 
                     int startPosition = position(expression) +
-                                        identifier.length() +
-                                        1 /* ( */ +
-                                        helper.firstExpressionLength(expression) +
-                                        (expression.hasComma() ? 1 : 0) +
-                                        (expression.hasSpaceAfterComma() ? 1 : 0);
+                            identifier.length() +
+                            1 /* ( */ +
+                            helper.firstExpressionLength(expression) +
+                            (expression.hasComma() ? 1 : 0) +
+                            (expression.hasSpaceAfterComma() ? 1 : 0);
 
                     addProblem(expression, startPosition, helper.secondExpressionMissingKey());
                 }
@@ -1752,11 +1752,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                 else if (!helper.isSecondExpressionValid(expression)) {
 
                     int startPosition = position(expression) +
-                                        identifier.length() +
-                                        1 /* ( */ +
-                                        helper.firstExpressionLength(expression) +
-                                        (expression.hasComma() ? 1 : 0) +
-                                        (expression.hasSpaceAfterComma() ? 1 : 0);
+                            identifier.length() +
+                            1 /* ( */ +
+                            helper.firstExpressionLength(expression) +
+                            (expression.hasComma() ? 1 : 0) +
+                            (expression.hasSpaceAfterComma() ? 1 : 0);
 
                     int endPosition = startPosition + helper.secondExpressionLength(expression);
 
@@ -1772,12 +1772,12 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         if (!helper.hasRightParenthesis(expression)) {
 
             int startPosition = position(expression) +
-                                identifier.length() +
-                                1 /* ( */ +
-                                helper.firstExpressionLength(expression) +
-                                (expression.hasComma() ? 1 : 0) +
-                                (expression.hasSpaceAfterComma() ? 1 : 0) +
-                                length(expression.getSecondExpression());
+                    identifier.length() +
+                    1 /* ( */ +
+                    helper.firstExpressionLength(expression) +
+                    (expression.hasComma() ? 1 : 0) +
+                    (expression.hasSpaceAfterComma() ? 1 : 0) +
+                    length(expression.getSecondExpression());
 
             addProblem(expression, startPosition, helper.rightParenthesisMissingKey(expression));
         }
@@ -1789,8 +1789,8 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         if (!expression.hasDeclaration()) {
 
             int startPosition = position(expression) +
-                                4 /* FROM */ +
-                                (expression.hasSpaceAfterFrom() ? 1 : 0);
+                    4 /* FROM */ +
+                    (expression.hasSpaceAfterFrom() ? 1 : 0);
 
             addProblem(expression, startPosition, AbstractFromClause_MissingIdentificationVariableDeclaration);
         }
@@ -1800,9 +1800,9 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             // Two identification variable declarations have to be separated by a comma and
             // the FROM clause cannot end with a comma
             validateCollectionSeparatedByComma(
-                declaration,
-                AbstractFromClause_IdentificationVariableDeclarationEndsWithComma,
-                AbstractFromClause_IdentificationVariableDeclarationIsMissingComma
+                    declaration,
+                    AbstractFromClause_IdentificationVariableDeclarationEndsWithComma,
+                    AbstractFromClause_IdentificationVariableDeclarationIsMissingComma
             );
 
             // Validate the declaration
@@ -1825,10 +1825,10 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         if (!expression.hasSelectExpression()) {
 
             int startPosition = position(expression) +
-                                6 /* SELECT */ +
-                                (expression.hasSpaceAfterSelect() ? 1 : 0) +
-                                (expression.hasDistinct() ? 8 : 0) +
-                                (expression.hasSpaceAfterDistinct() ? 1 : 0);
+                    6 /* SELECT */ +
+                    (expression.hasSpaceAfterSelect() ? 1 : 0) +
+                    (expression.hasDistinct() ? 8 : 0) +
+                    (expression.hasSpaceAfterDistinct() ? 1 : 0);
 
             addProblem(expression, startPosition, AbstractSelectClause_MissingSelectExpression);
         }
@@ -1842,10 +1842,10 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                 if (!multipleSelectItemsAllowed) {
 
                     int startPosition = position(expression) +
-                                        6 /* SELECT */ +
-                                        (expression.hasSpaceAfterSelect() ? 1 : 0) +
-                                        (expression.hasDistinct() ? 8 : 0) +
-                                        (expression.hasSpaceAfterDistinct() ? 1 : 0);
+                            6 /* SELECT */ +
+                            (expression.hasSpaceAfterSelect() ? 1 : 0) +
+                            (expression.hasDistinct() ? 8 : 0) +
+                            (expression.hasSpaceAfterDistinct() ? 1 : 0);
 
                     int endPosition = startPosition + length(selectExpression);
 
@@ -1860,10 +1860,10 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             else if (!isValid(selectExpression, expression.getSelectItemQueryBNFId())) {
 
                 int startPosition = position(expression) +
-                                    6 /* SELECT */ +
-                                    (expression.hasSpaceAfterSelect() ? 1 : 0) +
-                                    (expression.hasDistinct() ? 8 : 0) +
-                                    (expression.hasSpaceAfterDistinct() ? 1 : 0);
+                        6 /* SELECT */ +
+                        (expression.hasSpaceAfterSelect() ? 1 : 0) +
+                        (expression.hasDistinct() ? 8 : 0) +
+                        (expression.hasSpaceAfterDistinct() ? 1 : 0);
 
                 int endPosition = startPosition + length(selectExpression);
 
@@ -1882,16 +1882,16 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         if (!expression.hasFromClause()) {
 
             int startPosition = position(expression) +
-                                length(expression.getSelectClause()) +
-                                (expression.hasSpaceAfterSelect() ? 1 : 0);
+                    length(expression.getSelectClause()) +
+                    (expression.hasSpaceAfterSelect() ? 1 : 0);
 
             addProblem(expression, startPosition, AbstractSelectStatement_FromClauseMissing);
         }
     }
 
     protected <T extends AbstractSingleEncapsulatedExpression>
-              void validateAbstractSingleEncapsulatedExpression
-              (T expression, AbstractSingleEncapsulatedExpressionHelper<T> helper) {
+    void validateAbstractSingleEncapsulatedExpression
+            (T expression, AbstractSingleEncapsulatedExpressionHelper<T> helper) {
 
         String identifier = helper.identifier(expression);
 
@@ -1900,25 +1900,25 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             int startPosition = position(expression) + identifier.length();
 
             addProblem(
-                expression,
-                startPosition,
-                helper.leftParenthesisMissingKey(expression),
-                helper.arguments(expression)
+                    expression,
+                    startPosition,
+                    helper.leftParenthesisMissingKey(expression),
+                    helper.arguments(expression)
             );
         }
         // Missing encapsulated expression
         else if (helper.isEncapsulatedExpressionMissing(expression)) {
 
             int startPosition = position(expression) +
-                                identifier.length()  +
-                                1 /* '(' */          +
-                                helper.lengthBeforeEncapsulatedExpression(expression);
+                    identifier.length()  +
+                    1 /* '(' */          +
+                    helper.lengthBeforeEncapsulatedExpression(expression);
 
             addProblem(
-                expression,
-                startPosition,
-                helper.encapsulatedExpressionMissingKey(expression),
-                helper.arguments(expression)
+                    expression,
+                    startPosition,
+                    helper.encapsulatedExpressionMissingKey(expression),
+                    helper.arguments(expression)
             );
         }
         // Validate the encapsulated expression
@@ -1926,18 +1926,18 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             // The encapsulated expression is not valid
             if (!helper.isEncapsulatedExpressionValid(expression)) {
                 int startPosition = position(expression) +
-                                    identifier.length()  +
-                                    1 /* '(' */          +
-                                    helper.lengthBeforeEncapsulatedExpression(expression);
+                        identifier.length()  +
+                        1 /* '(' */          +
+                        helper.lengthBeforeEncapsulatedExpression(expression);
 
                 int endPosition = startPosition + helper.encapsulatedExpressionLength(expression);
 
                 addProblem(
-                    expression,
-                    startPosition,
-                    endPosition,
-                    helper.encapsulatedExpressionInvalidKey(expression),
-                    helper.arguments(expression)
+                        expression,
+                        startPosition,
+                        endPosition,
+                        helper.encapsulatedExpressionInvalidKey(expression),
+                        helper.arguments(expression)
                 );
             }
             // Now visit the encapsulated expression
@@ -1952,17 +1952,17 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             int startPosition = position(expression) + length(expression);
 
             addProblem(
-                expression,
-                startPosition,
-                helper.rightParenthesisMissingKey(expression),
-                helper.arguments(expression)
+                    expression,
+                    startPosition,
+                    helper.rightParenthesisMissingKey(expression),
+                    helper.arguments(expression)
             );
         }
     }
 
     protected <T extends AbstractTripleEncapsulatedExpression>
-              void validateAbstractTripleEncapsulatedExpression
-              (T expression, AbstractTripleEncapsulatedExpressionHelper<T> helper) {
+    void validateAbstractTripleEncapsulatedExpression
+            (T expression, AbstractTripleEncapsulatedExpressionHelper<T> helper) {
 
         String identifier = helper.identifier(expression);
 
@@ -1977,8 +1977,8 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             if (!helper.hasFirstExpression(expression)) {
 
                 int startPosition = position(expression) +
-                                    identifier.length() +
-                                    1 /* ( */;
+                        identifier.length() +
+                        1 /* ( */;
 
                 addProblem(expression, startPosition, helper.firstExpressionMissingKey());
             }
@@ -1986,8 +1986,8 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             else if (!helper.isFirstExpressionValid(expression)) {
 
                 int startPosition = position(expression) +
-                                    identifier.length() +
-                                    1 /* ( */;
+                        identifier.length() +
+                        1 /* ( */;
 
                 int endPosition = startPosition + helper.firstExpressionLength(expression);
 
@@ -1999,12 +1999,12 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 
             // Missing first comma
             if (helper.hasFirstExpression(expression) &&
-                !expression.hasFirstComma()) {
+                    !expression.hasFirstComma()) {
 
                 int startPosition = position(expression) +
-                                    identifier.length() +
-                                    1 /* ( */ +
-                                    helper.firstExpressionLength(expression);
+                        identifier.length() +
+                        1 /* ( */ +
+                        helper.firstExpressionLength(expression);
 
                 addProblem(expression, startPosition, helper.firstCommaMissingKey());
             }
@@ -2016,11 +2016,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                 if (!helper.hasSecondExpression(expression)) {
 
                     int startPosition = position(expression) +
-                                        identifier.length() +
-                                        1 /* ( */ +
-                                        helper.firstExpressionLength(expression) +
-                                        (expression.hasFirstComma() ? 1 : 0) +
-                                        (expression.hasSpaceAfterFirstComma() ? 1 : 0);
+                            identifier.length() +
+                            1 /* ( */ +
+                            helper.firstExpressionLength(expression) +
+                            (expression.hasFirstComma() ? 1 : 0) +
+                            (expression.hasSpaceAfterFirstComma() ? 1 : 0);
 
                     addProblem(expression, startPosition, helper.secondExpressionMissingKey());
                 }
@@ -2028,11 +2028,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                 else if (!helper.isSecondExpressionValid(expression)) {
 
                     int startPosition = position(expression) +
-                                        identifier.length() +
-                                        1 /* ( */ +
-                                        helper.firstExpressionLength(expression) +
-                                        (expression.hasFirstComma() ? 1 : 0) +
-                                        (expression.hasSpaceAfterFirstComma() ? 1 : 0);
+                            identifier.length() +
+                            1 /* ( */ +
+                            helper.firstExpressionLength(expression) +
+                            (expression.hasFirstComma() ? 1 : 0) +
+                            (expression.hasSpaceAfterFirstComma() ? 1 : 0);
 
                     int endPosition = startPosition + helper.secondExpressionLength(expression);
 
@@ -2045,16 +2045,16 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 
             // Missing second comma
             if (helper.hasSecondExpression(expression) &&
-                !expression.hasSecondComma() &&
-                helper.hasThirdExpression(expression)) {
+                    !expression.hasSecondComma() &&
+                    helper.hasThirdExpression(expression)) {
 
                 int startPosition = position(expression) +
-                                    identifier.length() +
-                                    1 /* ( */ +
-                                    helper.firstExpressionLength(expression) +
-                                    (expression.hasFirstComma() ? 1 : 0) +
-                                    (expression.hasSpaceAfterFirstComma() ? 1 : 0) +
-                                    helper.secondExpressionLength(expression);
+                        identifier.length() +
+                        1 /* ( */ +
+                        helper.firstExpressionLength(expression) +
+                        (expression.hasFirstComma() ? 1 : 0) +
+                        (expression.hasSpaceAfterFirstComma() ? 1 : 0) +
+                        helper.secondExpressionLength(expression);
 
                 addProblem(expression, startPosition, helper.secondCommaMissingKey());
             }
@@ -2066,14 +2066,14 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                 if (!helper.hasThirdExpression(expression)) {
 
                     int startPosition = position(expression) +
-                                        identifier.length() +
-                                        1 /* ( */ +
-                                        helper.firstExpressionLength(expression) +
-                                        (expression.hasFirstComma() ? 1 : 0) +
-                                        (expression.hasSpaceAfterFirstComma() ? 1 : 0) +
-                                        helper.secondExpressionLength(expression) +
-                                        (expression.hasSecondComma() ? 1 : 0) +
-                                        (expression.hasSpaceAfterSecondComma() ? 1 : 0);
+                            identifier.length() +
+                            1 /* ( */ +
+                            helper.firstExpressionLength(expression) +
+                            (expression.hasFirstComma() ? 1 : 0) +
+                            (expression.hasSpaceAfterFirstComma() ? 1 : 0) +
+                            helper.secondExpressionLength(expression) +
+                            (expression.hasSecondComma() ? 1 : 0) +
+                            (expression.hasSpaceAfterSecondComma() ? 1 : 0);
 
                     addProblem(expression, startPosition, helper.thirdExpressionMissingKey());
                 }
@@ -2081,14 +2081,14 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                 else if (!helper.isThirdExpressionValid(expression)) {
 
                     int startPosition = position(expression) +
-                                        identifier.length() +
-                                        1 /* ( */ +
-                                        helper.firstExpressionLength(expression) +
-                                        (expression.hasFirstComma() ? 1 : 0) +
-                                        (expression.hasSpaceAfterFirstComma() ? 1 : 0) +
-                                        helper.secondExpressionLength(expression) +
-                                        (expression.hasSecondComma() ? 1 : 0) +
-                                        (expression.hasSpaceAfterSecondComma() ? 1 : 0);
+                            identifier.length() +
+                            1 /* ( */ +
+                            helper.firstExpressionLength(expression) +
+                            (expression.hasFirstComma() ? 1 : 0) +
+                            (expression.hasSpaceAfterFirstComma() ? 1 : 0) +
+                            helper.secondExpressionLength(expression) +
+                            (expression.hasSecondComma() ? 1 : 0) +
+                            (expression.hasSpaceAfterSecondComma() ? 1 : 0);
 
                     int endPosition = startPosition + helper.thirdExpressionLength(expression);
 
@@ -2104,22 +2104,22 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         if (!helper.hasRightParenthesis(expression)) {
 
             int startPosition = position(expression) +
-                                identifier.length() +
-                                1 /* ( */ +
-                                helper.firstExpressionLength(expression) +
-                                (expression.hasFirstComma() ? 1 : 0) +
-                                (expression.hasSpaceAfterFirstComma() ? 1 : 0) +
-                                helper.secondExpressionLength(expression) +
-                                (expression.hasSecondComma() ? 1 : 0) +
-                                (expression.hasSpaceAfterSecondComma() ? 1 : 0) +
-                                helper.thirdExpressionLength(expression);
+                    identifier.length() +
+                    1 /* ( */ +
+                    helper.firstExpressionLength(expression) +
+                    (expression.hasFirstComma() ? 1 : 0) +
+                    (expression.hasSpaceAfterFirstComma() ? 1 : 0) +
+                    helper.secondExpressionLength(expression) +
+                    (expression.hasSecondComma() ? 1 : 0) +
+                    (expression.hasSpaceAfterSecondComma() ? 1 : 0) +
+                    helper.thirdExpressionLength(expression);
 
             addProblem(expression, startPosition, helper.rightParenthesisMissingKey(expression));
         }
     }
 
     protected <T extends AggregateFunction> void validateAggregateFunctionLocation
-        (T expression, AbstractSingleEncapsulatedExpressionHelper<T> helper) {
+            (T expression, AbstractSingleEncapsulatedExpressionHelper<T> helper) {
 
         // Check to see if the aggregate function is in the right clause
         OwningClauseVisitor visitor = getOwningClauseVisitor();
@@ -2143,11 +2143,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             int endPosition   = startPosition + length(expression);
 
             addProblem(
-                expression,
-                startPosition,
-                endPosition,
-                AggregateFunction_WrongClause,
-                expression.getIdentifier());
+                    expression,
+                    startPosition,
+                    endPosition,
+                    AggregateFunction_WrongClause,
+                    expression.getIdentifier());
         }
         else {
             validateAbstractSingleEncapsulatedExpression(expression, helper);
@@ -2156,14 +2156,14 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 
     protected void validateArithmeticExpression(ArithmeticExpression expression) {
         validateCompoundExpression(
-            expression,
-            expression.getArithmeticSign(),
-            ArithmeticExpression_MissingLeftExpression,
-            ArithmeticExpression_InvalidLeftExpression,
-            ArithmeticExpression_MissingRightExpression,
-            ArithmeticExpression_InvalidRightExpression,
-            ArithmeticExpressionBNF.ID,
-            ArithmeticTermBNF.ID
+                expression,
+                expression.getArithmeticSign(),
+                ArithmeticExpression_MissingLeftExpression,
+                ArithmeticExpression_InvalidLeftExpression,
+                ArithmeticExpression_MissingRightExpression,
+                ArithmeticExpression_InvalidRightExpression,
+                ArithmeticExpressionBNF.ID,
+                ArithmeticTermBNF.ID
         );
     }
 
@@ -2254,10 +2254,10 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         if (!expression.hasRightExpression()) {
 
             int startPosition = position(expression) +
-                                length(expression.getLeftExpression()) +
-                                (expression.hasLeftExpression() ? 1 : 0) +
-                                identifier.length() +
-                                (expression.hasSpaceAfterIdentifier() ? 1 : 0);
+                    length(expression.getLeftExpression()) +
+                    (expression.hasLeftExpression() ? 1 : 0) +
+                    identifier.length() +
+                    (expression.hasSpaceAfterIdentifier() ? 1 : 0);
 
             addProblem(expression, startPosition, missingRightExpression);
         }
@@ -2268,10 +2268,10 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             if (!isValid(rightExpression, rightExpressionQueryBNF)) {
 
                 int startPosition = position(expression) +
-                                    length(expression.getLeftExpression()) +
-                                    (expression.hasLeftExpression() ? 1 : 0) +
-                                    identifier.length() +
-                                    (expression.hasSpaceAfterIdentifier() ? 1 : 0);
+                        length(expression.getLeftExpression()) +
+                        (expression.hasLeftExpression() ? 1 : 0) +
+                        identifier.length() +
+                        (expression.hasSpaceAfterIdentifier() ? 1 : 0);
 
                 int endPosition = startPosition + length(rightExpression);
 
@@ -2321,8 +2321,8 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         // Must not be a reserved identifier. An exception is ORDER and GROUP because the actual
         // identifiers are ORDER BY and GROUP BY
         if (getExpressionRegistry().isIdentifier(variableName) &&
-            !"ORDER".equalsIgnoreCase(variableName) &&
-            !"GROUP".equalsIgnoreCase(variableName)) {
+                !"ORDER".equalsIgnoreCase(variableName) &&
+                !"GROUP".equalsIgnoreCase(variableName)) {
 
             int startPosition = position(expression);
             int endPosition   = startPosition + variableLength;
@@ -2376,9 +2376,9 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             if (children.size() > 1) {
 
                 validateCollectionSeparatedBySpace(
-                    joins,
-                    IdentificationVariableDeclaration_JoinsEndWithComma,
-                    IdentificationVariableDeclaration_JoinsHaveComma
+                        joins,
+                        IdentificationVariableDeclaration_JoinsEndWithComma,
+                        IdentificationVariableDeclaration_JoinsHaveComma
                 );
 
                 // Make sure each child is a JOIN expression
@@ -2412,24 +2412,24 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             if (character.length() != 1) {
 
                 int startPosition = position(expression) +
-                                    length(expression.getStringExpression()) +
-                                    (expression.hasSpaceAfterStringExpression() ? 1 : 0) +
-                                    (expression.hasNot() ? 4 : 0) +
-                                    4 /* LIKE */ +
-                                    (expression.hasSpaceAfterLike() ? 1 : 0) +
-                                    length(expression.getPatternValue()) +
-                                    (expression.hasSpaceAfterPatternValue() ? 1 : 0) +
-                                    6 + /* ESCAPE */ +
-                                    (expression.hasSpaceAfterEscape() ? 1 : 0);
+                        length(expression.getStringExpression()) +
+                        (expression.hasSpaceAfterStringExpression() ? 1 : 0) +
+                        (expression.hasNot() ? 4 : 0) +
+                        4 /* LIKE */ +
+                        (expression.hasSpaceAfterLike() ? 1 : 0) +
+                        length(expression.getPatternValue()) +
+                        (expression.hasSpaceAfterPatternValue() ? 1 : 0) +
+                        6 + /* ESCAPE */ +
+                        (expression.hasSpaceAfterEscape() ? 1 : 0);
 
                 int endPosition = startPosition +  length(escapeCharacter);
 
                 addProblem(
-                    expression,
-                    startPosition,
-                    endPosition,
-                    LikeExpression_InvalidEscapeCharacter,
-                    escapeCharacter.toActualText()
+                        expression,
+                        startPosition,
+                        endPosition,
+                        LikeExpression_InvalidEscapeCharacter,
+                        escapeCharacter.toActualText()
                 );
             }
         }
@@ -2438,27 +2438,27 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             character = literal(escapeCharacter, LiteralType.INPUT_PARAMETER);
 
             if ((character.length() == 0) &&
-                !isValid(escapeCharacter, LikeExpressionEscapeCharacterBNF.ID)) {
+                    !isValid(escapeCharacter, LikeExpressionEscapeCharacterBNF.ID)) {
 
                 int startPosition = position(expression) +
-                                    length(expression.getStringExpression()) +
-                                    4 /* LIKE */ +
-                                    (expression.hasSpaceAfterStringExpression() ? 1 : 0) +
-                                    (expression.hasNot() ? 1 : 0) +
-                                    (expression.hasSpaceAfterLike() ? 1 : 0) +
-                                    length(expression.getPatternValue()) +
-                                    (expression.hasSpaceAfterPatternValue() ? 1 : 0) +
-                                    6 + /* ESCAPE */ +
-                                    (expression.hasSpaceAfterEscape() ? 1 : 0);
+                        length(expression.getStringExpression()) +
+                        4 /* LIKE */ +
+                        (expression.hasSpaceAfterStringExpression() ? 1 : 0) +
+                        (expression.hasNot() ? 1 : 0) +
+                        (expression.hasSpaceAfterLike() ? 1 : 0) +
+                        length(expression.getPatternValue()) +
+                        (expression.hasSpaceAfterPatternValue() ? 1 : 0) +
+                        6 + /* ESCAPE */ +
+                        (expression.hasSpaceAfterEscape() ? 1 : 0);
 
                 int endPosition = startPosition + length(escapeCharacter);
 
                 addProblem(
-                    expression,
-                    startPosition,
-                    endPosition,
-                    LikeExpression_InvalidEscapeCharacter,
-                    escapeCharacter.toActualText()
+                        expression,
+                        startPosition,
+                        endPosition,
+                        LikeExpression_InvalidEscapeCharacter,
+                        escapeCharacter.toActualText()
                 );
             }
         }
@@ -2469,14 +2469,14 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                                              String rightExpressionQueryBNF) {
 
         validateCompoundExpression(
-            expression,
-            expression.getIdentifier(),
-            LogicalExpression_MissingLeftExpression,
-            LogicalExpression_InvalidLeftExpression,
-            LogicalExpression_MissingRightExpression,
-            LogicalExpression_InvalidRightExpression,
-            leftExpressionQueryBNF,
-            rightExpressionQueryBNF
+                expression,
+                expression.getIdentifier(),
+                LogicalExpression_MissingLeftExpression,
+                LogicalExpression_InvalidLeftExpression,
+                LogicalExpression_MissingRightExpression,
+                LogicalExpression_InvalidRightExpression,
+                leftExpressionQueryBNF,
+                rightExpressionQueryBNF
         );
     }
 
@@ -2493,7 +2493,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 
         // Missing identification variable
         if (!expression.hasIdentificationVariable() &&
-            !expression.hasVirtualIdentificationVariable()) {
+                !expression.hasVirtualIdentificationVariable()) {
 
             addProblem(expression, AbstractPathExpression_MissingIdentificationVariable);
         }
@@ -2600,10 +2600,10 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         if (!expression.hasLowerBoundExpression()) {
 
             int startPosition = position(expression) +
-                                length(expression.getExpression()) +
-                                (expression.hasExpression() ? 1 : 0) +
-                                (expression.hasNot() ? 11 /* NOT BETWEEN */ : 7 /* BETWEEN */) +
-                                (expression.hasSpaceAfterBetween() ? 1 : 0);
+                    length(expression.getExpression()) +
+                    (expression.hasExpression() ? 1 : 0) +
+                    (expression.hasNot() ? 11 /* NOT BETWEEN */ : 7 /* BETWEEN */) +
+                    (expression.hasSpaceAfterBetween() ? 1 : 0);
 
             addProblem(expression, startPosition, BetweenExpression_MissingLowerBoundExpression);
         }
@@ -2611,12 +2611,12 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         else if (!expression.hasAnd()) {
 
             int startPosition = position(expression) +
-                                length(expression.getExpression()) +
-                                (expression.hasExpression() ? 1 : 0) +
-                                (expression.hasNot() ? 11 /* NOT BETWEEN */ : 7 /* BETWEEN */) +
-                                (expression.hasSpaceAfterBetween() ? 1 : 0) +
-                                length(expression.getLowerBoundExpression()) +
-                                (expression.hasSpaceAfterLowerBound() ? 1 : 0);
+                    length(expression.getExpression()) +
+                    (expression.hasExpression() ? 1 : 0) +
+                    (expression.hasNot() ? 11 /* NOT BETWEEN */ : 7 /* BETWEEN */) +
+                    (expression.hasSpaceAfterBetween() ? 1 : 0) +
+                    length(expression.getLowerBoundExpression()) +
+                    (expression.hasSpaceAfterLowerBound() ? 1 : 0);
 
             addProblem(expression, startPosition, BetweenExpression_MissingAnd);
         }
@@ -2624,14 +2624,14 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         else if (!expression.hasUpperBoundExpression()) {
 
             int startPosition = position(expression) +
-                                length(expression.getExpression()) +
-                                (expression.hasExpression() ? 1 : 0) +
-                                (expression.hasNot() ? 11 /* NOT BETWEEN */ : 7 /* BETWEEN */) +
-                                (expression.hasSpaceAfterBetween() ? 1 : 0) +
-                                length(expression.getLowerBoundExpression()) +
-                                (expression.hasSpaceAfterLowerBound() ? 1 : 0) +
-                                3 /* AND */ +
-                                (expression.hasSpaceAfterAnd() ? 1 : 0);
+                    length(expression.getExpression()) +
+                    (expression.hasExpression() ? 1 : 0) +
+                    (expression.hasNot() ? 11 /* NOT BETWEEN */ : 7 /* BETWEEN */) +
+                    (expression.hasSpaceAfterBetween() ? 1 : 0) +
+                    length(expression.getLowerBoundExpression()) +
+                    (expression.hasSpaceAfterLowerBound() ? 1 : 0) +
+                    3 /* AND */ +
+                    (expression.hasSpaceAfterAnd() ? 1 : 0);
 
             addProblem(expression, startPosition, BetweenExpression_MissingUpperBoundExpression);
         }
@@ -2650,34 +2650,34 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             // WHEN clauses can't be separated by commas
             if (expression.hasWhenClauses()) {
                 validateCollectionSeparatedBySpace(
-                    expression.getWhenClauses(),
-                    CaseExpression_WhenClausesEndWithComma,
-                    CaseExpression_WhenClausesHasComma
+                        expression.getWhenClauses(),
+                        CaseExpression_WhenClausesEndWithComma,
+                        CaseExpression_WhenClausesHasComma
                 );
             }
             // At least one WHEN clause must be specified
             else {
 
                 int startPosition = position(expression) +
-                                    4 /* CASE */ +
-                                    (expression.hasSpaceAfterCase() ? 1 : 0) +
-                                    length(expression.getCaseOperand()) +
-                                    (expression.hasSpaceAfterCaseOperand() ? 1 : 0);
+                        4 /* CASE */ +
+                        (expression.hasSpaceAfterCase() ? 1 : 0) +
+                        length(expression.getCaseOperand()) +
+                        (expression.hasSpaceAfterCaseOperand() ? 1 : 0);
 
                 addProblem(expression, startPosition, CaseExpression_MissingWhenClause);
             }
 
             // Missing ELSE
             if (expression.hasWhenClauses() &&
-               !expression.hasElse()) {
+                    !expression.hasElse()) {
 
                 int startPosition = position(expression) +
-                                    4 /* CASE */ +
-                                    (expression.hasSpaceAfterCase() ? 1 : 0) +
-                                    length(expression.getCaseOperand()) +
-                                    (expression.hasSpaceAfterCaseOperand() ? 1 : 0) +
-                                    length(expression.getWhenClauses()) +
-                                    (expression.hasSpaceAfterWhenClauses() ? 1 : 0);
+                        4 /* CASE */ +
+                        (expression.hasSpaceAfterCase() ? 1 : 0) +
+                        length(expression.getCaseOperand()) +
+                        (expression.hasSpaceAfterCaseOperand() ? 1 : 0) +
+                        length(expression.getWhenClauses()) +
+                        (expression.hasSpaceAfterWhenClauses() ? 1 : 0);
 
                 addProblem(expression, startPosition, CaseExpression_MissingElseIdentifier);
             }
@@ -2686,14 +2686,14 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                     !expression.hasElseExpression()) {
 
                 int startPosition = position(expression) +
-                                    4 /* CASE */ +
-                                    (expression.hasSpaceAfterCase() ? 1 : 0) +
-                                    length(expression.getCaseOperand()) +
-                                    (expression.hasSpaceAfterCaseOperand() ? 1 : 0) +
-                                    length(expression.getWhenClauses()) +
-                                    (expression.hasSpaceAfterWhenClauses() ? 1 : 0) +
-                                    4 /* ELSE */ +
-                                    (expression.hasSpaceAfterElse() ? 1 : 0);
+                        4 /* CASE */ +
+                        (expression.hasSpaceAfterCase() ? 1 : 0) +
+                        length(expression.getCaseOperand()) +
+                        (expression.hasSpaceAfterCaseOperand() ? 1 : 0) +
+                        length(expression.getWhenClauses()) +
+                        (expression.hasSpaceAfterWhenClauses() ? 1 : 0) +
+                        4 /* ELSE */ +
+                        (expression.hasSpaceAfterElse() ? 1 : 0);
 
                 addProblem(expression, startPosition, CaseExpression_MissingElseExpression);
             }
@@ -2702,16 +2702,16 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                     !expression.hasEnd()) {
 
                 int startPosition = position(expression) +
-                                    4 /* CASE */ +
-                                    (expression.hasSpaceAfterCase() ? 1 : 0) +
-                                    length(expression.getCaseOperand()) +
-                                    (expression.hasSpaceAfterCaseOperand() ? 1 : 0) +
-                                    length(expression.getWhenClauses()) +
-                                    (expression.hasSpaceAfterWhenClauses() ? 1 : 0) +
-                                    4 /* ELSE */ +
-                                    (expression.hasSpaceAfterElse() ? 1 : 0) +
-                                    length(expression.getElseExpression()) +
-                                    (expression.hasSpaceAfterElseExpression() ? 1 : 0);
+                        4 /* CASE */ +
+                        (expression.hasSpaceAfterCase() ? 1 : 0) +
+                        length(expression.getCaseOperand()) +
+                        (expression.hasSpaceAfterCaseOperand() ? 1 : 0) +
+                        length(expression.getWhenClauses()) +
+                        (expression.hasSpaceAfterWhenClauses() ? 1 : 0) +
+                        4 /* ELSE */ +
+                        (expression.hasSpaceAfterElse() ? 1 : 0) +
+                        length(expression.getElseExpression()) +
+                        (expression.hasSpaceAfterElseExpression() ? 1 : 0);
 
                 addProblem(expression, startPosition, CaseExpression_MissingEndIdentifier);
             }
@@ -2759,27 +2759,27 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             else if (!expression.hasRightParenthesis()) {
 
                 int startPosition = position(expression) +
-                                    2 /* IN */ +
-                                    (expression.hasLeftParenthesis() ? 1 : 0) +
-                                    (expression.hasSpaceAfterIn() ? 1 : 0) +
-                                    length(expression.getCollectionValuedPathExpression());
+                        2 /* IN */ +
+                        (expression.hasLeftParenthesis() ? 1 : 0) +
+                        (expression.hasSpaceAfterIn() ? 1 : 0) +
+                        length(expression.getCollectionValuedPathExpression());
 
                 addProblem(expression, startPosition, CollectionMemberDeclaration_MissingRightParenthesis);
             }
 
             // Missing identification variable
             if (expression.hasRightParenthesis() &&
-               !expression.hasIdentificationVariable()) {
+                    !expression.hasIdentificationVariable()) {
 
                 int startPosition = position(expression) +
-                                    2 /* IN */ +
-                                    (expression.hasLeftParenthesis() ? 1 : 0) +
-                                    (expression.hasSpaceAfterIn() ? 1 : 0) +
-                                    length(expression.getCollectionValuedPathExpression()) +
-                                    1 /* ')' */ +
-                                    (expression.hasSpaceAfterRightParenthesis() ? 1 : 0) +
-                                    (expression.hasAs() ? 2 : 0) +
-                                    (expression.hasSpaceAfterAs() ? 1 : 0);
+                        2 /* IN */ +
+                        (expression.hasLeftParenthesis() ? 1 : 0) +
+                        (expression.hasSpaceAfterIn() ? 1 : 0) +
+                        length(expression.getCollectionValuedPathExpression()) +
+                        1 /* ')' */ +
+                        (expression.hasSpaceAfterRightParenthesis() ? 1 : 0) +
+                        (expression.hasAs() ? 2 : 0) +
+                        (expression.hasSpaceAfterAs() ? 1 : 0);
 
                 addProblem(expression, startPosition, CollectionMemberDeclaration_MissingIdentificationVariable);
             }
@@ -2789,7 +2789,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 
             // Missing '('
             if (!expression.hasLeftParenthesis() &&
-                 expression.hasRightParenthesis()) {
+                    expression.hasRightParenthesis()) {
 
                 int startPosition = position(expression) + 2; // IN
                 addProblem(expression, startPosition, CollectionMemberDeclaration_MissingLeftParenthesis);
@@ -2798,8 +2798,8 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             else if (!expression.hasCollectionValuedPathExpression()) {
 
                 int startPosition = position(expression) +
-                                    2 /* IN */ +
-                                    (expression.hasSpaceAfterIn() ? 1 : 0);
+                        2 /* IN */ +
+                        (expression.hasSpaceAfterIn() ? 1 : 0);
 
                 addProblem(expression, startPosition, CollectionMemberDeclaration_MissingCollectionValuedPathExpression);
             }
@@ -2808,27 +2808,27 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                     !expression.hasRightParenthesis()) {
 
                 int startPosition = position(expression) +
-                                    2 /* IN */ +
-                                    (expression.hasLeftParenthesis() ? 1 : 0) +
-                                    (expression.hasSpaceAfterIn() ? 1 : 0) +
-                                    length(expression.getCollectionValuedPathExpression());
+                        2 /* IN */ +
+                        (expression.hasLeftParenthesis() ? 1 : 0) +
+                        (expression.hasSpaceAfterIn() ? 1 : 0) +
+                        length(expression.getCollectionValuedPathExpression());
 
                 addProblem(expression, startPosition, CollectionMemberDeclaration_MissingRightParenthesis);
             }
 
             // Missing identification variable
             if (expression.hasRightParenthesis() &&
-               !expression.hasIdentificationVariable()) {
+                    !expression.hasIdentificationVariable()) {
 
                 int startPosition = position(expression) +
-                                    2 /* IN */ +
-                                    (expression.hasLeftParenthesis() ? 1 : 0) +
-                                    (expression.hasSpaceAfterIn() ? 1 : 0) +
-                                    length(expression.getCollectionValuedPathExpression()) +
-                                    1 /* ')' */ +
-                                    (expression.hasSpaceAfterRightParenthesis() ? 1 : 0) +
-                                    (expression.hasAs() ? 2 : 0) +
-                                    (expression.hasSpaceAfterAs() ? 1 : 0);
+                        2 /* IN */ +
+                        (expression.hasLeftParenthesis() ? 1 : 0) +
+                        (expression.hasSpaceAfterIn() ? 1 : 0) +
+                        length(expression.getCollectionValuedPathExpression()) +
+                        1 /* ')' */ +
+                        (expression.hasSpaceAfterRightParenthesis() ? 1 : 0) +
+                        (expression.hasAs() ? 2 : 0) +
+                        (expression.hasSpaceAfterAs() ? 1 : 0);
 
                 addProblem(expression, startPosition, CollectionMemberDeclaration_MissingIdentificationVariable);
             }
@@ -2850,13 +2850,13 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         if (!expression.hasCollectionValuedPathExpression()) {
 
             int startPosition = position(expression) +
-                                length(expression.getEntityExpression()) +
-                                (expression.hasEntityExpression() ? 1 : 0) +
-                                (expression.hasNot() ? 4 /* NOT + whitespace */ : 0) +
-                                6 /* MEMBER */ +
-                                (expression.hasSpaceAfterMember() ? 1 : 0) +
-                                (expression.hasOf() ? 2 : 0) +
-                                (expression.hasSpaceAfterOf() ? 1 : 0);
+                    length(expression.getEntityExpression()) +
+                    (expression.hasEntityExpression() ? 1 : 0) +
+                    (expression.hasNot() ? 4 /* NOT + whitespace */ : 0) +
+                    6 /* MEMBER */ +
+                    (expression.hasSpaceAfterMember() ? 1 : 0) +
+                    (expression.hasOf() ? 2 : 0) +
+                    (expression.hasSpaceAfterOf() ? 1 : 0);
 
             addProblem(expression, startPosition, CollectionMemberExpression_MissingCollectionValuedPathExpression);
         }
@@ -2867,22 +2867,22 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             if (!isValid(pathExpression, CollectionValuedPathExpressionBNF.ID)) {
 
                 int startPosition = position(expression) +
-                                    length(expression.getEntityExpression()) +
-                                    (expression.hasEntityExpression() ? 1 : 0) +
-                                    (expression.hasNot() ? 4 /* NOT + whitespace */ : 0) +
-                                    6 /* MEMBER */ +
-                                    (expression.hasSpaceAfterMember() ? 1 : 0) +
-                                    (expression.hasOf() ? 2 : 0) +
-                                    (expression.hasSpaceAfterOf() ? 1 : 0);
+                        length(expression.getEntityExpression()) +
+                        (expression.hasEntityExpression() ? 1 : 0) +
+                        (expression.hasNot() ? 4 /* NOT + whitespace */ : 0) +
+                        6 /* MEMBER */ +
+                        (expression.hasSpaceAfterMember() ? 1 : 0) +
+                        (expression.hasOf() ? 2 : 0) +
+                        (expression.hasSpaceAfterOf() ? 1 : 0);
 
                 int endPosition = startPosition + length(pathExpression);
 
                 addProblem(
-                    expression,
-                    startPosition,
-                    endPosition,
-                    CollectionValuedPathExpression_NotCollectionType,
-                    expression.toParsedText()
+                        expression,
+                        startPosition,
+                        endPosition,
+                        CollectionValuedPathExpression_NotCollectionType,
+                        expression.toParsedText()
                 );
             }
         }
@@ -2908,10 +2908,10 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         if (!expression.hasRightExpression()) {
 
             int startPosition = position(expression) +
-                                (expression.hasLeftExpression() ? 1 : 0) +
-                                length(expression.getLeftExpression()) +
-                                expression.getComparisonOperator().length() +
-                                (expression.hasSpaceAfterIdentifier() ? 1 : 0);
+                    (expression.hasLeftExpression() ? 1 : 0) +
+                    length(expression.getLeftExpression()) +
+                    expression.getComparisonOperator().length() +
+                    (expression.hasSpaceAfterIdentifier() ? 1 : 0);
 
             addProblem(expression, startPosition, ComparisonExpression_MissingRightExpression);
         }
@@ -2925,7 +2925,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         validateAbstractSingleEncapsulatedExpression(expression, concatExpressionHelper());
 
         if (expression.hasLeftParenthesis() &&
-            expression.hasExpression()) {
+                expression.hasExpression()) {
 
             CollectionExpression collectionExpression = getCollectionExpression(expression.getExpression());
 
@@ -2952,8 +2952,8 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         if (className.length() == 0) {
 
             int startPosition = position(expression) +
-                                3 /* NEW */ +
-                                (expression.hasSpaceAfterNew() ? 1 : 0);
+                    3 /* NEW */ +
+                    (expression.hasSpaceAfterNew() ? 1 : 0);
 
             addProblem(expression, startPosition, ConstructorExpression_MissingConstructorName);
         }
@@ -2961,9 +2961,9 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         else if (!expression.hasLeftParenthesis()) {
 
             int startPosition = position(expression) +
-                                3 /* NEW */ +
-                                (expression.hasSpaceAfterNew() ? 1 : 0) +
-                                className.length();
+                    3 /* NEW */ +
+                    (expression.hasSpaceAfterNew() ? 1 : 0) +
+                    className.length();
 
             addProblem(expression, startPosition, ConstructorExpression_MissingLeftParenthesis);
         }
@@ -2973,10 +2973,10 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             if (!expression.hasConstructorItems()) {
 
                 int startPosition = position(expression) +
-                                    3 /* NEW */ +
-                                    (expression.hasSpaceAfterNew() ? 1 : 0) +
-                                    className.length() +
-                                    1 /* '(' */;
+                        3 /* NEW */ +
+                        (expression.hasSpaceAfterNew() ? 1 : 0) +
+                        className.length() +
+                        1 /* '(' */;
 
                 addProblem(expression, startPosition, ConstructorExpression_MissingConstructorItem);
             }
@@ -2984,22 +2984,22 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 
                 // Validate the constructor items
                 validateCollectionSeparatedByComma(
-                    expression.getConstructorItems(),
-                    ConstructorExpression_ConstructorItemEndsWithComma,
-                    ConstructorExpression_ConstructorItemIsMissingComma
+                        expression.getConstructorItems(),
+                        ConstructorExpression_ConstructorItemEndsWithComma,
+                        ConstructorExpression_ConstructorItemIsMissingComma
                 );
 
                 // Missing ')'
                 if (expression.hasLeftParenthesis()  &&
-                    expression.hasConstructorItems() &&
-                   !expression.hasRightParenthesis()) {
+                        expression.hasConstructorItems() &&
+                        !expression.hasRightParenthesis()) {
 
                     int startPosition = position(expression) +
-                                        3 /* NEW */ +
-                                        (expression.hasSpaceAfterNew() ? 1 : 0) +
-                                        className.length() +
-                                        1 /* '(' */ +
-                                        length(expression.getConstructorItems());
+                            3 /* NEW */ +
+                            (expression.hasSpaceAfterNew() ? 1 : 0) +
+                            className.length() +
+                            1 /* '(' */ +
+                            length(expression.getConstructorItems());
 
                     addProblem(expression, startPosition, ConstructorExpression_MissingRightParenthesis);
                 }
@@ -3025,8 +3025,8 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 
             // Missing opening
             if (!dateTime.startsWith("{d ") &&
-                !dateTime.startsWith("{t ") &&
-                !dateTime.startsWith("{ts ")) {
+                    !dateTime.startsWith("{t ") &&
+                    !dateTime.startsWith("{ts ")) {
 
                 int startPosition = position(expression) + 1;
                 int endPosition = startPosition;
@@ -3042,8 +3042,8 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             }
             // Missing open quote
             else if (!dateTime.startsWith("{d '") &&
-                     !dateTime.startsWith("{t '") &&
-                     !dateTime.startsWith("{ts '")) {
+                    !dateTime.startsWith("{t '") &&
+                    !dateTime.startsWith("{ts '")) {
 
                 int startPosition = position(expression) + 1;
 
@@ -3083,7 +3083,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         if (!expression.hasFrom()) {
 
             int startPosition = 6 /* DELETE */ +
-                                (expression.hasSpaceAfterDelete() ? 1 : 0);
+                    (expression.hasSpaceAfterDelete() ? 1 : 0);
 
             addProblem(expression, startPosition, DeleteClause_FromMissing);
         }
@@ -3117,10 +3117,10 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                 }
 
                 addProblem(
-                    expression,
-                    startPosition,
-                    endPosition,
-                    malformed ? DeleteClause_RangeVariableDeclarationMalformed :
+                        expression,
+                        startPosition,
+                        endPosition,
+                        malformed ? DeleteClause_RangeVariableDeclarationMalformed :
                                 DeleteClause_MultipleRangeVariableDeclaration
                 );
             }
@@ -3159,11 +3159,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                 int endPosition   = startPosition + length(pathExpression);
 
                 addProblem(
-                    expression,
-                    startPosition,
-                    endPosition,
-                    CollectionValuedPathExpression_NotCollectionType,
-                    expression.toParsedText()
+                        expression,
+                        startPosition,
+                        endPosition,
+                        CollectionValuedPathExpression_NotCollectionType,
+                        expression.toParsedText()
                 );
             }
             else {
@@ -3221,8 +3221,8 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 
                 if (ExpressionTools.stringIsEmpty(functionName)) {
                     int startPosition = position(expression) +
-                                        expression.getIdentifier().length() +
-                                        (expression.hasLeftParenthesis() ? 1 : 0);
+                            expression.getIdentifier().length() +
+                            (expression.hasLeftParenthesis() ? 1 : 0);
 
                     addProblem(expression, startPosition, FunctionExpression_MissingFunctionName);
                 }
@@ -3237,17 +3237,17 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         if (!expression.hasGroupByItems()) {
 
             int startPosition = position(expression) +
-                                8 /* GROUP BY */ +
-                                (expression.hasSpaceAfterGroupBy() ? 1 : 0);
+                    8 /* GROUP BY */ +
+                    (expression.hasSpaceAfterGroupBy() ? 1 : 0);
 
             addProblem(expression, startPosition, GroupByClause_GroupByItemMissing);
         }
         // Validate the separation of multiple ordering items
         else {
             validateCollectionSeparatedByComma(
-                expression.getGroupByItems(),
-                GroupByClause_GroupByItemEndsWithComma,
-                GroupByClause_GroupByItemIsMissingComma
+                    expression.getGroupByItems(),
+                    GroupByClause_GroupByItemEndsWithComma,
+                    GroupByClause_GroupByItemIsMissingComma
             );
 
             super.visit(expression);
@@ -3257,9 +3257,9 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     @Override
     public void visit(HavingClause expression) {
         validateAbstractConditionalClause(
-            expression,
-            HavingClause_MissingConditionalExpression,
-            HavingClause_InvalidConditionalExpression
+                expression,
+                HavingClause_MissingConditionalExpression,
+                HavingClause_InvalidConditionalExpression
         );
     }
 
@@ -3270,11 +3270,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             String variable = expression.getText();
 
             validateIdentifier(
-                expression,
-                variable,
-                variable.length(),
-                IdentificationVariable_Invalid_ReservedWord,
-                IdentificationVariable_Invalid_JavaIdentifier
+                    expression,
+                    variable,
+                    variable.length(),
+                    IdentificationVariable_Invalid_ReservedWord,
+                    IdentificationVariable_Invalid_JavaIdentifier
             );
         }
     }
@@ -3332,16 +3332,16 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 
         // Check for "IN :input_parameter" defined in JPA 2.0
         boolean singleInputParameter = isNewerThanOrEqual(JPAVersion.VERSION_2_0) &&
-                                       expression.isSingleInputParameter();
+                expression.isSingleInputParameter();
 
         // Missing '('
         if (!expression.hasLeftParenthesis() && !singleInputParameter) {
 
             int startPosition = position(expression) +
-                                length(expression.getExpression()) +
-                                (expression.hasExpression() ? 1 : 0) +
-                                (expression.hasNot() ? 4 /* NOT + whitespace */ : 0) +
-                                2 /* IN */;
+                    length(expression.getExpression()) +
+                    (expression.hasExpression() ? 1 : 0) +
+                    (expression.hasNot() ? 4 /* NOT + whitespace */ : 0) +
+                    2 /* IN */;
 
             addProblem(expression, startPosition, InExpression_MissingLeftParenthesis);
         }
@@ -3350,12 +3350,12 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         else if (!expression.hasInItems()) {
 
             int startPosition = position(expression) +
-                                length(expression.getExpression()) +
-                                (expression.hasExpression() ? 1 : 0) +
-                                (expression.hasNot() ? 4 /* NOT + whitespace */ : 0) +
-                                2 /* IN */ +
-                                (expression.hasSpaceAfterIn() ? 1 : 0) +
-                                (expression.hasLeftParenthesis() ? 1 : 0);
+                    length(expression.getExpression()) +
+                    (expression.hasExpression() ? 1 : 0) +
+                    (expression.hasNot() ? 4 /* NOT + whitespace */ : 0) +
+                    2 /* IN */ +
+                    (expression.hasSpaceAfterIn() ? 1 : 0) +
+                    (expression.hasLeftParenthesis() ? 1 : 0);
 
             addProblem(expression, startPosition, InExpression_MissingInItems);
         }
@@ -3369,9 +3369,9 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             if (collectionExpression != null) {
 
                 validateCollectionSeparatedByComma(
-                    inItems,
-                    InExpression_ItemEndsWithComma,
-                    InExpression_ItemIsMissingComma
+                        inItems,
+                        InExpression_ItemEndsWithComma,
+                        InExpression_ItemIsMissingComma
                 );
 
                 // Validate each item
@@ -3413,17 +3413,17 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 
         // Missing ')'
         if (!singleInputParameter    &&
-             expression.hasInItems() &&
-            !expression.hasRightParenthesis()) {
+                expression.hasInItems() &&
+                !expression.hasRightParenthesis()) {
 
             int startPosition = position(expression) +
-                                length(expression.getExpression()) +
-                                (expression.hasExpression() ? 1 : 0) +
-                                (expression.hasNot() ? 4 /* NOT + whitespace */ : 0) +
-                                2 /* IN */ +
-                                (expression.hasSpaceAfterIn() ? 1 : 0) +
-                                (expression.hasLeftParenthesis() ? 1 : 0) +
-                                length(expression.getInItems());
+                    length(expression.getExpression()) +
+                    (expression.hasExpression() ? 1 : 0) +
+                    (expression.hasNot() ? 4 /* NOT + whitespace */ : 0) +
+                    2 /* IN */ +
+                    (expression.hasSpaceAfterIn() ? 1 : 0) +
+                    (expression.hasLeftParenthesis() ? 1 : 0) +
+                    length(expression.getInItems());
 
             addProblem(expression, startPosition, InExpression_MissingRightParenthesis);
         }
@@ -3491,22 +3491,22 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         String identifier = expression.getIdentifier();
 
         if (identifier != JOIN             &&
-            identifier != JOIN_FETCH       &&
-            identifier != INNER_JOIN       &&
-            identifier != INNER_JOIN_FETCH &&
-            identifier != LEFT_JOIN        &&
-            identifier != LEFT_JOIN_FETCH  &&
-            identifier != LEFT_OUTER_JOIN  &&
-            identifier != LEFT_OUTER_JOIN_FETCH) {
+                identifier != JOIN_FETCH       &&
+                identifier != INNER_JOIN       &&
+                identifier != INNER_JOIN_FETCH &&
+                identifier != LEFT_JOIN        &&
+                identifier != LEFT_JOIN_FETCH  &&
+                identifier != LEFT_OUTER_JOIN  &&
+                identifier != LEFT_OUTER_JOIN_FETCH) {
 
             int startPosition = position(expression);
             int endPosition   = startPosition + identifier.length();
 
             addProblem(
-                expression,
-                startPosition,
-                endPosition,
-                Join_InvalidIdentifier
+                    expression,
+                    startPosition,
+                    endPosition,
+                    Join_InvalidIdentifier
             );
         }
 
@@ -3514,13 +3514,13 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         if (!expression.hasJoinAssociationPath()) {
 
             int startPosition = position(expression) +
-                                identifier.length() +
-                                (expression.hasSpaceAfterJoin() ? 1 : 0);
+                    identifier.length() +
+                    (expression.hasSpaceAfterJoin() ? 1 : 0);
 
             addProblem(
-                expression,
-                startPosition,
-                joinFetch ? JoinFetch_MissingJoinAssociationPath : Join_MissingJoinAssociationPath
+                    expression,
+                    startPosition,
+                    joinFetch ? JoinFetch_MissingJoinAssociationPath : Join_MissingJoinAssociationPath
             );
         }
         else {
@@ -3544,38 +3544,38 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         // A JOIN expression always needs an identification variable
         // A JOIN FETCH expression does not always require an identification, only if 'AS' is present
         if (expression.hasJoinAssociationPath() &&
-           !expression.hasIdentificationVariable() &&
-            (!joinFetch || expression.hasAs() && isJoinFetchIdentifiable())) {
+                !expression.hasIdentificationVariable() &&
+                (!joinFetch || expression.hasAs() && isJoinFetchIdentifiable())) {
 
             int startPosition = position(expression) +
-                                identifier.length() +
-                                (expression.hasSpaceAfterJoin() ? 1 : 0) +
-                                length(expression.getJoinAssociationPath()) +
-                                (expression.hasSpaceAfterJoinAssociation() ? 1 : 0) +
-                                (expression.hasAs() ? 2 : 0) +
-                                (expression.hasSpaceAfterAs() ? 1 : 0);
+                    identifier.length() +
+                    (expression.hasSpaceAfterJoin() ? 1 : 0) +
+                    length(expression.getJoinAssociationPath()) +
+                    (expression.hasSpaceAfterJoinAssociation() ? 1 : 0) +
+                    (expression.hasAs() ? 2 : 0) +
+                    (expression.hasSpaceAfterAs() ? 1 : 0);
 
             addProblem(
-                expression,
-                startPosition,
-                joinFetch ? JoinFetch_MissingIdentificationVariable : Join_MissingIdentificationVariable
+                    expression,
+                    startPosition,
+                    joinFetch ? JoinFetch_MissingIdentificationVariable : Join_MissingIdentificationVariable
             );
         }
         // A JOIN FETCH expression that cannot be identified with an identification variable
         else if (joinFetch &&
-                 !isJoinFetchIdentifiable() &&
-                 (expression.hasAs() || expression.hasIdentificationVariable())) {
+                !isJoinFetchIdentifiable() &&
+                (expression.hasAs() || expression.hasIdentificationVariable())) {
 
             int startPosition = position(expression) +
-                                identifier.length() +
-                                (expression.hasSpaceAfterJoin() ? 1 : 0) +
-                                length(expression.getJoinAssociationPath()) +
-                                (expression.hasSpaceAfterJoinAssociation() ? 1 : 0);
+                    identifier.length() +
+                    (expression.hasSpaceAfterJoin() ? 1 : 0) +
+                    length(expression.getJoinAssociationPath()) +
+                    (expression.hasSpaceAfterJoinAssociation() ? 1 : 0);
 
             int endPosition = startPosition +
-                              (expression.hasAs() ? 2 : 0) +
-                              (expression.hasSpaceAfterAs() ? 1 : 0) +
-                              length(expression.getIdentificationVariable());
+                    (expression.hasAs() ? 2 : 0) +
+                    (expression.hasSpaceAfterAs() ? 1 : 0) +
+                    length(expression.getIdentificationVariable());
 
             addProblem(expression, startPosition, endPosition, JoinFetch_InvalidIdentification);
         }
@@ -3664,11 +3664,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         if (!expression.hasPatternValue()) {
 
             int startPosition = position(expression) +
-                                length(expression.getStringExpression()) +
-                                4 /* LIKE */ +
-                                (expression.hasSpaceAfterStringExpression() ? 1 : 0) +
-                                (expression.hasNot() ? 1 : 0) +
-                                (expression.hasSpaceAfterLike() ? 1 : 0);
+                    length(expression.getStringExpression()) +
+                    4 /* LIKE */ +
+                    (expression.hasSpaceAfterStringExpression() ? 1 : 0) +
+                    (expression.hasNot() ? 1 : 0) +
+                    (expression.hasSpaceAfterLike() ? 1 : 0);
 
             addProblem(expression, startPosition, LikeExpression_MissingPatternValue);
         }
@@ -3680,21 +3680,21 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             if (!expression.hasEscapeCharacter()) {
 
                 int startPosition = position(expression) +
-                                    length(expression.getStringExpression()) +
-                                    4 /* LIKE */ +
-                                    (expression.hasSpaceAfterStringExpression() ? 1 : 0) +
-                                    (expression.hasNot() ? 1 : 0) +
-                                    (expression.hasSpaceAfterLike() ? 1 : 0) +
-                                    length(expression.getPatternValue()) +
-                                    (expression.hasSpaceAfterPatternValue() ? 1 : 0) +
-                                    6 + /* ESCAPE */ +
-                                    (expression.hasSpaceAfterEscape() ? 1 : 0);
+                        length(expression.getStringExpression()) +
+                        4 /* LIKE */ +
+                        (expression.hasSpaceAfterStringExpression() ? 1 : 0) +
+                        (expression.hasNot() ? 1 : 0) +
+                        (expression.hasSpaceAfterLike() ? 1 : 0) +
+                        length(expression.getPatternValue()) +
+                        (expression.hasSpaceAfterPatternValue() ? 1 : 0) +
+                        6 + /* ESCAPE */ +
+                        (expression.hasSpaceAfterEscape() ? 1 : 0);
 
                 addProblem(expression, startPosition, LikeExpression_MissingEscapeCharacter);
             }
             else {
-               validateLikeExpressionEscapeCharacter(expression);
-           }
+                validateLikeExpressionEscapeCharacter(expression);
+            }
         }
 
         super.visit(expression);
@@ -3737,8 +3737,8 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         if (!expression.hasExpression()) {
 
             int startPosition = position(expression) +
-                                3 /* NOT */ +
-                                (expression.hasSpaceAfterNot() ? 1 : 0);
+                    3 /* NOT */ +
+                    (expression.hasSpaceAfterNot() ? 1 : 0);
 
             addProblem(expression, startPosition, NotExpression_MissingExpression);
         }
@@ -3807,8 +3807,8 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         if (!expression.hasConditionalExpression()) {
 
             int startPosition = position(expression) +
-                                2 /* ON */ +
-                                (expression.hasSpaceAfterIdentifier() ? 1 : 0);
+                    2 /* ON */ +
+                    (expression.hasSpaceAfterIdentifier() ? 1 : 0);
 
             addProblem(expression, startPosition, OnClause_MissingConditionalExpression);
         }
@@ -3819,8 +3819,8 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             if (!isValid(conditionalExpression, ConditionalExpressionBNF.ID)) {
 
                 int startPosition = position(expression) +
-                                    2 /* ON */ +
-                                    (expression.hasSpaceAfterIdentifier() ? 1 : 0);
+                        2 /* ON */ +
+                        (expression.hasSpaceAfterIdentifier() ? 1 : 0);
 
                 int endPosition = startPosition + length(conditionalExpression);
 
@@ -3843,9 +3843,9 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         // Validate the separation of multiple grouping items
         else {
             validateCollectionSeparatedByComma(
-                expression.getOrderByItems(),
-                OrderByClause_OrderByItemEndsWithComma,
-                OrderByClause_OrderByItemIsMissingComma
+                    expression.getOrderByItems(),
+                    OrderByClause_OrderByItemEndsWithComma,
+                    OrderByClause_OrderByItemIsMissingComma
             );
         }
 
@@ -3878,9 +3878,9 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     @Override
     public void visit(OrExpression expression) {
         validateLogicalExpression(
-            expression,
-            ConditionalExpressionBNF.ID,
-            ConditionalExpressionBNF.ID
+                expression,
+                ConditionalExpressionBNF.ID,
+                ConditionalExpressionBNF.ID
         );
     }
 
@@ -3910,13 +3910,13 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 
         // Missing identification variable
         if (!expression.hasIdentificationVariable() &&
-            !expression.hasVirtualIdentificationVariable()) {
+                !expression.hasVirtualIdentificationVariable()) {
 
             int startPosition = position(expression) +
-                                length(expression.getRootObject()) +
-                                (expression.hasSpaceAfterRootObject() ? 1 : 0) +
-                                (expression.hasAs() ? 2 : 0) +
-                                (expression.hasSpaceAfterAs() ? 1 : 0);
+                    length(expression.getRootObject()) +
+                    (expression.hasSpaceAfterRootObject() ? 1 : 0) +
+                    (expression.hasAs() ? 2 : 0) +
+                    (expression.hasSpaceAfterAs() ? 1 : 0);
 
             addProblem(expression, startPosition, RangeVariableDeclaration_MissingIdentificationVariable);
         }
@@ -3931,13 +3931,13 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         // JPA 1.0 does not support a result variable expression
         if (isJPA1_0()) {
             int startPosition = position(expression) +
-                                length(expression.getSelectExpression()) +
-                                (expression.hasSelectExpression() ? 1 : 0);
+                    length(expression.getSelectExpression()) +
+                    (expression.hasSelectExpression() ? 1 : 0);
 
             int endPosition = startPosition +
-                              (expression.hasAs() ? 2 : 0) +
-                              (expression.hasSpaceAfterAs() ? 1 : 0) +
-                              length(expression.getResultVariable());
+                    (expression.hasAs() ? 2 : 0) +
+                    (expression.hasSpaceAfterAs() ? 1 : 0) +
+                    length(expression.getResultVariable());
 
             addProblem(expression, startPosition, endPosition, ResultVariable_InvalidJPAVersion);
         }
@@ -3957,10 +3957,10 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             if (!expression.hasResultVariable()) {
 
                 int startPosition = position(expression) +
-                                    length(expression.getSelectExpression()) +
-                                    (expression.hasSelectExpression() ? 1 : 0) +
-                                    (expression.hasAs() ? 2 : 0) +
-                                    (expression.hasSpaceAfterAs() ? 1 : 0);
+                        length(expression.getSelectExpression()) +
+                        (expression.hasSelectExpression() ? 1 : 0) +
+                        (expression.hasAs() ? 2 : 0) +
+                        (expression.hasSpaceAfterAs() ? 1 : 0);
 
                 addProblem(expression, startPosition, ResultVariable_MissingResultVariable);
             }
@@ -3979,9 +3979,9 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         // Make sure the select expression are separated by a comma
         if (expression.hasSelectExpression()) {
             validateCollectionSeparatedByComma(
-                expression.getSelectExpression(),
-                AbstractSelectClause_SelectExpressionEndsWithComma,
-                AbstractSelectClause_SelectExpressionIsMissingComma
+                    expression.getSelectExpression(),
+                    AbstractSelectClause_SelectExpressionEndsWithComma,
+                    AbstractSelectClause_SelectExpressionIsMissingComma
             );
         }
     }
@@ -4044,8 +4044,8 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             if (!expression.hasRightParenthesis()) {
 
                 int startPosition = position(expression) +
-                                    1 /* ( */ +
-                                    length(expression.getExpression());
+                        1 /* ( */ +
+                        length(expression.getExpression());
 
                 addProblem(expression, startPosition, SubExpression_MissingRightParenthesis);
             }
@@ -4091,14 +4091,14 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         if (!expression.hasExpression()) {
 
             int startPosition = position(expression) +
-                                4 /* TRIM */ +
-                                (expression.hasLeftParenthesis() ? 1 : 0) +
-                                expression.getSpecification().getValue().length() +
-                                (expression.hasSpaceAfterSpecification() ? 1 : 0) +
-                                length(expression.getTrimCharacter()) +
-                                (expression.hasSpaceAfterTrimCharacter() ? 1 : 0) +
-                                (expression.hasFrom() ? 4 : 0) +
-                                (expression.hasSpaceAfterFrom() ? 1 : 0);
+                    4 /* TRIM */ +
+                    (expression.hasLeftParenthesis() ? 1 : 0) +
+                    expression.getSpecification().getValue().length() +
+                    (expression.hasSpaceAfterSpecification() ? 1 : 0) +
+                    length(expression.getTrimCharacter()) +
+                    (expression.hasSpaceAfterTrimCharacter() ? 1 : 0) +
+                    (expression.hasFrom() ? 4 : 0) +
+                    (expression.hasSpaceAfterFrom() ? 1 : 0);
 
             addProblem(expression, startPosition, TrimExpression_MissingExpression);
         }
@@ -4106,14 +4106,14 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         else if (!isValid(expression.getExpression(), expression.getEncapsulatedExpressionQueryBNFId())) {
 
             int startPosition = position(expression) +
-                                4 /* TRIM */ +
-                                (expression.hasLeftParenthesis() ? 1 : 0) +
-                                expression.getSpecification().getValue().length() +
-                                (expression.hasSpaceAfterSpecification() ? 1 : 0) +
-                                length(expression.getTrimCharacter()) +
-                                (expression.hasSpaceAfterTrimCharacter() ? 1 : 0) +
-                                (expression.hasFrom() ? 4 : 0) +
-                                (expression.hasSpaceAfterFrom() ? 1 : 0);
+                    4 /* TRIM */ +
+                    (expression.hasLeftParenthesis() ? 1 : 0) +
+                    expression.getSpecification().getValue().length() +
+                    (expression.hasSpaceAfterSpecification() ? 1 : 0) +
+                    length(expression.getTrimCharacter()) +
+                    (expression.hasSpaceAfterTrimCharacter() ? 1 : 0) +
+                    (expression.hasFrom() ? 4 : 0) +
+                    (expression.hasSpaceAfterFrom() ? 1 : 0);
 
             int endPosition = startPosition + length(expression.getExpression());
             addProblem(expression, startPosition, endPosition, TrimExpression_InvalidExpression);
@@ -4132,10 +4132,10 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                 String stringLiteral = literal(trimCharacter, LiteralType.STRING_LITERAL);
 
                 int startPosition = position(expression) +
-                                    4 /* TRIM */ +
-                                    (expression.hasLeftParenthesis() ? 1 : 0) +
-                                    expression.getSpecification().getValue().length() +
-                                    (expression.hasSpaceAfterSpecification() ? 1 : 0);
+                        4 /* TRIM */ +
+                        (expression.hasLeftParenthesis() ? 1 : 0) +
+                        expression.getSpecification().getValue().length() +
+                        (expression.hasSpaceAfterSpecification() ? 1 : 0);
 
                 int endPosition = startPosition + length(trimCharacter);
 
@@ -4177,8 +4177,8 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         if (!expression.hasRangeVariableDeclaration()) {
 
             int startPosition = position(expression) +
-                                6 /* UPDATE */ +
-                                (expression.hasSpaceAfterUpdate() ? 1 : 0);
+                    6 /* UPDATE */ +
+                    (expression.hasSpaceAfterUpdate() ? 1 : 0);
 
             addProblem(expression, startPosition, UpdateClause_MissingRangeVariableDeclaration);
         }
@@ -4186,10 +4186,10 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         else if (!expression.hasSet()) {
 
             int startPosition = position(expression) +
-                                6 /* UPDATE */ +
-                                (expression.hasSpaceAfterUpdate() ? 1 : 0) +
-                                length(expression.getRangeVariableDeclaration()) +
-                                (expression.hasSpaceAfterRangeVariableDeclaration() ? 1 : 0);
+                    6 /* UPDATE */ +
+                    (expression.hasSpaceAfterUpdate() ? 1 : 0) +
+                    length(expression.getRangeVariableDeclaration()) +
+                    (expression.hasSpaceAfterRangeVariableDeclaration() ? 1 : 0);
 
             addProblem(expression, startPosition, UpdateClause_MissingSet);
         }
@@ -4197,21 +4197,21 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         else if (!expression.hasUpdateItems()) {
 
             int startPosition = position(expression) +
-                                6 /* UPDATE */ +
-                                (expression.hasSpaceAfterUpdate() ? 1 : 0) +
-                                length(expression.getRangeVariableDeclaration()) +
-                                (expression.hasSpaceAfterRangeVariableDeclaration() ? 1 : 0) +
-                                3 /* 'SET' */ +
-                                (expression.hasSpaceAfterSet() ? 1 : 0);
+                    6 /* UPDATE */ +
+                    (expression.hasSpaceAfterUpdate() ? 1 : 0) +
+                    length(expression.getRangeVariableDeclaration()) +
+                    (expression.hasSpaceAfterRangeVariableDeclaration() ? 1 : 0) +
+                    3 /* 'SET' */ +
+                    (expression.hasSpaceAfterSet() ? 1 : 0);
 
             addProblem(expression, startPosition, UpdateClause_MissingUpdateItems);
         }
         // Make sure the update items are separated by commas
         else {
             validateCollectionSeparatedByComma(
-                expression.getUpdateItems(),
-                UpdateClause_UpdateItemEndsWithComma,
-                UpdateClause_UpdateItemIsMissingComma
+                    expression.getUpdateItems(),
+                    UpdateClause_UpdateItemEndsWithComma,
+                    UpdateClause_UpdateItemIsMissingComma
             );
         }
 
@@ -4229,11 +4229,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 
         // Missing '='
         if (expression.hasStateFieldPathExpression() &&
-           !expression.hasEqualSign()) {
+                !expression.hasEqualSign()) {
 
             int startPosition = position(expression) +
-                                length(expression.getStateFieldPathExpression()) +
-                                (expression.hasSpaceAfterStateFieldPathExpression() ? 1 : 0);
+                    length(expression.getStateFieldPathExpression()) +
+                    (expression.hasSpaceAfterStateFieldPathExpression() ? 1 : 0);
 
             addProblem(expression, startPosition, UpdateItem_MissingEqualSign);
         }
@@ -4244,10 +4244,10 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             if (!expression.hasNewValue()) {
 
                 int startPosition = position(expression) +
-                                    length(expression.getStateFieldPathExpression()) +
-                                    (expression.hasSpaceAfterStateFieldPathExpression() ? 1 : 0) +
-                                    1 /* '=' */ +
-                                    (expression.hasSpaceAfterEqualSign() ? 1 : 0);
+                        length(expression.getStateFieldPathExpression()) +
+                        (expression.hasSpaceAfterStateFieldPathExpression() ? 1 : 0) +
+                        1 /* '=' */ +
+                        (expression.hasSpaceAfterEqualSign() ? 1 : 0);
 
                 addProblem(expression, startPosition, UpdateItem_MissingNewValue);
             }
@@ -4290,36 +4290,36 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         if (!expression.hasWhenExpression()) {
 
             int startPosition = position(expression) +
-                                4 /* WHEN */ +
-                                (expression.hasSpaceAfterWhen() ? 1 : 0);
+                    4 /* WHEN */ +
+                    (expression.hasSpaceAfterWhen() ? 1 : 0);
 
             addProblem(expression, startPosition, WhenClause_MissingWhenExpression);
         }
 
         // THEN identifier is missing
         if (expression.hasWhenExpression() &&
-           !expression.hasThen()) {
+                !expression.hasThen()) {
 
             int startPosition = position(expression) +
-                                4 /* WHEN */ +
-                                (expression.hasSpaceAfterWhen() ? 1 : 0) +
-                                length(expression.getWhenExpression()) +
-                                (expression.hasSpaceAfterWhenExpression() ? 1 : 0);
+                    4 /* WHEN */ +
+                    (expression.hasSpaceAfterWhen() ? 1 : 0) +
+                    length(expression.getWhenExpression()) +
+                    (expression.hasSpaceAfterWhenExpression() ? 1 : 0);
 
             addProblem(expression, startPosition, WhenClause_MissingThenIdentifier);
         }
 
         // THEN expression is missing
         if (expression.hasThen() &&
-           !expression.hasThenExpression()) {
+                !expression.hasThenExpression()) {
 
             int startPosition = position(expression) +
-                                4 /* WHEN */ +
-                                (expression.hasSpaceAfterWhen() ? 1 : 0) +
-                                length(expression.getWhenExpression()) +
-                                (expression.hasSpaceAfterWhenExpression() ? 1 : 0) +
-                                4 /* THEN */ +
-                                (expression.hasSpaceAfterThen() ? 1 : 0);
+                    4 /* WHEN */ +
+                    (expression.hasSpaceAfterWhen() ? 1 : 0) +
+                    length(expression.getWhenExpression()) +
+                    (expression.hasSpaceAfterWhenExpression() ? 1 : 0) +
+                    4 /* THEN */ +
+                    (expression.hasSpaceAfterThen() ? 1 : 0);
 
             addProblem(expression, startPosition, WhenClause_MissingThenExpression);
         }
@@ -4330,9 +4330,9 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     @Override
     public void visit(WhereClause expression) {
         validateAbstractConditionalClause(
-            expression,
-            WhereClause_MissingConditionalExpression,
-            WhereClause_InvalidConditionalExpression
+                expression,
+                WhereClause_MissingConditionalExpression,
+                WhereClause_InvalidConditionalExpression
         );
     }
 
@@ -4397,11 +4397,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                     int endPosition   = startPosition;
 
                     validator.addProblem(
-                        expression,
-                        startPosition,
-                        endPosition,
-                        CollectionExpression_MissingExpression,
-                        String.valueOf(index + 1)
+                            expression,
+                            startPosition,
+                            endPosition,
+                            CollectionExpression_MissingExpression,
+                            String.valueOf(index + 1)
                     );
                 }
 
@@ -4418,12 +4418,12 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 
                     if (!validateOnly) {
                         validator.addProblem(
-                            expression,
-                            startPosition,
-                            endPosition,
-                            wrongSeparatorProblemKey,
-                            expression1.toParsedText(),
-                            expression2.toParsedText()
+                                expression,
+                                startPosition,
+                                endPosition,
+                                wrongSeparatorProblemKey,
+                                expression1.toParsedText(),
+                                expression2.toParsedText()
                         );
                     }
                 }
@@ -4466,7 +4466,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 
         protected boolean hasComma(T expression) {
             return !hasFirstExpression(expression) ||
-                   expression.hasComma();
+                    expression.hasComma();
         }
 
         protected boolean hasFirstExpression(T expression) {
@@ -4734,32 +4734,32 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         protected boolean isRightParenthesisMissing(T expression) {
 
             if (!expression.hasLeftParenthesis() ||
-                !expression.hasFirstExpression() ||
-                 expression.hasRightParenthesis()) {
+                    !expression.hasFirstExpression() ||
+                    expression.hasRightParenthesis()) {
 
                 return false;
             }
 
             if (expression.hasFirstExpression()  &&
-               !expression.hasFirstComma()       &&
-               !expression.hasSecondExpression() &&
-               !expression.hasSecondComma()      &&
-               !expression.hasThirdExpression()) {
+                    !expression.hasFirstComma()       &&
+                    !expression.hasSecondExpression() &&
+                    !expression.hasSecondComma()      &&
+                    !expression.hasThirdExpression()) {
 
                 return false;
             }
 
             if (expression.hasFirstComma()       &&
-               !expression.hasSecondExpression() &&
-               !expression.hasSecondComma()      &&
-               !expression.hasThirdExpression()) {
+                    !expression.hasSecondExpression() &&
+                    !expression.hasSecondComma()      &&
+                    !expression.hasThirdExpression()) {
 
                 return false;
             }
 
             if (expression.hasSecondExpression() &&
-                expression.hasSecondComma()      &&
-               !expression.hasThirdExpression()) {
+                    expression.hasSecondComma()      &&
+                    !expression.hasThirdExpression()) {
 
                 return false;
             }

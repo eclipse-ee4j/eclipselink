@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,7 +56,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
      */
     protected List<String> clauses(String afterIdentifier, String beforeIdentifier, boolean subquery) {
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
 
         if (afterIdentifier == SELECT) {
 
@@ -247,7 +247,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT AVG(";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add(DISTINCT);
         CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
@@ -260,7 +260,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT AVG() From Employee e";
         int position = "SELECT AVG(".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         proposals.add(DISTINCT);
         CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
@@ -274,7 +274,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT AVG(DISTINCT ) From Employee e";
         int position = "SELECT AVG(DISTINCT ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
@@ -329,7 +329,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT AVG(DISTINCT e) From Employee e";
         int position = "SELECT AVG(DISTINCT ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
@@ -342,7 +342,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT AVG(DISTINCT e) From Employee e";
         int position = "SELECT AVG(DISTINCT e".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
@@ -354,7 +354,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT AVG(DISTINCT e) From Employee emp";
         int position = "SELECT AVG(DISTINCT e".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
@@ -367,7 +367,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT AVG() From Employee emp";
         int position = "SELECT AVG(".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         proposals.add(DISTINCT);
         CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
@@ -381,7 +381,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT AVG(e) From Employee emp";
         int position = "SELECT AVG(e".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
@@ -408,7 +408,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT AVG(emp) From Employee emp";
         int position = "SELECT AVG(e".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
@@ -428,7 +428,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT AVG( From Employee emp";
         int position = "SELECT AVG(".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         proposals.add(DISTINCT);
         CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
@@ -442,7 +442,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT AVG(e From Employee emp";
         int position = "SELECT AVG(e".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
@@ -918,7 +918,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e, IN(e.name) AS n";
         int position = "SELECT e FROM Employee e, IN(".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.collectionMemberDeclarationParameters());
 
@@ -931,7 +931,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e, IN(";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.collectionMemberDeclarationParameters());
 
@@ -944,7 +944,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e, IN(e.name) AS n";
         int position = "SELECT e FROM Employee e, IN(".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.collectionMemberDeclarationParameters());
 
@@ -1055,7 +1055,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "delete from Address as a where current_date ";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, bnfAccessor.comparators());
         CollectionTools.addAll(proposals, bnfAccessor.arithmetics());
         CollectionTools.addAll(proposals, bnfAccessor.conditionalExpressionsCompoundFunctions());
@@ -1072,7 +1072,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e " + identifier + " e.roomNumber ";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, bnfAccessor.conditionalExpressionsAggregates());
         CollectionTools.addAll(proposals, bnfAccessor.conditionalExpressionsCompoundFunctions());
 
@@ -1106,7 +1106,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e WHERE CONCAT(e.name, AS e)";
         int position = "SELECT e FROM Employee e WHERE CONCAT(e.name, ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.internalConcatExpressionFunctions());
 
@@ -1142,7 +1142,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e WHERE CONCAT(e.name, ()";
         int position = "SELECT e FROM Employee e WHERE CONCAT(e.name, (".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.internalConcatExpressionFunctions());
         CollectionTools.addAll(proposals, bnfAccessor.internalConcatExpressionClauses());
@@ -1156,7 +1156,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e WHERE CONCAT(e.name, (S)";
         int position = "SELECT e FROM Employee e WHERE CONCAT(e.name, (S".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, filter(bnfAccessor.internalConcatExpressionFunctions(), "S"));
         CollectionTools.addAll(proposals, filter(bnfAccessor.internalConcatExpressionClauses(), "S"));
 
@@ -1210,7 +1210,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e " + prepend + identifier + " (e.name = 'Pascal') ";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, clauses(identifier, null, false));
 
         testHasTheseProposals(jpqlQuery, position, proposals);
@@ -1225,7 +1225,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e " + prepend + identifier + " e.roomNumber ";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, clauses(identifier, null, false));
 
         testDoesNotHaveTheseProposals(jpqlQuery, position, proposals);
@@ -1240,7 +1240,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e " + prepend + identifier + " AVG(e.age) ";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, clauses(identifier, null, false));
 
         testDoesNotHaveTheseProposals(jpqlQuery, position, proposals);
@@ -1255,7 +1255,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e " + prepend + identifier + " ?1 ";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, clauses(identifier, null, false));
 
         testDoesNotHaveTheseProposals(jpqlQuery, position, proposals);
@@ -1290,26 +1290,26 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
     }
 
     @Test
-    public final void test_Constructor_04() throws Exception {
+    public final void test_Constructor_04() {
         String jpqlQuery = "SELECT e, NEW (";
         int position = "SELECT e, ".length();
         testHasTheseProposals(jpqlQuery, position, NEW);
     }
 
     @Test
-    public final void test_Constructor_05() throws Exception {
+    public final void test_Constructor_05() {
         String jpqlQuery = "SELECT e, NEW (";
         int position = "SELECT e, N".length();
         testHasTheseProposals(jpqlQuery, position, NEW);
     }
 
     @Test
-    public final void test_Constructor_06() throws Exception {
+    public final void test_Constructor_06() {
 
         String jpqlQuery = "SELECT NEW String() From Employee e";
         int position = "SELECT NEW String(".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.constructorItemFunctions());
 
@@ -1317,12 +1317,12 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
     }
 
     @Test
-    public final void test_Constructor_07() throws Exception {
+    public final void test_Constructor_07() {
 
         String jpqlQuery = "SELECT NEW String(e) From Employee e";
         int position = "SELECT NEW String(e".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, filter(bnfAccessor.constructorItemFunctions(), "e"));
 
@@ -1351,7 +1351,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
     }
 
     @Test
-    public final void test_Constructor_11() throws Exception {
+    public final void test_Constructor_11() {
         String jpqlQuery = "SELECT new com.titan.domain.Name(c.firstName, c.lastName) FROM Customer c";
         int position = "SELECT new com.titan.domain.Name(c.".length();
         testHasTheseProposals(jpqlQuery, position, "firstName", "hasGoodCredit", "id", "lastName", "address", "home");
@@ -1363,7 +1363,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT new com.titan.domain.Name(c.firstName, c.lastName) FROM Customer c";
         int position = "SELECT new com.titan.domain.Name(c.firstName, ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("c");
         CollectionTools.addAll(proposals, bnfAccessor.constructorItemFunctions());
 
@@ -1376,7 +1376,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT new com.titan.domain.Name(c.firstName, c.lastName) FROM Customer c";
         int position = "SELECT new com.titan.domain.Name(c.firstName, c".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("c");
         CollectionTools.addAll(proposals, filter(bnfAccessor.constructorItemFunctions(), "c"));
 
@@ -1384,21 +1384,21 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
     }
 
     @Test
-    public final void test_Constructor_15() throws Exception {
+    public final void test_Constructor_15() {
         String jpqlQuery = "SELECT NE";
         int position = jpqlQuery.length();
         testHasOnlyTheseProposals(jpqlQuery, position, NEW);
     }
 
     @Test
-    public final void test_Constructor_16() throws Exception {
+    public final void test_Constructor_16() {
         String jpqlQuery = "SELECT e, NE";
         int position = jpqlQuery.length();
         testHasOnlyTheseProposals(jpqlQuery, position, NEW);
     }
 
     @Test
-    public final void test_Constructor_17() throws Exception {
+    public final void test_Constructor_17() {
         String jpqlQuery = "SELECT e, NEW";
         int position = jpqlQuery.length();
         testHasTheseProposals(jpqlQuery, position, NEW);
@@ -1480,7 +1480,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT COUNT(";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add(DISTINCT);
         CollectionTools.addAll(proposals, bnfAccessor.countFunctions());
 
@@ -1493,7 +1493,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT COUNT() From Employee e";
         int position = "SELECT COUNT(".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         proposals.add(DISTINCT);
         CollectionTools.addAll(proposals, bnfAccessor.countFunctions());
@@ -1507,7 +1507,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT COUNT(DISTINCT ) From Employee e";
         int position = "SELECT COUNT(DISTINCT ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.countFunctions());
 
@@ -1562,7 +1562,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT COUNT(DISTINCT e) From Employee e";
         int position = "SELECT COUNT(DISTINCT ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.countFunctions());
 
@@ -1575,7 +1575,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT COUNT(DISTINCT e) From Employee e";
         int position = "SELECT COUNT(DISTINCT e".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, filter(bnfAccessor.countFunctions(), "e"));
 
@@ -1588,7 +1588,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT COUNT(DISTINCT e) From Employee emp";
         int position = "SELECT COUNT(DISTINCT e".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         CollectionTools.addAll(proposals, filter(bnfAccessor.countFunctions(), "e"));
 
@@ -1600,7 +1600,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT COUNT() From Employee emp";
         int position = "SELECT COUNT(".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         proposals.add(DISTINCT);
         CollectionTools.addAll(proposals, bnfAccessor.countFunctions());
@@ -1614,7 +1614,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT COUNT(e) From Employee emp";
         int position = "SELECT COUNT(e".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         CollectionTools.addAll(proposals, filter(bnfAccessor.countFunctions(), "e"));
 
@@ -1627,7 +1627,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT COUNT(em) From Employee emp";
         int position = "SELECT COUNT(em".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         CollectionTools.addAll(proposals, filter(bnfAccessor.countFunctions(), "em"));
 
@@ -1640,7 +1640,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT COUNT(emp) From Employee emp";
         int position = "SELECT COUNT(emp".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         CollectionTools.addAll(proposals, filter(bnfAccessor.countFunctions(), "emp"));
 
@@ -1653,7 +1653,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT COUNT(emp) From Employee emp";
         int position = "SELECT COUNT(e".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         CollectionTools.addAll(proposals, filter(bnfAccessor.countFunctions(), "e"));
 
@@ -1666,7 +1666,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT COUNT(emp) From Employee emp";
         int position = "SELECT COUNT(em".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         CollectionTools.addAll(proposals, filter(bnfAccessor.countFunctions(), "em"));
 
@@ -1679,7 +1679,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT COUNT( From Employee emp";
         int position = "SELECT COUNT(".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         proposals.add(DISTINCT);
         CollectionTools.addAll(proposals, bnfAccessor.countFunctions());
@@ -1693,7 +1693,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT COUNT(e From Employee emp";
         int position = "SELECT COUNT(e".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         CollectionTools.addAll(proposals, filter(bnfAccessor.countFunctions(), "e"));
 
@@ -2359,84 +2359,84 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
     }
 
     @Test
-    public final void test_From_01() throws Exception {
+    public final void test_From_01() {
         String jpqlQuery = "SELECT ";
         int position = jpqlQuery.length();
         testDoesNotHaveTheseProposals(jpqlQuery, position, FROM);
     }
 
     @Test
-    public final void test_From_02() throws Exception {
+    public final void test_From_02() {
         String jpqlQuery = "SELECT F";
         int position = jpqlQuery.length();
         testDoesNotHaveTheseProposals(jpqlQuery, position, FROM);
     }
 
     @Test
-    public final void test_From_03() throws Exception {
+    public final void test_From_03() {
         String jpqlQuery = "SELECT AVG(e.roomNumber)";
         int position = jpqlQuery.length();
         testHasTheseProposals(jpqlQuery, position, FROM);
     }
 
     @Test
-    public final void test_From_04() throws Exception {
+    public final void test_From_04() {
         String jpqlQuery = "SELECT AVG(e.roomNumber) ";
         int position = jpqlQuery.length();
         testHasTheseProposals(jpqlQuery, position, FROM);
     }
 
     @Test
-    public final void test_From_05() throws Exception {
+    public final void test_From_05() {
         String jpqlQuery = "SELECT AVG(e.roomNumber) F";
         int position = jpqlQuery.length();
         testHasOnlyTheseProposals(jpqlQuery, position, FROM);
     }
 
     @Test
-    public final void test_From_06() throws Exception {
+    public final void test_From_06() {
         String jpqlQuery = "SELECT f ";
         int position = jpqlQuery.length();
         testHasTheseProposals(jpqlQuery, position, FROM);
     }
 
     @Test
-    public final void test_From_07() throws Exception {
+    public final void test_From_07() {
         String jpqlQuery = "SELECT a, ";
         int position = jpqlQuery.length();
         testDoesNotHaveTheseProposals(jpqlQuery, position, FROM);
     }
 
     @Test
-    public final void test_From_08() throws Exception {
+    public final void test_From_08() {
         String jpqlQuery = "SELECT AVG( ";
         int position = jpqlQuery.length();
         testDoesNotHaveTheseProposals(jpqlQuery, position, FROM);
     }
 
     @Test
-    public final void test_From_09() throws Exception {
+    public final void test_From_09() {
         String jpqlQuery = "SELECT AVG(a ";
         int position = jpqlQuery.length();
         testDoesNotHaveTheseProposals(jpqlQuery, position, FROM);
     }
 
     @Test
-    public final void test_From_10() throws Exception {
+    public final void test_From_10() {
         String jpqlQuery = "SELECT AVG(e.roomNumber ";
         int position = jpqlQuery.length();
         testDoesNotHaveTheseProposals(jpqlQuery, position, FROM);
     }
 
     @Test
-    public final void test_From_11() throws Exception {
+    public final void test_From_11() {
         String jpqlQuery = "SELECT F F";
         int position = "SELECT F".length();
         testDoesNotHaveTheseProposals(jpqlQuery, position, FROM);
     }
 
     @Test
-    public final void test_From_12() throws Exception {
+    public final void test_From_12() {
 
         String jpqlQuery = "SELECT e FROM Address a," +
                            "              Employee emp JOIN emp.customers emp_c, " +
@@ -2448,21 +2448,21 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
     }
 
     @Test
-    public final void test_From_13() throws Exception {
+    public final void test_From_13() {
         String jpqlQuery = "SELECT e F";
         int position = jpqlQuery.length();
         testHasOnlyTheseProposals(jpqlQuery, position, FROM);
     }
 
     @Test
-    public final void test_From_14() throws Exception {
+    public final void test_From_14() {
         String jpqlQuery = "SELECT e F, E";
         int position = "SELECT e F".length();
         testDoesNotHaveTheseProposals(jpqlQuery, position, FROM);
     }
 
     @Test
-    public final void test_From_15() throws Exception {
+    public final void test_From_15() {
 
         String jpqlQuery = "SELECT e FROM Address a," +
                            "              Employee emp JOIN emp.customers emp_c, " +
@@ -2605,7 +2605,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e";
         int position = "SELECT e FROM ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, entityNames());
         CollectionTools.addAll(proposals, classNames());
         CollectionTools.addAll(proposals, bnfAccessor.internalFromClauseIdentifiers());
@@ -2623,7 +2623,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT i FROM Investment i";
         int position = "SELECT i FROM I".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, filter(entityNames(), "I"));
         CollectionTools.addAll(proposals, filter(classNames(), "I"));
         CollectionTools.addAll(proposals, filter(bnfAccessor.internalFromClauseIdentifiers(), "I"));
@@ -2641,7 +2641,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT t FROM Tax t";
         int position = "SELECT t FROM T".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, filter(entityNames(), "T"));
         CollectionTools.addAll(proposals, filter(classNames(), "T"));
         CollectionTools.addAll(proposals, filter(bnfAccessor.internalFromClauseIdentifiers(), "T"));
@@ -2659,7 +2659,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT AVG(e.roomNumber) FROM ";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, entityNames());
         CollectionTools.addAll(proposals, classNames());
         CollectionTools.addAll(proposals, bnfAccessor.internalFromClauseIdentifiers());
@@ -2677,7 +2677,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM ";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, entityNames());
         CollectionTools.addAll(proposals, classNames());
         CollectionTools.addAll(proposals, bnfAccessor.internalFromClauseIdentifiers());
@@ -2695,7 +2695,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM E";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, filter(entityNames(), "E"));
         CollectionTools.addAll(proposals, filter(classNames(), "E"));
         CollectionTools.addAll(proposals, filter(bnfAccessor.internalFromClauseIdentifiers(), "E"));
@@ -2713,7 +2713,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e, ";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, entityNames());
         CollectionTools.addAll(proposals, classNames());
         CollectionTools.addAll(proposals, bnfAccessor.internalFromClauseIdentifiers());
@@ -2727,7 +2727,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e, Address a";
         int position = "SELECT e FROM ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, entityNames());
         CollectionTools.addAll(proposals, classNames());
         CollectionTools.addAll(proposals, bnfAccessor.internalFromClauseIdentifiers());
@@ -2745,7 +2745,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e ";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, entityNames());
         CollectionTools.addAll(proposals, classNames());
         CollectionTools.addAll(proposals, bnfAccessor.internalFromClauseIdentifiers());
@@ -2759,7 +2759,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e, Address a ";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, entityNames());
         CollectionTools.addAll(proposals, classNames());
         CollectionTools.addAll(proposals, bnfAccessor.internalFromClauseIdentifiers());
@@ -2773,7 +2773,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e ";
         int position = "SELECT e FROM ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, entityNames());
         CollectionTools.addAll(proposals, classNames());
         CollectionTools.addAll(proposals, bnfAccessor.internalFromClauseIdentifiers());
@@ -2791,7 +2791,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e ";
         int position = "SELECT e FROM E".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, filter(entityNames(), "E"));
         CollectionTools.addAll(proposals, filter(classNames(), "E"));
         CollectionTools.addAll(proposals, filter(bnfAccessor.internalFromClauseIdentifiers(), "E"));
@@ -2805,7 +2805,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e ";
         int position = "SELECT e FROM Employee".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, filter(entityNames(), "Employee"));
         CollectionTools.addAll(proposals, filter(classNames(), "Employee"));
         CollectionTools.addAll(proposals, filter(bnfAccessor.internalFromClauseIdentifiers(), "Employee"));
@@ -2819,7 +2819,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e, Address a ";
         int position = "SELECT e FROM Employee e, ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, entityNames());
         CollectionTools.addAll(proposals, classNames());
         CollectionTools.addAll(proposals, bnfAccessor.internalFromClauseIdentifiers());
@@ -2833,7 +2833,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e, Address a ";
         int position = "SELECT e FROM Employee e, A".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, filter(entityNames(), "A"));
         CollectionTools.addAll(proposals, filter(classNames(), "A"));
         CollectionTools.addAll(proposals, filter(bnfAccessor.internalFromClauseIdentifiers(), "A"));
@@ -2847,7 +2847,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e, I";
         int position = "SELECT e FROM Employee e, I".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, filter(entityNames(), "I"));
         CollectionTools.addAll(proposals, filter(classNames(), "I"));
         CollectionTools.addAll(proposals, filter(bnfAccessor.internalFromClauseIdentifiers(), "I"));
@@ -2861,7 +2861,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e, A";
         int position = "SELECT e FROM Employee e, A".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, filter(entityNames(), "A"));
         CollectionTools.addAll(proposals, filter(classNames(), "A"));
         CollectionTools.addAll(proposals, filter(bnfAccessor.internalFromClauseIdentifiers(), "A"));
@@ -2870,7 +2870,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
     }
 
     @Test
-    public final void test_FromClause_18() throws Exception {
+    public final void test_FromClause_18() {
         String jpqlQuery = "SELECT e FROM Employee e";
         int position = "SELECT e FROM Employee ".length();
         testHasOnlyTheseProposals(jpqlQuery, position, AS);
@@ -2882,7 +2882,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e, , Address a";
         int position = "SELECT e FROM Employee e,".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, entityNames());
         CollectionTools.addAll(proposals, classNames());
         CollectionTools.addAll(proposals, bnfAccessor.internalFromClauseIdentifiers());
@@ -2896,7 +2896,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e, , Address a";
         int position = "SELECT e FROM Employee e, ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, entityNames());
         CollectionTools.addAll(proposals, classNames());
         CollectionTools.addAll(proposals, bnfAccessor.internalFromClauseIdentifiers());
@@ -2910,7 +2910,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e,, Address a";
         int position = "SELECT e FROM Employee e,".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, entityNames());
         CollectionTools.addAll(proposals, classNames());
         CollectionTools.addAll(proposals, bnfAccessor.internalFromClauseIdentifiers());
@@ -2924,7 +2924,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e J";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, filter(fromClauseInternalClauses(FROM), "J"));
         CollectionTools.addAll(proposals, filter(clauses(FROM, null, false), "J"));
 
@@ -2937,7 +2937,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e E";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, filter(fromClauseInternalClauses(FROM), "e"));
         CollectionTools.addAll(proposals, filter(clauses(FROM, null, false), "e"));
 
@@ -2985,7 +2985,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
                     int position = fragment.length() + positionIndex;
                     String filter = identifier.substring(0, positionIndex);
 
-                    List<String> proposals = new ArrayList<String>();
+                    List<String> proposals = new ArrayList<>();
                     CollectionTools.addAll(proposals, filter(functionProposals(), filter));
                     CollectionTools.addAll(proposals, filter(new String[] { "e" }, filter));
 
@@ -3280,14 +3280,14 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
     }
 
     @Test
-    public final void test_Is_01() throws Exception {
+    public final void test_Is_01() {
         String jpqlQuery = "select e from Employee e where e.managerEmployee is not ";
         int position = jpqlQuery.length();
         testHasOnlyTheseProposals(jpqlQuery, position, IS_NOT_NULL);
     }
 
     @Test
-    public final void test_Is_02() throws Exception {
+    public final void test_Is_02() {
         String jpqlQuery = "select e from Employee e where e.department is ";
         int position = jpqlQuery.length();
         testHasOnlyTheseProposals(jpqlQuery, position, IS_NULL, IS_NOT_NULL);
@@ -3308,7 +3308,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
     }
 
     @Test
-    public final void test_Is_05() throws Exception {
+    public final void test_Is_05() {
         String jpqlQuery = "select e from Employee e where (SELECT a FROM Address a) is ";
         int position = jpqlQuery.length();
         testDoesNotHaveTheseProposals(jpqlQuery, position, IS_NULL, IS_NOT_NULL);
@@ -3565,7 +3565,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e INNER JOIN e.magazines mags ";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, fromClauseInternalClauses(FROM));
         CollectionTools.addAll(proposals, clauses(FROM, null, false));
 
@@ -3893,7 +3893,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e WHERE e.hired = NULL ";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, bnfAccessor.logicalIdentifiers());
         CollectionTools.addAll(proposals, clauses(WHERE, null, false));
 
@@ -4172,7 +4172,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT MAX(";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add(DISTINCT);
         CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
@@ -4185,7 +4185,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT MAX() From Employee e";
         int position = "SELECT MAX(".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         proposals.add(DISTINCT);
         CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
@@ -4199,7 +4199,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT MAX(DISTINCT ) From Employee e";
         int position = "SELECT MAX(DISTINCT ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
@@ -4254,7 +4254,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT MAX(DISTINCT e) From Employee e";
         int position = "SELECT MAX(DISTINCT ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
@@ -4267,7 +4267,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT MAX(DISTINCT e) From Employee e";
         int position = "SELECT MAX(DISTINCT e".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
@@ -4280,7 +4280,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT MAX(DISTINCT e) From Employee emp";
         int position = "SELECT MAX(DISTINCT e".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
@@ -4293,7 +4293,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT MAX() From Employee emp";
         int position = "SELECT MAX(".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         proposals.add(DISTINCT);
         CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
@@ -4307,7 +4307,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT MAX(e) From Employee emp";
         int position = "SELECT MAX(e".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
@@ -4334,7 +4334,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT MAX(emp) From Employee emp";
         int position = "SELECT MAX(e".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
@@ -4354,7 +4354,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT MAX( From Employee emp";
         int position = "SELECT MAX(".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         proposals.add(DISTINCT);
         CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
@@ -4368,7 +4368,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT MAX(e From Employee emp";
         int position = "SELECT MAX(e".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
@@ -4409,7 +4409,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT MIN(";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add(DISTINCT);
         CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
@@ -4422,7 +4422,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT MIN() From Employee e";
         int position = "SELECT MIN(".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         proposals.add(DISTINCT);
         CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
@@ -4436,7 +4436,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT MIN(DISTINCT ) From Employee e";
         int position = "SELECT MIN(DISTINCT ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
@@ -4491,7 +4491,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT MIN(DISTINCT e) From Employee e";
         int position = "SELECT MIN(DISTINCT ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
@@ -4504,7 +4504,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT MIN(DISTINCT e) From Employee e";
         int position = "SELECT MIN(DISTINCT e".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
@@ -4517,7 +4517,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT MIN(DISTINCT e) From Employee emp";
         int position = "SELECT MIN(DISTINCT e".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
@@ -4530,7 +4530,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT MIN() From Employee emp";
         int position = "SELECT MIN(".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         proposals.add(DISTINCT);
         CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
@@ -4544,7 +4544,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT MIN(e) From Employee emp";
         int position = "SELECT MIN(e".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
@@ -4571,7 +4571,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT MIN(emp) From Employee emp";
         int position = "SELECT MIN(e".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
@@ -4591,7 +4591,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT MIN( From Employee emp";
         int position = "SELECT MIN(".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         proposals.add(DISTINCT);
         CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
@@ -4605,7 +4605,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT MIN(e From Employee emp";
         int position = "SELECT MIN(e".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
@@ -4799,7 +4799,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e ";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, fromClauseInternalClauses(FROM));
         CollectionTools.addAll(proposals, clauses(FROM, null, false));
 
@@ -4812,7 +4812,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e HAVING e.name = 'Oracle'";
         int position = "SELECT e FROM Employee e ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, fromClauseInternalClauses(FROM));
         CollectionTools.addAll(proposals, clauses(FROM, ORDER_BY, false));
 
@@ -4825,7 +4825,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e ORDER BY e.name";
         int position = "SELECT e FROM Employee e ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add(ORDER_BY);
         CollectionTools.addAll(proposals, fromClauseInternalClauses(FROM));
         CollectionTools.addAll(proposals, clauses(FROM, ORDER_BY, false));
@@ -4839,7 +4839,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e GROUP BY e.name";
         int position = "SELECT e FROM Employee e ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, fromClauseInternalClauses(FROM));
         CollectionTools.addAll(proposals, clauses(FROM, HAVING, false));
 
@@ -4852,7 +4852,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e WHERE e.name = 'Oracle' ";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, bnfAccessor.logicalIdentifiers());
         CollectionTools.addAll(proposals, clauses(WHERE, null, false));
 
@@ -4865,7 +4865,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e A";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, filter(fromClauseInternalClauses(FROM), "A"));
         CollectionTools.addAll(proposals, filter(clauses(FROM, null, false), "A"));
 
@@ -5076,40 +5076,40 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
     }
 
     @Test
-    public final void test_Query_01() throws Exception {
+    public final void test_Query_01() {
         String jpqlQuery = ExpressionTools.EMPTY_STRING;
         int position = 0;
         testHasOnlyTheseProposals(jpqlQuery, position, SELECT, UPDATE, DELETE_FROM);
     }
 
     @Test
-    public final void test_Query_02() throws Exception {
+    public final void test_Query_02() {
         String jpqlQuery = "SELECT e FROM Employee e WHERE e.name SEL";
         int position = jpqlQuery.length();
         testDoesNotHaveTheseProposals(jpqlQuery, position, SELECT, UPDATE, DELETE_FROM);
     }
 
     @Test
-    public final void test_Query_03() throws Exception {
+    public final void test_Query_03() {
         String jpqlQuery = "SELECT e FROM Employee e WHERE e.name DEL";
         int position = jpqlQuery.length();
         testDoesNotHaveTheseProposals(jpqlQuery, position, SELECT, UPDATE, DELETE_FROM);
     }
 
     @Test
-    public final void test_Query_04() throws Exception {
+    public final void test_Query_04() {
         String jpqlQuery = "SELECT e FROM Employee e WHERE e.name UP";
         int position = jpqlQuery.length();
         testDoesNotHaveTheseProposals(jpqlQuery, position, SELECT, UPDATE, DELETE_FROM);
     }
 
     @Test
-    public final void test_Restriction_01() throws Exception {
+    public final void test_Restriction_01() {
 
         String jpqlQuery = "SELECT AVG(e.name) FROM Employee e";
         int position = "SELECT AVG(".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         proposals.add(DISTINCT);
         CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
@@ -5118,15 +5118,15 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
     }
 
     @Test
-    public final void test_Restriction_02() throws Exception {
+    public final void test_Restriction_02() {
 
         String jpqlQuery = "SELECT AVG(e.name) FROM Employee e";
         int position = "SELECT AVG(e".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
-        List<String> selectProposals = new ArrayList<String>();
+        List<String> selectProposals = new ArrayList<>();
         CollectionTools.addAll(selectProposals, filter(bnfAccessor.selectItemIdentifiers(), "e"));
         selectProposals.removeAll(proposals);
 
@@ -5134,7 +5134,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
     }
 
     @Test
-    public final void test_Restriction_03() throws Exception {
+    public final void test_Restriction_03() {
         String jpqlQuery = "SELECT AVG(e.name) FROM Employee e";
         int position = "SELECT AVG(e.".length();
         testDoesNotHaveTheseProposals(jpqlQuery, position, bnfAccessor.selectItemIdentifiers());
@@ -5181,7 +5181,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT AS FROM Address AS a";
         int position = "SELECT ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add(DISTINCT);
         proposals.add("a");
         CollectionTools.addAll(proposals, bnfAccessor.selectItemFunctions());
@@ -5195,7 +5195,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT AS FROM Address AS a";
         int position = "SELECT A".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("a");
         CollectionTools.addAll(proposals, filter(bnfAccessor.selectItemFunctions(), "A"));
 
@@ -5222,7 +5222,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT a.id FROM Address AS a";
         int position = "SELECT a.id ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add(AS);
         proposals.add(FROM);
         CollectionTools.addAll(proposals, bnfAccessor.selectItemAggregates());
@@ -5236,7 +5236,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT a.zipcode, a.id FROM Address AS a";
         int position = "SELECT a.zipcode, a.id ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add(AS);
         proposals.add(FROM);
         CollectionTools.addAll(proposals, bnfAccessor.selectItemAggregates());
@@ -5251,7 +5251,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT a.zipcode , a.id FROM Address AS a";
         int position = "SELECT a.zipcode ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add(AS);
         CollectionTools.addAll(proposals, bnfAccessor.selectItemAggregates());
 
@@ -5264,7 +5264,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT (SELECT e From Employee e) FROM Address AS a";
         int position = "SELECT (SELECT e From Employee e) ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add(AS);
         proposals.add(FROM);
         CollectionTools.addAll(proposals, bnfAccessor.selectItemAggregates());
@@ -5273,12 +5273,12 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
     }
 
     @Test
-    public final void test_Select_01() throws Exception {
+    public final void test_Select_01() {
 
         String jpqlQuery = "SELECT ";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add(DISTINCT);
         CollectionTools.addAll(proposals, bnfAccessor.selectItemFunctions());
 
@@ -5286,24 +5286,24 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
     }
 
     @Test
-    public final void test_Select_02() throws Exception {
+    public final void test_Select_02() {
 
         String jpqlQuery = "SELECT e";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, filter(bnfAccessor.selectItemFunctions(), "e"));
 
         testHasOnlyTheseProposals(jpqlQuery, position, proposals);
     }
 
     @Test
-    public final void test_Select_03() throws Exception {
+    public final void test_Select_03() {
 
         String jpqlQuery = "SELECT  FROM Employee e";
         int position = "SELECT ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add(DISTINCT);
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.selectItemFunctions());
@@ -5312,33 +5312,33 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
     }
 
     @Test
-    public final void test_Select_04() throws Exception {
+    public final void test_Select_04() {
         String jpqlQuery = "SELECT AV FROM Employee e";
         int position = "SELECT AV".length();
         testHasOnlyTheseProposals(jpqlQuery, position, AVG);
     }
 
     @Test
-    public final void test_Select_05() throws Exception {
+    public final void test_Select_05() {
         String jpqlQuery = "SELECT e,";
         int position = jpqlQuery.length();
         testHasOnlyTheseProposals(jpqlQuery, position, bnfAccessor.selectItemFunctions());
     }
 
     @Test
-    public final void test_Select_06() throws Exception {
+    public final void test_Select_06() {
         String jpqlQuery = "SELECT e, ";
         int position = jpqlQuery.length();
         testHasOnlyTheseProposals(jpqlQuery, position, bnfAccessor.selectItemFunctions());
     }
 
     @Test
-    public final void test_Select_07() throws Exception {
+    public final void test_Select_07() {
 
         String jpqlQuery = "SELECT AVG(e.age)  FROM Employee e";
         int position = "SELECT AVG(e.age) ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add(AS);
         proposals.add(FROM);
         CollectionTools.addAll(proposals, bnfAccessor.selectItemAggregates());
@@ -5347,7 +5347,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
     }
 
     @Test
-    public final void test_Select_08() throws Exception {
+    public final void test_Select_08() {
 
         String jpqlQuery = SELECT;
 
@@ -5362,7 +5362,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT o,  FROM Address o";
         int position = "SELECT o, ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("o");
         CollectionTools.addAll(proposals, bnfAccessor.selectItemFunctions());
 
@@ -5426,7 +5426,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
     }
 
     @Test
-    public final void test_StateFieldPath_08() throws Exception {
+    public final void test_StateFieldPath_08() {
         String jpqlQuery = "SELECT c.employees. FROM CodeAssist c";
         int position = "SELECT c.employees.".length();
         testHasNoProposals(jpqlQuery, position);
@@ -5454,7 +5454,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
     }
 
     @Test
-    public final void test_StateFieldPath_12() throws Exception {
+    public final void test_StateFieldPath_12() {
         String jpqlQuery = "SELECT a.alias FROM CodeAssist c, IN (c.customerMap) cust, IN(KEY(cust).aliases) a";
         int position = "SELECT a.alias".length();
         testHasOnlyTheseProposals(jpqlQuery, position, "alias");
@@ -5468,7 +5468,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
     }
 
     @Test
-    public final void test_StateFieldPath_14() throws Exception {
+    public final void test_StateFieldPath_14() {
         String jpqlQuery = "SELECT a.alias FROM CodeAssist c, IN (c.customerMap) cust, IN(KEY(cust).aliases) a";
         int position = "SELECT a.alias FROM CodeAssist c, IN (c.customerMap) cust, IN(KEY(".length();
         testHasOnlyTheseProposals(jpqlQuery, position, "cust");
@@ -5510,12 +5510,12 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
     }
 
     @Test
-    public final void test_Subquery_01() throws Exception {
+    public final void test_Subquery_01() {
 
         String jpqlQuery = "SELECT e FROM Employee e WHERE e.salary > (SELECT AVG(f.salary) FROM Employee f)";
         int position = "SELECT e FROM Employee e WHERE e.salary > (".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.comparisonExpressionFunctions());
         CollectionTools.addAll(proposals, bnfAccessor.comparisonExpressionClauses());
@@ -5524,68 +5524,68 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
     }
 
     @Test
-    public final void test_Subquery_02() throws Exception {
+    public final void test_Subquery_02() {
         String jpqlQuery = "SELECT e FROM Employee e WHERE e.salary > (SELECT AVG(f.salary) FROM Employee f)";
         int position = "SELECT e FROM Employee e WHERE e.salary > (S".length();
         testHasTheseProposals(jpqlQuery, position, SELECT);
     }
 
     @Test
-    public final void test_Subquery_03() throws Exception {
+    public final void test_Subquery_03() {
         String jpqlQuery = "SELECT e FROM Employee e WHERE e.salary > (SELECT AVG(f.salary) FROM Employee f)";
         int position = "SELECT e FROM Employee e WHERE e.salary > (SE".length();
         testHasOnlyTheseProposals(jpqlQuery, position, SELECT);
     }
 
     @Test
-    public final void test_Subquery_04() throws Exception {
+    public final void test_Subquery_04() {
         String jpqlQuery = "SELECT e FROM Employee e WHERE e.salary > (SELECT AVG(f.salary) FROM Employee f)";
         int position = "SELECT e FROM Employee e WHERE e.salary > (SEL".length();
         testHasOnlyTheseProposals(jpqlQuery, position, SELECT);
     }
 
     @Test
-    public final void test_Subquery_05() throws Exception {
+    public final void test_Subquery_05() {
         String jpqlQuery = "SELECT e FROM Employee e WHERE e.salary > (SELECT AVG(f.salary) FROM Employee f)";
         int position = "SELECT e FROM Employee e WHERE e.salary > (SELE".length();
         testHasOnlyTheseProposals(jpqlQuery, position, SELECT);
     }
 
     @Test
-    public final void test_Subquery_06() throws Exception {
+    public final void test_Subquery_06() {
         String jpqlQuery = "SELECT e FROM Employee e WHERE e.salary > (SELECT AVG(f.salary) FROM Employee f)";
         int position = "SELECT e FROM Employee e WHERE e.salary > (SELEC".length();
         testHasOnlyTheseProposals(jpqlQuery, position, SELECT);
     }
 
     @Test
-    public final void test_Subquery_07() throws Exception {
+    public final void test_Subquery_07() {
         String jpqlQuery = "SELECT e FROM Employee e WHERE e.salary > (SELECT AVG(f.salary) FROM Employee f)";
         int position = "SELECT e FROM Employee e WHERE e.salary > (SELECT".length();
         testHasTheseProposals(jpqlQuery, position, SELECT);
     }
 
     @Test
-    public final void test_Subquery_08() throws Exception {
+    public final void test_Subquery_08() {
         String jpqlQuery = "SELECT e FROM Employee e WHERE e.salary > (SELECT ";
         int position = "SELECT e FROM Employee e WHERE e.salary > (SELECT".length();
         testHasOnlyTheseProposals(jpqlQuery, position, SELECT);
     }
 
     @Test
-    public final void test_Subquery_09() throws Exception {
+    public final void test_Subquery_09() {
         String jpqlQuery = "SELECT e FROM Employee e WHERE e.salary > (SELECT A";
         int position = "SELECT e FROM Employee e WHERE e.salary > (SELECT A".length();
         testHasOnlyTheseProposals(jpqlQuery, position, ABS, AVG);
     }
 
     @Test
-    public final void test_Subquery_10() throws Exception {
+    public final void test_Subquery_10() {
 
         String jpqlQuery = "SELECT e FROM Employee e WHERE e.salary > (SELECT AVG(f.salary) FROM Employee f)";
         int position = "SELECT e FROM Employee e WHERE e.salary > (SELECT AVG(f.salary) ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add(FROM);
         CollectionTools.addAll(proposals, bnfAccessor.selectItemAggregates());
 
@@ -5593,19 +5593,19 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
     }
 
     @Test
-    public final void test_Subquery_11() throws Exception {
+    public final void test_Subquery_11() {
         String jpqlQuery = "select e from Employee e where (sel";
         int position = jpqlQuery.length();
         testHasOnlyTheseProposals(jpqlQuery, position, SELECT);
     }
 
     @Test
-    public final void test_Subquery_12() throws Exception {
+    public final void test_Subquery_12() {
 
         String jpqlQuery = "select s from Employee s where (s";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("s");
         proposals.add(SELECT);
         CollectionTools.addAll(proposals, filter(bnfAccessor.conditionalExpressionsFunctions(), "s"));
@@ -5614,12 +5614,12 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
     }
 
     @Test
-    public final void test_Subquery_13() throws Exception {
+    public final void test_Subquery_13() {
 
         String jpqlQuery = "select e from Employee e where (";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         proposals.add(SELECT);
         CollectionTools.addAll(proposals, bnfAccessor.conditionalExpressionsFunctions());
@@ -5751,7 +5751,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT SUM(";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add(DISTINCT);
         CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
@@ -5764,7 +5764,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT SUM() From Employee e";
         int position = "SELECT SUM(".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         proposals.add(DISTINCT);
         CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
@@ -5778,7 +5778,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT SUM(DISTINCT ) From Employee e";
         int position = "SELECT SUM(DISTINCT ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
@@ -5833,7 +5833,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT SUM(DISTINCT e) From Employee e";
         int position = "SELECT SUM(DISTINCT ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
@@ -5846,7 +5846,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT SUM(DISTINCT e) From Employee e";
         int position = "SELECT SUM(DISTINCT e".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
@@ -5859,7 +5859,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT SUM(DISTINCT e) From Employee emp";
         int position = "SELECT SUM(DISTINCT e".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
@@ -5872,7 +5872,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT SUM() From Employee emp";
         int position = "SELECT SUM(".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         proposals.add(DISTINCT);
         CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
@@ -5886,7 +5886,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT SUM(e) From Employee emp";
         int position = "SELECT SUM(e".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
@@ -5913,7 +5913,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT SUM(emp) From Employee emp";
         int position = "SELECT SUM(e".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
@@ -5933,7 +5933,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT SUM( From Employee emp";
         int position = "SELECT SUM(".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         proposals.add(DISTINCT);
         CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
@@ -5947,7 +5947,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT SUM(e From Employee emp";
         int position = "SELECT SUM(e".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("emp");
         CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
@@ -6326,7 +6326,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
     }
 
     @Test
-    public final void test_Update_27() throws Exception {
+    public final void test_Update_27() {
         String jpqlQuery = "UPDATE Alias a";
         int position = "UPDATE Al".length();
         testHasOnlyTheseProposals(jpqlQuery, position, "Alias");
@@ -6401,7 +6401,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e WHERE CASE WHEN (e.name = 'Pascal') ";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add(THEN);
         CollectionTools.addAll(proposals, bnfAccessor.logicalIdentifiers());
 
@@ -6418,7 +6418,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e WHERE CASE WHEN e.roomNumber ";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, bnfAccessor.conditionalExpressionsAggregates());
         CollectionTools.addAll(proposals, bnfAccessor.conditionalExpressionsCompoundFunctions());
 
@@ -6437,7 +6437,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e WHERE CASE WHEN e.phoneNumbers ";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, bnfAccessor.conditionalExpressionsCompoundFunctions());
 
         // Filtered out
@@ -6457,7 +6457,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e WHERE CASE WHEN AVG(e.age) ";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, bnfAccessor.conditionalExpressionsAggregates());
         CollectionTools.addAll(proposals, bnfAccessor.conditionalExpressionsCompoundFunctions());
 
@@ -6474,7 +6474,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         String jpqlQuery = "SELECT e FROM Employee e WHERE CASE WHEN ?1 ";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, bnfAccessor.conditionalExpressionsAggregates());
         CollectionTools.addAll(proposals, bnfAccessor.conditionalExpressionsCompoundFunctions());
 

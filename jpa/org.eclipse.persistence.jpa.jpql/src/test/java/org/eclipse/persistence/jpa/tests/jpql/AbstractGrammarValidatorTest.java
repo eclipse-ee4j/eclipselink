@@ -46,7 +46,7 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 @SuppressWarnings("nls")
 public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest {
 
-    private JPQLQueryStringFormatter buildFormatter_1() throws Exception {
+    private JPQLQueryStringFormatter buildFormatter_1() {
         return new JPQLQueryStringFormatter() {
             @Override
             public String format(String jpqlQuery) {
@@ -64,7 +64,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
         };
     }
 
-    private JPQLQueryStringFormatter buildFormatter_2() throws Exception {
+    private JPQLQueryStringFormatter buildFormatter_2() {
         return new JPQLQueryStringFormatter() {
             @Override
             public String format(String jpqlQuery) {
@@ -73,7 +73,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
         };
     }
 
-    private JPQLQueryStringFormatter buildFormatter_4() throws Exception {
+    private JPQLQueryStringFormatter buildFormatter_4() {
         return new JPQLQueryStringFormatter() {
             @Override
             public String format(String jpqlQuery) {
@@ -82,7 +82,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
         };
     }
 
-    private JPQLQueryStringFormatter buildFormatter_5() throws Exception {
+    private JPQLQueryStringFormatter buildFormatter_5() {
         return new JPQLQueryStringFormatter() {
             @Override
             public String format(String jpqlQuery) {
@@ -91,7 +91,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
         };
     }
 
-    private JPQLQueryStringFormatter buildFormatter_6() throws Exception {
+    private JPQLQueryStringFormatter buildFormatter_6() {
         return new JPQLQueryStringFormatter() {
             @Override
             public String format(String jpqlQuery) {

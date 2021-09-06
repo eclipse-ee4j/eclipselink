@@ -51,7 +51,7 @@ public final class QueryPosition {
     public QueryPosition(int position) {
         super();
         this.position  = position;
-        this.positions = new HashMap<Expression, Integer>();
+        this.positions = new HashMap<>();
     }
 
     /**

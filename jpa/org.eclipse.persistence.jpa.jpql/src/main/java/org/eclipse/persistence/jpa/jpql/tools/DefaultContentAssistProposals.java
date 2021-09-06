@@ -182,7 +182,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 
     private static Map<String, String> buildLonguestIdentifiers() {
 
-        Map<String, String> identifiers = new HashMap<String, String>();
+        Map<String, String> identifiers = new HashMap<>();
 
         identifiers.put(IS_EMPTY,         IS_NOT_EMPTY);
         identifiers.put(IS_NULL,          IS_NOT_NULL);
@@ -207,20 +207,20 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 
     private static Map<String, List<String>> buildOrderedIdentifiers() {
 
-        Map<String, List<String>> identifiers = new HashMap<String, List<String>>();
+        Map<String, List<String>> identifiers = new HashMap<>();
 
         identifiers.put(IS_NOT_EMPTY, Collections.singletonList(IS_NOT_EMPTY));
         identifiers.put(IS_NOT_NULL,  Collections.singletonList(IS_NOT_NULL));
         identifiers.put(NOT_IN,       Collections.singletonList(NOT_IN));
         identifiers.put(NOT_BETWEEN,  Collections.singletonList(NOT_BETWEEN));
 
-        List<String> members = new ArrayList<String>();
+        List<String> members = new ArrayList<>();
         members.add(MEMBER_OF);
         members.add(NOT_MEMBER);
         members.add(MEMBER);
         identifiers.put(NOT_MEMBER_OF, members);
 
-        List<String> joins = new ArrayList<String>();
+        List<String> joins = new ArrayList<>();
         joins.add(LEFT_OUTER_JOIN);
         joins.add(LEFT_JOIN_FETCH);
         joins.add(LEFT_JOIN);
@@ -230,7 +230,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
         joins.add(JOIN);
         identifiers.put(LEFT_OUTER_JOIN_FETCH, joins);
 
-        List<String> clauses = new ArrayList<String>();
+        List<String> clauses = new ArrayList<>();
         clauses.add(SELECT);
         clauses.add(UPDATE);
         identifiers.put(DELETE_FROM, clauses);
@@ -240,7 +240,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 
     @Override
     public Iterable<IEntity> abstractSchemaTypes() {
-        return new SnapshotCloneIterable<IEntity>(entities);
+        return new SnapshotCloneIterable<>(entities);
     }
 
     /**
@@ -530,7 +530,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 
     @Override
     public Iterable<EnumProposals> enumConstant() {
-        return new SnapshotCloneIterable<EnumProposals>(enumProposals.values());
+        return new SnapshotCloneIterable<>(enumProposals.values());
     }
 
     @Override
@@ -617,27 +617,27 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 
     @Override
     public Iterable<String> identificationVariables() {
-        List<String> variables = new ArrayList<String>(identificationVariables.size() + rangeIdentificationVariables.size());
+        List<String> variables = new ArrayList<>(identificationVariables.size() + rangeIdentificationVariables.size());
         variables.addAll(identificationVariables);
         variables.addAll(rangeIdentificationVariables.keySet());
-        return new SnapshotCloneIterable<String>(variables);
+        return new SnapshotCloneIterable<>(variables);
     }
 
     @Override
     public Iterable<String> identifiers() {
-        return new SnapshotCloneIterable<String>(identifiers);
+        return new SnapshotCloneIterable<>(identifiers);
     }
 
     protected void initialize(JPQLGrammar jpqlGrammar, ContentAssistExtension extension) {
 
         this.extension                    = extension;
         this.jpqlGrammar                  = jpqlGrammar;
-        this.mappings                     = new HashSet<IMapping>();
-        this.identifiers                  = new HashSet<String>();
-        this.entities                     = new HashSet<IEntity>();
-        this.identificationVariables      = new HashSet<String>();
-        this.rangeIdentificationVariables = new HashMap<String, IEntity>();
-        this.enumProposals                = new HashMap<IType, DefaultEnumProposals>();
+        this.mappings                     = new HashSet<>();
+        this.identifiers                  = new HashSet<>();
+        this.entities                     = new HashSet<>();
+        this.identificationVariables      = new HashSet<>();
+        this.rangeIdentificationVariables = new HashMap<>();
+        this.enumProposals                = new HashMap<>();
     }
 
 
@@ -713,7 +713,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 
     @Override
     public Iterable<IMapping> mappings() {
-        return new SnapshotCloneIterable<IMapping>(mappings);
+        return new SnapshotCloneIterable<>(mappings);
     }
 
     /**
@@ -877,12 +877,12 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
         DefaultEnumProposals(IType enumType) {
             super();
             this.enumType  = enumType;
-            this.constants = new HashSet<String>();
+            this.constants = new HashSet<>();
         }
 
         @Override
         public Iterable<String> enumConstants() {
-            return new SnapshotCloneIterable<String>(constants);
+            return new SnapshotCloneIterable<>(constants);
         }
 
         @Override

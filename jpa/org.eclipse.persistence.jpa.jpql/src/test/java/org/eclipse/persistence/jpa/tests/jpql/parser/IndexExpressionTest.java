@@ -31,7 +31,7 @@ public final class IndexExpressionTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_01() throws Exception {
+    public void test_JPQLQuery_01() {
 
         String query = "SELECT c FROM CreditCard c WHERE INDEX(c) BETWEEN 0 AND 9";
 
@@ -45,7 +45,7 @@ public final class IndexExpressionTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_02() throws Exception {
+    public void test_JPQLQuery_02() {
 
         String query = "SELECT c FROM CreditCard c WHERE INDEX() BETWEEN 0 AND 9";
 
@@ -59,7 +59,7 @@ public final class IndexExpressionTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_03() throws Exception {
+    public void test_JPQLQuery_03() {
 
         String query = "SELECT c FROM CreditCard c WHERE INDEX( BETWEEN 0 AND 9";
 
@@ -77,7 +77,7 @@ public final class IndexExpressionTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_04() throws Exception {
+    public void test_JPQLQuery_04() {
 
         String query = "SELECT c FROM CreditCard c WHERE INDEX BETWEEN 0 AND 9";
 
@@ -95,7 +95,7 @@ public final class IndexExpressionTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_05() throws Exception {
+    public void test_JPQLQuery_05() {
 
         String query = "SELECT c FROM CreditCard c WHERE INDEX) ";
 
@@ -115,7 +115,7 @@ public final class IndexExpressionTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_06() throws Exception {
+    public void test_JPQLQuery_06() {
 
         String query = "SELECT c FROM CreditCard c WHERE INDEX e)";
 
@@ -133,7 +133,7 @@ public final class IndexExpressionTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_07() throws Exception {
+    public void test_JPQLQuery_07() {
 
         String query = "SELECT c FROM CreditCard c WHERE INDEX(e";
 
@@ -151,7 +151,7 @@ public final class IndexExpressionTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_08() throws Exception {
+    public void test_JPQLQuery_08() {
 
         String query = "SELECT c FROM CreditCard c WHERE INDEX(e ";
 

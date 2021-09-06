@@ -373,7 +373,7 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
          */
         protected AbstractRenamer() {
             super();
-            textEdits = new ArrayList<TextEdit>();
+            textEdits = new ArrayList<>();
         }
 
         /**

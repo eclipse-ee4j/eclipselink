@@ -137,7 +137,7 @@ public abstract class AbstractPathExpression extends AbstractExpression {
             return;
         }
 
-        paths = new ArrayList<String>();
+        paths = new ArrayList<>();
         String text = getText();
         char character = '\0';
         StringBuilder singlePath = new StringBuilder();
@@ -291,7 +291,7 @@ public abstract class AbstractPathExpression extends AbstractExpression {
      */
     public final ListIterable<String> paths() {
         checkPaths();
-        return new SnapshotCloneListIterable<String>(paths);
+        return new SnapshotCloneListIterable<>(paths);
     }
 
     /**

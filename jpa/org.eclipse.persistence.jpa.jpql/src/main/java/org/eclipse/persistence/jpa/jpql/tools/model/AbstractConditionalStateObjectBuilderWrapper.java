@@ -33,7 +33,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * The delegate to receive the calls from this one.
      */
-    private IConditionalExpressionStateObjectBuilder delegate;
+    private final IConditionalExpressionStateObjectBuilder delegate;
 
     /**
      * Creates a new <code>AbstractConditionalStateObjectBuilderWrapper</code>.

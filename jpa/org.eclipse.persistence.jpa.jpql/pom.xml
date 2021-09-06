@@ -30,6 +30,10 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
+    <properties>
+        <comp.xlint>-Xlint:all</comp.xlint>
+    </properties>
+
     <dependencies>
         <!--Test dependencies-->
         <dependency>

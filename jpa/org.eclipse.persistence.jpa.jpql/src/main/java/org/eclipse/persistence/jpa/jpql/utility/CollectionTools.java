@@ -117,7 +117,7 @@ public final class CollectionTools {
             return (T[]) Array.newInstance(componentType, 0);
         }
 
-        ArrayList<T> list = new ArrayList<T>();
+        ArrayList<T> list = new ArrayList<>();
 
         while (iterator.hasNext()) {
             list.add(iterator.next());
@@ -135,8 +135,9 @@ public final class CollectionTools {
      * @return An instance of a {@link List} containing the elements of the given array
      * @since 2.5
      */
+    @SafeVarargs
     public static <E> List<E> list(E... array) {
-        List<E> list = new ArrayList<E>(array.length);
+        List<E> list = new ArrayList<>(array.length);
         for (E item : array) {
             list.add(item);
         }
@@ -152,6 +153,6 @@ public final class CollectionTools {
      * @return A new {@link List}
      */
     public static <T> List<T> list(Iterator<? extends T> iterator) {
-        return addAll(new ArrayList<T>(), iterator);
+        return addAll(new ArrayList<>(), iterator);
     }
 }

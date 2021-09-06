@@ -157,7 +157,7 @@ public class JavaORMConfiguration extends JavaManagedTypeProvider
 
     protected void populateQueries(Document document) {
 
-        queries = new HashMap<String, IQuery>();
+        queries = new HashMap<>();
         NodeList nodeList = document.getElementsByTagName("named-query");
 
         for (int index = nodeList.getLength(); --index >= 0; ) {

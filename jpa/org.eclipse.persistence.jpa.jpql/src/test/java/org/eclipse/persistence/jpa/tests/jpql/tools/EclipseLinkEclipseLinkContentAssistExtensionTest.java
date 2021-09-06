@@ -148,7 +148,7 @@ public final class EclipseLinkEclipseLinkContentAssistExtensionTest extends Abst
     protected List<String> fromClauseInternalClauses(String afterIdentifier) {
 
         if (EclipseLinkVersionTools.isNewerThan2_4(getGrammar())) {
-            List<String> proposals = new ArrayList<String>();
+            List<String> proposals = new ArrayList<>();
 
             if (afterIdentifier == FROM) {
                 proposals.addAll(super.fromClauseInternalClauses(FROM));

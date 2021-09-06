@@ -38,7 +38,7 @@ public final class EmptyIterable<E> implements Iterable<E>, Serializable {
     /**
      * The singleton instance of this <code>EmptyIterable</code>.
      */
-    private static final Iterable<Object> INSTANCE = new EmptyIterable<Object>();
+    private static final Iterable<Object> INSTANCE = new EmptyIterable<>();
 
     /**
      * The serial version UID of this class.

@@ -53,7 +53,7 @@ public class SingleElementListIterable<E> implements ListIterable<E> {
 
     @Override
     public ListIterator<E> iterator() {
-        return new SingleElementListIterator<E>(this.element);
+        return new SingleElementListIterator<>(this.element);
     }
 
     @Override

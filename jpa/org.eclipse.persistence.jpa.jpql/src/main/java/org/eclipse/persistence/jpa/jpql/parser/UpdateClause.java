@@ -141,13 +141,13 @@ public final class UpdateClause extends AbstractExpression {
      */
     public CollectionExpression buildCollectionExpression() {
 
-        List<AbstractExpression> children = new ArrayList<AbstractExpression>(1);
+        List<AbstractExpression> children = new ArrayList<>(1);
         children.add((AbstractExpression) getUpdateItems());
 
-        List<Boolean> commas = new ArrayList<Boolean>(1);
+        List<Boolean> commas = new ArrayList<>(1);
         commas.add(Boolean.FALSE);
 
-        List<Boolean> spaces = new ArrayList<Boolean>(1);
+        List<Boolean> spaces = new ArrayList<>(1);
         spaces.add(Boolean.FALSE);
 
         return new CollectionExpression(this, children, commas, spaces, true);

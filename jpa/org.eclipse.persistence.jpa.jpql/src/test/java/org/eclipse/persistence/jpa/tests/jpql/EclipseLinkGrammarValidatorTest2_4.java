@@ -1365,7 +1365,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
     }
 
     @Test
-    public void test_RegexpExpression_InvalidPatternValue_3() throws Exception {
+    public void test_RegexpExpression_InvalidPatternValue_3() {
 
         // TODO
     }

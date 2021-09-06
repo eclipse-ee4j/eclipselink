@@ -171,7 +171,7 @@ public class FromSubqueryResolver extends Resolver {
         private void initializeMappings() {
 
             if (mappings == null) {
-                mappings = new HashMap<String, IMapping>();
+                mappings = new HashMap<>();
 
                 // Create virtual mappings that wraps the select items
                 VirtualMappingBuilder builder = new VirtualMappingBuilder();
@@ -185,7 +185,7 @@ public class FromSubqueryResolver extends Resolver {
         @Override
         public Iterable<IMapping> mappings() {
             initializeMappings();
-            return new SnapshotCloneIterable<IMapping>(mappings.values());
+            return new SnapshotCloneIterable<>(mappings.values());
         }
     }
 

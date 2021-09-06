@@ -336,7 +336,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
     @Override
     protected void initialize() {
         super.initialize();
-        usedIdentificationVariables    = new ArrayList<IdentificationVariable>();
+        usedIdentificationVariables    = new ArrayList<>();
         registerIdentificationVariable = true;
     }
 
@@ -1567,7 +1567,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
     protected void validateIdentificationVariables() {
 
         // Collect the identification variables from the Declarations
-        Map<String, List<IdentificationVariable>> identificationVariables = new HashMap<String, List<IdentificationVariable>>();
+        Map<String, List<IdentificationVariable>> identificationVariables = new HashMap<>();
         helper.collectLocalDeclarationIdentificationVariables(identificationVariables);
 
         // Check for duplicate identification variables
@@ -2124,7 +2124,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
     protected void validateSimpleSelectStatement(SimpleSelectStatement expression) {
 
         // Keep a copy of the identification variables that are used throughout the parent query
-        List<IdentificationVariable> oldUsedIdentificationVariables = new ArrayList<IdentificationVariable>(usedIdentificationVariables);
+        List<IdentificationVariable> oldUsedIdentificationVariables = new ArrayList<>(usedIdentificationVariables);
 
         // Create a context for the subquery
         helper.newSubqueryContext(expression);

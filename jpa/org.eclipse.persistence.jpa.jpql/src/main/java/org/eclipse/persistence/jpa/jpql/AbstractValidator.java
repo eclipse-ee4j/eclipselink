@@ -319,7 +319,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
     protected List<Expression> getChildren(Expression expression) {
         ChildrenCollectorVisitor visitor = getChildrenCollectorVisitor();
         try {
-            visitor.expressions = new LinkedList<Expression>();
+            visitor.expressions = new LinkedList<>();
             expression.accept(visitor);
             return visitor.expressions;
         }
@@ -500,7 +500,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
      * Initializes this validator.
      */
     protected void initialize() {
-        validators = new HashMap<String, JPQLQueryBNFValidator>();
+        validators = new HashMap<>();
     }
 
     /**
@@ -930,7 +930,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
             // Retrieve all the children from the "root" JPQLQueryBNF and
             // check if the BNF to validate is one of those children
             else {
-                Set<String> allQueryBNFIds = new HashSet<String>();
+                Set<String> allQueryBNFIds = new HashSet<>();
                 allJPQLQueryBNFs(allQueryBNFIds, this.queryBNF);
                 valid = allQueryBNFIds.contains(queryBNF.getId());
             }

@@ -53,7 +53,7 @@ public abstract class AbstractModifyClauseStateObject extends AbstractStateObjec
 
     @Override
     public ListIterable<VariableDeclarationStateObject> declarations() {
-        return new SingleElementListIterable<VariableDeclarationStateObject>(rangeVariableDeclaration);
+        return new SingleElementListIterable<>(rangeVariableDeclaration);
     }
 
     @Override

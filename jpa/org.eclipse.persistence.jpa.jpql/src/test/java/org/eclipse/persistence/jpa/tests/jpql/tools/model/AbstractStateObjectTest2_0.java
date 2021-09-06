@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,7 +48,7 @@ public abstract class AbstractStateObjectTest2_0 extends AbstractStateObjectTest
         );
     }
 
-    public static StateObjectTester stateObject_205() throws Exception {
+    public static StateObjectTester stateObject_205() {
 
         // UPDATE Employee e
         // SET e.salary =
@@ -73,7 +73,7 @@ public abstract class AbstractStateObjectTest2_0 extends AbstractStateObjectTest
         );
     }
 
-    public static StateObjectTester stateObject_206() throws Exception {
+    public static StateObjectTester stateObject_206() {
 
         // SELECT e.name,
         //        CASE TYPE(e) WHEN Exempt THEN 'Exempt'
@@ -102,7 +102,7 @@ public abstract class AbstractStateObjectTest2_0 extends AbstractStateObjectTest
         );
     }
 
-    public static StateObjectTester stateObject_207() throws Exception {
+    public static StateObjectTester stateObject_207() {
 
         // SELECT e.name,
         //        f.name,
@@ -132,7 +132,7 @@ public abstract class AbstractStateObjectTest2_0 extends AbstractStateObjectTest
         );
     }
 
-    public static StateObjectTester stateObject_208() throws Exception {
+    public static StateObjectTester stateObject_208() {
 
         // SELECT e
         // FROM Employee e
@@ -223,7 +223,7 @@ public abstract class AbstractStateObjectTest2_0 extends AbstractStateObjectTest
         );
     }
 
-    public static StateObjectTester stateObject_214() throws Exception {
+    public static StateObjectTester stateObject_214() {
 
         // UPDATE Employee e
         // SET e.salary = CASE e.rating WHEN 1 THEN e.salary * 1.1
@@ -246,7 +246,7 @@ public abstract class AbstractStateObjectTest2_0 extends AbstractStateObjectTest
         );
     }
 
-    public static StateObjectTester stateObject_217() throws Exception {
+    public static StateObjectTester stateObject_217() {
 
         // SELECT o.quantity, o.cost*1.08 AS taxedCost, a.zipcode
         // FROM Customer c JOIN c.orders o JOIN c.address a
@@ -276,7 +276,7 @@ public abstract class AbstractStateObjectTest2_0 extends AbstractStateObjectTest
         );
     }
 
-    public static StateObjectTester stateObject_218() throws Exception {
+    public static StateObjectTester stateObject_218() {
 
         // SELECT AVG(o.quantity) as q, a.zipcode
         // FROM Customer c JOIN c.orders o JOIN c.address a
@@ -297,7 +297,7 @@ public abstract class AbstractStateObjectTest2_0 extends AbstractStateObjectTest
         );
     }
 
-    public static StateObjectTester stateObject_222() throws Exception {
+    public static StateObjectTester stateObject_222() {
 
         // SELECT e.salary / 1000D n
         // From Employee e
@@ -308,7 +308,7 @@ public abstract class AbstractStateObjectTest2_0 extends AbstractStateObjectTest
         );
     }
 
-    public static StateObjectTester stateObject_223() throws Exception {
+    public static StateObjectTester stateObject_223() {
 
         // SELECT MOD(a.id, 2) AS m
         // FROM Address a JOIN FETCH a.customerList

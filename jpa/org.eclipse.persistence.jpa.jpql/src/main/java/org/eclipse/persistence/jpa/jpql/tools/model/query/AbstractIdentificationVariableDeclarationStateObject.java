@@ -230,12 +230,12 @@ public abstract class AbstractIdentificationVariableDeclarationStateObject exten
 
     @Override
     public ListIterable<IdentificationVariableStateObject> identificationVariables() {
-        List<IdentificationVariableStateObject> stateObjects = new ArrayList<IdentificationVariableStateObject>();
+        List<IdentificationVariableStateObject> stateObjects = new ArrayList<>();
         stateObjects.add(rangeVariableDeclaration.getIdentificationVariableStateObject());
         for (JoinStateObject join : items()) {
             stateObjects.add(join.getIdentificationVariableStateObject());
         }
-        return new SnapshotCloneListIterable<IdentificationVariableStateObject>(stateObjects);
+        return new SnapshotCloneListIterable<>(stateObjects);
     }
 
     @Override
