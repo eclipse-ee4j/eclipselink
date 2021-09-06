@@ -39,6 +39,7 @@ import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLInverseReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
 import org.eclipse.persistence.sdo.SDOChangeSummary;
 import org.eclipse.persistence.sdo.SDODataObject;
@@ -195,8 +196,9 @@ public class JAXBValueStore implements ValueStore {
             // OLD VALUE
             if (mapping.isAbstractCompositeObjectMapping()) {
                 XMLCompositeObjectMapping compositeMapping = (XMLCompositeObjectMapping) mapping;
-                if (oldValue != null && compositeMapping.getInverseReferenceMapping().getAttributeAccessor() != null) {
-                    compositeMapping.getInverseReferenceMapping().getAttributeAccessor().setAttributeValueInObject(oldValue, null);
+                XMLInverseReferenceMapping inverseReferenceMapping = compositeMapping.getInverseReferenceMapping();
+                if (oldValue != null && inverseReferenceMapping != null && inverseReferenceMapping.getAttributeAccessor() != null) {
+                    inverseReferenceMapping.getAttributeAccessor().setAttributeValueInObject(oldValue, null);
                 }
             }
 
@@ -205,8 +207,9 @@ public class JAXBValueStore implements ValueStore {
             mapping.getAttributeAccessor().setAttributeValueInObject(entity, newValue);
             if (mapping.isAbstractCompositeObjectMapping()) {
                 XMLCompositeObjectMapping compositeMapping = (XMLCompositeObjectMapping) mapping;
-                if (value != null && compositeMapping.getInverseReferenceMapping().getAttributeAccessor() != null) {
-                    compositeMapping.getInverseReferenceMapping().getAttributeAccessor().setAttributeValueInObject(newValue, entity);
+                XMLInverseReferenceMapping inverseReferenceMapping = compositeMapping.getInverseReferenceMapping();
+                if (value != null && inverseReferenceMapping != null && inverseReferenceMapping.getAttributeAccessor() != null) {
+                    inverseReferenceMapping.getAttributeAccessor().setAttributeValueInObject(newValue, entity);
                 }
             }
         }
@@ -250,7 +253,8 @@ public class JAXBValueStore implements ValueStore {
             // OLD VALUE
             if (mapping.isAbstractCompositeCollectionMapping()) {
                 XMLCompositeCollectionMapping compositeMapping = (XMLCompositeCollectionMapping) mapping;
-                if (compositeMapping.getInverseReferenceMapping().getAttributeAccessor() != null) {
+                XMLInverseReferenceMapping inverseReferenceMapping = compositeMapping.getInverseReferenceMapping();
+                if (inverseReferenceMapping != null && inverseReferenceMapping.getAttributeAccessor() != null) {
 
                     Object oldContainer = mapping.getAttributeValueFromObject(entity);
                     if (oldContainer != null) {
@@ -258,7 +262,7 @@ public class JAXBValueStore implements ValueStore {
                         Object iterator = containerPolicy.iteratorFor(oldContainer);
                         while (containerPolicy.hasNext(iterator)) {
                             Object oldValue = containerPolicy.next(iterator, session);
-                            compositeMapping.getInverseReferenceMapping().getAttributeAccessor().setAttributeValueInObject(oldValue, null);
+                            inverseReferenceMapping.getAttributeAccessor().setAttributeValueInObject(oldValue, null);
                         }
                     }
                 }
@@ -272,9 +276,10 @@ public class JAXBValueStore implements ValueStore {
             Object oldValue = mapping.getAttributeAccessor().getAttributeValueFromObject(entity);
             if (mapping.isAbstractCompositeObjectMapping()) {
                 XMLCompositeObjectMapping compositeMapping = (XMLCompositeObjectMapping) mapping;
-                if (compositeMapping.getInverseReferenceMapping().getAttributeAccessor() != null) {
+                final XMLInverseReferenceMapping inverseReferenceMapping = compositeMapping.getInverseReferenceMapping();
+                if (inverseReferenceMapping != null && inverseReferenceMapping.getAttributeAccessor() != null) {
                     if (oldValue != null) {
-                        compositeMapping.getInverseReferenceMapping().getAttributeAccessor().setAttributeValueInObject(oldValue, null);
+                        inverseReferenceMapping.getAttributeAccessor().setAttributeValueInObject(oldValue, null);
                     }
                 }
             }
