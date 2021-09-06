@@ -92,7 +92,7 @@ public class TestFind extends JPA1Base {
     public void testNegativ() {
         final EntityManager em = getEnvironment().getEntityManager();
         try {
-            Object result = em.find(Employee.class, Integer.valueOf(17 + 4));
+            Object result = em.find(Employee.class, Integer.valueOf(17 + 12345));
             verify(result == null, "found something");
         } finally {
             closeEntityManager(em);
