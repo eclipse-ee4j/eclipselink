@@ -101,7 +101,7 @@ public class ListChangeEvent<T> implements IListChangeEvent<T> {
 
     @Override
     public ListIterable<T> items() {
-        return new SnapshotCloneListIterable<T>(items);
+        return new SnapshotCloneListIterable<>(items);
     }
 
     @Override

@@ -149,7 +149,7 @@ public class DefaultRefactoringDelta implements RefactoringDelta {
     protected void initialize(CharSequence jpqlQuery) {
         Assert.isNotNull(jpqlQuery, "The JPQL query cannot be null");
         this.jpqlQuery = jpqlQuery;
-        this.textEdits = new LinkedList<TextEdit>();
+        this.textEdits = new LinkedList<>();
     }
 
     @Override
@@ -159,7 +159,7 @@ public class DefaultRefactoringDelta implements RefactoringDelta {
 
     @Override
     public ListIterable<TextEdit> textEdits() {
-        return new SnapshotCloneListIterable<TextEdit>(textEdits);
+        return new SnapshotCloneListIterable<>(textEdits);
     }
 
     @Override

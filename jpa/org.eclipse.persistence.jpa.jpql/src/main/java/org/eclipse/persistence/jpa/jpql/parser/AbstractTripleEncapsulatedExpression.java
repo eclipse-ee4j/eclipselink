@@ -144,17 +144,17 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
      */
     public final CollectionExpression buildCollectionExpression() {
 
-        List<AbstractExpression> children = new ArrayList<AbstractExpression>(3);
+        List<AbstractExpression> children = new ArrayList<>(3);
         children.add((AbstractExpression) getFirstExpression());
         children.add((AbstractExpression) getSecondExpression());
         children.add((AbstractExpression) getThirdExpression());
 
-        List<Boolean> commas = new ArrayList<Boolean>(3);
+        List<Boolean> commas = new ArrayList<>(3);
         commas.add(hasFirstComma);
         commas.add(hasSecondComma);
         commas.add(Boolean.FALSE);
 
-        List<Boolean> spaces = new ArrayList<Boolean>(3);
+        List<Boolean> spaces = new ArrayList<>(3);
         spaces.add(hasSpaceAfterFirstComma);
         spaces.add(hasSpaceAfterSecondComma);
         spaces.add(Boolean.FALSE);

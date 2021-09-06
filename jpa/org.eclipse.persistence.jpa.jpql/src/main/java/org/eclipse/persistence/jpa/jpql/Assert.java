@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -127,6 +127,8 @@ public final class Assert {
      * The exception thrown when the condition is not met.
      */
     public static class AssertException extends RuntimeException {
+
+        private static final long serialVersionUID = 0L;
 
         /**
          * Creates a new <code>AssertException</code>.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,7 +42,7 @@ public class JPQLExpressionTurkishLocaleTest {
                 true
             );
 
-            Collection<JPQLQueryProblem> problems = new LinkedList<JPQLQueryProblem>();
+            Collection<JPQLQueryProblem> problems = new LinkedList<>();
             EclipseLinkGrammarValidator grammarValidator = new EclipseLinkGrammarValidator(grammar);
             grammarValidator.setProblems(problems);
             expression.accept(grammarValidator);

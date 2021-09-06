@@ -17,6 +17,7 @@
 package org.eclipse.persistence.jpa.jpql.tools;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.persistence.jpa.jpql.Assert;
@@ -30,6 +31,7 @@ import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
+import org.eclipse.persistence.jpa.jpql.tools.model.JPQLQueryBuilderWrapper;
 import org.eclipse.persistence.jpa.jpql.tools.resolver.Declaration;
 import org.eclipse.persistence.jpa.jpql.tools.resolver.DeclarationResolver;
 import org.eclipse.persistence.jpa.jpql.tools.resolver.Resolver;
@@ -93,7 +95,7 @@ public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
             List<IdentificationVariable> variables = identificationVariables.get(variableName);
 
             if (variables == null) {
-                variables = new ArrayList<IdentificationVariable>();
+                variables = new ArrayList<>();
                 identificationVariables.put(variableName, variables);
             }
 
@@ -154,7 +156,7 @@ public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
     @Override
     public String[] entityNames() {
 
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
 
         for (IEntity entity : queryContext.getProvider().entities()) {
             names.add(entity.getName());
@@ -166,7 +168,7 @@ public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
     @Override
     public List<JPQLQueryDeclaration> getAllDeclarations() {
 
-        List<JPQLQueryDeclaration> declarations = new ArrayList<JPQLQueryDeclaration>();
+        List<JPQLQueryDeclaration> declarations = new ArrayList<>();
         JPQLQueryContext context = queryContext.getCurrentContext();
 
         while (context != null) {
@@ -183,9 +185,8 @@ public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
     }
 
     @Override
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public List getDeclarations() {
-        return queryContext.getDeclarations();
+    public List<JPQLQueryDeclaration> getDeclarations() {
+        return new ArrayList<>(queryContext.getDeclarations());
     }
 
     @Override

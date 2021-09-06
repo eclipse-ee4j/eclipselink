@@ -55,6 +55,7 @@ public class AndFilter<T> extends CompoundFilter<T> {
      * @return A new chain of {@link AndFilter AndFilters} that will "accept" any object when all
      * {@link Filter filters} accepts the object
      */
+    @SafeVarargs
     public static <T> Filter<T> and(Filter<T>... filters) {
 
         int length = filters.length;
@@ -67,10 +68,10 @@ public class AndFilter<T> extends CompoundFilter<T> {
             return filters[0];
         }
 
-        AndFilter<T> filter = new AndFilter<T>(filters[0], filters[1]);
+        AndFilter<T> filter = new AndFilter<>(filters[0], filters[1]);
 
         for (int index = 2; index < length; index++) {
-            filter = new AndFilter<T>(filter, filters[index]);
+            filter = new AndFilter<>(filter, filters[index]);
         }
 
         return filter;

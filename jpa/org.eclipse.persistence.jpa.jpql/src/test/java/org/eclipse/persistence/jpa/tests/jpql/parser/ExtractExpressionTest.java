@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,7 @@ import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 public final class ExtractExpressionTest extends JPQLParserTest {
 
     @Test
-    public void test_JPQLQuery_01() throws Exception {
+    public void test_JPQLQuery_01() {
 
         String jpqlQuery = "Select extract(year from e.hireDate) from Employee e";
 
@@ -40,7 +40,7 @@ public final class ExtractExpressionTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_02() throws Exception {
+    public void test_JPQLQuery_02() {
 
         String jpqlQuery = "Select extract(year e.hireDate) from Employee e";
 
@@ -53,7 +53,7 @@ public final class ExtractExpressionTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_03() throws Exception {
+    public void test_JPQLQuery_03() {
 
         String jpqlQuery = "Select extract from Employee e";
 
@@ -70,7 +70,7 @@ public final class ExtractExpressionTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_04() throws Exception {
+    public void test_JPQLQuery_04() {
 
         String jpqlQuery = "Select extract( from Employee e";
 
@@ -87,7 +87,7 @@ public final class ExtractExpressionTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_05() throws Exception {
+    public void test_JPQLQuery_05() {
 
         String jpqlQuery = "Select extract() from Employee e";
 
@@ -100,7 +100,7 @@ public final class ExtractExpressionTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_06() throws Exception {
+    public void test_JPQLQuery_06() {
 
         String jpqlQuery = "Select extract(from) from Employee e";
 
@@ -113,7 +113,7 @@ public final class ExtractExpressionTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_07() throws Exception {
+    public void test_JPQLQuery_07() {
 
         String jpqlQuery = "Select extract( from Employee e";
 
@@ -130,7 +130,7 @@ public final class ExtractExpressionTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_08() throws Exception {
+    public void test_JPQLQuery_08() {
 
         String jpqlQuery = "Select extract(MICROSECOND from Employee e";
 
@@ -146,7 +146,7 @@ public final class ExtractExpressionTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_09() throws Exception {
+    public void test_JPQLQuery_09() {
 
         String jpqlQuery = "Select extract(WEEK) from Employee e";
 
@@ -161,7 +161,7 @@ public final class ExtractExpressionTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_10() throws Exception {
+    public void test_JPQLQuery_10() {
 
         String jpqlQuery = "Select extract(DAY_HOUR from from Employee e";
 
@@ -180,7 +180,7 @@ public final class ExtractExpressionTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_11() throws Exception {
+    public void test_JPQLQuery_11() {
 
         String jpqlQuery = "Select extract(DAY_MINUTE from) from Employee e";
 
@@ -195,7 +195,7 @@ public final class ExtractExpressionTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_12() throws Exception {
+    public void test_JPQLQuery_12() {
 
         String jpqlQuery = "Select extract(MONTH (select a.description from Alias a)) " +
                            "from Employee e";
@@ -219,7 +219,7 @@ public final class ExtractExpressionTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_13() throws Exception {
+    public void test_JPQLQuery_13() {
 
         String jpqlQuery = "Select extract(MONTH e.name + 2 " +
                            "from Employee e";
@@ -240,7 +240,7 @@ public final class ExtractExpressionTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_14() throws Exception {
+    public void test_JPQLQuery_14() {
 
         String jpqlQuery = "Select extract MONTH e.name + 2) " +
                            "from Employee e";
@@ -262,7 +262,7 @@ public final class ExtractExpressionTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_15() throws Exception {
+    public void test_JPQLQuery_15() {
 
         String jpqlQuery = "Select extract MONTH e.name + 2) " +
                            "from Employee e";

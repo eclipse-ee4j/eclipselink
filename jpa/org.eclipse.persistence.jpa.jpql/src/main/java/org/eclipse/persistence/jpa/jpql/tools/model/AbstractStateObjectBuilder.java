@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,7 +41,7 @@ public abstract class AbstractStateObjectBuilder {
      */
     protected AbstractStateObjectBuilder() {
         super();
-        stateObjects = new Stack<StateObject>();
+        stateObjects = new Stack<>();
     }
 
     /**
@@ -70,6 +70,7 @@ public abstract class AbstractStateObjectBuilder {
      * @param builders The builders that were passed as arguments, which is only meant to create the
      * stack of {@link StateObject StateObjects} in the right order
      */
+    @SafeVarargs
     protected final <T extends IScalarExpressionStateObjectBuilder<?>> void checkBuilders(T... builders) {
         for (IScalarExpressionStateObjectBuilder<?> builder : builders) {
             checkBuilder(builder);

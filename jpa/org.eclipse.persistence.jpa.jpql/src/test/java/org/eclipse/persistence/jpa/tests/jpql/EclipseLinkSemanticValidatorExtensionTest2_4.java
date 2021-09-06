@@ -73,7 +73,7 @@ public final class EclipseLinkSemanticValidatorExtensionTest2_4 extends Abstract
 
     private List<String> columnNames(String tableName) {
 
-        List<String> columnNames = new ArrayList<String>();
+        List<String> columnNames = new ArrayList<>();
 
         if ("EMPLOYEE".equals(tableName)) {
             columnNames.add("ADDRESS");
@@ -105,7 +105,7 @@ public final class EclipseLinkSemanticValidatorExtensionTest2_4 extends Abstract
 
     private List<String> tableNames() {
 
-        List<String> tableNames = new ArrayList<String>();
+        List<String> tableNames = new ArrayList<>();
         tableNames.add("ADDRESS");
         tableNames.add("EMPLOYEE");
         tableNames.add("EMPLOYEE_SEQ");

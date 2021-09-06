@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,7 +30,7 @@ import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 public final class OrderByItemTest extends JPQLParserTest {
 
     @Test
-    public void test_JPQLQuery_01() throws Exception {
+    public void test_JPQLQuery_01() {
 
         String jpqlQuery = "select e from Employee e order by e.name asc nulls first";
 
@@ -44,7 +44,7 @@ public final class OrderByItemTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_02() throws Exception {
+    public void test_JPQLQuery_02() {
 
         String jpqlQuery = "select e from Employee e order by e.name asc nulls last";
 
@@ -58,7 +58,7 @@ public final class OrderByItemTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_03() throws Exception {
+    public void test_JPQLQuery_03() {
 
         String jpqlQuery = "select e from Employee e order by e.name nulls first";
 
@@ -72,7 +72,7 @@ public final class OrderByItemTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_04() throws Exception {
+    public void test_JPQLQuery_04() {
 
         String jpqlQuery = "select e from Employee e order by e.name nulls last";
 
@@ -86,7 +86,7 @@ public final class OrderByItemTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_05() throws Exception {
+    public void test_JPQLQuery_05() {
 
         String jpqlQuery = "select e from Employee e order by e.name nulls last, e.age desc nulls first";
 
@@ -103,7 +103,7 @@ public final class OrderByItemTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_06() throws Exception {
+    public void test_JPQLQuery_06() {
 
         String jpqlQuery = "select e from Employee e order by e.name nulls last, e.age nulls";
 
@@ -123,7 +123,7 @@ public final class OrderByItemTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_07() throws Exception {
+    public void test_JPQLQuery_07() {
 
         String jpqlQuery = "select e from Employee e order by e.name nulls last, e.age NULLS ";
 
@@ -144,7 +144,7 @@ public final class OrderByItemTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_08() throws Exception {
+    public void test_JPQLQuery_08() {
 
         String jpqlQuery = "SELECT i FROM Item i WHERE i.category=:category ORDER BY i.id\"";
 

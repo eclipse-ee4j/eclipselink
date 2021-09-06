@@ -111,7 +111,7 @@ public class JavaTypeDeclaration implements ITypeDeclaration {
 
     protected ITypeDeclaration[] buildParameterTypes() {
 
-        List<ITypeDeclaration> parameterTypes = new ArrayList<ITypeDeclaration>();
+        List<ITypeDeclaration> parameterTypes = new ArrayList<>();
 
         // Example: Class<T>
         if (genericType instanceof ParameterizedType) {

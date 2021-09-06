@@ -271,7 +271,7 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
     @Override
     protected void initialize() {
         super.initialize();
-        validators = new HashMap<Class<? extends TypeValidator>, TypeValidator>();
+        validators = new HashMap<>();
     }
 
     /**

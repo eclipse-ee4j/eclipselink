@@ -135,7 +135,7 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
 
     @Override
     public Iterable<IEntity> entities() {
-        return new SnapshotCloneIterable<IEntity>(entities.values());
+        return new SnapshotCloneIterable<>(entities.values());
     }
 
     @Override
@@ -213,16 +213,16 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
         Assert.isNotNull(mappingBuilder, "The IMappingBuilder cannot be null");
 
         this.mappingBuilder     = mappingBuilder;
-        this.entities           = new HashMap<String, IEntity>();
-        this.embeddables        = new HashMap<String, IEmbeddable>();
-        this.managedTypes       = new HashMap<String, IManagedType>();
-        this.mappedSuperclasses = new HashMap<String, IMappedSuperclass>();
+        this.entities           = new HashMap<>();
+        this.embeddables        = new HashMap<>();
+        this.managedTypes       = new HashMap<>();
+        this.mappedSuperclasses = new HashMap<>();
 
         initialize();
     }
 
     @Override
     public Iterable<IManagedType> managedTypes() {
-        return new SnapshotCloneIterable<IManagedType>(managedTypes.values());
+        return new SnapshotCloneIterable<>(managedTypes.values());
     }
 }

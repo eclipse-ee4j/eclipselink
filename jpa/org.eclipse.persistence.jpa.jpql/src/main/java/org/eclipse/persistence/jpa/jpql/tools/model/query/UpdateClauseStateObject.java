@@ -195,8 +195,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public UpdateItemStateObject addItem(UpdateItemStateObject item) {
+    public <S extends UpdateItemStateObject> S addItem(S item) {
         getChangeSupport().addItem(this, items, UPDATE_ITEMS_LIST, parent(item));
         return item;
     }
@@ -277,7 +276,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
     @Override
     protected void initialize() {
         super.initialize();
-        items = new ArrayList<UpdateItemStateObject>();
+        items = new ArrayList<>();
     }
 
     @Override
@@ -298,7 +297,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
 
     @Override
     public ListIterable<UpdateItemStateObject> items() {
-        return new SnapshotCloneListIterable<UpdateItemStateObject>(items);
+        return new SnapshotCloneListIterable<>(items);
     }
 
     @Override

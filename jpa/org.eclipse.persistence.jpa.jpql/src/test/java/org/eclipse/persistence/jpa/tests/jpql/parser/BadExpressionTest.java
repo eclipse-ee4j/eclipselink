@@ -175,7 +175,7 @@ public final class BadExpressionTest extends JPQLParserTest {
 //                       "   e.name = 'Pascal' ANY(a,)";
     }
 
-    private void testQueries(QueryModifier queryModifier) throws Exception {
+    private void testQueries(QueryModifier queryModifier) {
 
 //        Collection<String> queries = queries();
 //        int queryIndex = 0;

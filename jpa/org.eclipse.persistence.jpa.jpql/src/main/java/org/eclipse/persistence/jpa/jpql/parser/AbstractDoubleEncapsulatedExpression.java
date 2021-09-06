@@ -108,15 +108,15 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
      */
     public final CollectionExpression buildCollectionExpression() {
 
-        List<AbstractExpression> children = new ArrayList<AbstractExpression>(3);
+        List<AbstractExpression> children = new ArrayList<>(3);
         children.add((AbstractExpression) getFirstExpression());
         children.add((AbstractExpression) getSecondExpression());
 
-        List<Boolean> commas = new ArrayList<Boolean>(2);
+        List<Boolean> commas = new ArrayList<>(2);
         commas.add(hasComma);
         commas.add(Boolean.FALSE);
 
-        List<Boolean> spaces = new ArrayList<Boolean>(2);
+        List<Boolean> spaces = new ArrayList<>(2);
         spaces.add(hasSpaceAfterComma);
         spaces.add(Boolean.FALSE);
 

@@ -102,7 +102,7 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
      */
     static {
 
-        testRunnerHelpers = new HashMap<Class<? extends Annotation>, DescriptionBuilder>();
+        testRunnerHelpers = new HashMap<>();
 
         testRunnerHelpers.put(IJPQLQueryBuilderTestHelper.class,   buildJPQLQueryBuilderTestHelperDescriptionBuilder());
         testRunnerHelpers.put(IJPQLQueryFormatterTestHelper.class, buildJPQLQueryFormatterTestHelperDescriptionBuilder());
@@ -203,7 +203,7 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
             return Collections.emptyList();
         }
 
-        List<Runner> runners = new ArrayList<Runner>();
+        List<Runner> runners = new ArrayList<>();
 
         for (Class<?> test : suiteClasses.value()) {
             if (descriptionHelper.helpers.isEmpty()) {
@@ -273,8 +273,8 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 
     private List<SuiteHelper> buildSuiteHelpers() {
 
-        List<SuiteHelper> suiteHelpers = new ArrayList<SuiteHelper>();
-        Map<Class<? extends Annotation>, Object> singleHelpers = new HashMap<Class<? extends Annotation>, Object>();
+        List<SuiteHelper> suiteHelpers = new ArrayList<>();
+        Map<Class<? extends Annotation>, Object> singleHelpers = new HashMap<>();
         Collection<Class<? extends Annotation>> multipleHelpers = retrieveMultipleHelpers();
 
         for (Map.Entry<Class<? extends Annotation>, Object[]> helper : descriptionHelper.helpers.entrySet()) {
@@ -289,12 +289,12 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
                     if (firstHelperKey != secondHelperKey) {
                         for (Object firstHelper : descriptionHelper.helpers.get(firstHelperKey)) {
                             for (Object secondHelper : descriptionHelper.helpers.get(secondHelperKey)) {
-                                Map<Class<? extends Annotation>, Object> copy = new HashMap<Class<? extends Annotation>, Object>();
+                                Map<Class<? extends Annotation>, Object> copy = new HashMap<>();
                                 copy.putAll(singleHelpers);
                                 copy.put(firstHelperKey,  firstHelper);
                                 copy.put(secondHelperKey, secondHelper);
 
-                                List<Class<? extends Annotation>> keys = new ArrayList<Class<? extends Annotation>>();
+                                List<Class<? extends Annotation>> keys = new ArrayList<>();
                                 keys.add(firstHelperKey);
                                 keys.add(secondHelperKey);
 
@@ -308,11 +308,11 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
         else if (multipleHelpers.size() == 1) {
             for (Class<? extends Annotation> firstHelperKey : multipleHelpers) {
                 for (Object firstHelper : descriptionHelper.helpers.get(firstHelperKey)) {
-                    Map<Class<? extends Annotation>, Object> copy = new HashMap<Class<? extends Annotation>, Object>();
+                    Map<Class<? extends Annotation>, Object> copy = new HashMap<>();
                     copy.putAll(singleHelpers);
                     copy.put(firstHelperKey, firstHelper);
 
-                    List<Class<? extends Annotation>> keys = new ArrayList<Class<? extends Annotation>>();
+                    List<Class<? extends Annotation>> keys = new ArrayList<>();
                     keys.add(firstHelperKey);
 
                     suiteHelpers.add(new SuiteHelper(suiteHelper, copy, keys));
@@ -419,7 +419,7 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 
     private Collection<Class<? extends Annotation>> retrieveMultipleHelpers() {
 
-        Collection<Class<? extends Annotation>> keys = new ArrayList<Class<? extends Annotation>>();
+        Collection<Class<? extends Annotation>> keys = new ArrayList<>();
 
         for (Map.Entry<Class<? extends Annotation>, Object[]> helper : descriptionHelper.helpers.entrySet()) {
             if (helper.getValue().length > 1) {
@@ -455,7 +455,7 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 
         DescriptionHelper() {
             super();
-            helpers = new HashMap<Class<? extends Annotation>, Object[]>();
+            helpers = new HashMap<>();
         }
     }
 
@@ -517,7 +517,7 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
         }
 
         @Override
-        protected Object createTest() throws Exception {
+        protected Object createTest() {
             return test;
         }
 

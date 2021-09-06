@@ -130,7 +130,7 @@ public abstract class ParameterTypeVisitor extends AbstractTraverseParentVisitor
      */
     protected ParameterTypeVisitor() {
         super();
-        this.visitedExpressions = new HashSet<Expression>();
+        this.visitedExpressions = new HashSet<>();
     }
 
     /**

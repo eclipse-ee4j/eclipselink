@@ -48,6 +48,8 @@ public class ArrayIterator<E> implements Iterator<E> {
      *
      * @param array The object containing the items to iterate over
      */
+    @SafeVarargs
+    @SuppressWarnings({"varargs"})
     public <T extends E> ArrayIterator(T... array) {
         this(array, 0, array.length);
     }

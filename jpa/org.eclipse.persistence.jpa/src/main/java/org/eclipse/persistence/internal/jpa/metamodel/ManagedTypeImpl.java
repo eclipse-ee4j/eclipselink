@@ -687,7 +687,6 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  @return ListAttribute of the given name
      *  @throws IllegalArgumentException if attribute of the given
      *          name is not present in the managed type
-     * @return
      */
     private ListAttribute<? super X, ?> getList(String name, boolean performNullCheck) {
         /*

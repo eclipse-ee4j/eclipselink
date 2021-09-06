@@ -1024,7 +1024,7 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
      */
     protected void visitArithmeticExpression(ArithmeticExpression expression) {
 
-        List<Resolver> resolvers = new ArrayList<Resolver>(2);
+        List<Resolver> resolvers = new ArrayList<>(2);
 
         // Visit the first expression
         expression.getLeftExpression().accept(this);
@@ -1051,7 +1051,7 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
     protected void visitCollectionEquivalentExpression(Expression expression,
                                                        Expression extraExpression) {
 
-        List<Resolver> resolvers = new ArrayList<Resolver>();
+        List<Resolver> resolvers = new ArrayList<>();
         CollectionExpression collectionExpression = getCollectionExpression(expression);
 
         // Gather the resolver for all children

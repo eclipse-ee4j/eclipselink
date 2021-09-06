@@ -140,8 +140,7 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public String addItem(String item) {
+    public <S extends String> S addItem(S item) {
         getChangeSupport().addItem(this, paths, PATHS_LIST, item);
         return item;
     }
@@ -213,7 +212,7 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
             }
         }
 
-        ListChangeEvent<String> event = new ListChangeEvent<String>(this, paths, EventType.CHANGED, PATHS_LIST, paths, startIndex, itemsSize());
+        ListChangeEvent<String> event = new ListChangeEvent<>(this, paths, EventType.CHANGED, PATHS_LIST, paths, startIndex, itemsSize());
         getChangeSupport().fireListChangeEvent(event);
     }
 
@@ -347,8 +346,8 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
     @Override
     protected void initialize() {
         super.initialize();
-        paths    = new ArrayList<String>();
-        mappings = new ArrayList<IMapping>();
+        paths    = new ArrayList<>();
+        mappings = new ArrayList<>();
     }
 
     @Override
@@ -386,7 +385,7 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
 
     @Override
     public ListIterable<String> items() {
-        return new SnapshotCloneListIterable<String>(paths);
+        return new SnapshotCloneListIterable<>(paths);
     }
 
     @Override
@@ -538,7 +537,7 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
      */
     public void setPath(CharSequence path) {
 
-        List<String> paths = new ArrayList<String>();
+        List<String> paths = new ArrayList<>();
 
         for (StringTokenizer tokenizer = new StringTokenizer(path.toString(), ".", true); tokenizer.hasMoreTokens(); ) {
             String token = tokenizer.nextToken();

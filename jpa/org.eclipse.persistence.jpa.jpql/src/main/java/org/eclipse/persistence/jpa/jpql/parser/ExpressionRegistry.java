@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -215,10 +215,10 @@ public class ExpressionRegistry {
      * Instantiates the only instance of various API used by the parser.
      */
     protected void initialize() {
-        queryBNFs           = new HashMap<String, JPQLQueryBNF>();
-        identifiers         = new HashMap<String, IdentifierRole>();
-        expressionFactories = new HashMap<String, ExpressionFactory>();
-        identifierVersions  = new HashMap<String, JPAVersion>();
+        queryBNFs           = new HashMap<>();
+        identifiers         = new HashMap<>();
+        expressionFactories = new HashMap<>();
+        identifierVersions  = new HashMap<>();
     }
 
     /**

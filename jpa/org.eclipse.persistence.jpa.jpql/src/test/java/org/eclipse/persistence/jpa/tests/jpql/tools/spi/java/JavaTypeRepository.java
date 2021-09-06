@@ -60,7 +60,7 @@ public class JavaTypeRepository implements ITypeRepository {
     public JavaTypeRepository(ClassLoader classLoader) {
         super();
         this.classLoader = classLoader;
-        this.types       = new HashMap<String, JavaType>();
+        this.types       = new HashMap<>();
     }
 
     /**

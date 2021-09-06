@@ -113,7 +113,7 @@ public abstract class JavaManagedType implements IManagedType {
 
     protected void initializeMappings() {
         if (mappings == null) {
-            mappings = new HashMap<String, IMapping>();
+            mappings = new HashMap<>();
             initializeMappings(type.getType(), getAccessType());
         }
     }
@@ -173,6 +173,6 @@ public abstract class JavaManagedType implements IManagedType {
     @Override
     public final Iterable<IMapping> mappings() {
         initializeMappings();
-        return new SnapshotCloneIterable<IMapping>(mappings.values());
+        return new SnapshotCloneIterable<>(mappings.values());
     }
 }

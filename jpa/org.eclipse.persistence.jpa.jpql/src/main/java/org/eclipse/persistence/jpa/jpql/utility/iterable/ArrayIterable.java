@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,6 +38,8 @@ public class ArrayIterable<E>
     /**
      * Construct an iterable for the specified array.
      */
+    @SafeVarargs
+    @SuppressWarnings({"varargs"})
     public ArrayIterable(E... array) {
         this(array, 0, array.length);
     }
@@ -71,7 +73,7 @@ public class ArrayIterable<E>
 
     @Override
     public Iterator<E> iterator() {
-        return new ArrayIterator<E>(this.array, this.start, this.length);
+        return new ArrayIterator<>(this.array, this.start, this.length);
     }
 
     @Override

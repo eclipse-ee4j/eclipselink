@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,7 @@ import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 public final class JPQLQueriesTest2_1 extends JPQLParserTest {
 
     @Test
-    public void test_Query_001() throws Exception {
+    public void test_Query_001() {
 
         // Select e
         // From Employee e Join TREAT(e.projects AS LargeProject) lp
@@ -44,7 +44,7 @@ public final class JPQLQueriesTest2_1 extends JPQLParserTest {
     }
 
     @Test
-    public void test_Query_002() throws Exception {
+    public void test_Query_002() {
 
         // Select e
         // From Employee e Join TREAT(e.projects LargeProject) lp
@@ -58,7 +58,7 @@ public final class JPQLQueriesTest2_1 extends JPQLParserTest {
     }
 
     @Test
-    public void test_Query_003() throws Exception {
+    public void test_Query_003() {
 
         // SELECT TREAT(TREAT(p.project LargeProject).parent AS LargeProject).endDate
       // FROM Product p

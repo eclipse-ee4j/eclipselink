@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,7 @@ public final class EclipseLinkComparisonExpressionTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_01() throws Exception {
+    public void test_JPQLQuery_01() {
 
         if (isEclipseLink2_0()) {
             return;
@@ -53,7 +53,7 @@ public final class EclipseLinkComparisonExpressionTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_02() throws Exception {
+    public void test_JPQLQuery_02() {
 
         if (isEclipseLink2_0()) {
             return;
@@ -71,7 +71,7 @@ public final class EclipseLinkComparisonExpressionTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_03() throws Exception {
+    public void test_JPQLQuery_03() {
 
         String query = "SELECT e FROM Employee e WHERE e.age != 'JPQL'";
 
@@ -85,7 +85,7 @@ public final class EclipseLinkComparisonExpressionTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_04() throws Exception {
+    public void test_JPQLQuery_04() {
 
         String query = "SELECT e FROM Employee e WHERE e.age != 'JPQL' GROUP BY e.name";
 
@@ -100,7 +100,7 @@ public final class EclipseLinkComparisonExpressionTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_05() throws Exception {
+    public void test_JPQLQuery_05() {
 
         if (isEclipseLink2_0()) {
             return;
@@ -119,7 +119,7 @@ public final class EclipseLinkComparisonExpressionTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_06() throws Exception {
+    public void test_JPQLQuery_06() {
 
         if (isEclipseLink2_0()) {
             return;

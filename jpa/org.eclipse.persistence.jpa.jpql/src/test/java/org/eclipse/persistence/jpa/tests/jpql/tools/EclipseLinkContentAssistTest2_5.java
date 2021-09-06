@@ -154,7 +154,7 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
     protected List<String> fromClauseInternalClauses(String afterIdentifier) {
 
         if (EclipseLinkVersionTools.isNewerThan2_4(getGrammar())) {
-            List<String> proposals = new ArrayList<String>();
+            List<String> proposals = new ArrayList<>();
 
             if (afterIdentifier == FROM) {
                 proposals.addAll(super.fromClauseInternalClauses(FROM));
@@ -333,7 +333,7 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
         String jpqlQuery = "select e from Employee e AS OF ";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add(SCN);
         proposals.add(TIMESTAMP);
         proposals.add("e");
@@ -348,7 +348,7 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
         String jpqlQuery = "select e from Employee e AS OF SCN ";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.scalarExpressionFunctions());
 
@@ -377,7 +377,7 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
         String jpqlQuery = "select e from Employee e AS OF TIMESTAMP ";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.scalarExpressionFunctions());
 
@@ -414,7 +414,7 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
         String jpqlQuery = "select e from Employee e AS OF SCN e.name + WHERE e.name = 'JPQL'";
         int position = "select e from Employee e AS OF SCN e.name + ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.scalarExpressionFunctions());
 
@@ -507,7 +507,7 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
         String jpqlQuery = "select e from Employee e CONNECT BY ";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.collectionValuedPathExpressionFunctions());
 
@@ -600,7 +600,7 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
         String jpqlQuery = "select e from Employee e CONNECT BY ";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.collectionValuedPathExpressionFunctions());
 
@@ -613,7 +613,7 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
         String jpqlQuery = "select e from Employee e JOIN e.manager k CONNECT BY k";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("k");
         CollectionTools.addAll(proposals, filter(bnfAccessor.collectionValuedPathExpressionFunctions(), "K"));
 
@@ -626,7 +626,7 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
         String jpqlQuery = "select e from Employee e START WITH ";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.conditionalExpressionsFunctions());
 
@@ -639,7 +639,7 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
         String jpqlQuery = "select e from Employee e START WITH C";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, filter(bnfAccessor.conditionalExpressionsFunctions(), "C"));
 
         testHasOnlyTheseProposals(jpqlQuery, position, proposals);
@@ -651,7 +651,7 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
         String jpqlQuery = "select e from Employee e START WITH O";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, filter(bnfAccessor.conditionalExpressionsFunctions(), "O"));
 
         testHasOnlyTheseProposals(jpqlQuery, position, proposals);
@@ -663,7 +663,7 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
         String jpqlQuery = "select e from Employee e CONNECT BY e.name ";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, fromClauseInternalClauses(CONNECT_BY));
         CollectionTools.addAll(proposals, clauses(FROM, null, false));
 
@@ -676,7 +676,7 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
         String jpqlQuery = "select e from Employee e START WITH  CONNECT BY";
         int position = "select e from Employee e START WITH ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.conditionalExpressionsFunctions());
 
@@ -689,7 +689,7 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
         String jpqlQuery = "select e from Employee e CONNECT BY e.name O";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, filter(fromClauseInternalClauses(CONNECT_BY), "O"));
         CollectionTools.addAll(proposals, filter(clauses(FROM, null, false), "O"));
 
@@ -832,7 +832,7 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
         String jpqlQuery = "select e from Employee e START WITH ";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.conditionalExpressionsFunctions());
 
@@ -925,7 +925,7 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
         String jpqlQuery = "select e from Employee e start with e.name + WHERE e.name = 'JPQL'";
         int position = "select e from Employee e start with e.name + ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.arithmeticTermFunctions());
 

@@ -192,7 +192,7 @@ public abstract class JPQLQueryBNF {
 
     private JPQLQueryBNF[] buildChildren(Filter<JPQLQueryBNF> filter) {
 
-        Set<JPQLQueryBNF> queryBNFs = new HashSet<JPQLQueryBNF>();
+        Set<JPQLQueryBNF> queryBNFs = new HashSet<>();
         queryBNFs.add(this);
         addChildren(queryBNFs, filter);
 
@@ -208,7 +208,7 @@ public abstract class JPQLQueryBNF {
 
             if (cachedExpressionFactories == null) {
 
-                Map<String, ExpressionFactory> factories = new HashMap<String, ExpressionFactory>();
+                Map<String, ExpressionFactory> factories = new HashMap<>();
 
                 // Caches the ExpressionFactory mapped by all the JPQL identifiers that
                 // are registered for that ExpressionFactory
@@ -284,7 +284,7 @@ public abstract class JPQLQueryBNF {
      * @return The children BNFs describing this BNF rule
      */
     public Iterable<JPQLQueryBNF> children() {
-        return new ArrayIterable<JPQLQueryBNF>(getChildren());
+        return new ArrayIterable<>(getChildren());
     }
 
     private JPQLQueryBNF[] getChildren() {
@@ -334,7 +334,7 @@ public abstract class JPQLQueryBNF {
      * BNF rule and with its children
      */
     public Iterable<String> getExpressionFactoryIds() {
-        return new ArrayIterable<String>(getExpressionFactoryIdsImp());
+        return new ArrayIterable<>(getExpressionFactoryIdsImp());
     }
 
     private String[] getExpressionFactoryIdsImp() {
@@ -349,8 +349,8 @@ public abstract class JPQLQueryBNF {
 
             if (cachedExpressionFactoryIds == null) {
 
-                Set<JPQLQueryBNF> queryBNFs = new HashSet<JPQLQueryBNF>();
-                Set<String> factoryIds = new HashSet<String>();
+                Set<JPQLQueryBNF> queryBNFs = new HashSet<>();
+                Set<String> factoryIds = new HashSet<>();
                 calculateExpressionFactoryIds(queryBNFs, factoryIds);
 
                 cachedExpressionFactoryIds = new String[factoryIds.size()];
@@ -418,13 +418,13 @@ public abstract class JPQLQueryBNF {
         // identifiers has not been copied from cachedExpressionFactoryIds yet.
         // cachedExpressionFactoryIds is set at the end of the method, insuring proper initialization
         if (cachedExpressionFactoryIds != null) {
-            return new ArrayIterable<String>(cachedIdentifiers);
+            return new ArrayIterable<>(cachedIdentifiers);
         }
 
         // Synchronize to make sure only one thread populates the list of JPQL identifiers
         calculateExpressionFactories();
 
-        return new ArrayIterable<String>(cachedIdentifiers);
+        return new ArrayIterable<>(cachedIdentifiers);
     }
 
     /**
@@ -444,7 +444,7 @@ public abstract class JPQLQueryBNF {
         // Synchronize to make sure only one thread calculates it
         synchronized (this) {
             if (handleAggregate == null) {
-                Set<JPQLQueryBNF> children = new HashSet<JPQLQueryBNF>();
+                Set<JPQLQueryBNF> children = new HashSet<>();
                 handleAggregate = calculateHandleAggregate(children);
             }
         }
@@ -469,7 +469,7 @@ public abstract class JPQLQueryBNF {
         // Synchronize to make sure only one thread calculates it
         synchronized (this) {
             if (handleCollection == null) {
-                Set<JPQLQueryBNF> children = new HashSet<JPQLQueryBNF>();
+                Set<JPQLQueryBNF> children = new HashSet<>();
                 handleCollection = calculateHandleCollection(children);
             }
         }
@@ -579,7 +579,7 @@ public abstract class JPQLQueryBNF {
 
         // No need to synchronize if the list of child BNFs (non-compound) was calculated
         if (nonCompoundChildren != null) {
-            return new ArrayIterable<JPQLQueryBNF>(nonCompoundChildren);
+            return new ArrayIterable<>(nonCompoundChildren);
         }
 
         // Synchronize to make sure only one thread populates the list of child BNFs (non-compound)
@@ -589,7 +589,7 @@ public abstract class JPQLQueryBNF {
             }
         }
 
-        return new ArrayIterable<JPQLQueryBNF>(nonCompoundChildren);
+        return new ArrayIterable<>(nonCompoundChildren);
     }
 
     /**
@@ -605,7 +605,7 @@ public abstract class JPQLQueryBNF {
         }
 
         if (children == null) {
-            children = new LinkedList<String>();
+            children = new LinkedList<>();
         }
 
         children.add(queryBNFId);
@@ -624,7 +624,7 @@ public abstract class JPQLQueryBNF {
         }
 
         if (expressionFactoryIds == null) {
-            expressionFactoryIds = new LinkedList<String>();
+            expressionFactoryIds = new LinkedList<>();
         }
 
         expressionFactoryIds.add(expressionFactoryId);

@@ -392,10 +392,10 @@ public abstract class AbstractExpression implements Expression {
     @Override
     public final ListIterable<Expression> children() {
         if (children == null) {
-            children = new LinkedList<Expression>();
+            children = new LinkedList<>();
             addChildrenTo(children);
         }
-        return new SnapshotCloneListIterable<Expression>(children);
+        return new SnapshotCloneListIterable<>(children);
     }
 
     /**
@@ -646,10 +646,10 @@ public abstract class AbstractExpression implements Expression {
     @Override
     public final ListIterable<Expression> orderedChildren() {
         if (orderedChildren == null) {
-            orderedChildren = new LinkedList<Expression>();
+            orderedChildren = new LinkedList<>();
             addOrderedChildrenTo(orderedChildren);
         }
-        return new SnapshotCloneListIterable<Expression>(orderedChildren);
+        return new SnapshotCloneListIterable<>(orderedChildren);
     }
 
     /**
@@ -1213,19 +1213,19 @@ public abstract class AbstractExpression implements Expression {
         }
 
         List<AbstractExpression> buildChildren() {
-            ArrayList<AbstractExpression> children = new ArrayList<AbstractExpression>();
+            ArrayList<AbstractExpression> children = new ArrayList<>();
             addChild(children);
             return children;
         }
 
         List<Boolean> buildCommas() {
-            ArrayList<Boolean> children = new ArrayList<Boolean>();
+            ArrayList<Boolean> children = new ArrayList<>();
             addComma(children);
             return children;
         }
 
         List<Boolean> buildSpaces() {
-            ArrayList<Boolean> children = new ArrayList<Boolean>();
+            ArrayList<Boolean> children = new ArrayList<>();
             addSpace(children);
             return children;
         }

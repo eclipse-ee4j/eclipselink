@@ -658,7 +658,7 @@ public final class DefaultSemanticValidatorTest2_0 extends AbstractSemanticValid
     }
 
     @Test
-    public final void test_InExpression_InItem_WrongType_1() throws Exception {
+    public final void test_InExpression_InItem_WrongType_1() {
 //        String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IN(e, ‘JPQL’)
 //        List<QueryProblem> problems = validate(jpqlQuery);
 //
@@ -674,7 +674,7 @@ public final class DefaultSemanticValidatorTest2_0 extends AbstractSemanticValid
     }
 
     @Test
-    public final void test_InExpression_InItem_WrongType_2() throws Exception {
+    public final void test_InExpression_InItem_WrongType_2() {
 //        String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IN(e.name, :name, ‘JPQL’)
 //        List<QueryProblem> problems = validate(jpqlQuery);
 //
@@ -685,7 +685,7 @@ public final class DefaultSemanticValidatorTest2_0 extends AbstractSemanticValid
     }
 
     @Test
-    public final void test_InExpression_WrongType_1() throws Exception {
+    public final void test_InExpression_WrongType_1() {
 //        String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IN(e.empId)
 //        List<QueryProblem> problems = validate(jpqlQuery);
 //
@@ -701,7 +701,7 @@ public final class DefaultSemanticValidatorTest2_0 extends AbstractSemanticValid
     }
 
     @Test
-    public final void test_InExpression_WrongType_2() throws Exception {
+    public final void test_InExpression_WrongType_2() {
 //        String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IN('JPQL', 'Java')
 //        List<QueryProblem> problems = validate(jpqlQuery);
 //
@@ -712,7 +712,7 @@ public final class DefaultSemanticValidatorTest2_0 extends AbstractSemanticValid
     }
 
     @Test
-    public final void test_InExpression_WrongType_3() throws Exception {
+    public final void test_InExpression_WrongType_3() {
 //        //SELECT e FROM Employee e WHERE e.name IN(?1, ?2, ?3)
 //        List<QueryProblem> problems = validate(jpqlQuery);
 //

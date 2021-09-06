@@ -101,7 +101,7 @@ public class JavaType implements IType {
         }
 
         Constructor<?>[] javaConstructors = type.getDeclaredConstructors();
-        Collection<IConstructor> constructors = new ArrayList<IConstructor>(javaConstructors.length);
+        Collection<IConstructor> constructors = new ArrayList<>(javaConstructors.length);
 
         for (Constructor<?> javaConstructor : javaConstructors) {
             constructors.add(buildConstructor(javaConstructor));
@@ -131,7 +131,7 @@ public class JavaType implements IType {
         if (constructors == null) {
             constructors = buildConstructors();
         }
-        return new SnapshotCloneIterable<IConstructor>(constructors);
+        return new SnapshotCloneIterable<>(constructors);
     }
 
     @Override

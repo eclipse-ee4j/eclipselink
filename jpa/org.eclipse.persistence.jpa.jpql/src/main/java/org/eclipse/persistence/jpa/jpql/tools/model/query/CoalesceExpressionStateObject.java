@@ -198,7 +198,7 @@ public class CoalesceExpressionStateObject extends AbstractEncapsulatedExpressio
     @Override
     protected void initialize() {
         super.initialize();
-        items = new ArrayList<StateObject>();
+        items = new ArrayList<>();
     }
 
     @Override
@@ -209,7 +209,7 @@ public class CoalesceExpressionStateObject extends AbstractEncapsulatedExpressio
 
     @Override
     public ListIterable<StateObject> items() {
-        return new SnapshotCloneListIterable<StateObject>(items);
+        return new SnapshotCloneListIterable<>(items);
     }
 
     @Override

@@ -85,7 +85,7 @@ public class JavaEntity extends JavaManagedType
 
     protected Map<String, IQuery> buildQueries() {
 
-        Map<String, IQuery> queries = new HashMap<String, IQuery>();
+        Map<String, IQuery> queries = new HashMap<>();
 
         try {
             Class<?> type = getType().getType();

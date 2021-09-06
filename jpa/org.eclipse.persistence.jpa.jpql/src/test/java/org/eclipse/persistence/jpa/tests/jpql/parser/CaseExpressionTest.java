@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 public final class CaseExpressionTest extends JPQLParserTest {
 
     @Test
-    public void test_JPQLQuery_01() throws Exception {
+    public void test_JPQLQuery_01() {
 
         String query = "UPDATE Employee e " +
                        "SET e.salary = " +
@@ -51,7 +51,7 @@ public final class CaseExpressionTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_02() throws Exception {
+    public void test_JPQLQuery_02() {
         String query = "SELECT e.name, " +
                        "       f.name, " +
                        "       CONCAT(CASE WHEN f.annualMiles > 50000 THEN 'Platinum ' " +
@@ -83,7 +83,7 @@ public final class CaseExpressionTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_03() throws Exception {
+    public void test_JPQLQuery_03() {
         String query = "SELECT CASE WHEN f.annualMiles > 50000 THEN 'Platinum ' " +
                        "            WHEN f.annualMiles > 25000 THEN 'Gold ' " +
                        "            ELSE '' " +
@@ -107,7 +107,7 @@ public final class CaseExpressionTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_04() throws Exception {
+    public void test_JPQLQuery_04() {
         String query = "SELECT CASE WHEN e.age > 17 THEN 0 " +
                        "            WHEN e.age > 39 THEN 1 " +
                        "            WHEN e.age > 64 THEN 2 " +

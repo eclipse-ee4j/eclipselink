@@ -84,7 +84,7 @@ public class NumericResolver extends Resolver {
     @Override
     protected IType buildType() {
 
-        List<IType> types = new ArrayList<IType>(resolvers.size());
+        List<IType> types = new ArrayList<>(resolvers.size());
         TypeHelper helper = getTypeHelper();
         IType unresolvableType = helper.unknownType();
 
