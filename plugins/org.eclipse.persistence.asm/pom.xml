@@ -1,0 +1,229 @@
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>EclipseLink ASM Dependency</name>
+    <groupId>org.eclipse.persistence</groupId>
+    <artifactId>asmcompdep</artifactId>
+    <version>9.1.1</version>
+    <packaging>pom</packaging>
+
+    <repositories>
+        <repository>
+            <id>oss.sonatype.org</id>
+            <name>OSS Sonatype Staging</name>
+            <url>https://oss.sonatype.org/content/groups/staging</url>
+        </repository>
+        <repository>
+            <id>jakarta.oss.sonatype.org</id>
+            <name>OSS Sonatype Staging</name>
+            <url>https://jakarta.oss.sonatype.org/content/groups/staging</url>
+        </repository>
+    </repositories>
+    
+    <properties>
+        <!-- TOOL Properties -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <tycho.version>1.3.0</tycho.version>
+        
+        <!-- DEPENDENCY Versions -->
+        <eclipselink.asm.version>9.1.1</eclipselink.asm.version>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.1.1</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <id>inject-asm-into-src-bundles</id>
+                        <phase>prepare-package</phase>
+                        <configuration>
+                            <target>
+                                <path id="plugin.path"><pathelement location="${project.basedir}/.."/></path>
+                                <pathconvert property="plugin.dir" refid="plugin.path" />
+                                
+                                <echo>Removing old asm bundle jars from ${plugin.dir} ...</echo>
+                                <delete verbose="true">
+                                   <fileset dir="${plugin.dir}" includes="org.eclipse.persistence.asm*.jar"/>
+                                </delete>
+                                
+                                <echo>Copying eclipselink asm bundles from Maven repository...</echo>
+                                <property name="asm.repo.loc" value="${settings.localRepository}/org/eclipse/persistence/org.eclipse.persistence.asm/${eclipselink.asm.version}" />
+                                <property name="asm.bin.jar.orig" value="${asm.repo.loc}/org.eclipse.persistence.asm-${eclipselink.asm.version}.jar" />
+                                <property name="asm.src.jar.orig" value="${asm.repo.loc}/org.eclipse.persistence.asm-${eclipselink.asm.version}-sources.jar" />
+                                <echo>asm.repo.loc = ${asm.repo.loc}</echo>
+                                <echo>asm.bin.jar.orig = ${asm.bin.jar.orig}</echo>
+                                <echo>asm.src.jar.orig = ${asm.src.jar.orig}</echo>
+                                
+                                <copy file="${asm.bin.jar.orig}" tofile="${plugin.dir}/org.eclipse.persistence.asm_${eclipselink.asm.version}.jar" verbose="true"/>
+                                <copy file="${asm.src.jar.orig}" tofile="${plugin.dir}/org.eclipse.persistence.asm.source_${eclipselink.asm.version}.jar" verbose="true"/>
+                                
+                                <echo>
+                                
+   IMPORTANT
+                                  
+     Remember to update the following files' version ranges, if necessary:
+        features/antbuild.xml
+        foundation/eclipselink.extension.nosql.test/antbuild.xml
+        foundation/eclipselink.extension.oracle.nosql.test/antbuild.xml
+        jpa/org.eclipse.persistence.jpa/META-INF/MANIFEST.MF
+        utils/eclipselink.dbws.builder.test.oracle/antbuild.properties  
+                                </echo>
+                                
+                                <path id="ecl.root.path"><pathelement location="${project.basedir}/../.."/></path>
+                                <pathconvert property="ecl.root.dir" refid="ecl.root.path" />
+                                
+                                <replaceregexp file="${ecl.root.dir}/dbws/org.eclipse.persistence.dbws/.classpath" flags="g"
+                                     match="org.eclipse.persistence.asm_\d+\.\d+\.\d+"
+                                     replace="org.eclipse.persistence.asm_${eclipselink.asm.version}" />
+                                <replaceregexp file="${ecl.root.dir}/dbws/org.eclipse.persistence.dbws/.classpath" flags="g"
+                                     match="org.eclipse.persistence.asm.source_\d+\.\d+\.\d+"
+                                     replace="org.eclipse.persistence.asm.source_${eclipselink.asm.version}" />
+
+                                <replaceregexp file="${ecl.root.dir}/dbws/org.eclipse.persistence.dbws/META-INF/MANIFEST.MF" flags="g"
+                                     match="org.eclipse.persistence.asm;bundle-version=\&quot;\d+\.\d+\.\d+\&quot;"
+                                     replace="org.eclipse.persistence.asm;bundle-version=\&quot;${eclipselink.asm.version}\&quot;" />
+
+
+                                <replaceregexp file="${ecl.root.dir}/foundation/org.eclipse.persistence.core/.classpath" flags="g"
+                                     match="org.eclipse.persistence.asm_\d+\.\d+\.\d+"
+                                     replace="org.eclipse.persistence.asm_${eclipselink.asm.version}" />
+                                <replaceregexp file="${ecl.root.dir}/foundation/org.eclipse.persistence.core/.classpath" flags="g"
+                                     match="org.eclipse.persistence.asm.source_\d+\.\d+\.\d+"
+                                     replace="org.eclipse.persistence.asm.source_${eclipselink.asm.version}" />
+
+                                <replaceregexp file="${ecl.root.dir}/foundation/org.eclipse.persistence.core/META-INF/MANIFEST.MF" flags="g"
+                                     match="org.eclipse.persistence.asm;bundle-version=\&quot;\d+\.\d+\.\d+\&quot;"
+                                     replace="org.eclipse.persistence.asm;bundle-version=\&quot;${eclipselink.asm.version}\&quot;" />
+
+
+                                <replaceregexp file="${ecl.root.dir}/jpa/eclipselink.jpa.test.jse/.classpath" flags="g"
+                                     match="org.eclipse.persistence.asm_\d+\.\d+\.\d+"
+                                     replace="org.eclipse.persistence.asm_${eclipselink.asm.version}" />
+                                <replaceregexp file="${ecl.root.dir}/jpa/eclipselink.jpa.test.jse/.classpath" flags="g"
+                                     match="org.eclipse.persistence.asm.source_\d+\.\d+\.\d+"
+                                     replace="org.eclipse.persistence.asm.source_${eclipselink.asm.version}" />
+
+
+                                <replaceregexp file="${ecl.root.dir}/jpa/eclipselink.jpars.test/.classpath" flags="g"
+                                     match="org.eclipse.persistence.asm_\d+\.\d+\.\d+"
+                                     replace="org.eclipse.persistence.asm_${eclipselink.asm.version}" />
+                                <replaceregexp file="${ecl.root.dir}/jpa/eclipselink.jpars.test/.classpath" flags="g"
+                                     match="org.eclipse.persistence.asm.source_\d+\.\d+\.\d+"
+                                     replace="org.eclipse.persistence.asm.source_${eclipselink.asm.version}" />
+
+                                     
+                                <replaceregexp file="${ecl.root.dir}/jpa/org.eclipse.persistence.jpa/.classpath" flags="g"
+                                     match="org.eclipse.persistence.asm_\d+\.\d+\.\d+"
+                                     replace="org.eclipse.persistence.asm_${eclipselink.asm.version}" />
+                                <replaceregexp file="${ecl.root.dir}/jpa/org.eclipse.persistence.jpa/.classpath" flags="g"
+                                     match="org.eclipse.persistence.asm.source_\d+\.\d+\.\d+"
+                                     replace="org.eclipse.persistence.asm.source_${eclipselink.asm.version}" />
+
+                                <replaceregexp file="${ecl.root.dir}/jpa/org.eclipse.persistence.jpa/META-INF/MANIFEST.MF" flags="g"
+                                     match="org.eclipse.persistence.asm;bundle-version=\&quot;\d+\.\d+\.\d+\&quot;"
+                                     replace="org.eclipse.persistence.asm;bundle-version=\&quot;${eclipselink.asm.version}\&quot;" />
+
+
+                                <replaceregexp file="${ecl.root.dir}/moxy/eclipselink.moxy.test/.classpath" flags="g"
+                                     match="org.eclipse.persistence.asm_\d+\.\d+\.\d+"
+                                     replace="org.eclipse.persistence.asm_${eclipselink.asm.version}" />
+                                <replaceregexp file="${ecl.root.dir}/moxy/eclipselink.moxy.test/.classpath" flags="g"
+                                     match="org.eclipse.persistence.asm.source_\d+\.\d+\.\d+"
+                                     replace="org.eclipse.persistence.asm.source_${eclipselink.asm.version}" />
+
+
+
+                                <replaceregexp file="${ecl.root.dir}/moxy/eclipselink.moxy.test/antbuild.properties" flags="g"
+                                     match="org.eclipse.persistence.asm_\d+\.\d+\.\d+"
+                                     replace="org.eclipse.persistence.asm_${eclipselink.asm.version}" />
+
+
+                                <replaceregexp file="${ecl.root.dir}/moxy/org.eclipse.persistence.moxy/.classpath" flags="g"
+                                     match="org.eclipse.persistence.asm_\d+\.\d+\.\d+"
+                                     replace="org.eclipse.persistence.asm_${eclipselink.asm.version}" />
+                                <replaceregexp file="${ecl.root.dir}/moxy/org.eclipse.persistence.moxy/.classpath" flags="g"
+                                     match="org.eclipse.persistence.asm.source_\d+\.\d+\.\d+"
+                                     replace="org.eclipse.persistence.asm.source_${eclipselink.asm.version}" />
+
+
+                                <replaceregexp file="${ecl.root.dir}/moxy/org.eclipse.persistence.moxy/META-INF/MANIFEST.MF" flags="g"
+                                     match="org.eclipse.persistence.asm;bundle-version=\&quot;\d+\.\d+\.\d+\&quot;"
+                                     replace="org.eclipse.persistence.asm;bundle-version=\&quot;${eclipselink.asm.version}\&quot;" />
+                                     
+                                     
+                                <replaceregexp file="${ecl.root.dir}/performance/eclipselink.perf.test/.classpath" flags="g"
+                                     match="org.eclipse.persistence.asm_\d+\.\d+\.\d+"
+                                     replace="org.eclipse.persistence.asm_${eclipselink.asm.version}" />
+                                <replaceregexp file="${ecl.root.dir}/performance/eclipselink.perf.test/.classpath" flags="g"
+                                     match="org.eclipse.persistence.asm.source_\d+\.\d+\.\d+"
+                                     replace="org.eclipse.persistence.asm.source_${eclipselink.asm.version}" />
+
+
+                                <replaceregexp file="${ecl.root.dir}/performance/eclipselink.perf.test/antbuild.properties" flags="g"
+                                     match="org.eclipse.persistence.asm_\d+\.\d+\.\d+"
+                                     replace="org.eclipse.persistence.asm_${eclipselink.asm.version}" />
+
+                                <replaceregexp file="${ecl.root.dir}/sdo/eclipselink.sdo.test/antbuild.properties" flags="g"
+                                     match="org.eclipse.persistence.asm_\d+\.\d+\.\d+"
+                                     replace="org.eclipse.persistence.asm_${eclipselink.asm.version}" />
+
+                                <replaceregexp file="${ecl.root.dir}/sdo/org.eclipse.persistence.sdo/META-INF/MANIFEST.MF" flags="g"
+                                     match="org.eclipse.persistence.asm;bundle-version=\&quot;\d+\.\d+\.\d+\&quot;"
+                                     replace="org.eclipse.persistence.asm;bundle-version=\&quot;${eclipselink.asm.version}\&quot;" />
+
+                                <replaceregexp file="${ecl.root.dir}/utils/eclipselink.dbws.builder.test.oracle.server/antbuild.properties" flags="g"
+                                     match="org.eclipse.persistence.asm_\d+\.\d+\.\d+"
+                                     replace="org.eclipse.persistence.asm_${eclipselink.asm.version}" />
+
+                                <replaceregexp file="${ecl.root.dir}/utils/eclipselink.dbws.builder.test.oracle/.classpath" flags="g"
+                                     match="org.eclipse.persistence.asm_\d+\.\d+\.\d+"
+                                     replace="org.eclipse.persistence.asm_${eclipselink.asm.version}" />
+                                <replaceregexp file="${ecl.root.dir}/utils/eclipselink.dbws.builder.test.oracle/.classpath" flags="g"
+                                     match="org.eclipse.persistence.asm.source_\d+\.\d+\.\d+"
+                                     replace="org.eclipse.persistence.asm.source_${eclipselink.asm.version}" />
+
+
+                                <replaceregexp file="${ecl.root.dir}/utils/eclipselink.utils.sigcompare/.classpath" flags="g"
+                                     match="org.eclipse.persistence.asm_\d+\.\d+\.\d+"
+                                     replace="org.eclipse.persistence.asm_${eclipselink.asm.version}" />
+                                <replaceregexp file="${ecl.root.dir}/utils/eclipselink.utils.sigcompare/.classpath" flags="g"
+                                     match="org.eclipse.persistence.asm.source_\d+\.\d+\.\d+"
+                                     replace="org.eclipse.persistence.asm.source_${eclipselink.asm.version}" />
+
+
+                                <replaceregexp file="${ecl.root.dir}/utils/org.eclipse.persistence.dbws.builder/antbuild.properties" flags="g"
+                                     match="org.eclipse.persistence.asm_\d+\.\d+\.\d+"
+                                     replace="org.eclipse.persistence.asm_${eclipselink.asm.version}" />
+                                     
+
+
+                                
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>    
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.asm</artifactId>
+            <version>${eclipselink.asm.version}</version>
+        </dependency>    
+    </dependencies>    
+</project>
