@@ -71,14 +71,18 @@ public class ContainmentProject extends Project {
 
         XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
         mapping.setReferenceClass(Child.class);
-        mapping.getInverseReferenceMapping().setAttributeName("container");
+        if (mapping.getInverseReferenceMapping() != null) {
+            mapping.getInverseReferenceMapping().setAttributeName("container");
+        }
         mapping.setAttributeName("childProperty");
         mapping.setXPath("tns:child");
         xmlDescriptor.addMapping(mapping);
 
         XMLCompositeCollectionMapping mapping2 = new XMLCompositeCollectionMapping();
         mapping2.setReferenceClass(Child.class);
-        mapping2.getInverseReferenceMapping().setAttributeName("container");
+        if (mapping.getInverseReferenceMapping() != null) {
+            mapping2.getInverseReferenceMapping().setAttributeName("container");
+        }
         mapping2.setAttributeName("childCollectionProperty");
         mapping2.setXPath("tns:child-many");
         mapping2.getContainerPolicy().setContainerClass(ArrayList.class);
