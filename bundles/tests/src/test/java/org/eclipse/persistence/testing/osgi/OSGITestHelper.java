@@ -31,7 +31,7 @@ import static org.ops4j.pax.exam.CoreOptions.systemPackage;
 public class OSGITestHelper {
     // Environment variables defined in antbuild.properties/antbuild.xml
     private static final String PLUGINS_DIR = System.getProperty("plugins.dir","target/osgi-test-plugins/");
-    private static final String ACTIVATION_JAR = System.getProperty("activation.jar", "jakarta.activation.jar");
+    private static final String ACTIVATION_JAR = System.getProperty("activation.jar", "jakarta.activation-api.jar");
     private static final String JAXB_API_JAR = System.getProperty("jaxb-api.jar", "jakarta.xml.bind-api.jar");
     private static final String JAXB_OSGI = System.getProperty("jaxb-osgi.jar", "jaxb-xjc.jar");
     private static final String JAXRS_JAR = System.getProperty("jaxrs.jar", "jakarta.ws.rs-api.jar");
