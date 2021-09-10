@@ -444,7 +444,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
      * Create a JAXBValidator.  The JAXBValidator is used to validate Java objects against
      * an XSD.
      */
-    @Override
+//    @Override
     public JAXBValidator createValidator() {
         return new JAXBValidator(getXMLContext().createValidator());
     }
@@ -938,6 +938,8 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
             if (sessionLoadingException != null) {
                 jaxbException.setInternalException(sessionLoadingException);
             }
+            SessionLog log = AbstractSessionLog.getLog();
+            log.logThrowable(SessionLog.INFO, jaxbException);
             throw new jakarta.xml.bind.JAXBException(jaxbException);
         }
 

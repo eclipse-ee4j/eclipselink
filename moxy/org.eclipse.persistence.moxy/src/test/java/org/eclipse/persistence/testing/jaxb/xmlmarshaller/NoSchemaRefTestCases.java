@@ -14,15 +14,15 @@
 //     Blaise Doughan - 2.2 - initial implementation
 package org.eclipse.persistence.testing.jaxb.xmlmarshaller;
 
-import jakarta.xml.bind.JAXBContext;
+import org.eclipse.persistence.jaxb.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.ValidationException;
-import jakarta.xml.bind.Validator;
 
 import junit.framework.TestCase;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBValidator;
 import org.eclipse.persistence.platform.xml.XMLPlatformException;
 
 public class NoSchemaRefTestCases extends TestCase {
@@ -30,8 +30,8 @@ public class NoSchemaRefTestCases extends TestCase {
     public void testValidateRootNoSchemaReference() {
         try {
             Class[] classes = {Address.class};
-            JAXBContext jc = JAXBContextFactory.createContext(classes, null);
-            Validator validator = jc.createValidator();
+            JAXBContext jc = (JAXBContext) JAXBContextFactory.createContext(classes, null);
+            JAXBValidator validator = jc.createValidator();
             validator.validateRoot(new Address());
         } catch(ValidationException e) {
             XMLMarshalException xme = (XMLMarshalException) e.getLinkedException();
@@ -46,8 +46,8 @@ public class NoSchemaRefTestCases extends TestCase {
     public void testValidateNoSchemaReference() throws JAXBException {
         try {
             Class[] classes = {Address.class};
-            JAXBContext jc = JAXBContextFactory.createContext(classes, null);
-            Validator validator = jc.createValidator();
+            JAXBContext jc = (JAXBContext) JAXBContextFactory.createContext(classes, null);
+            JAXBValidator validator = jc.createValidator();
             validator.validate(new Address());
         } catch (ValidationException e) {
             XMLMarshalException xme = (XMLMarshalException) e.getLinkedException();

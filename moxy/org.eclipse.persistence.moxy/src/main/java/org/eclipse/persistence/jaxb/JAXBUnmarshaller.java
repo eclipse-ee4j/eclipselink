@@ -771,7 +771,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
         return new JAXBUnmarshallerHandler(this);
     }
 
-    @Override
+//    @Override
     public void setValidating(boolean validate) throws JAXBException {
         if (validate) {
             xmlUnmarshaller.setValidationMode(XMLUnmarshaller.SCHEMA_VALIDATION);
@@ -780,7 +780,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
         }
     }
 
-    @Override
+//    @Override
     public boolean isValidating() throws JAXBException {
         return xmlUnmarshaller.getValidationMode() != XMLUnmarshaller.NONVALIDATING;
     }
