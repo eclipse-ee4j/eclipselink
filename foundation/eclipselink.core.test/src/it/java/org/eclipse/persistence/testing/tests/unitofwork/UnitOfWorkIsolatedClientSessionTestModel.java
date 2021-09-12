@@ -35,7 +35,7 @@ public class UnitOfWorkIsolatedClientSessionTestModel extends UnitOfWorkClientSe
 
     @Override
     public void setup() {
-        for (Iterator descriptors = getSession().getDescriptors().values().iterator(); descriptors.hasNext(); ) {
+        for (Iterator<ClassDescriptor> descriptors = getSession().getDescriptors().values().iterator(); descriptors.hasNext(); ) {
             ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
             descriptor.setCacheIsolation(CacheIsolationType.ISOLATED);
         }
@@ -45,7 +45,7 @@ public class UnitOfWorkIsolatedClientSessionTestModel extends UnitOfWorkClientSe
 
     @Override
     public void reset() {
-        for (Iterator descriptors = getSession().getDescriptors().values().iterator(); descriptors.hasNext(); ) {
+        for (Iterator<ClassDescriptor> descriptors = getSession().getDescriptors().values().iterator(); descriptors.hasNext(); ) {
             ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
             descriptor.setCacheIsolation(CacheIsolationType.SHARED);
         }

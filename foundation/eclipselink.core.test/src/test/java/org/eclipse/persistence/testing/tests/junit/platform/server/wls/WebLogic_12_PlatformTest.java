@@ -142,7 +142,7 @@ public class WebLogic_12_PlatformTest {
         Field instanceField = null;
         Object ctxHelperInstance = null;
         try {
-            Class ctxHelperClass = Class.forName("org.eclipse.persistence.platform.server.wls.WebLogic_12_Platform$ContextHelper");
+            Class<?> ctxHelperClass = Class.forName("org.eclipse.persistence.platform.server.wls.WebLogic_12_Platform$ContextHelper");
             c = ctxHelperClass.getDeclaredConstructors()[0];
             c.setAccessible(true);
             ctxHelperInstance = c.newInstance(imgr.getClass(), ICtx.class.getName());

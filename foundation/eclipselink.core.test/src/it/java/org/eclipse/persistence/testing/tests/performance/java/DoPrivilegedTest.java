@@ -176,7 +176,7 @@ public class DoPrivilegedTest extends PerformanceComparisonTestCase {
             Object[] parameters = { "TopLink Blah." };
             AccessController.doPrivileged(new PrivilegedMethodInvoker(method, version, parameters));
 
-            Constructor constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(clazz, null, true));
+            Constructor<?> constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(clazz, null, true));
             Constructor declaredConstructor = AccessController.doPrivileged(new PrivilegedGetDeclaredConstructorFor(clazz, null, true));
             AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, null));
 

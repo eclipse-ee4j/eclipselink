@@ -41,7 +41,7 @@ public class ServerSessionReadPoolTypeTest extends AutoVerifyTestCase {
 
     @Override
     public void verify() {
-        Class readPoolClass = serverSession.getReadConnectionPool().getClass();
+        Class<? extends ConnectionPool> readPoolClass = serverSession.getReadConnectionPool().getClass();
         String readPoolClassName = Helper.getShortClassName(readPoolClass);
         if (serverSession.getLogin().shouldUseExternalConnectionPooling()) {
             if (!readPoolClass.equals(ExternalConnectionPool.class)) {

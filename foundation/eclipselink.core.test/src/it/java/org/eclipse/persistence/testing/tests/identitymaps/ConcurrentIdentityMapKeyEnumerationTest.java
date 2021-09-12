@@ -48,7 +48,7 @@ public class ConcurrentIdentityMapKeyEnumerationTest extends TestCase {
             @Override
             public void run() {
                 while (shouldRun) {
-                    Enumeration keys = identityMap.keys();
+                    Enumeration<CacheKey> keys = identityMap.keys();
                     while (keys.hasMoreElements()) {
                         try {
                             Object key = keys.nextElement();

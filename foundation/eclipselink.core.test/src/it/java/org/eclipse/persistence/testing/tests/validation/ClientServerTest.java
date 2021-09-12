@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatabaseSession;
@@ -117,7 +118,7 @@ public class ClientServerTest extends AutoVerifyTestCase {
         try {
             int counter = 0;
             ConnectionPool pool = server.serverSession.getConnectionPools().get("default");
-            List connections = pool.getConnectionsAvailable();
+            List<Accessor> connections = pool.getConnectionsAvailable();
             for (Iterator iterator = connections.iterator(); iterator.hasNext(); ) {
                 if (((DatabaseAccessor)iterator.next()).isConnected()) {
                     counter = counter + 1;

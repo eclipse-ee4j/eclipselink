@@ -88,7 +88,7 @@ public class CustomSQLTestModel extends TestModel {
         suite.setName("CustomSQLDeleteObjectTestSuite");
         suite.setDescription("This suite tests delete SQL.");
 
-        Class employeeClass = Employee.class;
+        Class<Employee> employeeClass = Employee.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new EmployeeDeleteTest(manager.getObject(employeeClass, "0001")));
@@ -138,7 +138,7 @@ public class CustomSQLTestModel extends TestModel {
         suite.setName("CustomSQLReadObjectTestSuite");
         suite.setDescription("This suite test read sql.");
 
-        Class employeeClass = Employee.class;
+        Class<Employee> employeeClass = Employee.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new ReadObjectTest(manager.getObject(employeeClass, "0001")));
@@ -156,7 +156,7 @@ public class CustomSQLTestModel extends TestModel {
         TestSuite suite = new TestSuite();
         suite.setName("RefreshObjectTestSuite");
         suite.setDescription("This Suite contains tests that verify that Refreshing of Objects is working correctly");
-        Class employeeClass = Employee.class;
+        Class<Employee> employeeClass = Employee.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
         suite.addTest(new ReadObjectQueryTest((Employee)manager.getObject(employeeClass, "0003")));
         return suite;
@@ -180,7 +180,7 @@ public class CustomSQLTestModel extends TestModel {
         suite.setName("CustomSQLStoredProcedureTestSuite");
         suite.setDescription("This suite tests certains aspects of StoredProcedures");
 
-        Class employeeClass = Employee.class;
+        Class<Employee> employeeClass = Employee.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new CacheHitTest(manager.getObject(employeeClass, "0003")));
@@ -239,7 +239,7 @@ public class CustomSQLTestModel extends TestModel {
         suite.setName("CustomSQLUpdateObjectTestSuite");
         suite.setDescription("This suite tests update sql.");
 
-        Class employeeClass = Employee.class;
+        Class<Employee> employeeClass = Employee.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new WriteObjectTest(manager.getObject(employeeClass, "0001")));

@@ -375,8 +375,8 @@ public class InheritanceTestModel extends TestModel {
         suite.setName("InheritanceUpdateObjectTestSuite");
         suite.setDescription("This suite tests the updating of each object in the inheritance model.");
 
-        Class companyClass = Company.class;
-        Class personClass = Person.class;
+        Class<Company> companyClass = Company.class;
+        Class<Person> personClass = Person.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new WriteObjectTest(manager.getObject(Cat.class, "catExample1")));

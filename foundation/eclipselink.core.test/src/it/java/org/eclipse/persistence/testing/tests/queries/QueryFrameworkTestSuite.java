@@ -15,11 +15,12 @@
 package org.eclipse.persistence.testing.tests.queries;
 
 import java.util.*;
+
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 import org.eclipse.persistence.testing.models.employee.domain.Project;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.testing.framework.*;
@@ -689,7 +690,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
                 ComplexQueryResult result = (ComplexQueryResult) getSession().executeQuery(query);
                 DatabaseRecord record = (DatabaseRecord)((List)result.getData()).get(0);
                 Iterator keySetKeys = record.keySet().iterator();
-                Iterator keys = record.getFields().iterator();
+                Iterator<DatabaseField> keys = record.getFields().iterator();
                 while (keys.hasNext() || keySetKeys.hasNext()) {
                     if (keys.next() != keySetKeys.next()) {
                         throwError("KeySet is incorrect.");

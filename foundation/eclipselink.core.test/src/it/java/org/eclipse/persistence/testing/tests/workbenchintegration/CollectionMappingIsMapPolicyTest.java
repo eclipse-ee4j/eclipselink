@@ -21,7 +21,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
 
@@ -46,7 +45,7 @@ public class CollectionMappingIsMapPolicyTest extends ProjectClassGeneratorResul
 
         descriptorToModify = project.getDescriptors().get(Employee.class);
         policy = new MapContainerPolicy();
-        for (Enumeration mappingsEnum = (descriptorToModify.getMappings()).elements();
+        for (Enumeration<DatabaseMapping> mappingsEnum = (descriptorToModify.getMappings()).elements();
              mappingsEnum.hasMoreElements(); ) {
             mappingToModify = (DatabaseMapping)mappingsEnum.nextElement();
 

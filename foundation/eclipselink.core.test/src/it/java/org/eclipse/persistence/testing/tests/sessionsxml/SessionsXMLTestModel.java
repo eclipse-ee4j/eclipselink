@@ -116,7 +116,7 @@ public class SessionsXMLTestModel extends TestModel {
     public void addSessionsXMLSchemaWriteTest(TestSuite suite){
 
         try{
-            Class testCaseClass = Class.forName("org.eclipse.persistence.testing.tests.sessionsxml.SessionsXMLSchemaWriteTest");
+            Class<?> testCaseClass = Class.forName("org.eclipse.persistence.testing.tests.sessionsxml.SessionsXMLSchemaWriteTest");
             junit.framework.Test testCase = (junit.framework.Test)testCaseClass.getConstructor().newInstance();
             suite.addTest(testCase);
         } catch (Exception e){

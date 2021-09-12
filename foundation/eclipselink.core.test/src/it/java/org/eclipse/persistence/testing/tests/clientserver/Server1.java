@@ -15,6 +15,8 @@
 package org.eclipse.persistence.testing.tests.clientserver;
 
 import java.util.*;
+
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.server.ConnectionPool;
 
@@ -40,7 +42,7 @@ public class Server1 {
     public void copyDescriptors(Session session) {
         Vector descriptors = new Vector();
 
-        for (Iterator iterator = session.getDescriptors().values().iterator(); iterator.hasNext();) {
+        for (Iterator<ClassDescriptor> iterator = session.getDescriptors().values().iterator(); iterator.hasNext();) {
             descriptors.addElement(iterator.next());
         }
 

@@ -16,6 +16,8 @@ package org.eclipse.persistence.testing.tests.simultaneous;
 
 import java.io.*;
 import java.util.*;
+
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.server.*;
@@ -238,8 +240,8 @@ public class MultithreadTestCase extends AutoVerifyTestCase {
             serverSession.login();
 
             Vector descriptors = new Vector();
-            for (Iterator iterator = databaseSession.getDescriptors().values().iterator();
-                     iterator.hasNext();) {
+            for (Iterator<ClassDescriptor> iterator = databaseSession.getDescriptors().values().iterator();
+                 iterator.hasNext();) {
                 descriptors.addElement(iterator.next());
             }
             serverSession.addDescriptors(descriptors);

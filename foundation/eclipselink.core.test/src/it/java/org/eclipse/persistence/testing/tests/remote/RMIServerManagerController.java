@@ -54,7 +54,7 @@ public class RMIServerManagerController extends UnicastRemoteObject implements R
             }
         } else {
             try {
-                Class cls = Class.forName(controllerClassName);
+                Class<?> cls = Class.forName(controllerClassName);
                 Class[] parameterTypes = { org.eclipse.persistence.sessions.Session.class };
                 Constructor constructor = cls.getConstructor(parameterTypes);
                 Object[] params = { getSession() };

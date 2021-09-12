@@ -69,7 +69,7 @@ public class CleanupCacheKeyCorrectnessTest extends TestCase {
 
     @Override
     public void test() {
-        List employees = new ArrayList<Employee>(numberOfObjectsToCreate);
+        List<Employee> employees = new ArrayList<>(numberOfObjectsToCreate);
 
         UnitOfWork uow = getSession().acquireUnitOfWork();
         for (int i = 0; i < numberOfObjectsToCreate; i++) {

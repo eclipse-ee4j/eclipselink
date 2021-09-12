@@ -32,7 +32,7 @@ public class InheritanceWorkbenchIntegrationSystem extends InheritanceSystem {
 
         // Must clear 1-way transformation added in amendment, otherwise will be added twice.
         ClassDescriptor descriptor = project.getDescriptor(Animal.class);
-        for (Iterator mappings = descriptor.getMappings().iterator(); mappings.hasNext(); ) {
+        for (Iterator<DatabaseMapping> mappings = descriptor.getMappings().iterator(); mappings.hasNext(); ) {
             DatabaseMapping mapping = (DatabaseMapping) mappings.next();
             if (mapping.isWriteOnly()) {
                 descriptor.getMappings().remove(mapping);

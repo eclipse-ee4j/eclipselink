@@ -17,10 +17,8 @@ package org.eclipse.persistence.testing.models.inheritance;
 import java.io.*;
 import java.util.Enumeration;
 import org.eclipse.persistence.descriptors.*;
-import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.tools.schemaframework.*;
-import org.eclipse.persistence.testing.models.inheritance.PC;
 
 public class Computer implements Serializable {
     public int id;
@@ -35,7 +33,7 @@ public class Computer implements Serializable {
         // As a result, we check for the mapping before adding it.
         // The reason this mapping is not added in the project is that some Mapping Workbench
         // tests rely on the ammendment method.
-        Enumeration mappings = descriptor.getMappings().elements();
+        Enumeration<DatabaseMapping> mappings = descriptor.getMappings().elements();
         while (mappings.hasMoreElements()) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.nextElement();
             if (mapping.isTransformationMapping()) {

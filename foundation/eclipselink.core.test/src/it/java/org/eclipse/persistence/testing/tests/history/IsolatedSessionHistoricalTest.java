@@ -16,6 +16,7 @@ package org.eclipse.persistence.testing.tests.history;
 
 import java.util.*;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.history.*;
@@ -40,7 +41,7 @@ public class IsolatedSessionHistoricalTest extends AutoVerifyTestCase {
     public void copyDescriptors(Session session) {
         Vector descriptors = new Vector();
 
-        for (Iterator iterator = session.getDescriptors().values().iterator(); iterator.hasNext(); ) {
+        for (Iterator<ClassDescriptor> iterator = session.getDescriptors().values().iterator(); iterator.hasNext(); ) {
             descriptors.addElement(iterator.next());
         }
         this.server.addDescriptors(descriptors);

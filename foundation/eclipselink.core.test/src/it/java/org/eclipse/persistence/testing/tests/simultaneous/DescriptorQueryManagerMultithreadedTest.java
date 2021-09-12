@@ -100,7 +100,7 @@ public class DescriptorQueryManagerMultithreadedTest extends MultithreadTestCase
         super.setup();
         // save the current queries
         ClassDescriptor descriptor = getSession().getClassDescriptor(Employee.class);
-        Map queryTable = descriptor.getQueryManager().getQueries();
+        Map<String, List<DatabaseQuery>> queryTable = descriptor.getQueryManager().getQueries();
         if (queryTable != null) {
             queries = (Vector)queryTable.get(QUERY_STRING);
         }

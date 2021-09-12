@@ -31,7 +31,7 @@ public class PC extends Computer {
         // As a result, we check for the mapping before adding it.
         // The reason this mapping is not added in the project is that some Mapping Workbench
         // tests rely on the ammendment method.
-        Enumeration mappings = descriptor.getMappings().elements();
+        Enumeration<DatabaseMapping> mappings = descriptor.getMappings().elements();
         while (mappings.hasMoreElements()) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.nextElement();
             if (mapping.isTransformationMapping()) {

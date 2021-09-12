@@ -18,7 +18,6 @@ import java.rmi.registry.Registry;
 
 import java.util.Iterator;
 
-import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.broker.SessionBroker;
 import org.eclipse.persistence.sessions.DatabaseSession;
@@ -43,7 +42,7 @@ public abstract class DistributedServer {
         super();
         if (testSssion.isSessionBroker()) {
             this.session = new SessionBroker();
-            Iterator enumtr = ((SessionBroker)testSssion).getSessionsByName().keySet().iterator();
+            Iterator<String> enumtr = ((SessionBroker)testSssion).getSessionsByName().keySet().iterator();
             while (enumtr.hasNext()) {
                 String name = (String)enumtr.next();
                 DatabaseSession newMemberSession = ((SessionBroker)testSssion).getSessionForName(name).getProject().createDatabaseSession();
@@ -55,7 +54,7 @@ public abstract class DistributedServer {
         this.session.setSessionLog(testSssion.getSessionLog());
         this.session.login();
         if (testSssion.isSessionBroker()) {
-            Iterator enumtr = ((SessionBroker)testSssion).getSessionsByName().keySet().iterator();
+            Iterator<String> enumtr = ((SessionBroker)testSssion).getSessionsByName().keySet().iterator();
             while (enumtr.hasNext()) {
                 String name = (String)enumtr.next();
                 Session oldMemberSession = ((SessionBroker)testSssion).getSessionForName(name);

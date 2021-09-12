@@ -92,7 +92,7 @@ public class InsertWeakIdentityMapTest extends TestCase {
         }
         // Check that all the CacheReferences (WeakCacheReferences) are null, since
         // they all should have been garbage collected.
-        Map cache = getIdentityMap().getCacheKeys();
+        Map<Object, CacheKey> cache = getIdentityMap().getCacheKeys();
         for (Iterator iterator = cache.values().iterator(); iterator.hasNext(); ) {
             CacheKey key = (CacheKey)iterator.next();
             if (key.getObject() != null) {

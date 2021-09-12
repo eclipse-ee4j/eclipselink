@@ -74,7 +74,7 @@ public class SubstituteSequencingWithReturningPolicyAdapter implements ProjectAn
 
     @Override
     public void updateProject(Project project, Session session) {
-        Iterator it = project.getDescriptors().values().iterator();
+        Iterator<ClassDescriptor> it = project.getDescriptors().values().iterator();
         while (it.hasNext()) {
             ClassDescriptor desc = (ClassDescriptor)it.next();
             if (desc.isAggregateDescriptor()) {

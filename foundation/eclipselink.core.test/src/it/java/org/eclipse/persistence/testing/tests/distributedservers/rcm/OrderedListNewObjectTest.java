@@ -93,7 +93,7 @@ public class OrderedListNewObjectTest extends ConfigurableCacheSyncDistributedTe
     public void reset(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         ListHolder holder = (ListHolder)uow.readObject(ListHolder.class);
-        Iterator i = holder.getItems().iterator();
+        Iterator<ListItem> i = holder.getItems().iterator();
         while (i.hasNext()){
             uow.deleteObject(i.next());
         }

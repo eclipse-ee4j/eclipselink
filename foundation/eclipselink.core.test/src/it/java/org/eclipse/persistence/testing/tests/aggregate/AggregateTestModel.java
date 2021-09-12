@@ -147,8 +147,8 @@ public class AggregateTestModel extends TestModel {
         suite.setName("AggregateCheckForNullUnitOfWorkTestSuite");
         suite.setDescription("This suite tests updating objects with UOW in the aggregate model.");
 
-        Class employeeClass = Employee.class;
-        Class clientClass = Client.class;
+        Class<Employee> employeeClass = Employee.class;
+        Class<Client> clientClass = Client.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new CheckForNullUnitOfWorkTest(manager.getObject(employeeClass, "example1")));
@@ -171,9 +171,9 @@ public class AggregateTestModel extends TestModel {
         suite.setName("AggregateDeleteObjectTestSuite");
         suite.setDescription("This suite tests the deletion of each object in the aggregate model.");
 
-        Class employeeClass = Employee.class;
-        Class clientClass = Client.class;
-        Class evaluationClientClass = EvaluationClient.class;
+        Class<Employee> employeeClass = Employee.class;
+        Class<Client> clientClass = Client.class;
+        Class<EvaluationClient> evaluationClientClass = EvaluationClient.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new DeleteObjectTest(manager.getObject(employeeClass, "example1")));
@@ -386,12 +386,12 @@ public class AggregateTestModel extends TestModel {
         suite.setDescription("This suite test the reading of each object in the aggregate model.");
 
         //=====================================
-        Class employee1Class = Employee1.class;
+        Class<Employee1> employee1Class = Employee1.class;
 
         //======================================
-        Class employeeClass = Employee.class;
-        Class clientClass = Client.class;
-        Class evaluationClientClass = EvaluationClient.class;
+        Class<Employee> employeeClass = Employee.class;
+        Class<Client> clientClass = Client.class;
+        Class<EvaluationClient> evaluationClientClass = EvaluationClient.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         //===============================================================================
@@ -432,7 +432,7 @@ public class AggregateTestModel extends TestModel {
         suite.setName("AggregateUnitOfWorkCommitResumeTestSuite");
         suite.setDescription("This suite tests updating objects with UOW in the aggregate model using the commitAndResume method.");
 
-        Class employeeClass = Employee.class;
+        Class<Employee> employeeClass = Employee.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new BatchReadingWithAggregateCollectionMapping(Agent.class));
@@ -462,8 +462,8 @@ public class AggregateTestModel extends TestModel {
         suite.setName("AggregateUnitOfWorkTestSuite");
         suite.setDescription("This suite tests updating objects with UOW in the aggregate model.");
 
-        Class employeeClass = Employee.class;
-        Class clientClass = Client.class;
+        Class<Employee> employeeClass = Employee.class;
+        Class<Client> clientClass = Client.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new UnitOfWorkTest(manager.getObject(employeeClass, "example1")));
@@ -505,10 +505,10 @@ public class AggregateTestModel extends TestModel {
         suite.setName("AggregateUpdateObjectTestSuite");
         suite.setDescription("This suite tests the updating of each object in the aggregate model.");
 
-        Class employee1Class = Employee1.class;
-        Class employeeClass = Employee.class;
-        Class clientClass = Client.class;
-        Class evaluationClientClass = EvaluationClient.class;
+        Class<Employee1> employee1Class = Employee1.class;
+        Class<Employee> employeeClass = Employee.class;
+        Class<Client> clientClass = Client.class;
+        Class<EvaluationClient> evaluationClientClass = EvaluationClient.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         //=================================================================================

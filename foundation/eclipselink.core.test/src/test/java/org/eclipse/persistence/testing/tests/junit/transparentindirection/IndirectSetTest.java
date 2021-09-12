@@ -182,7 +182,7 @@ public class IndirectSetTest {
     @Test
     public void testIterator() {
         int i = 0;
-        for (Iterator stream = testList.iterator(); stream.hasNext(); i++) {
+        for (Iterator<String> stream = testList.iterator(); stream.hasNext(); i++) {
             stream.next();
         }
         assertEquals(list.size(), i);

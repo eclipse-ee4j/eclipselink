@@ -533,10 +533,10 @@ public class IndirectMapTest {
         map.putAll(temp);
         testMap.putAll(temp);
         assertEquals(map, testMap);
-        for (Enumeration stream = temp.keys(); stream.hasMoreElements();) {
+        for (Enumeration<String> stream = temp.keys(); stream.hasMoreElements();) {
             assertTrue(testMap.containsKey(stream.nextElement()));
         }
-        for (Enumeration stream = temp.elements(); stream.hasMoreElements();) {
+        for (Enumeration<String> stream = temp.elements(); stream.hasMoreElements();) {
             assertTrue(testMap.contains(stream.nextElement()));
         }
         assertAddEvents(2);
@@ -564,7 +564,7 @@ public class IndirectMapTest {
     public void testValues() {
         assertEquals(map.size(), testMap.values().size());
 
-        for (Iterator stream = testMap.values().iterator(); stream.hasNext();) {
+        for (Iterator<String> stream = testMap.values().iterator(); stream.hasNext();) {
             assertTrue(map.contains(stream.next()));
         }
         map.values().removeAll(testMap.values());

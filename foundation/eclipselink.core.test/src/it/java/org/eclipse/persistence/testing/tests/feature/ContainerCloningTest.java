@@ -39,7 +39,7 @@ public class ContainerCloningTest extends AutoVerifyTestCase {
     public void test() {
         ContainerPolicy cp = new CollectionContainerPolicy();
         cp.setContainerClass(ClassConstants.ArrayList_class);
-        Collection originalC = java.util.Arrays.asList(new Employee());
+        Collection<Employee> originalC = java.util.Arrays.asList(new Employee());
         Collection cloneC = (Collection)cp.cloneFor(originalC);
 
         cp = new MapContainerPolicy();

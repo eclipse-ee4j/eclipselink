@@ -56,7 +56,7 @@ public class ConcurrentReadBigBadObjectTest extends TestCase {
         ClassDescriptor d = (server.serverSession).getClassDescriptor(BigBadObject.class);
         DatabaseMapping m;
 
-        Vector v = d.getMappings();
+        Vector<DatabaseMapping> v = d.getMappings();
         int mappings = v.size();
         int i =0;
         while (i<mappings){

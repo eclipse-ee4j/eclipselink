@@ -78,7 +78,7 @@ public class PLSQLTest extends TestCase {
         if (this.result instanceof DatabaseRecord) {
             DatabaseRecord record = (DatabaseRecord)this.result;
             DatabaseRecord queryRecord = (DatabaseRecord)queryResult;
-            for (Iterator iterator = record.getFields().iterator(); iterator.hasNext(); ) {
+            for (Iterator<DatabaseField> iterator = record.getFields().iterator(); iterator.hasNext(); ) {
                 DatabaseField field = (DatabaseField)iterator.next();
                 Object value = record.get(field);
                 Object queryValue = queryRecord.get(field);

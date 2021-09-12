@@ -77,7 +77,7 @@ public class TransactionIsolationBuildObjectCacheHitTest extends TestCase {
     @Override
     public void verify() {
         // check for duplicates
-        List statements = sqlTracker.getSqlStatements();
+        List<String> statements = sqlTracker.getSqlStatements();
         Vector errors = new Vector();
         for (int i = 0; i < statements.size(); i++) {
             String statement = (String)statements.get(i);

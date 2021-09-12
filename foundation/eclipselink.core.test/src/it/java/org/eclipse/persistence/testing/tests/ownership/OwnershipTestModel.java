@@ -46,7 +46,7 @@ public class OwnershipTestModel extends TestModel {
         suite.setName("OwnershipDeleteObjectTestSuite");
         suite.setDescription("This suite tests the deletion of each object in the ownership model.");
 
-        Class objectAClass = ObjectA.class;
+        Class<ObjectA> objectAClass = ObjectA.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new DeleteObjectTest(manager.getObject(objectAClass, "example1")));
@@ -87,7 +87,7 @@ public class OwnershipTestModel extends TestModel {
         suite.setName("OwnershipReadObjectTestSuite");
         suite.setDescription("This suite test the reading of each object in the ownership model.");
 
-        Class objectAClass = ObjectA.class;
+        Class<ObjectA> objectAClass = ObjectA.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new ReadObjectTest(manager.getObject(objectAClass, "example1")));
@@ -102,7 +102,7 @@ public class OwnershipTestModel extends TestModel {
         suite.setName("OwnershipUnitOfWorkTestSuite");
         suite.setDescription("This suite verifies that UOW works in the ownership model");
 
-        Class objectAClass = ObjectA.class;
+        Class<ObjectA> objectAClass = ObjectA.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new UnitOfWorkTest(manager.getObject(objectAClass, "example1")));
@@ -117,7 +117,7 @@ public class OwnershipTestModel extends TestModel {
         suite.setName("OwnershipUpdateObjectTestSuite");
         suite.setDescription("This suite tests the updating of each object in the ownership model.");
 
-        Class objectAClass = ObjectA.class;
+        Class<ObjectA> objectAClass = ObjectA.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new WriteObjectTest(manager.getObject(objectAClass, "example1")));

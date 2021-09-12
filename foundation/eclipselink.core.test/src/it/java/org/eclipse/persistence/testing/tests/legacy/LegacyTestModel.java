@@ -59,7 +59,7 @@ public class LegacyTestModel extends TestModel {
         suite.setName("LegacyDeleteObjectTestSuite");
         suite.setDescription("This suite tests the deletion of each object in the mapping model.");
 
-        Class employeeClass = Employee.class;
+        Class<Employee> employeeClass = Employee.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new DeleteObjectTest(manager.getObject(employeeClass, "example1")));
@@ -96,7 +96,7 @@ public class LegacyTestModel extends TestModel {
         suite.setName("LegacyReadObjectTestSuite");
         suite.setDescription("This suite test the reading of each object in the mapping model.");
 
-        Class employeeClass = Employee.class;
+        Class<Employee> employeeClass = Employee.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new ReadObjectTest(manager.getObject(employeeClass, "example1")));
@@ -111,7 +111,7 @@ public class LegacyTestModel extends TestModel {
         suite.setName("LegacyUpdateObjectTestSuite");
         suite.setDescription("This suite tests the updating of each object in the mapping model.");
 
-        Class employeeClass = Employee.class;
+        Class<Employee> employeeClass = Employee.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new WriteObjectTest(manager.getObject(employeeClass, "example1")));

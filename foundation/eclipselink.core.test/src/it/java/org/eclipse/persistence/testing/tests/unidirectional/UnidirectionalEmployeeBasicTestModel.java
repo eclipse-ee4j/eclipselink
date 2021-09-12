@@ -67,7 +67,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
         suite.setName("EmployeeDeleteObjectTestSuite");
         suite.setDescription("This suite tests the deletion of each object in the employee demo.");
 
-        Class employeeClass = org.eclipse.persistence.testing.models.unidirectional.Employee.class;
+        Class<Employee> employeeClass = org.eclipse.persistence.testing.models.unidirectional.Employee.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new DeleteObjectTest(manager.getObject(employeeClass, "0001")));
@@ -124,7 +124,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
         suite.setName("EmployeeReadObjectTestSuite");
         suite.setDescription("This suite test the reading of each object in the employee demo.");
 
-        Class employeeClass = Employee.class;
+        Class<Employee> employeeClass = Employee.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new ReadObjectTest(manager.getObject(employeeClass, "0001")));
@@ -148,7 +148,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
         suite.setName("EmployeeComplexUpdateTestSuite");
         suite.setDescription("This suite tests the updating of each an employee by adding and/or removing managed employees and/or phones.");
 
-        Class employeeClass = Employee.class;
+        Class<Employee> employeeClass = Employee.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
         Employee originalEmployee = (Employee)manager.getObject(employeeClass, "0001");
         Employee otherEmployee = (Employee)manager.getObject(employeeClass, "0002");

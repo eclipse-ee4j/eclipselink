@@ -38,7 +38,7 @@ public class MappingIsReadOnlyTest extends ProjectClassGeneratorResultFileTest {
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         descriptorToModify = project.getDescriptors().get(Employee.class);
-        for (Enumeration mappingsEnum = (descriptorToModify.getMappings()).elements();
+        for (Enumeration<DatabaseMapping> mappingsEnum = (descriptorToModify.getMappings()).elements();
              mappingsEnum.hasMoreElements(); ) {
             mappingToModify = (DatabaseMapping)mappingsEnum.nextElement();
             mappingToModify.readOnly();

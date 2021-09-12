@@ -19,6 +19,8 @@ import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.models.interfaces.*;
 
+import java.util.Iterator;
+
 public class DescriptorInitTest extends TestCase {
     public Project project;
     public DatabaseSession dbsession;
@@ -48,7 +50,7 @@ public class DescriptorInitTest extends TestCase {
 
     @Override
     public void test() {
-        for (java.util.Iterator iterator = project.getDescriptors().values().iterator(); iterator.hasNext(); ) {
+        for (Iterator<ClassDescriptor> iterator = project.getDescriptors().values().iterator(); iterator.hasNext(); ) {
             ClassDescriptor descriptor = (ClassDescriptor)iterator.next();
             String className = descriptor.getJavaClass().toString();
 
@@ -81,7 +83,7 @@ public class DescriptorInitTest extends TestCase {
     @Override
     public void verify() {
         //Make sure all Descriptors have been initialized.
-        for (java.util.Iterator iterator = project.getDescriptors().values().iterator(); iterator.hasNext(); ) {
+        for (Iterator<ClassDescriptor> iterator = project.getDescriptors().values().iterator(); iterator.hasNext(); ) {
             ClassDescriptor descriptor = (ClassDescriptor)iterator.next();
             if (!descriptor.isFullyInitialized()) {
                 throw new TestErrorException("Descriptor \"" + descriptor + "\" is NOT INITIALIZED");
