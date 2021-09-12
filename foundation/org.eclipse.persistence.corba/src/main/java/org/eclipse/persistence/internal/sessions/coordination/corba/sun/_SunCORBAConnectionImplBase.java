@@ -35,7 +35,7 @@ public abstract class _SunCORBAConnectionImplBase extends ObjectImpl implements 
     public _SunCORBAConnectionImplBase() {
     }
 
-    private static Hashtable _methods = new Hashtable();
+    private static Hashtable<String, Integer> _methods = new Hashtable<>();
 
     static {
         _methods.put("executeCommand", 0);

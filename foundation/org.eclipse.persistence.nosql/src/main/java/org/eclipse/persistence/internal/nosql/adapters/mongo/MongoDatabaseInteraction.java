@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,6 @@ import jakarta.resource.ResourceException;
 import jakarta.resource.cci.Connection;
 import jakarta.resource.cci.Interaction;
 import jakarta.resource.cci.InteractionSpec;
-import jakarta.resource.cci.Record;
 import jakarta.resource.cci.ResourceWarning;
 
 import org.bson.Document;
@@ -244,11 +243,11 @@ public class MongoDatabaseInteraction implements Interaction {
      */
     public MongoRecord buildRecordFromDBObject(Document object) {
         MongoRecord record = new MongoRecord();
-        for (Iterator iterator = object.entrySet().iterator(); iterator.hasNext(); ) {
+        for (Iterator<Map.Entry<String, Object>> iterator = object.entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry entry = (Map.Entry)iterator.next();
             if (entry.getValue() instanceof BasicDBList) {
                 List values = new ArrayList();
-                for (Iterator valuesIterator = ((BasicDBList)entry.getValue()).iterator(); valuesIterator.hasNext(); ) {
+                for (Iterator<Object> valuesIterator = ((BasicDBList)entry.getValue()).iterator(); valuesIterator.hasNext(); ) {
                     Object value = valuesIterator.next();
                     if (value instanceof Document) {
                         values.add(buildRecordFromDBObject((Document)value));

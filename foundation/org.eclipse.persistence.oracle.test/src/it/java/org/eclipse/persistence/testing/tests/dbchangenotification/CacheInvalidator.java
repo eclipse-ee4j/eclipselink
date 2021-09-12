@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -59,7 +59,7 @@ CacheInvalidator {
         HashSet tableNames = new HashSet();
 
         // fill out tableNames collection with all tables' names mapped by all descriptors
-        Iterator descriptors = session.getDescriptors().values().iterator();
+        Iterator<ClassDescriptor> descriptors = session.getDescriptors().values().iterator();
         while (descriptors.hasNext()) {
             ClassDescriptor desc = (ClassDescriptor)descriptors.next();
 
@@ -92,7 +92,7 @@ CacheInvalidator {
         // pkFieldVectors cached here to avoid calculating it more than once per class
         Hashtable classToPkFieldNames = new Hashtable();
         // loop through the descriptors to fill out tableNameToClass and tableNameToPkFieldNames
-        Iterator descriptors = session.getDescriptors().values().iterator();
+        Iterator<ClassDescriptor> descriptors = session.getDescriptors().values().iterator();
         while (descriptors.hasNext() && !tableNames.isEmpty()) {
             ClassDescriptor desc = (ClassDescriptor)descriptors.next();
 

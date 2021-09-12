@@ -51,10 +51,10 @@ public class DbChangeNotificationAdapter implements ProjectAndDatabaseAdapter {
 
     @Override
     public void updateProject(Project project, Session session) {
-        Iterator it = project.getDescriptors().values().iterator();
+        Iterator<ClassDescriptor> it = project.getDescriptors().values().iterator();
         while (it.hasNext()) {
             ClassDescriptor desc = (ClassDescriptor)it.next();
-            Enumeration enumDescTableNames = desc.getTables().elements();
+            Enumeration<DatabaseTable> enumDescTableNames = desc.getTables().elements();
             while (enumDescTableNames.hasMoreElements()) {
                 String tableName = ((DatabaseTable)enumDescTableNames.nextElement()).getName();
                 if (!tableNamesToPkFields.containsKey(tableName)) {

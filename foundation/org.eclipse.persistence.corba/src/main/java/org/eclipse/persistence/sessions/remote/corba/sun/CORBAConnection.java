@@ -142,15 +142,16 @@ public class CORBAConnection extends RemoteConnection {
             throw transporter.getException();
         }
 
-        Vector serverNextPageObjects = (Vector)transporter.getObject();
+        @SuppressWarnings({"unchecked"})
+        Vector<Object> serverNextPageObjects = (Vector<Object>)transporter.getObject();
         if (serverNextPageObjects == null) {
             cursoredStreamClose(remoteCursoredStream.getID());
             return null;
         }
-        Vector clientNextPageObjects = serverNextPageObjects;
+        Vector<Object> clientNextPageObjects = serverNextPageObjects;
         if (query.isReadAllQuery() && (!query.isReportQuery())) {// could be DataReadQuery
-            clientNextPageObjects = new Vector(serverNextPageObjects.size());
-            for (Enumeration objEnum = serverNextPageObjects.elements(); objEnum.hasMoreElements();) {
+            clientNextPageObjects = new Vector<>(serverNextPageObjects.size());
+            for (Enumeration<Object> objEnum = serverNextPageObjects.elements(); objEnum.hasMoreElements();) {
                 // 2612538 - the default size of Map (32) is appropriate
                 Object clientObject = session.getObjectCorrespondingTo(objEnum.nextElement(), transporter.getObjectDescriptors(), new IdentityHashMap(), (ObjectLevelReadQuery)query);
                 clientNextPageObjects.addElement(clientObject);

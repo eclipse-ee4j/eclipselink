@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -217,7 +217,7 @@ public class MongoInteraction implements Interaction {
             Map.Entry entry = (Map.Entry)iterator.next();
             if (entry.getValue() instanceof BasicDBList) {
                 List values = new ArrayList();
-                for (Iterator valuesIterator = ((BasicDBList)entry.getValue()).iterator(); valuesIterator.hasNext(); ) {
+                for (Iterator<Object> valuesIterator = ((BasicDBList)entry.getValue()).iterator(); valuesIterator.hasNext(); ) {
                     Object value = valuesIterator.next();
                     if (value instanceof DBObject) {
                         values.add(buildRecordFromDBObject((DBObject)value));

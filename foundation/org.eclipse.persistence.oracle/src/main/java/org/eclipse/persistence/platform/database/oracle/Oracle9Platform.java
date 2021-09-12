@@ -84,10 +84,10 @@ import oracle.sql.TIMESTAMPTZ;
  */
 public class Oracle9Platform extends Oracle8Platform {
 
-    public static final Class NCHAR = NCharacter.class;
-    public static final Class NSTRING = NString.class;
-    public static final Class NCLOB = NClob.class;
-    public static final Class XMLTYPE = XMLTypePlaceholder.class;
+    public static final Class<NCharacter> NCHAR = NCharacter.class;
+    public static final Class<NString> NSTRING = NString.class;
+    public static final Class<NClob> NCLOB = NClob.class;
+    public static final Class<XMLTypePlaceholder> XMLTYPE = XMLTypePlaceholder.class;
 
     /* Driver version set to connection.getMetaData.getDriverVersion() */
     protected transient String driverVersion;
@@ -132,9 +132,9 @@ public class Oracle9Platform extends Oracle8Platform {
      * If driver is not available, this class will not be initialized and will fail fast instead of failing later on
      * when classes from driver are utilized
      */
-    private static final Class ORACLE_SQL_TIMESTAMP    = oracle.sql.TIMESTAMP.class;
-    private static final Class ORACLE_SQL_TIMESTAMPTZ  = oracle.sql.TIMESTAMPTZ.class;
-    private static final Class ORACLE_SQL_TIMESTAMPLTZ = oracle.sql.TIMESTAMPLTZ.class;
+    private static final Class<TIMESTAMP> ORACLE_SQL_TIMESTAMP    = oracle.sql.TIMESTAMP.class;
+    private static final Class<TIMESTAMPTZ> ORACLE_SQL_TIMESTAMPTZ  = oracle.sql.TIMESTAMPTZ.class;
+    private static final Class<TIMESTAMPLTZ> ORACLE_SQL_TIMESTAMPLTZ = oracle.sql.TIMESTAMPLTZ.class;
 
 
     public Oracle9Platform(){
@@ -722,7 +722,7 @@ public class Oracle9Platform extends Oracle8Platform {
     }
 
     protected List buildFromStringCharVec(Class javaClass) {
-        List vec = getConversionManager().getDataTypesConvertedFrom(javaClass);
+        List<Class<?>> vec = getConversionManager().getDataTypesConvertedFrom(javaClass);
         vec.add(NCHAR);
         vec.add(NSTRING);
         if (javaClass == String.class) {
