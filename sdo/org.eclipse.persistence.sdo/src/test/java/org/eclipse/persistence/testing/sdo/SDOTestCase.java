@@ -406,9 +406,9 @@ public class SDOTestCase extends junit.framework.TestCase {
                     } else if (aType.equals(SDO_CHARACTER)) {
                         assertEquals(0, ((Character)aPropertyValue).charValue());
                     } else if (aType.equals(SDO_DOUBLE)) {
-                        assertEquals(0, (Double) aPropertyValue);
+                        assertEquals(0, aPropertyValue);
                     } else if (aType.equals(SDO_FLOAT)) {
-                        assertEquals(0, (Float) aPropertyValue);
+                        assertEquals(0, aPropertyValue);
                     } else if (aType.equals(SDO_INT)) {
                         assertEquals(0, ((Integer)aPropertyValue).intValue());
                     } else if (aType.equals(SDO_SHORT)) {

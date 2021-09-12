@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,18 +34,18 @@ public class UrlTestCases extends TestCase {
 
     public void testValidStringToUrl() throws Exception {
         URL control = new URL(URL);
-        URL test = (URL) xmlConversionManager.convertObject(URL, URL.class);
+        URL test = xmlConversionManager.convertObject(URL, URL.class);
         assertEquals(control, test);
     }
 
     public void testNullStringToUrl() throws Exception {
-        URL test = (URL) xmlConversionManager.convertObject(null, URL.class);
+        URL test = xmlConversionManager.convertObject(null, URL.class);
         assertNull(test);
     }
 
     public void testInvalidStringToUrl() {
         try {
-            URL test = (URL) xmlConversionManager.convertObject("abc", URL.class);
+            URL test = xmlConversionManager.convertObject("abc", URL.class);
         } catch(ConversionException e) {
             return;
         } catch(Exception e) {
@@ -56,25 +56,25 @@ public class UrlTestCases extends TestCase {
 
     public void testUrlToString() throws Exception {
         URL control = new URL(URL);
-        String test = (String) xmlConversionManager.convertObject(control, String.class);
+        String test = xmlConversionManager.convertObject(control, String.class);
         assertEquals(URL, test);
     }
 
     public void testNullUrlToString() {
-        String test = (String) xmlConversionManager.convertObject(null, String.class);
+        String test = xmlConversionManager.convertObject(null, String.class);
         assertNull(test);
     }
 
     public void testUrlToUrl() throws Exception {
         URL control = new URL(URL);
-        URL test = (URL) xmlConversionManager.convertObject(control, URL.class);
+        URL test = xmlConversionManager.convertObject(control, URL.class);
         assertEquals(control, test);
     }
 
     public void testUrlToInteger() {
         try {
             URL control = new URL(URL);
-            URL test = (URL) xmlConversionManager.convertObject(control, Integer.class);
+            xmlConversionManager.convertObject(control, Integer.class);
         } catch(ConversionException e) {
             return;
         } catch(Exception e) {

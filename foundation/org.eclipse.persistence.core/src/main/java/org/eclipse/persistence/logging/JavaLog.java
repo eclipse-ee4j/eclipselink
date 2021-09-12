@@ -57,7 +57,7 @@ public class JavaLog extends AbstractSessionLog {
      * Represents the HashMap that stores all the name space strings.
      * The keys are category names.  The values are namespace strings.
      */
-    private Map nameSpaceMap  = new HashMap();
+    private final Map<String, String> nameSpaceMap  = new HashMap<>();
 
     /**
      * Stores the namespace for session, i.e."{@code org.eclipse.persistence.session.<sessionname>}".
@@ -69,7 +69,7 @@ public class JavaLog extends AbstractSessionLog {
      */
     private Logger sessionLogger;
 
-    private Map categoryloggers = new HashMap<String, Logger>();
+    private final Map<String, Logger> categoryloggers = new HashMap<>();
 
     /**
      * INTERNAL:
@@ -92,7 +92,7 @@ public class JavaLog extends AbstractSessionLog {
      * INTERNAL:
      * Return catagoryloggers
      */
-     public Map getCategoryLoggers() {
+     public Map<String, Logger> getCategoryLoggers() {
          return categoryloggers;
      }
 
@@ -160,7 +160,7 @@ public class JavaLog extends AbstractSessionLog {
     @Override
     public void setWriter(OutputStream fileOutputStream){
         StreamHandler sh = new StreamHandler(fileOutputStream,new LogFormatter());
-        ((Logger)categoryloggers.get(DEFAULT_TOPLINK_NAMESPACE)).addHandler(sh);
+        categoryloggers.get(DEFAULT_TOPLINK_NAMESPACE).addHandler(sh);
         if(sessionLogger!=null){
             sessionLogger.addHandler(sh);
         }
@@ -176,7 +176,7 @@ public class JavaLog extends AbstractSessionLog {
         } else if ((category == null) || (category.length() == 0)) {
             return sessionNameSpace;
         } else {
-            return  (String)nameSpaceMap.get(category);
+            return nameSpaceMap.get(category);
         }
     }
 
@@ -186,11 +186,11 @@ public class JavaLog extends AbstractSessionLog {
      */
     protected Logger getLogger(String category) {
         if (session == null) {
-            return (Logger)categoryloggers.get(DEFAULT_TOPLINK_NAMESPACE);
+            return categoryloggers.get(DEFAULT_TOPLINK_NAMESPACE);
         } else if ((category == null) || (category.length() == 0) || !this.categoryloggers.containsKey(category)) {
-            return (Logger) categoryloggers.get(sessionNameSpace);
+            return categoryloggers.get(sessionNameSpace);
         } else {
-            Logger logger = (Logger) categoryloggers.get(category);
+            Logger logger = categoryloggers.get(category);
             // If session != null, categoryloggers should have an entry for this category
             assert logger != null;
             return logger;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,8 +40,8 @@ public class MethodSerialImpl implements Serializable {
     public MethodSerialImpl(Method method) {
         methodName = method.getName();
         declaringClassName = method.getDeclaringClass().getName();
-        paramList = new java.util.ArrayList((method.getParameterTypes()).length);
-        for (Class clazz: method.getParameterTypes()) {
+        paramList = new java.util.ArrayList<>((method.getParameterTypes()).length);
+        for (Class<?> clazz: method.getParameterTypes()) {
             paramList.add(clazz.getName());
         }
     }
@@ -52,7 +52,7 @@ public class MethodSerialImpl implements Serializable {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    declaringClass = AccessController.doPrivileged(new PrivilegedClassForName(declaringClassName, true, loader));
+                    declaringClass = AccessController.doPrivileged(new PrivilegedClassForName<>(declaringClassName, true, loader));
                 } catch (PrivilegedActionException exception) {
                     throw ValidationException.unableToLoadClass(declaringClassName, exception.getException());
                 }
@@ -70,7 +70,7 @@ public class MethodSerialImpl implements Serializable {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        argTypes[i++] = AccessController.doPrivileged(new PrivilegedClassForName(paramType, true, loader));
+                        argTypes[i++] = AccessController.doPrivileged(new PrivilegedClassForName<>(paramType, true, loader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.unableToLoadClass(paramType, exception.getException());
                     }

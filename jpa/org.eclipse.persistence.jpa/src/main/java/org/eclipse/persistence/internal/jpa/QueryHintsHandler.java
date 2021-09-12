@@ -235,9 +235,9 @@ public class QueryHintsHandler {
      * and set the valueArray if the set of valid values is finite.
      */
     protected static abstract class Hint {
-        static HashMap mainMap = new HashMap();
+        static HashMap<String, Hint> mainMap = new HashMap<>();
         Object[] valueArray;
-        HashMap valueMap;
+        HashMap<String, Object> valueMap;
         String name;
         String defaultValue;
         Object defaultValueToApply;
@@ -328,7 +328,7 @@ public class QueryHintsHandler {
         abstract DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession);
 
         static void verify(String hintName, boolean shouldUseDefault, Object hintValue, String queryName, AbstractSession session) {
-            Hint hint = (Hint)mainMap.get(hintName);
+            Hint hint = mainMap.get(hintName);
             if(hint == null) {
                 if(session != null) {
                     session.log(SessionLog.FINEST, SessionLog.QUERY, "unknown_query_hint", new Object[]{getPrintValue(queryName), hintName});
@@ -352,7 +352,7 @@ public class QueryHintsHandler {
         }
 
         static DatabaseQuery apply(String hintName, boolean shouldUseDefault, Object hintValue, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
-            Hint hint = (Hint)mainMap.get(hintName);
+            Hint hint = mainMap.get(hintName);
             if (hint == null) {
                 // unknown hint name - silently ignored.
                 return query;
@@ -406,11 +406,11 @@ public class QueryHintsHandler {
             return hintValue != null ? hintValue.toString().toUpperCase(Locale.ROOT) : null;
         }
 
-        static Class loadClass(String className, DatabaseQuery query, ClassLoader loader) throws QueryException {
+        static Class<?> loadClass(String className, DatabaseQuery query, ClassLoader loader) throws QueryException {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     try {
-                        return AccessController.doPrivileged(new PrivilegedClassForName(className, true, loader));
+                        return AccessController.doPrivileged(new PrivilegedClassForName<>(className, true, loader));
                     } catch (PrivilegedActionException exception) {
                         throw QueryException.classNotFoundWhileUsingQueryHint(query, className, exception.getException());
                     }
@@ -422,10 +422,10 @@ public class QueryHintsHandler {
             }
         }
 
-        static Object newInstance(Class theClass, DatabaseQuery query, String hint) {
+        static <T> T newInstance(Class<T> theClass, DatabaseQuery query, String hint) {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    return AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(theClass));
+                    return AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<T>(theClass));
                 } else {
                     return PrivilegedAccessHelper.newInstanceFromClass(theClass);
                 }
@@ -436,7 +436,7 @@ public class QueryHintsHandler {
 
         void initialize() {
             if(valueArray != null) {
-                valueMap = new HashMap(valueArray.length);
+                valueMap = new HashMap<>(valueArray.length);
                 if(valueArray instanceof Object[][]) {
                     Object[][] valueArray2 = (Object[][])valueArray;
                     for(int i=0; i<valueArray2.length; i++) {

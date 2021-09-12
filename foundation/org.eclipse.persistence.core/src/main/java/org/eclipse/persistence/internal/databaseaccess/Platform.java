@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -51,7 +51,7 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
      * @exception ConversionException all exceptions will be thrown as this type.
      * @return the newly converted object
      */
-    @Override Object convertObject(Object sourceObject, Class javaClass) throws ConversionException;
+    @Override <T> T convertObject(Object sourceObject, Class<T> javaClass) throws ConversionException;
 
     /**
      * Copy the state into the new platform.

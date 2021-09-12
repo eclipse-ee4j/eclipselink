@@ -77,7 +77,7 @@ public class PreLoginMappingAdapter extends SessionEventListener {
         ClassLoader cl = jpaSession.getDatasourcePlatform().getConversionManager().getLoader();
         DefaultXMLNameTransformer xmlNameTransformer = new DefaultXMLNameTransformer();
         for (Object descriptorAlias : project.getAliasDescriptors().keySet()) {
-            ClassDescriptor descriptor = (ClassDescriptor) project.getAliasDescriptors().get(descriptorAlias);
+            ClassDescriptor descriptor = project.getAliasDescriptors().get(descriptorAlias);
 
             if (!PersistenceWeavedRest.class.isAssignableFrom(descriptor.getJavaClass())) {
                 continue;
@@ -190,7 +190,7 @@ public class PreLoginMappingAdapter extends SessionEventListener {
         }
 
         for (Object descriptorAlias : project.getAliasDescriptors().keySet()) {
-            ClassDescriptor descriptor = (ClassDescriptor) project.getAliasDescriptors().get(descriptorAlias);
+            ClassDescriptor descriptor = project.getAliasDescriptors().get(descriptorAlias);
             ClassDescriptor jpaDescriptor = jpaSession.getDescriptorForAlias(descriptor.getAlias());
             Vector<DatabaseMapping> descriptorMappings = (Vector<DatabaseMapping>) descriptor.getMappings().clone();
 

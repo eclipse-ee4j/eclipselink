@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,7 +51,7 @@ public class WeakIdentityMap extends FullIdentityMap {
      * the total time still constant.
      */
     protected void cleanupDeadCacheKeys() {
-        for (Iterator iterator = getCacheKeys().values().iterator(); iterator.hasNext();) {
+        for (Iterator<CacheKey> iterator = getCacheKeys().values().iterator(); iterator.hasNext();) {
             CacheKey key = (CacheKey)iterator.next();
             if (key.getObject() == null) {
                 // Check lock first.

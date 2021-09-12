@@ -28,6 +28,7 @@ import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -63,22 +64,22 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 public class StoredProcedureGenerator {
     public SchemaManager schemaManager;
     /** This hashtable is used to store the storedProcedure referenced by the class name. */
-    private Hashtable storedProcedures;
+    private Hashtable<ClassDescriptor, Vector<StoredProcedureDefinition>> storedProcedures;
     /** This hashtable is used to store the storedProcedure referenced by the mapping name. */
-    private Hashtable mappingStoredProcedures;
-    private Hashtable intToTypeConverterHash;
+    private Hashtable<ClassDescriptor, Hashtable<String, Hashtable<String, StoredProcedureDefinition>>> mappingStoredProcedures;
+    private Hashtable<Integer, Class<?>> intToTypeConverterHash;
     private Writer writer;
     private String prefix;
     private static final String DEFAULT_PREFIX = "";
-    private Hashtable sequenceProcedures;
+    private Hashtable<String, StoredProcedureDefinition> sequenceProcedures;
     private static final int MAX_NAME_SIZE = 30;
 
     public StoredProcedureGenerator(SchemaManager schemaMngr) {
         super();
         this.schemaManager = schemaMngr;
-        this.sequenceProcedures = new Hashtable();
-        this.storedProcedures = new Hashtable();
-        this.mappingStoredProcedures = new Hashtable();
+        this.sequenceProcedures = new Hashtable<>();
+        this.storedProcedures = new Hashtable<>();
+        this.mappingStoredProcedures = new Hashtable<>();
         this.buildIntToTypeConverterHash();
         this.prefix = DEFAULT_PREFIX;
         this.verify();
@@ -88,7 +89,7 @@ public class StoredProcedureGenerator {
      * INTERNAL: Build all conversions based on JDBC return values.
      */
     protected void buildIntToTypeConverterHash() {
-        this.intToTypeConverterHash = new Hashtable();
+        this.intToTypeConverterHash = new Hashtable<>();
         this.intToTypeConverterHash.put(8, Double.class);
         this.intToTypeConverterHash.put(-7, Boolean.class);
         this.intToTypeConverterHash.put(-3, Byte[].class);
@@ -167,7 +168,7 @@ public class StoredProcedureGenerator {
             outputWriter.write("This is a EclipseLink generated class to add stored procedure admendments to a project.  \n * Any changes to this code will be lost when the class is regenerated \n */\npublic class ");
             outputWriter.write(className);
             outputWriter.write("{\n");
-            Enumeration descriptorEnum = this.storedProcedures.keys();
+            Enumeration<ClassDescriptor> descriptorEnum = this.storedProcedures.keys();
             while (descriptorEnum.hasMoreElements()) {
                 descriptor = (ClassDescriptor)descriptorEnum.nextElement();
                 if (descriptor.isDescriptorForInterface() || descriptor.isAggregateDescriptor()) {
@@ -391,12 +392,12 @@ public class StoredProcedureGenerator {
      * INTERNAL: Generates the mapping stored procedures for this descriptor.
      * currently only 1:1 and 1:M are supported
      */
-    protected Hashtable generateMappingStoredProcedures(ClassDescriptor descriptor) {
-        Vector mappings = descriptor.getMappings();
-        Hashtable mappingSP = new Hashtable();
-        Hashtable mappingTable;
-        for (Enumeration enumtr = mappings.elements(); enumtr.hasMoreElements();) {
-            mappingTable = new Hashtable();
+    protected Hashtable<String, Hashtable<String, StoredProcedureDefinition>> generateMappingStoredProcedures(ClassDescriptor descriptor) {
+        Vector<DatabaseMapping> mappings = descriptor.getMappings();
+        Hashtable<String, Hashtable<String, StoredProcedureDefinition>> mappingSP = new Hashtable<>();
+        Hashtable<String, StoredProcedureDefinition> mappingTable;
+        for (Enumeration<DatabaseMapping> enumtr = mappings.elements(); enumtr.hasMoreElements();) {
+            mappingTable = new Hashtable<>();
             DatabaseMapping mapping = (DatabaseMapping)enumtr.nextElement();
             if (mapping.isOneToManyMapping()) {
                 if (!getSession().getPlatform().isOracle()) {
@@ -526,8 +527,8 @@ public class StoredProcedureGenerator {
      */
     protected StoredProcedureDefinition generateStoredProcedure(DatabaseQuery query, List<DatabaseField> fields, AbstractRecord rowForPrepare, String name) {
         StoredProcedureDefinition definition = new StoredProcedureDefinition();
-        Vector callVector;
-        Vector statementVector = new Vector();
+        Vector<DatasourceCall> callVector;
+        Vector<String> statementVector = new Vector<>();
 
         query.checkPrepare(getSession(), rowForPrepare, true);
         callVector = ((CallQueryMechanism)query.getQueryMechanism()).getCalls();
@@ -538,7 +539,7 @@ public class StoredProcedureGenerator {
                 callVector.addElement(((CallQueryMechanism)query.getQueryMechanism()).getCall());
             }
         }
-        Enumeration enumtr = callVector.elements();
+        Enumeration<DatasourceCall> enumtr = callVector.elements();
         while (enumtr.hasMoreElements()) {
             SQLCall call = (SQLCall)enumtr.nextElement();
             statementVector.addElement(this.buildProcedureString(call));
@@ -588,11 +589,11 @@ public class StoredProcedureGenerator {
         // Must turn binding off to ensure literals are printed correctly.
         boolean wasBinding = getSession().getLogin().shouldBindAllParameters();
         getSession().getLogin().setShouldBindAllParameters(false);
-        Map descriptors = getSession().getProject().getDescriptors();
-        Iterator iterator = descriptors.keySet().iterator();
+        Map<Class<?>, ClassDescriptor> descriptors = getSession().getProject().getDescriptors();
+        Iterator<Class<?>> iterator = descriptors.keySet().iterator();
         ClassDescriptor desc;
         StoredProcedureDefinition definition;
-        Vector definitionVector;
+        Vector<StoredProcedureDefinition> definitionVector;
         this.generateSequenceStoredProcedures(getSession().getProject());
         while (iterator.hasNext()) {
             desc = (ClassDescriptor)descriptors.get(iterator.next());
@@ -600,7 +601,7 @@ public class StoredProcedureGenerator {
                 continue;
             }
             definition = this.generateInsertStoredProcedure(desc);
-            definitionVector = new Vector();
+            definitionVector = new Vector<>();
             definitionVector.addElement(definition);
             this.writeDefinition(definition);
             definition = this.generateUpdateStoredProcedure(desc);
@@ -617,9 +618,9 @@ public class StoredProcedureGenerator {
                 definitionVector.addElement(definition);
                 this.writeDefinition(definition);
             }
-            Hashtable mappingDefinitions = this.generateMappingStoredProcedures(desc);
-            for (Enumeration enum2 = mappingDefinitions.elements(); enum2.hasMoreElements();) {
-                Hashtable table = (Hashtable)enum2.nextElement();
+            Hashtable<String, Hashtable<String, StoredProcedureDefinition>> mappingDefinitions = this.generateMappingStoredProcedures(desc);
+            for (Enumeration<Hashtable<String, StoredProcedureDefinition>> enum2 = mappingDefinitions.elements(); enum2.hasMoreElements();) {
+                Hashtable<String, StoredProcedureDefinition> table = enum2.nextElement();
                 definition = (StoredProcedureDefinition)table.get("1MREAD");
                 if (definition != null) {
                     this.writeDefinition(definition);

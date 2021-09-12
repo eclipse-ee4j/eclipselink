@@ -117,7 +117,7 @@ public class ConstructorResult extends SQLResult {
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     try {
-                        targetClass = AccessController.doPrivileged(new PrivilegedClassForName(targetClassName, true, classLoader));
+                        targetClass = AccessController.doPrivileged(new PrivilegedClassForName<>(targetClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(targetClassName, exception.getException());
                     }
@@ -200,7 +200,7 @@ public class ConstructorResult extends SQLResult {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
-                    constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(targetClass, constructorArgTypes, true));
+                    constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<Class<?>>(targetClass, constructorArgTypes, true));
                 } catch (PrivilegedActionException exception) {
                     throw QueryException.exceptionWhileInitializingConstructor(exception.getException(), query, targetClass);
                 }

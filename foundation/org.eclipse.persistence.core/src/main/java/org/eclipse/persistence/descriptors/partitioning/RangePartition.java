@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -81,7 +81,7 @@ public class RangePartition  {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        partitionValueType = AccessController.doPrivileged(new PrivilegedClassForName(partitionValueTypeName, true, classLoader));
+                        partitionValueType = AccessController.doPrivileged(new PrivilegedClassForName<>(partitionValueTypeName, true, classLoader));
                     } catch (PrivilegedActionException e) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(partitionValueTypeName, e.getException());
                     }
@@ -117,24 +117,25 @@ public class RangePartition  {
      * INTERNAL:
      * TODO: clean up the exception handling.
      */
-    protected Object initObject(Class type, String value) {
+    @SuppressWarnings({"unchecked"})
+    protected <T> T initObject(Class<T> type, String value) {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
             try {
-                Constructor constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(type, new Class[] {String.class}, false));
-                return AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] {value}));
+                Constructor<T> constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(type, new Class[] {String.class}, false));
+                return AccessController.doPrivileged(new PrivilegedInvokeConstructor<>(constructor, new Object[] {value}));
             } catch (PrivilegedActionException exception) {
                 //throwInitObjectException(exception, type, value, isData);
             }
         } else {
             try {
-                Constructor constructor = PrivilegedAccessHelper.getConstructorFor(type, new Class[] {String.class}, false);
+                Constructor<T> constructor = PrivilegedAccessHelper.getConstructorFor(type, new Class[] {String.class}, false);
                 return PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] {value});
             } catch (Exception exception) {
                 //throwInitObjectException(exception, type, value, isData);
             }
         }
 
-        return value;
+        return (T) value;
     }
 
     /**

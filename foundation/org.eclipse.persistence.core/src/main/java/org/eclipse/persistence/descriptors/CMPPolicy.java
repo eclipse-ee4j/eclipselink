@@ -524,7 +524,7 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
     /**
      * INTERNAL:
      */
-    public Object getPKClassInstance() {
+    public <T> T getPKClassInstance() {
         // TODO fix this exception so that it is more descriptive
         // This method only works in CMP3Policy but was added here for separation
         // of components
@@ -534,7 +534,7 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
     /**
      * INTERNAL:
      */
-    public Class getPKClass() {
+    public <T> Class<T> getPKClass() {
         // TODO fix this exception so that it is more descriptive
         // This method only works in CMP3Policy but was added here for separation
         // of components

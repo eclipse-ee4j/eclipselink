@@ -80,7 +80,7 @@ public class EmployeeWithByteArrayObject {
                 if (next != null) {
                     returnString += next + " ";
                     if(next instanceof Byte[]) {
-                        returnString = "\n" + "-->" + new String(Base64.base64Encode(((byte[])ConversionManager.getDefaultManager().convertObject(next, byte[].class))));
+                        returnString = "\n" + "-->" + new String(Base64.base64Encode(ConversionManager.getDefaultManager().convertObject(next, byte[].class)));
                     }
                 } else {
                     returnString += ("null_item" + " ");

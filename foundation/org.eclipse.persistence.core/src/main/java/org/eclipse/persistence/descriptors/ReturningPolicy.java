@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,7 +56,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
      * Should be filled out before initialize() is called:
      * fields added after initialization are ignored.
      */
-    protected List<Info> infos = new ArrayList();
+    protected List<Info> infos = new ArrayList<>();
 
     /**
      * The following attributes are initialized by initialize() method.
@@ -80,7 +80,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
      * maps ClassDescriptor's tables into Vectors of fields to be used for call generation.
      * Lazily initialized array [NUM_OPERATIONS]
      */
-    protected Map<DatabaseTable, Vector<DatabaseField>>[] tableToFieldsForGenerationMap;
+    protected Map<DatabaseTable, List<DatabaseField>>[] tableToFieldsForGenerationMap;
 
     /** indicates whether ReturningPolicy is used for generation of the PK. */
     protected boolean isUsedToSetPrimaryKey;
@@ -109,12 +109,12 @@ public class ReturningPolicy implements Serializable, Cloneable {
     protected void fieldIsNotFromDescriptor(DatabaseField field) {
         if (field.getTable().equals(getDescriptor().getDefaultTable())) {
             if (this.fieldsNotFromDescriptor_DefaultTable == null) {
-                this.fieldsNotFromDescriptor_DefaultTable = new HashMap();
+                this.fieldsNotFromDescriptor_DefaultTable = new HashMap<>();
             }
             this.fieldsNotFromDescriptor_DefaultTable.put(field, field);
         } else {
             if (this.fieldsNotFromDescriptor_OtherTables == null) {
-                this.fieldsNotFromDescriptor_OtherTables = new HashMap();
+                this.fieldsNotFromDescriptor_OtherTables = new HashMap<>();
             }
             this.fieldsNotFromDescriptor_OtherTables.put(field, field);
         }
@@ -123,14 +123,14 @@ public class ReturningPolicy implements Serializable, Cloneable {
     /**
      * INTERNAL:
      */
-    public Vector getFieldsToGenerateInsert(DatabaseTable table) {
+    public List<? extends DatabaseField> getFieldsToGenerateInsert(DatabaseTable table) {
         return getVectorOfFieldsToGenerate(INSERT, table);
     }
 
     /**
      * INTERNAL:
      */
-    public Vector getFieldsToGenerateUpdate(DatabaseTable table) {
+    public List<? extends DatabaseField> getFieldsToGenerateUpdate(DatabaseTable table) {
         return getVectorOfFieldsToGenerate(UPDATE, table);
     }
 
@@ -170,17 +170,17 @@ public class ReturningPolicy implements Serializable, Cloneable {
      * Note that the passed Collections are cloned.
      * Used for testing only.
      */
-    public static boolean areCollectionsEqualAsSets(Collection col1, Collection col2) {
+    public static boolean areCollectionsEqualAsSets(Collection<? extends Info> col1, Collection<? extends Info> col2) {
         if (col1 == col2) {
             return true;
         }
         if (col1.size() != col2.size()) {
             return false;
         }
-        Collection c1 = new ArrayList(col1);
-        Collection c2 = new ArrayList(col2);
-        for (Iterator i = c1.iterator(); i.hasNext();) {
-            Object o = i.next();
+        Collection<Info> c1 = new ArrayList<Info>(col1);
+        Collection<Info> c2 = new ArrayList<>(col2);
+        for (Iterator<Info> i = c1.iterator(); i.hasNext();) {
+            Info o = i.next();
             c2.remove(o);
         }
         return c2.isEmpty();
@@ -189,25 +189,26 @@ public class ReturningPolicy implements Serializable, Cloneable {
     /**
      * INTERNAL:
      */
-    protected Vector<DatabaseField> getVectorOfFieldsToGenerate(int operation, DatabaseTable table) {
+    @SuppressWarnings({"unchecked"})
+    protected List<DatabaseField> getVectorOfFieldsToGenerate(int operation, DatabaseTable table) {
         if (this.main[operation][ALL] == null) {
             return null;
         }
         if (this.tableToFieldsForGenerationMap == null) {
             // the method is called for the first time
-            tableToFieldsForGenerationMap = new HashMap[NUM_OPERATIONS];
+            tableToFieldsForGenerationMap = (Map<DatabaseTable, List<DatabaseField>>[]) new HashMap[NUM_OPERATIONS];
         }
         if (this.tableToFieldsForGenerationMap[operation] == null) {
             // the method is called for the first time for this operation
-            this.tableToFieldsForGenerationMap[operation] = new HashMap();
+            this.tableToFieldsForGenerationMap[operation] = new HashMap<>();
         }
-        Vector<DatabaseField> fieldsForGeneration = this.tableToFieldsForGenerationMap[operation].get(table);
+        List<DatabaseField> fieldsForGeneration = this.tableToFieldsForGenerationMap[operation].get(table);
         if (fieldsForGeneration == null) {
             // the method is called for the first time for this operation and this table
-            fieldsForGeneration = new NonSynchronizedVector();
-            Iterator it = this.main[operation][ALL].iterator();
+            fieldsForGeneration = new ArrayList<>();
+            Iterator<DatabaseField> it = this.main[operation][ALL].iterator();
             while (it.hasNext()) {
-                DatabaseField field = (DatabaseField)it.next();
+                DatabaseField field = it.next();
                 if (field.getTable().equals(table)) {
                     fieldsForGeneration.add(field);
                 }
@@ -265,7 +266,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
      * Define that the field will be returned from an insert operation.
      * The type may be required to bind the output parameter if not known by the mapping.
      */
-    public void addFieldForInsert(String qualifiedName, Class type) {
+    public void addFieldForInsert(String qualifiedName, Class<?> type) {
         addFieldForInsert(createField(qualifiedName, type));
     }
 
@@ -321,7 +322,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
      * Define that the field will be returned from an update operation.
      * The type may be required to bind the output parameter if not known by the mapping.
      */
-    public void addFieldForUpdate(String qualifiedName, Class type) {
+    public void addFieldForUpdate(String qualifiedName, Class<?> type) {
         addFieldForUpdate(createField(qualifiedName, type));
     }
 
@@ -348,7 +349,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
         private boolean isInsert;
         private boolean isInsertModeReturnOnly;
         private boolean isUpdate;
-        private Class referenceClass;
+        private Class<? extends Object> referenceClass;
         private String referenceClassName;
 
         Info() {
@@ -402,11 +403,11 @@ public class ReturningPolicy implements Serializable, Cloneable {
             this.isUpdate = isUpdate;
         }
 
-        public Class getReferenceClass() {
+        public Class<? extends Object> getReferenceClass() {
             return referenceClass;
         }
 
-        public void setReferenceClass(Class referenceClass) {
+        public void setReferenceClass(Class<?> referenceClass) {
             this.referenceClass = referenceClass;
             if (referenceClass != null) {
                 this.referenceClassName = referenceClass.getName();
@@ -497,7 +498,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
         @Override
         public int hashCode() {
             DatabaseField field = getField();
-            Class type = field != null ? field.getType() : null;
+            Class<? extends Object> type = field != null ? field.getType() : null;
             boolean isInsert = isInsert();
             boolean isInsertModeReturnOnly = isInsertModeReturnOnly();
             boolean isUpdate = isUpdate();
@@ -577,8 +578,8 @@ public class ReturningPolicy implements Serializable, Cloneable {
     /**
      * INTERNAL:
      */
-    protected Collection createCollection() {
-        return new HashSet();
+    protected Collection<DatabaseField> createCollection() {
+        return new HashSet<>();
     }
 
     // precondition field != null
@@ -589,7 +590,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
         main[operation][state].add(field);
     }
 
-    protected void addCollectionToMain(int operation, int state, Collection collection) {
+    protected void addCollectionToMain(int operation, int state, Collection<? extends DatabaseField> collection) {
         if ((collection == null) || collection.isEmpty()) {
             return;
         }
@@ -620,8 +621,8 @@ public class ReturningPolicy implements Serializable, Cloneable {
         }
     }
 
-    protected Hashtable removeDuplicateAndValidateInfos(AbstractSession session) {
-        Hashtable infoHashtable = new Hashtable();
+    protected Hashtable<DatabaseField, Info> removeDuplicateAndValidateInfos(AbstractSession session) {
+        Hashtable<DatabaseField, Info> infoHashtable = new Hashtable<DatabaseField, Info>();
         for (int i = 0; i < infos.size(); i++) {
             Info info1 = infos.get(i);
             info1 = (Info)info1.clone();
@@ -633,7 +634,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
                 info1.getField().setName(descField.getName());
                 info1.getField().setTableName(getDescriptor().getDefaultTable().getQualifiedNameDelimited(session.getPlatform()));
             }
-            Info info2 = (Info)infoHashtable.get(info1.getField());
+            Info info2 = infoHashtable.get(info1.getField());
             if (info2 == null) {
                 infoHashtable.put(info1.getField(), info1);
             } else {
@@ -654,9 +655,10 @@ public class ReturningPolicy implements Serializable, Cloneable {
     /**
      * INTERNAL:
      */
+    @SuppressWarnings({"unchecked"})
     public void initialize(AbstractSession session) {
         clearInitialization();
-        main = new Collection[NUM_OPERATIONS][MAIN_SIZE];
+        main = (Collection<DatabaseField>[][]) new Collection[NUM_OPERATIONS][MAIN_SIZE];
 
         // The order of descriptor initialization guarantees initialization of Parent before children.
         // main array is copied from Parent's ReturningPolicy
@@ -668,11 +670,11 @@ public class ReturningPolicy implements Serializable, Cloneable {
         }
 
         if (!infos.isEmpty()) {
-            Hashtable infoHashtable = removeDuplicateAndValidateInfos(session);
+            Hashtable<? extends DatabaseField, ? extends Info> infoHashtable = removeDuplicateAndValidateInfos(session);
             Hashtable infoHashtableUnmapped = (Hashtable)infoHashtable.clone();
-            for (Enumeration fields = getDescriptor().getFields().elements();
-                     fields.hasMoreElements();) {
-                DatabaseField field = (DatabaseField)fields.nextElement();
+            for (Enumeration<DatabaseField> fields = getDescriptor().getFields().elements();
+                 fields.hasMoreElements();) {
+                DatabaseField field = fields.nextElement();
                 Info info = (Info)infoHashtableUnmapped.get(field);
                 if (info != null) {
                     infoHashtableUnmapped.remove(field);
@@ -711,7 +713,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
     }
 
     protected void copyMainFrom(ReturningPolicy policy) {
-        Collection[][] mainToCopy = policy.main;
+        Collection<? extends DatabaseField>[][] mainToCopy = policy.main;
         for (int operation = INSERT; operation <= UPDATE; operation++) {
             for (int state = RETURN_ONLY; state < MAIN_SIZE; state++) {
                 addCollectionToMain(operation, state, mainToCopy[operation][state]);
@@ -743,12 +745,12 @@ public class ReturningPolicy implements Serializable, Cloneable {
         }
 
         // now compare types
-        Hashtable allFields = new Hashtable();
+        Hashtable<DatabaseField, DatabaseField> allFields = new Hashtable<DatabaseField, DatabaseField>();
         for (int operation = INSERT; operation <= UPDATE; operation++) {
             if (main[operation][ALL] != null) {
-                Iterator it = main[operation][ALL].iterator();
+                Iterator<DatabaseField> it = main[operation][ALL].iterator();
                 while (it.hasNext()) {
-                    DatabaseField field = (DatabaseField)it.next();
+                    DatabaseField field = it.next();
                     allFields.put(field, field);
                 }
             }
@@ -758,7 +760,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
                 Iterator it = mainToCompare[operation][ALL].iterator();
                 while (it.hasNext()) {
                     DatabaseField fieldToCompare = (DatabaseField)it.next();
-                    DatabaseField field = (DatabaseField)allFields.get(fieldToCompare);
+                    DatabaseField field = allFields.get(fieldToCompare);
                     if (!field.getType().equals(fieldToCompare.getType())) {
                         return false;
                     }
@@ -780,7 +782,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
         if ((modifyRow == null) || modifyRow.isEmpty()) {
             return;
         }
-        Collection fields = main[operation][RETURN_ONLY];
+        Collection<? extends DatabaseField> fields = main[operation][RETURN_ONLY];
         if ((fields == null) || fields.isEmpty()) {
             return;
         }
@@ -812,7 +814,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
         if ((main[INSERT][MAPPED] == null) || main[INSERT][MAPPED].isEmpty()) {
             return;
         }
-        List primaryKeys = getDescriptor().getPrimaryKeyFields();
+        List<DatabaseField> primaryKeys = getDescriptor().getPrimaryKeyFields();
         for (int index = 0; (index < primaryKeys.size()) && !isUsedToSetPrimaryKey; index++) {
             this.isUsedToSetPrimaryKey = main[INSERT][MAPPED].contains(primaryKeys.get(index));
         }
@@ -822,10 +824,10 @@ public class ReturningPolicy implements Serializable, Cloneable {
         boolean ok = true;
         verifyField(session, field, getDescriptor());
         DatabaseMapping mapping;
-        List readOnlyMappings = getDescriptor().getObjectBuilder().getReadOnlyMappingsForField(field);
+        List<DatabaseMapping> readOnlyMappings = getDescriptor().getObjectBuilder().getReadOnlyMappingsForField(field);
         if (readOnlyMappings != null) {
             for (int j = 0; j < readOnlyMappings.size(); j++) {
-                mapping = (DatabaseMapping)readOnlyMappings.get(j);
+                mapping = readOnlyMappings.get(j);
                 ok &= verifyFieldAndMapping(session, field, getDescriptor(), mapping);
             }
         }
@@ -877,21 +879,21 @@ public class ReturningPolicy implements Serializable, Cloneable {
      * INTERNAL:
      */
     public void validationAfterDescriptorInitialization(AbstractSession session) {
-        Hashtable mapped = new Hashtable();
+        Hashtable<DatabaseField, DatabaseField> mapped = new Hashtable<DatabaseField, DatabaseField>();
         for (int operation = INSERT; operation <= UPDATE; operation++) {
             if ((main[operation][MAPPED] != null) && !main[operation][MAPPED].isEmpty()) {
-                Iterator it = main[operation][MAPPED].iterator();
+                Iterator<DatabaseField> it = main[operation][MAPPED].iterator();
                 while (it.hasNext()) {
-                    DatabaseField field = (DatabaseField)it.next();
+                    DatabaseField field = it.next();
                     mapped.put(field, field);
                 }
             }
         }
         if (!mapped.isEmpty()) {
-            for (Enumeration fields = getDescriptor().getFields().elements();
-                     fields.hasMoreElements();) {
-                DatabaseField fieldInDescriptor = (DatabaseField)fields.nextElement();
-                DatabaseField fieldInMain = (DatabaseField)mapped.get(fieldInDescriptor);
+            for (Enumeration<DatabaseField> fields = getDescriptor().getFields().elements();
+                 fields.hasMoreElements();) {
+                DatabaseField fieldInDescriptor = fields.nextElement();
+                DatabaseField fieldInMain = mapped.get(fieldInDescriptor);
                 if (fieldInMain != null) {
                     if (fieldInMain.getType() == null) {
                         if (getDescriptor().isReturnTypeRequiredForReturningPolicy()) {
@@ -921,15 +923,15 @@ public class ReturningPolicy implements Serializable, Cloneable {
                     // that's why SQLCall can't be verified here.
                     DatabaseCall customCall = (DatabaseCall)query[operation].getDatasourceCall();
                     Enumeration outputRowFields = customCall.getOutputRowFields().elements();
-                    Collection notFoundInOutputRow = createCollection();
+                    Collection<DatabaseField> notFoundInOutputRow = createCollection();
                     notFoundInOutputRow.addAll(main[operation][ALL]);
                     while (outputRowFields.hasMoreElements()) {
                         notFoundInOutputRow.remove(outputRowFields.nextElement());
                     }
                     if (!notFoundInOutputRow.isEmpty()) {
-                        Iterator it = notFoundInOutputRow.iterator();
+                        Iterator<DatabaseField> it = notFoundInOutputRow.iterator();
                         while (it.hasNext()) {
-                            DatabaseField field = (DatabaseField)it.next();
+                            DatabaseField field = it.next();
                             session.getIntegrityChecker().handleError(DescriptorException.customQueryAndReturningPolicyFieldConflict(field.getName(), queryTypeName[operation], getDescriptor()));
                         }
                     }

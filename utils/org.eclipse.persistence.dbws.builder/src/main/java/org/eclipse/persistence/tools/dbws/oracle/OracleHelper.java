@@ -19,7 +19,6 @@ import static java.sql.Types.OTHER;
 import static java.sql.Types.STRUCT;
 import static java.util.logging.Level.FINEST;
 // EclipseLink imports
-import static org.eclipse.persistence.internal.helper.ClassConstants.Object_Class;
 import static org.eclipse.persistence.internal.oxm.Constants.ANY_QNAME;
 import static org.eclipse.persistence.internal.oxm.Constants.COLON;
 import static org.eclipse.persistence.internal.oxm.Constants.DATE_QNAME;
@@ -80,6 +79,7 @@ import java.util.logging.Level;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -1556,9 +1556,9 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             xField.addJavaConversion(java.sql.Date.class, DATE_QNAME);
             xdesc.getNamespaceResolver().put(SCHEMA_PREFIX, SCHEMA_URL);
         } else {
-            Class<?> attributeClass = (Class<?>)XMLConversionManager.getDefaultXMLTypes().get(qnameFromDatabaseType);
+            Class<?> attributeClass = XMLConversionManager.getDefaultXMLTypes().get(qnameFromDatabaseType);
             if (attributeClass == null) {
-                attributeClass =  Object_Class;
+                attributeClass =  CoreClassConstants.OBJECT;
             }
             fieldMapping.setAttributeClassification(attributeClass);
         }

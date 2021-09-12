@@ -470,7 +470,7 @@ public class SDOTypesGenerator {
         String value = (String) complexType.getAttributesMap().get(SDOConstants.SDOXML_ALIASNAME_QNAME);
         if (value != null) {
             XMLConversionManager xmlConversionManager = ((SDOXMLHelper) aHelperContext.getXMLHelper()).getXmlConversionManager();
-            java.util.List names = (java.util.List) xmlConversionManager.convertObject(value, java.util.List.class);
+            java.util.List names = xmlConversionManager.convertObject(value, java.util.List.class);
             currentType.setAliasNames(names);
         }
 
@@ -758,7 +758,7 @@ public class SDOTypesGenerator {
         String value = (String) simpleType.getAttributesMap().get(SDOConstants.SDOXML_ALIASNAME_QNAME);
         if (value != null) {
             XMLConversionManager xmlConversionManager = ((SDOXMLHelper) aHelperContext.getXMLHelper()).getXmlConversionManager();
-            java.util.List names = (java.util.List) xmlConversionManager.convertObject(value, java.util.List.class);
+            java.util.List names = xmlConversionManager.convertObject(value, java.util.List.class);
             currentType.setAliasNames(names);
         }
 
@@ -1706,7 +1706,7 @@ public class SDOTypesGenerator {
         String aliasNamesValue = (String) simpleComponent.getAttributesMap().get(SDOConstants.SDOXML_ALIASNAME_QNAME);
         if (aliasNamesValue != null) {
             XMLConversionManager xmlConversionManager = ((SDOXMLHelper) aHelperContext.getXMLHelper()).getXmlConversionManager();
-            java.util.List names = (java.util.List) xmlConversionManager.convertObject(aliasNamesValue, java.util.List.class);
+            java.util.List names = xmlConversionManager.convertObject(aliasNamesValue, java.util.List.class);
             p.setAliasNames(names);
         }
 

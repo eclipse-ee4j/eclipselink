@@ -225,7 +225,7 @@ public class CoreAttributeGroup<
      *    This method is used internally in the clone processing.
      */
     public CoreAttributeGroup clone(Map<CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>, CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>> cloneMap){
-        CoreAttributeGroup clone = cloneMap.get(this);
+        CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR> clone = cloneMap.get(this);
         if (clone != null) {
             return clone;
         }
@@ -248,7 +248,7 @@ public class CoreAttributeGroup<
             clone.superClassGroup = this.superClassGroup.clone(cloneMap);
         }
         if (this.subClasses != null){
-            clone.subClasses = new HashSet<CoreAttributeGroup>();
+            clone.subClasses = new HashSet<>();
             for (CoreAttributeGroup group : this.subClasses){
                 clone.subClasses.add(group.clone(cloneMap));
             }
@@ -256,9 +256,9 @@ public class CoreAttributeGroup<
         // all attributes and nested groups should be cloned, too
         clone.items = null;
         if (hasItems()) {
-            clone.items = new HashMap<String, ATTRIBUTE_ITEM>();
+            clone.items = new HashMap<>();
             for (ATTRIBUTE_ITEM item : this.items.values()){
-                clone.items.put(item.getAttributeName(), item.clone(cloneMap, clone));
+                clone.items.put(item.getAttributeName(), (ATTRIBUTE_ITEM) item.clone((Map<CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>, CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>>)cloneMap, clone));
             }
         }
         return clone;
@@ -316,7 +316,7 @@ public class CoreAttributeGroup<
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        this.type = AccessController.doPrivileged(new PrivilegedClassForName(this.typeName, true, classLoader));
+                        this.type = AccessController.doPrivileged(new PrivilegedClassForName<>(this.typeName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(this.typeName, exception.getException());
                     }

@@ -234,7 +234,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         namespaceResolver.put("xsi", W3C_XML_SCHEMA_INSTANCE_NS_URI);
         namespaceResolver.put("xsd", W3C_XML_SCHEMA_NS_URI);
 
-        for (Iterator descriptors = getDescriptors().values().iterator(); descriptors.hasNext();) {
+        for (Iterator<ClassDescriptor> descriptors = getDescriptors().values().iterator(); descriptors.hasNext();) {
             XMLDescriptor descriptor = (XMLDescriptor)descriptors.next();
             descriptor.setNamespaceResolver(namespaceResolver);
         }

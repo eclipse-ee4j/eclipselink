@@ -124,7 +124,7 @@ public enum LogCategory {
      * @param id   Logging category ID.
      * @param name Logging category name.
      */
-    private LogCategory(final byte id, final String name) {
+    LogCategory(final byte id, final String name) {
         this.id = id;
         this.name = name;
     }

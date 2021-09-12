@@ -473,7 +473,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             return null;
         }
         HashSet aliasTables = new HashSet();
-        Iterator itEntries = selectStatement.getTableAliases().entrySet().iterator();
+        Iterator<Map.Entry<DatabaseTable, DatabaseTable>> itEntries = selectStatement.getTableAliases().entrySet().iterator();
         DatabaseTable aliasTable = null;
         while(itEntries.hasNext()) {
             Map.Entry entry = (Map.Entry)itEntries.next();
@@ -1338,7 +1338,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                 // In the case of multiple tables, build the sql statements list in insert order. When the
                 // actual SQL calls are sent they are sent in the reverse of this order.
                 for (DatabaseTable table : tablesInInsertOrder) {
-                    Collection primaryKeyFields = getPrimaryKeyFieldsForTable(table);
+                    Collection<DatabaseField> primaryKeyFields = getPrimaryKeyFieldsForTable(table);
                     SQLDeleteStatement deleteStatement;
 
                     // In Employee example, query with reference class:
@@ -1507,7 +1507,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                 tablesToIgnoreForChildren.addAll(tablesInInsertOrder);
             }
 
-            Iterator it = descriptor.getInheritancePolicy().getChildDescriptors().iterator();
+            Iterator<ClassDescriptor> it = descriptor.getInheritancePolicy().getChildDescriptors().iterator();
             while (it.hasNext()) {
                 // Define the same query for the child
                 ClassDescriptor childDescriptor = (ClassDescriptor)it.next();
@@ -2187,7 +2187,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             Map.Entry entry = (Map.Entry)tables_databaseFieldsToValues.entrySet().iterator().next();
             DatabaseTable table = (DatabaseTable)entry.getKey();
             HashMap databaseFieldsToValues = (HashMap)entry.getValue();
-            Collection primaryKeyFields = tablesToPrimaryKeyFields.values().iterator().next();
+            Collection<DatabaseField> primaryKeyFields = tablesToPrimaryKeyFields.values().iterator().next();
             setSQLStatement(buildUpdateAllStatement(table, databaseFieldsToValues, selectCallForExist, selectStatementForExist, primaryKeyFields));
         } else {
             // To figure out the order of statements we need to find dependencies
@@ -2384,7 +2384,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             for(int i=0; i < orderedTables.size(); i++) {
                 DatabaseTable table = (DatabaseTable)orderedTables.elementAt(i);
                 HashMap databaseFieldsToValues = (HashMap)tables_databaseFieldsToValues.get(table);
-                Collection primaryKeyFields = tablesToPrimaryKeyFields.get(table);
+                Collection<DatabaseField> primaryKeyFields = tablesToPrimaryKeyFields.get(table);
                 getSQLStatements().addElement(buildUpdateAllStatement(table, databaseFieldsToValues, selectCallForExist, selectStatementForExist, primaryKeyFields));
             }
         }
@@ -2532,7 +2532,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             rootDescriptor = rootDescriptor.getInheritancePolicy().getRootParentDescriptor();
         }
         Vector allFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
-        Iterator it = rootDescriptor.getFields().iterator();
+        Iterator<DatabaseField> it = rootDescriptor.getFields().iterator();
         while(it.hasNext()) {
             DatabaseField field = (DatabaseField)it.next();
             if(rootTable.equals(field.getTable())) {
@@ -2651,7 +2651,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                 tablesToIgnoreForChildren.addAll(tablesInInsertOrder);
             }
 
-            Iterator it = descriptor.getInheritancePolicy().getChildDescriptors().iterator();
+            Iterator<ClassDescriptor> it = descriptor.getInheritancePolicy().getChildDescriptors().iterator();
             while (it.hasNext()) {
                 ClassDescriptor childDescriptor = (ClassDescriptor)it.next();
 
@@ -2687,7 +2687,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         Vector statements = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(4);
 
         Vector allFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
-        Iterator it = getDescriptor().getFields().iterator();
+        Iterator<DatabaseField> it = getDescriptor().getFields().iterator();
         while(it.hasNext()) {
             DatabaseField field = (DatabaseField)it.next();
             if(table.equals(field.getTable())) {

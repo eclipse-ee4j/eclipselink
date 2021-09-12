@@ -361,7 +361,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      */
     @Override
     public CriteriaQuery<T> orderBy(Order... o) {
-        this.orderBy = new ArrayList();
+        this.orderBy = new ArrayList<>();
         for (Order order : o) {
             this.orderBy.add(order);
         }
@@ -412,7 +412,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         Constructor constructor = null;
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(class1, constructorArgs, false));
+                constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(class1, constructorArgs, false));
             } else {
                 constructor = PrivilegedAccessHelper.getConstructorFor(class1, constructorArgs, false);
             }
@@ -523,7 +523,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 reportQuery.setShouldReturnSingleAttribute(true);
             } else {
                 if (this.queryResult.equals(ResultType.TUPLE)) {
-                    reportQuery = new TupleQuery(this.selection == null ? new ArrayList() : this.selection.getCompoundSelectionItems());
+                    reportQuery = new TupleQuery(this.selection == null ? new ArrayList<>() : this.selection.getCompoundSelectionItems());
                 } else {
                     reportQuery = new ReportQuery();
                     reportQuery.setShouldReturnWithoutReportQueryResult(true);
@@ -672,7 +672,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         } else {
             ReportQuery reportQuery = null;
             if (this.queryResult.equals(ResultType.TUPLE)) {
-                List list = new ArrayList();
+                List list = new ArrayList<>();
                 list.add(this.selection);
                 reportQuery = new TupleQuery(list);
             } else {
@@ -713,7 +713,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             if (this.where != null && ((InternalSelection) this.where).getCurrentNode() != null && ((InternalSelection) this.where).getCurrentNode().getBuilder() != null && ((InternalSelection) this.where).getCurrentNode().getBuilder().getQueryClass() != null) {
                 query.setReferenceClass(((InternalSelection) this.where).getCurrentNode().getBuilder().getQueryClass());
             } else if (roots != null && ! roots.isEmpty()){
-                Root root = this.getRoots().iterator().next();
+                Root<?> root = this.getRoots().iterator().next();
                 query.setReferenceClass(root.getJavaType());
             }
         }
@@ -740,7 +740,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     public DatabaseQuery translate() {
         ObjectLevelReadQuery query = (ObjectLevelReadQuery)super.translate();
 
-        for (Iterator iterator = this.getRoots().iterator(); iterator.hasNext();) {
+        for (Iterator<Root<?>> iterator = this.getRoots().iterator(); iterator.hasNext();) {
             findJoins((FromImpl) iterator.next());
         }
 

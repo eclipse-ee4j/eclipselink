@@ -175,7 +175,7 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
 
             // Check for deletion dependencies.
             if (isUnitOfWork) {
-                Set dependencies = ((UnitOfWorkImpl)session).getDeletionDependencies(object);
+                Set<Object> dependencies = ((UnitOfWorkImpl)session).getDeletionDependencies(object);
                 if (dependencies != null) {
                     for (Object dependency : dependencies) {
                         if (!commitManager.isCommitCompletedInPostOrIgnore(dependency)) {

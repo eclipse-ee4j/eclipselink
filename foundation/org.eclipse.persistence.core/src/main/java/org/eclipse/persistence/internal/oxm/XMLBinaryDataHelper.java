@@ -191,7 +191,7 @@ public class XMLBinaryDataHelper {
         }
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
-            Iterator itr = ImageIO.getImageWritersByMIMEType(mimeType);
+            Iterator<ImageWriter> itr = ImageIO.getImageWritersByMIMEType(mimeType);
             if (itr.hasNext()) {
                 ImageWriter w = (ImageWriter) itr.next();
                 w.setOutput(ImageIO.createImageOutputStream(outputStream));
@@ -311,7 +311,7 @@ public class XMLBinaryDataHelper {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
             source.writeTo(output);
-            return (String) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(output.toByteArray(), String.class, schemaTypeQName);
+            return ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(output.toByteArray(), String.class, schemaTypeQName);
         } catch (Exception ex) {
             throw ConversionException.couldNotBeConverted(source, CoreClassConstants.STRING, ex);
         }
@@ -325,7 +325,7 @@ public class XMLBinaryDataHelper {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
             String mimeType = "image/png";
-            Iterator itr = ImageIO.getImageWritersByMIMEType(mimeType);
+            Iterator<ImageWriter> itr = ImageIO.getImageWritersByMIMEType(mimeType);
             if (itr.hasNext()) {
                 ImageWriter w = (ImageWriter) itr.next();
                 w.setOutput(ImageIO.createImageOutputStream(outputStream));

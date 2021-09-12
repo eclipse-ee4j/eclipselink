@@ -282,7 +282,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
 
         // Bug 3037701 - clone the queries
         manager.setQueries(new LinkedHashMap(getQueries().size()));//bug5677655
-        Iterator iterator = queries.values().iterator();
+        Iterator<List<DatabaseQuery>> iterator = queries.values().iterator();
         while (iterator.hasNext()) {
             Iterator queriesForKey = ((Vector)iterator.next()).iterator();
             while (queriesForKey.hasNext()) {
@@ -327,7 +327,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * This method is implemented by subclasses as necessary.
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
-        Iterator queryVectors = getQueries().values().iterator();
+        Iterator<List<DatabaseQuery>> queryVectors = getQueries().values().iterator();
         while (queryVectors.hasNext()){
             Iterator queries = ((Vector)queryVectors.next()).iterator();
             while (queries.hasNext()){
@@ -498,7 +498,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      */
     public Vector getAllQueries() {
         Vector allQueries = new Vector();
-        for (Iterator vectors = getQueries().values().iterator(); vectors.hasNext();) {
+        for (Iterator<List<DatabaseQuery>> vectors = getQueries().values().iterator(); vectors.hasNext();) {
             allQueries.addAll((Vector)vectors.next());
         }
         return allQueries;
@@ -1029,7 +1029,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
             // PERF: Only process changed mappings.
             ObjectChangeSet changeSet = query.getObjectChangeSet();
             if ((changeSet != null) && (!changeSet.isNew())) {
-                List changeRecords = changeSet.getChanges();
+                List<org.eclipse.persistence.sessions.changesets.ChangeRecord> changeRecords = changeSet.getChanges();
                 int size = changeRecords.size();
                 for (int index = 0; index < size; index++) {
                     ChangeRecord record = (ChangeRecord)changeRecords.get(index);
@@ -1123,7 +1123,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
             // PERF: Only process changed mappings.
             ObjectChangeSet changeSet = query.getObjectChangeSet();
             if ((changeSet != null) && (!changeSet.isNew())) {
-                List changeRecords = changeSet.getChanges();
+                List<org.eclipse.persistence.sessions.changesets.ChangeRecord> changeRecords = changeSet.getChanges();
                 int size = changeRecords.size();
                 for (int index = 0; index < size; index++) {
                     ChangeRecord record = (ChangeRecord)changeRecords.get(index);

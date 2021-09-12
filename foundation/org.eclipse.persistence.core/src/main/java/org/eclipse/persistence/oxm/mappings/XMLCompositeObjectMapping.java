@@ -55,7 +55,6 @@ import org.eclipse.persistence.sessions.Session;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
 
 /**
  * <p>Composite object XML mappings represent a relationship between two classes.  In XML, the "owned"
@@ -610,7 +609,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
 
             QName schemaTypeQName = new QName(namespaceURI, typeFragment.getLocalName());
             ConversionManager conversionManager = (ConversionManager) executionSession.getDatasourcePlatform().getConversionManager();
-            Class theClass = conversionManager.javaType(schemaTypeQName);
+            Class<Object> theClass = conversionManager.javaType(schemaTypeQName);
             if (theClass != null) {
                 toReturn = conversionManager.convertObject(stringValue, theClass, schemaTypeQName);
             }

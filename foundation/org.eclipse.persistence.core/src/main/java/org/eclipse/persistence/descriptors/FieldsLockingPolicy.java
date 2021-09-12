@@ -77,8 +77,8 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * and class indicator fields.
      * This is called during lazy initialization.
      */
-    protected List buildAllNonPrimaryKeyFields() {
-        List fields = new ArrayList();
+    protected List<DatabaseField> buildAllNonPrimaryKeyFields() {
+        List<DatabaseField> fields = new ArrayList<>();
         for (DatabaseField dbField : descriptor.getSelectionFields()) {
             if (!isPrimaryKey(dbField)) {
                 if (descriptor.hasInheritance()) {
@@ -231,7 +231,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * null in some situations.
      */
     @Override
-    public Object getBaseValue(){
+    public <T> T getBaseValue(){
         return null; // this locking type does not store values in the cache
     }
 
@@ -279,7 +279,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * is stored in the object, then return a null.
      */
     @Override
-    public Object getValueToPutInCache(AbstractRecord row, AbstractSession session) {
+    public <T> T getValueToPutInCache(AbstractRecord row, AbstractSession session) {
         return null;
     }
 
@@ -299,7 +299,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * This method will return the optimistic lock value for the object
      */
     @Override
-    public Object getWriteLockValue(Object domainObject, Object primaryKey, AbstractSession session) {
+    public <T> T getWriteLockValue(Object domainObject, Object primaryKey, AbstractSession session) {
         //There is no way of knowing if this value is newer or not, so always return true.
         return null;
     }
@@ -378,9 +378,9 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
             return true;
         } else {
             if (descriptor.isMultipleTableDescriptor()) {
-                for (Iterator enumtr = descriptor.getAdditionalTablePrimaryKeyFields().values().iterator();
+                for (Iterator<Map<DatabaseField, DatabaseField>> enumtr = descriptor.getAdditionalTablePrimaryKeyFields().values().iterator();
                          enumtr.hasNext();) {
-                    if (((Map)enumtr.next()).containsKey(dbField)) {
+                    if (enumtr.next().containsKey(dbField)) {
                         return true;
                     }
                 }
@@ -412,7 +412,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
     /**
      * INTERNAL: Set method for all the primary keys
      */
-    protected void setAllNonPrimaryKeyFields(List allNonPrimaryKeyFields) {
+    protected void setAllNonPrimaryKeyFields(List<DatabaseField> allNonPrimaryKeyFields) {
         this.allNonPrimaryKeyFields = allNonPrimaryKeyFields;
     }
 

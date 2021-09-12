@@ -138,9 +138,9 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
             PersistenceContext context = getPersistenceContext(persistenceUnit, null, baseURI, version, null);
             PersistenceUnit pu = new PersistenceUnit();
             pu.setPersistenceUnitName(persistenceUnit);
-            Map<Class, ClassDescriptor> descriptors = context.getServerSession().getDescriptors();
+            Map<Class<?>, ClassDescriptor> descriptors = context.getServerSession().getDescriptors();
             String mediaType = StreamingOutputMarshaller.mediaType(headers.getAcceptableMediaTypes()).toString();
-            Iterator<Class> contextIterator = descriptors.keySet().iterator();
+            Iterator<Class<?>> contextIterator = descriptors.keySet().iterator();
             while (contextIterator.hasNext()) {
                 ClassDescriptor descriptor = descriptors.get(contextIterator.next());
                 String alias = descriptor.getAlias();

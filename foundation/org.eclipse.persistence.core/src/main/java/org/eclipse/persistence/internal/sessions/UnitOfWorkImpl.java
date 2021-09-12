@@ -3812,8 +3812,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     protected void postMergeChanges(Set classesChanged) {
         //bug 4730595: objects removed during flush are not removed from the cache during commit
         if (this.unitOfWorkChangeSet.hasDeletedObjects()) {
-            Map deletedObjects = this.unitOfWorkChangeSet.getDeletedObjects();
-            for (Iterator removedObjects = deletedObjects.keySet().iterator(); removedObjects.hasNext(); ) {
+            Map<ObjectChangeSet, ObjectChangeSet> deletedObjects = this.unitOfWorkChangeSet.getDeletedObjects();
+            for (Iterator<ObjectChangeSet> removedObjects = deletedObjects.keySet().iterator(); removedObjects.hasNext(); ) {
                 ObjectChangeSet removedObjectChangeSet = (ObjectChangeSet) removedObjects.next();
                 Object primaryKey = removedObjectChangeSet.getId();
                 ClassDescriptor descriptor = removedObjectChangeSet.getDescriptor();
@@ -5426,7 +5426,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     public void resumeUnitOfWork() {
         // Resume new objects.
         if (hasNewObjects() && !this.isNestedUnitOfWork) {
-            Iterator newEntries = this.newObjectsCloneToOriginal.entrySet().iterator();
+            Iterator<Map.Entry<Object, Object>> newEntries = this.newObjectsCloneToOriginal.entrySet().iterator();
             Map cloneToOriginals = getCloneToOriginals();
             while (newEntries.hasNext()) {
                 Map.Entry entry = (Map.Entry)newEntries.next();
@@ -5468,7 +5468,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             if (this.unregisteredDeletedObjectsCloneToBackupAndOriginal == null) {
                 this.unregisteredDeletedObjectsCloneToBackupAndOriginal = new IdentityHashMap(this.objectsDeletedDuringCommit.size());
             }
-            Iterator iterator = this.objectsDeletedDuringCommit.keySet().iterator();
+            Iterator<Object> iterator = this.objectsDeletedDuringCommit.keySet().iterator();
             Map cloneToOriginals = getCloneToOriginals();
             while (iterator.hasNext()) {
                 Object deletedObject = iterator.next();

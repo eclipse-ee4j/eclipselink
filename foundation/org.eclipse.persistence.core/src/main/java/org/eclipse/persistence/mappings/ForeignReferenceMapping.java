@@ -425,7 +425,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        referenceClass = AccessController.doPrivileged(new PrivilegedClassForName(getReferenceClassName(), true, classLoader));
+                        referenceClass = AccessController.doPrivileged(new PrivilegedClassForName<>(getReferenceClassName(), true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(getReferenceClassName(), exception.getException());
                     }
@@ -729,7 +729,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                 }
             }
 
-            List nestedJoins = extractNestedNonAggregateExpressions(joinManager.getJoinedAttributeExpressions(), nestedQuery.getExpressionBuilder(), false);
+            List<Expression> nestedJoins = extractNestedNonAggregateExpressions(joinManager.getJoinedAttributeExpressions(), nestedQuery.getExpressionBuilder(), false);
             if (nestedJoins.size() > 0) {
                 // Recompute the joined indexes based on the nested join expressions.
                 nestedQuery.getJoinedAttributeManager().clear();

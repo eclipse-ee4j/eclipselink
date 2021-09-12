@@ -37,7 +37,7 @@ public class MetadataAnnotation {
     protected boolean isMeta = false;
 
     /** Map of attribute names and values. */
-    protected Map<String, Object> m_attributes = new HashMap<String, Object>();
+    protected Map<String, Object> m_attributes = new HashMap<>();
 
     /**
      * Default constructor.

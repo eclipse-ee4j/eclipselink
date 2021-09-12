@@ -150,7 +150,7 @@ public class InImpl<T> extends CompoundExpressionImpl implements In<T> {
     @Override
     public Predicate not(){
         parentNode = this.getCurrentNode().not();
-        ArrayList list = new ArrayList();
+        List<Expression<?>> list = new ArrayList<>();
         list.add(this);
         CompoundExpressionImpl expr = new CompoundExpressionImpl(this.metamodel, parentNode, list, "not");
         expr.setIsNegated(true);

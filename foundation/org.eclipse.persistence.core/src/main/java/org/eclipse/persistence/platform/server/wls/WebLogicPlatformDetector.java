@@ -75,7 +75,7 @@ public class WebLogicPlatformDetector implements ServerPlatformDetector {
      */
     private String getServerNameAndVersionInternal() {
         try {
-            Class versionCls = Class.forName("weblogic.version");
+            Class<?> versionCls = Class.forName("weblogic.version");
             Method method = versionCls.getMethod("getReleaseBuildVersion");
             return (String) method.invoke(null);
         } catch (Throwable t) {

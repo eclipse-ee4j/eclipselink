@@ -352,7 +352,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
             Class elementClass = null;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    elementClass = AccessController.doPrivileged(new PrivilegedClassForName(elementClassName, true, classLoader));
+                    elementClass = AccessController.doPrivileged(new PrivilegedClassForName<>(elementClassName, true, classLoader));
                 } catch (PrivilegedActionException exception) {
                     throw ValidationException.classNotFoundWhileConvertingClassNames(containerClassName, exception.getException());
                 }

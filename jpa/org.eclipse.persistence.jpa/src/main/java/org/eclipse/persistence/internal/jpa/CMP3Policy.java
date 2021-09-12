@@ -144,7 +144,7 @@ public class CMP3Policy extends CMPPolicy {
                 Class aPKClass = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        aPKClass = AccessController.doPrivileged(new PrivilegedClassForName(getPKClassName(), true, classLoader));
+                        aPKClass = AccessController.doPrivileged(new PrivilegedClassForName<>(getPKClassName(), true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw new IllegalArgumentException(ExceptionLocalization.buildMessage("pk_class_not_found", new Object[] {this.pkClassName}), exception.getException());
 

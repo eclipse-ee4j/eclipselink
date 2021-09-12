@@ -91,7 +91,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
     /**
      * Allow the default collection class to be set.
      */
-    protected static Class defaultContainerClass = ClassConstants.Vector_class;
+    protected static Class<Vector> defaultContainerClass = ClassConstants.Vector_class;
 
     /** The descriptor is used to wrap and unwrap objects using the wrapper policy. **/
     protected transient ClassDescriptor elementDescriptor;
@@ -909,7 +909,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
             Constructor constructor = null;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(getContainerClass(), new Class[] { ClassConstants.PINT }, false));
+                    constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<Class<?>>(getContainerClass(), new Class[] { ClassConstants.PINT }, false));
                 } catch (PrivilegedActionException exception) {
                     // If there is no constructor then the default will be used.
                     return;
@@ -1116,7 +1116,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
     protected void mergeChanges(CollectionChangeRecord changeRecord, Object valueOfTarget, boolean shouldMergeCascadeParts, MergeManager mergeManager, AbstractSession targetSession) {
         ObjectChangeSet objectChanges;
         // Step 1 - iterate over the removed changes and remove them from the container.
-        Iterator removeObjects = changeRecord.getRemoveObjectList().keySet().iterator();
+        Iterator<ObjectChangeSet> removeObjects = changeRecord.getRemoveObjectList().keySet().iterator();
         while (removeObjects.hasNext()) {
             objectChanges = (ObjectChangeSet) removeObjects.next();
             removeFrom(objectChanges.getOldKey(), objectChanges.getTargetVersionOfSourceObject(mergeManager, targetSession), valueOfTarget, targetSession);
@@ -1126,7 +1126,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
         }
 
         // Step 2 - iterate over the added changes and add them to the container.
-        Iterator addObjects = changeRecord.getAddObjectList().keySet().iterator();
+        Iterator<ObjectChangeSet> addObjects = changeRecord.getAddObjectList().keySet().iterator();
         while (addObjects.hasNext()) {
             objectChanges = (ObjectChangeSet) addObjects.next();
             Object object = null;

@@ -181,7 +181,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
     public boolean objectIsInstantiated(Object object) {
         if (object instanceof Proxy) {
             ProxyIndirectionHandler handler = (ProxyIndirectionHandler)Proxy.getInvocationHandler(object);
-            ValueHolderInterface valueHolder = handler.getValueHolder();
+            ValueHolderInterface<?> valueHolder = handler.getValueHolder();
             return valueHolder.isInstantiated();
         } else {
             return true;
@@ -196,7 +196,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
     public boolean objectIsEasilyInstantiated(Object object) {
         if (object instanceof Proxy) {
             ProxyIndirectionHandler handler = (ProxyIndirectionHandler)Proxy.getInvocationHandler(object);
-            ValueHolderInterface valueHolder = handler.getValueHolder();
+            ValueHolderInterface<?> valueHolder = handler.getValueHolder();
             if (valueHolder instanceof DatabaseValueHolder) {
                 return ((DatabaseValueHolder)valueHolder).isEasilyInstantiated();
             }
@@ -233,7 +233,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
     public Object getRealAttributeValueFromObject(Object obj, Object object) {
         if (object instanceof Proxy) {
             ProxyIndirectionHandler handler = (ProxyIndirectionHandler)Proxy.getInvocationHandler(object);
-            ValueHolderInterface valueHolder = handler.getValueHolder();
+            ValueHolderInterface<?> valueHolder = handler.getValueHolder();
             return valueHolder.getValue();
         } else {
             return object;
@@ -267,7 +267,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
     @Override
     public Object getOriginalIndirectionObject(Object unitOfWorkIndirectionObject, AbstractSession session) {
         if (unitOfWorkIndirectionObject instanceof UnitOfWorkValueHolder) {
-            ValueHolderInterface valueHolder = ((UnitOfWorkValueHolder)unitOfWorkIndirectionObject).getWrappedValueHolder();
+            ValueHolderInterface<?> valueHolder = ((UnitOfWorkValueHolder)unitOfWorkIndirectionObject).getWrappedValueHolder();
             if ((valueHolder == null) && session.isRemoteUnitOfWork()) {
                 RemoteSessionController controller = ((RemoteUnitOfWork)session).getParentSessionController();
                 valueHolder = controller.getRemoteValueHolders().get(((UnitOfWorkValueHolder)unitOfWorkIndirectionObject).getWrappedValueHolderRemoteID());
@@ -300,7 +300,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
         }
 
         ProxyIndirectionHandler handler = (ProxyIndirectionHandler)Proxy.getInvocationHandler(referenceObject);
-        ValueHolderInterface valueHolder = handler.getValueHolder();
+        ValueHolderInterface<?> valueHolder = handler.getValueHolder();
 
         if (valueHolder.isInstantiated()) {
             return null;
@@ -325,7 +325,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
 
         ValueHolderInterface newValueHolder;
         ProxyIndirectionHandler handler = (ProxyIndirectionHandler)Proxy.getInvocationHandler(attributeValue);
-        ValueHolderInterface oldValueHolder = handler.getValueHolder();
+        ValueHolderInterface<?> oldValueHolder = handler.getValueHolder();
 
         if (!buildDirectlyFromRow && cloningSession.isUnitOfWork() && ((UnitOfWorkImpl)cloningSession).isOriginalNewObject(original)) {
             // CR#3156435 Throw a meaningful exception if a serialized/dead value holder is detected.

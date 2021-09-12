@@ -942,7 +942,7 @@ public class FunctionExpression extends BaseExpression {
 
     protected DatabaseMapping getMappingOfFirstPrimaryKey(ClassDescriptor descriptor) {
         if (descriptor != null) {
-            for (Iterator i = descriptor.getMappings().iterator(); i.hasNext(); ) {
+            for (Iterator<DatabaseMapping> i = descriptor.getMappings().iterator(); i.hasNext(); ) {
                 DatabaseMapping m = (DatabaseMapping)i.next();
                 if (m.isPrimaryKeyMapping()) {
                     return m;

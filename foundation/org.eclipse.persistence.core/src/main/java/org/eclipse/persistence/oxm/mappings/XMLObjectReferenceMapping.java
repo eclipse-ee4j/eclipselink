@@ -163,7 +163,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
             }
             primaryKeys.set(0, object);
         } else {
-            Vector pkFieldNames = referenceDescriptor.getPrimaryKeyFieldNames();
+            Vector<String> pkFieldNames = referenceDescriptor.getPrimaryKeyFieldNames();
             // if reference is null, create a new instance and set it on the resolver
             if (reference == null) {
                 primaryKeys = new CacheId(new Object[pkFieldNames.size()]);
@@ -302,7 +302,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
      *
      */
     protected String getValueToWrite(QName schemaType, Object value, AbstractSession session) {
-        return (String) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING, schemaType);
+        return ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING, schemaType);
     }
 
     /**

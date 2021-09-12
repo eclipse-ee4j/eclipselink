@@ -27,6 +27,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.descriptors.TimestampLockingPolicy;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -63,7 +64,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
             // Sort by changes to keep same SQL together for batching.
             if ((left.changes != null) && right.changes != null) {
                 int size = left.changes.size();
-                List otherChanges = right.changes;
+                List<org.eclipse.persistence.sessions.changesets.ChangeRecord> otherChanges = right.changes;
                 int otherSize = otherChanges.size();
                 if (size > otherSize) {
                     return 1;
@@ -192,7 +193,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
         }
         String attributeName = changeRecord.getAttribute();
         Map attributeToChanges = getAttributesToChanges();
-        List changes = getChanges();
+        List<org.eclipse.persistence.sessions.changesets.ChangeRecord> changes = getChanges();
         ChangeRecord existingChangeRecord = (ChangeRecord)attributeToChanges.get(attributeName);
         // change tracking may add a change to an existing attribute fix that here.
         if (existingChangeRecord != null) {
@@ -346,7 +347,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
     @Override
     public Class getClassType(org.eclipse.persistence.sessions.Session session) {
         if (classType == null) {
-            classType = (Class) session.getDatasourcePlatform().getConversionManager().convertObject(getClassName(), ClassConstants.CLASS);
+            classType = session.getDatasourcePlatform().getConversionManager().convertObject(getClassName(), ClassConstants.CLASS);
         }
         return classType;
     }
@@ -781,7 +782,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
                 }
             }
         }
-        List changesToMerge = changeSetToMergeFrom.getChanges();
+        List<org.eclipse.persistence.sessions.changesets.ChangeRecord> changesToMerge = changeSetToMergeFrom.getChanges();
         int size = changesToMerge.size();
         for (int index = 0; index < size; ++index) {
             ChangeRecord record = (ChangeRecord)changesToMerge.get(index);
@@ -1186,8 +1187,8 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      */
     protected void rebuildWriteLockValueFromUserFormat(ClassDescriptor descriptor, AbstractSession session) {
         if (descriptor.getOptimisticLockingPolicy() instanceof TimestampLockingPolicy) {
-            this.writeLockValue = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(this.writeLockValue, ClassConstants.JavaSqlTimestamp_Class);
-            this.initialWriteLockValue = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(this.initialWriteLockValue, ClassConstants.JavaSqlTimestamp_Class);
+            this.writeLockValue = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(this.writeLockValue, CoreClassConstants.TIMESTAMP);
+            this.initialWriteLockValue = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(this.initialWriteLockValue, CoreClassConstants.TIMESTAMP);
         } else if (descriptor.getOptimisticLockingPolicy() instanceof VersionLockingPolicy) {
             this.writeLockValue = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(this.writeLockValue, ClassConstants.BIGDECIMAL);
             this.initialWriteLockValue = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(this.initialWriteLockValue, ClassConstants.BIGDECIMAL);

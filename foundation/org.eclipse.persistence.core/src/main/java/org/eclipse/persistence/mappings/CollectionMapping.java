@@ -1794,7 +1794,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         // no need for private owned check.  This code is only registered for private owned mappings.
         // targets are added to and/or removed to/from the source.
         CollectionChangeRecord collectionChangeRecord = (CollectionChangeRecord)changeRecord;
-        Iterator it = collectionChangeRecord.getRemoveObjectList().values().iterator();
+        Iterator<ObjectChangeSet> it = collectionChangeRecord.getRemoveObjectList().values().iterator();
         while(it.hasNext()) {
             ObjectChangeSet ocs = (ObjectChangeSet)it.next();
             containerPolicy.postCalculateChanges(ocs, referenceDescriptor, this, uow);

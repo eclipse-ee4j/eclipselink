@@ -294,15 +294,14 @@ final class JPQLQueryContext {
      * @param typeName The fully qualified type name
      * @return The Java type if it could be retrieved; <code>null</code> otherwise
      */
-    @SuppressWarnings("unchecked")
-    private Class<?> attemptLoadType(String typeName) {
+    private <T> Class<T> attemptLoadType(String typeName) {
 
         try {
 
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
                     return AccessController.doPrivileged(
-                        new PrivilegedClassForName(typeName, true, getClassLoader())
+                        new PrivilegedClassForName<>(typeName, true, getClassLoader())
                     );
                 }
                 catch (PrivilegedActionException exception) {
@@ -522,14 +521,12 @@ final class JPQLQueryContext {
      * @return The {@link Constructor} or <code>null</code> if none exist or the privilege access
      * was denied
      */
-    @SuppressWarnings("unchecked")
-    <T> Constructor<T> getConstructor(Class<?> type, Class<?>[] parameterTypes) {
-
+    <T> Constructor<T> getConstructor(Class<T> type, Class<?>[] parameterTypes) {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
                     return AccessController.doPrivileged(
-                        new PrivilegedGetConstructorFor(type, parameterTypes, true)
+                        new PrivilegedGetConstructorFor<>(type, parameterTypes, true)
                     );
                 }
                 catch (PrivilegedActionException exception) {
@@ -1004,8 +1001,7 @@ final class JPQLQueryContext {
      * @param parameter The object to pass during instantiation
      * @return A new instance or <code>null</code> if a problem was encountered during instantiation
      */
-    @SuppressWarnings("unchecked")
-    <T> T newInstance(Class<?> type, Class<?> parameterType, Object parameter) {
+    <T> T newInstance(Class<T> type, Class<?> parameterType, Object parameter) {
         return newInstance(type, new Class[] { parameterType }, new Object[] { parameter });
     }
 
@@ -1018,7 +1014,7 @@ final class JPQLQueryContext {
      * @return A new instance of the given type or <code>null</code> if a problem was encountered
      * during instantiation
      */
-    <T> T newInstance(Class<?> type, Class<?>[] parameterTypes, Object[] parameters) {
+    <T> T newInstance(Class<T> type, Class<?>[] parameterTypes, Object[] parameters) {
 
         Constructor<T> constructor = getConstructor(type, parameterTypes);
 
@@ -1036,15 +1032,14 @@ final class JPQLQueryContext {
      * @param parameters The objects to pass during instantiation
      * @return A new instance or <code>null</code> if a problem was encountered during instantiation
      */
-    @SuppressWarnings("unchecked")
     <T> T newInstance(Constructor<T> constructor, Object[] parameters) {
 
         try {
 
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
-                    return (T) AccessController.doPrivileged(
-                        new PrivilegedInvokeConstructor(constructor, parameters)
+                    return AccessController.doPrivileged(
+                        new PrivilegedInvokeConstructor<>(constructor, parameters)
                     );
                 }
                 catch (PrivilegedActionException exception) {
@@ -1052,15 +1047,9 @@ final class JPQLQueryContext {
                 }
             }
 
-            return (T) PrivilegedAccessHelper.invokeConstructor(constructor, parameters);
+            return PrivilegedAccessHelper.invokeConstructor(constructor, parameters);
         }
-        catch (InstantiationException e) {
-            return null;
-        }
-        catch (InvocationTargetException e) {
-            return null;
-        }
-        catch (IllegalAccessException e) {
+        catch (ReflectiveOperationException e) {
             return null;
         }
     }

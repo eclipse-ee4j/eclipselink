@@ -154,7 +154,7 @@ public class SortedCollectionContainerPolicy extends CollectionContainerPolicy {
                 Constructor constructor = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(getContainerClass(), constructClass, false));
+                        constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<Class<?>>(getContainerClass(), constructClass, false));
                         return AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, arguments));
                     } catch (PrivilegedActionException exception) {
                         throw QueryException.couldNotInstantiateContainerClass(getContainerClass(), exception.getException());

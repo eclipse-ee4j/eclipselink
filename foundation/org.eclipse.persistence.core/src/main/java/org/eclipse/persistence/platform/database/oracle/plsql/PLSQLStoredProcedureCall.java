@@ -1152,7 +1152,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
             return outputRow;
         }
         // re-order elements in outputRow to conform to original indices
-        Vector outputRowFields = outputRow.getFields();
+        Vector<DatabaseField> outputRowFields = outputRow.getFields();
         Vector outputRowValues = outputRow.getValues();
         DatabaseRecord newOutputRow = new DatabaseRecord();
         List<PLSQLargument> outArguments = getArguments(arguments, OUT);

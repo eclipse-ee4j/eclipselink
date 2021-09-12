@@ -78,7 +78,7 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
             if (dataClassName != null){
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        dataClass = AccessController.doPrivileged(new PrivilegedClassForName(dataClassName, true, classLoader));
+                        dataClass = AccessController.doPrivileged(new PrivilegedClassForName<>(dataClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(dataClassName, exception.getException());
                     }
@@ -94,7 +94,7 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
             if (objectClassName != null){
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        objectClass = AccessController.doPrivileged(new PrivilegedClassForName(objectClassName, true, classLoader));
+                        objectClass = AccessController.doPrivileged(new PrivilegedClassForName<>(objectClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(objectClassName, exception.getException());
                     }

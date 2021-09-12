@@ -139,7 +139,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
                     if (this.classesToBeInvalidated == null) {
                         this.classesToBeInvalidated = new HashSet<>();
                     }
-                    Iterator enumDeleted = this.unregisteredDeletedObjectsCloneToBackupAndOriginal.keySet().iterator();
+                    Iterator<Object> enumDeleted = this.unregisteredDeletedObjectsCloneToBackupAndOriginal.keySet().iterator();
                     // classes of the deleted objects should be invalidated in the shared cache
                     while (enumDeleted.hasNext()) {
                         this.classesToBeInvalidated.add(getDescriptor(enumDeleted.next().getClass()));
@@ -649,8 +649,8 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      */
     public Object getUnregisteredDeletedCloneForOriginal(Object original) {
         if (unregisteredDeletedObjectsCloneToBackupAndOriginal != null) {
-            Iterator keys = unregisteredDeletedObjectsCloneToBackupAndOriginal.keySet().iterator();
-            Iterator values = unregisteredDeletedObjectsCloneToBackupAndOriginal.values().iterator();
+            Iterator<Object> keys = unregisteredDeletedObjectsCloneToBackupAndOriginal.keySet().iterator();
+            Iterator<Object> values = unregisteredDeletedObjectsCloneToBackupAndOriginal.values().iterator();
             while(keys.hasNext()) {
                 Object deletedObjectClone = keys.next();
                 Object[] backupAndOriginal = (Object[])values.next();

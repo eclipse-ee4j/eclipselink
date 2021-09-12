@@ -166,7 +166,7 @@ public class DB2ZPlatform extends DB2Platform {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
                     ClassLoader cl = AccessController.doPrivileged(new PrivilegedGetContextClassLoader(Thread.currentThread()));
-                    clazz = AccessController.doPrivileged(new PrivilegedClassForName(DB2_CALLABLESTATEMENT_CLASS, true, cl));
+                    clazz = AccessController.doPrivileged(new PrivilegedClassForName<>(DB2_CALLABLESTATEMENT_CLASS, true, cl));
                     method = AccessController.doPrivileged(new PrivilegedGetMethod(clazz, methodName, methodArgs, true));
                     Object o = statement.unwrap(clazz);
                     AccessController.doPrivileged(new PrivilegedMethodInvoker(method, o, parameters));
@@ -205,7 +205,7 @@ public class DB2ZPlatform extends DB2Platform {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
                     ClassLoader cl = AccessController.doPrivileged(new PrivilegedGetContextClassLoader(Thread.currentThread()));
-                    clazz = AccessController.doPrivileged(new PrivilegedClassForName(DB2_CALLABLESTATEMENT_CLASS, true, cl));
+                    clazz = AccessController.doPrivileged(new PrivilegedClassForName<>(DB2_CALLABLESTATEMENT_CLASS, true, cl));
                     method = AccessController.doPrivileged(new PrivilegedGetMethod(clazz, methodName, methodArgs, true));
                     Object o = statement.unwrap(clazz);
                     AccessController.doPrivileged(new PrivilegedMethodInvoker(method, o, parameters));
@@ -334,7 +334,7 @@ public class DB2ZPlatform extends DB2Platform {
         } else if (parameter instanceof Boolean) {
             methodName = "setJccBooleanAtName";
             methodArgs = new Class[] {String.class, boolean.class};
-            parameters = new Object[] {name, (Boolean) parameter};
+            parameters = new Object[] {name, parameter};
         } else if (parameter == null) {
             // Normally null is passed as a DatabaseField so the type is included, but in some case may be passed directly.
             methodName = "setJccNullAtName";
@@ -404,7 +404,7 @@ public class DB2ZPlatform extends DB2Platform {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     try {
                         ClassLoader cl = AccessController.doPrivileged(new PrivilegedGetContextClassLoader(Thread.currentThread()));
-                        clazz = AccessController.doPrivileged(new PrivilegedClassForName(DB2_PREPAREDSTATEMENT_CLASS, true, cl));
+                        clazz = AccessController.doPrivileged(new PrivilegedClassForName<>(DB2_PREPAREDSTATEMENT_CLASS, true, cl));
                         method = AccessController.doPrivileged(new PrivilegedGetMethod(clazz, methodName, methodArgs, true));
                         Object o = statement.unwrap(clazz);
                         AccessController.doPrivileged(new PrivilegedMethodInvoker(method, o, parameters));
@@ -452,7 +452,7 @@ public class DB2ZPlatform extends DB2Platform {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
                     ClassLoader cl = AccessController.doPrivileged(new PrivilegedGetContextClassLoader(Thread.currentThread()));
-                    clazz = AccessController.doPrivileged(new PrivilegedClassForName(DB2_PREPAREDSTATEMENT_CLASS, true, cl));
+                    clazz = AccessController.doPrivileged(new PrivilegedClassForName<>(DB2_PREPAREDSTATEMENT_CLASS, true, cl));
                     method = AccessController.doPrivileged(new PrivilegedGetMethod(clazz, methodName, methodArgs, true));
                     Object o = statement.unwrap(clazz);
                     AccessController.doPrivileged(new PrivilegedMethodInvoker(method, o, parameters));
@@ -494,7 +494,7 @@ public class DB2ZPlatform extends DB2Platform {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     try {
                         ClassLoader cl = AccessController.doPrivileged(new PrivilegedGetContextClassLoader(Thread.currentThread()));
-                        clazz = AccessController.doPrivileged(new PrivilegedClassForName(DB2_CALLABLESTATEMENT_CLASS, true, cl));
+                        clazz = AccessController.doPrivileged(new PrivilegedClassForName<>(DB2_CALLABLESTATEMENT_CLASS, true, cl));
                         method = AccessController.doPrivileged(new PrivilegedGetMethod(clazz, methodName, methodArgs, true));
                         Object o = statement.unwrap(clazz);
                         return AccessController.doPrivileged(new PrivilegedMethodInvoker(method, o, parameters));

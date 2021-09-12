@@ -406,7 +406,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         // Wrapping is done automatically.
         // Make sure a vector of exactly the right size is returned.
         Object conformedResult = cp.containerInstance(indexedInterimResult.size() + fromDatabase.size());
-        for (Iterator enumtr = indexedInterimResult.values().iterator(); enumtr.hasNext();) {
+        for (Iterator<Object> enumtr = indexedInterimResult.values().iterator(); enumtr.hasNext();) {
             Object eachClone = enumtr.next();
             cp.addInto(eachClone, conformedResult, unitOfWork);
         }

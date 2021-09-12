@@ -183,7 +183,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
      */
     @Override
     public EntityManagerFactory createEntityManagerFactory(String emName, Map properties){
-        Map nonNullProperties = (properties == null) ? new HashMap() : properties;
+        Map nonNullProperties = (properties == null) ? new HashMap<>() : properties;
 
         if (checkForProviderProperty(nonNullProperties)){
             String name = (emName == null) ? "" : emName;
@@ -243,7 +243,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
     @Override
     public boolean generateSchema(String persistenceUnitName, Map properties) {
         String puName = (persistenceUnitName == null) ? "" : persistenceUnitName;
-        Map nonNullProperties = (properties == null) ? new HashMap() : properties;
+        Map nonNullProperties = (properties == null) ? new HashMap<>() : properties;
 
         // If not EclipseLink, do nothing.
         if (checkForProviderProperty(nonNullProperties)) {
@@ -320,7 +320,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
         // Record that we are inside a JEE container to allow weaving for non managed persistence units.
         JavaSECMPInitializer.setIsInContainer(true);
 
-        Map nonNullProperties = (properties == null) ? new HashMap() : properties;
+        Map nonNullProperties = (properties == null) ? new HashMap<>() : properties;
 
         String forceTargetServer = EntityManagerFactoryProvider.getConfigPropertyAsString(SystemProperties.ENFORCE_TARGET_SERVER, null);
         if ("true".equalsIgnoreCase(forceTargetServer)) {

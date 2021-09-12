@@ -59,6 +59,7 @@ import org.eclipse.persistence.internal.helper.ConcurrentFixedCache;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.identitymaps.AbstractIdentityMap;
+import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.queries.AttributeGroup;
@@ -84,17 +85,17 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession> implements Serializable, Cloneable {
     protected String name;
     protected Login datasourceLogin;
-    protected Map<Class, ClassDescriptor> descriptors;
+    protected Map<Class<?>, ClassDescriptor> descriptors;
     protected List<ClassDescriptor> orderedDescriptors;
 
     // Currently only one is supported.
     protected MultitenantPolicy multitenantPolicy;
 
     /** Holds the default set of read-only classes that apply to each UnitOfWork. */
-    protected Vector defaultReadOnlyClasses;
+    protected Vector<Class<?>> defaultReadOnlyClasses;
 
     /** Cache the EJBQL descriptor aliases. */
-    protected Map aliasDescriptors;
+    protected Map<String, ClassDescriptor> aliasDescriptors;
 
     /** Cache if any descriptor is isolated. (set during initialization) */
     protected boolean hasIsolatedClasses;
@@ -120,7 +121,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     protected transient boolean hasMappingsPostCalculateChangesOnDeleted = false;
 
     /** Default value for ClassDescriptor.identityMapClass. */
-    protected Class defaultIdentityMapClass = AbstractIdentityMap.getDefaultIdentityMapClass();
+    protected Class<? extends IdentityMap> defaultIdentityMapClass = AbstractIdentityMap.getDefaultIdentityMapClass();
 
     /** Default value for ClassDescriptor.identityMapSize. */
     protected int defaultIdentityMapSize = 100;
@@ -208,7 +209,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      */
     public Project() {
         this.name = "";
-        this.descriptors = new HashMap();
+        this.descriptors = new HashMap<>();
         this.defaultReadOnlyClasses = NonSynchronizedVector.newInstance();
         this.orderedDescriptors = new ArrayList<>();
         this.hasIsolatedClasses = false;
@@ -301,7 +302,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public List<DatabaseQuery> getJPAQueries() {
         // PERF: lazy init, not normally required.
         if (jpaQueries == null) {
-            jpaQueries = new ArrayList();
+            jpaQueries = new ArrayList<>();
         }
 
         return jpaQueries;
@@ -315,7 +316,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public List<DatabaseQuery> getJPATablePerTenantQueries() {
         // PERF: lazy init, not normally required.
         if (jpaTablePerTenantQueries == null) {
-            jpaTablePerTenantQueries = new ArrayList();
+            jpaTablePerTenantQueries = new ArrayList<>();
         }
 
         return jpaTablePerTenantQueries;
@@ -405,7 +406,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * PUBLIC:
      * Add the read-only class which apply to each UnitOfWork created by default.
      */
-    public void addDefaultReadOnlyClass(Class readOnlyClass) {
+    public void addDefaultReadOnlyClass(Class<?> readOnlyClass) {
         getDefaultReadOnlyClasses().addElement(readOnlyClass);
     }
 
@@ -439,14 +440,17 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
                 // Descriptor aliases may be concurrently accessed by other threads.
                 // Make a clone, add new descriptor to the clone, override original with the clone.
                 if (alias != null) {
-                    final Map aliasDescriptorsClone = getAliasDescriptors() != null
-                            ? (Map)((HashMap)getAliasDescriptors()).clone() : new HashMap();
+                    @SuppressWarnings({"unchecked"})
+                    final Map<String, ClassDescriptor> aliasDescriptorsClone = getAliasDescriptors() != null
+                            ? (Map<String, ClassDescriptor>)((HashMap<String, ClassDescriptor>) getAliasDescriptors()).clone()
+                            : new HashMap<>();
                     aliasDescriptorsClone.put(alias, descriptor);
                     setAliasDescriptors(aliasDescriptorsClone);
                 }
                 // Descriptors may be concurrently accessed by other threads.
                 // Make a clone, add new descriptor to the clone, override original with the clone.
-                final Map<Class, ClassDescriptor> descriptorsClone = (Map)((HashMap)getDescriptors()).clone();
+                @SuppressWarnings({"unchecked"})
+                final Map<Class<?>, ClassDescriptor> descriptorsClone = (Map<Class<?>, ClassDescriptor>)((HashMap<Class<?>, ClassDescriptor>) getDescriptors()).clone();
                 descriptorsClone.put(descriptor.getJavaClass(), descriptor);
                 setDescriptors(descriptorsClone);
                 session.copyDescriptorsFromProject();
@@ -472,11 +476,14 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
             if (session.isConnected()) {
                 // Descriptor aliases may be concurrently accessed by other threads.
                 // Make a clone, add new descriptors to the clone, override original with the clone.
-                final Map aliasDescriptorsClone = getAliasDescriptors() != null
-                        ? (Map)((HashMap)getAliasDescriptors()).clone() : new HashMap();
+                @SuppressWarnings({"unchecked"})
+                final Map<String, ClassDescriptor> aliasDescriptorsClone = getAliasDescriptors() != null
+                        ? (Map<String, ClassDescriptor>)((HashMap<String, ClassDescriptor>) getAliasDescriptors()).clone()
+                        : new HashMap<>();
                 // Descriptors may be concurrently accessed by other threads.
                 // Make a clone, add new descriptors to the clone, override original with the clone.
-                final Map<Class, ClassDescriptor> descriptorsClone = (Map)((HashMap)getDescriptors()).clone();
+                @SuppressWarnings({"unchecked"})
+                final Map<Class<?>, ClassDescriptor> descriptorsClone = (Map<Class<?>, ClassDescriptor>)((HashMap<Class<?>, ClassDescriptor>) getDescriptors()).clone();
                 for (ClassDescriptor descriptor : (Collection<ClassDescriptor>) descriptors) {
                     descriptorsClone.put(descriptor.getJavaClass(), descriptor);
                     final String alias = descriptor.getAlias();
@@ -491,7 +498,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
                 session.copyDescriptorsFromProject();
                 session.initializeDescriptors(descriptors);
             } else {
-                final Map<Class, ClassDescriptor> projectDescriptors = getDescriptors();
+                final Map<Class<?>, ClassDescriptor> projectDescriptors = getDescriptors();
                 for (ClassDescriptor descriptor : (Collection<ClassDescriptor>) descriptors) {
                     final String alias = descriptor.getAlias();
                     projectDescriptors.put(descriptor.getJavaClass(), descriptor);
@@ -526,7 +533,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
             return;
         }
         if (this.sqlResultSetMappings == null){
-            this.sqlResultSetMappings = new HashMap();
+            this.sqlResultSetMappings = new HashMap<>();
         }
         this.sqlResultSetMappings.put(sqlResultSetMapping.getName(), sqlResultSetMapping);
     }
@@ -536,9 +543,9 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * Set all this project's descriptors to conform all read queries within the context of the unit of work.
      */
     public void conformAllDescriptors() {
-        Iterator descriptors = getDescriptors().values().iterator();
+        Iterator<ClassDescriptor> descriptors = getDescriptors().values().iterator();
         while (descriptors.hasNext()) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
+            ClassDescriptor descriptor = descriptors.next();
             descriptor.setShouldAlwaysConformResultsInUnitOfWork(true);
         }
     }
@@ -550,16 +557,16 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
-        Iterator ordered = orderedDescriptors.iterator();
+        Iterator<ClassDescriptor> ordered = orderedDescriptors.iterator();
         while (ordered.hasNext()){
-            ClassDescriptor descriptor = (ClassDescriptor)ordered.next();
+            ClassDescriptor descriptor = ordered.next();
             descriptor.convertClassNamesToClasses(classLoader);
         }
         for (AttributeGroup group : this.getAttributeGroups().values()){
             group.convertClassNamesToClasses(classLoader);
         }
         // Clear old descriptors to allow rehash on new classes.
-        this.descriptors = new HashMap();
+        this.descriptors = new HashMap<>();
         // convert class names to classes for each SQLResultSetMapping
         if (this.sqlResultSetMappings != null) {
             for (SQLResultSetMapping mapping : this.sqlResultSetMappings.values()) {
@@ -578,9 +585,9 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * Switch all descriptors to assume existence for non-null primary keys.
      */
     public void assumeExistenceForDoesExist() {
-        Iterator descriptors = getDescriptors().values().iterator();
+        Iterator<ClassDescriptor> descriptors = getDescriptors().values().iterator();
         while (descriptors.hasNext()) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
+            ClassDescriptor descriptor = descriptors.next();
             descriptor.getQueryManager().assumeExistenceForDoesExist();
         }
     }
@@ -590,9 +597,9 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * Switch all descriptors to check the cache for existence.
      */
     public void checkCacheForDoesExist() {
-        Iterator descriptors = getDescriptors().values().iterator();
+        Iterator<ClassDescriptor> descriptors = getDescriptors().values().iterator();
         while (descriptors.hasNext()) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
+            ClassDescriptor descriptor = descriptors.next();
             descriptor.getQueryManager().checkCacheForDoesExist();
         }
     }
@@ -602,9 +609,9 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * Switch all descriptors to check the database for existence.
      */
     public void checkDatabaseForDoesExist() {
-        Iterator descriptors = getDescriptors().values().iterator();
+        Iterator<ClassDescriptor> descriptors = getDescriptors().values().iterator();
         while (descriptors.hasNext()) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
+            ClassDescriptor descriptor = descriptors.next();
             descriptor.getQueryManager().checkDatabaseForDoesExist();
         }
     }
@@ -696,7 +703,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * PUBLIC:
      * Return default value for descriptor cache type.
      */
-    public Class getDefaultIdentityMapClass() {
+    public Class<? extends IdentityMap> getDefaultIdentityMapClass() {
         return this.defaultIdentityMapClass;
     }
 
@@ -729,7 +736,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * Return the descriptor specified for the class.
      * If the passed Class parameter is null, null will be returned.
      */
-    public ClassDescriptor getClassDescriptor(Class theClass) {
+    public ClassDescriptor getClassDescriptor(Class<?> theClass) {
         return getDescriptor(theClass);
     }
 
@@ -738,7 +745,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * Return the descriptor specified for the class.
      */
     @Override
-    public ClassDescriptor getDescriptor(Class theClass) {
+    public ClassDescriptor getDescriptor(Class<?> theClass) {
         if (theClass == null) {
             return null;
         }
@@ -749,11 +756,11 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * PUBLIC:
      * Return the descriptors in a ClassDescriptors Map keyed on the Java class.
      */
-    public Map<Class, ClassDescriptor> getDescriptors() {
+    public Map<Class<?>, ClassDescriptor> getDescriptors() {
         // Lazy initialize class references from orderedDescriptors when reading from XML.
         if (descriptors.isEmpty() && (!orderedDescriptors.isEmpty())) {
-            for (Iterator iterator = orderedDescriptors.iterator(); iterator.hasNext();) {
-                ClassDescriptor descriptor = (ClassDescriptor)iterator.next();
+            for (Iterator<ClassDescriptor> iterator = orderedDescriptors.iterator(); iterator.hasNext();) {
+                ClassDescriptor descriptor = iterator.next();
                 descriptors.put(descriptor.getJavaClass(), descriptor);
             }
         }
@@ -906,7 +913,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * PUBLIC:
      * Set default value for descriptor cache type.
      */
-    public void setDefaultIdentityMapClass(Class defaultIdentityMapClass) {
+    public void setDefaultIdentityMapClass(Class<? extends IdentityMap> defaultIdentityMapClass) {
         this.defaultIdentityMapClass = defaultIdentityMapClass;
     }
 
@@ -939,8 +946,8 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      */
     public void setDescriptors(Map descriptors) {
         this.descriptors = descriptors;
-        for (Iterator iterator = descriptors.values().iterator(); iterator.hasNext();) {
-            ClassDescriptor descriptor = (ClassDescriptor)iterator.next();
+        for (Iterator<ClassDescriptor> iterator = descriptors.values().iterator(); iterator.hasNext();) {
+            ClassDescriptor descriptor = iterator.next();
             String alias = descriptor.getAlias();
             if (alias != null) {
                 addAlias(alias, descriptor);
@@ -962,8 +969,8 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      *        container call.
      */
     public void setDeferModificationsUntilCommit(int deferralLevel) {
-        for (Iterator iterator = descriptors.values().iterator(); iterator.hasNext();) {
-            ClassDescriptor descriptor = (ClassDescriptor)iterator.next();
+        for (Iterator<ClassDescriptor> iterator = descriptors.values().iterator(); iterator.hasNext();) {
+            ClassDescriptor descriptor = iterator.next();
             if (descriptor.getCMPPolicy() != null) {
                 descriptor.getCMPPolicy().setDeferModificationsUntilCommit(deferralLevel);
             }
@@ -1127,9 +1134,9 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * Switch all descriptors to use the cache identity map.
      */
     public void useCacheIdentityMap() {
-        Iterator descriptors = getDescriptors().values().iterator();
+        Iterator<ClassDescriptor> descriptors = getDescriptors().values().iterator();
         while (descriptors.hasNext()) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
+            ClassDescriptor descriptor = descriptors.next();
             descriptor.useCacheIdentityMap();
         }
     }
@@ -1139,9 +1146,9 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * Switch all descriptors to use the cache identity map the size.
      */
     public void useCacheIdentityMap(int cacheSize) {
-        Iterator descriptors = getDescriptors().values().iterator();
+        Iterator<ClassDescriptor> descriptors = getDescriptors().values().iterator();
         while (descriptors.hasNext()) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
+            ClassDescriptor descriptor = descriptors.next();
             descriptor.useCacheIdentityMap();
             descriptor.setIdentityMapSize(cacheSize);
         }
@@ -1152,9 +1159,9 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * Switch all descriptors to use the full identity map.
      */
     public void useFullIdentityMap() {
-        Iterator descriptors = getDescriptors().values().iterator();
+        Iterator<ClassDescriptor> descriptors = getDescriptors().values().iterator();
         while (descriptors.hasNext()) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
+            ClassDescriptor descriptor = descriptors.next();
             descriptor.useFullIdentityMap();
         }
     }
@@ -1164,9 +1171,9 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * Switch all descriptors to use the full identity map with initial cache size.
      */
     public void useFullIdentityMap(int initialCacheSize) {
-        Iterator descriptors = getDescriptors().values().iterator();
+        Iterator<ClassDescriptor> descriptors = getDescriptors().values().iterator();
         while (descriptors.hasNext()) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
+            ClassDescriptor descriptor = descriptors.next();
             descriptor.useFullIdentityMap();
             descriptor.setIdentityMapSize(initialCacheSize);
         }
@@ -1177,9 +1184,9 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * Switch all descriptors to use no identity map.
      */
     public void useNoIdentityMap() {
-        Iterator descriptors = getDescriptors().values().iterator();
+        Iterator<ClassDescriptor> descriptors = getDescriptors().values().iterator();
         while (descriptors.hasNext()) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
+            ClassDescriptor descriptor = descriptors.next();
             descriptor.useNoIdentityMap();
         }
     }
@@ -1189,9 +1196,9 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * Switch all descriptors to use the soft cache weak identity map.
      */
     public void useSoftCacheWeakIdentityMap() {
-        Iterator descriptors = getDescriptors().values().iterator();
+        Iterator<ClassDescriptor> descriptors = getDescriptors().values().iterator();
         while (descriptors.hasNext()) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
+            ClassDescriptor descriptor = descriptors.next();
             descriptor.useSoftCacheWeakIdentityMap();
         }
     }
@@ -1201,9 +1208,9 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * Switch all descriptors to use the soft cache weak identity map with soft cache size.
      */
     public void useSoftCacheWeakIdentityMap(int cacheSize) {
-        Iterator descriptors = getDescriptors().values().iterator();
+        Iterator<ClassDescriptor> descriptors = getDescriptors().values().iterator();
         while (descriptors.hasNext()) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
+            ClassDescriptor descriptor = descriptors.next();
             descriptor.useSoftCacheWeakIdentityMap();
             descriptor.setIdentityMapSize(cacheSize);
         }
@@ -1214,9 +1221,9 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * Asks each descriptor if is uses optimistic locking.
      */
     public boolean usesOptimisticLocking() {
-        Iterator descriptors = getDescriptors().values().iterator();
+        Iterator<ClassDescriptor> descriptors = getDescriptors().values().iterator();
         while (descriptors.hasNext()) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
+            ClassDescriptor descriptor = descriptors.next();
             if (descriptor.usesOptimisticLocking()) {
                 return true;
             }
@@ -1229,9 +1236,9 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * Asks each descriptor if is uses sequencing.
      */
     public boolean usesSequencing() {
-        Iterator descriptors = getDescriptors().values().iterator();
+        Iterator<ClassDescriptor> descriptors = getDescriptors().values().iterator();
         while (descriptors.hasNext()) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
+            ClassDescriptor descriptor = descriptors.next();
             if (descriptor.usesSequenceNumbers()) {
                 return true;
             }
@@ -1244,9 +1251,9 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * Switch all descriptors to use the weak identity map.
      */
     public void useWeakIdentityMap() {
-        Iterator descriptors = getDescriptors().values().iterator();
+        Iterator<ClassDescriptor> descriptors = getDescriptors().values().iterator();
         while (descriptors.hasNext()) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
+            ClassDescriptor descriptor = descriptors.next();
             descriptor.useWeakIdentityMap();
         }
     }
@@ -1256,9 +1263,9 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * Switch all descriptors to use the weak identity map.
      */
     public void useWeakIdentityMap(int initialCacheSize) {
-        Iterator descriptors = getDescriptors().values().iterator();
+        Iterator<ClassDescriptor> descriptors = getDescriptors().values().iterator();
         while (descriptors.hasNext()) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
+            ClassDescriptor descriptor = descriptors.next();
             descriptor.useWeakIdentityMap();
             descriptor.setIdentityMapSize(initialCacheSize);
         }
@@ -1278,7 +1285,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * INTERNAL:
      * Returns the alias descriptors hashtable.
      */
-    public Map getAliasDescriptors() {
+    public Map<String, ClassDescriptor> getAliasDescriptors() {
         return aliasDescriptors;
     }
 
@@ -1288,7 +1295,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      */
     public void addAlias(String alias, ClassDescriptor descriptor) {
         if (aliasDescriptors == null) {
-            aliasDescriptors = new HashMap(10);
+            aliasDescriptors = new HashMap<>(10);
         }
         aliasDescriptors.put(alias, descriptor);
     }
@@ -1356,7 +1363,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public ClassDescriptor getDescriptorForAlias(String alias) {
         ClassDescriptor descriptor = null;
         if (aliasDescriptors != null) {
-            descriptor = (ClassDescriptor)aliasDescriptors.get(alias);
+            descriptor = aliasDescriptors.get(alias);
         }
         return descriptor;
     }
@@ -1365,7 +1372,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * INTERNAL:
      * Set the alias descriptors hashtable.
      */
-    public void setAliasDescriptors(Map aHashtable) {
+    public void setAliasDescriptors(Map<String, ClassDescriptor> aHashtable) {
         aliasDescriptors = aHashtable;
     }
 

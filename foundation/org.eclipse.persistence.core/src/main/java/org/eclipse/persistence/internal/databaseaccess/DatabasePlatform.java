@@ -2601,7 +2601,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         } else if (parameter instanceof char[]) {
             statement.setString(index, new String((char[])parameter));
         } else if (parameter instanceof Character[]) {
-            statement.setString(index, (String)convertObject(parameter, ClassConstants.STRING));
+            statement.setString(index, convertObject(parameter, ClassConstants.STRING));
         } else if (parameter instanceof Byte[]) {
             statement.setBytes(index, (byte[])convertObject(parameter, ClassConstants.APBYTE));
         } else if (parameter instanceof SQLXML) {
@@ -2706,7 +2706,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         } else if (parameter instanceof char[]) {
             statement.setString(name, new String((char[])parameter));
         } else if (parameter instanceof Character[]) {
-            statement.setString(name, (String)convertObject(parameter, ClassConstants.STRING));
+            statement.setString(name, convertObject(parameter, ClassConstants.STRING));
         } else if (parameter instanceof Byte[]) {
             statement.setBytes(name, (byte[])convertObject(parameter, ClassConstants.APBYTE));
         } else if (parameter instanceof SQLXML) {
@@ -2989,10 +2989,10 @@ public class DatabasePlatform extends DatasourcePlatform {
                 FieldDefinition fieldDef;
                 //gfbug3307, should use columnDefinition if it was defined.
                 if ((field.getColumnDefinition()!= null) && (field.getColumnDefinition().length() == 0)) {
-                    Class type = ConversionManager.getObjectClass(field.getType());
+                    Class<? extends Class> type = ConversionManager.getObjectClass(field.getType());
                     // Default type to VARCHAR, if unknown.
                     if (type == null) {
-                        type = ClassConstants.STRING;
+                        type = ConversionManager.getObjectClass(ClassConstants.STRING);
                     }
                    fieldDef = new FieldDefinition(field.getNameDelimited(this), type);
                 } else {
@@ -3307,7 +3307,7 @@ public class DatabasePlatform extends DatasourcePlatform {
 
         boolean shouldAcquireSequenceValueAfterInsert = false;
         DatabaseField field = new DatabaseField(qualifiedFieldName, getStartDelimiter(), getEndDelimiter());
-        Iterator descriptors = session.getDescriptors().values().iterator();
+        Iterator<ClassDescriptor> descriptors = session.getDescriptors().values().iterator();
         while (descriptors.hasNext()) {
             ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
             if (!descriptor.usesSequenceNumbers()) {

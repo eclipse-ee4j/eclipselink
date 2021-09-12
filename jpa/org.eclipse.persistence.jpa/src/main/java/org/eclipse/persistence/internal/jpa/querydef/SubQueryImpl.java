@@ -87,8 +87,8 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
             this.subQuery.setReferenceClass(result);
         }
         this.subQuery.setDistinctState(ObjectLevelReadQuery.DONT_USE_DISTINCT);
-        this.correlatedJoins = new HashSet();
-        this.correlations = new HashSet();
+        this.correlatedJoins = new HashSet<>();
+        this.correlations = new HashSet<>();
         this.currentNode = new SubSelectExpression(subQuery, new ExpressionBuilder());
         this.parent = parent;
     }
@@ -103,10 +103,10 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     @Override
     public Subquery<T> select(Expression<T> selection) {
         findRootAndParameters(selection);
-        for (Iterator iterator = this.getRoots().iterator(); iterator.hasNext();){
+        for (Iterator<Root<?>> iterator = this.getRoots().iterator(); iterator.hasNext();){
             findJoins((FromImpl)iterator.next());
         }
-        for (Iterator iterator = this.getCorrelatedJoins().iterator(); iterator.hasNext();){
+        for (Iterator<Join<?, ?>> iterator = this.getCorrelatedJoins().iterator(); iterator.hasNext();){
             findJoins((FromImpl)iterator.next());
         }
 
@@ -123,7 +123,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
             }
             this.subQuery.setExpressionBuilder(((InternalSelection)selection.getCompoundSelectionItems().get(0)).getCurrentNode().getBuilder());
         } else {
-            TypeImpl type = ((MetamodelImpl)this.metamodel).getType(selection.getJavaType());
+            TypeImpl<? extends T> type = ((MetamodelImpl)this.metamodel).getType(selection.getJavaType());
             if (type != null && type.getPersistenceType().equals(PersistenceType.ENTITY)) {
                 this.subQuery.addAttribute("", new ConstantExpression(1, ((InternalSelection)selection).getCurrentNode().getBuilder()));
                 this.subQuery.addNonFetchJoinedAttribute(((InternalSelection)selection).getCurrentNode());
@@ -157,10 +157,10 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
             currentNode = currentNode.and(exp);
         }
         this.subQuery.setSelectionCriteria(currentNode);
-        for (Iterator iterator = this.getRoots().iterator(); iterator.hasNext();){
+        for (Iterator<Root<?>> iterator = this.getRoots().iterator(); iterator.hasNext();){
             findJoins((FromImpl)iterator.next());
         }
-        for (Iterator iterator = this.getCorrelatedJoins().iterator(); iterator.hasNext();){
+        for (Iterator<Join<?, ?>> iterator = this.getCorrelatedJoins().iterator(); iterator.hasNext();){
             findJoins((FromImpl)iterator.next());
         }
         return this;
@@ -186,10 +186,10 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
             currentNode = currentNode.and(exp);
         }
         this.subQuery.setSelectionCriteria(currentNode);
-        for (Iterator iterator = this.getRoots().iterator(); iterator.hasNext();){
+        for (Iterator<Root<?>> iterator = this.getRoots().iterator(); iterator.hasNext();){
             findJoins((FromImpl)iterator.next());
         }
-        for (Iterator iterator = this.getCorrelatedJoins().iterator(); iterator.hasNext();){
+        for (Iterator<Join<?, ?>> iterator = this.getCorrelatedJoins().iterator(); iterator.hasNext();){
             findJoins((FromImpl)iterator.next());
         }
         return this;
@@ -476,7 +476,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
 
     @Override
     public Predicate in(Object... values) {
-        List list = new ArrayList();
+        List list = new ArrayList<>();
         list.add(this);
         return new CompoundExpressionImpl(this.metamodel, this.currentNode.in(values), list, "in");
     }
@@ -489,7 +489,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      */
     @Override
     public Predicate in(Expression<?>... values) {
-        List list = new ArrayList();
+        List list = new ArrayList<>();
         list.add(this);
         for (Expression exp: values){
             if (!((InternalExpression)exp).isLiteral() && !((InternalExpression) exp).isParameter()){
@@ -509,7 +509,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      */
     @Override
     public Predicate in(Collection<?> values) {
-        List list = new ArrayList();
+        List list = new ArrayList<>();
         list.add(this);
         return new CompoundExpressionImpl(this.metamodel, this.currentNode.in(values), list, "in");
     }
@@ -521,14 +521,14 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      */
     @Override
     public Predicate in(Expression<Collection<?>> values) {
-        List list = new ArrayList();
+        List list = new ArrayList<>();
         list.add(this);
         return new CompoundExpressionImpl(this.metamodel, this.currentNode.in(((InternalSelection)values).getCurrentNode()), list, "in");
     }
 
     @Override
     public Predicate isNotNull() {
-        List list = new ArrayList();
+        List list = new ArrayList<>();
         list.add(this);
         return new CompoundExpressionImpl(this.metamodel, this.currentNode.notNull(), list, "not null");
     }
@@ -536,7 +536,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
 
     @Override
     public Predicate isNull() {
-        List list = new ArrayList();
+        List list = new ArrayList<>();
         list.add(this);
         return new CompoundExpressionImpl(this.metamodel, this.currentNode.isNull(), list, "is null");
     }

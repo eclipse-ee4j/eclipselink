@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -167,9 +167,9 @@ public class CacheId implements Serializable, Comparable<CacheId> {
                     return false;
                 }
                 if (this.hasArray) {
-                    Class valueClass = value.getClass();
+                    Class<?> valueClass = value.getClass();
                     if (valueClass.isArray()) {
-                        Class otherClass = otherValue.getClass();
+                        Class<?> otherClass = otherValue.getClass();
                         //gf bug 1193: fix array comparison logic to exit if they don't match, and continue the loop if they do
                         if (((valueClass == ClassConstants.APBYTE) && (otherClass == ClassConstants.APBYTE)) ) {
                             if (!Helper.compareByteArrays((byte[])value, (byte[])otherValue)){

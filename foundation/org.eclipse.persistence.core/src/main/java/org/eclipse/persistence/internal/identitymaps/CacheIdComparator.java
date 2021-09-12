@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,9 +45,9 @@ class CacheIdComparator implements Comparator<CacheId> {
                     return 1;
                 }
 
-                Class value1Class = value1.getClass();
+                Class<?> value1Class = value1.getClass();
                 if (value1Class.isArray()) {
-                    Class value2Class = value2.getClass();
+                    Class<?> value2Class = value2.getClass();
                     if (value1Class == ClassConstants.APBYTE && value2Class == ClassConstants.APBYTE) {
                         int result = compareByteArrays((byte[])value1, (byte[])value2);
                         if (result != 0) {

@@ -127,7 +127,7 @@ public interface BeanValidationInitializationHelper {
             Class loadedClass = null;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 loadedClass = AccessController.doPrivileged(
-                        new PrivilegedClassForName(className, true, classLoader));
+                        new PrivilegedClassForName<>(className, true, classLoader));
             } else {
                 loadedClass = PrivilegedAccessHelper.getClassForName(className, true, classLoader);
             }

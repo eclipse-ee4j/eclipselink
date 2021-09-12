@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -65,11 +65,11 @@ public class CustomPartitioningPolicy extends PartitioningPolicy {
         }
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                Class partitioningClass = AccessController.doPrivileged(new PrivilegedClassForName(getPartitioningClasName(), true, classLoader));
-                this.policy = (PartitioningPolicy)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(partitioningClass));
+                Class<? extends PartitioningPolicy> partitioningClass = AccessController.doPrivileged(new PrivilegedClassForName<>(getPartitioningClasName(), true, classLoader));
+                this.policy = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(partitioningClass));
             } else {
-                Class partitioningClass = PrivilegedAccessHelper.getClassForName(getPartitioningClasName(), true, classLoader);
-                this.policy = (PartitioningPolicy)PrivilegedAccessHelper.newInstanceFromClass(partitioningClass);
+                Class<? extends PartitioningPolicy> partitioningClass = PrivilegedAccessHelper.getClassForName(getPartitioningClasName(), true, classLoader);
+                this.policy = PrivilegedAccessHelper.newInstanceFromClass(partitioningClass);
             }
         } catch (PrivilegedActionException exception) {
             throw ValidationException.classNotFoundWhileConvertingClassNames(getPartitioningClasName(), exception.getException());

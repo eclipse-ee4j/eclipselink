@@ -754,7 +754,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
         }
         XMLDescriptor parentDesc = (XMLDescriptor) this.getDescriptor();
         XMLField field = (XMLField) this.getField();
-        Iterator mappings = parentDesc.getMappings().iterator();
+        Iterator<DatabaseMapping> mappings = parentDesc.getMappings().iterator();
         int mappingsInContext = 0;
         while (mappings.hasNext()) {
             DatabaseMapping next = (DatabaseMapping) mappings.next();

@@ -175,7 +175,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
     public Object getOriginalIndirectionObject(Object unitOfWorkIndirectionObject, AbstractSession session) {
         IndirectContainer container = (IndirectContainer)unitOfWorkIndirectionObject;
         if (container.getValueHolder() instanceof UnitOfWorkValueHolder) {
-            ValueHolderInterface valueHolder = ((UnitOfWorkValueHolder)container.getValueHolder()).getWrappedValueHolder();
+            ValueHolderInterface<?> valueHolder = ((UnitOfWorkValueHolder)container.getValueHolder()).getWrappedValueHolder();
             if ((valueHolder == null) && session.isRemoteUnitOfWork()) {
                 RemoteSessionController controller = ((RemoteUnitOfWork)session).getParentSessionController();
                 valueHolder = controller.getRemoteValueHolders().get(((UnitOfWorkValueHolder)container.getValueHolder()).getWrappedValueHolderRemoteID());
@@ -227,7 +227,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try{
-                    this.containerConstructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(getContainerClass(), new Class[] { ClassConstants.ValueHolderInterface_Class }, false));
+                    this.containerConstructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<Class<?>>(getContainerClass(), new Class[] { ClassConstants.ValueHolderInterface_Class }, false));
                 }catch (PrivilegedActionException ex){
                     if (ex.getCause() instanceof NoSuchMethodException){
                         throw (NoSuchMethodException) ex.getCause();
@@ -245,7 +245,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try{
-                    this.containerConstructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(getContainerClass(), new Class[0], false));
+                    this.containerConstructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<Class<?>>(getContainerClass(), new Class[0], false));
                 }catch (PrivilegedActionException ex){
                     if (ex.getCause() instanceof NoSuchMethodException){
                         throw (NoSuchMethodException) ex.getCause();

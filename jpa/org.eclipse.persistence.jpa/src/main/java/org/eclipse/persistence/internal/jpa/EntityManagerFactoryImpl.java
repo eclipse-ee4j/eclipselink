@@ -224,8 +224,8 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
             throw PersistenceUnitLoadingException.cannotRefreshEntityManagerFactoryCreatedFromSession(delegate.getServerSession().getName());
         }
         String sessionName = setupImpl.getSessionName();
-        Map existingProperties = delegate.getProperties();
-        Map deployProperties = new HashMap();
+        Map<String, Object> existingProperties = delegate.getProperties();
+        Map<String, Object> deployProperties = new HashMap<>();
         deployProperties.putAll(existingProperties);
         if (properties != null){
             deployProperties.putAll(properties);

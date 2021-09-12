@@ -34,7 +34,7 @@ public class LogFormatter extends SimpleFormatter {
     Date dat = new Date();
     private final static String format = "{0,date} {0,time}";
     private MessageFormat formatter;
-    private Object[] args = new Object[1];
+    private final Object[] args = new Object[1];
 
     // Line separator string.  This is the value of the line.separator
     // property at the moment that the SimpleFormatter was created.
@@ -52,7 +52,8 @@ public class LogFormatter extends SimpleFormatter {
         } else {
             EclipseLinkLogRecord record = (EclipseLinkLogRecord)record0;
 
-            StringBuffer sb = new StringBuffer();
+            //method is synchronized
+            StringBuilder sb = new StringBuilder();
 
             if (record.shouldPrintDate()) {
                 // Minimize memory allocations here.
@@ -81,11 +82,11 @@ public class LogFormatter extends SimpleFormatter {
             }
             if (record.getConnection() != null) {
                 sb.append(" ");
-                sb.append(AbstractSessionLog.CONNECTION_STRING + "(" + String.valueOf(System.identityHashCode(record.getConnection())) + ")");
+                sb.append(AbstractSessionLog.CONNECTION_STRING + "(").append(System.identityHashCode(record.getConnection())).append(")");
             }
             if (record.shouldPrintThread()) {
                 sb.append(" ");
-                sb.append(AbstractSessionLog.THREAD_STRING + "(" + String.valueOf(record.getThreadID()) + ")");
+                sb.append(AbstractSessionLog.THREAD_STRING + "(").append(record.getThreadID()).append(")");
             }
             sb.append(lineSeparator);
             String message = formatMessage(record);
@@ -106,7 +107,7 @@ public class LogFormatter extends SimpleFormatter {
                             pw.write(lineSeparator);
                         }
                     }
-                    sb.append(sw.toString());
+                    sb.append(sw);
                 }
             }
             return sb.toString();

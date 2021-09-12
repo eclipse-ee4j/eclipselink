@@ -44,7 +44,7 @@ public class ListTestCases extends OXTestCase {
         list.add(CONTROL_ITEM_1);
         list.add(CONTROL_ITEM_2);
         String control = CONTROL_STRING;
-        String test = (String)xcm.convertObject(list, String.class);
+        String test = xcm.convertObject(list, String.class);
         assertEquals(control, test);
     }
 
@@ -53,7 +53,7 @@ public class ListTestCases extends OXTestCase {
         list.add(CONTROL_ITEM_1);
         list.add(CONTROL_ITEM_2);
         String control = CONTROL_STRING;
-        String test = (String)xcm.convertObject(list, String.class, XMLConstants.STRING_QNAME);
+        String test = xcm.convertObject(list, String.class, XMLConstants.STRING_QNAME);
         assertEquals(control, test);
     }
 
@@ -62,7 +62,7 @@ public class ListTestCases extends OXTestCase {
         List control = new ArrayList(2);
         control.add(CONTROL_ITEM_1);
         control.add(CONTROL_ITEM_2);
-        List test = (List)xcm.convertObject(string, List.class);
+        List test = xcm.convertObject(string, List.class);
         assertEquals(control, test);
     }
 
@@ -71,7 +71,7 @@ public class ListTestCases extends OXTestCase {
         List control = new ArrayList(2);
         control.add(CONTROL_ITEM_1);
         control.add(CONTROL_ITEM_2);
-        List test = (List)xcm.convertObject(string, List.class, XMLConstants.STRING_QNAME);
+        List test = xcm.convertObject(string, List.class, XMLConstants.STRING_QNAME);
         assertEquals(control, test);
     }
 }

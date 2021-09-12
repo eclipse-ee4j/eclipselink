@@ -46,7 +46,7 @@ public class JCEEncryptionTest {
     private Securable convertToEncryptionObject(String encryptionClassName) {
         try {
             ConversionManager cm = ConversionManager.getDefaultManager();
-            Class securableClass = (Class)cm.convertObject(encryptionClassName, Class.class);
+            Class securableClass = cm.convertObject(encryptionClassName, Class.class);
             return (Securable)securableClass.getConstructor().newInstance();
         } catch (Throwable e) {
             return null;

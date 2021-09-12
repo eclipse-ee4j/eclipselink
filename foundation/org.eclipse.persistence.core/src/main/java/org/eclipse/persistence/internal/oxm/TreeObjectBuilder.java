@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,8 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
+import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.record.NodeRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
@@ -100,14 +102,14 @@ public class TreeObjectBuilder extends XMLObjectBuilder implements ObjectBuilder
     @Override
     public void initialize(org.eclipse.persistence.internal.sessions.AbstractSession session) {
         super.initialize(session);
-        Descriptor xmlDescriptor = (Descriptor)getDescriptor();
+        XMLDescriptor xmlDescriptor = (XMLDescriptor)getDescriptor();
 
         // INHERITANCE
         if (xmlDescriptor.hasInheritance()) {
             CoreInheritancePolicy inheritancePolicy = xmlDescriptor.getInheritancePolicy();
 
             if (!inheritancePolicy.hasClassExtractor()) {
-                Field classIndicatorField = new XMLField(inheritancePolicy.getClassIndicatorFieldName());
+                Field<XMLConversionManager, NamespaceResolver> classIndicatorField = new XMLField(inheritancePolicy.getClassIndicatorFieldName());
                 classIndicatorField.setNamespaceResolver(xmlDescriptor.getNamespaceResolver());
             }
         }

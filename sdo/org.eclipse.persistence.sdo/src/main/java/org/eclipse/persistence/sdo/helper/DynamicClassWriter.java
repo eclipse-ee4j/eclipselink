@@ -68,7 +68,7 @@ public class DynamicClassWriter {
         if (type.isSubType()) {
             try {
                 Field parentEndPropertyIndexField = PrivilegedAccessHelper.getField(parentClass, END_PROPERTY_INDEX, true);
-                Integer parentEndPropertyIndex = (Integer) PrivilegedAccessHelper.getValueFromField(parentEndPropertyIndexField, parentClass);
+                Integer parentEndPropertyIndex = PrivilegedAccessHelper.getValueFromField(parentEndPropertyIndexField, parentClass);
                 startPropertyIndex = parentEndPropertyIndex + 1;
             } catch (NoSuchFieldException e) {
                 startPropertyIndex = 0;

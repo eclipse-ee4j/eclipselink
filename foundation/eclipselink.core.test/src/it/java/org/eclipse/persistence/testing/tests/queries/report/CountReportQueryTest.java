@@ -57,8 +57,8 @@ public class CountReportQueryTest extends ReportQueryTestCase {
         }
         BigDecimal expected = (BigDecimal)((ReportQueryResult)expectedResults.firstElement()).getByIndex(0);
         BigDecimal result =
-            (BigDecimal)ConversionManager.getDefaultManager().convertObject(((ReportQueryResult)results.firstElement()).getByIndex(0),
-                                                                            BigDecimal.class);
+                ConversionManager.getDefaultManager().convertObject(((ReportQueryResult)results.firstElement()).getByIndex(0),
+                                                                                BigDecimal.class);
         if (!Helper.compareBigDecimals(expected, result)) {
             throw new TestErrorException("ReportQuery test failed: The results did not match (" + expected + ", " +
                                          result + ")");

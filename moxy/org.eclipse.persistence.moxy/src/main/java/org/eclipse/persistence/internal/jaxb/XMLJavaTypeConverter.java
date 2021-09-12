@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,7 +51,7 @@ import org.xml.sax.SAXParseException;
 public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.converters.XMLConverterAdapter {
     protected Class boundType = Object.class;
     protected Class valueType = Object.class;
-    protected Class xmlAdapterClass;
+    protected Class<?> xmlAdapterClass;
     protected String xmlAdapterClassName;
     protected XmlAdapter xmlAdapter;
     protected QName schemaType;
@@ -241,7 +241,7 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
         if (xmlAdapterClass == null) {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    xmlAdapterClass = AccessController.doPrivileged(new PrivilegedClassForName(getXmlAdapterClassName(), true, loader));
+                    xmlAdapterClass = AccessController.doPrivileged(new PrivilegedClassForName<>(getXmlAdapterClassName(), true, loader));
                 } else {
                     xmlAdapterClass = PrivilegedAccessHelper.getClassForName(getXmlAdapterClassName(), true, loader);
                 }
@@ -260,14 +260,14 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
         try {
         try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    xmlAdapter = (XmlAdapter) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(getXmlAdapterClass()));
+                    xmlAdapter = (XmlAdapter) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(getXmlAdapterClass()));
                 } else {
                     xmlAdapter = (XmlAdapter) PrivilegedAccessHelper.newInstanceFromClass(getXmlAdapterClass());
                 }
             } catch (IllegalAccessException e) {
                 Constructor ctor = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                        ctor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(xmlAdapterClass, new Class[0], true));
+                        ctor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(xmlAdapterClass, new Class[0], true));
                 } else {
                     ctor = PrivilegedAccessHelper.getDeclaredConstructorFor(xmlAdapterClass, new Class[0], true);
                 }

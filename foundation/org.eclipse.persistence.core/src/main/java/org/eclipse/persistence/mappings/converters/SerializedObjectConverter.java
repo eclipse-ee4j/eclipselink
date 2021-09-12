@@ -96,7 +96,7 @@ public class SerializedObjectConverter implements Converter, ClassNameConversion
             if (this.serializerClassName != null) {
                 Class serializerClass = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    serializerClass = AccessController.doPrivileged(new PrivilegedClassForName(this.serializerClassName, true, classLoader));
+                    serializerClass = AccessController.doPrivileged(new PrivilegedClassForName<>(this.serializerClassName, true, classLoader));
                 } else {
                     serializerClass = PrivilegedAccessHelper.getClassForName(this.serializerClassName, true, classLoader);
                 }
@@ -133,7 +133,7 @@ public class SerializedObjectConverter implements Converter, ClassNameConversion
         } else if (this.serializer.getType() == ClassConstants.STRING) {
             String text;
             try {
-                text = (String) session.getDatasourcePlatform().convertObject(fieldValue, ClassConstants.STRING);
+                text = session.getDatasourcePlatform().convertObject(fieldValue, ClassConstants.STRING);
             } catch (ConversionException exception) {
                 throw ConversionException.couldNotBeConverted(this.mapping, this.mapping.getDescriptor(), exception);
             }

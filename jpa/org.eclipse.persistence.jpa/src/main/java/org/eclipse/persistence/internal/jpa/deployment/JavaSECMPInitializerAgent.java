@@ -47,7 +47,7 @@ public class JavaSECMPInitializerAgent {
     }
 
     public static void initializeFromAgent(Instrumentation instr) throws Throwable {
-            Class cls = Class.forName("org.eclipse.persistence.internal.jpa.deployment.JavaSECMPInitializer");
+            Class<?> cls = Class.forName("org.eclipse.persistence.internal.jpa.deployment.JavaSECMPInitializer");
             Method method = cls.getDeclaredMethod("initializeFromAgent", new Class[] { Instrumentation.class });
             try {
                 method.invoke(null, new Object[] { instr });
@@ -57,7 +57,7 @@ public class JavaSECMPInitializerAgent {
     }
 
     public static void initializeFromMain(Instrumentation instr) throws Exception {
-            Class cls = Class.forName("org.eclipse.persistence.internal.jpa.deployment.JavaSECMPInitializer");
+            Class<?> cls = Class.forName("org.eclipse.persistence.internal.jpa.deployment.JavaSECMPInitializer");
             Field field = cls.getField("globalInstrumentation");
             field.set(null, instr);
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1198,9 +1198,9 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 value = null;
             } else if(null == xsiType) {
                 if (clazz == CoreClassConstants.ABYTE || clazz == CoreClassConstants.APBYTE || clazz.getCanonicalName().equals("jakarta.activation.DataHandler")) {
-                    value = (T) xcm.convertObject(stringBuilder.toString(), clazz, Constants.BASE_64_BINARY_QNAME);
+                    value = xcm.convertObject(stringBuilder.toString(), clazz, Constants.BASE_64_BINARY_QNAME);
                 } else {
-                    value = (T) xcm.convertObject(stringBuilder.toString(), clazz);
+                    value = xcm.convertObject(stringBuilder.toString(), clazz);
                 }
             } else {
                 int colonIndex = xsiType.indexOf(':');
@@ -1216,7 +1216,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 }
                 String typeNamespace = namespaces.get(typePrefix);
                 QName typeQName = new QName(typeNamespace, typeName);
-                value = (T) xcm.convertObject(stringBuilder.toString(), clazz, typeQName);
+                value = xcm.convertObject(stringBuilder.toString(), clazz, typeQName);
 
             }
 
@@ -1324,7 +1324,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
             if (xsiNil) {
                 value = null;
             } else {
-                value = (E) xcm.convertObject(stringBuffer.toString(), componentClass);
+                value = xcm.convertObject(stringBuffer.toString(), componentClass);
             }
             addValue(value);
             stringBuffer.reset();
@@ -1345,7 +1345,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
 
             while (st.hasMoreTokens()) {
                 String nextToken = st.nextToken();
-                value = (E) xcm.convertObject(nextToken, componentClass);
+                value = xcm.convertObject(nextToken, componentClass);
                 addValue(value);
             }
             stringBuffer.reset();

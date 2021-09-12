@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,7 +41,7 @@ public class CharacterEscapeHandlerWrapper implements CharacterEscapeHandler {
 
     public CharacterEscapeHandlerWrapper(Object sunHandler) {
         this.handler = sunHandler;
-        Class handlerClass = sunHandler.getClass();
+        Class<? extends Object> handlerClass = sunHandler.getClass();
 
         try {
             this.escapeMethod = PrivilegedAccessHelper.getMethod(handlerClass, ESCAPE_METHOD_NAME, PARAMS, false);

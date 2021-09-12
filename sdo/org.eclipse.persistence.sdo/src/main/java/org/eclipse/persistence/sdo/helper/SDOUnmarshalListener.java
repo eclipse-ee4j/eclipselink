@@ -144,7 +144,7 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                     List unsetValueList = new ArrayList();
                     if ((unsetValue != null) && (unsetValue.length() > 0)) {
                         XMLConversionManager xmlConversionManager = ((SDOXMLHelper) aHelperContext.getXMLHelper()).getXmlConversionManager();
-                        unsetValueList = (List)xmlConversionManager.convertObject(unsetValue, List.class);
+                        unsetValueList = xmlConversionManager.convertObject(unsetValue, List.class);
                     }
                     if (nextModifiedDO != null) {
                         nextModifiedDO._setModified(true);

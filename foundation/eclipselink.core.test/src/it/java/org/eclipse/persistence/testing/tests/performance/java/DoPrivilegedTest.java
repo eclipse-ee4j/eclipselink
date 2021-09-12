@@ -145,16 +145,16 @@ public class DoPrivilegedTest extends PerformanceComparisonTestCase {
         String fieldValue = "TopLink Blah";
         String methodName = "setProduct";
 
-        Class clazz = null;
+        Class<?> clazz = null;
         Version version = null;
         Method method = null;
         try {
-            clazz = AccessController.doPrivileged(new PrivilegedClassForName(className));
-            Class[] methodParameterTypes = { AccessController.doPrivileged(new PrivilegedClassForName("java.lang.String")) };
+            clazz = AccessController.doPrivileged(new PrivilegedClassForName<>(className));
+            Class<?>[] methodParameterTypes = { AccessController.doPrivileged(new PrivilegedClassForName<>("java.lang.String")) };
             ClassLoader clazzloader = AccessController.doPrivileged(new PrivilegedGetClassLoaderForClass(clazz));
             ClassLoader classloader = AccessController.doPrivileged(new PrivilegedGetContextClassLoader(Thread.currentThread()));
-            AccessController.doPrivileged(new PrivilegedClassForName(className, true, clazzloader));
-            version = (Version)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(clazz));
+            AccessController.doPrivileged(new PrivilegedClassForName<>(className, true, clazzloader));
+            version = (Version)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(clazz));
 
             Field[] fields = AccessController.doPrivileged(new PrivilegedGetFields(clazz));
             Field field = AccessController.doPrivileged(new PrivilegedGetDeclaredField(clazz, fieldName, true));
@@ -176,7 +176,7 @@ public class DoPrivilegedTest extends PerformanceComparisonTestCase {
             Object[] parameters = { "TopLink Blah." };
             AccessController.doPrivileged(new PrivilegedMethodInvoker(method, version, parameters));
 
-            Constructor constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(clazz, null, true));
+            Constructor constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(clazz, null, true));
             Constructor declaredConstructor = AccessController.doPrivileged(new PrivilegedGetDeclaredConstructorFor(clazz, null, true));
             AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, null));
 

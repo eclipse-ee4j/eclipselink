@@ -975,7 +975,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
                 }
             }
 
-            Iterator keyIterator = keyObjects.iterator();
+            Iterator<Object> keyIterator = keyObjects.iterator();
             for(Object key : values){
                 addInto(keyIterator.next(), fromCache.get(key), result, session);
             }

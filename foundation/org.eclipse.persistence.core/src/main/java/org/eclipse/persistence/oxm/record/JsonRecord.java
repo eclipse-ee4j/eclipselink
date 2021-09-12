@@ -357,15 +357,15 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
                 if (value.getClass() == CoreClassConstants.BOOLEAN || CoreClassConstants.NUMBER.isAssignableFrom(value.getClass())) {
                     writeValue(value, schemaType, isAttribute);
                 } else {
-                    String convertedValue = ((String) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType));
+                    String convertedValue = ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType);
                     writeValue(convertedValue, schemaType, isAttribute);
                 }
             } else if (schemaType != null && !isNumericOrBooleanType(schemaType)) {
                 //if schemaType exists and is not boolean or number do write quotes (convert to string)
-                String convertedValue = ((String) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType));
+                String convertedValue = ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType);
                 writeValue(convertedValue, schemaType, isAttribute);
             } else if (isCDATA) {
-                String convertedValue = ((String) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType));
+                String convertedValue = ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType);
                 cdata(convertedValue);
             } else {
                 writeValue(value, schemaType, isAttribute);
@@ -508,7 +508,7 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
         }
         CoreConversionManager xmlConversionManager = getSession().getDatasourcePlatform().getConversionManager();
 
-        return (String) xmlConversionManager.convertObject(qName, String.class);
+        return xmlConversionManager.convertObject(qName, String.class);
     }
 
     /**

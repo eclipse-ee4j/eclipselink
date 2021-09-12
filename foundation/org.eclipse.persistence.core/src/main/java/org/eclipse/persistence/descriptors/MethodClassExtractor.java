@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -92,7 +92,7 @@ public class MethodClassExtractor extends ClassExtractor {
     @Override
     public void initialize(ClassDescriptor descriptor, Session session) throws DescriptorException {
         setDescriptor(descriptor);
-        Class[] declarationParameters = new Class[1];
+        Class<?>[] declarationParameters = new Class[1];
         declarationParameters[0] = ClassConstants.DatabaseRow_Class;
 
         try {
@@ -123,15 +123,15 @@ public class MethodClassExtractor extends ClassExtractor {
      * the value is the database value.
      */
     @Override
-    public Class extractClassFromRow(Record row, org.eclipse.persistence.sessions.Session session) {
-        Class classForRow;
-
+    @SuppressWarnings({"unchecked"})
+    public <T> Class<T> extractClassFromRow(Record row, org.eclipse.persistence.sessions.Session session) {
+        Class<?> classForRow;
         try {
             Object[] arguments = new Object[1];
             arguments[0] = row;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    classForRow = (Class)AccessController.doPrivileged(new PrivilegedMethodInvoker(getClassExtractionMethod(), null, arguments));
+                    classForRow = AccessController.doPrivileged(new PrivilegedMethodInvoker<>(getClassExtractionMethod(), null, arguments));
                 } catch (PrivilegedActionException exception) {
                     Exception throwableException = exception.getException();
                     if (throwableException instanceof IllegalAccessException) {
@@ -141,7 +141,7 @@ public class MethodClassExtractor extends ClassExtractor {
                     }
                 }
             } else {
-                classForRow = (Class)PrivilegedAccessHelper.invokeMethod(getClassExtractionMethod(), null, arguments);
+                classForRow = PrivilegedAccessHelper.invokeMethod(getClassExtractionMethod(), null, arguments);
             }
         } catch (IllegalAccessException exception) {
             throw DescriptorException.illegalAccessWhileInvokingRowExtractionMethod((AbstractRecord)row, getClassExtractionMethod(), getDescriptor(), exception);
@@ -149,7 +149,7 @@ public class MethodClassExtractor extends ClassExtractor {
             throw DescriptorException.targetInvocationWhileInvokingRowExtractionMethod((AbstractRecord)row, getClassExtractionMethod(), getDescriptor(), exception);
         }
 
-        return classForRow;
+        return (Class<T>) classForRow;
     }
 
     /**

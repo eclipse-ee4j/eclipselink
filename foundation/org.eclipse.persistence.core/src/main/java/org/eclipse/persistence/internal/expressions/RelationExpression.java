@@ -193,7 +193,7 @@ public class RelationExpression extends CompoundExpression {
             return performSelector(false);
         }
 
-        Class javaClass = leftValue.getClass();
+        Class<? extends Object> javaClass = leftValue.getClass();
         if (javaClass != rightValue.getClass()) {
             return performSelector(false);
         }

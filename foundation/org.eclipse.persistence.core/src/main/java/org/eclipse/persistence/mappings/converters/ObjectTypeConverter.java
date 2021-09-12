@@ -197,7 +197,7 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    return AccessController.doPrivileged(new PrivilegedClassForName(className, true, classLoader));
+                    return AccessController.doPrivileged(new PrivilegedClassForName<>(className, true, classLoader));
                 } catch (PrivilegedActionException e) {
                     throw ValidationException.classNotFoundWhileConvertingClassNames(className, e.getException());
                 }
@@ -418,7 +418,7 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
     private Object initObject(Class type, String value, boolean isData) {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
             try {
-                Constructor constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(type, new Class[] {String.class}, false));
+                Constructor<Class<?>> constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<Class<?>>(type, new Class[] {String.class}, false));
                 return AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] {value}));
             } catch (PrivilegedActionException exception) {
                 throwInitObjectException(exception, type, value, isData);

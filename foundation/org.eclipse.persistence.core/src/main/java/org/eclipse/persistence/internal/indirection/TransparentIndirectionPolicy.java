@@ -359,7 +359,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
         }
         IndirectContainer container = (IndirectContainer)unitOfWorkIndirectionObject;
         if (container.getValueHolder() instanceof WrappingValueHolder) {
-            ValueHolderInterface valueHolder = ((WrappingValueHolder)container.getValueHolder()).getWrappedValueHolder();
+            ValueHolderInterface<?> valueHolder = ((WrappingValueHolder)container.getValueHolder()).getWrappedValueHolder();
             if ((valueHolder == null) && session.isRemoteUnitOfWork()) {
                 RemoteSessionController controller = ((RemoteUnitOfWork)session).getParentSessionController();
                 valueHolder = controller.getRemoteValueHolders().get(((UnitOfWorkValueHolder)container.getValueHolder()).getWrappedValueHolderRemoteID());

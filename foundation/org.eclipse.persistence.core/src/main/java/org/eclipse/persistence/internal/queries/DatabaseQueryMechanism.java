@@ -842,7 +842,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         Object primaryKey = null;
         if (isFirstCallForInsert) {
             AbstractRecord pkToModify = new DatabaseRecord();
-            List primaryKeyFields = getDescriptor().getPrimaryKeyFields();
+            List<DatabaseField> primaryKeyFields = getDescriptor().getPrimaryKeyFields();
             for (int i = 0; i < primaryKeyFields.size(); i++) {
                 DatabaseField field = (DatabaseField)primaryKeyFields.get(i);
                 if (row.containsKey(field)) {

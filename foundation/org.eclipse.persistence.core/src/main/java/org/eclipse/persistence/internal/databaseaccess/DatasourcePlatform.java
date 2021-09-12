@@ -26,6 +26,7 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
@@ -142,7 +143,7 @@ public class DatasourcePlatform implements Platform {
      */
     @Override
     public void appendParameter(Call call, Writer writer, Object parameter) {
-        String parameterValue = (String)getConversionManager().convertObject(parameter, ClassConstants.STRING);
+        String parameterValue = getConversionManager().convertObject(parameter, ClassConstants.STRING);
         if (parameterValue == null) {
             parameterValue = "";
         }
@@ -224,7 +225,7 @@ public class DatasourcePlatform implements Platform {
      * @return the newly converted object
      */
     @Override
-    public Object convertObject(Object sourceObject, Class javaClass) throws ConversionException {
+    public <T> T convertObject(Object sourceObject, Class<T> javaClass) throws ConversionException {
         return getConversionManager().convertObject(sourceObject, javaClass);
     }
 
@@ -370,7 +371,7 @@ public class DatasourcePlatform implements Platform {
         } else {
             getTimestampQuery().setSessionName(sessionName);
             Object result = session.executeQuery(getTimestampQuery());
-            return (java.sql.Timestamp) session.getDatasourcePlatform().convertObject(result, ClassConstants.TIMESTAMP);
+            return session.getDatasourcePlatform().convertObject(result, ClassConstants.TIMESTAMP);
         }
     }
 
@@ -716,7 +717,7 @@ public class DatasourcePlatform implements Platform {
      * @param javaClass - the class that is converted from
      * @return - a vector of classes
      */
-    public Vector getDataTypesConvertedFrom(Class javaClass) {
+    public List getDataTypesConvertedFrom(Class javaClass) {
         return getConversionManager().getDataTypesConvertedFrom(javaClass);
     }
 
@@ -726,7 +727,7 @@ public class DatasourcePlatform implements Platform {
      * @param javaClass - the class that is converted to
      * @return - a vector of classes
      */
-    public Vector getDataTypesConvertedTo(Class javaClass) {
+    public List getDataTypesConvertedTo(Class javaClass) {
         return getConversionManager().getDataTypesConvertedTo(javaClass);
     }
 

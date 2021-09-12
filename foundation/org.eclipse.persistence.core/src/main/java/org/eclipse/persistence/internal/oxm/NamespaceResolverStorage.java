@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,7 @@ import static org.eclipse.persistence.internal.oxm.VectorUtils.unmodifiableVecto
 
 public class NamespaceResolverStorage extends LinkedHashMap<String, String> {
     private static final long serialVersionUID = -4697397620139076774L;
-    private transient Vector namespaces = emptyVector();
+    private transient Vector<Namespace> namespaces = emptyVector();
     private transient boolean modified = false;
 
     public NamespaceResolverStorage() {
@@ -94,7 +94,7 @@ public class NamespaceResolverStorage extends LinkedHashMap<String, String> {
         return response;
     }
 
-    public Vector getNamespaces() {
+    public Vector<Namespace> getNamespaces() {
         if (isModified()) {
             namespaces = buildNamespacesUnmodifiable();
             setModified(false);
@@ -102,7 +102,7 @@ public class NamespaceResolverStorage extends LinkedHashMap<String, String> {
         return namespaces;
     }
 
-    public void setNamespaces(Vector namespaces) {
+    public void setNamespaces(Vector<Namespace> namespaces) {
         super.clear();
         for (Namespace namespace : (Vector<Namespace>) namespaces) {
             if ((namespace.getPrefix() != null) && (namespace.getNamespaceURI() != null)) {
@@ -120,8 +120,8 @@ public class NamespaceResolverStorage extends LinkedHashMap<String, String> {
         this.modified = modified;
     }
 
-    private Vector buildNamespacesUnmodifiable() {
-        Vector names = new Vector(size());
+    private Vector<Namespace> buildNamespacesUnmodifiable() {
+        Vector<Namespace> names = new Vector<>(size());
         for (Map.Entry<String, String> entry : entrySet()) {
             Namespace namespace = new Namespace(entry.getKey(), entry.getValue());
             names.addElement(namespace);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,10 +50,10 @@ public class DateTimePopulator {
             try {
                 Class clazz = PrivilegedAccessHelper.getClassForName("org.eclipse.persistence.platform.database.oracle.Oracle9Platform");
                 Method getDriverVersionMethod = PrivilegedAccessHelper.getMethod(clazz, "getDriverVersion", null, false);
-                String driverVersion = (String) PrivilegedAccessHelper.invokeMethod(getDriverVersionMethod, session.getPlatform(), null);
+                String driverVersion = PrivilegedAccessHelper.invokeMethod(getDriverVersionMethod, session.getPlatform(), null);
                 if (Helper.compareVersions(driverVersion, "12.1") >= 0) {
                     Method shouldTruncateDateMethod = PrivilegedAccessHelper.getMethod(clazz, "shouldTruncateDate", null, false);
-                    boolean shouldTruncateDate = (Boolean) PrivilegedAccessHelper.invokeMethod(shouldTruncateDateMethod, session.getPlatform(), null);
+                    boolean shouldTruncateDate = PrivilegedAccessHelper.invokeMethod(shouldTruncateDateMethod, session.getPlatform(), null);
                     if (!shouldTruncateDate) {
                         Method setShouldTruncateDateMethod = PrivilegedAccessHelper.getMethod(clazz, "setShouldTruncateDate", new Class[]{boolean.class}, false);
                         PrivilegedAccessHelper.invokeMethod(setShouldTruncateDateMethod, session.getPlatform(), new Object[]{true});

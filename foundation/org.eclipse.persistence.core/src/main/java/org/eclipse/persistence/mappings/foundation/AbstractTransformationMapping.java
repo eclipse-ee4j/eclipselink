@@ -559,7 +559,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     try {
-                        attributeTransformerClass = AccessController.doPrivileged(new PrivilegedClassForName(attributeTransformerClassName, true, classLoader));
+                        attributeTransformerClass = AccessController.doPrivileged(new PrivilegedClassForName<>(attributeTransformerClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(attributeTransformerClassName, exception.getException());
                     }
@@ -584,7 +584,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
                 try {
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                         try {
-                            transformerClass = AccessController.doPrivileged(new PrivilegedClassForName(transformerClassName, true, classLoader));
+                            transformerClass = AccessController.doPrivileged(new PrivilegedClassForName<>(transformerClassName, true, classLoader));
                         } catch (PrivilegedActionException exception) {
                             throw ValidationException.classNotFoundWhileConvertingClassNames(transformerClassName, exception.getException());
                         }
@@ -802,7 +802,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      */
     public Hashtable getFieldNameToMethodNames() {
         Hashtable table = new Hashtable(getFieldTransformations().size());
-        Iterator transformations = getFieldTransformations().iterator();
+        Iterator<FieldTransformation> transformations = getFieldTransformations().iterator();
         while (transformations.hasNext()) {
             FieldTransformation transformation = (FieldTransformation)transformations.next();
             if (transformation instanceof MethodBasedFieldTransformation) {
@@ -850,7 +850,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
                 } else if (field.getColumnDefinition() != null) {
                     // Search for the type for this field definition.
                     if (session.getDatasourcePlatform() instanceof DatabasePlatform) {
-                        Iterator iterator = session.getPlatform().getFieldTypes().entrySet().iterator();
+                        Iterator<Map.Entry<Class, FieldTypeDefinition>> iterator = session.getPlatform().getFieldTypes().entrySet().iterator();
                         while (iterator.hasNext()) {
                             Map.Entry entry = (Map.Entry)iterator.next();
                             if (((FieldTypeDefinition)entry.getValue()).getName().equals(field.getColumnDefinition())) {
@@ -1161,7 +1161,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      */
     public Vector getFieldNameToMethodNameAssociations() {
         Vector associations = new Vector();
-        for (Iterator source = getFieldTransformations().iterator(); source.hasNext();) {
+        for (Iterator<FieldTransformation> source = getFieldTransformations().iterator(); source.hasNext();) {
             FieldTransformation tf = (FieldTransformation)source.next();
             if (tf instanceof MethodBasedFieldTransformation) {
                 Association ass = new Association();

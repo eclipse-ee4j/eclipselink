@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -565,8 +565,8 @@ public class PackageRenamer {
         }
 
         // Sorting key package name.
-        Vector aVector = new Vector();
-        for (Enumeration e = properties.keys(); e.hasMoreElements();) {
+        Vector<Object> aVector = new Vector<>();
+        for (Enumeration<Object> e = properties.keys(); e.hasMoreElements();) {
             aVector.addElement(e.nextElement());
         }
         String[] aStringArrayOfSortedKeyPackageName = new String[aVector.size()];
@@ -576,7 +576,7 @@ public class PackageRenamer {
         // Starting to rename.
         boolean alreadyPrint = false;
         int index = aStringArrayOfSortedKeyPackageName.length;
-        for (Enumeration enumtr = properties.keys(); enumtr.hasMoreElements();) {
+        for (Enumeration<Object> enumtr = properties.keys(); enumtr.hasMoreElements();) {
             enumtr.nextElement();
             String key = aStringArrayOfSortedKeyPackageName[index - 1];
             String value = (String)properties.get(key);
@@ -650,7 +650,7 @@ public class PackageRenamer {
      * @return The new filename, regardless of whether is has been changed
      */
     public String returnNewFileNameIfRequired(String aSourceFileNameWithoutRoot) {
-        for (Enumeration enumtr = properties.keys(); enumtr.hasMoreElements();) {
+        for (Enumeration<Object> enumtr = properties.keys(); enumtr.hasMoreElements();) {
             String key = (String)enumtr.nextElement();
 
             if (aSourceFileNameWithoutRoot.indexOf(key) != -1) {

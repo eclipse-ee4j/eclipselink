@@ -158,7 +158,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                 failed = true;
                 break;
             }
-            int intOrderValue = (Integer) conversionManager.convertObject(orderValue, Integer.class);
+            int intOrderValue = conversionManager.convertObject(orderValue, Integer.class);
             try {
                 // one or more elements have the same order value
                 if(NOT_SET != ((List)container).set(intOrderValue, elements.get(i))) {
@@ -183,7 +183,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                 if(orderValue == null) {
                     orderList.add(null);
                 } else {
-                    orderList.add((Integer)conversionManager.convertObject(orderValue, Integer.class));
+                    orderList.add(conversionManager.convertObject(orderValue, Integer.class));
                 }
             }
 
@@ -477,7 +477,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
             ((IndirectList)valueOfTarget).setIsListOrderBrokenInDb(false);
         }
         if (!changeRecord.getOrderedChangeObjectList().isEmpty()) {
-            Iterator objects =changeRecord.getOrderedChangeObjectList().iterator();
+            Iterator<OrderedChangeObject> objects =changeRecord.getOrderedChangeObjectList().iterator();
             while (objects.hasNext()){
                 OrderedChangeObject changeObject = (OrderedChangeObject)objects.next();
                 objectChanges = changeObject.getChangeSet();
@@ -547,7 +547,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
             if (removedIndices.isEmpty()) {
                 // Check if we have removed objects via a
                 // simpleRemoveFromCollectionChangeRecord API call.
-                Iterator removedObjects = changeRecord.getRemoveObjectList().keySet().iterator();
+                Iterator<ObjectChangeSet> removedObjects = changeRecord.getRemoveObjectList().keySet().iterator();
 
                 while (removedObjects.hasNext()) {
                     objectChanges = (ObjectChangeSet) removedObjects.next();

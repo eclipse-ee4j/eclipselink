@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -285,7 +285,7 @@ public abstract class RemoteConnection implements java.io.Serializable {
      */
     public void fixObjectReferences(Transporter remoteCursoredStream, ObjectLevelReadQuery query, DistributedSession session) {
         RemoteCursoredStream stream = (RemoteCursoredStream)remoteCursoredStream.getObject();
-        List remoteObjectCollection = stream.getObjectCollection();
+        List<Object> remoteObjectCollection = stream.getObjectCollection();
         if (query.isReadAllQuery() && (!query.isReportQuery())) {// could be DataReadQuery
             Vector clientObjectCollection = new Vector(remoteObjectCollection.size());
 

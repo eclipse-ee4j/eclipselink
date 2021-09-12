@@ -3864,7 +3864,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         Vector pk = new Vector(1);
         pk.add(dealer.getId());
 
-        return (Integer) getServerSession().getDescriptor(Dealer.class).getOptimisticLockingPolicy().getWriteLockValue(dealer, pk, getServerSession());
+        return getServerSession().getDescriptor(Dealer.class).getOptimisticLockingPolicy().getWriteLockValue(dealer, pk, getServerSession());
     }
 
     protected List<Employee> createEmployeesWithUnidirectionalMappings(String lastName) {

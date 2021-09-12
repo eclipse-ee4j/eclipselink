@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -250,7 +250,7 @@ public class DefaultConnector implements Connector {
             if(session != null) {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        driverClass = AccessController.doPrivileged(new PrivilegedClassForName(this.getDriverClassName(), true, session.getPlatform().getConversionManager().getLoader()));
+                        driverClass = AccessController.doPrivileged(new PrivilegedClassForName<>(this.getDriverClassName(), true, session.getPlatform().getConversionManager().getLoader()));
                     } catch (PrivilegedActionException exception) {
                         throw DatabaseException.configurationErrorClassNotFound(this.getDriverClassName());
                     }
@@ -260,7 +260,7 @@ public class DefaultConnector implements Connector {
             } else {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        driverClass = AccessController.doPrivileged(new PrivilegedClassForName(this.getDriverClassName(), true, ConversionManager.getDefaultManager().getLoader()));
+                        driverClass = AccessController.doPrivileged(new PrivilegedClassForName<>(this.getDriverClassName(), true, ConversionManager.getDefaultManager().getLoader()));
                     } catch (PrivilegedActionException exception) {
                         throw DatabaseException.configurationErrorClassNotFound(this.getDriverClassName());                }
                 } else {

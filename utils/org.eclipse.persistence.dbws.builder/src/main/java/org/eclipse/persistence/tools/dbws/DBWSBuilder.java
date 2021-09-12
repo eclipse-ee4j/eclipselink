@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -605,7 +605,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
                 Class<?> driverClass = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     driverClass = AccessController.doPrivileged(
-                        new PrivilegedClassForName(driverClassName));
+                        new PrivilegedClassForName<>(driverClassName));
                 }
                 else {
                     driverClass = PrivilegedAccessHelper.getClassForName(driverClassName);
@@ -696,7 +696,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
                 Class<?> platformClass = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     platformClass = AccessController.doPrivileged(
-                        new PrivilegedClassForName(platformClassname));
+                        new PrivilegedClassForName<>(platformClassname));
                 }
                 else {
                     platformClass =

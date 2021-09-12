@@ -1324,7 +1324,7 @@ public class MetadataProject {
                     m_sharedCacheMode = AccessController.doPrivileged(new PrivilegedMethodInvoker<SharedCacheMode>(method, m_persistenceUnitInfo));
                 } else {
                     method = PrivilegedAccessHelper.getDeclaredMethod(PersistenceUnitInfo.class, "getSharedCacheMode", null);
-                    m_sharedCacheMode = (SharedCacheMode) PrivilegedAccessHelper.invokeMethod(method, m_persistenceUnitInfo, null);
+                    m_sharedCacheMode = PrivilegedAccessHelper.invokeMethod(method, m_persistenceUnitInfo, null);
                 }
             } catch (Throwable exception) {
                 // Swallow any exceptions, shared cache mode will be null.

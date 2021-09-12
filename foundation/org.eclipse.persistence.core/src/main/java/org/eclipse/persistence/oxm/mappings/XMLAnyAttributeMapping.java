@@ -196,7 +196,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
         }
         ContainerPolicy cp = getContainerPolicy();
         if (cp != null && cp.getContainerClass() == null) {
-            Class cls = session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(cp.getContainerClassName());
+            Class<Object> cls = session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(cp.getContainerClassName());
             cp.setContainerClass(cls);
         }
     }

@@ -49,8 +49,8 @@ public class NormalHoursTransformer implements FieldTransformer, AttributeTransf
          * This conversion allows for the database type not to match, i.e. may be a Timestamp or
          * String.
          */
-        hours[0] = (Time)session.getProject().getDatasourceLogin().getDatasourcePlatform().convertObject(row.get("START_TIME/text()"), Time.class);
-        hours[1] = (Time)session.getProject().getDatasourceLogin().getDatasourcePlatform().convertObject(row.get("END_TIME/text()"), Time.class);
+        hours[0] = session.getProject().getDatasourceLogin().getDatasourcePlatform().convertObject(row.get("START_TIME/text()"), Time.class);
+        hours[1] = session.getProject().getDatasourceLogin().getDatasourcePlatform().convertObject(row.get("END_TIME/text()"), Time.class);
 
         return hours;
     }

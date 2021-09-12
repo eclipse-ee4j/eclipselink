@@ -131,8 +131,8 @@ public class NLSEmployee implements org.eclipse.persistence.testing.models.emplo
         Time[] hours = new Time[2];
 
         /** This conversion allows for the database type not to match, i.e. may be a Timestamp or String. */
-        hours[0] = (Time)session.getPlatform().convertObject(row.get("\u3066\u3068\u3042\u3064\u3068_\u3068\u3051\u3059\u304a"), java.sql.Time.class);
-        hours[1] = (Time)session.getPlatform().convertObject(row.get("\u304a\u305b\u3048_\u3068\u3051\u3059\u304a"), java.sql.Time.class);
+        hours[0] = session.getPlatform().convertObject(row.get("\u3066\u3068\u3042\u3064\u3068_\u3068\u3051\u3059\u304a"), Time.class);
+        hours[1] = session.getPlatform().convertObject(row.get("\u304a\u305b\u3048_\u3068\u3051\u3059\u304a"), Time.class);
         return hours;
     }
 

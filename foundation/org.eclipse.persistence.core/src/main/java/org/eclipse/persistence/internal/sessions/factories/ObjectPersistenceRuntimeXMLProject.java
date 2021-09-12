@@ -307,7 +307,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         addDescriptor(buildDirectToFieldMappingDescriptor());
         addDescriptor(buildXMLDirectMappingDescriptor());
         try {
-            Class typesafeenumClass = new PrivilegedClassForName("org.eclipse.persistence.jaxb.JAXBTypesafeEnumConverter").run();
+            Class<Object> typesafeenumClass = new PrivilegedClassForName<>("org.eclipse.persistence.jaxb.JAXBTypesafeEnumConverter").run();
             addDescriptor(buildTypesafeEnumConverterDescriptor(typesafeenumClass));
         }
         catch (ClassNotFoundException cnfe) {
@@ -450,8 +450,8 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public Object getAttributeValueFromObject(Object object) {
                 AggregateCollectionMapping mapping = (AggregateCollectionMapping)object;
-                List sourceFields = mapping.getSourceKeyFields();
-                List targetFields = mapping.getTargetForeignKeyFields();
+                List<DatabaseField> sourceFields = mapping.getSourceKeyFields();
+                List<DatabaseField> targetFields = mapping.getTargetForeignKeyFields();
                 List associations = new ArrayList(sourceFields.size());
                 for (int index = 0; index < sourceFields.size(); index++) {
                     associations.add(new Association(targetFields.get(index), sourceFields.get(index)));
@@ -579,7 +579,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                  * changed getAggregateToSourceFieldAssociations to hold String->DatabaseField associations
                  */
                 AggregateObjectMapping mapping = (AggregateObjectMapping)object;
-                Vector associations = mapping.getAggregateToSourceFieldAssociations();
+                Vector<Association> associations = mapping.getAggregateToSourceFieldAssociations();
                 Vector translations = new Vector(associations.size());
                 for (int index = 0; index < associations.size(); index++) {
                     Association association = (Association)associations.get(index);
@@ -762,7 +762,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 }
 
                 Object attributeValue;
-                Class attributeClass = (Class) session.getDatasourcePlatform().convertObject(fieldValue, ClassConstants.CLASS);
+                Class attributeClass = session.getDatasourcePlatform().convertObject(fieldValue, ClassConstants.CLASS);
                 try {
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                         try {
@@ -2608,8 +2608,8 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         sourceToReferenceKeyFieldAssociationsMapping.setAttributeAccessor(new AttributeAccessor() {
             @Override
             public Object getAttributeValueFromObject(Object object) {
-                List sourceFields = ((DirectCollectionMapping)object).getSourceKeyFields();
-                List referenceFields = ((DirectCollectionMapping)object).getReferenceKeyFields();
+                List<DatabaseField> sourceFields = ((DirectCollectionMapping)object).getSourceKeyFields();
+                List<DatabaseField> referenceFields = ((DirectCollectionMapping)object).getReferenceKeyFields();
                 List associations = new ArrayList(sourceFields.size());
                 for (int index = 0; index < sourceFields.size(); index++) {
                     associations.add(new Association(referenceFields.get(index), sourceFields.get(index)));
@@ -3112,7 +3112,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         descriptor.getInheritancePolicy().addClassIndicator(TypeConversionConverter.class, getPrimaryNamespaceXPath() + "type-conversion-converter");
         descriptor.getInheritancePolicy().addClassIndicator(SerializedObjectConverter.class, getPrimaryNamespaceXPath() + "serialized-object-converter");
         try {
-            Class typesafeenumClass = new PrivilegedClassForName("org.eclipse.persistence.jaxb.JAXBTypesafeEnumConverter").run();
+            Class<Object> typesafeenumClass = new PrivilegedClassForName<>("org.eclipse.persistence.jaxb.JAXBTypesafeEnumConverter").run();
             descriptor.getInheritancePolicy().addClassIndicator(typesafeenumClass, getPrimaryNamespaceXPath() + "typesafe-enumeration-converter");
         }
         catch (ClassNotFoundException cnfe) {
@@ -3219,8 +3219,8 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         sourceToRelationKeyFieldAssociationsMapping.setAttributeAccessor(new AttributeAccessor() {
             @Override
             public Object getAttributeValueFromObject(Object object) {
-                List sourceFields = ((ManyToManyMapping)object).getSourceKeyFields();
-                List relationFields = ((ManyToManyMapping)object).getSourceRelationKeyFields();
+                List<DatabaseField> sourceFields = ((ManyToManyMapping)object).getSourceKeyFields();
+                List<DatabaseField> relationFields = ((ManyToManyMapping)object).getSourceRelationKeyFields();
                 List associations = new ArrayList(sourceFields.size());
                 for (int index = 0; index < sourceFields.size(); index++) {
                     associations.add(new Association(relationFields.get(index), sourceFields.get(index)));
@@ -3252,8 +3252,8 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         targetToRelationKeyFieldAssociationsMapping.setAttributeAccessor(new AttributeAccessor() {
             @Override
             public Object getAttributeValueFromObject(Object object) {
-                List targetFields = ((ManyToManyMapping)object).getTargetKeyFields();
-                List relationFields = ((ManyToManyMapping)object).getTargetRelationKeyFields();
+                List<DatabaseField> targetFields = ((ManyToManyMapping)object).getTargetKeyFields();
+                List<DatabaseField> relationFields = ((ManyToManyMapping)object).getTargetRelationKeyFields();
                 List associations = new ArrayList(targetFields.size());
                 for (int index = 0; index < targetFields.size(); index++) {
                     associations.add(new Association(relationFields.get(index), targetFields.get(index)));
@@ -3505,8 +3505,8 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         sourceToTargetKeyFieldAssociationsMapping.setAttributeAccessor(new AttributeAccessor() {
             @Override
             public Object getAttributeValueFromObject(Object object) {
-                List sourceFields = ((OneToManyMapping)object).getSourceKeyFields();
-                List targetFields = ((OneToManyMapping)object).getTargetForeignKeyFields();
+                List<DatabaseField> sourceFields = ((OneToManyMapping)object).getSourceKeyFields();
+                List<DatabaseField> targetFields = ((OneToManyMapping)object).getTargetForeignKeyFields();
                 List associations = new ArrayList(sourceFields.size());
                 for (int index = 0; index < sourceFields.size(); index++) {
                     associations.add(new Association(targetFields.get(index), sourceFields.get(index)));
@@ -3605,9 +3605,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         sourceToTargetKeyFieldAssociationsMapping.setAttributeAccessor(new AttributeAccessor() {
             @Override
             public Object getAttributeValueFromObject(Object object) {
-                Map sourceToTargetKeyFields = ((OneToOneMapping)object).getSourceToTargetKeyFields();
+                Map<DatabaseField, DatabaseField> sourceToTargetKeyFields = ((OneToOneMapping)object).getSourceToTargetKeyFields();
                 List associations = new ArrayList(sourceToTargetKeyFields.size());
-                Iterator iterator = sourceToTargetKeyFields.entrySet().iterator();
+                Iterator<Map.Entry<DatabaseField, DatabaseField>> iterator = sourceToTargetKeyFields.entrySet().iterator();
                 while (iterator.hasNext()) {
                     Map.Entry entry = (Map.Entry)iterator.next();
                     associations.add(new Association(entry.getKey(), entry.getValue()));

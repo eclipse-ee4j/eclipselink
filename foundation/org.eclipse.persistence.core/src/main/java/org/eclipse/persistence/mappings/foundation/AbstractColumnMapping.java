@@ -148,7 +148,7 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        converterClass = AccessController.doPrivileged(new PrivilegedClassForName(converterClassName, true, classLoader));
+                        converterClass = AccessController.doPrivileged(new PrivilegedClassForName<>(converterClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(converterClassName, exception.getException());
                     }

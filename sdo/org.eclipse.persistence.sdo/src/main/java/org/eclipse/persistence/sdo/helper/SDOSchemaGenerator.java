@@ -572,7 +572,7 @@ public class SDOSchemaGenerator {
         if (sdoProperty.isDefaultSet()) {
             if (!sdoProperty.isMany() && sdoProperty.getType().isDataType()) {
                 XMLConversionManager xmlConversionManager = ((SDOXMLHelper)aHelperContext.getXMLHelper()).getXmlConversionManager();
-                elem.setDefaultValue((String)xmlConversionManager.convertObject(sdoProperty.getDefault(), ClassConstants.STRING, sdoProperty.getXsdType()));
+                elem.setDefaultValue(xmlConversionManager.convertObject(sdoProperty.getDefault(), ClassConstants.STRING, sdoProperty.getXsdType()));
             }
 
         }
@@ -678,7 +678,7 @@ public class SDOSchemaGenerator {
         if (((SDOProperty)property).isDefaultSet()) {
             if (!property.isMany() && property.getType().isDataType()) {
                 XMLConversionManager xmlConversionManager = ((SDOXMLHelper)aHelperContext.getXMLHelper()).getXmlConversionManager();
-                attr.setDefaultValue((String)xmlConversionManager.convertObject(property.getDefault(), ClassConstants.STRING, ((SDOProperty)property).getXsdType()));
+                attr.setDefaultValue(xmlConversionManager.convertObject(property.getDefault(), ClassConstants.STRING, ((SDOProperty)property).getXsdType()));
             }
         }
         addSimpleComponentAnnotations(attr, property, false);

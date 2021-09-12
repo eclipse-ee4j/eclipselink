@@ -283,7 +283,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
         ContainerPolicy cp = getContainerPolicy();
         if (cp != null) {
             if (cp.getContainerClass() == null) {
-                Class cls = session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(cp.getContainerClassName());
+                Class<Object> cls = session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(cp.getContainerClassName());
                 cp.setContainerClass(cls);
             }
         }

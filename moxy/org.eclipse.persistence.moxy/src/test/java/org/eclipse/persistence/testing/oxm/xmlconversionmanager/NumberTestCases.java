@@ -38,7 +38,7 @@ public class NumberTestCases extends OXTestCase {
 
     public void testConvertWithPlusToByte() {
         Byte controlByte = Byte.valueOf("1");
-        Byte testByte = (Byte) xmlConversionManager.convertObject("+1", Byte.class);
+        Byte testByte = xmlConversionManager.convertObject("+1", Byte.class);
         String testString = String.valueOf(testByte);
         String controlString = String.valueOf(controlByte);
         assertEquals(controlString, testString);
@@ -46,7 +46,7 @@ public class NumberTestCases extends OXTestCase {
 
     public void testConvertWithPlusToInteger() {
         Integer controlInteger = Integer.valueOf("1");
-        Integer testInteger = (Integer) xmlConversionManager.convertObject("+1", Integer.class);
+        Integer testInteger = xmlConversionManager.convertObject("+1", Integer.class);
         String testString = String.valueOf(testInteger);
         String controlString = String.valueOf(controlInteger);
         assertEquals(controlString, testString);
@@ -54,7 +54,7 @@ public class NumberTestCases extends OXTestCase {
 
     public void testConvertWithMinuToByte() {
         Byte controlByte = Byte.valueOf("-1");
-        Byte testByte = (Byte) xmlConversionManager.convertObject("-1", Byte.class);
+        Byte testByte = xmlConversionManager.convertObject("-1", Byte.class);
         String testString = String.valueOf(testByte);
         String controlString = String.valueOf(controlByte);
         assertEquals(controlString, testString);
@@ -62,79 +62,79 @@ public class NumberTestCases extends OXTestCase {
 
     public void testConvertWithMinusToInteger() {
         Integer controlInteger = Integer.valueOf("-1");
-        Integer testInteger = (Integer) xmlConversionManager.convertObject("-1", Integer.class);
+        Integer testInteger = xmlConversionManager.convertObject("-1", Integer.class);
         String testString = String.valueOf(testInteger);
         String controlString = String.valueOf(controlInteger);
         assertEquals(controlString, testString);
     }
 
     public void testConvertEmptyStringTo_byte() {
-        byte test = (Byte) xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, byte.class);
+        byte test = xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, byte.class);
         assertEquals(0, test);
     }
 
     public void testConvertEmptyStringTo_Byte() {
-        Byte test = (Byte) xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, Byte.class);
+        Byte test = xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, Byte.class);
         assertEquals(0, test.byteValue());
     }
 
     public void testConvertEmptyStringTo_double() {
-        double test = (Double) xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, double.class);
+        double test = xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, double.class);
         assertEquals(0.0, test);
     }
 
     public void testConvertEmptyStringTo_Double() {
-        Double test = (Double) xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, Double.class);
+        Double test = xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, Double.class);
         assertEquals(0.0, test);
     }
 
     public void testConvertEmptyStringTo_float() {
-        float test = (Float) xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, float.class);
+        float test = xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, float.class);
         assertEquals(0.0, test, 0);
     }
 
     public void testConvertEmptyStringTo_Float() {
-        Float test = (Float) xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, Float.class);
+        Float test = xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, Float.class);
         assertEquals(0.0, test, 0);
     }
 
     public void testConvertEmptyStringTo_int() {
-        int test = (Integer) xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, int.class);
+        int test = xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, int.class);
         assertEquals(0, test);
     }
 
     public void testConvertEmptyStringTo_Integer() {
-        Integer test = (Integer) xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, Integer.class);
+        Integer test = xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, Integer.class);
         assertEquals(0, test.intValue());
     }
 
     public void testConvertEmptyStringTo_long() {
-        long test = (Long) xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, long.class);
+        long test = xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, long.class);
         assertEquals(0, test);
     }
 
     public void testConvertEmptyStringTo_Long() {
-        Long test = (Long) xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, Long.class);
+        Long test = xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, Long.class);
         assertEquals(0, test.longValue());
     }
 
     public void testConvertEmptyStringTo_short() {
-        short test = (Short) xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, short.class);
+        short test = xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, short.class);
         assertEquals(0, test);
     }
 
     public void testConvertEmptyStringTo_Short() {
-        Short test = (Short) xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, Short.class);
+        Short test = xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, Short.class);
         assertEquals(0, test.shortValue());
     }
 
     public void testConvertEmptyStringTo_BigDecimal() {
-        BigDecimal test = (BigDecimal) xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, BigDecimal.class);
+        BigDecimal test = xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, BigDecimal.class);
         assertNull(test);
     }
 
     public void testConvertEmptyStringTo_BigInteger() {
-        BigInteger test = (BigInteger) xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, BigInteger.class);
+        BigInteger test = xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, BigInteger.class);
         assertNull(test);
     }
 
@@ -142,7 +142,7 @@ public class NumberTestCases extends OXTestCase {
     public void testConvertBigDecimalTo_String() {
         String controlString = "0.000000001";
         BigDecimal controlBigDecimal = new BigDecimal(controlString);
-        String testString = (String)xmlConversionManager.convertObject(controlBigDecimal, String.class);
+        String testString = xmlConversionManager.convertObject(controlBigDecimal, String.class);
         assertEquals(controlString, testString);
     }
 
@@ -150,7 +150,7 @@ public class NumberTestCases extends OXTestCase {
     public void testConvertBigDecimalWithQNameTo_String() {
         String controlString = "0.000000001";
         BigDecimal controlBigDecimal = new BigDecimal(controlString);
-        String testString = (String)xmlConversionManager.convertObject(controlBigDecimal, String.class, XMLConstants.STRING_QNAME);
+        String testString = xmlConversionManager.convertObject(controlBigDecimal, String.class, XMLConstants.STRING_QNAME);
         assertEquals(controlString, testString);
     }
 

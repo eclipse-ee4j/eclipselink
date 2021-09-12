@@ -161,7 +161,7 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
      */
     private boolean isSet(Object object) {
         try {
-            Boolean isSet = (Boolean) PrivilegedAccessHelper.invokeMethod(getIsSetMethod(object.getClass()), object, isSetParameters);
+            Boolean isSet = PrivilegedAccessHelper.invokeMethod(getIsSetMethod(object.getClass()), object, isSetParameters);
             return isSet;
         } catch (Exception e) {
             throw new RuntimeException(e);

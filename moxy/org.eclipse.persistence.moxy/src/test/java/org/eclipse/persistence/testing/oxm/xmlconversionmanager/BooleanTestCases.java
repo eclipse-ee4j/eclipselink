@@ -32,12 +32,12 @@ public class BooleanTestCases extends OXTestCase {
     }
 
     public void testConvertEmptyStringTo_boolean() {
-        boolean test = (Boolean) xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, boolean.class);
+        boolean test = xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, boolean.class);
         assertEquals(false, test);
     }
 
     public void testConvertEmptyStringTo_Boolean() {
-        Boolean test = (Boolean) xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, Boolean.class);
+        Boolean test = xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, Boolean.class);
         assertEquals(false, test.booleanValue());
     }
 

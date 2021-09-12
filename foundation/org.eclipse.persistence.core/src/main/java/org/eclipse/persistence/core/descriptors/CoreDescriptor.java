@@ -113,7 +113,7 @@ public abstract class CoreDescriptor<
      * PUBLIC:
      * Return the java class.
      */
-    public abstract Class getJavaClass();
+    public abstract <T> Class<T> getJavaClass();
 
     /**
      * INTERNAL:
@@ -178,7 +178,7 @@ public abstract class CoreDescriptor<
     * Set the Java class that this descriptor maps.
     * Every descriptor maps one and only one class.
     */
-    public abstract void setJavaClass(Class javaClass);
+    public abstract void setJavaClass(Class<?> javaClass);
 
     /**
      * INTERNAL:

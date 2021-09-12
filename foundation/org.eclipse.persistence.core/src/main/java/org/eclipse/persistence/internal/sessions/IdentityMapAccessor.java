@@ -855,7 +855,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
         //removed synchronization that would result in deadlock
         //no need to synchronize as changes to identity map will not aversely affect this code
         //bug 275724: IdentityMapAccessor.invalidateClass() should not check ReadLock when invalidating
-        Enumeration keys = identityMap.keys(false); // do not check readlock
+        Enumeration<CacheKey> keys = identityMap.keys(false); // do not check readlock
         while (keys.hasMoreElements()) {
             CacheKey key = (CacheKey)keys.nextElement();
             Object obj = key.getObject();
@@ -1070,7 +1070,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      */
     @Override
     public Object removeFromIdentityMap(Object object) {
-        Class theClass = object.getClass();
+        Class<? extends Object> theClass = object.getClass();
         return removeFromIdentityMap(getSession().getId(object), theClass, getSession().getDescriptor(theClass), object);
     }
 
@@ -1153,7 +1153,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
         };
 
         iterator.setSession(getSession());
-        Iterator descriptors = getSession().getDescriptors().values().iterator();
+        Iterator<ClassDescriptor> descriptors = getSession().getDescriptors().values().iterator();
         while (descriptors.hasNext()) {
             ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
             IdentityMap cache = getIdentityMap(descriptor, true);

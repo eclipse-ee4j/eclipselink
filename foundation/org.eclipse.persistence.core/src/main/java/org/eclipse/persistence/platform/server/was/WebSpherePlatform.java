@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -95,7 +95,7 @@ public class WebSpherePlatform extends JMXServerPlatformBase {
     protected Class getWebsphereUtilClass() {
         if (this.websphereUtilClass == null) {
             try {
-                this.websphereUtilClass = (Class) getDatabaseSession().getPlatform().convertObject("com.ibm.ws.rsadapter.jdbc.WSJdbcUtil", Class.class);
+                this.websphereUtilClass = getDatabaseSession().getPlatform().convertObject("com.ibm.ws.rsadapter.jdbc.WSJdbcUtil", Class.class);
             } catch (Throwable exception) {
                 getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, exception);
                 this.websphereUtilClass = void.class;
@@ -110,7 +110,7 @@ public class WebSpherePlatform extends JMXServerPlatformBase {
     protected Class getWebsphereConnectionClass() {
         if (this.websphereConnectionClass == null) {
             try {
-                this.websphereConnectionClass = (Class) getDatabaseSession().getPlatform().convertObject("com.ibm.ws.rsadapter.jdbc.WSJdbcConnection", Class.class);
+                this.websphereConnectionClass = getDatabaseSession().getPlatform().convertObject("com.ibm.ws.rsadapter.jdbc.WSJdbcConnection", Class.class);
             } catch (Throwable exception) {
                 getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, exception);
                 this.websphereConnectionClass = void.class;
@@ -143,7 +143,7 @@ public class WebSpherePlatform extends JMXServerPlatformBase {
     public Connection unwrapConnection(Connection connection) {
         if (getWebsphereConnectionClass().isInstance(connection) && getVendorConnectionMethod() != null) {
             try {
-                return (Connection) PrivilegedAccessHelper.invokeMethod(getVendorConnectionMethod(), null, new Object[]{connection});
+                return PrivilegedAccessHelper.invokeMethod(getVendorConnectionMethod(), null, new Object[]{connection});
             } catch (IllegalAccessException exception) {
                 getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, exception);
             } catch (InvocationTargetException exception) {

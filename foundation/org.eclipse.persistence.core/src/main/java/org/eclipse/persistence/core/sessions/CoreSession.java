@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,7 +50,7 @@ public interface CoreSession<
      * by one of the classes stored in the map, that descriptor will be stored under the
      * new class.
      */
-    DESCRIPTOR getDescriptor(Class theClass);
+    DESCRIPTOR getDescriptor(Class<?> theClass);
 
     /**
      * ADVANCED:
@@ -62,7 +62,7 @@ public interface CoreSession<
      * ADVANCED:
      * Return all registered descriptors.
      */
-    Map<Class, DESCRIPTOR> getDescriptors();
+    Map<Class<?>, DESCRIPTOR> getDescriptors();
 
     /**
      * PUBLIC:

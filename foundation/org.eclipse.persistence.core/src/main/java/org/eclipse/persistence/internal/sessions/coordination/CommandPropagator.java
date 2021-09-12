@@ -87,7 +87,7 @@ public class CommandPropagator implements Runnable {
      */
     public void synchronousPropagateCommand() {
         rcm.logDebug("sync_propagation", null);
-        Iterator connections = rcm.getTransportManager().getConnectionsToExternalServicesForCommandPropagation().values().iterator();
+        Iterator<RemoteConnection> connections = rcm.getTransportManager().getConnectionsToExternalServicesForCommandPropagation().values().iterator();
 
         while (connections.hasNext()) {
             connection = (RemoteConnection)connections.next();
@@ -197,8 +197,8 @@ public class CommandPropagator implements Runnable {
                 this.rcm.getCommandProcessor().endOperationProfile(SessionProfiler.CacheCoordination);
             }
         } else {
-            Map mapConnections = this.rcm.getTransportManager().getConnectionsToExternalServicesForCommandPropagation();
-            Iterator iterator = mapConnections.values().iterator();
+            Map<String, RemoteConnection> mapConnections = this.rcm.getTransportManager().getConnectionsToExternalServicesForCommandPropagation();
+            Iterator<RemoteConnection> iterator = mapConnections.values().iterator();
             if (mapConnections.size() == 1) {
                 // There is only one connection - no need for yet another thread.
                 // Set the connection into the current one

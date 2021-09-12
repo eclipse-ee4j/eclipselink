@@ -42,11 +42,11 @@ public class CompoundExpressionImpl extends FunctionExpressionImpl<Boolean> impl
     protected boolean isNegated = false;
 
     public <T> CompoundExpressionImpl (Metamodel metamodel, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> compoundExpressions){
-        super(metamodel, (Class<Boolean>)ClassConstants.BOOLEAN, expressionNode, compoundExpressions);
+        super(metamodel, ClassConstants.BOOLEAN, expressionNode, compoundExpressions);
     }
 
     public <T> CompoundExpressionImpl (Metamodel metamodel, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> compoundExpressions, String operator){
-        super(metamodel, (Class<Boolean>)ClassConstants.BOOLEAN, expressionNode, compoundExpressions, operator);
+        super(metamodel, ClassConstants.BOOLEAN, expressionNode, compoundExpressions, operator);
     }
 
     /**
@@ -97,7 +97,7 @@ public class CompoundExpressionImpl extends FunctionExpressionImpl<Boolean> impl
      */
     @Override
     public Predicate not(){
-        List<Expression<?>> list = new ArrayList();
+        List<Expression<?>> list = new ArrayList<>();
         list.add(this);
         CompoundExpressionImpl expr = new CompoundExpressionImpl(this.metamodel, this.currentNode.not(), list, "not");
         expr.setIsNegated(true);

@@ -233,7 +233,7 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    return AccessController.doPrivileged(new PrivilegedClassForName(classname, true, loader));
+                    return AccessController.doPrivileged(new PrivilegedClassForName<>(classname, true, loader));
                 } catch (PrivilegedActionException exception) {
                     throw ValidationException.unableToLoadClass(classname, exception.getException());
                 }

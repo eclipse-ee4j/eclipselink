@@ -317,8 +317,8 @@ public class Employee implements Serializable, Cloneable {
         Time[] hours = new Time[2];
 
         /** This conversion allows for the database type not to match, i.e. may be a Timestamp or String. */
-        hours[0] = (Time) session.getDatasourcePlatform().convertObject(row.get("START_TIME"), java.sql.Time.class);
-        hours[1] = (Time) session.getDatasourcePlatform().convertObject(row.get("END_TIME"), java.sql.Time.class);
+        hours[0] = session.getDatasourcePlatform().convertObject(row.get("START_TIME"), Time.class);
+        hours[1] = session.getDatasourcePlatform().convertObject(row.get("END_TIME"), Time.class);
         return hours;
     }
 

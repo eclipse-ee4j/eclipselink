@@ -995,9 +995,9 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         @Override
         public Object getAttributeValueFromObject(Object anObject) throws DescriptorException {
             StoredProcedureCall spc = (StoredProcedureCall)anObject;
-            List parameterTypes = spc.getParameterTypes();
+            List<Integer> parameterTypes = spc.getParameterTypes();
             List parameters = spc.getParameters();
-            List procedureArgumentNames = spc.getProcedureArgumentNames();
+            List<String> procedureArgumentNames = spc.getProcedureArgumentNames();
             List storedProcedureArguments = new Vector();
             for (int i = spc.getFirstParameterIndexForCallString(); i < parameterTypes.size(); i++) {
                 StoredProcedureArgument spa = null;
@@ -1713,9 +1713,9 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          fieldsMapping.setAttributeAccessor(new AttributeAccessor() {
              @Override
             public Object getAttributeValueFromObject(Object object) {
-                 Map fields = ((OracleObjectType) object).getFields();
+                 Map<String, DatabaseType> fields = ((OracleObjectType) object).getFields();
                  List associations = new ArrayList(fields.size());
-                 Iterator iterator = fields.entrySet().iterator();
+                 Iterator<Map.Entry<String, DatabaseType>> iterator = fields.entrySet().iterator();
                  while (iterator.hasNext()) {
                      Map.Entry entry = (Map.Entry)iterator.next();
                      associations.add(new ObjectTypeFieldAssociation(entry.getKey().toString(),  wrapType((DatabaseType) entry.getValue())));
@@ -1725,12 +1725,12 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
              @Override
             public void setAttributeValueInObject(Object object, Object value) {
                  OracleObjectType objectType = (OracleObjectType) object;
-                 List associations = (List) value;
-                 Map fieldMap = new LinkedHashMap<String, DatabaseType>(associations.size() + 1);
-                 Iterator iterator = associations.iterator();
+                 List<ObjectTypeFieldAssociation> associations = (List<ObjectTypeFieldAssociation>) value;
+                 Map<String, DatabaseType> fieldMap = new LinkedHashMap<>(associations.size() + 1);
+                 Iterator<ObjectTypeFieldAssociation> iterator = associations.iterator();
                  while (iterator.hasNext()) {
                      ObjectTypeFieldAssociation association = (ObjectTypeFieldAssociation)iterator.next();
-                     fieldMap.put(association.getKey(), unwrapType((DatabaseTypeWrapper)association.getValue()));
+                     fieldMap.put((String) association.getKey(), unwrapType((DatabaseTypeWrapper)association.getValue()));
                  }
                  objectType.setFields(fieldMap);
              }

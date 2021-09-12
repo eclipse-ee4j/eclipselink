@@ -183,12 +183,12 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
 
         /** This conversion allows for the database type not to match, i.e. may be a Timestamp or String. */
         try {
-            hours[0] = (Time) session.getDatasourcePlatform().convertObject(row.get("START_TIME"), java.sql.Time.class);
-            hours[1] = (Time) session.getDatasourcePlatform().convertObject(row.get("END_TIME"), java.sql.Time.class);
+            hours[0] = session.getDatasourcePlatform().convertObject(row.get("START_TIME"), Time.class);
+            hours[1] = session.getDatasourcePlatform().convertObject(row.get("END_TIME"), Time.class);
         } catch (Throwable in904) {
             // Allow performance tests to be run in 904.
-            hours[0] = (Time)ConversionManager.getDefaultManager().convertObject(row.get("START_TIME"), java.sql.Time.class);
-            hours[1] = (Time)ConversionManager.getDefaultManager().convertObject(row.get("END_TIME"), java.sql.Time.class);
+            hours[0] = ConversionManager.getDefaultManager().convertObject(row.get("START_TIME"), Time.class);
+            hours[1] = ConversionManager.getDefaultManager().convertObject(row.get("END_TIME"), Time.class);
         }
         return hours;
     }

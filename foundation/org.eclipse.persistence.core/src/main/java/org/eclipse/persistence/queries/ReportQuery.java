@@ -1163,8 +1163,8 @@ public class ReportQuery extends ReadAllQuery {
             return false;
         }
         ReportQuery query = (ReportQuery) object;
-        List items = getItems();
-        List otherItems = query.getItems();
+        List<ReportItem> items = getItems();
+        List<ReportItem> otherItems = query.getItems();
         int size = items.size();
         if (size != otherItems.size()) {
             return false;
@@ -1175,8 +1175,8 @@ public class ReportQuery extends ReadAllQuery {
             }
         }
         if (hasGroupByExpressions() && query.hasGroupByExpressions()) {
-            List groupBys = getGroupByExpressions();
-            List otherGroupBys = query.getGroupByExpressions();
+            List<Expression> groupBys = getGroupByExpressions();
+            List<Expression> otherGroupBys = query.getGroupByExpressions();
             size = groupBys.size();
             if (size != otherGroupBys.size()) {
                 return false;

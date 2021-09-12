@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -376,9 +376,9 @@ public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
         sourceToTargetKeyFieldAssociationsMapping.setAttributeAccessor(new AttributeAccessor() {
                 @Override
                 public Object getAttributeValueFromObject(Object object) {
-                    Map sourceToTargetKeyFields = ((EISOneToOneMapping)object).getSourceToTargetKeyFields();
+                    Map<DatabaseField, DatabaseField> sourceToTargetKeyFields = ((EISOneToOneMapping)object).getSourceToTargetKeyFields();
                     List associations = new ArrayList(sourceToTargetKeyFields.size());
-                    Iterator iterator = sourceToTargetKeyFields.entrySet().iterator();
+                    Iterator<Map.Entry<DatabaseField, DatabaseField>> iterator = sourceToTargetKeyFields.entrySet().iterator();
                     while (iterator.hasNext()) {
                         Map.Entry entry = (Map.Entry)iterator.next();
                         associations.add(new Association(entry.getKey(), entry.getValue()));

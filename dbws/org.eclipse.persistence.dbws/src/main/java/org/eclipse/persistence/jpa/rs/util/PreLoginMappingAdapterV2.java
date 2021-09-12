@@ -42,7 +42,7 @@ public class PreLoginMappingAdapterV2 extends SessionEventListener {
         final Project project = event.getSession().getProject();
         final DefaultXMLNameTransformer xmlNameTransformer = new DefaultXMLNameTransformer();
         for (Object descriptorAlias : project.getAliasDescriptors().keySet()) {
-            final ClassDescriptor descriptor = (ClassDescriptor) project.getAliasDescriptors().get(descriptorAlias);
+            final ClassDescriptor descriptor = project.getAliasDescriptors().get(descriptorAlias);
 
             if (!PersistenceWeavedRest.class.isAssignableFrom(descriptor.getJavaClass())) {
                 continue;

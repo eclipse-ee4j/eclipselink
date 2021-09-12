@@ -60,7 +60,7 @@ public class DefaultSessionLog extends AbstractSessionLog implements Serializabl
      * Represents the Map that stores log levels per the name space strings. The
      * keys are category names. The values are log levels.
      */
-    private Map<String, Integer> categoryLogLevelMap = new HashMap();
+    private final Map<String, Integer> categoryLogLevelMap = new HashMap<>();
 
     public DefaultSessionLog() {
         super();

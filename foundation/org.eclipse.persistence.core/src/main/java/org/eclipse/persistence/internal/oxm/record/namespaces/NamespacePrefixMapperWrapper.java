@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,7 +44,7 @@ public class NamespacePrefixMapperWrapper extends NamespacePrefixMapper {
 
     public NamespacePrefixMapperWrapper(Object prefixMapper) {
         this.prefixMapper = prefixMapper;
-        Class prefixMapperClass = prefixMapper.getClass();
+        Class<? extends Object> prefixMapperClass = prefixMapper.getClass();
         try {
             this.getPreferredPrefixMethod = PrivilegedAccessHelper.getMethod(prefixMapperClass, GET_PREF_PREFIX_METHOD_NAME, PREF_PREFIX_PARAM_TYPES, false);
         } catch(Exception ex) {
@@ -71,7 +71,7 @@ public class NamespacePrefixMapperWrapper extends NamespacePrefixMapper {
     @Override
     public String getPreferredPrefix(String namespaceUri, String suggestion, boolean requirePrefix) {
         try {
-            return (String)PrivilegedAccessHelper.invokeMethod(getPreferredPrefixMethod, prefixMapper, new Object[]{namespaceUri, suggestion, requirePrefix});
+            return PrivilegedAccessHelper.invokeMethod(getPreferredPrefixMethod, prefixMapper, new Object[]{namespaceUri, suggestion, requirePrefix});
         } catch(Exception ex) {
             throw XMLMarshalException.errorInvokingPrefixMapperMethod(GET_PREF_PREFIX_METHOD_NAME, prefixMapper);
         }
@@ -80,7 +80,7 @@ public class NamespacePrefixMapperWrapper extends NamespacePrefixMapper {
     @Override
     public String[] getContextualNamespaceDecls() {
         try {
-            return (String[])PrivilegedAccessHelper.invokeMethod(this.getContextualNamespaceDeclsMethod, prefixMapper, new Object[]{});
+            return PrivilegedAccessHelper.invokeMethod(this.getContextualNamespaceDeclsMethod, prefixMapper, new Object[]{});
         } catch(Exception ex) {
             throw XMLMarshalException.errorInvokingPrefixMapperMethod(GET_CONTEXTUAL_NAMESPACE_DECL_METHOD_NAME, prefixMapper);
         }
@@ -89,7 +89,7 @@ public class NamespacePrefixMapperWrapper extends NamespacePrefixMapper {
     @Override
     public String[] getPreDeclaredNamespaceUris() {
         try {
-            return (String[])PrivilegedAccessHelper.invokeMethod(getPredeclaredNamespaceUrisMethod, prefixMapper, new Object[]{});
+            return PrivilegedAccessHelper.invokeMethod(getPredeclaredNamespaceUrisMethod, prefixMapper, new Object[]{});
         } catch(Exception ex) {
             throw XMLMarshalException.errorInvokingPrefixMapperMethod(GET_PRE_DECL_NAMESPACE_URIS_METHOD_NAME, prefixMapper);
         }
@@ -98,7 +98,7 @@ public class NamespacePrefixMapperWrapper extends NamespacePrefixMapper {
     @Override
     public String[] getPreDeclaredNamespaceUris2() {
         try {
-            return (String[])PrivilegedAccessHelper.invokeMethod(getPredeclaredNamespaceUris2Method, prefixMapper, new Object[]{});
+            return PrivilegedAccessHelper.invokeMethod(getPredeclaredNamespaceUris2Method, prefixMapper, new Object[]{});
         } catch(Exception ex) {
             throw XMLMarshalException.errorInvokingPrefixMapperMethod(GET_PRE_DECL_NAMESPACE_URIS2_METHOD_NAME, prefixMapper);
         }

@@ -551,7 +551,7 @@ public class MetadataAsmFactory extends MetadataFactory {
         // since it is a JDK class, just use reflection.
         if ((className.length() > 5) && className.substring(0, 5).equals("java.")) {
             try {
-                Class reflectClass = Class.forName(className);
+                Class<?> reflectClass = Class.forName(className);
                 if (reflectClass.getSuperclass() != null) {
                     metadataClass.setSuperclassName(reflectClass.getSuperclass().getName());
                 }

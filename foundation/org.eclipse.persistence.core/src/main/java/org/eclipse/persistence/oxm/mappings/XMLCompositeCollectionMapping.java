@@ -60,7 +60,6 @@ import org.eclipse.persistence.sessions.Session;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
 
 /**
  * <p>Composite collection XML mappings map an attribute that contains a homogeneous collection of objects
@@ -326,7 +325,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         ContainerPolicy cp = getContainerPolicy();
         if (cp != null) {
             if (cp.getContainerClass() == null) {
-                Class cls = session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(cp.getContainerClassName());
+                Class<Object> cls = session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(cp.getContainerClassName());
                 cp.setContainerClass(cls);
             }
             if (cp instanceof MapContainerPolicy) {
@@ -620,7 +619,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
             typeFragment.setNamespaceURI(namespaceURI);
             QName schemaTypeQName = new QName(namespaceURI, typeFragment.getLocalName());
             ConversionManager conversionManager = (ConversionManager) executionSession.getDatasourcePlatform().getConversionManager();
-            Class theClass = conversionManager.javaType(schemaTypeQName);
+            Class<Object> theClass = conversionManager.javaType(schemaTypeQName);
             if (theClass != null) {
                 objectToAdd = conversionManager.convertObject(stringValue, theClass, schemaTypeQName);
             }

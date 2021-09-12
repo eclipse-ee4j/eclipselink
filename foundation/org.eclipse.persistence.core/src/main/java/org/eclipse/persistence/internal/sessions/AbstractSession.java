@@ -238,7 +238,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     transient protected ClassDescriptor lastDescriptorAccessed;
 
     /** PERF: cache descriptors from project. */
-    transient protected Map<Class, ClassDescriptor> descriptors;
+    transient protected Map<Class<?>, ClassDescriptor> descriptors;
 
     /** PERF: cache table per tenant descriptors needing to be initialized per EM */
     transient protected List<ClassDescriptor> tablePerTenantDescriptors;
@@ -335,7 +335,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     transient protected Serializer serializer;
 
     /** Allow CDI injection of entity listeners **/
-    transient protected InjectionManager injectionManager;
+    transient protected InjectionManager<?> injectionManager;
 
     /**
      * Indicates whether ObjectLevelReadQuery should by default use ResultSet Access optimization.
@@ -461,7 +461,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             // use class.forName() to avoid loading parser classes for JAXB
             // Use Class.forName not thread class loader to avoid class loader issues.
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                parserClass = AccessController.doPrivileged(new PrivilegedClassForName(queryBuilderClassName));
+                parserClass = AccessController.doPrivileged(new PrivilegedClassForName<>(queryBuilderClassName));
                 builder = (JPAQueryBuilder)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(parserClass));
             } else {
                 parserClass = PrivilegedAccessHelper.getClassForName(queryBuilderClassName);
@@ -1179,13 +1179,13 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     public <T> InjectionManager<T> createInjectionManager(Object beanManager){
         try{
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    Class elim = AccessController.doPrivileged(new PrivilegedClassForName(InjectionManager.DEFAULT_CDI_INJECTION_MANAGER, true, getLoader()));
-                    Constructor constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(elim, new Class[] {String.class}, false));
-                    return (InjectionManager<T>) AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] {beanManager}));
+                    Class<InjectionManager<T>> elim = AccessController.doPrivileged(new PrivilegedClassForName<>(InjectionManager.DEFAULT_CDI_INJECTION_MANAGER, true, getLoader()));
+                    Constructor<InjectionManager<T>> constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<InjectionManager<T>>(elim, new Class[] {String.class}, false));
+                    return AccessController.doPrivileged(new PrivilegedInvokeConstructor<InjectionManager<T>>(constructor, new Object[] {beanManager}));
             } else {
-                Class elim = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(InjectionManager.DEFAULT_CDI_INJECTION_MANAGER, true, getLoader());
-                Constructor constructor = PrivilegedAccessHelper.getConstructorFor(elim, new Class[] {Object.class}, false);
-                return (InjectionManager<T>) PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] {beanManager});
+                Class<InjectionManager<T>> elim = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(InjectionManager.DEFAULT_CDI_INJECTION_MANAGER, true, getLoader());
+                Constructor<InjectionManager<T>> constructor = PrivilegedAccessHelper.<InjectionManager<T>>getConstructorFor(elim, new Class[] {Object.class}, false);
+                return PrivilegedAccessHelper.<InjectionManager<T>>invokeConstructor(constructor, new Object[] {beanManager});
             }
         } catch (Exception e){
             logThrowable(SessionLog.FINEST, SessionLog.JPA, e);
@@ -2301,7 +2301,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         if (injectionManager == null){
             injectionManager = createInjectionManager(this.getProperty(PersistenceUnitProperties.CDI_BEANMANAGER));
         }
-        return injectionManager;
+        return (InjectionManager<T>) injectionManager;
     }
 
     /**
@@ -2510,7 +2510,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Return all registered descriptors.
      */
     @Override
-    public Map<Class, ClassDescriptor> getDescriptors() {
+    public Map<Class<?>, ClassDescriptor> getDescriptors() {
         return this.project.getDescriptors();
     }
 
@@ -2995,7 +2995,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      */
     public List<DatabaseQuery> getAllQueries() {
         Vector allQueries = new Vector();
-        for (Iterator vectors = getQueries().values().iterator(); vectors.hasNext();) {
+        for (Iterator<List<DatabaseQuery>> vectors = getQueries().values().iterator(); vectors.hasNext();) {
             allQueries.addAll((Vector)vectors.next());
         }
         return allQueries;
@@ -3957,7 +3957,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     }
 
     public void setInjectionManager(
-            InjectionManager injectionManager) {
+            InjectionManager<?> injectionManager) {
         this.injectionManager = injectionManager;
     }
 
@@ -4964,9 +4964,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      */
     public void copyDescriptorNamedQueries(boolean allowSameQueryNameDiffArgsCopyToSession) {
         for (ClassDescriptor descriptor : getProject().getOrderedDescriptors()) {
-            Map queries  = descriptor.getQueryManager().getQueries();
+            Map<String, List<DatabaseQuery>> queries  = descriptor.getQueryManager().getQueries();
             if ((queries != null) && (queries.size() > 0)) {
-                for (Iterator keyValueItr = queries.entrySet().iterator(); keyValueItr.hasNext();){
+                for (Iterator<Map.Entry<String, List<DatabaseQuery>>> keyValueItr = queries.entrySet().iterator(); keyValueItr.hasNext();){
                     Map.Entry entry = (Map.Entry) keyValueItr.next();
                     Vector thisQueries = (Vector)entry.getValue();
                     if ((thisQueries != null) && (thisQueries.size() > 0)){

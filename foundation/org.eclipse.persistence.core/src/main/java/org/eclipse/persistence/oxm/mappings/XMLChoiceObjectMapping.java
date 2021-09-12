@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -269,7 +269,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
     @Override
     public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session, WriteType writeType) throws DescriptorException {
         Object value = getAttributeValueFromObject(object);
-        Class valueClass = value.getClass();
+        Class<? extends Object> valueClass = value.getClass();
         if(valueClass == XMLRoot.class) {
             //look for a nested mapping based on the Root's QName
             XMLRoot root = (XMLRoot)value;
@@ -508,7 +508,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     try {
-                        elementType = AccessController.doPrivileged(new PrivilegedClassForName(className, true, classLoader));
+                        elementType = AccessController.doPrivileged(new PrivilegedClassForName<>(className, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(className, exception.getException());
                     }
@@ -532,7 +532,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     try {
-                        elementType = AccessController.doPrivileged(new PrivilegedClassForName(className, true, classLoader));
+                        elementType = AccessController.doPrivileged(new PrivilegedClassForName<>(className, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(className, exception.getException());
                     }
@@ -555,7 +555,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
                 try {
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                         try {
-                            elementType = AccessController.doPrivileged(new PrivilegedClassForName(className, true, classLoader));
+                            elementType = AccessController.doPrivileged(new PrivilegedClassForName<>(className, true, classLoader));
                         } catch (PrivilegedActionException exception) {
                             throw ValidationException.classNotFoundWhileConvertingClassNames(className, exception.getException());
                         }
@@ -578,7 +578,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
                 try {
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                         try {
-                            elementType = AccessController.doPrivileged(new PrivilegedClassForName(className, true, classLoader));
+                            elementType = AccessController.doPrivileged(new PrivilegedClassForName<>(className, true, classLoader));
                         } catch (PrivilegedActionException exception) {
                             throw ValidationException.classNotFoundWhileConvertingClassNames(className, exception.getException());
                         }
@@ -598,7 +598,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
                 try {
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                         try {
-                            elementType = AccessController.doPrivileged(new PrivilegedClassForName(className, true, classLoader));
+                            elementType = AccessController.doPrivileged(new PrivilegedClassForName<>(className, true, classLoader));
                         } catch (PrivilegedActionException exception) {
                             throw ValidationException.classNotFoundWhileConvertingClassNames(className, exception.getException());
                         }
@@ -691,7 +691,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
              if(isBinaryType(className)) {
                  XMLBinaryDataMapping xmlMapping = new XMLBinaryDataMapping();
                  xmlMapping.setField(xmlField);
-                 Class theClass = XMLConversionManager.getDefaultXMLManager().convertClassNameToClass(className);
+                 Class<Object> theClass = XMLConversionManager.getDefaultXMLManager().convertClassNameToClass(className);
                  xmlMapping.setAttributeClassification(theClass);
                  xmlMapping.setAttributeAccessor(temporaryAccessor);
                  if(this.choiceElementMappings.get(xmlField) == null) {

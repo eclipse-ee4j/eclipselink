@@ -112,7 +112,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
 
         }
 
-        Collection classes = this.classToNodeValues.keySet();
+        Collection<Class> classes = this.classToNodeValues.keySet();
         for(Class nextClass:((Map<Class, Mapping>)this.xmlChoiceCollectionMapping.getChoiceElementMappingsByClass()).keySet()) {
             //Create node values for any classes that aren't already processed
             if(!(classes.contains(nextClass))) {
@@ -328,7 +328,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
                 if(xmlChoiceCollectionMapping.isAny()) {
                     return this.anyNodeValue;
                 }
-                Class theClass = fieldValue.getClass();
+                Class<? extends Object> theClass = fieldValue.getClass();
                 while(associatedField == null) {
                     associatedField = (Field) xmlChoiceCollectionMapping.getClassToFieldMappings().get(theClass);
                     if(theClass.getSuperclass() != null) {
@@ -342,7 +342,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
                 nodeValue = this.fieldToNodeValues.get(associatedField);
             }
         } else {
-            Class theClass = value.getClass();
+            Class<? extends Object> theClass = value.getClass();
             while(associatedField == null) {
                 associatedField = (Field) xmlChoiceCollectionMapping.getClassToFieldMappings().get(theClass);
                 List<FieldNodeValue> fieldNodes = classToNodeValues.get(theClass);
@@ -374,7 +374,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
         if(associatedField == null) {
             //check the field associations
             List<Field> sourceFields = null;
-            Class theClass = value.getClass();
+            Class<? extends Object> theClass = value.getClass();
             while(theClass != null) {
                 sourceFields = (List<Field>) xmlChoiceCollectionMapping.getClassToSourceFieldsMappings().get(theClass);
                 if(sourceFields != null) {

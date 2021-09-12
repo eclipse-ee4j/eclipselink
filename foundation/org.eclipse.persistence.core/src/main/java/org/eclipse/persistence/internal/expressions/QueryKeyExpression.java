@@ -188,7 +188,7 @@ public class QueryKeyExpression extends ObjectExpression {
         }
 
         HashMap tablesJoinExpressions = new HashMap();
-        Vector tables = getDescriptor().getTables();
+        Vector<DatabaseTable> tables = getDescriptor().getTables();
         // skip the main table - start with i=1
         int tablesSize = tables.size();
         if (shouldUseOuterJoin() || (!getSession().getPlatform().shouldPrintInnerJoinInWhereClause())) {
@@ -203,7 +203,7 @@ public class QueryKeyExpression extends ObjectExpression {
             }
         }
         if (isUsingOuterJoinForMultitableInheritance()) {
-            List childrenTables = getDescriptor().getInheritancePolicy().getChildrenTables();
+            List<DatabaseTable> childrenTables = getDescriptor().getInheritancePolicy().getChildrenTables();
             tablesSize = childrenTables.size();
             for (int i=0; i < tablesSize; i++) {
                 DatabaseTable table = (DatabaseTable)childrenTables.get(i);

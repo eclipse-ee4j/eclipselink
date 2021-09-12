@@ -1557,7 +1557,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
         Statement statement = null;
         if (call.usesBinding(session) && call.shouldCacheStatement(session)) {
             // Check the cache by sql string, must synchronize check and removal.
-            Map statementCache = getStatementCache();
+            Map<String, Statement> statementCache = getStatementCache();
             synchronized (statementCache) {
                 statement = (PreparedStatement)statementCache.get(call.getSQLString());
                 if (statement != null) {
@@ -1610,7 +1610,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
         PreparedStatement statement = null;
         // Check the cache by sql string, must synchronize check and removal.
         if (getPlatform().shouldCacheAllStatements()) {
-            Map statementCache = getStatementCache();
+            Map<String, Statement> statementCache = getStatementCache();
             synchronized (statementCache) {
                 statement = (PreparedStatement)statementCache.get(sql);
                 if (statement != null) {

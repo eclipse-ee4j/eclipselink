@@ -343,7 +343,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
                     }
                 }
             } else {
-                return (Set<E>)PrivilegedAccessHelper.invokeMethod(cloneMethod, this.getDelegate(), null);
+                return PrivilegedAccessHelper.invokeMethod(cloneMethod, this.getDelegate(), null);
             }
         } catch (IllegalAccessException ex1) {
             throw QueryException.cloneMethodInaccessible();
@@ -569,7 +569,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
     public boolean removeAll(Collection<?> c) {
         // Must trigger remove events if tracked or uow.
         if (hasBeenRegistered() || hasTrackedPropertyChangeListener()) {
-            Iterator objects = c.iterator();
+            Iterator<?> objects = c.iterator();
             while (objects.hasNext()) {
                 this.remove(objects.next());
             }
@@ -585,7 +585,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
     public boolean retainAll(Collection<?> c) {
         // Must trigger remove events if tracked or uow.
         if (hasBeenRegistered() || hasTrackedPropertyChangeListener()) {
-            Iterator objects = getDelegate().iterator();
+            Iterator<E> objects = getDelegate().iterator();
             while (objects.hasNext()) {
                 Object object = objects.next();
                 if (!c.contains(object)) {

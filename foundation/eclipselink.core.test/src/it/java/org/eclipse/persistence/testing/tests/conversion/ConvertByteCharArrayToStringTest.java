@@ -46,10 +46,10 @@ public class ConvertByteCharArrayToStringTest extends AutoVerifyTestCase {
     @Override
     public void test() {
         //Convert back to a string
-        byteString = (String)ConversionManager.getDefaultManager().convertObject(byteArray, ClassConstants.STRING);
-        byteOString = (String)ConversionManager.getDefaultManager().convertObject(byteOArray, ClassConstants.STRING);
-        charString = (String)ConversionManager.getDefaultManager().convertObject(charArray, ClassConstants.STRING);
-        charOString = (String)ConversionManager.getDefaultManager().convertObject(charOArray, ClassConstants.STRING);
+        byteString = ConversionManager.getDefaultManager().convertObject(byteArray, ClassConstants.STRING);
+        byteOString = ConversionManager.getDefaultManager().convertObject(byteOArray, ClassConstants.STRING);
+        charString = ConversionManager.getDefaultManager().convertObject(charArray, ClassConstants.STRING);
+        charOString = ConversionManager.getDefaultManager().convertObject(charOArray, ClassConstants.STRING);
     }
 
     @Override

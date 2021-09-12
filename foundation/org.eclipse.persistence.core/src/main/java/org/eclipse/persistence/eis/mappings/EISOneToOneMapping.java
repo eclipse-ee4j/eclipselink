@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -153,7 +153,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
         clone.setTargetToSourceKeyFields(new HashMap(getTargetToSourceKeyFields().size()));
         Map setOfFields = new HashMap(getTargetToSourceKeyFields().size());
 
-        for (Enumeration enumtr = getForeignKeyFields().elements(); enumtr.hasMoreElements();) {
+        for (Enumeration<DatabaseField> enumtr = getForeignKeyFields().elements(); enumtr.hasMoreElements();) {
             DatabaseField field = (DatabaseField)enumtr.nextElement();
 
             DatabaseField fieldClone = field.clone();
@@ -162,7 +162,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
         }
 
         //get clones from set for source hashtable.  If they do not exist, create a new one.
-        Iterator sourceKeyIterator = getSourceToTargetKeyFields().keySet().iterator();
+        Iterator<DatabaseField> sourceKeyIterator = getSourceToTargetKeyFields().keySet().iterator();
         while (sourceKeyIterator.hasNext()) {
             DatabaseField sourceField = (DatabaseField)sourceKeyIterator.next();
             DatabaseField targetField = getSourceToTargetKeyFields().get(sourceField);
@@ -182,7 +182,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
         }
 
         //get clones from set for target hashtable.  If they do not exist, create a new one.
-        Iterator targetKeyIterator = getTargetToSourceKeyFields().keySet().iterator();
+        Iterator<DatabaseField> targetKeyIterator = getTargetToSourceKeyFields().keySet().iterator();
         while (targetKeyIterator.hasNext()) {
             DatabaseField targetField = (DatabaseField)targetKeyIterator.next();
             DatabaseField sourceField = getTargetToSourceKeyFields().get(targetField);
@@ -212,7 +212,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
      */
     @Override
     public Object extractPrimaryKeysForReferenceObjectFromRow(AbstractRecord row) {
-        List primaryKeyFields = getReferenceDescriptor().getPrimaryKeyFields();
+        List<DatabaseField> primaryKeyFields = getReferenceDescriptor().getPrimaryKeyFields();
         Object[] result = new  Object[primaryKeyFields.size()];
         for (int index = 0; index < primaryKeyFields.size(); index++) {
             DatabaseField targetKeyField = (DatabaseField)primaryKeyFields.get(index);
@@ -237,7 +237,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
         super.initialize(session);
 
         // Must build foreign keys fields.
-        List foreignKeyFields = getForeignKeyFields();
+        List<DatabaseField> foreignKeyFields = getForeignKeyFields();
         int size = foreignKeyFields.size();
         for (int index = 0; index < size; index++) {
             DatabaseField foreignKeyField = (DatabaseField)foreignKeyFields.get(index);
@@ -262,7 +262,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
     protected void initializeForeignKeys(AbstractSession session) {
         HashMap newSourceToTargetKeyFields = new HashMap(getSourceToTargetKeyFields().size());
         HashMap newTargetToSourceKeyFields = new HashMap(getTargetToSourceKeyFields().size());
-        Iterator iterator = getSourceToTargetKeyFields().entrySet().iterator();
+        Iterator<Map.Entry<DatabaseField, DatabaseField>> iterator = getSourceToTargetKeyFields().entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry entry = (Map.Entry)iterator.next();
             DatabaseField sourceField = (DatabaseField)entry.getKey();
@@ -292,7 +292,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
 
         Expression criteria;
         Expression builder = new ExpressionBuilder();
-        Iterator keyIterator = getSourceToTargetKeyFields().keySet().iterator();
+        Iterator<DatabaseField> keyIterator = getSourceToTargetKeyFields().keySet().iterator();
         while (keyIterator.hasNext()) {
             DatabaseField foreignKey = (DatabaseField)keyIterator.next();
             DatabaseField targetKey = getSourceToTargetKeyFields().get(foreignKey);
@@ -376,7 +376,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
         // If any field in the foreign key is null then it means there are no referenced objects
         // Skip for partial objects as fk may not be present.
         if (!query.hasPartialAttributeExpressions()) {
-            for (Enumeration enumeration = getFields().elements(); enumeration.hasMoreElements();) {
+            for (Enumeration<DatabaseField> enumeration = getFields().elements(); enumeration.hasMoreElements();) {
                 DatabaseField field = (DatabaseField)enumeration.nextElement();
                 if (row.get(field) == null) {
                     return getIndirectionPolicy().nullValueFromRow();

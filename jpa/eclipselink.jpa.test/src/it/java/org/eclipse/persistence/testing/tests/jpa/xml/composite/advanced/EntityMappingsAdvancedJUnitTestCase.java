@@ -1732,7 +1732,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         pk.add(dealer.getId());
 
         DatabaseSessionImpl session = getDatabaseSession();
-        return (Integer) session.getDescriptor(Dealer.class).getOptimisticLockingPolicy().getWriteLockValue(dealer, pk, session);
+        return session.getDescriptor(Dealer.class).getOptimisticLockingPolicy().getWriteLockValue(dealer, pk, session);
     }
 
     protected List<Employee> createEmployeesWithUnidirectionalMappings(String lastName) {

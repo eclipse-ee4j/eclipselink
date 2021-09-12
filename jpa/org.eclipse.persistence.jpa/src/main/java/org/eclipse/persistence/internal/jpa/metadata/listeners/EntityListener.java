@@ -551,7 +551,7 @@ public class EntityListener<T> extends DescriptorEventAdapter {
             // So far so good, now check the method modifiers.
             validateMethodModifiers(method);
         } else {
-            Class parameterClass = (numberOfParameters == 0) ? null : method.getParameterTypes()[0];
+            Class<?> parameterClass = (numberOfParameters == 0) ? null : method.getParameterTypes()[0];
             throw ValidationException.invalidEntityListenerCallbackMethodArguments(m_entityClass, parameterClass, getListenerClass(), method.getName());
         }
     }

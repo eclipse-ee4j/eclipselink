@@ -168,28 +168,28 @@ public class XMLGregorianCalendarTestCases extends XMLMappingTestCases {
         String timeString       = "07:30:00+03:00";
         String dateTimeString   = "2009-02-17T07:30:00.000+03:00";
 
-        testString = (String) getXmlConversionManager().convertObject(aCal, String.class, XMLConstants.G_DAY_QNAME);
+        testString = getXmlConversionManager().convertObject(aCal, String.class, XMLConstants.G_DAY_QNAME);
         assertEquals("Object to String conversion failed.", gDayString, testString);
 
-        testString = (String) getXmlConversionManager().convertObject(aCal, String.class, XMLConstants.G_MONTH_QNAME);
+        testString = getXmlConversionManager().convertObject(aCal, String.class, XMLConstants.G_MONTH_QNAME);
         assertEquals("Object to String conversion failed.", gMonthString, testString);
 
-        testString = (String) getXmlConversionManager().convertObject(aCal, String.class, XMLConstants.G_MONTH_DAY_QNAME);
+        testString = getXmlConversionManager().convertObject(aCal, String.class, XMLConstants.G_MONTH_DAY_QNAME);
         assertEquals("Object to String conversion failed.", gMonthDayString, testString);
 
-        testString = (String) getXmlConversionManager().convertObject(aCal, String.class, XMLConstants.G_YEAR_QNAME);
+        testString = getXmlConversionManager().convertObject(aCal, String.class, XMLConstants.G_YEAR_QNAME);
         assertEquals("Object to String conversion failed.", gYearString, testString);
 
-        testString = (String) getXmlConversionManager().convertObject(aCal, String.class, XMLConstants.G_YEAR_MONTH_QNAME);
+        testString = getXmlConversionManager().convertObject(aCal, String.class, XMLConstants.G_YEAR_MONTH_QNAME);
         assertEquals("Object to String conversion failed.", gYearMonthString, testString);
 
-        testString = (String) getXmlConversionManager().convertObject(aCal, String.class, XMLConstants.DATE_QNAME);
+        testString = getXmlConversionManager().convertObject(aCal, String.class, XMLConstants.DATE_QNAME);
         assertEquals("Object to String conversion failed.", dateString, testString);
 
-        testString = (String) getXmlConversionManager().convertObject(aCal, String.class, XMLConstants.TIME_QNAME);
+        testString = getXmlConversionManager().convertObject(aCal, String.class, XMLConstants.TIME_QNAME);
         assertEquals("Object to String conversion failed.", timeString, testString);
 
-        testString = (String) getXmlConversionManager().convertObject(aCal, String.class, XMLConstants.DATE_TIME_QNAME);
+        testString = getXmlConversionManager().convertObject(aCal, String.class, XMLConstants.DATE_TIME_QNAME);
         assertEquals("Object to String conversion failed.", dateTimeString, testString);
     }
 

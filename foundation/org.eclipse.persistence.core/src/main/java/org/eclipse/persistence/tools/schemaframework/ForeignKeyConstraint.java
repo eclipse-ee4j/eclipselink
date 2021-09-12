@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -70,7 +70,7 @@ public class ForeignKeyConstraint implements Serializable {
                 writer.write(getForeignKeyDefinition());
             } else {
                 writer.write("FOREIGN KEY (");
-                for (Iterator iterator = getSourceFields().iterator(); iterator.hasNext();) {
+                for (Iterator<String> iterator = getSourceFields().iterator(); iterator.hasNext();) {
                     writer.write((String)iterator.next());
                     if (iterator.hasNext()) {
                         writer.write(", ");
@@ -79,7 +79,7 @@ public class ForeignKeyConstraint implements Serializable {
                 writer.write(") REFERENCES ");
                 writer.write(getTargetTable());
                 writer.write(" (");
-                for (Iterator iterator = getTargetFields().iterator(); iterator.hasNext();) {
+                for (Iterator<String> iterator = getTargetFields().iterator(); iterator.hasNext();) {
                     writer.write((String)iterator.next());
                     if (iterator.hasNext()) {
                         writer.write(", ");

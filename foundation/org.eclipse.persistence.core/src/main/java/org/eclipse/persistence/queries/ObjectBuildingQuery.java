@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.expressions.ForUpdateClause;
 import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -147,7 +148,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
         try{
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    referenceClass = AccessController.doPrivileged(new PrivilegedClassForName(getReferenceClassName(), true, classLoader));
+                    referenceClass = AccessController.doPrivileged(new PrivilegedClassForName<>(getReferenceClassName(), true, classLoader));
                 } catch (PrivilegedActionException exception) {
                     throw ValidationException.classNotFoundWhileConvertingClassNames(getReferenceClassName(), exception.getException());
                 }
@@ -489,7 +490,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * Fetch/trigger indirection on the clone passed in, based on join expressions in the joinManager.
      */
     private void triggerJoinExpressions(UnitOfWorkImpl unitOfWork, JoinedAttributeManager joinManager, Object clone, ClassDescriptor concreteDescriptor) {
-        List joinExpressions = joinManager.getJoinedAttributeExpressions();
+        List<Expression> joinExpressions = joinManager.getJoinedAttributeExpressions();
         int size = joinExpressions.size();
         if ((size == 0) || (clone == null)) {
             return;

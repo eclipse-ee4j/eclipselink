@@ -558,8 +558,8 @@ public class Employee implements Serializable {
     }
 
     public java.util.Date setDateAndTime(org.eclipse.persistence.sessions.Record row, org.eclipse.persistence.sessions.Session session) {
-        java.sql.Date sqlDateOfBirth = (java.sql.Date)ConversionManager.getDefaultManager().convertObject(row.get("BDAY"), java.sql.Date.class);
-        java.sql.Time timeOfBirth = (java.sql.Time)session.getLogin().getPlatform().convertObject(row.get("BTIME"), java.sql.Time.class);
+        java.sql.Date sqlDateOfBirth = ConversionManager.getDefaultManager().convertObject(row.get("BDAY"), java.sql.Date.class);
+        java.sql.Time timeOfBirth = session.getLogin().getPlatform().convertObject(row.get("BTIME"), java.sql.Time.class);
         if ((timeOfBirth == null) || (sqlDateOfBirth == null)) {
             return null;
         }

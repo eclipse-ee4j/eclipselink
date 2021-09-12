@@ -172,8 +172,8 @@ public class ProjectClassGenerator {
     }
 
     protected void addAggregateCollectionMappingLines(NonreflectiveMethodDefinition method, String mappingName, AggregateCollectionMapping mapping) {
-        Enumeration targetKeysEnum = mapping.getTargetForeignKeyFields().elements();
-        Enumeration sourceKeysEnum = mapping.getSourceKeyFields().elements();
+        Enumeration<DatabaseField> targetKeysEnum = mapping.getTargetForeignKeyFields().elements();
+        Enumeration<DatabaseField> sourceKeysEnum = mapping.getSourceKeyFields().elements();
         while (sourceKeysEnum.hasMoreElements()) {
             DatabaseField sourceField = (DatabaseField)sourceKeysEnum.nextElement();
             DatabaseField targetField = (DatabaseField)targetKeysEnum.nextElement();
@@ -397,8 +397,8 @@ public class ProjectClassGenerator {
 
         method.addLine(mappingName + ".setDirectFieldName(\"" + mapping.getDirectFieldName() + "\");");
 
-        Enumeration sourceKeysEnum = mapping.getSourceKeyFields().elements();
-        Enumeration referenceKeysEnum = mapping.getReferenceKeyFields().elements();
+        Enumeration<DatabaseField> sourceKeysEnum = mapping.getSourceKeyFields().elements();
+        Enumeration<DatabaseField> referenceKeysEnum = mapping.getReferenceKeyFields().elements();
         while (referenceKeysEnum.hasMoreElements()) {
             DatabaseField sourceField = (DatabaseField)sourceKeysEnum.nextElement();
             DatabaseField referenceField = (DatabaseField)referenceKeysEnum.nextElement();
@@ -434,7 +434,7 @@ public class ProjectClassGenerator {
         method.addLine("//Fetch groups");
         method.addLine("descriptor.setFetchGroupManager(new FetchGroupManager());");
 
-        Map namedFetchGroups = descriptor.getFetchGroupManager().getFetchGroups();
+        Map<String, FetchGroup> namedFetchGroups = descriptor.getFetchGroupManager().getFetchGroups();
 
         if (descriptor.getFetchGroupManager().getDefaultFetchGroup() != null) {
             String defaultFetchGroupIdentifier = descriptor.getFetchGroupManager().getDefaultFetchGroup().getName() + "FetchGroup";
@@ -446,8 +446,8 @@ public class ProjectClassGenerator {
         if (namedFetchGroups.isEmpty()) {
             return;
         }
-        for (Iterator namedFetchGroupIter = namedFetchGroups.values().iterator();
-                 namedFetchGroupIter.hasNext();) {
+        for (Iterator<FetchGroup> namedFetchGroupIter = namedFetchGroups.values().iterator();
+             namedFetchGroupIter.hasNext();) {
             FetchGroup namedFetchGroup = (FetchGroup)namedFetchGroupIter.next();
             String fetchGroupIdentifier = namedFetchGroup.getName() + "FetchGroup";
             method.addLine("");
@@ -587,7 +587,7 @@ public class ProjectClassGenerator {
             }
 
             // Ordering.
-            Iterator queryKeyExpressions = collectionMapping.getOrderByQueryKeyExpressions().iterator();
+            Iterator<Expression> queryKeyExpressions = collectionMapping.getOrderByQueryKeyExpressions().iterator();
             while (queryKeyExpressions.hasNext()) {
                 FunctionExpression expression = (FunctionExpression) queryKeyExpressions.next();
                 String queryKeyName = expression.getBaseExpression().getName();
@@ -712,16 +712,16 @@ public class ProjectClassGenerator {
             method.addLine(mappingName + ".setRelationTableName(\"" + mapping.getRelationTable().getQualifiedName() + "\");");
         }
 
-        Enumeration sourceRelationKeysEnum = mapping.getSourceRelationKeyFields().elements();
-        Enumeration sourceKeysEnum = mapping.getSourceKeyFields().elements();
+        Enumeration<DatabaseField> sourceRelationKeysEnum = mapping.getSourceRelationKeyFields().elements();
+        Enumeration<DatabaseField> sourceKeysEnum = mapping.getSourceKeyFields().elements();
         while (sourceRelationKeysEnum.hasMoreElements()) {
             DatabaseField sourceField = (DatabaseField)sourceKeysEnum.nextElement();
             DatabaseField relationField = (DatabaseField)sourceRelationKeysEnum.nextElement();
             method.addLine(mappingName + ".addSourceRelationKeyFieldName(\"" + relationField.getQualifiedName() + "\", \"" + sourceField.getQualifiedName() + "\");");
         }
 
-        Enumeration targetRelationKeysEnum = mapping.getTargetRelationKeyFields().elements();
-        Enumeration targetKeysEnum = mapping.getTargetKeyFields().elements();
+        Enumeration<DatabaseField> targetRelationKeysEnum = mapping.getTargetRelationKeyFields().elements();
+        Enumeration<DatabaseField> targetKeysEnum = mapping.getTargetKeyFields().elements();
         while (targetRelationKeysEnum.hasMoreElements()) {
             DatabaseField targetField = (DatabaseField)targetKeysEnum.nextElement();
             DatabaseField relationField = (DatabaseField)targetRelationKeysEnum.nextElement();
@@ -821,8 +821,8 @@ public class ProjectClassGenerator {
     }
 
     protected void addOneToManyMappingLines(NonreflectiveMethodDefinition method, String mappingName, OneToManyMapping mapping) {
-        Enumeration targetKeysEnum = mapping.getTargetForeignKeyFields().elements();
-        Enumeration sourceKeysEnum = mapping.getSourceKeyFields().elements();
+        Enumeration<DatabaseField> targetKeysEnum = mapping.getTargetForeignKeyFields().elements();
+        Enumeration<DatabaseField> sourceKeysEnum = mapping.getSourceKeyFields().elements();
         while (sourceKeysEnum.hasMoreElements()) {
             DatabaseField sourceField = (DatabaseField)sourceKeysEnum.nextElement();
             DatabaseField targetField = (DatabaseField)targetKeysEnum.nextElement();
@@ -831,8 +831,8 @@ public class ProjectClassGenerator {
     }
 
     protected void addOneToOneMappingLines(NonreflectiveMethodDefinition method, String mappingName, OneToOneMapping mapping) {
-        for (Iterator foreignKeysEnum = mapping.getSourceToTargetKeyFields().keySet().iterator();
-                 foreignKeysEnum.hasNext();) {
+        for (Iterator<DatabaseField> foreignKeysEnum = mapping.getSourceToTargetKeyFields().keySet().iterator();
+             foreignKeysEnum.hasNext();) {
             DatabaseField sourceField = (DatabaseField)foreignKeysEnum.next();
             DatabaseField targetField = mapping.getSourceToTargetKeyFields().get(sourceField);
             if (mapping.getForeignKeyFields().contains(sourceField)) {
@@ -1191,7 +1191,7 @@ public class ProjectClassGenerator {
             }
 
             //joinedAttribute
-            for (Iterator joinedEnum = readQuery.getJoinedAttributeManager().getJoinedAttributeExpressions().iterator(); joinedEnum.hasNext();) {
+            for (Iterator<Expression> joinedEnum = readQuery.getJoinedAttributeManager().getJoinedAttributeExpressions().iterator(); joinedEnum.hasNext();) {
                 Expression joinedExp = (Expression)joinedEnum.next();
                 builderString = buildBuilderString(builderString, method, iteration, queryIdentifier);
                 buildExpressionString(builderString, method, queryIdentifier, joinedExp, ".addJoinedAttribute(");
@@ -1300,7 +1300,7 @@ public class ProjectClassGenerator {
 
         // Query arguments.
         Iterator<String> argumentTypes = query.getArgumentTypeNames().iterator();
-        for (Iterator arguments = query.getArguments().iterator(); arguments.hasNext();) {
+        for (Iterator<String> arguments = query.getArguments().iterator(); arguments.hasNext();) {
             String argument = (String)arguments.next();
             String argumentTypeName = argumentTypes.next();
             method.addLine(queryIdentifier + ".addArgument(\"" + argument + "\", " + argumentTypeName + ".class);");
@@ -1383,7 +1383,7 @@ public class ProjectClassGenerator {
             }
         }
 
-        Iterator fieldTransformations = mapping.getFieldTransformations().iterator();
+        Iterator<FieldTransformation> fieldTransformations = mapping.getFieldTransformations().iterator();
         while (fieldTransformations.hasNext()) {
             FieldTransformation trans = (FieldTransformation)fieldTransformations.next();
             String fieldName = trans.getFieldName();
@@ -1526,21 +1526,21 @@ public class ProjectClassGenerator {
 
         if ((!descriptor.isAggregateDescriptor()) && (!descriptor.isDescriptorForInterface())) {
             // Tables
-            for (Enumeration tablesEnum = descriptor.getTables().elements();
-                     tablesEnum.hasMoreElements();) {
+            for (Enumeration<DatabaseTable> tablesEnum = descriptor.getTables().elements();
+                 tablesEnum.hasMoreElements();) {
                 String tableName = ((DatabaseTable)tablesEnum.nextElement()).getQualifiedName();
                 method.addLine("descriptor.addTableName(\"" + tableName + "\");");
             }
 
             // Primary key
             if (!descriptor.isChildDescriptor()) {
-                for (Enumeration keysEnum = descriptor.getPrimaryKeyFieldNames().elements();
-                         keysEnum.hasMoreElements();) {
+                for (Enumeration<String> keysEnum = descriptor.getPrimaryKeyFieldNames().elements();
+                     keysEnum.hasMoreElements();) {
                     method.addLine("descriptor.addPrimaryKeyFieldName(\"" + keysEnum.nextElement() + "\");");
                 }
             }
-            for (Iterator multipleTablePrimaryKeysEnum = descriptor.getAdditionalTablePrimaryKeyFields().values().iterator();
-                     multipleTablePrimaryKeysEnum.hasNext();) {
+            for (Iterator<Map<DatabaseField, DatabaseField>> multipleTablePrimaryKeysEnum = descriptor.getAdditionalTablePrimaryKeyFields().values().iterator();
+                 multipleTablePrimaryKeysEnum.hasNext();) {
                 Map keyMapping = (Map)multipleTablePrimaryKeysEnum.next();
                 Iterator keyMappingSourceFieldsEnum = keyMapping.keySet().iterator();
                 Iterator keyMappingTargetFieldsEnum = keyMapping.values().iterator();
@@ -1593,7 +1593,7 @@ public class ProjectClassGenerator {
         if (!descriptor.getQueryKeys().isEmpty()) {
             method.addLine("");
             method.addLine("// Query keys.");
-            for (Iterator queryKeysEnum = descriptor.getQueryKeys().values().iterator(); queryKeysEnum.hasNext();) {
+            for (Iterator<QueryKey> queryKeysEnum = descriptor.getQueryKeys().values().iterator(); queryKeysEnum.hasNext();) {
                 addQueryKeyLines(method, (QueryKey)queryKeysEnum.next());
             }
         }
@@ -1766,7 +1766,7 @@ public class ProjectClassGenerator {
      */
     protected void computeDescriptorMethodNames() {
         Hashtable shortNames = new Hashtable();
-        Iterator descriptors = project.getOrderedDescriptors().iterator();
+        Iterator<ClassDescriptor> descriptors = project.getOrderedDescriptors().iterator();
         while (descriptors.hasNext()) {
             ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
 

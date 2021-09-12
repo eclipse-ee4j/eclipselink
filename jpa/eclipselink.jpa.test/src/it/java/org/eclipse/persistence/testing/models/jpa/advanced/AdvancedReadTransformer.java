@@ -48,8 +48,8 @@ public class AdvancedReadTransformer implements AttributeTransformer {
         if(attributeName.equals("overtimeHours")) {
             Time[] hours = new Time[2];
             /** This conversion allows for the database type not to match, i.e. may be a Timestamp or String. */
-            hours[0] = (Time) session.getDatasourcePlatform().convertObject(record.get("START_OVERTIME"), java.sql.Time.class);
-            hours[1] = (Time) session.getDatasourcePlatform().convertObject(record.get("END_OVERTIME"), java.sql.Time.class);
+            hours[0] = session.getDatasourcePlatform().convertObject(record.get("START_OVERTIME"), Time.class);
+            hours[1] = session.getDatasourcePlatform().convertObject(record.get("END_OVERTIME"), Time.class);
             return hours;
         } else {
             throw new RuntimeException("Unknown attribute");

@@ -123,7 +123,7 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
         this.serializableMethods = new ConcurrentHashMap<>();
         for (String event: methods.keySet()){
             java.util.List<Method> methodList = methods.get(event);
-            java.util.List<MethodSerialImpl> newMethodList = new java.util.ArrayList();
+            java.util.List<MethodSerialImpl> newMethodList = new java.util.ArrayList<>();
             for (Method method: methodList) {
                 MethodSerialImpl serializableMethod = new MethodSerialImpl(method);
                 newMethodList.add(serializableMethod);
@@ -142,7 +142,7 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    entityListenerClass = AccessController.doPrivileged(new PrivilegedClassForName(listenerClassName, true, loader));
+                    entityListenerClass = AccessController.doPrivileged(new PrivilegedClassForName<>(listenerClassName, true, loader));
                 } catch (PrivilegedActionException exception) {
                     throw ValidationException.unableToLoadClass(listenerClassName, exception.getException());
                 }
@@ -163,8 +163,7 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
      */
     public void addEventMethod(String event, Method method) {
         if (!getMethods().containsKey(event)) {
-            List methodsList = new ArrayList<MethodSerialImpl>();
-            methodsList.add(method);
+            List<MethodSerialImpl> methodsList = new ArrayList<>();
             serializableMethods.put(event, methodsList);
         }
 

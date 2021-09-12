@@ -27,6 +27,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -64,8 +65,8 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     protected static XMLConversionManager defaultXMLManager;
 
     // Static hash tables for the default conversion pairs
-    protected static HashMap defaultXMLTypes;
-    protected static HashMap defaultJavaTypes;
+    protected static Map<QName, Class<?>> defaultXMLTypes;
+    protected static Map<Class<?>, QName> defaultJavaTypes;
 
     protected boolean timeZoneQualified;
     protected TimeZone timeZone;
@@ -153,49 +154,50 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      * @return - the newly converted object
      */
     @Override
-    public Object convertObject(Object sourceObject, Class javaClass) throws ConversionException {
+    @SuppressWarnings({"unchecked"})
+    public <T> T convertObject(Object sourceObject, Class<T> javaClass) throws ConversionException {
         if (sourceObject == null) {//Let the parent handle default null values
             return super.convertObject(null, javaClass);
         } else if (javaClass == null || javaClass == CoreClassConstants.OBJECT || sourceObject.getClass() == javaClass) {
-            return sourceObject;
+            return (T) sourceObject;
         } else if (javaClass == CoreClassConstants.STRING) {
            if(sourceObject instanceof List){
-               return convertListToString(sourceObject, null);
+               return (T) convertListToString(sourceObject, null);
            } else if (sourceObject instanceof Character[]) {
-               return convertObjectToString(sourceObject);
+               return (T) convertObjectToString(sourceObject);
            } else if (sourceObject instanceof Object[]) {
-               return convertArrayToString((Object[]) sourceObject, null);
+               return (T) convertArrayToString((Object[]) sourceObject, null);
            } else {
-               return convertObjectToString(sourceObject);
+               return (T) convertObjectToString(sourceObject);
            }
         } else if (javaClass == CoreClassConstants.ASTRING && sourceObject instanceof String) {
-                return convertStringToList(sourceObject).toArray(new String[] {});
+                return (T) convertStringToList(sourceObject).toArray(new String[] {});
         // TODO else if (javaClass == CoreClassConstants.ArrayList_class) {
         //        return convertStringToList((Object[]) sourceObject, null);
         } else if ((javaClass == Constants.QNAME_CLASS) && (sourceObject != null)) {
-            return convertObjectToQName(sourceObject);
+            return (T) convertObjectToQName(sourceObject);
         } else if ((javaClass == CoreClassConstants.List_Class) && (sourceObject instanceof String)) {
-            return convertStringToList(sourceObject);
+            return (T) convertStringToList(sourceObject);
         } else if ((javaClass == CoreClassConstants.CALENDAR)) {
-            return convertObjectToCalendar(sourceObject);
+            return (T) convertObjectToCalendar(sourceObject);
         } else if ((javaClass == CoreClassConstants.UTILDATE)) {
-            return convertObjectToUtilDate(sourceObject, Constants.DATE_TIME_QNAME);
+            return (T) convertObjectToUtilDate(sourceObject, Constants.DATE_TIME_QNAME);
         } else if ((javaClass == CoreClassConstants.SQLDATE)) {
-            return convertObjectToSQLDate(sourceObject, Constants.DATE_QNAME);
+            return (T) convertObjectToSQLDate(sourceObject, Constants.DATE_QNAME);
         } else if ((javaClass == CoreClassConstants.TIME)) {
-            return convertObjectToSQLTime(sourceObject, Constants.TIME_QNAME);
+            return (T) convertObjectToSQLTime(sourceObject, Constants.TIME_QNAME);
         } else if ((javaClass == CoreClassConstants.TIMESTAMP)) {
-            return convertObjectToTimestamp(sourceObject, Constants.DATE_TIME_QNAME);
+            return (T) convertObjectToTimestamp(sourceObject, Constants.DATE_TIME_QNAME);
         } else if ((javaClass == java.net.URI.class)) {
-            return convertObjectToURI(sourceObject);
+            return (T) convertObjectToURI(sourceObject);
         } else if ((javaClass == CoreClassConstants.XML_GREGORIAN_CALENDAR)) {
-            return convertObjectToXMLGregorianCalendar(sourceObject);
+            return (T) convertObjectToXMLGregorianCalendar(sourceObject);
         } else if ((javaClass == CoreClassConstants.DURATION)) {
-            return convertObjectToDuration(sourceObject);
+            return (T) convertObjectToDuration(sourceObject);
         } else if ((javaClass == CoreClassConstants.FILE) && (sourceObject instanceof String)) {
-            return convertStringToFile((String) sourceObject);
+            return (T) convertStringToFile((String) sourceObject);
         } else if ((javaClass == Constants.UUID) && (sourceObject instanceof String)) {
-            return UUID.fromString((String) sourceObject);
+            return (T) UUID.fromString((String) sourceObject);
         } else {
             try {
                 return super.convertObject(sourceObject, javaClass);
@@ -218,7 +220,8 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      * @return - the newly converted object
      */
     @Override
-    public Object convertObject(Object sourceObject, Class javaClass, QName schemaTypeQName) throws ConversionException {
+    @SuppressWarnings({"unchecked"})
+    public <T> T convertObject(Object sourceObject, Class<T> javaClass, QName schemaTypeQName) throws ConversionException {
         if (schemaTypeQName == null) {
             return convertObject(sourceObject, javaClass);
         }
@@ -226,57 +229,57 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
         if (sourceObject == null) {
             return super.convertObject(null, javaClass);
         } else if ((sourceObject.getClass() == javaClass) || (javaClass == null) || (javaClass == CoreClassConstants.OBJECT)) {
-            return sourceObject;
+            return (T) sourceObject;
         } else if ((javaClass == CoreClassConstants.CALENDAR) || (javaClass == CoreClassConstants.GREGORIAN_CALENDAR)) {
-            return convertObjectToCalendar(sourceObject, schemaTypeQName);
+            return (T) convertObjectToCalendar(sourceObject, schemaTypeQName);
         } else if (javaClass == CoreClassConstants.ABYTE) {
             if (schemaTypeQName.getLocalPart().equalsIgnoreCase(Constants.HEX_BINARY)) {
-                return super.convertObjectToByteObjectArray(sourceObject);
+                return (T) super.convertObjectToByteObjectArray(sourceObject);
             } else if (schemaTypeQName.getLocalPart().equalsIgnoreCase(Constants.BASE_64_BINARY)) {
-                return convertSchemaBase64ToByteObjectArray(sourceObject);
+                return (T) convertSchemaBase64ToByteObjectArray(sourceObject);
             }
         } else if (javaClass == CoreClassConstants.APBYTE) {
             if (schemaTypeQName.getLocalPart().equalsIgnoreCase(Constants.HEX_BINARY)) {
-                return super.convertObjectToByteArray(sourceObject);
+                return (T) super.convertObjectToByteArray(sourceObject);
             } else if (schemaTypeQName.getLocalPart().equalsIgnoreCase(Constants.BASE_64_BINARY)) {
-                return convertSchemaBase64ToByteArray(sourceObject);
+                return (T) convertSchemaBase64ToByteArray(sourceObject);
             }
         } else if ((javaClass == CoreClassConstants.List_Class) && (sourceObject instanceof String)) {
-            return convertStringToList(sourceObject);
+            return (T) convertStringToList(sourceObject);
         } else if ((javaClass == CoreClassConstants.STRING) && (sourceObject instanceof List)) {
-            return convertListToString(sourceObject, schemaTypeQName);
+            return (T) convertListToString(sourceObject, schemaTypeQName);
         } else if (sourceObject instanceof byte[]) {
             if (schemaTypeQName.getLocalPart().equalsIgnoreCase(Constants.BASE_64_BINARY)) {
-                return buildBase64StringFromBytes((byte[]) sourceObject);
+                return (T) buildBase64StringFromBytes((byte[]) sourceObject);
             }
-            return Helper.buildHexStringFromBytes((byte[]) sourceObject);
+            return (T) Helper.buildHexStringFromBytes((byte[]) sourceObject);
         } else if (sourceObject instanceof Byte[]) {
             if (schemaTypeQName.getLocalPart().equalsIgnoreCase(Constants.BASE_64_BINARY)) {
-                return buildBase64StringFromObjectBytes((Byte[]) sourceObject);
+                return (T) buildBase64StringFromObjectBytes((Byte[]) sourceObject);
             }
-            return buildHexStringFromObjectBytes((Byte[]) sourceObject);
+            return (T) buildHexStringFromObjectBytes((Byte[]) sourceObject);
         } else if ((javaClass == CoreClassConstants.STRING) && (sourceObject instanceof Object[])) {
-            return convertArrayToString((Object[]) sourceObject, schemaTypeQName);
+            return (T) convertArrayToString((Object[]) sourceObject, schemaTypeQName);
         } else if ((javaClass == CoreClassConstants.UTILDATE)) {
-            return convertObjectToUtilDate(sourceObject, schemaTypeQName);
+            return (T) convertObjectToUtilDate(sourceObject, schemaTypeQName);
         } else if (javaClass == CoreClassConstants.SQLDATE) {
-            return convertObjectToSQLDate(sourceObject, schemaTypeQName);
+            return (T) convertObjectToSQLDate(sourceObject, schemaTypeQName);
         } else if (javaClass == CoreClassConstants.TIME) {
-            return convertObjectToSQLTime(sourceObject, schemaTypeQName);
+            return (T) convertObjectToSQLTime(sourceObject, schemaTypeQName);
         } else if (javaClass ==  CoreClassConstants.TIMESTAMP) {
-            return convertObjectToTimestamp(sourceObject, schemaTypeQName);
+            return (T) convertObjectToTimestamp(sourceObject, schemaTypeQName);
         } else if (javaClass == Constants.QNAME_CLASS) {
-            return convertObjectToQName(sourceObject);
+            return (T) convertObjectToQName(sourceObject);
         } else if (javaClass == CoreClassConstants.STRING) {
-            return convertObjectToString(sourceObject, schemaTypeQName);
+            return (T) convertObjectToString(sourceObject, schemaTypeQName);
         } else if ((javaClass == java.net.URI.class)) {
-            return convertObjectToURI(sourceObject);
+            return (T) convertObjectToURI(sourceObject);
         } else if ((javaClass == CoreClassConstants.XML_GREGORIAN_CALENDAR)) {
-            return convertObjectToXMLGregorianCalendar(sourceObject, schemaTypeQName);
+            return (T) convertObjectToXMLGregorianCalendar(sourceObject, schemaTypeQName);
         } else if ((javaClass == CoreClassConstants.DURATION)) {
-            return convertObjectToDuration(sourceObject);
+            return (T) convertObjectToDuration(sourceObject);
         } else if ((javaClass == CoreClassConstants.CHAR)) {
-            return convertObjectToChar(sourceObject, schemaTypeQName);
+            return (T) convertObjectToChar(sourceObject, schemaTypeQName);
         } else {
             try {
                 return super.convertObject(sourceObject, javaClass);
@@ -632,7 +635,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
       if(sourceObject instanceof String) {
           String sourceString = (String) sourceObject;
           if(sourceString.length() == 0) {
-              return 0l;
+              return 0L;
           } else if(sourceString.charAt(0) == PLUS) {
               return super.convertObjectToLong(sourceString.substring(1));
           }
@@ -1185,9 +1188,8 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
             return null;
         }
         Calendar cal = toCalendar(xmlGregorianCalender);
-        Date returnDate = cal.getTime();
 
-        return returnDate;
+        return cal.getTime();
     }
 
     private Calendar toCalendar(XMLGregorianCalendar xgc) {
@@ -1649,8 +1651,8 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
         return Helper.buildHexStringFromBytes(primitiveBytes);
     }
 
-    protected List convertStringToList(Object sourceObject) throws ConversionException {
-        ArrayList list = new ArrayList();
+    protected List<String> convertStringToList(Object sourceObject) throws ConversionException {
+        List<String> list = new ArrayList<>();
         if (sourceObject instanceof String) {
             StringTokenizer tokenizer = new StringTokenizer((String) sourceObject, " ");
             while (tokenizer.hasMoreElements()) {
@@ -1676,8 +1678,8 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      * @param elementType - the type of the elements contained in the list
      * @return - the newly converted object
      */
-    public Object convertStringToList(Object sourceObject, Class elementType, ContainerPolicy containerPolicy, QName schemaType) throws ConversionException {
-        Collection collection = (Collection) containerPolicy.containerInstance();
+    public <T> Collection<T> convertStringToList(Object sourceObject, Class<T> elementType, ContainerPolicy containerPolicy, QName schemaType) throws ConversionException {
+        Collection<T> collection = (Collection<T>) containerPolicy.containerInstance();
 
         if (sourceObject instanceof String) {
             StringTokenizer tokenizer = new StringTokenizer((String) sourceObject, " ");
@@ -1693,13 +1695,14 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     public String convertListToString(Object sourceObject, QName schemaType) throws ConversionException {
         StringBuilder returnStringBuilder = new StringBuilder();
         if (sourceObject instanceof List) {
-            List list = (List) sourceObject;
+            @SuppressWarnings({"unchecked"})
+            List<?> list = (List<?>) sourceObject;
             for (int i = 0, listSize = list.size(); i < listSize; i++) {
                 Object next = list.get(i);
-                    if (i > 0) {
-                        returnStringBuilder.append(' ');
-                    }
-                    returnStringBuilder.append((String)convertObject(next, String.class, schemaType));
+                if (i > 0) {
+                    returnStringBuilder.append(' ');
+                }
+                returnStringBuilder.append(convertObject(next, next.getClass().getComponentType(), schemaType));
             }
         }
         return returnStringBuilder.toString();
@@ -1712,19 +1715,19 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
             if (i > 0) {
                 returnStringBuilder.append(' ');
             }
-            returnStringBuilder.append((String)convertObject(next, String.class, schemaType));
+            returnStringBuilder.append(convertObject(next, next.getClass().getComponentType(), schemaType));
         }
         return returnStringBuilder.toString();
     }
 
-    public static HashMap getDefaultXMLTypes() {
+    public static Map<QName, Class<?>> getDefaultXMLTypes() {
         if (defaultXMLTypes == null) {
             defaultXMLTypes = buildXMLTypes();
         }
         return defaultXMLTypes;
     }
 
-    public static HashMap getDefaultJavaTypes() {
+    public static Map<Class<?>, QName> getDefaultJavaTypes() {
         if (defaultJavaTypes == null) {
             defaultJavaTypes = buildJavaTypes();
         }
@@ -1734,8 +1737,8 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     /**
     * Build and return a Hashtable containing the default XML to Java conversion pairs
     */
-    private static HashMap buildXMLTypes() {
-        HashMap XMLTypes = new HashMap();
+    private static Map<QName, Class<?>> buildXMLTypes() {
+        Map<QName, Class<?>> XMLTypes = new HashMap<>();
 
         //jaxb 1.0 spec pairs
         XMLTypes.put(Constants.ANY_SIMPLE_TYPE_QNAME, CoreClassConstants.STRING);
@@ -1783,8 +1786,8 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     /**
      * Build and return a Hashtable containing the default Java to XML conversion pairs
      */
-    private static HashMap buildJavaTypes() {
-        HashMap javaTypes = new HashMap();
+    private static Map<Class<?>, QName> buildJavaTypes() {
+        Map<Class<?>, QName> javaTypes = new HashMap<>();
 
         //jaxb 1.0 spec pairs
         javaTypes.put(CoreClassConstants.APBYTE, Constants.HEX_BINARY_QNAME);
@@ -1978,9 +1981,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
                 collapsedString.append(nextCharacter);
                 inSequence = false;
             } else {
-                if(inSequence) {
-                    continue;
-                } else {
+                if(!inSequence) {
                     collapsedString.append(' ');
                     inSequence = true;
                 }
@@ -2033,8 +2034,9 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      * @return the Java class for the XML schema type.
      */
     @Override
-    public Class<?> javaType(QName schemaType) {
-        return (Class<?>) getDefaultXMLTypes().get(schemaType);
+    @SuppressWarnings({"unchecked"})
+    public <T> Class<T> javaType(QName schemaType) {
+        return (Class<T>) getDefaultXMLTypes().get(schemaType);
     }
 
     /**
@@ -2044,7 +2046,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      */
     @Override
     public QName schemaType(Class<?> javaType) {
-         return (QName) getDefaultJavaTypes().get(javaType);
+         return getDefaultJavaTypes().get(javaType);
     }
 
     @Override

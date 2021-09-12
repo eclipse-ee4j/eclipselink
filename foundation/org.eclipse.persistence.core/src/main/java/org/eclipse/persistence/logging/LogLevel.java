@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -87,7 +87,7 @@ public enum LogLevel {
     }
 
     /** Array for id to {@link LogLevel} lookup. */
-    private static final LogLevel idValues[] = new LogLevel[length];
+    private static final LogLevel[] idValues = new LogLevel[length];
 
     // Initialize id to LogLevel lookup array.
     static {
@@ -102,7 +102,7 @@ public enum LogLevel {
      * @return {@link LogLevel} object holding the value represented by the string argument or {@code null} when
      *         there exists no corresponding {@link LogLevel} object to provided argument value.
      */
-    public static final LogLevel toValue(final String name) {
+    public static LogLevel toValue(final String name) {
         return name != null ? stringValuesMap.get(name.toUpperCase()) : null;
     }
 
@@ -113,7 +113,7 @@ public enum LogLevel {
      * @return {@link LogLevel} object holding the value represented by the string argument or {@code fallBack} when
      *         there exists no corresponding {@link LogLevel} object to provided argument value.
      */
-    public static final LogLevel toValue(final String name, final LogLevel fallBack) {
+    public static LogLevel toValue(final String name, final LogLevel fallBack) {
         if (name != null) {
             final LogLevel level = stringValuesMap.get(name.toUpperCase());
             return level != null ? level : fallBack;
@@ -128,10 +128,10 @@ public enum LogLevel {
      * @return {@link LogLevel} object holding the value represented by the {@code id} argument.
      * @throws IllegalArgumentException when {@link LogLevel} ID is out of valid {@link LogLevel} IDs range.
      */
-    public static final LogLevel toValue(final int id) {
+    public static LogLevel toValue(final int id) {
         if (id < 0 || id >= length) {
             throw new IllegalArgumentException(
-                    "Log level ID " + id + "is out of range <0, " + Integer.toString(length) + ">.");
+                    "Log level ID " + id + "is out of range <0, " + length + ">.");
         }
         return idValues[id];
     }
@@ -144,7 +144,7 @@ public enum LogLevel {
      *         when provided ID is not valid {@link LogLevel} ID.
      * @throws IllegalArgumentException when {@link LogLevel} ID is out of valid {@link LogLevel} IDs range.
      */
-    public static final LogLevel toValue(final int id, final LogLevel fallBack) {
+    public static LogLevel toValue(final int id, final LogLevel fallBack) {
         if (id >= 0 && id < length) {
             return idValues[id];
         }
@@ -163,7 +163,7 @@ public enum LogLevel {
      * @param id   Logging level ID.
      * @param name Logging level name.
      */
-    private LogLevel(final byte id, final String name) {
+    LogLevel(final byte id, final String name) {
         this.id = id;
         this.name = name;
     }

@@ -39,7 +39,6 @@ import jakarta.persistence.metamodel.Type;
 import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.jpa.CMP3Policy;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
@@ -229,7 +228,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
                 for(DatabaseMapping aMapping : getDescriptor().getMappings()) {
                     if(aMapping.isJPAId()) {
                         // get the attribute Id (declared or not)
-                        Attribute anAttribute = this.getAttribute(aMapping.getAttributeName());
+                        Attribute<X, ?> anAttribute = this.getAttribute(aMapping.getAttributeName());
                         if(anAttribute != null) {
                             return this.getMetamodel().getType(((Bindable)anAttribute).getBindableJavaType()); // all Attributes are Bindable
                         }

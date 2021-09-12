@@ -269,8 +269,8 @@ public class SQLSelectStatement extends SQLStatement {
                     outerJoinedAliases.add(newAlias);
                     writer.write(newAlias.getQualifiedNameDelimited(printer.getPlatform()));
                 } else {// do normal outer stuff for Informix
-                    for (Enumeration target = outerExpression.getMapping().getReferenceDescriptor().getTables().elements();
-                             target.hasMoreElements();) {
+                    for (Enumeration<DatabaseTable> target = outerExpression.getMapping().getReferenceDescriptor().getTables().elements();
+                         target.hasMoreElements();) {
                         DatabaseTable newTarget = (DatabaseTable)target.nextElement();
                         DatabaseTable newAlias = outerExpression.aliasForTable(newTarget);
                         writer.write(", OUTER ");
@@ -760,7 +760,7 @@ public class SQLSelectStatement extends SQLStatement {
 
         printer.getWriter().write(" ORDER BY ");
 
-        for (Iterator expressionsEnum = getOrderByExpressions().iterator(); expressionsEnum.hasNext();) {
+        for (Iterator<Expression> expressionsEnum = getOrderByExpressions().iterator(); expressionsEnum.hasNext();) {
             Expression expression = (Expression)expressionsEnum.next();
             expression.printSQL(printer);
 
@@ -779,7 +779,7 @@ public class SQLSelectStatement extends SQLStatement {
             return;
         }
 
-        for (Iterator expressionsEnum = getUnionExpressions().iterator(); expressionsEnum.hasNext();) {
+        for (Iterator<Expression> expressionsEnum = getUnionExpressions().iterator(); expressionsEnum.hasNext();) {
             Expression expression = (Expression)expressionsEnum.next();
             printer.getWriter().write(" ");
             expression.printSQL(printer);
@@ -1577,9 +1577,9 @@ public class SQLSelectStatement extends SQLStatement {
                     allExpressions.add(criteria);
                 }
 
-                Map map = holder.outerJoinedAdditionalJoinCriteria;
+                Map<DatabaseTable, Expression> map = holder.outerJoinedAdditionalJoinCriteria;
                 if (map != null) {
-                    Iterator it = map.values().iterator();
+                    Iterator<Expression> it = map.values().iterator();
                     while(it.hasNext()) {
                         criteria = (Expression)it.next();
                         if(criteria != null) {
