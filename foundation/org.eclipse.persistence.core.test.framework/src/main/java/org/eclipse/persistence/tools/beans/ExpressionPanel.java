@@ -701,7 +701,7 @@ public class ExpressionPanel extends JPanel {
             getAttributeCombo().removeAllItems();
         }
         if (getDescriptor() != null) {
-            for (Enumeration mappingsEnum =
+            for (Enumeration<DatabaseMapping> mappingsEnum =
                  getDescriptor().getMappings().elements();
                  mappingsEnum.hasMoreElements(); ) {
                 DatabaseMapping mapping =

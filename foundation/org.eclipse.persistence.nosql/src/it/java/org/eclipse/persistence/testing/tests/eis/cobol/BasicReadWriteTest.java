@@ -32,7 +32,7 @@ public class BasicReadWriteTest extends CobolTest {
     protected void test() {
         RecordMetaData recordMetaData = CobolTestModel.getConversionRecord();
         row = CobolTestModel.getConversionRow();
-        Enumeration fieldEnum = row.getFields().elements();
+        Enumeration<DatabaseField> fieldEnum = row.getFields().elements();
         resultRow = new CobolRow();
         //write to array
         while (fieldEnum.hasMoreElements()) {

@@ -81,7 +81,7 @@ public class ReadWeakIdentityMapTest extends TestCase {
             // if not all through warning as different VM have different gc behavior.
             Map<Object, CacheKey> cache = getIdentityMap().getCacheKeys();
             numObjects = 0;
-            for (Iterator iterator = cache.values().iterator(); iterator.hasNext();) {
+            for (Iterator<CacheKey> iterator = cache.values().iterator(); iterator.hasNext();) {
                 CacheKey key = (CacheKey)iterator.next();
                 if (key.getObject() != null) {
                     numObjects++;

@@ -131,8 +131,8 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
             }
         } else {
             Vector summariesHasResult = new Vector();
-            for (Enumeration enumtr = selectedSummary.getLoadBuildSummary().getSummaries().elements();
-                     enumtr.hasMoreElements();) {
+            for (Enumeration<TestResultsSummary> enumtr = selectedSummary.getLoadBuildSummary().getSummaries().elements();
+                 enumtr.hasMoreElements();) {
                 TestResultsSummary summary = (TestResultsSummary)enumtr.nextElement();
                 if ((summary.getResults() != null) && (summary.getResults().size() != 0)) {
                     summariesHasResult.addElement(summary);
@@ -760,7 +760,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
     public void initilaizeTestSummaryCache(LoadBuildSummary loadBuild) {
         Vector rootSummaries = new Vector();
 
-        for (Enumeration enumtr = loadBuild.getSummaries().elements(); enumtr.hasMoreElements();) {
+        for (Enumeration<TestResultsSummary> enumtr = loadBuild.getSummaries().elements(); enumtr.hasMoreElements();) {
             TestResultsSummary summary = (TestResultsSummary)enumtr.nextElement();
             if (summary.getParent() == null) {
                 rootSummaries.addElement(summary);
@@ -778,8 +778,8 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
 
         Vector children = new Vector();
 
-        for (Enumeration enumtr = theSummary.getLoadBuildSummary().getSummaries().elements();
-                 enumtr.hasMoreElements();) {
+        for (Enumeration<TestResultsSummary> enumtr = theSummary.getLoadBuildSummary().getSummaries().elements();
+             enumtr.hasMoreElements();) {
             TestResultsSummary summary = (TestResultsSummary)enumtr.nextElement();
             if ((summary.getParent() != null) && summary.getParent().getName().equals(theSummary.getName())) {
                 children.addElement(summary);

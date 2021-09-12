@@ -186,7 +186,7 @@ public class SDOHelperContextTest extends SDOHelperContextTestCases {
     @SuppressWarnings("unchecked")
     public void testNotificationListenerWLS() throws Exception {
         final String applicationName = "App1";
-        Class listenerClass = Class.forName("org.eclipse.persistence.sdo.helper.SDOHelperContext$MyNotificationListener");
+        Class<? extends NotificationListener> listenerClass = (Class<? extends NotificationListener>) Class.forName("org.eclipse.persistence.sdo.helper.SDOHelperContext$MyNotificationListener");
         Constructor<? extends NotificationListener> constructor = listenerClass.getDeclaredConstructor(String.class, int.class);
         Field helperContextsField = SDOHelperContext.class.getDeclaredField("helperContexts");
         Field appNameToClassLoaderMapField = SDOHelperContext.class.getDeclaredField("appNameToClassLoaderMap");

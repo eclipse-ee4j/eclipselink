@@ -24,7 +24,6 @@ import java.util.List;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOSequence;
-import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.sequenced.Setting;
 
@@ -240,8 +239,8 @@ public class SDOEqualityHelper implements EqualityHelper {
             return false;
         }
         // the settings inside the sequence must be new objects
-        List originalSettingsList = aSequence.getSettings();
-        List copySettingsList = aSequenceCopy.getSettings();
+        List<Setting> originalSettingsList = aSequence.getSettings();
+        List<Setting> copySettingsList = aSequenceCopy.getSettings();
         if ((null == originalSettingsList) || (null == copySettingsList)) {
             return false;
         }
@@ -258,8 +257,8 @@ public class SDOEqualityHelper implements EqualityHelper {
          */
         if (isDeep) {
             for (int index = 0, size = aSequence.size(); index < size; index++) {
-                originalProperty = aSequence.getProperty((Setting) originalSettingsList.get(index));
-                copyProperty = aSequenceCopy.getProperty((Setting) copySettingsList.get(index));
+                originalProperty = aSequence.getProperty(originalSettingsList.get(index));
+                copyProperty = aSequenceCopy.getProperty(copySettingsList.get(index));
 
                 // we must handle null properties that represent unstructured text
                 // both null = unstructured

@@ -31,7 +31,6 @@ import org.eclipse.persistence.internal.helper.Helper;
 import java.util.*;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
@@ -99,7 +98,7 @@ public class JoinedAttributeTestHelper {
         for (Iterator iterator = collectionResult.iterator(); iterator.hasNext(); ) {
             Object object = iterator.next();
             boolean remove = false;
-            for (Iterator joinsIterator = queryWithJoins.getJoinedAttributeManager().getJoinedAttributeExpressions().iterator(); joinsIterator.hasNext(); ) {
+            for (Iterator<Expression> joinsIterator = queryWithJoins.getJoinedAttributeManager().getJoinedAttributeExpressions().iterator(); joinsIterator.hasNext(); ) {
                 Expression joinExpression = (Expression)joinsIterator.next();
                 joinExpression.getBuilder().setSession(session);
                 joinExpression.getBuilder().setQueryClass(queryWithJoins.getReferenceClass());
@@ -156,7 +155,7 @@ public class JoinedAttributeTestHelper {
             if (excluded.contains(new CacheKey(session.getId(object)))) {
                 iterator.remove();
             } else {
-                for (Iterator joinsIterator = queryWithJoins.getJoinedAttributeManager().getJoinedAttributeExpressions().iterator(); joinsIterator.hasNext(); ) {
+                for (Iterator<Expression> joinsIterator = queryWithJoins.getJoinedAttributeManager().getJoinedAttributeExpressions().iterator(); joinsIterator.hasNext(); ) {
                     Expression joinExpression = (Expression)joinsIterator.next();
                     // Instantiate value holders that should be instantiated.
                     joinExpression.valueFromObject(object, session, null, valueHolderPolicy, false);
@@ -344,7 +343,7 @@ public class JoinedAttributeTestHelper {
             return errorMsg;
         }
 
-        Vector mappings = desc.getMappings();
+        Vector<DatabaseMapping> mappings = desc.getMappings();
         for (int index = 0; index < mappings.size(); index++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
             String mappingErrorMsg = compareAttributes(obj1, obj2, mapping, session, processed);

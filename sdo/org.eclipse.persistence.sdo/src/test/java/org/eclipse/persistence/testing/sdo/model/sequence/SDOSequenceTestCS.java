@@ -32,13 +32,11 @@ import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOSequence;
-import org.eclipse.persistence.sdo.SDOSetting;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.DefaultSchemaLocationResolver;
 import org.eclipse.persistence.sdo.helper.ListWrapper;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
 import org.eclipse.persistence.exceptions.SDOException;
-import org.eclipse.persistence.oxm.XMLConstants;
 
 public class SDOSequenceTestCS extends SDOSequenceTestCases {
 
@@ -2466,7 +2464,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         List<DataObject> aListToAdd = new ArrayList<DataObject>();
         aListToAdd.add(item3);
         aListToAdd.add(item3);
-        for(Iterator i = aListToAdd.iterator(); i.hasNext();) {
+        for(Iterator<DataObject> i = aListToAdd.iterator(); i.hasNext();) {
             // add to the end of the list
             existingList.add(i.next());
         }

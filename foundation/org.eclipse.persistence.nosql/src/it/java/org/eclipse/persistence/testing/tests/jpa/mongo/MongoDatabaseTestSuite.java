@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -987,7 +987,7 @@ public class MongoDatabaseTestSuite extends JUnitTestCase {
      * Test dynamic entities.
      */
     public void testDynamicEntities() {
-        final Map properties = new HashMap<String, String>(this.properties);
+        final Map<String, Object> properties = new HashMap<>(this.properties);
         properties.put("eclipselink.classloader", new DynamicClassLoader(getClass().getClassLoader()));
         properties.put("eclipselink.logging.level", "finest");
         final EntityManagerFactory factory = Persistence.createEntityManagerFactory("mongo-dynamic", properties);

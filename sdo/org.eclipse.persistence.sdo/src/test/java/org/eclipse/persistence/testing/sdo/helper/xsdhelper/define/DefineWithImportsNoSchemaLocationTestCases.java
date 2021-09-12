@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.sdo.helper.xsdhelper.define;
 
 import commonj.sdo.DataObject;
 import commonj.sdo.Type;
-import java.io.FileInputStream;
+
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
@@ -25,8 +25,6 @@ import java.util.List;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import junit.textui.TestRunner;
-import org.eclipse.persistence.sdo.SDOConstants;
-import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
 import org.eclipse.persistence.sdo.helper.SchemaResolver;
@@ -50,7 +48,7 @@ public class DefineWithImportsNoSchemaLocationTestCases extends XSDHelperDefineT
 
         List types = ((SDOXSDHelper) xsdHelper).define(new StreamSource(is), new TestResolver(getSchemaLocation()));
         log("\nExpected:\n");
-        List controlTypes = getControlTypes();
+        List<Type> controlTypes = getControlTypes();
         log(controlTypes);
 
         log("\nActual:\n");

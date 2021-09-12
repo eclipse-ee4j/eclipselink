@@ -770,7 +770,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
                 // done reflectively to remove dependency on tools jar
                 Object[] params = new Object[1];
                 params[0] = source;
-                Class mainClass = Class.forName("com.sun.tools.javac.Main");
+                Class<?> mainClass = Class.forName("com.sun.tools.javac.Main");
                 Class[] parameterTypes = new Class[1];
                 parameterTypes[0] = String[].class;
                 Method method = mainClass.getMethod("compile", parameterTypes);
@@ -780,7 +780,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
                             "Java code compile failed. This could either be a legitimate compile "
                                     + "failure, or could result if you do not have the tools.jar from your JDK on the classpath.");
                 }
-                Class newClass = Class.forName(className);
+                Class<?> newClass = Class.forName(className);
                 Object newInstance = newClass.getConstructor().newInstance();
                 newClass.getField("session").set(newInstance, getSession());
                 Object value;
@@ -3240,7 +3240,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
                 getSession().getSessionLog().setShouldPrintThread(true);
             }
             // Also update all sessions in session manager.
-            Iterator iterator = SessionManager.getManager().getSessions().values().iterator();
+            Iterator<Session> iterator = SessionManager.getManager().getSessions().values().iterator();
             while (iterator.hasNext()) {
                 ((Session)iterator.next()).setSessionLog(getSession().getSessionLog());
             }
@@ -3409,7 +3409,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         IdentityMap map = ((AbstractSession) getSession())
                 .getIdentityMapAccessorInstance().getIdentityMap(
                         info.descriptor.getJavaClass());
-        for (Enumeration cacheEnum = map.keys(); cacheEnum.hasMoreElements();) {
+        for (Enumeration<CacheKey> cacheEnum = map.keys(); cacheEnum.hasMoreElements();) {
             CacheKey key = (CacheKey) cacheEnum.nextElement();
             if (info.descriptor.getJavaClass().isInstance(key.getObject())) {
                 cacheResults.addElement(key);
@@ -3447,7 +3447,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         ClassInfo[] classes = new ClassInfo[(getSession()).getDescriptors()
                 .size()];
         int index = 0;
-        for (Iterator iterator = (getSession()).getDescriptors().values()
+        for (Iterator<ClassDescriptor> iterator = (getSession()).getDescriptors().values()
                 .iterator(); iterator.hasNext();) {
             classes[index] = new ClassInfo((ClassDescriptor) iterator.next(),
                     useFullNames);
@@ -3755,7 +3755,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         if (shouldUseJndiConnector
                 && getLoginEditorPanel().getLogin().getPlatform().isOracle()) {
             try {
-                Class connectionPoolHelperClass = Class
+                Class<?> connectionPoolHelperClass = Class
                         .forName("org.eclipse.persistence.tools.sessionconsole.OracleConnectionPoolHelper");
                 Class[] params = new Class[] { java.lang.String.class };
                 java.lang.reflect.Method method = connectionPoolHelperClass

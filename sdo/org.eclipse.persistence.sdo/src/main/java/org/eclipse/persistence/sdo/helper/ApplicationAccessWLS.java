@@ -143,14 +143,14 @@ public class ApplicationAccessWLS {
 
         try {
             // Get component invocation manager
-            final Class cicManagerClass = PrivilegedAccessHelper.getClassForName(CIC_MANAGER_CLASS_NAME);
+            final Class<Object> cicManagerClass = PrivilegedAccessHelper.getClassForName(CIC_MANAGER_CLASS_NAME);
             final Method getInstance = PrivilegedAccessHelper.getDeclaredMethod(cicManagerClass, "getInstance", new Class[]{});
             cicManagerInstance = PrivilegedAccessHelper.invokeMethod(getInstance, cicManagerClass);
 
             // Get component invocation context
             getCurrentCicMethod = PrivilegedAccessHelper.getMethod(cicManagerClass, "getCurrentComponentInvocationContext", new Class[]{}, true);
 
-            final Class cicClass = PrivilegedAccessHelper.getClassForName(CIC_CLASS_NAME);
+            final Class<Object> cicClass = PrivilegedAccessHelper.getClassForName(CIC_CLASS_NAME);
             getApplicationIdMethod = PrivilegedAccessHelper.getDeclaredMethod(cicClass, "getApplicationId", new Class[]{});
 
             return true;
@@ -165,7 +165,7 @@ public class ApplicationAccessWLS {
      */
     protected boolean initUsingApplicationAccess() {
         try {
-            final Class applicationAccessClass = PrivilegedAccessHelper.getClassForName("weblogic.application.ApplicationAccess");
+            final Class<Object> applicationAccessClass = PrivilegedAccessHelper.getClassForName("weblogic.application.ApplicationAccess");
             final Method getApplicationAccessMethod = PrivilegedAccessHelper.getDeclaredMethod(applicationAccessClass, "getApplicationAccess", new Class[]{});
             applicationAccessInstance = PrivilegedAccessHelper.invokeMethod(getApplicationAccessMethod, applicationAccessClass);
 

@@ -35,15 +35,15 @@ import java.util.Iterator;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.eclipse.persistence.oxm.sequenced.Setting;
 import org.eclipse.persistence.sdo.SDOChangeSummary;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOSequence;
 import org.eclipse.persistence.sdo.SDOSetting;
-import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.ValueStore;
-import org.eclipse.persistence.sdo.helper.SDOClassLoader;
 import org.eclipse.persistence.sdo.helper.SDODataHelper;
 import org.eclipse.persistence.sdo.helper.SDOHelperContext;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
@@ -53,7 +53,6 @@ import commonj.sdo.Type;
 import commonj.sdo.impl.HelperProvider;
 import org.eclipse.persistence.Version;
 import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.platform.xml.XMLComparer;
 
 import static org.eclipse.persistence.sdo.SDOConstants.*;
 
@@ -699,8 +698,8 @@ public class SDOTestCase extends junit.framework.TestCase {
         // the settings inside the sequence must be new objects
         SDOSetting originalSetting = null;
         SDOSetting copySetting = null;
-        List originalSettingsList = aSequence.getSettings();
-        List copySettingsList = aSequenceCopy.getSettings();
+        List<? super Setting> originalSettingsList = aSequence.getSettings();
+        List<? super Setting> copySettingsList = aSequenceCopy.getSettings();
         if (null == originalSettingsList || null == copySettingsList) {
             return false;
         }

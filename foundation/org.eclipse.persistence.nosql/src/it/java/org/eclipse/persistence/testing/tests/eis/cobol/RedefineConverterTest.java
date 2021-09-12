@@ -34,7 +34,7 @@ public class RedefineConverterTest extends CobolTest {
         row = CobolTestModel.getConversionRow();
         row.remove("emp-tasks");
         row.add(new DatabaseField("emp-depart"), "accounting");
-        Enumeration fieldEnum = row.getFields().elements();
+        Enumeration<DatabaseField> fieldEnum = row.getFields().elements();
         resultRow = new CobolRow();
         //write to array
         while (fieldEnum.hasMoreElements()) {

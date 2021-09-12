@@ -18,6 +18,7 @@ import java.io.*;
 import java.util.*;
 import jakarta.persistence.*;
 
+import junit.framework.TestFailure;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.server.*;
@@ -555,7 +556,7 @@ public class TestExecutor {
                 log.write(CR);
                 log.write(indent + "Failures:");
                 log.write(CR);
-                for (Enumeration failures = result.failures(); failures.hasMoreElements();) {
+                for (Enumeration<TestFailure> failures = result.failures(); failures.hasMoreElements();) {
                     junit.framework.TestFailure failure = (junit.framework.TestFailure)failures.nextElement();
                     String testString = failure.failedTest().toString();
                     int startIndex = testString.indexOf("(");
@@ -576,7 +577,7 @@ public class TestExecutor {
                 log.write(CR);
                 log.write(indent + "Errors:");
                 log.write(CR);
-                for (Enumeration errors = result.errors(); errors.hasMoreElements();) {
+                for (Enumeration<TestFailure> errors = result.errors(); errors.hasMoreElements();) {
                     junit.framework.TestFailure error = (junit.framework.TestFailure)errors.nextElement();
                     String testString = error.failedTest().toString();
                     int startIndex = testString.indexOf("(");

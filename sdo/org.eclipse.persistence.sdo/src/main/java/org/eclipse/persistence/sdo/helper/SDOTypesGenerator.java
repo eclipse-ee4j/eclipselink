@@ -180,10 +180,10 @@ public class SDOTypesGenerator {
                 ((SDOTypeHelper) aHelperContext.getTypeHelper()).addType(nextSDOType);
             }
 
-            Iterator anonymousIterator = getAnonymousTypes().iterator();
+            Iterator<SDOType> anonymousIterator = getAnonymousTypes().iterator();
 
             while (anonymousIterator.hasNext()) {
-                SDOType nextSDOType = (SDOType) anonymousIterator.next();
+                SDOType nextSDOType = anonymousIterator.next();
                 ((SDOTypeHelper) aHelperContext.getTypeHelper()).getAnonymousTypes().add(nextSDOType);
             }
 

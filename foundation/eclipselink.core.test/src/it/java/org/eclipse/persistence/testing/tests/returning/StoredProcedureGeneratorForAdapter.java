@@ -59,7 +59,7 @@ public class StoredProcedureGeneratorForAdapter extends StoredProcedureGenerator
     public void generateInsertStoredProceduresDefinitionsForProject(Project project) {
         verifyProject(project);
         Map<Class<?>, ClassDescriptor> descrpts = project.getDescriptors();
-        Iterator iterator = descrpts.keySet().iterator();
+        Iterator<Class<?>> iterator = descrpts.keySet().iterator();
         ClassDescriptor desc;
         while (iterator.hasNext()) {
             desc = (ClassDescriptor)descrpts.get(iterator.next());
@@ -79,7 +79,7 @@ public class StoredProcedureGeneratorForAdapter extends StoredProcedureGenerator
     public void generateUpdateStoredProceduresDefinitionsForProject(Project project) {
         verifyProject(project);
         Map<Class<?>, ClassDescriptor> descrpts = project.getDescriptors();
-        Iterator iterator = descrpts.keySet().iterator();
+        Iterator<Class<?>> iterator = descrpts.keySet().iterator();
         ClassDescriptor desc;
         while (iterator.hasNext()) {
             desc = (ClassDescriptor)descrpts.get(iterator.next());

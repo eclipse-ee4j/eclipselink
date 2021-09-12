@@ -14,6 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.framework;
 
+import junit.framework.Test;
+
 import java.lang.reflect.*;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -124,7 +126,7 @@ public class JUnitTestCase extends AutoVerifyTestCase {
             throw new TestProblemException("suite method failed on class " + junitTestCaseClass.getName() + " with: " + exception.toString(), exception);
         }
         Vector testsOut = new Vector(suite.countTestCases());
-        Enumeration tests = suite.tests();
+        Enumeration<Test> tests = suite.tests();
         while (tests.hasMoreElements()) {
             junit.framework.TestCase testCaseToAdd = (junit.framework.TestCase)tests.nextElement();
             testsOut.addElement(new JUnitTestCase(testCaseToAdd));

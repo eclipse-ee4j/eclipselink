@@ -19,6 +19,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import javax.xml.transform.Source;
@@ -62,7 +63,7 @@ public class ComplexImportsAndIncludesTestCases extends XSDHelperTestCases {
             java.util.Properties fileProps = new java.util.Properties();
             fileProps.load(indexFIS);
 
-            java.util.Enumeration keyEnum = fileProps.keys();
+            Enumeration<Object> keyEnum = fileProps.keys();
             while (keyEnum.hasMoreElements()) {
                 String s = (String) keyEnum.nextElement();
                 fileIndex.put(fileProps.get(s), s);

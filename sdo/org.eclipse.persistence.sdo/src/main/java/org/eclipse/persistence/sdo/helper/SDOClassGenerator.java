@@ -14,11 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.sdo.helper;
 
+import commonj.sdo.Type;
 import commonj.sdo.helper.HelperContext;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import javax.xml.namespace.QName;
@@ -221,7 +223,7 @@ public class SDOClassGenerator {
 
     public Map generate(Source xsdSource, CodeWriter aCodeWriter, SchemaResolver schemaResolver, boolean bProcessImports) {
         SDOTypesGenerator gen = new SDOTypesGenerator(aHelperContext);
-        java.util.List types = gen.define(xsdSource, schemaResolver, true, bProcessImports);
+        List<Type> types = gen.define(xsdSource, schemaResolver, true, bProcessImports);
         return generate(aCodeWriter, types);
     }
 

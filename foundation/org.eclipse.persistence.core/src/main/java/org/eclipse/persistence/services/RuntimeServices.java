@@ -59,7 +59,6 @@ import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.JavaLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.server.JMXEnabledPlatform;
-import org.eclipse.persistence.services.jboss.ClassSummaryDetail;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DefaultConnector;
 import org.eclipse.persistence.sessions.Session;
@@ -1543,7 +1542,7 @@ public abstract class RuntimeServices {
          }
 
          try {
-             Vector mappedClassNames = getMappedClassNamesUsingFilter(filter);
+             Vector<String> mappedClassNames = getMappedClassNamesUsingFilter(filter);
              String mappedClassName;
              TabularDataSupport rowData = new TabularDataSupport(buildTabularTypeForClassSummaryDetails());
              // Check if there aren't any classes mapped
@@ -1581,7 +1580,7 @@ public abstract class RuntimeServices {
       */
      private TabularData buildClassSummaryDetails() {
          try {
-             Vector mappedClassNames = getMappedClassNames();
+             Vector<String> mappedClassNames = getMappedClassNames();
              String mappedClassName;
              TabularDataSupport rowData = new TabularDataSupport(buildTabularTypeForClassSummaryDetails());
              // Check if there aren't any classes mapped

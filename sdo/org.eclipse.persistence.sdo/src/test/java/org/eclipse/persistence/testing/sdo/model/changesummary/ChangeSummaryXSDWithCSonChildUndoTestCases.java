@@ -14,21 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.sdo.model.changesummary;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOChangeSummary;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.ValueStore;
-import org.eclipse.persistence.sdo.helper.ListWrapper;
-import org.eclipse.persistence.testing.sdo.SDOTestCase;
 import commonj.sdo.ChangeSummary;
 import commonj.sdo.DataObject;
-import commonj.sdo.Property;
-import commonj.sdo.helper.XMLDocument;
 
 /**
  * This test suite will exercise mulit-operations on changeSummaries that are below the root as well as inter-changeSummary ops.
@@ -411,7 +403,7 @@ public class ChangeSummaryXSDWithCSonChildUndoTestCases extends ChangeSummaryXSD
         // verify that the objects are returned back to their original stes
         assertNotNull(salesPO1DO.get("items"));
         assertNull(salesPO1DO2.get("items"));
-        List preOrderList = preOrderTraversalDataObjectList((SDODataObject)rootObject, false);
+        List<DataObject> preOrderList = preOrderTraversalDataObjectList((SDODataObject)rootObject, false);
         assertEquals(62, preOrderList.size());
     }
 
@@ -507,7 +499,7 @@ public class ChangeSummaryXSDWithCSonChildUndoTestCases extends ChangeSummaryXSD
         // verify that the object above the tree is still set
         assertNotNull(salesDO.get("employee[1]"));
         assertNotNull(salesPO1DO.get("buyer"));
-        List preOrderList = preOrderTraversalDataObjectList((SDODataObject)rootObject, false);
+        List<DataObject> preOrderList = preOrderTraversalDataObjectList((SDODataObject)rootObject, false);
         assertEquals(63, preOrderList.size());
     }
 
@@ -1037,7 +1029,7 @@ public class ChangeSummaryXSDWithCSonChildUndoTestCases extends ChangeSummaryXSD
         assertNotNull(salesPO1ItemsDO.getChangeSummary());
         assertNotNull(salesPO2ItemsDO.getChangeSummary());
 
-        List preOrderList = preOrderTraversalDataObjectList((SDODataObject)rootObject, false);
+        List<DataObject> preOrderList = preOrderTraversalDataObjectList((SDODataObject)rootObject, false);
         assertEquals(62, preOrderList.size());
 
         // preoperation setup

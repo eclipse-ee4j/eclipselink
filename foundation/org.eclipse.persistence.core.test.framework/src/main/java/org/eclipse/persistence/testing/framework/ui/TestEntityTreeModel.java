@@ -17,6 +17,8 @@ package org.eclipse.persistence.testing.framework.ui;
 import java.util.*;
 import javax.swing.tree.*;
 import javax.swing.event.*;
+
+import junit.framework.Test;
 import org.eclipse.persistence.testing.framework.*;
 
 /**
@@ -63,7 +65,7 @@ public class TestEntityTreeModel implements TreeModel {
         if (parent instanceof TestCollection) {
             return ((TestCollection)parent).getTests().indexOf(child);
         } else if (parent instanceof junit.framework.TestSuite) {
-            Enumeration tests = ((junit.framework.TestSuite)parent).tests();
+            Enumeration<Test> tests = ((junit.framework.TestSuite)parent).tests();
             int index = 0;
             while (tests.hasMoreElements()) {
                 if (tests.nextElement() == child) {

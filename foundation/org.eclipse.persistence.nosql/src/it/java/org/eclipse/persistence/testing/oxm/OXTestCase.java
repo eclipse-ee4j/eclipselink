@@ -26,6 +26,8 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Constructor;
+import java.util.Collection;
+import java.util.Iterator;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLInputFactory;
@@ -125,8 +127,8 @@ public abstract class OXTestCase extends XMLTestCase {
 
     public XMLContext getXMLContext(Project project) {
         if (platform == Platform.DOC_PRES) {
-            java.util.Collection descriptors = project.getDescriptors().values();
-            java.util.Iterator iter = descriptors.iterator();
+            Collection<ClassDescriptor> descriptors = project.getDescriptors().values();
+            Iterator<ClassDescriptor> iter = descriptors.iterator();
             while (iter.hasNext()) {
                 ClassDescriptor nextDesc = (ClassDescriptor)iter.next();
                 if (nextDesc instanceof org.eclipse.persistence.oxm.XMLDescriptor) {

@@ -32,7 +32,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
-import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
@@ -734,7 +733,7 @@ public class SDODataHelper implements DataHelper {
             // convert a DataHandler to a string, by getting the bytes and then
             // calling into conversion manager
             try {
-                Class binaryDataHelper = PrivilegedAccessHelper.getClassForName("org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper");
+                Class<Object> binaryDataHelper = PrivilegedAccessHelper.getClassForName("org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper");
                 java.lang.reflect.Method getHelperMethod = PrivilegedAccessHelper.getMethod(binaryDataHelper, "getXMLBinaryDataHelper", new Class[] {}, false);
                 java.lang.reflect.Method stringToDataHandlerMethod = PrivilegedAccessHelper.getMethod(binaryDataHelper, "stringFromDataHandler", new Class[] { Object.class, QName.class, CoreAbstractSession.class }, false);
 

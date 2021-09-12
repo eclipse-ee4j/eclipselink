@@ -693,7 +693,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         Type sdotype = null;
         boolean isMany = false;
         boolean isContainment = false;
-        Class valueClass = value.getClass();
+        Class<? extends Object> valueClass = value.getClass();
 
         if (value instanceof Collection) {
             if (((Collection)value).size() > 0) {
@@ -745,7 +745,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         propertyDO.set("name", name);
         boolean isMany = false;
         boolean isContainment = false;
-        Class valueClass = value.getClass();
+        Class<? extends Object> valueClass = value.getClass();
 
         if (value instanceof Collection) {
             if (((Collection)value).size() > 0) {
