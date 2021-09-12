@@ -377,7 +377,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     try {
-                        setReferenceClass(AccessController.doPrivileged(new PrivilegedClassForName(getReferenceClassName(), true, classLoader)));
+                        setReferenceClass(AccessController.doPrivileged(new PrivilegedClassForName<>(getReferenceClassName(), true, classLoader)));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(getReferenceClassName(), exception.getException());
                     }
@@ -1084,8 +1084,8 @@ public abstract class AggregateMapping extends DatabaseMapping {
         if (attributeValue == null) {
             return true;
         }
-        for (Enumeration mappings = getReferenceDescriptor(attributeValue, session).getMappings().elements();
-                 mappings.hasMoreElements();) {
+        for (Enumeration<DatabaseMapping> mappings = getReferenceDescriptor(attributeValue, session).getMappings().elements();
+             mappings.hasMoreElements();) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.nextElement();
             if (!mapping.verifyDelete(attributeValue, session)) {
                 return false;

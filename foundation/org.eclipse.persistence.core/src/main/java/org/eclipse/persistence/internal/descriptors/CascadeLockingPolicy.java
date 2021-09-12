@@ -68,7 +68,7 @@ public class CascadeLockingPolicy {
             m_query = new ReadObjectQuery(m_parentClass);
 
             Expression selectionCriteria = null;
-            Iterator keys = m_queryKeyFields.keySet().iterator();
+            Iterator<DatabaseField> keys = m_queryKeyFields.keySet().iterator();
             ExpressionBuilder builder = new ExpressionBuilder();
 
             while (keys.hasNext()) {

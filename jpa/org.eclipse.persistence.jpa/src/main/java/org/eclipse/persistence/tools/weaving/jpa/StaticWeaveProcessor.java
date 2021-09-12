@@ -40,7 +40,6 @@ import org.eclipse.persistence.internal.jpa.weaving.StaticWeaveJAROutputHandler;
 import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.jpa.Archive;
 import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 
 /**
@@ -258,9 +257,9 @@ public class StaticWeaveProcessor {
         Archive sourceArchive =(new ArchiveFactoryImpl()).createArchive(source, null, null);
         if (sourceArchive != null) {
             try {
-                Iterator entries = sourceArchive.getEntries();
+                Iterator<String> entries = sourceArchive.getEntries();
                 while (entries.hasNext()){
-                    String entryName = (String)entries.next();
+                    String entryName = entries.next();
                     InputStream entryInputStream = sourceArchive.getEntry(entryName);
 
                     // Add a directory entry
@@ -280,7 +279,7 @@ public class StaticWeaveProcessor {
                     byte[] originalClassBytes=null;
                     byte[] transferredClassBytes=null;
                     try {
-                        Class thisClass = this.classLoader.loadClass(className);
+                        Class<?> thisClass = this.classLoader.loadClass(className);
                         // If the class is not in the classpath, we simply copy the entry
                         // to the target(no weaving).
                         if (thisClass == null){

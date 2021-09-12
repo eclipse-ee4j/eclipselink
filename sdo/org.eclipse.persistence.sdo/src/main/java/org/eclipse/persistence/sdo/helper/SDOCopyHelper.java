@@ -26,7 +26,6 @@ import org.eclipse.persistence.sdo.SDOChangeSummary;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOSequence;
-import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.ValueStore;
 import org.eclipse.persistence.exceptions.SDOException;
 import commonj.sdo.ChangeSummary;
@@ -155,9 +154,9 @@ public class SDOCopyHelper implements CopyHelper {
         }
 
         if (dataObject.getType().isSequenced()) {
-            List settings = ((SDOSequence)dataObject.getSequence()).getSettings();
+            List<Setting> settings = ((SDOSequence)dataObject.getSequence()).getSettings();
             for (int index = 0, size = dataObject.getSequence().size(); index < size; index++) {
-                Setting nextSetting = (Setting)settings.get(index);
+                Setting nextSetting = settings.get(index);
 
                 Property prop = dataObject.getSequence().getProperty(index);
                 if (prop == null || prop.getType().isDataType()) {
@@ -394,9 +393,9 @@ public class SDOCopyHelper implements CopyHelper {
 
         SDOProperty seqProperty = null;
         try {
-            List settings = origSequence.getSettings();
+            List<Setting> settings = origSequence.getSettings();
             for (int index = 0, size = origSequence.size(); index < size; index++) {
-                Setting nextSetting = (Setting)settings.get(index);
+                Setting nextSetting = settings.get(index);
                 seqProperty = origSequence.getProperty(nextSetting);
 
                 if ((null == seqProperty) || seqProperty.getType().isDataType()) {

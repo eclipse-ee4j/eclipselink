@@ -108,7 +108,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
         }
 
         Method cloneMethod;
-        Class javaClass = container.getClass();
+        Class<? extends Object> javaClass = container.getClass();
         if (javaClass == getContainerClass()) {
             cloneMethod = getCloneMethod();
         } else {
@@ -135,7 +135,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
         try{
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
-                    containerClass = AccessController.doPrivileged(new PrivilegedClassForName(getContainerClassName(), true, classLoader));
+                    containerClass = AccessController.doPrivileged(new PrivilegedClassForName<>(getContainerClassName(), true, classLoader));
                 } catch (PrivilegedActionException exception) {
                     throw ValidationException.classNotFoundWhileConvertingClassNames(getContainerClassName(), exception.getException());
                 }

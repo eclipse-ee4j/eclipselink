@@ -583,7 +583,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
         setInitializationStage(PREINITIALIZED);
 
         // Allow mapping pre init, must be done before validate.
-        for (Enumeration mappingsEnum = getMappings().elements(); mappingsEnum.hasMoreElements();) {
+        for (Enumeration<DatabaseMapping> mappingsEnum = getMappings().elements(); mappingsEnum.hasMoreElements();) {
             try {
                 DatabaseMapping mapping = (DatabaseMapping) mappingsEnum.nextElement();
                 mapping.preInitialize(session);
@@ -764,7 +764,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
             }
         }
 
-        for (Enumeration mappingsEnum = getMappings().elements(); mappingsEnum.hasMoreElements();) {
+        for (Enumeration<DatabaseMapping> mappingsEnum = getMappings().elements(); mappingsEnum.hasMoreElements();) {
             DatabaseMapping mapping = (DatabaseMapping) mappingsEnum.nextElement();
             validateMappingType(mapping);
             mapping.initialize(session);

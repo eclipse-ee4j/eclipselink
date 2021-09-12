@@ -1717,9 +1717,9 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         pk.add(dealer.getId());
 
         if (isOnServer()) {
-            return (Integer) getServerSession().getDescriptor(Dealer.class).getOptimisticLockingPolicy().getWriteLockValue(dealer, pk, getServerSession());
+            return getServerSession().getDescriptor(Dealer.class).getOptimisticLockingPolicy().getWriteLockValue(dealer, pk, getServerSession());
         } else {
-            return (Integer) ((EntityManagerImpl) em).getServerSession().getDescriptor(Dealer.class).getOptimisticLockingPolicy().getWriteLockValue(dealer, pk, ((EntityManagerImpl) em).getServerSession());
+            return ((EntityManagerImpl) em).getServerSession().getDescriptor(Dealer.class).getOptimisticLockingPolicy().getWriteLockValue(dealer, pk, ((EntityManagerImpl) em).getServerSession());
         }
     }
 

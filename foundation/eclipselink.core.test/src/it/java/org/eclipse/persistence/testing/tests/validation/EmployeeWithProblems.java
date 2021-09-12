@@ -80,8 +80,8 @@ public class EmployeeWithProblems extends org.eclipse.persistence.testing.models
         Time[] hours = new Time[2];
 
         /** This conversion allows for the database type not to match, i.e. may be a Timestamp or String. */
-        hours[0] = (Time)session.getPlatform().convertObject(row.get("START_TIME"), java.sql.Time.class);
-        hours[1] = (Time)session.getPlatform().convertObject(row.get("END_TIME"), java.sql.Time.class);
+        hours[0] = session.getPlatform().convertObject(row.get("START_TIME"), Time.class);
+        hours[1] = session.getPlatform().convertObject(row.get("END_TIME"), Time.class);
         //    return hours;
     }
 

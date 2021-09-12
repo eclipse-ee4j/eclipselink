@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2015 Sei Syvalta. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -245,7 +245,7 @@ public class DefaultTableGenerator {
 
             List existedTables = new ArrayList();
             List existedTableNames = new ArrayList();
-            Iterator tblDefIter = tblCreator.getTableDefinitions().iterator();
+            Iterator<TableDefinition> tblDefIter = tblCreator.getTableDefinitions().iterator();
 
             while (tblDefIter.hasNext()) {
                 TableDefinition tblDef = (TableDefinition) tblDefIter.next();
@@ -295,7 +295,7 @@ public class DefaultTableGenerator {
                 isPKField = descriptor.getPrimaryKeyFields().contains(dbField);
 
                 //then check if the field is a pk field in the secondary table(s), this is only applied to the multiple tables case.
-                Map secondaryKeyMap = descriptor.getAdditionalTablePrimaryKeyFields().get(dbField.getTable());
+                Map<DatabaseField, DatabaseField> secondaryKeyMap = descriptor.getAdditionalTablePrimaryKeyFields().get(dbField.getTable());
 
                 if (secondaryKeyMap != null) {
                     isPKField = isPKField || secondaryKeyMap.containsValue(dbField);
@@ -556,14 +556,14 @@ public class DefaultTableGenerator {
      * Reset the transformation mapping field types
      */
     protected void resetTransformedFieldType(TransformationMapping mapping) {
-        Iterator transIter = mapping.getFieldTransformations().iterator();
+        Iterator<FieldTransformation> transIter = mapping.getFieldTransformations().iterator();
         while (transIter.hasNext()) {
             FieldTransformation transformation = (FieldTransformation) transIter.next();
 
             if (transformation instanceof MethodBasedFieldTransformation) {
                 MethodBasedFieldTransformation methodTransformation = (MethodBasedFieldTransformation) transformation;
                 try {
-                    Class returnType = Helper.getDeclaredMethod(mapping.getDescriptor().getJavaClass(), methodTransformation.getMethodName(), null).getReturnType();
+                    Class<?> returnType = Helper.getDeclaredMethod(mapping.getDescriptor().getJavaClass(), methodTransformation.getMethodName(), null).getReturnType();
                     getFieldDefFromDBField(methodTransformation.getField()).setType(returnType);
                 } catch (NoSuchMethodException ex) {
                     // For some reason, the method type could not be retrieved,
@@ -576,7 +576,7 @@ public class DefaultTableGenerator {
                 Class[] params = new Class[] {Object.class, String.class, Session.class};
 
                 try {
-                    Class returnType = Helper.getDeclaredMethod(classTransformation.getTransformerClass(), methodName, params).getReturnType();
+                    Class<?> returnType = Helper.getDeclaredMethod(classTransformation.getTransformerClass(), methodName, params).getReturnType();
 
                     if (returnType.equals(Object.class)) {
                         // User needs to be more specific with their class
@@ -603,7 +603,7 @@ public class DefaultTableGenerator {
         TableDefinition targetTable = getTableDefFromDBTable(mapping.getReferenceDescriptor().getDefaultTable());
         addFieldsForMappedKeyMapContainerPolicy(mapping.getContainerPolicy(), targetTable);
 
-        Iterator aggregateFieldIterator = mapping.getReferenceDescriptor().getFields().iterator();
+        Iterator<DatabaseField> aggregateFieldIterator = mapping.getReferenceDescriptor().getFields().iterator();
         while (aggregateFieldIterator.hasNext()) {
             DatabaseField dbField = (DatabaseField) aggregateFieldIterator.next();
             //add the target definition to the table definition
@@ -874,7 +874,7 @@ public class DefaultTableGenerator {
         }
 
         DatabaseTable databaseTable = null;
-        Iterator dbTblIter = descriptor.getTables().iterator();
+        Iterator<DatabaseTable> dbTblIter = descriptor.getTables().iterator();
         while (dbTblIter.hasNext()) {
             databaseTable = (DatabaseTable) dbTblIter.next();
             Map<DatabaseField, DatabaseField> srcFields = descriptor.getAdditionalTablePrimaryKeyFields().get(databaseTable);

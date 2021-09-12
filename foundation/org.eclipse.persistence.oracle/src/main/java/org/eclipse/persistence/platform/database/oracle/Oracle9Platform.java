@@ -33,6 +33,7 @@ import java.sql.Types;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.Vector;
@@ -83,10 +84,10 @@ import oracle.sql.TIMESTAMPTZ;
  */
 public class Oracle9Platform extends Oracle8Platform {
 
-    public static final Class NCHAR = NCharacter.class;
-    public static final Class NSTRING = NString.class;
-    public static final Class NCLOB = NClob.class;
-    public static final Class XMLTYPE = XMLTypePlaceholder.class;
+    public static final Class<NCharacter> NCHAR = NCharacter.class;
+    public static final Class<NString> NSTRING = NString.class;
+    public static final Class<NClob> NCLOB = NClob.class;
+    public static final Class<XMLTypePlaceholder> XMLTYPE = XMLTypePlaceholder.class;
 
     /* Driver version set to connection.getMetaData.getDriverVersion() */
     protected transient String driverVersion;
@@ -131,9 +132,9 @@ public class Oracle9Platform extends Oracle8Platform {
      * If driver is not available, this class will not be initialized and will fail fast instead of failing later on
      * when classes from driver are utilized
      */
-    private static final Class ORACLE_SQL_TIMESTAMP    = oracle.sql.TIMESTAMP.class;
-    private static final Class ORACLE_SQL_TIMESTAMPTZ  = oracle.sql.TIMESTAMPTZ.class;
-    private static final Class ORACLE_SQL_TIMESTAMPLTZ = oracle.sql.TIMESTAMPLTZ.class;
+    private static final Class<TIMESTAMP> ORACLE_SQL_TIMESTAMP    = oracle.sql.TIMESTAMP.class;
+    private static final Class<TIMESTAMPTZ> ORACLE_SQL_TIMESTAMPTZ  = oracle.sql.TIMESTAMPTZ.class;
+    private static final Class<TIMESTAMPLTZ> ORACLE_SQL_TIMESTAMPLTZ = oracle.sql.TIMESTAMPLTZ.class;
 
 
     public Oracle9Platform(){
@@ -370,9 +371,10 @@ public class Oracle9Platform extends Oracle8Platform {
      * Allow for conversion from the Oracle type to the Java type.
      */
     @Override
-    public Object convertObject(Object sourceObject, Class javaClass) throws ConversionException, DatabaseException {
+    @SuppressWarnings({"unchecked"})
+    public <T> T convertObject(Object sourceObject, Class<T> javaClass) throws ConversionException, DatabaseException {
         if ((javaClass == null) || ((sourceObject != null) && (sourceObject.getClass() == javaClass))) {
-            return sourceObject;
+            return (T) sourceObject;
         }
         if (sourceObject == null) {
             return super.convertObject(sourceObject, javaClass);
@@ -382,16 +384,16 @@ public class Oracle9Platform extends Oracle8Platform {
 
         //Used in Type Conversion Mapping on write
         if ((javaClass == TIMESTAMPTypes.TIMESTAMP_CLASS) || (javaClass == TIMESTAMPTypes.TIMESTAMPLTZ_CLASS)) {
-            return sourceObject;
+            return (T) sourceObject;
         }
 
         if (javaClass == TIMESTAMPTypes.TIMESTAMPTZ_CLASS) {
             if (sourceObject instanceof java.util.Date) {
                 Calendar cal = Calendar.getInstance();
                 cal.setTimeInMillis(((java.util.Date)sourceObject).getTime());
-                return cal;
+                return (T) cal;
             } else {
-                return sourceObject;
+                return (T) sourceObject;
             }
         }
 
@@ -399,7 +401,7 @@ public class Oracle9Platform extends Oracle8Platform {
             //Don't convert to XMLTypes. This will be done by the
             //XMLTypeBindCallCustomParameter to ensure the correct
             //Connection is used
-            return sourceObject;
+            return (T) sourceObject;
         }
 
         //Added to overcome an issue with the oracle 9.0.1.1.0 JDBC driver.
@@ -414,7 +416,7 @@ public class Oracle9Platform extends Oracle8Platform {
             //in TIMESTAMPTZWrapper.  Separate Calendar from any other types.
             if (((javaClass == ClassConstants.CALENDAR) || (javaClass == ClassConstants.GREGORIAN_CALENDAR))) {
                 try {
-                    return TIMESTAMPHelper.buildCalendar((TIMESTAMPTZWrapper)sourceObject);
+                    return (T) TIMESTAMPHelper.buildCalendar((TIMESTAMPTZWrapper)sourceObject);
                 } catch (SQLException exception) {
                     throw DatabaseException.sqlException(exception);
                 }
@@ -428,7 +430,7 @@ public class Oracle9Platform extends Oracle8Platform {
             //in TIMESTAMPLTZWrapper.  Separate Calendar from any other types.
             if (((javaClass == ClassConstants.CALENDAR) || (javaClass == ClassConstants.GREGORIAN_CALENDAR))) {
                 try {
-                    return TIMESTAMPHelper.buildCalendar((TIMESTAMPLTZWrapper)sourceObject);
+                    return (T) TIMESTAMPHelper.buildCalendar((TIMESTAMPLTZWrapper)sourceObject);
                 } catch (SQLException exception) {
                     throw DatabaseException.sqlException(exception);
                 }
@@ -719,12 +721,12 @@ public class Oracle9Platform extends Oracle8Platform {
         return super.getCustomModifyValueForCall(call, value, field, shouldBind);
     }
 
-    protected Vector buildFromStringCharVec(Class javaClass) {
-        Vector vec = getConversionManager().getDataTypesConvertedFrom(javaClass);
-        vec.addElement(NCHAR);
-        vec.addElement(NSTRING);
+    protected List buildFromStringCharVec(Class javaClass) {
+        List<Class<?>> vec = getConversionManager().getDataTypesConvertedFrom(javaClass);
+        vec.add(NCHAR);
+        vec.add(NSTRING);
         if (javaClass == String.class) {
-            vec.addElement(NCLOB);
+            vec.add(NCLOB);
         }
         return vec;
     }
@@ -737,24 +739,24 @@ public class Oracle9Platform extends Oracle8Platform {
      * @return - a vector of classes
      */
     @Override
-    public Vector getDataTypesConvertedFrom(Class javaClass) {
+    public List getDataTypesConvertedFrom(Class javaClass) {
         if (dataTypesConvertedFromAClass == null) {
             dataTypesConvertedFromAClass = new Hashtable(5);
         }
-        Vector dataTypes = (Vector) dataTypesConvertedFromAClass.get(javaClass);
+        List dataTypes = (List) dataTypesConvertedFromAClass.get(javaClass);
         if (dataTypes != null) {
             return dataTypes;
         }
         dataTypes = super.getDataTypesConvertedFrom(javaClass);
         if ((javaClass == String.class) || (javaClass == Character.class)) {
-            dataTypes.addElement(NCHAR);
-            dataTypes.addElement(NSTRING);
+            dataTypes.add(NCHAR);
+            dataTypes.add(NSTRING);
             if (javaClass == String.class) {
-                dataTypes.addElement(NCLOB);
+                dataTypes.add(NCLOB);
             }
         }
         if ((javaClass == char[].class) || (javaClass == Character[].class)) {
-            dataTypes.addElement(NCLOB);
+            dataTypes.add(NCLOB);
         }
         dataTypesConvertedFromAClass.put(javaClass, dataTypes);
         return dataTypes;
@@ -768,11 +770,11 @@ public class Oracle9Platform extends Oracle8Platform {
      * @return - a vector of classes
      */
     @Override
-    public Vector getDataTypesConvertedTo(Class javaClass) {
+    public List getDataTypesConvertedTo(Class javaClass) {
         if (dataTypesConvertedToAClass == null) {
             dataTypesConvertedToAClass = new Hashtable(5);
         }
-        Vector dataTypes = (Vector) dataTypesConvertedToAClass.get(javaClass);
+        List dataTypes = (Vector) dataTypesConvertedToAClass.get(javaClass);
         if (dataTypes != null) {
             return dataTypes;
         }
@@ -883,12 +885,12 @@ public class Oracle9Platform extends Oracle8Platform {
             String className = "org.eclipse.persistence.internal.platform.database.oracle.xdb.XMLTypeFactoryImpl";
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    Class xmlTypeFactoryClass = AccessController.doPrivileged(new PrivilegedClassForName(className, true, this.getClass().getClassLoader()));
-                    Constructor xmlTypeFactoryConstructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(xmlTypeFactoryClass, new Class[0], true));
-                    xmlTypeFactory = (XMLTypeFactory)AccessController.doPrivileged(new PrivilegedInvokeConstructor(xmlTypeFactoryConstructor, new Object[0]));
+                    Class<XMLTypeFactory> xmlTypeFactoryClass = AccessController.doPrivileged(new PrivilegedClassForName<>(className, true, this.getClass().getClassLoader()));
+                    Constructor<XMLTypeFactory> xmlTypeFactoryConstructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(xmlTypeFactoryClass, new Class[0], true));
+                    xmlTypeFactory = AccessController.doPrivileged(new PrivilegedInvokeConstructor<>(xmlTypeFactoryConstructor, new Object[0]));
                 }else{
-                    Class xmlTypeFactoryClass = PrivilegedAccessHelper.getClassForName(className, true, this.getClass().getClassLoader());
-                    Constructor xmlTypeFactoryConstructor = PrivilegedAccessHelper.getConstructorFor(xmlTypeFactoryClass, new Class[0], true);
+                    Class<XMLTypeFactory> xmlTypeFactoryClass = PrivilegedAccessHelper.getClassForName(className, true, this.getClass().getClassLoader());
+                    Constructor<XMLTypeFactory> xmlTypeFactoryConstructor = PrivilegedAccessHelper.getConstructorFor(xmlTypeFactoryClass, new Class[0], true);
                     xmlTypeFactory = (XMLTypeFactory)PrivilegedAccessHelper.invokeConstructor(xmlTypeFactoryConstructor, new Object[0]);
                 }
             } catch (Exception e) {

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2020 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -278,8 +278,8 @@ public class WriteLockManager {
         if (descriptor.shouldAcquireCascadedLocks()) {
             FetchGroupManager fetchGroupManager = descriptor.getFetchGroupManager();
             boolean isPartialObject = (fetchGroupManager != null) && fetchGroupManager.isPartialObject(objectForClone);
-            for (Iterator mappings = descriptor.getLockableMappings().iterator();
-                     mappings.hasNext();) {
+            for (Iterator<DatabaseMapping> mappings = descriptor.getLockableMappings().iterator();
+                 mappings.hasNext();) {
                 DatabaseMapping mapping = (DatabaseMapping)mappings.next();
                 // Only cascade fetched mappings.
                 if (!isPartialObject || (fetchGroupManager.isAttributeFetched(objectForClone, mapping.getAttributeName()))) {
@@ -594,8 +594,8 @@ public class WriteLockManager {
         if (!MergeManager.LOCK_ON_MERGE) {//lockOnMerge is a backdoor and not public
             return;
         }
-        List acquiredLocks = mergeManager.getAcquiredLocks();
-        Iterator locks = acquiredLocks.iterator();
+        List<CacheKey> acquiredLocks = mergeManager.getAcquiredLocks();
+        Iterator<CacheKey> locks = acquiredLocks.iterator();
         RuntimeException exception = null;
         while (locks.hasNext()) {
             try {

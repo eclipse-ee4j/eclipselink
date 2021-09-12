@@ -151,7 +151,7 @@ public class ExpressionJavaPrinter {
             printString(object.toString());
             printString("\")");
         } else {
-            printString((String)ConversionManager.getDefaultManager().convertObject(object, String.class));
+            printString(ConversionManager.getDefaultManager().convertObject(object, String.class));
         }
 
     }

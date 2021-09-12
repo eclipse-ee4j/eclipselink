@@ -468,7 +468,7 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
         try{
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    factoryClass = AccessController.doPrivileged(new PrivilegedClassForName(factoryClassName, true, classLoader));
+                    factoryClass = AccessController.doPrivileged(new PrivilegedClassForName<>(factoryClassName, true, classLoader));
                 } catch (PrivilegedActionException exception) {
                     throw ValidationException.classNotFoundWhileConvertingClassNames(factoryClassName, exception.getException());
                 }

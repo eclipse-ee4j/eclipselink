@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -722,7 +722,7 @@ public class ReportQueryResult implements Serializable, Map {
      * Converts the ReportQueryResult to a simple array of values.
      */
     public Object[] toArray(){
-       List list = getResults();
+       List<Object> list = getResults();
        return (list == null) ? null : list.toArray();
     }
 

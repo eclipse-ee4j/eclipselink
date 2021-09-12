@@ -38,8 +38,8 @@ public class SDOXMLComparer extends XMLComparer {
             String testValue = test.getNodeValue();
             if (controlValue.length() == testValue.length()) {
                 try {
-                    List controlList = (List)XMLConversionManager.getDefaultXMLManager().convertObject(controlValue, List.class);
-                    List testList = (List)XMLConversionManager.getDefaultXMLManager().convertObject(testValue, List.class);
+                    List controlList = XMLConversionManager.getDefaultXMLManager().convertObject(controlValue, List.class);
+                    List testList = XMLConversionManager.getDefaultXMLManager().convertObject(testValue, List.class);
                     if (controlList.size() == testList.size()) {
                         if ((controlList.containsAll(testList)) && testList.containsAll(controlList)) {
                             return true;

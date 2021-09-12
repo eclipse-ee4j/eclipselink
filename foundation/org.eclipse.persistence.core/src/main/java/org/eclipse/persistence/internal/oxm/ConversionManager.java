@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,7 +42,7 @@ public interface ConversionManager {
      * @param schemaTypeQName - the XML schema that the object is being converted from
      * @return - the newly converted object
      */
-    Object convertObject(Object sourceObject, Class javaClass, QName schemaTypeQName);
+    <T> T convertObject(Object sourceObject, Class<T> javaClass, QName schemaTypeQName);
 
     /**
      * @since EclipseLink 2.6.0
@@ -61,7 +61,7 @@ public interface ConversionManager {
      * @param schemaType The type you want to find a corresponding Java class for.
      * @return the Java class for the XML schema type.
      */
-    Class<?> javaType(QName schemaType);
+    <T> Class<T> javaType(QName schemaType);
 
     /**
      * Replaces any CR, Tab or LF characters in the string with a single ' ' character.

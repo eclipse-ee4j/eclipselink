@@ -495,7 +495,7 @@ public class TestSystem {
     public void useOracleThin(String databaseURL, String userName, String password) {
         DatabasePlatform platform = null;
         try{
-            Class platformClass = Class.forName("org.eclipse.persistence.platform.database.oracle.Oracle9Platform");
+            Class<?> platformClass = Class.forName("org.eclipse.persistence.platform.database.oracle.Oracle9Platform");
             platform = (DatabasePlatform)platformClass.getConstructor().newInstance();
         } catch (Exception e){
             platform = new org.eclipse.persistence.platform.database.OraclePlatform();
@@ -519,7 +519,7 @@ public class TestSystem {
     public void useOracle8Thin(String databaseURL, String userName, String password) {
         DatabasePlatform platform = null;
         try{
-            Class platformClass = Class.forName("org.eclipse.persistence.platform.database.oracle.Oracle8Platform");
+            Class<?> platformClass = Class.forName("org.eclipse.persistence.platform.database.oracle.Oracle8Platform");
             platform = (DatabasePlatform)platformClass.getConstructor().newInstance();
         } catch (Exception e){
             platform = new org.eclipse.persistence.platform.database.OraclePlatform();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -106,7 +106,7 @@ public class IDResolverWrapper extends IDResolver {
     public Callable<?> resolve(Object id, Class targetType) throws SAXException {
         try {
             Object[] params = new Object[] { id.toString(), targetType };
-            return (Callable<?>) PrivilegedAccessHelper.invokeMethod(this.resolveMethod, this.resolver, params);
+            return PrivilegedAccessHelper.invokeMethod(this.resolveMethod, this.resolver, params);
         } catch (Exception ex) {
             throw XMLMarshalException.errorInvokingIDResolver(RESOLVE_METHOD_NAME, this.resolver, ex);
         }

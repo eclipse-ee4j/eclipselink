@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -387,7 +387,7 @@ public class XRServiceFactory  {
                     }
                 }
                 // convert class names to classes on the associated OR descriptor
-                ClassDescriptor odesc = (ClassDescriptor) orProject.getAliasDescriptors().get(alias);
+                ClassDescriptor odesc = orProject.getAliasDescriptors().get(alias);
                 if (odesc != null)  {  // shouldn't be null...
                     // step three:  align OR alias and ordered descriptors (alias names and mappings)
                     ClassDescriptor orderedDescriptor = getDescriptorForClassName(orProject, odesc.getJavaClassName());

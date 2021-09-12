@@ -36,7 +36,6 @@ import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.Text;
 
 /**
  * <p><b>Purpose:</b> An abstract superclass for XMLAnyObjectMapping and XMLAnyCollectionMapping.
@@ -154,7 +153,7 @@ public abstract class XMLAbstractAnyMapping extends DatabaseMapping {
                 Object convertedValue = stringValue;
                 if (schemaTypeQName != null) {
                     ConversionManager conversionManager = (ConversionManager) session.getDatasourcePlatform().getConversionManager();
-                    Class theClass = conversionManager.javaType(schemaTypeQName);
+                    Class<Object> theClass = conversionManager.javaType(schemaTypeQName);
                     if (theClass != null) {
                         convertedValue = conversionManager.convertObject(convertedValue, theClass, schemaTypeQName);
                     }

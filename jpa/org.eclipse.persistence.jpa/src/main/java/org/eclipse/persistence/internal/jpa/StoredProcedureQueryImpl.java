@@ -61,6 +61,7 @@ import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.querydef.ParameterExpressionImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.DataReadQuery;
@@ -123,7 +124,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             executeCall.matchFieldOrder(resultSet, accessor, session);
             ResultSetMetaData metaData = resultSet.getMetaData();
 
-            List result =  new Vector();
+            List<AbstractRecord> result =  new Vector<>();
             while (resultSet.next()) {
                 result.add(accessor.fetchRow(executeCall.getFields(), executeCall.getFieldsArray(), resultSet, metaData, session));
             }
@@ -1118,7 +1119,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      */
     @Override
     protected void setParameterInternal(String name, Object value, boolean isIndex) {
-        Parameter parameter = this.getInternalParameters().get(name);
+        Parameter<?> parameter = this.getInternalParameters().get(name);
         StoredProcedureCall call = (StoredProcedureCall) getDatabaseQuery().getCall();
         if (parameter == null) {
             if (isIndex) {

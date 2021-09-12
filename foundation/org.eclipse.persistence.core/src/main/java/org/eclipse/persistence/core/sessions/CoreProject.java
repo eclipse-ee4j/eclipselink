@@ -63,7 +63,7 @@ public abstract class CoreProject <
      * PUBLIC:
      * Return the descriptor specified for the class.
      */
-    public abstract DESCRIPTOR getDescriptor(Class theClass);
+    public abstract DESCRIPTOR getDescriptor(Class<?> theClass);
 
     /**
      * INTERNAL:

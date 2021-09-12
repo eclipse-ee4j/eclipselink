@@ -14,13 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.performance.java;
 
+import org.eclipse.persistence.Version;
 import org.eclipse.persistence.testing.framework.*;
 
 /**
  * This test compares the performance between .class and a static variable.
  */
 public class ClassForNameTest extends PerformanceComparisonTestCase {
-    public static Class TOPLINK = org.eclipse.persistence.Version.class;
+    public static Class<Version> TOPLINK = org.eclipse.persistence.Version.class;
 
     public ClassForNameTest() {
         setName("static vs class forName PerformanceComparisonTest");

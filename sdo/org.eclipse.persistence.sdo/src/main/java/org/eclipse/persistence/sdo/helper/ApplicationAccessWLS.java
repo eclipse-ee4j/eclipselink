@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -143,14 +143,14 @@ public class ApplicationAccessWLS {
 
         try {
             // Get component invocation manager
-            final Class cicManagerClass = PrivilegedAccessHelper.getClassForName(CIC_MANAGER_CLASS_NAME);
+            final Class<Object> cicManagerClass = PrivilegedAccessHelper.getClassForName(CIC_MANAGER_CLASS_NAME);
             final Method getInstance = PrivilegedAccessHelper.getDeclaredMethod(cicManagerClass, "getInstance", new Class[]{});
             cicManagerInstance = PrivilegedAccessHelper.invokeMethod(getInstance, cicManagerClass);
 
             // Get component invocation context
             getCurrentCicMethod = PrivilegedAccessHelper.getMethod(cicManagerClass, "getCurrentComponentInvocationContext", new Class[]{}, true);
 
-            final Class cicClass = PrivilegedAccessHelper.getClassForName(CIC_CLASS_NAME);
+            final Class<Object> cicClass = PrivilegedAccessHelper.getClassForName(CIC_CLASS_NAME);
             getApplicationIdMethod = PrivilegedAccessHelper.getDeclaredMethod(cicClass, "getApplicationId", new Class[]{});
 
             return true;
@@ -165,7 +165,7 @@ public class ApplicationAccessWLS {
      */
     protected boolean initUsingApplicationAccess() {
         try {
-            final Class applicationAccessClass = PrivilegedAccessHelper.getClassForName("weblogic.application.ApplicationAccess");
+            final Class<Object> applicationAccessClass = PrivilegedAccessHelper.getClassForName("weblogic.application.ApplicationAccess");
             final Method getApplicationAccessMethod = PrivilegedAccessHelper.getDeclaredMethod(applicationAccessClass, "getApplicationAccess", new Class[]{});
             applicationAccessInstance = PrivilegedAccessHelper.invokeMethod(getApplicationAccessMethod, applicationAccessClass);
 
@@ -185,7 +185,7 @@ public class ApplicationAccessWLS {
      */
     private String getAppNameUsingCic() throws InvocationTargetException, IllegalAccessException {
         final Object cicInstance = PrivilegedAccessHelper.invokeMethod(getCurrentCicMethod, cicManagerInstance);
-        return (String) PrivilegedAccessHelper.invokeMethod(getApplicationIdMethod, cicInstance);
+        return PrivilegedAccessHelper.invokeMethod(getApplicationIdMethod, cicInstance);
     }
 
     /**
@@ -193,9 +193,9 @@ public class ApplicationAccessWLS {
      */
     private String getAppNameUsingApplicationAccess(ClassLoader classLoader) throws InvocationTargetException, IllegalAccessException {
         final Object[] parameters = new Object[] {classLoader};
-        final String appName = (String) PrivilegedAccessHelper.invokeMethod(getApplicationNameMethod, applicationAccessInstance, parameters);
+        final String appName = PrivilegedAccessHelper.invokeMethod(getApplicationNameMethod, applicationAccessInstance, parameters);
         if (appName != null) {
-            final String appVersion = (String) PrivilegedAccessHelper.invokeMethod(getApplicationVersionMethod, applicationAccessInstance, parameters);
+            final String appVersion = PrivilegedAccessHelper.invokeMethod(getApplicationVersionMethod, applicationAccessInstance, parameters);
             if (appVersion != null) {
                 return appName + "#" + appVersion;
             }

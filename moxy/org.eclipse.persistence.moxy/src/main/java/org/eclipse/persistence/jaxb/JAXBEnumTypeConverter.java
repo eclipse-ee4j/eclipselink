@@ -63,7 +63,7 @@ public class JAXBEnumTypeConverter extends ObjectTypeConverter {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    m_enumClass = AccessController.doPrivileged(new PrivilegedClassForName(m_enumClassName, true, classLoader));
+                    m_enumClass = AccessController.doPrivileged(new PrivilegedClassForName<>(m_enumClassName, true, classLoader));
                 } catch (PrivilegedActionException exception) {
                     throw ValidationException.classNotFoundWhileConvertingClassNames(m_enumClassName, exception.getException());
                 }

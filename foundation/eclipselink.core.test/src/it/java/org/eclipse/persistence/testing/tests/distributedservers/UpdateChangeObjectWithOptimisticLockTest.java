@@ -66,8 +66,8 @@ public class UpdateChangeObjectWithOptimisticLockTest extends ComplexUpdateTest 
         // Because it seems there is no way to write object with version without transaction,
         // let's compare versions directly
         Employee remoteEmp = (Employee)remoteServer.executeQuery(this.query);
-        long remoteVersion = (Long)remoteServer.getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(remoteEmp, remoteEmp.getId(), (AbstractSession)remoteServer);
-        long writtenVersion = (Long)getUnitOfWork().getParent().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(objectToBeWritten, ((Employee)objectToBeWritten).getId(), getUnitOfWork().getParent());
+        long remoteVersion = remoteServer.getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(remoteEmp, remoteEmp.getId(), (AbstractSession)remoteServer);
+        long writtenVersion = getUnitOfWork().getParent().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(objectToBeWritten, ((Employee)objectToBeWritten).getId(), getUnitOfWork().getParent());
         if (remoteVersion != writtenVersion) {
             throw new TestErrorException("Failed to copy the version number to the remote system");
         }

@@ -73,7 +73,7 @@ public abstract class LoadAndSaveTestCases extends LoadAndSaveWithOptionsTestCas
         String className = package1 + "/" + getRootInterfaceName();
         className = className.replaceAll("/", ".");
 
-        Class urlLoadedClass = myURLLoader.loadClass(className);
+        Class<?> urlLoadedClass = myURLLoader.loadClass(className);
 
         ((SDOXMLHelper)xmlHelper).setLoader(new SDOClassLoader(myURLLoader, aHelperContext));
         Class loadedClass2 = ((SDOXMLHelper)xmlHelper).getLoader().loadClass(className);

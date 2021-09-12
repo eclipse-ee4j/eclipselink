@@ -547,8 +547,8 @@ public class XMLObjectBuilder extends ObjectBuilder {
             relationshipMappings.clear();
         }
 
-        for (Enumeration mappings = this.descriptor.getMappings().elements();
-                 mappings.hasMoreElements();) {
+        for (Enumeration<DatabaseMapping> mappings = this.descriptor.getMappings().elements();
+             mappings.hasMoreElements();) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.nextElement();
 
             // Add attribute to mapping association
@@ -577,7 +577,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
 
                 if (mapping.isReadOnly()) {
                     if(null != readOnlyMappingsByField) {
-                        List readOnlyMappings = getReadOnlyMappingsByField().get(field);
+                        List<DatabaseMapping> readOnlyMappings = getReadOnlyMappingsByField().get(field);
 
                         if (readOnlyMappings == null) {
                             readOnlyMappings = new ArrayList();
@@ -596,7 +596,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
                         DatabaseMapping aggregatedFieldMapping = aggregateObjectBuilder.getMappingForField(field);
 
                         if (aggregatedFieldMapping == null) { // mapping must be read-only
-                            List readOnlyMappings = getReadOnlyMappingsByField().get(field);
+                            List<DatabaseMapping> readOnlyMappings = getReadOnlyMappingsByField().get(field);
 
                             if (readOnlyMappings == null) {
                                 readOnlyMappings = new ArrayList();

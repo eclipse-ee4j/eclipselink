@@ -56,7 +56,7 @@ public class CacheExpiryReadAllQueryTest extends CacheExpiryTest {
         }
 
         // Changed the names of all the employees in the cache
-        Enumeration employeeMap = ((AbstractSession)getSession()).getIdentityMapAccessorInstance().getIdentityMap(Employee.class).keys();
+        Enumeration<CacheKey> employeeMap = ((AbstractSession)getSession()).getIdentityMapAccessorInstance().getIdentityMap(Employee.class).keys();
         while (employeeMap.hasMoreElements()) {
             Employee employee = (Employee)((CacheKey)employeeMap.nextElement()).getObject();
             employee.setFirstName(employee.getFirstName() + "-mutated");

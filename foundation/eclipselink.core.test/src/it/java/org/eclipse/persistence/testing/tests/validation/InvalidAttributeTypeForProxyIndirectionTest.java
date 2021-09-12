@@ -20,6 +20,7 @@ import org.eclipse.persistence.exceptions.IntegrityChecker;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
 import org.eclipse.persistence.mappings.OneToManyMapping;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
 
 //Created by Ian Reid
@@ -32,7 +33,7 @@ public class InvalidAttributeTypeForProxyIndirectionTest extends ExceptionTest {
     }
 
     IntegrityChecker orgIntegrityChecker;
-    Class attributeType = org.eclipse.persistence.testing.models.employee.domain.Employee.class;
+    Class<Employee> attributeType = org.eclipse.persistence.testing.models.employee.domain.Employee.class;
     Class[] targetInterfaces = { InvalidAttributeTypeForProxyIndirectionTest.class };
     OneToManyMapping mapping = new OneToManyMapping();
 

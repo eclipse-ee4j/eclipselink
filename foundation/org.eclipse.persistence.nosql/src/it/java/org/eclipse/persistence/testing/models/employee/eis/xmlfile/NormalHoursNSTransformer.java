@@ -64,8 +64,8 @@ public class NormalHoursNSTransformer implements FieldTransformer, AttributeTran
          * This conversion allows for the database type not to match, i.e. may be a Timestamp or
          * String.
          */
-        hours[0] = (Time)session.getProject().getDatasourceLogin().getDatasourcePlatform().convertObject(row.get(startTimeField), Time.class);
-        hours[1] = (Time)session.getProject().getDatasourceLogin().getDatasourcePlatform().convertObject(row.get(endTimeField), Time.class);
+        hours[0] = session.getProject().getDatasourceLogin().getDatasourcePlatform().convertObject(row.get(startTimeField), Time.class);
+        hours[1] = session.getProject().getDatasourceLogin().getDatasourcePlatform().convertObject(row.get(endTimeField), Time.class);
 
         return hours;
     }

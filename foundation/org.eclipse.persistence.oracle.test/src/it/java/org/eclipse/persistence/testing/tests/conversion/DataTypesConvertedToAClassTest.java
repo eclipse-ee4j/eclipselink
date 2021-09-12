@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.conversion;
 
+import java.util.List;
 import java.util.Vector;
 import java.util.Calendar;
 import java.sql.*;
@@ -48,7 +49,7 @@ public class DataTypesConvertedToAClassTest extends AutoVerifyTestCase {
 
     @Override
     public void test() {
-        Vector vec;
+        List vec;
         int x;
         int y;
         int z;
@@ -63,7 +64,7 @@ public class DataTypesConvertedToAClassTest extends AutoVerifyTestCase {
             for (y = 0; y < vec.size(); y++) {
                 for (z = 0; z < fields.length; z++) {
                     type = fields[z].getType();
-                    if (vec.elementAt(y) == type) {
+                    if (vec.get(y) == type) {
                         try {
                             obj = fields[z].get(example);
                         } catch (IllegalAccessException e) {

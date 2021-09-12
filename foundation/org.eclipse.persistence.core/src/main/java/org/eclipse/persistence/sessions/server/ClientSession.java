@@ -416,7 +416,7 @@ public class ClientSession extends AbstractSession {
      * Return all registered descriptors.
      */
     @Override
-    public Map<Class, ClassDescriptor> getDescriptors() {
+    public Map<Class<?>, ClassDescriptor> getDescriptors() {
         // descriptors from the project may have been modified (for table per
         // tenants so make sure to return the updated ones)
         if (hasTablePerTenantDescriptors()) {
@@ -666,7 +666,7 @@ public class ClientSession extends AbstractSession {
     @Override
     public void release() throws DatabaseException {
         // Clear referencing classes. If this is not done the object is not garbage collected.
-        for (Map.Entry<Class, ClassDescriptor> entry : getDescriptors().entrySet()) {
+        for (Map.Entry<Class<?>, ClassDescriptor> entry : getDescriptors().entrySet()) {
             entry.getValue().clearReferencingClasses();
         }
 

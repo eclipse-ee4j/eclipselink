@@ -41,7 +41,7 @@ public class WorkbenchIntegrationSystemHelper {
                 throw new TestErrorException("Project class generation compile failed. This could either be a legitimate compile " +
                          "failure, or could result if you do not have the tools.jar from your JDK on the classpath.");
             }
-            Class projectClass = Class.forName(filename);
+            Class<?> projectClass = Class.forName(filename);
             return (Project) projectClass.getConstructor().newInstance();
         } catch (Exception exception) {
             throw new RuntimeException("Project class generation failed.It may be possible to solve this issue by adding the tools.jar from your JDK to the classpath.", exception);

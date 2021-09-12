@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.identitymaps.WeakIdentityMap;
 
 /**
  * <p><b>Purpose</b>:
@@ -36,7 +37,7 @@ public class CacheIndex implements Cloneable, Serializable {
     protected int cacheSize;
 
     /** Allows the identity map class type to be set. */
-    protected Class cacheType = ClassConstants.WeakIdentityMap_Class;
+    protected Class<? extends WeakIdentityMap> cacheType = ClassConstants.WeakIdentityMap_Class;
 
     public CacheIndex() {
         this.fields = new ArrayList<>();
@@ -111,7 +112,7 @@ public class CacheIndex implements Cloneable, Serializable {
      * This default to a weak cache, and should normally not be changed.
      * For a weak cache, the index will remain until the object gcs from the main cache.
      */
-    public void setCacheType(Class cacheType) {
+    public void setCacheType(Class<? extends WeakIdentityMap> cacheType) {
         this.cacheType = cacheType;
     }
 

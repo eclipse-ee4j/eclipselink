@@ -180,7 +180,7 @@ public class QueryImpl {
      * @return the results of the query execution
      */
     protected Object executeReadQuery() {
-        List parameterValues = processParameters();
+        List<Object> parameterValues = processParameters();
         // TODO: the following performFlush() call is a temporary workaround for
         // bug 4752493:
         // CTS: INMEMORY QUERYING IN EJBQUERY BROKEN DUE TO CHANGE TO USE
@@ -295,7 +295,7 @@ public class QueryImpl {
             entityManager.checkForTransaction(true);
 
             // fix for bug:4288845, did not add the parameters to the query
-            List parameterValues = processParameters();
+            List<Object> parameterValues = processParameters();
             if (isFlushModeAUTO()) {
                 performPreQueryFlush();
             }
@@ -568,20 +568,20 @@ public class QueryImpl {
      */
     protected List<Object> processParameters() {
         DatabaseQuery query = getDatabaseQueryInternal();
-        List arguments = query.getArguments();
+        List<String> arguments = query.getArguments();
         if (arguments.isEmpty()) {
             // This occurs for native queries, as the query does not know of its arguments.
             // This may have issues, it is better if the query set its arguments
             // when parsing the SQL.
 
-            arguments = new ArrayList<String>(this.parameterValues.keySet());
+            arguments = new ArrayList<>(this.parameterValues.keySet());
             query.setArguments(arguments);
         }
         // now create parameterValues in the same order as the argument list
         int size = arguments.size();
         List<Object> parameterValues = new ArrayList<Object>(size);
         for (int index = 0; index < size; index++) {
-            String name = (String) arguments.get(index);
+            String name = arguments.get(index);
             Object parameter = this.parameterValues.get(name);
             if ((parameter != null) || this.parameterValues.containsKey(name)) {
                 parameterValues.add(parameter);
@@ -1054,7 +1054,7 @@ public class QueryImpl {
     public Parameter<?> getParameter(String name) {
         //don't rollback transaction on error
         entityManager.verifyOpen();
-        Parameter param = getInternalParameters().get(name);
+        Parameter<?> param = getInternalParameters().get(name);
         if (param == null) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME", new Object[] { name, this.databaseQuery }));
         }
@@ -1068,7 +1068,7 @@ public class QueryImpl {
     public Parameter<?> getParameter(int position) {
         //don't rollback transaction on error
         entityManager.verifyOpen();
-        Parameter param = getInternalParameters().get(String.valueOf(position));
+        Parameter<?> param = getInternalParameters().get(String.valueOf(position));
         if (param == null) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_INDEX", new Object[] { position, this.databaseQuery }));
         }
@@ -1142,7 +1142,7 @@ public class QueryImpl {
      */
     public Set<Parameter<?>> getParameters() {
         entityManager.verifyOpen();//don't rollback transaction
-        return new HashSet(getInternalParameters().values());
+        return new HashSet<>(getInternalParameters().values());
     }
 
     /**

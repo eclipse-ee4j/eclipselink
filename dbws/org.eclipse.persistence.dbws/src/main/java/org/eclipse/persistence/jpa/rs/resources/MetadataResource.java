@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -268,7 +268,7 @@ public class MetadataResource extends AbstractResource {
         final MetadataCatalog result = new MetadataCatalog();
 
         // Entities
-        final Map<Class, ClassDescriptor> descriptors = context.getServerSession().getDescriptors();
+        final Map<Class<?>, ClassDescriptor> descriptors = context.getServerSession().getDescriptors();
         for (ClassDescriptor descriptor : descriptors.values()) {
 
             // Skip embeddables

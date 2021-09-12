@@ -95,7 +95,7 @@ public class PersistenceWeaver implements ClassTransformer {
         final SessionLog log = AbstractSessionLog.getLog();
         // PERF: Is finest logging on weaving turned on?
         final boolean shouldLogFinest = log.shouldLog(SessionLog.FINEST, SessionLog.WEAVER);
-        final Map classDetailsMap = this.classDetailsMap;
+        final Map<String, ClassDetails> classDetailsMap = this.classDetailsMap;
         // Check if cleared already.
         if (classDetailsMap == null) {
             return null;
@@ -107,7 +107,7 @@ public class PersistenceWeaver implements ClassTransformer {
              * Thus, we must check the classDetailsMap to see if we are 'interested'
              * in the class.
              */
-            final ClassDetails classDetails = (ClassDetails)classDetailsMap.get(Helper.toSlashedClassName(className));
+            final ClassDetails classDetails = classDetailsMap.get(Helper.toSlashedClassName(className));
 
             if (classDetails != null) {
                 if (shouldLogFinest) {

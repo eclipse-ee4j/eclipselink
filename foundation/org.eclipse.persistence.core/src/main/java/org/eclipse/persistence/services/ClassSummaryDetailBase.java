@@ -62,7 +62,7 @@ public abstract class ClassSummaryDetailBase {
     private String parentClassName;
 
     // The corresponding CompositeType for this class
-    protected static CompositeType cType_= null;
+    protected static CompositeType cType_;
 
     protected static final String[] itemNames_=
         {"Class Name", "Cache Type", "Configured Size",
@@ -70,7 +70,7 @@ public abstract class ClassSummaryDetailBase {
 
     static {
         try {
-            OpenType[] itemTypes = {
+            OpenType<?>[] itemTypes = {
                     SimpleType.STRING,
                     SimpleType.STRING,
                     SimpleType.STRING,

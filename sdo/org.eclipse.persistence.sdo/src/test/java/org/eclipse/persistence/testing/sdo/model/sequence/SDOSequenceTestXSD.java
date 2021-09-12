@@ -26,18 +26,15 @@ import java.util.Iterator;
 import java.util.List;
 
 import junit.textui.TestRunner;
-import org.eclipse.persistence.sdo.SDOChangeSummary;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOSequence;
-import org.eclipse.persistence.sdo.SDOSetting;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.DefaultSchemaLocationResolver;
 import org.eclipse.persistence.sdo.helper.ListWrapper;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
 import org.eclipse.persistence.exceptions.SDOException;
-import org.eclipse.persistence.oxm.XMLConstants;
 
 public class SDOSequenceTestXSD extends SDOSequenceTestCases {
 
@@ -2783,7 +2780,7 @@ public class SDOSequenceTestXSD extends SDOSequenceTestCases {
         List<DataObject> aListToAdd = new ArrayList<DataObject>();
         aListToAdd.add(item3);
         aListToAdd.add(item3);
-        for(Iterator i = aListToAdd.iterator(); i.hasNext();) {
+        for(Iterator<DataObject> i = aListToAdd.iterator(); i.hasNext();) {
             // add to the end of the list
             existingList.add(i.next());
         }
@@ -3368,7 +3365,7 @@ public class SDOSequenceTestXSD extends SDOSequenceTestCases {
         aListToAdd.add(item4);
         aListToAdd.add(item5);
         // add each to the end of the list
-        for(Iterator i = aListToAdd.iterator(); i.hasNext();) {
+        for(Iterator<DataObject> i = aListToAdd.iterator(); i.hasNext();) {
             existingList.add(i.next());
         }
 

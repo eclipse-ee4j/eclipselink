@@ -50,7 +50,7 @@ public class ConstructingDescriptorExceptionTests extends AutoVerifyTestCase {
     @Override
     public void test() throws NoSuchMethodException {
         try {
-            Class javaClass = ConstructingDescriptorExceptionTests.class;
+            Class<ConstructingDescriptorExceptionTests> javaClass = ConstructingDescriptorExceptionTests.class;
             RelationalDescriptor descriptor = new RelationalDescriptor();
             descriptor.setJavaClass(javaClass);
             TestErrorException dummyException = new TestErrorException("no ERROR");

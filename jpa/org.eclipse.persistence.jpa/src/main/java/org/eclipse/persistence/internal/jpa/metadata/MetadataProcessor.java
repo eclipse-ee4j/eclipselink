@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -93,7 +93,7 @@ public class MetadataProcessor {
     protected MetadataFactory m_factory;
     protected MetadataProject m_project;
     protected AbstractSession m_session;
-    protected Map m_predeployProperties;
+    protected Map<String, Object> m_predeployProperties;
     protected MetadataProcessor m_compositeProcessor;
     protected Set<MetadataProcessor> m_compositeMemberProcessors;
     protected MetadataSource m_metadataSource;
@@ -109,7 +109,7 @@ public class MetadataProcessor {
      * Called from EntityManagerSetupImpl. The 'real' EJB 3.0 processing
      * that includes XML and annotations.
      */
-    public MetadataProcessor(PersistenceUnitInfo puInfo, AbstractSession session, ClassLoader loader, boolean weaveLazy, boolean weaveEager, boolean weaveFetchGroups, boolean multitenantSharedEmf, boolean multitenantSharedCache, Map predeployProperties, MetadataProcessor compositeProcessor) {
+    public MetadataProcessor(PersistenceUnitInfo puInfo, AbstractSession session, ClassLoader loader, boolean weaveLazy, boolean weaveEager, boolean weaveFetchGroups, boolean multitenantSharedEmf, boolean multitenantSharedCache, Map<String, Object> predeployProperties, MetadataProcessor compositeProcessor) {
         m_loader = loader;
         m_session = session;
         m_project = new MetadataProject(puInfo, session, weaveLazy, weaveEager, weaveFetchGroups, multitenantSharedEmf, multitenantSharedCache);
@@ -127,7 +127,7 @@ public class MetadataProcessor {
      */
     public void addCompositeMemberProcessor(MetadataProcessor compositeMemberProcessor) {
         if (m_compositeMemberProcessors == null) {
-            m_compositeMemberProcessors = new HashSet();
+            m_compositeMemberProcessors = new HashSet<>();
         }
         m_compositeMemberProcessors.add(compositeMemberProcessor);
     }
@@ -192,7 +192,7 @@ public class MetadataProcessor {
      * Returns projects owned by compositeProcessor minus the passed project.
      */
     public Set<MetadataProject> getPearProjects(MetadataProject project) {
-        Set<MetadataProject> pearProjects = new HashSet();
+        Set<MetadataProject> pearProjects = new HashSet<>();
         if (m_compositeMemberProcessors != null) {
             for(MetadataProcessor processor : m_compositeMemberProcessors) {
                 MetadataProject pearProject = processor.getProject();
@@ -339,7 +339,7 @@ public class MetadataProcessor {
         }
 
         // Add all the classes off the classpath at the persistence unit root url.
-        Set<String> unlistedClasses = Collections.EMPTY_SET;
+        Set<String> unlistedClasses = Collections.emptySet();
         if (! persistenceUnitInfo.excludeUnlistedClasses()) {
             unlistedClasses = PersistenceUnitProcessor.getClassNamesFromURL(persistenceUnitInfo.getPersistenceUnitRootUrl(), m_loader, m_predeployProperties);
         }

@@ -25,6 +25,7 @@ import java.util.Vector;
 import org.eclipse.persistence.annotations.OrderCorrectionType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
+import org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy;
 import org.eclipse.persistence.descriptors.changetracking.ObjectChangeTrackingPolicy;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
@@ -358,7 +359,7 @@ public class OrderListTestModel extends TestModel {
         if(!isTopLevel) {
             if(changeTracking == ChangeTracking.ATTRIBUTE) {
                 // Save change policies for the all employee demo class in order to restore them at reset time.
-                Map originalChangeTrackingPolicies = new HashMap<Class, ObjectChangeTrackingPolicy>();
+                Map<Class, ObjectChangePolicy> originalChangeTrackingPolicies = new HashMap<>();
 
                 originalChangeTrackingPolicies.put(Employee.class, getSession().getDescriptor(Employee.class).getObjectChangePolicy());
                 getSession().getDescriptor(Employee.class).setObjectChangePolicy(new AttributeChangeTrackingPolicy());
@@ -1598,7 +1599,7 @@ public class OrderListTestModel extends TestModel {
                     addTo(managerClone, create("temp", 2));
                 }
             }
-            List list = createList();
+            List<List> list = createList();
             addTo(list, create("new", 0));
             addTo(list, create("new", 1));
             setListInto(managerClone, list);

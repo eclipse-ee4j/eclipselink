@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -627,7 +627,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
         }
 
         protected Object clone(ReferenceQueue refQueue) {
-            WeakEntry current = this;
+            WeakEntry<K, V> current = this;
             WeakEntry root = new WeakEntry(current.hash, current.key.get(), current.value.get(), null, refQueue);
             WeakEntry currentClone = root;
 
@@ -861,7 +861,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
         s.writeInt(count);
         // Write out contents
         for (int i = entries.length - 1; i >= 0; i--) {
-            WeakEntry entry = entries[i];
+            WeakEntry<K, V> entry = entries[i];
             while (entry != null) {
                 s.writeObject(entry.key.get());
                 s.writeObject(entry.value.get());

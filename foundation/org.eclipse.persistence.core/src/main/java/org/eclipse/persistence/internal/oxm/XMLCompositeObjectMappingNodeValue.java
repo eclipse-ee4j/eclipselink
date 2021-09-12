@@ -47,7 +47,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -216,7 +215,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         if(descriptor == null){
             descriptor = (Descriptor) session.getDescriptor(objectValue.getClass());
         }else if(descriptor.hasInheritance()){
-            Class objectValueClass = objectValue.getClass();
+            Class<? extends Object> objectValueClass = objectValue.getClass();
             if(!(objectValueClass == descriptor.getJavaClass())){
                 descriptor = (Descriptor) session.getDescriptor(objectValueClass);
             }
@@ -331,7 +330,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                         unmarshalRecord.setTypeQName(schemaType);
                     }
                     if(schemaType != null){
-                        Class theClass = unmarshalRecord.getConversionManager().javaType(schemaType);
+                        Class<Object> theClass = unmarshalRecord.getConversionManager().javaType(schemaType);
                         if(theClass == null){
                             setupHandlerForKeepAsElementPolicy(unmarshalRecord, xPathFragment, atts);
                             return true;
@@ -403,7 +402,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             if (null != keepAsElementPolicy && (keepAsElementPolicy.isKeepUnknownAsElement() || keepAsElementPolicy.isKeepAllAsElement()) && builder.getNodes().size() != 0) {
 
                 if(unmarshalRecord.getTypeQName() != null){
-                    Class theClass = unmarshalRecord.getConversionManager().javaType(unmarshalRecord.getTypeQName());
+                    Class<Object> theClass = unmarshalRecord.getConversionManager().javaType(unmarshalRecord.getTypeQName());
                     if(theClass != null){
                         //handle simple text
                         endElementProcessText(unmarshalRecord, xmlCompositeObjectMapping, xPathFragment, null);
@@ -467,7 +466,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
             if ((((keepAsElementPolicy.isKeepUnknownAsElement()) || (keepAsElementPolicy.isKeepAllAsElement())))&& (builder.getNodes().size() != 0) ) {
                 if(unmarshalRecord.getTypeQName() != null){
-                    Class theClass = unmarshalRecord.getConversionManager().javaType(unmarshalRecord.getTypeQName());
+                    Class<Object> theClass = unmarshalRecord.getConversionManager().javaType(unmarshalRecord.getTypeQName());
                     if(theClass != null){
                         //handle simple text
                         endElementProcessText(unmarshalRecord, xmlCompositeObjectMapping, null, null);
@@ -497,7 +496,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                         }
                         QName qName = new QName(namespace, xsiType.substring(colonIndex + 1));
                         ConversionManager conversionManager = unmarshalRecord.getConversionManager();
-                        Class theClass = conversionManager.javaType(qName);
+                        Class<Object> theClass = conversionManager.javaType(qName);
                         if (theClass != null) {
                             value = conversionManager.convertObject(element.getTextContent(), theClass, qName);
                         }
@@ -506,7 +505,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                             QName qName = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, xsiType);
 
                             ConversionManager conversionManager = unmarshalRecord.getConversionManager();
-                            Class theClass = conversionManager.javaType(qName);
+                            Class<Object> theClass = conversionManager.javaType(qName);
                             if (theClass != null) {
                                 value = conversionManager.convertObject(element.getTextContent(), theClass, qName);
                             }

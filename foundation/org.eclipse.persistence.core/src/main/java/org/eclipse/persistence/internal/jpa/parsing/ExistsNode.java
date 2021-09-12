@@ -73,8 +73,8 @@ public class ExistsNode extends Node {
         // select clause expressions as non fetch join attributes to the
         // ReportQuery representing the subquery. This make sure the FK joins
         // get generated.
-        List items = reportQuery.getItems();
-        for (Iterator i = items.iterator(); i.hasNext();) {
+        List<ReportItem> items = reportQuery.getItems();
+        for (Iterator<ReportItem> i = items.iterator(); i.hasNext();) {
             ReportItem item = (ReportItem)i.next();
             Expression expr = item.getAttributeExpression();
             reportQuery.addNonFetchJoinedAttribute(expr);

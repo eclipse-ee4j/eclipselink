@@ -1369,7 +1369,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     public AbstractRecord getAggregateRow(ObjectLevelModifyQuery query, Object object) {
         Vector referenceObjectKeys = getReferenceObjectKeys(query);
         AbstractRecord aggregateRow = new DatabaseRecord();
-        Vector keys = getTargetForeignKeyFields();
+        Vector<DatabaseField> keys = getTargetForeignKeyFields();
         for (int keyIndex = 0; keyIndex < keys.size(); keyIndex++) {
             aggregateRow.put(keys.elementAt(keyIndex), referenceObjectKeys.elementAt(keyIndex));
         }
@@ -1387,7 +1387,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         Expression criteria = null;
         Expression builder = new ExpressionBuilder();
 
-        for (Iterator keys = getTargetForeignKeyToSourceKeys().keySet().iterator(); keys.hasNext();) {
+        for (Iterator<DatabaseField> keys = getTargetForeignKeyToSourceKeys().keySet().iterator(); keys.hasNext();) {
             DatabaseField targetForeignKey = (DatabaseField)keys.next();
             DatabaseField sourceKey = getTargetForeignKeyToSourceKeys().get(targetForeignKey);
 
@@ -1454,8 +1454,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         //For CR#2587-S.M.  For nested aggregate collections the source keys can easily be read from the original query.
         AbstractRecord translationRow = query.getTranslationRow();
 
-        for (Enumeration sourcekeys = getSourceKeyFields().elements();
-                 sourcekeys.hasMoreElements();) {
+        for (Enumeration<DatabaseField> sourcekeys = getSourceKeyFields().elements();
+             sourcekeys.hasMoreElements();) {
             DatabaseField sourceKey = (DatabaseField)sourcekeys.nextElement();
 
             // CR#2587.  Try first to get the source key from the original query.  If that fails try to get it from the object.
@@ -1478,8 +1478,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      */
     public Vector getSourceKeyFieldNames() {
         Vector fieldNames = new Vector(getSourceKeyFields().size());
-        for (Enumeration fieldsEnum = getSourceKeyFields().elements();
-                 fieldsEnum.hasMoreElements();) {
+        for (Enumeration<DatabaseField> fieldsEnum = getSourceKeyFields().elements();
+             fieldsEnum.hasMoreElements();) {
             fieldNames.addElement(((DatabaseField)fieldsEnum.nextElement()).getQualifiedName());
         }
 
@@ -1501,8 +1501,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      */
     public Vector getTargetForeignKeyFieldNames() {
         Vector fieldNames = new Vector(getTargetForeignKeyFields().size());
-        for (Enumeration fieldsEnum = getTargetForeignKeyFields().elements();
-                 fieldsEnum.hasMoreElements();) {
+        for (Enumeration<DatabaseField> fieldsEnum = getTargetForeignKeyFields().elements();
+             fieldsEnum.hasMoreElements();) {
             fieldNames.addElement(((DatabaseField)fieldsEnum.nextElement()).getQualifiedName());
         }
 
@@ -2029,7 +2029,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         Expression criteria;
         Expression builder = new ExpressionBuilder();
 
-        for (Iterator keys = getTargetForeignKeyToSourceKeys().keySet().iterator(); keys.hasNext();) {
+        for (Iterator<DatabaseField> keys = getTargetForeignKeyToSourceKeys().keySet().iterator(); keys.hasNext();) {
             DatabaseField targetForeignKey = (DatabaseField)keys.next();
             DatabaseField sourceKey = getTargetForeignKeyToSourceKeys().get(targetForeignKey);
 

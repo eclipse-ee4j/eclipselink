@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -100,8 +100,8 @@ public class CommitOrderDependencyNode {
      * If my superclass is related to a class, I'm related to it.
      */
     public void recordMappingDependencies() {
-        for (Enumeration mappings = getDescriptor().getMappings().elements();
-                 mappings.hasMoreElements();) {
+        for (Enumeration<DatabaseMapping> mappings = getDescriptor().getMappings().elements();
+             mappings.hasMoreElements();) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.nextElement();
             if (mapping.isForeignReferenceMapping()) {
                 if (mapping.hasConstraintDependency()) {

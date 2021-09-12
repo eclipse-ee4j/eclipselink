@@ -186,7 +186,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     protected boolean beginEarlyTransaction;
 
     /** Local properties passed from createEntityManager. */
-    protected Map properties;
+    protected Map<String, Object> properties;
 
     /** Flush mode property, allows flush before query to be avoided. */
     protected FlushModeType flushMode;
@@ -518,7 +518,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         // bug 236249: In JPA session.setProperty() throws
         // UnsupportedOperationException.
         if (properties != null) {
-            this.properties = new HashMap(properties);
+            this.properties = new HashMap<>(properties);
             if(!properties.isEmpty()) {
                 processProperties();
             }

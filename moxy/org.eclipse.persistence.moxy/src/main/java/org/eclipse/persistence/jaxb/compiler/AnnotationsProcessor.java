@@ -373,7 +373,7 @@ public final class AnnotationsProcessor {
                                     qname = Constants.ANY_SIMPLE_TYPE_QNAME;
                                 } else {
                                     Class theClass = helper.getClassForJavaClass(nextClass);
-                                    qname = (QName) XMLConversionManager.getDefaultJavaTypes().get(theClass);
+                                    qname = XMLConversionManager.getDefaultJavaTypes().get(theClass);
                                 }
                             }
                         }
@@ -738,7 +738,7 @@ public final class AnnotationsProcessor {
         if(xmlAccessorFactory != null) {
             Class xmlAccessorFactoryClass = null;
             try {
-                xmlAccessorFactoryClass = (Class)PrivilegedAccessHelper.invokeMethod(valueMethod, xmlAccessorFactory, new Object[]{});
+                xmlAccessorFactoryClass = PrivilegedAccessHelper.invokeMethod(valueMethod, xmlAccessorFactory, new Object[]{});
                 info.setXmlAccessorFactory(new AccessorFactoryWrapper(PrivilegedAccessHelper.newInstanceFromClass(xmlAccessorFactoryClass)));
             } catch (Exception ex) {
                 throw JAXBException.errorInstantiatingAccessorFactory(xmlAccessorFactoryClass, ex);
@@ -1344,7 +1344,7 @@ public final class AnnotationsProcessor {
             Object seeAlso = helper.getAnnotation(javaClass, xmlSeeAlsoClass);
             Class[] values = null;
             try {
-                values = (Class[]) PrivilegedAccessHelper.invokeMethod(valueMethod, seeAlso, new Object[] {});
+                values = PrivilegedAccessHelper.invokeMethod(valueMethod, seeAlso, new Object[] {});
             } catch (Exception ex) {
             }
 
@@ -1951,7 +1951,7 @@ public final class AnnotationsProcessor {
                         if (helper.isAnnotationPresent(javaField, XmlAttribute.class)) {
                             Object value = ((JavaFieldImpl) javaField).get(null);
                             if (value != null) {
-                                String stringValue = (String) XMLConversionManager.getDefaultXMLManager().convertObject(value, String.class, property.getSchemaType());
+                                String stringValue = XMLConversionManager.getDefaultXMLManager().convertObject(value, String.class, property.getSchemaType());
                                 property.setFixedValue(stringValue);
                             }
                         }
@@ -2486,7 +2486,7 @@ public final class AnnotationsProcessor {
             try{
                 Method requireMethod = PrivilegedAccessHelper.getMethod(XmlElementRef.class, "required", new Class[0], true);
                 if(requireMethod != null){
-                    Boolean val = (Boolean)PrivilegedAccessHelper.invokeMethod(requireMethod, nextRef);
+                    Boolean val = PrivilegedAccessHelper.invokeMethod(requireMethod, nextRef);
                     property.setIsRequired(val);
                 }
             } catch (Exception exception){
@@ -3399,7 +3399,7 @@ public final class AnnotationsProcessor {
             // reflectively load XmlSchema class to avoid dependency
             try {
                 Method locationMethod = PrivilegedAccessHelper.getDeclaredMethod(XmlSchema.class, "location", new Class[] {});
-                String location = (String) PrivilegedAccessHelper.invokeMethod(locationMethod, xmlSchema, new Object[] {});
+                String location = PrivilegedAccessHelper.invokeMethod(locationMethod, xmlSchema, new Object[] {});
 
                 if (location != null) {
                     if (location.equals("##generate")) {
@@ -3603,7 +3603,7 @@ public final class AnnotationsProcessor {
                 Annotation xmlAccessorFactory = helper.getAnnotation(pack, CompilerHelper.ACCESSOR_FACTORY_ANNOTATION_CLASS);
                 Class xmlAccessorFactoryClass = null;
                 try {
-                    xmlAccessorFactoryClass = (Class)PrivilegedAccessHelper.invokeMethod(CompilerHelper.ACCESSOR_FACTORY_VALUE_METHOD, xmlAccessorFactory, new Object[]{});
+                    xmlAccessorFactoryClass = PrivilegedAccessHelper.invokeMethod(CompilerHelper.ACCESSOR_FACTORY_VALUE_METHOD, xmlAccessorFactory, new Object[]{});
                     packageInfo.setAccessorFactory(new AccessorFactoryWrapper(PrivilegedAccessHelper.newInstanceFromClass(xmlAccessorFactoryClass)));
                 } catch (Exception ex) {
                     throw JAXBException.errorInstantiatingAccessorFactory(xmlAccessorFactoryClass, ex);
@@ -3612,7 +3612,7 @@ public final class AnnotationsProcessor {
                 Annotation xmlAccessorFactory = helper.getAnnotation(pack, CompilerHelper.OLD_ACCESSOR_FACTORY_ANNOTATION_CLASS);
                 Class xmlAccessorFactoryClass = null;
                 try {
-                    xmlAccessorFactoryClass = (Class)PrivilegedAccessHelper.invokeMethod(CompilerHelper.OLD_ACCESSOR_FACTORY_VALUE_METHOD, xmlAccessorFactory, new Object[]{});
+                    xmlAccessorFactoryClass = PrivilegedAccessHelper.invokeMethod(CompilerHelper.OLD_ACCESSOR_FACTORY_VALUE_METHOD, xmlAccessorFactory, new Object[]{});
                     packageInfo.setAccessorFactory(new AccessorFactoryWrapper(PrivilegedAccessHelper.newInstanceFromClass(xmlAccessorFactoryClass)));
                 } catch (Exception ex) {
                     throw JAXBException.errorInstantiatingAccessorFactory(xmlAccessorFactoryClass, ex);
@@ -3621,7 +3621,7 @@ public final class AnnotationsProcessor {
                 Annotation xmlAccessorFactory = helper.getAnnotation(pack, CompilerHelper.INTERNAL_ACCESSOR_FACTORY_ANNOTATION_CLASS);
                 Class xmlAccessorFactoryClass = null;
                 try {
-                    xmlAccessorFactoryClass = (Class)PrivilegedAccessHelper.invokeMethod(CompilerHelper.INTERNAL_ACCESSOR_FACTORY_VALUE_METHOD, xmlAccessorFactory, new Object[]{});
+                    xmlAccessorFactoryClass = PrivilegedAccessHelper.invokeMethod(CompilerHelper.INTERNAL_ACCESSOR_FACTORY_VALUE_METHOD, xmlAccessorFactory, new Object[]{});
                     packageInfo.setAccessorFactory(new AccessorFactoryWrapper(PrivilegedAccessHelper.newInstanceFromClass(xmlAccessorFactoryClass)));
                 } catch (Exception ex) {
                     throw JAXBException.errorInstantiatingAccessorFactory(xmlAccessorFactoryClass, ex);

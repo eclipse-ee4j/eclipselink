@@ -73,7 +73,7 @@ public abstract class AdapterWithReturnObjectControl implements ProjectAndDataba
     }
 
     public void getChange(org.eclipse.persistence.sessions.Record row, Session session, Object object1, Object object2, ClassDescriptor desc, boolean useUOW, WriteType writeType) {
-        for (Enumeration mappings = desc.getMappings().elements(); mappings.hasMoreElements(); ) {
+        for (Enumeration<DatabaseMapping> mappings = desc.getMappings().elements(); mappings.hasMoreElements(); ) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.nextElement();
             if (!mapping.isReadOnly()) {
                 getChange(row, mapping, session, object1, object2, useUOW, writeType);
@@ -126,7 +126,7 @@ public abstract class AdapterWithReturnObjectControl implements ProjectAndDataba
         Object object = desc.getObjectBuilder().buildNewInstance();
         ReadObjectQuery query = new ReadObjectQuery();
         query.setSession((AbstractSession)session);
-        for (Enumeration mappings = desc.getMappings().elements(); mappings.hasMoreElements(); ) {
+        for (Enumeration<DatabaseMapping> mappings = desc.getMappings().elements(); mappings.hasMoreElements(); ) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.nextElement();
             mapping.readFromRowIntoObject((DatabaseRecord)row, query.getJoinedAttributeManager(), object, null, query, query.getSession(), true);
         }

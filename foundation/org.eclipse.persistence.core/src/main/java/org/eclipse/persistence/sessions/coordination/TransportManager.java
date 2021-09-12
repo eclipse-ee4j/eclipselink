@@ -342,7 +342,7 @@ public abstract class TransportManager {
      */
     public void removeAllConnectionsToExternalServices() {
         synchronized (this) {
-            Enumeration connections = connectionsToExternalServices.elements();
+            Enumeration<RemoteConnection> connections = connectionsToExternalServices.elements();
             connectionsToExternalServices = new Hashtable(3);
 
             while (connections.hasMoreElements()) {

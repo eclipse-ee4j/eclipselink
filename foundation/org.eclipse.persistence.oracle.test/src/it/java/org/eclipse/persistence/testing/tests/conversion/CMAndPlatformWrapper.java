@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.conversion;
 
+import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.persistence.internal.helper.ConversionManager;
@@ -27,7 +28,7 @@ public class CMAndPlatformWrapper {
         wrappedObj = object;
     }
 
-    public Vector getDataTypesConvertedFrom(Class aClass) {
+    public List getDataTypesConvertedFrom(Class aClass) {
         if (wrappedObj instanceof ConversionManager) {
             return ((ConversionManager)wrappedObj).getDataTypesConvertedFrom(aClass);
         } else if (wrappedObj instanceof Oracle9Platform) {
@@ -36,7 +37,7 @@ public class CMAndPlatformWrapper {
         return new Vector();
     }
 
-    public Vector getDataTypesConvertedTo(Class aClass) {
+    public List getDataTypesConvertedTo(Class aClass) {
         if (wrappedObj instanceof ConversionManager) {
             return ((ConversionManager)wrappedObj).getDataTypesConvertedTo(aClass);
         } else if (wrappedObj instanceof Oracle9Platform) {

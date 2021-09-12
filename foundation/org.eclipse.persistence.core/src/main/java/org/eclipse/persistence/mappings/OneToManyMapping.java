@@ -246,8 +246,8 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         Expression selectionCriteria = null;
         Expression builder = new ExpressionBuilder();
 
-        for (Iterator keys = getTargetForeignKeysToSourceKeys().keySet().iterator();
-                 keys.hasNext();) {
+        for (Iterator<DatabaseField> keys = getTargetForeignKeysToSourceKeys().keySet().iterator();
+             keys.hasNext();) {
             DatabaseField targetForeignKey = (DatabaseField)keys.next();
             DatabaseField sourceKey = getTargetForeignKeysToSourceKeys().get(targetForeignKey);
 
@@ -273,9 +273,9 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         Expression selectionCriteria = null;
         Expression builder = new ExpressionBuilder();
 
-        Enumeration sourceKeys = getSourceKeyFields().elements();
-        for (Enumeration targetForeignKeys = getTargetForeignKeyFields().elements();
-                 targetForeignKeys.hasMoreElements();) {
+        Enumeration<DatabaseField> sourceKeys = getSourceKeyFields().elements();
+        for (Enumeration<DatabaseField> targetForeignKeys = getTargetForeignKeyFields().elements();
+             targetForeignKeys.hasMoreElements();) {
             DatabaseField targetForeignKey = (DatabaseField)targetForeignKeys.nextElement();
             DatabaseField sourceKey = (DatabaseField)sourceKeys.nextElement();
             Expression targetExpression = builder.getField(targetForeignKey);
@@ -472,8 +472,8 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      */
     public Vector getSourceKeyFieldNames() {
         Vector fieldNames = new Vector(getSourceKeyFields().size());
-        for (Enumeration fieldsEnum = getSourceKeyFields().elements();
-                 fieldsEnum.hasMoreElements();) {
+        for (Enumeration<DatabaseField> fieldsEnum = getSourceKeyFields().elements();
+             fieldsEnum.hasMoreElements();) {
             fieldNames.addElement(((DatabaseField)fieldsEnum.nextElement()).getQualifiedName());
         }
 
@@ -515,8 +515,8 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      */
     public Vector getTargetForeignKeyFieldNames() {
         Vector fieldNames = new Vector(getTargetForeignKeyFields().size());
-        for (Enumeration fieldsEnum = getTargetForeignKeyFields().elements();
-                 fieldsEnum.hasMoreElements();) {
+        for (Enumeration<DatabaseField> fieldsEnum = getTargetForeignKeyFields().elements();
+             fieldsEnum.hasMoreElements();) {
             fieldNames.addElement(((DatabaseField)fieldsEnum.nextElement()).getQualifiedName());
         }
 
@@ -734,7 +734,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             throw DescriptorException.multipleTargetForeignKeyTables(this.getDescriptor(), this, tables);
         }
 
-        List defaultTablePrimaryKeyFields = getReferenceDescriptor().getPrimaryKeyFields();
+        List<DatabaseField> defaultTablePrimaryKeyFields = getReferenceDescriptor().getPrimaryKeyFields();
         if(this.targetForeignKeyTable.equals(getReferenceDescriptor().getDefaultTable())) {
             this.targetPrimaryKeyFields = defaultTablePrimaryKeyFields;
         } else {

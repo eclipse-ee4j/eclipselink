@@ -365,7 +365,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
              String convertedValue = getStringForQName((QName)value);
              attribute(xPathFragment, namespaceResolver, convertedValue);
          } else{
-             String convertedValue = ((String) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType));
+             String convertedValue = ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType);
              attribute(xPathFragment, namespaceResolver, convertedValue);
          }
     }
@@ -389,7 +389,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
             String convertedValue = getStringForQName((QName)value);
             characters(convertedValue);
         }else{
-            String convertedValue = ((String) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType));
+            String convertedValue = ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType);
             if(isCDATA){
                 cdata(convertedValue);
             }else{
@@ -408,7 +408,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
         }else if(value.getClass() == String.class){
             return (String) value;
         }
-        return (String) conversionManager.convertObject(value, CoreClassConstants.STRING, schemaType);
+        return conversionManager.convertObject(value, CoreClassConstants.STRING, schemaType);
     }
 
     protected String getStringForQName(QName qName){

@@ -543,7 +543,7 @@ public class SDOHelperContext implements HelperContext {
         if (null == contextMap) {
             contextMap = new ConcurrentHashMap<String, HelperContext>();
             // use putIfAbsent to avoid concurrent entries in the map
-            ConcurrentHashMap existingMap = helperContexts.putIfAbsent(contextMapKey, contextMap);
+            ConcurrentHashMap<String, HelperContext> existingMap = helperContexts.putIfAbsent(contextMapKey, contextMap);
             if (existingMap != null) {
                 // if a new entry was just added, use it instead of the one we just created
                 contextMap = existingMap;
@@ -1329,7 +1329,7 @@ public class SDOHelperContext implements HelperContext {
         if (null == alias) {
             alias = new ConcurrentHashMap<String, String>();
             // use putIfAbsent to avoid concurrent entries in the map
-            ConcurrentHashMap existingMap = aliasMap.putIfAbsent(mapKey, alias);
+            ConcurrentHashMap<String, String> existingMap = aliasMap.putIfAbsent(mapKey, alias);
             if (existingMap != null) {
                 // if a new entry was just added, use it instead of the one we just created
                 alias = existingMap;

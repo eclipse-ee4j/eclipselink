@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,6 @@ import static org.eclipse.persistence.internal.helper.ClassConstants.DOUBLE;
 import static org.eclipse.persistence.internal.helper.ClassConstants.FLOAT;
 import static org.eclipse.persistence.internal.helper.ClassConstants.INTEGER;
 import static org.eclipse.persistence.internal.helper.ClassConstants.LONG;
-import static org.eclipse.persistence.internal.helper.ClassConstants.Object_Class;
 import static org.eclipse.persistence.internal.helper.ClassConstants.SHORT;
 import static org.eclipse.persistence.internal.helper.ClassConstants.STRING;
 import static org.eclipse.persistence.internal.oxm.Constants.ANY_SIMPLE_TYPE_QNAME;
@@ -67,6 +66,7 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 // EclipseLink imports
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
@@ -434,7 +434,7 @@ public class Util {
     public static Class<?> getClassFromJDBCType(String typeName, DatabasePlatform databasePlatform) {
         Class<?> clz = databasePlatform.getClassTypes().get(typeName);
         if (clz == null) {
-            return Object_Class;
+            return CoreClassConstants.OBJECT;
         }
         return clz;
     }
@@ -444,7 +444,7 @@ public class Util {
     public static final Map<QName, Class<?>> SCHEMA_2_CLASS;
     static {
       SCHEMA_2_CLASS = Collections.unmodifiableMap(new HashMap<QName, Class<?>>() {{
-            put(ANY_SIMPLE_TYPE_QNAME,Object_Class);
+            put(ANY_SIMPLE_TYPE_QNAME,CoreClassConstants.OBJECT);
             put(BASE_64_BINARY_QNAME, APBYTE);
             put(BOOLEAN_QNAME, BOOLEAN);
             put(BYTE_QNAME, BYTE);

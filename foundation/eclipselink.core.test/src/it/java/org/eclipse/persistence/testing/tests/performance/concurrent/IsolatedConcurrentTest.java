@@ -33,8 +33,8 @@ public abstract class IsolatedConcurrentTest extends ConcurrentPerformanceCompar
     @Override
     public void setup() {
         super.setup();
-        for (Iterator descriptors = getServerSession().getDescriptors().values().iterator();
-                 descriptors.hasNext();) {
+        for (Iterator<ClassDescriptor> descriptors = getServerSession().getDescriptors().values().iterator();
+             descriptors.hasNext();) {
             ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
             descriptor.setCacheIsolation(CacheIsolationType.ISOLATED);
         }
@@ -47,8 +47,8 @@ public abstract class IsolatedConcurrentTest extends ConcurrentPerformanceCompar
     @Override
     public void reset() {
         super.reset();
-        for (Iterator descriptors = getServerSession().getDescriptors().values().iterator();
-                 descriptors.hasNext();) {
+        for (Iterator<ClassDescriptor> descriptors = getServerSession().getDescriptors().values().iterator();
+             descriptors.hasNext();) {
             ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
             descriptor.setCacheIsolation(CacheIsolationType.SHARED);
         }

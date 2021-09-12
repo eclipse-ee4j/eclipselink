@@ -101,6 +101,7 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.MappingCompare;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
+import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
@@ -140,6 +141,7 @@ import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.interceptors.CacheInterceptor;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
 
 /**
@@ -1007,7 +1009,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     protected void checkDatabase(AbstractSession session) {
         if (session.getIntegrityChecker().shouldCheckDatabase()) {
-            for (Iterator iterator = getTables().iterator(); iterator.hasNext();) {
+            for (Iterator<DatabaseTable> iterator = getTables().iterator(); iterator.hasNext();) {
                 DatabaseTable table = (DatabaseTable)iterator.next();
                 if (session.getIntegrityChecker().checkTable(table, session)) {
                     // To load the fields of database into a vector
@@ -1336,7 +1338,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         Vector mappingsVector = NonSynchronizedVector.newInstance();
 
         // All the mappings
-        for (Enumeration mappingsEnum = getMappings().elements(); mappingsEnum.hasMoreElements();) {
+        for (Enumeration<DatabaseMapping> mappingsEnum = getMappings().elements(); mappingsEnum.hasMoreElements();) {
             DatabaseMapping mapping;
 
             mapping = (DatabaseMapping)((DatabaseMapping)mappingsEnum.nextElement()).clone();
@@ -1357,7 +1359,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
 
         // PrimaryKeyFields
         List primaryKeyVector = new ArrayList(getPrimaryKeyFields().size());
-        List primaryKeyFields = getPrimaryKeyFields();
+        List<DatabaseField> primaryKeyFields = getPrimaryKeyFields();
         for (int index = 0; index < primaryKeyFields.size(); index++) {
             DatabaseField primaryKey = ((DatabaseField)primaryKeyFields.get(index)).clone();
             primaryKeyVector.add(primaryKey);
@@ -1487,7 +1489,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        descriptorClass = AccessController.doPrivileged(new PrivilegedClassForName(getJavaClassName(), true, classLoader));
+                        descriptorClass = AccessController.doPrivileged(new PrivilegedClassForName<>(getJavaClassName(), true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(getJavaClassName(), exception.getException());
                     }
@@ -1505,7 +1507,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        amendmentClass = AccessController.doPrivileged(new PrivilegedClassForName(getAmendmentClassName(), true, classLoader));
+                        amendmentClass = AccessController.doPrivileged(new PrivilegedClassForName<>(getAmendmentClassName(), true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(getAmendmentClassName(), exception.getException());
                     }
@@ -1524,7 +1526,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        copyPolicyClass = AccessController.doPrivileged(new PrivilegedClassForName(getCopyPolicyClassName(), true, classLoader));
+                        copyPolicyClass = AccessController.doPrivileged(new PrivilegedClassForName<>(getCopyPolicyClassName(), true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(getCopyPolicyClassName(), exception.getException());
                     }
@@ -1554,7 +1556,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        serializedObjectPolicyClass = AccessController.doPrivileged(new PrivilegedClassForName(serializedObjectPolicyClassName, true, classLoader));
+                        serializedObjectPolicyClass = AccessController.doPrivileged(new PrivilegedClassForName<>(serializedObjectPolicyClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(serializedObjectPolicyClassName, exception.getException());
                     }
@@ -1583,7 +1585,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName(defaultQueryRedirectorClassName, true, classLoader));
+                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName<>(defaultQueryRedirectorClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(defaultQueryRedirectorClassName, exception.getException());
                     }
@@ -1608,7 +1610,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName(defaultReadObjectQueryRedirectorClassName, true, classLoader));
+                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName<>(defaultReadObjectQueryRedirectorClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReadObjectQueryRedirectorClassName, exception.getException());
                     }
@@ -1632,7 +1634,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName(defaultReadAllQueryRedirectorClassName, true, classLoader));
+                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName<>(defaultReadAllQueryRedirectorClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReadAllQueryRedirectorClassName, exception.getException());
                     }
@@ -1656,7 +1658,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName(defaultReportQueryRedirectorClassName, true, classLoader));
+                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName<>(defaultReportQueryRedirectorClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReportQueryRedirectorClassName, exception.getException());
                     }
@@ -1680,7 +1682,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName(defaultInsertObjectQueryRedirectorClassName, true, classLoader));
+                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName<>(defaultInsertObjectQueryRedirectorClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(defaultInsertObjectQueryRedirectorClassName, exception.getException());
                     }
@@ -1704,7 +1706,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName(defaultUpdateObjectQueryRedirectorClassName, true, classLoader));
+                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName<>(defaultUpdateObjectQueryRedirectorClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(defaultUpdateObjectQueryRedirectorClassName, exception.getException());
                     }
@@ -1728,7 +1730,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName(defaultDeleteObjectQueryRedirectorClassName, true, classLoader));
+                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName<>(defaultDeleteObjectQueryRedirectorClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(defaultDeleteObjectQueryRedirectorClassName, exception.getException());
                     }
@@ -1748,7 +1750,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                 throw ValidationException.classNotFoundWhileConvertingClassNames(defaultDeleteObjectQueryRedirectorClassName, e);
             }
         }
-        Iterator mappings = getMappings().iterator();
+        Iterator<DatabaseMapping> mappings = getMappings().iterator();
         while (mappings.hasNext()){
             ((DatabaseMapping)mappings.next()).convertClassNamesToClasses(classLoader);
         }
@@ -1776,14 +1778,14 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                 List<String> valuePair = getUnconvertedProperties().get(propertyName);
                 String value = valuePair.get(0);
                 String valueTypeName = valuePair.get(1);
-                Class valueType = String.class;
+                Class<String> valueType = String.class;
 
                 if (valueTypeName != null) {
                     // Have to initialize the valueType now
                     try {
                         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                             try {
-                                valueType = AccessController.doPrivileged(new PrivilegedClassForName(valueTypeName, true, classLoader));
+                                valueType = AccessController.doPrivileged(new PrivilegedClassForName<>(valueTypeName, true, classLoader));
                             } catch (PrivilegedActionException exception) {
                                 throw ValidationException.classNotFoundWhileConvertingClassNames(valueTypeName, exception.getException());
                             }
@@ -2221,7 +2223,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * As with IdentityMaps an entire class inheritance hierarchy will share the same interceptor.
      * @see org.eclipse.persistence.sessions.interceptors.CacheInterceptor
      */
-    public Class getCacheInterceptorClass() {
+    public Class<? extends CacheInterceptor> getCacheInterceptorClass() {
         return getCachePolicy().getCacheInterceptorClass();
     }
 
@@ -2547,7 +2549,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     public DatabaseMapping getMappingForAttributeName(String attributeName) {
         // ** Don't use this internally, just for amendments, see getMappingForAttributeName on ObjectBuilder.
-        for (Enumeration mappingsNum = mappings.elements(); mappingsNum.hasMoreElements();) {
+        for (Enumeration<DatabaseMapping> mappingsNum = mappings.elements(); mappingsNum.hasMoreElements();) {
             DatabaseMapping mapping = (DatabaseMapping)mappingsNum.nextElement();
             if ((mapping.getAttributeName() != null) && mapping.getAttributeName().equals(attributeName)) {
                 return mapping;
@@ -2584,7 +2586,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     public Vector getMultipleTableForeignKeyAssociations() {
         Vector associations = new Vector(getAdditionalTablePrimaryKeyFields().size() * 2);
-        Iterator tablesHashtable = getAdditionalTablePrimaryKeyFields().values().iterator();
+        Iterator<Map<DatabaseField, DatabaseField>> tablesHashtable = getAdditionalTablePrimaryKeyFields().values().iterator();
         while (tablesHashtable.hasNext()) {
             Map tableHash = (Map)tablesHashtable.next();
             Iterator fieldEnumeration = tableHash.keySet().iterator();
@@ -2634,7 +2636,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     public Vector getMultipleTablePrimaryKeyAssociations() {
         Vector associations = new Vector(getAdditionalTablePrimaryKeyFields().size() * 2);
-        Iterator tablesHashtable = getAdditionalTablePrimaryKeyFields().values().iterator();
+        Iterator<Map<DatabaseField, DatabaseField>> tablesHashtable = getAdditionalTablePrimaryKeyFields().values().iterator();
         while (tablesHashtable.hasNext()) {
             Map tableHash = (Map)tablesHashtable.next();
             Iterator fieldEnumeration = tableHash.keySet().iterator();
@@ -2704,7 +2706,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     @Override
     public Vector<String> getPrimaryKeyFieldNames() {
         Vector<String> result = new Vector(getPrimaryKeyFields().size());
-        List primaryKeyFields = getPrimaryKeyFields();
+        List<DatabaseField> primaryKeyFields = getPrimaryKeyFields();
         for (int index = 0; index < primaryKeyFields.size(); index++) {
             result.addElement(((DatabaseField)primaryKeyFields.get(index)).getQualifiedName());
         }
@@ -2878,7 +2880,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             return null;// Assume aggregate descriptor.
         }
 
-        for (Enumeration tables = getTables().elements(); tables.hasMoreElements();) {
+        for (Enumeration<DatabaseTable> tables = getTables().elements(); tables.hasMoreElements();) {
             DatabaseTable table = (DatabaseTable)tables.nextElement();
 
             if(tableName.indexOf(' ') != -1) {
@@ -2919,7 +2921,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     public Vector getTableNames() {
         Vector tableNames = new Vector(getTables().size());
-        for (Enumeration fieldsEnum = getTables().elements(); fieldsEnum.hasMoreElements();) {
+        for (Enumeration<DatabaseTable> fieldsEnum = getTables().elements(); fieldsEnum.hasMoreElements();) {
             tableNames.addElement(((DatabaseTable)fieldsEnum.nextElement()).getQualifiedName());
         }
 
@@ -3094,7 +3096,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Checks if the class has any private owned parts are not
      */
     public boolean hasPrivatelyOwnedParts() {
-        for (Enumeration mappings = getMappings().elements(); mappings.hasMoreElements();) {
+        for (Enumeration<DatabaseMapping> mappings = getMappings().elements(); mappings.hasMoreElements();) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.nextElement();
             if (mapping.isPrivateOwned()) {
                 return true;
@@ -3232,8 +3234,8 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         // Sorting the mappings to ensure that all DirectToFields get merged before all other mappings
         // This prevents null key errors when merging maps
         if (shouldOrderMappings()) {
-            Vector mappings = getMappings();
-            Object[] mappingsArray = new Object[mappings.size()];
+            Vector<DatabaseMapping> mappings = getMappings();
+            DatabaseMapping[] mappingsArray = new DatabaseMapping[mappings.size()];
             for (int index = 0; index < mappings.size(); index++) {
                 mappingsArray[index] = mappings.get(index);
             }
@@ -3307,7 +3309,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         }
 
         // All the query keys should be initialized.
-        for (Iterator queryKeys = getQueryKeys().values().iterator(); queryKeys.hasNext();) {
+        for (Iterator<QueryKey> queryKeys = getQueryKeys().values().iterator(); queryKeys.hasNext();) {
             QueryKey queryKey = (QueryKey)queryKeys.next();
             queryKey.initialize(this);
         }
@@ -3352,8 +3354,8 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         // This prevents null key errors when merging maps
         // This resort will change the previous sort order, only do it if has inheritance.
         if (hasInheritance() && shouldOrderMappings()) {
-            Vector mappings = getMappings();
-            Object[] mappingsArray = new Object[mappings.size()];
+            Vector<DatabaseMapping> mappings = getMappings();
+            DatabaseMapping[] mappingsArray = new DatabaseMapping[mappings.size()];
             for (int index = 0; index < mappings.size(); index++) {
                 mappingsArray[index] = mappings.get(index);
             }
@@ -3642,9 +3644,9 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         setInterfaceInitializationStage(INITIALIZED);
 
         if (isInterfaceChildDescriptor()) {
-            for (Iterator<Class> interfaces = getInterfacePolicy().getParentInterfaces().iterator();
+            for (Iterator<Class<?>> interfaces = getInterfacePolicy().getParentInterfaces().iterator();
                      interfaces.hasNext();) {
-                Class parentInterface = interfaces.next();
+                Class<?> parentInterface = interfaces.next();
                 ClassDescriptor parentDescriptor = session.getDescriptor(parentInterface);
                 parentDescriptor.interfaceInitialization(session);
 
@@ -3652,8 +3654,8 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                     setQueryKeys(Helper.concatenateMaps(getQueryKeys(), parentDescriptor.getQueryKeys()));
                 } else {
                     //ClassDescriptor is a class, not an interface
-                    for (Iterator parentKeys = parentDescriptor.getQueryKeys().keySet().iterator();
-                             parentKeys.hasNext();) {
+                    for (Iterator<String> parentKeys = parentDescriptor.getQueryKeys().keySet().iterator();
+                         parentKeys.hasNext();) {
                         String queryKeyName = (String)parentKeys.next();
                         if (!hasQueryKeyOrMapping(queryKeyName)) {
                             //the parent descriptor has a query key not defined in the child
@@ -4156,7 +4158,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             // Cloning is only auto set for field access, as method access
             // may not have simple fields, same with empty new and reflection get/set.
             boolean isMethodAccess = false;
-            for (Iterator iterator = getMappings().iterator(); iterator.hasNext(); ) {
+            for (Iterator<DatabaseMapping> iterator = getMappings().iterator(); iterator.hasNext(); ) {
                 DatabaseMapping mapping = (DatabaseMapping)iterator.next();
                 if (mapping.isUsingMethodAccess()) {
                     // Ok for lazy 1-1s
@@ -4183,7 +4185,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         }
 
         // 4924665 Check for spaces in table names, and add the appropriate quote character
-        Iterator tables = this.getTables().iterator();
+        Iterator<DatabaseTable> tables = this.getTables().iterator();
         while(tables.hasNext()) {
             DatabaseTable next = (DatabaseTable)tables.next();
             if(next.getName().indexOf(' ') != -1) {
@@ -4290,9 +4292,9 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         assignDefaultValues(session);
 
         if (isInterfaceChildDescriptor()) {
-            for (Iterator<Class> interfaces = getInterfacePolicy().getParentInterfaces().iterator();
+            for (Iterator<Class<?>> interfaces = getInterfacePolicy().getParentInterfaces().iterator();
                      interfaces.hasNext();) {
-                Class parentInterface = interfaces.next();
+                Class<?> parentInterface = interfaces.next();
                 ClassDescriptor parentDescriptor = session.getDescriptor(parentInterface);
                 if ((parentDescriptor == null) || (parentDescriptor.getJavaClass() == getJavaClass()) || parentDescriptor.getInterfacePolicy().usesImplementorDescriptor()) {
                     session.getProject().getDescriptors().put(parentInterface, this);
@@ -4317,7 +4319,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public void rehashFieldDependancies(AbstractSession session) {
         getObjectBuilder().rehashFieldDependancies(session);
 
-        for (Enumeration enumtr = getMappings().elements(); enumtr.hasMoreElements();) {
+        for (Enumeration<DatabaseMapping> enumtr = getMappings().elements(); enumtr.hasMoreElements();) {
             ((DatabaseMapping)enumtr.nextElement()).rehashFieldDependancies(session);
         }
     }
@@ -4466,7 +4468,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * descriptor.
      */
     protected void setAdditionalTablePrimaryKeyFields(DatabaseTable table, DatabaseField field1, DatabaseField field2) {
-        Map tableAdditionalPKFields = getAdditionalTablePrimaryKeyFields().get(table);
+        Map<DatabaseField, DatabaseField> tableAdditionalPKFields = getAdditionalTablePrimaryKeyFields().get(table);
 
         if (tableAdditionalPKFields == null) {
             tableAdditionalPKFields = new HashMap(2);
@@ -4809,7 +4811,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Set the class of identity map to be used by this descriptor.
      * The default is the "FullIdentityMap".
      */
-    public void setIdentityMapClass(Class theIdentityMapClass) {
+    public void setIdentityMapClass(Class<? extends IdentityMap> theIdentityMapClass) {
         getCachePolicy().setIdentityMapClass(theIdentityMapClass);
     }
 
@@ -5090,7 +5092,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     public void setMappings(Vector<DatabaseMapping> mappings) {
         // This is used from XML reader so must ensure that all mapping's descriptor has been set.
-        for (Enumeration mappingsEnum = mappings.elements(); mappingsEnum.hasMoreElements();) {
+        for (Enumeration<DatabaseMapping> mappingsEnum = mappings.elements(); mappingsEnum.hasMoreElements();) {
             DatabaseMapping mapping = (DatabaseMapping)mappingsEnum.nextElement();
 
             // For CR#2646, if the mapping already points to the parent descriptor then leave it.
@@ -5511,7 +5513,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * all tables in this descriptor
      */
     public void setTableQualifier(String tableQualifier) {
-        for (Enumeration enumtr = getTables().elements(); enumtr.hasMoreElements();) {
+        for (Enumeration<DatabaseTable> enumtr = getTables().elements(); enumtr.hasMoreElements();) {
             DatabaseTable table = (DatabaseTable)enumtr.nextElement();
             table.setTableQualifier(tableQualifier);
         }
@@ -5822,8 +5824,8 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         if (lockingPolicy != null && (lockingPolicy instanceof FieldsLockingPolicy)) {
             return false;
         }
-        Vector mappings = getMappings();
-        for (Iterator iterator = mappings.iterator(); iterator.hasNext();) {
+        Vector<DatabaseMapping> mappings = getMappings();
+        for (Iterator<DatabaseMapping> iterator = mappings.iterator(); iterator.hasNext();) {
             DatabaseMapping mapping = (DatabaseMapping)iterator.next();
             if (!mapping.isChangeTrackingSupported(project) ) {
                 return false;

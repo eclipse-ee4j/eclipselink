@@ -169,8 +169,8 @@ public class PlatformCreateDocumentTestCases extends OXTestCase {
     }
 
     public void testCreateInvalidXMLPlatform() throws Exception {
-        Class originalClass = XMLPlatformFactory.getInstance().getXMLPlatformClass();
-        XMLPlatformFactory.getInstance().setXMLPlatformClass(PlatformCreateDocumentTestCases.class);
+        Class<? extends XMLPlatform> originalClass = XMLPlatformFactory.getInstance().getXMLPlatformClass();
+        XMLPlatformFactory.getInstance().setXMLPlatformClass((Class) PlatformCreateDocumentTestCases.class);
         try {
             XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
         } catch (XMLPlatformException e) {

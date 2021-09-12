@@ -51,7 +51,7 @@ public class RemoteConnectionExceptionsTest extends TestCase {
     protected Vector args;
 
     protected void setRemoteConnection(RemoteConnection remoteConnection) {
-        Class cls = remoteConnection.getClass();
+        Class<? extends RemoteConnection> cls = remoteConnection.getClass();
         if (!remoteConnectionClass.equals(cls)) {
             throw new TestProblemException("remoteConnection's type is different from the type used to create the test");
         }

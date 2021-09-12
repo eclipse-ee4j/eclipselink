@@ -29,13 +29,11 @@ import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPoli
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.CDATASection;
-import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.Locator2;
@@ -122,7 +120,7 @@ public class DOMReader extends XMLReaderAdapter {
             parent = parent.getParentNode();
         }
         // Pop off each node and call startPrefixMapping for each XMLNS attribute
-        for (Iterator stackIt = parentElements.iterator(); stackIt.hasNext(); ) {
+        for (Iterator<Node> stackIt = parentElements.iterator(); stackIt.hasNext(); ) {
             NamedNodeMap attrs = parentElements.remove(parentElements.size() - 1).getAttributes();
             if (attrs != null) {
                 for (int i=0, length = attrs.getLength(); i < length; i++) {

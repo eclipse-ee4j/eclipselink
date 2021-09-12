@@ -59,7 +59,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.exceptions.ConversionException;
-import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.core.helper.CoreHelper;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
@@ -385,13 +384,13 @@ public class Helper extends CoreHelper implements Serializable {
      * (through interface or implementation inheritance).
      * @return boolean
      */
-    public static boolean classImplementsInterface(Class aClass, Class anInterface) {
+    public static <T> boolean classImplementsInterface(Class<T> aClass, Class<?> anInterface) {
         // quick check
         if (aClass == anInterface) {
             return true;
         }
 
-        Class[] interfaces = aClass.getInterfaces();
+        Class<?>[] interfaces = aClass.getInterfaces();
 
         // loop through the "directly declared" interfaces
         for (int i = 0; i < interfaces.length; i++) {
@@ -408,7 +407,7 @@ public class Helper extends CoreHelper implements Serializable {
         }
 
         // finally, recurse up through the superclasses to Object
-        Class superClass = aClass.getSuperclass();
+        Class<? super T> superClass = aClass.getSuperclass();
         if (superClass == null) {
             return false;
         }
@@ -530,7 +529,7 @@ public class Helper extends CoreHelper implements Serializable {
         try{
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    convertedClass = AccessController.doPrivileged(new PrivilegedClassForName(className, true, classLoader));
+                    convertedClass = AccessController.doPrivileged(new PrivilegedClassForName<>(className, true, classLoader));
                 } catch (PrivilegedActionException exception) {
                     throw ValidationException.classNotFoundWhileConvertingClassNames(className, exception.getException());
                 }
@@ -688,8 +687,8 @@ public class Helper extends CoreHelper implements Serializable {
      * check for BigDecimals as well.
      */
     public static boolean comparePotentialArrays(Object firstValue, Object secondValue) {
-        Class firstClass = firstValue.getClass();
-        Class secondClass = secondValue.getClass();
+        Class<? extends Object> firstClass = firstValue.getClass();
+        Class<? extends Object> secondClass = secondValue.getClass();
 
         // Arrays must be checked for equality because default does identity
         if ((firstClass == ClassConstants.APBYTE) && (secondClass == ClassConstants.APBYTE)) {

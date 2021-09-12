@@ -785,8 +785,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Employee emp1 = (Employee) expectedResult.elementAt(0);
         Employee emp2 = (Employee) expectedResult.elementAt(1);
 
-        double salarySquareRoot1 = Math.sqrt(((double) emp1.getSalary()));
-        double salarySquareRoot2 = Math.sqrt(((double) emp2.getSalary()));
+        double salarySquareRoot1 = Math.sqrt(emp1.getSalary());
+        double salarySquareRoot2 = Math.sqrt(emp2.getSalary());
 
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
         ejbqlString = ejbqlString + salarySquareRoot1;
@@ -824,8 +824,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Employee emp1 = (Employee) expectedResult.elementAt(0);
         Employee emp2 = (Employee) expectedResult.elementAt(1);
 
-        double salarySquareRoot1 = Math.sqrt(((double) emp1.getSalary()));
-        double salarySquareRoot2 = Math.sqrt(((double) emp2.getSalary()));
+        double salarySquareRoot1 = Math.sqrt(emp1.getSalary());
+        double salarySquareRoot2 = Math.sqrt(emp2.getSalary());
 
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
         ejbqlString = ejbqlString + "(SQRT(emp.salary) = ";

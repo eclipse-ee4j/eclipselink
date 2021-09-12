@@ -40,77 +40,77 @@ public class QNameTestCases extends OXTestCase {
 
     public void testQNameToQName() {
         QName control = CONTROL_QNAME;
-        QName test = (QName)xcm.convertObject(control, QName.class);
+        QName test = xcm.convertObject(control, QName.class);
         assertEquals(control, test);
     }
 
     public void testQNameToString_default_null() {
         QName qName = null;
         QName control = null;
-        String test = (String)xcm.convertObject(control, String.class);
+        String test = xcm.convertObject(control, String.class);
         assertEquals(control, test);
     }
 
     public void testQNameToString_default() {
         QName qName = CONTROL_QNAME;
         String control = CONTROL_STRING;
-        String test = (String)xcm.convertObject(qName, String.class);
+        String test = xcm.convertObject(qName, String.class);
         assertEquals(control, test);
     }
 
     public void testQNameToString_default_ns() {
         QName qName = CONTROL_QNAME_NS;
         String control = CONTROL_STRING_NS;
-        String test = (String)xcm.convertObject(qName, String.class);
+        String test = xcm.convertObject(qName, String.class);
         assertEquals(control, test);
     }
 
     public void testQNameToString_qname() {
         QName qName = CONTROL_QNAME;
         String control = CONTROL_STRING;
-        String test = (String)xcm.convertObject(qName, String.class, XMLConstants.QNAME_QNAME);
+        String test = xcm.convertObject(qName, String.class, XMLConstants.QNAME_QNAME);
         assertEquals(control, test);
     }
 
     public void testQNameToString_qname_ns() {
         QName qName = CONTROL_QNAME_NS;
         String control = CONTROL_STRING_NS;
-        String test = (String)xcm.convertObject(qName, String.class, XMLConstants.QNAME_QNAME);
+        String test = xcm.convertObject(qName, String.class, XMLConstants.QNAME_QNAME);
         assertEquals(control, test);
     }
 
     public void testStringToQName_default_null() {
         String string = null;
         QName control = null;
-        QName test = (QName)xcm.convertObject(string, QName.class);
+        QName test = xcm.convertObject(string, QName.class);
         assertEquals(control, test);
     }
 
     public void testStringToQName_default() {
         String string = CONTROL_STRING;
         QName control = CONTROL_QNAME;
-        QName test = (QName)xcm.convertObject(string, QName.class);
+        QName test = xcm.convertObject(string, QName.class);
         assertEquals(control, test);
     }
 
     public void testStringToQName_default_ns() {
         String string = CONTROL_STRING_NS;
         QName control = CONTROL_QNAME_NS;
-        QName test = (QName)xcm.convertObject(string, QName.class);
+        QName test = xcm.convertObject(string, QName.class);
         assertEquals(control, test);
     }
 
     public void testStringToQName_qname() {
         String string = CONTROL_STRING;
         QName control = CONTROL_QNAME;
-        QName test = (QName)xcm.convertObject(string, QName.class, XMLConstants.QNAME_QNAME);
+        QName test = xcm.convertObject(string, QName.class, XMLConstants.QNAME_QNAME);
         assertEquals(control, test);
     }
 
     public void testStringToQName_qname_ns() {
         String string = CONTROL_STRING_NS;
         QName control = CONTROL_QNAME_NS;
-        QName test = (QName)xcm.convertObject(string, QName.class, XMLConstants.QNAME_QNAME);
+        QName test = xcm.convertObject(string, QName.class, XMLConstants.QNAME_QNAME);
         assertEquals(control, test);
     }
 

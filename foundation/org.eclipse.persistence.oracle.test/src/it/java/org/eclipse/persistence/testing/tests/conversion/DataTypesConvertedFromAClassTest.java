@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.conversion;
 
+import java.util.List;
 import java.util.Vector;
 import java.util.Calendar;
 import java.sql.Timestamp;
@@ -46,7 +47,7 @@ public class DataTypesConvertedFromAClassTest extends AutoVerifyTestCase {
 
     @Override
     public void test() {
-        Vector vec;
+        List vec;
         int x;
         int y;
         Object obj;
@@ -67,15 +68,15 @@ public class DataTypesConvertedFromAClassTest extends AutoVerifyTestCase {
                 vec = wrapper.getDataTypesConvertedFrom(type);
                 for (y = 0; y < vec.size(); y++) {
                     //Different string formats are required for number, date and other types
-                    if ((fields[x].getName().equals("stringToInt") && !isNumber((Class)vec.elementAt(y))) || (fields[x].getName().equals("stringToTimestamp") && !isTimestamp((Class)vec.elementAt(y))) || (fields[x].getName().equals("aString") && !isChar((Class)vec.elementAt(y)))) {
+                    if ((fields[x].getName().equals("stringToInt") && !isNumber((Class)vec.get(y))) || (fields[x].getName().equals("stringToTimestamp") && !isTimestamp((Class)vec.get(y))) || (fields[x].getName().equals("aString") && !isChar((Class)vec.get(y)))) {
                         continue;
                     }
                     try {
-                        wrapper.convertObject(obj, (Class)vec.elementAt(y));
+                        wrapper.convertObject(obj, (Class)vec.get(y));
                     } catch (Exception e) {
                         exception2 = e;
                         sourceClass = fields[x].getType();
-                        targetClass = (Class)vec.elementAt(y);
+                        targetClass = (Class)vec.get(y);
                     }
                 }
             }

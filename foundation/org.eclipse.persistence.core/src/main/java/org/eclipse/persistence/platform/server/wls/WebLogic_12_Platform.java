@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -111,7 +111,7 @@ public class WebLogic_12_Platform extends WebLogic_10_Platform {
                 cicManagerInstance = PrivilegedAccessHelper.invokeMethod(getInstance, managerClass);
                 // Get component invocation context
                 getCurrentCicMethod = PrivilegedAccessHelper.getMethod(managerClass, "getCurrentComponentInvocationContext", new Class[]{}, true);
-                final Class cicClass = PrivilegedAccessHelper.getClassForName(contextClassName);
+                final Class<Object> cicClass = PrivilegedAccessHelper.getClassForName(contextClassName);
                 getPartitionIdMethod = PrivilegedAccessHelper.getDeclaredMethod(cicClass, "getPartitionId", new Class[]{});
                 getPartitionNameMethod = PrivilegedAccessHelper.getDeclaredMethod(cicClass, "getPartitionName", new Class[]{});
                 isGlobalRuntimeMethod = PrivilegedAccessHelper.getDeclaredMethod(cicClass, "isGlobalRuntime", new Class[]{});
@@ -164,7 +164,7 @@ public class WebLogic_12_Platform extends WebLogic_10_Platform {
                         public String run() {
                             try {
                                 final Object cicInstance = PrivilegedAccessHelper.invokeMethod(getCurrentCicMethod, cicManagerInstance);
-                                return (String) PrivilegedAccessHelper.invokeMethod(methodToCall, cicInstance);
+                                return PrivilegedAccessHelper.invokeMethod(methodToCall, cicInstance);
                             } catch (ReflectiveOperationException ex) {
                                 AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, null, ex);
                                 return "UNKNOWN";
@@ -173,7 +173,7 @@ public class WebLogic_12_Platform extends WebLogic_10_Platform {
                     });
                 } else {
                     final Object cicInstance = PrivilegedAccessHelper.invokeMethod(getCurrentCicMethod, cicManagerInstance);
-                    return (String) PrivilegedAccessHelper.invokeMethod(methodToCall, cicInstance);
+                    return PrivilegedAccessHelper.invokeMethod(methodToCall, cicInstance);
                 }
             } catch (ReflectiveOperationException ex) {
                 AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, null, ex);
@@ -193,7 +193,7 @@ public class WebLogic_12_Platform extends WebLogic_10_Platform {
                         public Boolean run() {
                             try {
                                 final Object cicInstance = PrivilegedAccessHelper.invokeMethod(getCurrentCicMethod, cicManagerInstance);
-                                return (Boolean) PrivilegedAccessHelper.invokeMethod(isGlobalRuntimeMethod, cicInstance);
+                                return PrivilegedAccessHelper.invokeMethod(isGlobalRuntimeMethod, cicInstance);
                             } catch (ReflectiveOperationException ex) {
                                 AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, null, ex);
                                 return true;
@@ -202,7 +202,7 @@ public class WebLogic_12_Platform extends WebLogic_10_Platform {
                     });
                 } else {
                     final Object cicInstance = PrivilegedAccessHelper.invokeMethod(getCurrentCicMethod, cicManagerInstance);
-                    return (boolean) PrivilegedAccessHelper.invokeMethod(isGlobalRuntimeMethod, cicInstance);
+                    return PrivilegedAccessHelper.invokeMethod(isGlobalRuntimeMethod, cicInstance);
                 }
             } catch (ReflectiveOperationException ex) {
                 AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, null, ex);

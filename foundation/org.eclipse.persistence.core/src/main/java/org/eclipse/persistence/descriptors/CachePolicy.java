@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jakarta.persistence.Cache;
 import org.eclipse.persistence.annotations.CacheCoordinationType;
 import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.annotations.DatabaseChangeNotificationType;
@@ -36,6 +37,7 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -44,6 +46,8 @@ import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.interceptors.CacheInterceptor;
+import org.eclipse.persistence.sessions.interceptors.CacheKeyInterceptor;
 
 /**
  * <p><b>Purpose</b>:
@@ -56,13 +60,13 @@ import org.eclipse.persistence.sessions.DatabaseSession;
  * @see ClassDescriptor
  */
 public class CachePolicy implements Cloneable, Serializable {
-    protected Class identityMapClass;
+    protected Class<? extends IdentityMap> identityMapClass;
     protected int identityMapSize;
     protected boolean shouldAlwaysRefreshCache;
     protected boolean shouldOnlyRefreshCacheIfNewerVersion;
     protected boolean shouldDisableCacheHits;
 
-    protected Class remoteIdentityMapClass;
+    protected Class<? extends IdentityMap> remoteIdentityMapClass;
     protected int remoteIdentityMapSize;
     protected boolean shouldAlwaysRefreshCacheOnRemote;
     protected boolean shouldDisableCacheHitsOnRemote;
@@ -105,7 +109,7 @@ public class CachePolicy implements Cloneable, Serializable {
     protected CacheKeyType cacheKeyType;
 
     //Added for interceptor support.
-    protected Class cacheInterceptorClass;
+    protected Class<? extends CacheInterceptor> cacheInterceptorClass;
     //Added for interceptor support.
     protected String cacheInterceptorClassName;
 
@@ -161,7 +165,7 @@ public class CachePolicy implements Cloneable, Serializable {
         // If the parent is isolated, then the child must also be isolated.
         if (!parentPolicy.isSharedIsolation()) {
             // Do not override cache isolation when explicitly enabled by @Cacheable(true) annotation in current class.
-            boolean copyParrent = cacheable == null || cacheable == false;
+            boolean copyParrent = cacheable == null || !cacheable;
             if (!isIsolated() && (getCacheIsolation() != parentPolicy.getCacheIsolation()) && copyParrent) {
                 session.log(SessionLog.WARNING, SessionLog.METADATA, "overriding_cache_isolation",
                         new Object[]{descriptorDescriptor.getAlias(),
@@ -302,7 +306,7 @@ public class CachePolicy implements Cloneable, Serializable {
      * The primary key is always indexed in the cache.
      * Cache indexes are defined by their database column names.
      */
-    public void addCacheIndex(DatabaseField fields[]) {
+    public void addCacheIndex(DatabaseField[] fields) {
         addCacheIndex(new CacheIndex(fields));
     }
 
@@ -325,8 +329,8 @@ public class CachePolicy implements Cloneable, Serializable {
     public CachePolicy clone() {
         try {
             return (CachePolicy)super.clone();
-        } catch (CloneNotSupportedException ignore) {
-            throw new InternalError(ignore.getMessage());
+        } catch (CloneNotSupportedException cnse) {
+            throw new InternalError(cnse.getMessage());
         }
     }
 
@@ -358,7 +362,7 @@ public class CachePolicy implements Cloneable, Serializable {
             if (this.cacheInterceptorClass == null && this.cacheInterceptorClassName != null){
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        this.cacheInterceptorClass = AccessController.doPrivileged(new PrivilegedClassForName(this.cacheInterceptorClassName, true, classLoader));
+                        this.cacheInterceptorClass = AccessController.doPrivileged(new PrivilegedClassForName<>(this.cacheInterceptorClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(this.cacheInterceptorClassName, exception.getException());
                    }
@@ -404,8 +408,9 @@ public class CachePolicy implements Cloneable, Serializable {
      * As with IdentityMaps an entire class inheritance hierarchy will share the same interceptor.
      * @see org.eclipse.persistence.sessions.interceptors.CacheInterceptor
      */
-    public Class getCacheInterceptorClass(){
-        return this.cacheInterceptorClass;
+    @SuppressWarnings({"unchecked"})
+    public <T extends CacheInterceptor> Class<T> getCacheInterceptorClass(){
+        return (Class<T>) this.cacheInterceptorClass;
     }
 
     /**
@@ -442,8 +447,9 @@ public class CachePolicy implements Cloneable, Serializable {
      * Return the class of identity map to be used by this descriptor.
      * The default is the "SoftCacheWeakIdentityMap".
      */
-    public Class getIdentityMapClass() {
-        return identityMapClass;
+    @SuppressWarnings({"unchecked"})
+    public <T extends IdentityMap> Class<T> getIdentityMapClass() {
+        return (Class<T>) identityMapClass;
     }
 
     /**
@@ -459,12 +465,12 @@ public class CachePolicy implements Cloneable, Serializable {
      * Return the class of identity map to be used by this descriptor.
      * The default is the "SoftCacheWeakIdentityMap".
      */
-    public Class getRemoteIdentityMapClass() {
+    @SuppressWarnings({"unchecked"})
+    public <T extends IdentityMap> Class<T> getRemoteIdentityMapClass() {
         if (remoteIdentityMapClass == null) {
             remoteIdentityMapClass = getIdentityMapClass();
         }
-
-        return remoteIdentityMapClass;
+        return (Class<T>) remoteIdentityMapClass;
     }
 
     /**
@@ -644,7 +650,7 @@ public class CachePolicy implements Cloneable, Serializable {
      * Set the class of identity map to be used by this descriptor.
      * The default is the "FullIdentityMap".
      */
-    public void setRemoteIdentityMapClass(Class theIdentityMapClass) {
+    public void setRemoteIdentityMapClass(Class<? extends IdentityMap> theIdentityMapClass) {
         remoteIdentityMapClass = theIdentityMapClass;
     }
 
@@ -776,7 +782,7 @@ public class CachePolicy implements Cloneable, Serializable {
      * Set the class of identity map to be used by this descriptor.
      * The default is the "FullIdentityMap".
      */
-    public void setIdentityMapClass(Class theIdentityMapClass) {
+    public void setIdentityMapClass(Class<? extends IdentityMap> theIdentityMapClass) {
         identityMapClass = theIdentityMapClass;
     }
 
@@ -840,7 +846,7 @@ public class CachePolicy implements Cloneable, Serializable {
      * As with IdentityMaps an entire class inheritance hierarchy will share the same interceptor.
      * @see org.eclipse.persistence.sessions.interceptors.CacheInterceptor
      */
-    public void setCacheInterceptorClass(Class cacheInterceptorClass){
+    public void setCacheInterceptorClass(Class<? extends CacheInterceptor> cacheInterceptorClass){
         this.cacheInterceptorClass = cacheInterceptorClass;
     }
 
@@ -1005,7 +1011,7 @@ public class CachePolicy implements Cloneable, Serializable {
         for (CacheIndex index : this.cacheIndexes.values()) {
             List<DatabaseField> searchFields = index.getFields();
             int size = searchFields.size();
-            Set<DatabaseField> foundFields = new HashSet(size);
+            Set<DatabaseField> foundFields = new HashSet<>(size);
             boolean isValid = expression.extractFields(true, false, descriptor, searchFields, foundFields);
             if (isValid && (foundFields.size() == size)) {
                 return true;

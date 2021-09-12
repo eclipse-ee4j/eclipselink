@@ -109,7 +109,7 @@ public final class ServerPlatformUtils {
         if (platformClass == null) {
             throw ServerPlatformException.invalidServerPlatformClass(null, null);
         }
-        Class cls = null;
+        Class<? extends ServerPlatform> cls = null;
         try {
             //try the supplied classloader
             cls = findClass(platformClass, loader);
@@ -132,17 +132,17 @@ public final class ServerPlatformUtils {
         ServerPlatform platform = null;
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
             try {
-                Constructor constructor = AccessController.doPrivileged(
-                        new PrivilegedGetConstructorFor(cls, paramTypes, false));
-                platform = (ServerPlatform) AccessController.doPrivileged(
-                        new PrivilegedInvokeConstructor(constructor, params));
+                Constructor<? extends ServerPlatform> constructor = AccessController.doPrivileged(
+                        new PrivilegedGetConstructorFor<>(cls, paramTypes, false));
+                platform = AccessController.doPrivileged(
+                        new PrivilegedInvokeConstructor<>(constructor, params));
             } catch (PrivilegedActionException ex) {
                 throw ServerPlatformException.invalidServerPlatformClass(platformClass, ex);
             }
         } else {
             try {
-                Constructor constructor = PrivilegedAccessHelper.getConstructorFor(cls, paramTypes, false);
-                platform = (ServerPlatform) PrivilegedAccessHelper.invokeConstructor(constructor, params);
+                Constructor<? extends ServerPlatform> constructor = PrivilegedAccessHelper.getConstructorFor(cls, paramTypes, false);
+                platform = PrivilegedAccessHelper.invokeConstructor(constructor, params);
             } catch (NoSuchMethodException | IllegalAccessException
                     | InvocationTargetException | InstantiationException ex) {
                 throw ServerPlatformException.invalidServerPlatformClass(platformClass, ex);
@@ -151,9 +151,9 @@ public final class ServerPlatformUtils {
         return platform;
     }
 
-    private static Class findClass(String className, ClassLoader loader) throws ClassNotFoundException, PrivilegedActionException {
+    private static Class<? extends ServerPlatform> findClass(String className, ClassLoader loader) throws ClassNotFoundException, PrivilegedActionException {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            return AccessController.doPrivileged(new PrivilegedClassForName(className, false, loader));
+            return AccessController.doPrivileged(new PrivilegedClassForName<>(className, false, loader));
         } else {
             return PrivilegedAccessHelper.getClassForName(className, false, loader);
         }

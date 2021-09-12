@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -64,7 +64,7 @@ public class CacheBasedValueHolder extends DatabaseValueHolder {
     public Object getValue(UnitOfWorkImpl uow) {
         if (this.references != null && this.references.length != 0){
             if (mapping.isCollectionMapping()){
-                Collection result = uow.getIdentityMapAccessorInstance().getAllFromIdentityMapWithEntityPK(this.references, this.mapping.getReferenceDescriptor()).values();
+                Collection<Object> result = uow.getIdentityMapAccessorInstance().getAllFromIdentityMapWithEntityPK(this.references, this.mapping.getReferenceDescriptor()).values();
                 if (result.size() == references.length){
                     ContainerPolicy cp = mapping.getContainerPolicy();
                     Object container = cp.containerInstance(result.size());

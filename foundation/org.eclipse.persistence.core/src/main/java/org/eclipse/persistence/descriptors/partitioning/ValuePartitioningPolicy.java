@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,7 +55,7 @@ public class ValuePartitioningPolicy extends FieldPartitioningPolicy {
     protected String partitionValueTypeName;
 
     /** The type of the partition values. Initialized from the type name at runtime. */
-    protected Class partitionValueType;
+    protected Class<?> partitionValueType;
 
     /** Use to track order for compute UCP index. */
     protected List<String> orderedPartitions = new ArrayList<>();
@@ -87,7 +87,7 @@ public class ValuePartitioningPolicy extends FieldPartitioningPolicy {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        partitionValueType = AccessController.doPrivileged(new PrivilegedClassForName(partitionValueTypeName, true, classLoader));
+                        partitionValueType = AccessController.doPrivileged(new PrivilegedClassForName<>(partitionValueTypeName, true, classLoader));
                     } catch (PrivilegedActionException e) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(partitionValueTypeName, e.getException());
                     }
@@ -115,7 +115,7 @@ public class ValuePartitioningPolicy extends FieldPartitioningPolicy {
      * Convert the string value to the class type.
      * This will handle numbers, string, dates, and most other classes.
      */
-    private Object initObject(Class type, String value) {
+    private <T> T initObject(Class<T> type, String value) {
         return ConversionManager.getDefaultManager().convertObject(value, type);
     }
 

@@ -70,9 +70,9 @@ public class EmployeeWithSpacesTestModel extends TestModel {
         suite.setName("EmployeeDeleteObjectTestSuite");
         suite.setDescription("This suite tests the deletion of each object in the employee demo.");
 
-        Class employeeClass = Employee.class;
-        Class largeProjectClass = LargeProject.class;
-        Class smallProjectClass = SmallProject.class;
+        Class<Employee> employeeClass = Employee.class;
+        Class<LargeProject> largeProjectClass = LargeProject.class;
+        Class<SmallProject> smallProjectClass = SmallProject.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new EmployeeWithSpacesDeleteTest(manager.getObject(employeeClass, "0001")));
@@ -162,9 +162,9 @@ public class EmployeeWithSpacesTestModel extends TestModel {
         suite.setName("EmployeeReadObjectTestSuite");
         suite.setDescription("This suite test the reading of each object in the employee demo.");
 
-        Class employeeClass = Employee.class;
-        Class largeProjectClass = LargeProject.class;
-        Class smallProjectClass = SmallProject.class;
+        Class<Employee> employeeClass = Employee.class;
+        Class<LargeProject> largeProjectClass = LargeProject.class;
+        Class<SmallProject> smallProjectClass = SmallProject.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new ReadObjectTest(manager.getObject(employeeClass, "0001")));
@@ -203,9 +203,9 @@ public class EmployeeWithSpacesTestModel extends TestModel {
         suite.setName("EmployeeUpdateObjectTestSuite");
         suite.setDescription("This suite tests the updating of each object in the employee demo.");
 
-        Class employeeClass = Employee.class;
-        Class largeProjectClass = LargeProject.class;
-        Class smallProjectClass = SmallProject.class;
+        Class<Employee> employeeClass = Employee.class;
+        Class<LargeProject> largeProjectClass = LargeProject.class;
+        Class<SmallProject> smallProjectClass = SmallProject.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new WriteObjectTest(manager.getObject(employeeClass, "0001")));

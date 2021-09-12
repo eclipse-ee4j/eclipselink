@@ -1107,7 +1107,7 @@ public class JPAMetadataGenerator {
         Class<?> platformClass = null;
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                platformClass = AccessController.doPrivileged(new PrivilegedClassForName(platformClassName));
+                platformClass = AccessController.doPrivileged(new PrivilegedClassForName<>(platformClassName));
             } else {
                 platformClass = PrivilegedAccessHelper.getClassForName(platformClassName);
             }
@@ -1115,7 +1115,7 @@ public class JPAMetadataGenerator {
         } catch (PrivilegedActionException | ClassNotFoundException | NullPointerException e) {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    platformClass = AccessController.doPrivileged(new PrivilegedClassForName(DEFAULT_PLATFORM));
+                    platformClass = AccessController.doPrivileged(new PrivilegedClassForName<>(DEFAULT_PLATFORM));
                 } else {
                     platformClass = PrivilegedAccessHelper.getClassForName(DEFAULT_PLATFORM);
                 }

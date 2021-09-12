@@ -197,11 +197,12 @@ public class SessionsFactory {
         String sessionCustomizerClassName = sessionConfig.getSessionCustomizerClass();
         if (sessionCustomizerClassName != null) {
             try {
-                Class sessionCustomizerClass = m_classLoader.loadClass(sessionCustomizerClassName);
+                @SuppressWarnings({"unchecked"})
+                Class<SessionCustomizer> sessionCustomizerClass = (Class<SessionCustomizer>) m_classLoader.loadClass(sessionCustomizerClassName);
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    ((SessionCustomizer)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(sessionCustomizerClass))).customize(session);
+                    AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(sessionCustomizerClass)).customize(session);
                 }else{
-                    ((SessionCustomizer)PrivilegedAccessHelper.newInstanceFromClass(sessionCustomizerClass)).customize(session);
+                    PrivilegedAccessHelper.newInstanceFromClass(sessionCustomizerClass).customize(session);
                 }
             } catch (Exception exception) {
                 throw SessionLoaderException.failedToLoadTag("session-customizer-class", sessionCustomizerClassName, exception);
@@ -342,6 +343,7 @@ public class SessionsFactory {
      * Load a projectConfig from the session.xml file. This method will determine
      * the proper loading scheme, that is, for a class or xml project.
      */
+    @SuppressWarnings({"unchecked"})
     protected Project loadProjectConfig(ProjectConfig projectConfig) {
         Project project = null;
         String projectString = projectConfig.getProjectString().trim();
@@ -349,9 +351,9 @@ public class SessionsFactory {
         if (projectConfig.isProjectClassConfig()) {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    project = (Project) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(m_classLoader.loadClass(projectString)));
+                    project = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>((Class<Project>) m_classLoader.loadClass(projectString)));
                 }else{
-                    project = (Project) PrivilegedAccessHelper.newInstanceFromClass(m_classLoader.loadClass(projectString));
+                    project = PrivilegedAccessHelper.newInstanceFromClass((Class<Project>)m_classLoader.loadClass(projectString));
                 }
             } catch (Exception exception) {
                 throw SessionLoaderException.failedToLoadProjectClass(projectString, exception);
@@ -403,12 +405,13 @@ public class SessionsFactory {
         String specClassName = eisLoginConfig.getConnectionSpecClass();
         if (specClassName != null) {
             try {
-                Class specClass = m_classLoader.loadClass(specClassName);
+                @SuppressWarnings({"unchecked"})
+                Class<EISConnectionSpec> specClass = (Class<EISConnectionSpec>) m_classLoader.loadClass(specClassName);
                 EISConnectionSpec spec = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    spec = (EISConnectionSpec)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(specClass));
+                    spec = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(specClass));
                 }else{
-                    spec = (EISConnectionSpec)PrivilegedAccessHelper.newInstanceFromClass(specClass);
+                    spec = PrivilegedAccessHelper.newInstanceFromClass(specClass);
                 }
                 eisLogin.setConnectionSpec(spec);
             } catch (Exception exception) {
@@ -454,7 +457,7 @@ public class SessionsFactory {
         String driverClassName = databaseLoginConfig.getDriverClass();
         if (driverClassName != null) {
             try {
-                Class driverClass = m_classLoader.loadClass(driverClassName);
+                Class<?> driverClass = m_classLoader.loadClass(driverClassName);
                 databaseLogin.setDriverClass(driverClass);
             } catch (Exception exception) {
                 throw SessionLoaderException.failedToLoadTag("driver-class", driverClassName, exception);
@@ -543,25 +546,26 @@ public class SessionsFactory {
     /**
      * INTERNAL:
      */
+    @SuppressWarnings({"unchecked"})
     protected void processStructConverterConfig(StructConverterConfig converterClassConfig, DatabaseLogin login) {
         if (converterClassConfig != null) {
             Platform platform = login.getDatasourcePlatform();
             if (platform instanceof DatabasePlatform){
-                Iterator i = converterClassConfig.getStructConverterClasses().iterator();
+                Iterator<String> i = converterClassConfig.getStructConverterClasses().iterator();
 
                 while (i.hasNext()) {
                     String converterClassName = (String)i.next();
                     try {
-                        Class converterClass = m_classLoader.loadClass(converterClassName);
+                        Class<StructConverter> converterClass = (Class<StructConverter>) m_classLoader.loadClass(converterClassName);
                         StructConverter converter = null;
                         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                             try{
-                                converter = (StructConverter)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(converterClass));
+                                converter = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(converterClass));
                             }catch (PrivilegedActionException ex){
                                 throw (Exception)ex.getCause();
                             }
                         }else{
-                            converter = (StructConverter)PrivilegedAccessHelper.newInstanceFromClass(converterClass);
+                            converter = PrivilegedAccessHelper.newInstanceFromClass(converterClass);
                         }
                         ((DatabasePlatform)platform).addStructConverter(converter);
                     } catch (Exception exception) {
@@ -581,11 +585,12 @@ public class SessionsFactory {
         String platformClassName = loginConfig.getPlatformClass();
         if (platformClassName != null) {
             try {
-                Class platformClass = m_classLoader.loadClass(platformClassName);
+                @SuppressWarnings({"unchecked"})
+                Class<DatasourcePlatform> platformClass = (Class<DatasourcePlatform>) m_classLoader.loadClass(platformClassName);
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    login.usePlatform((DatasourcePlatform)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(platformClass)));
+                    login.usePlatform(AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(platformClass)));
                 }else{
-                    login.usePlatform((DatasourcePlatform)PrivilegedAccessHelper.newInstanceFromClass(platformClass));
+                    login.usePlatform(PrivilegedAccessHelper.newInstanceFromClass(platformClass));
                 }
             } catch (Exception exception) {
                 throw SessionLoaderException.failedToLoadTag("platform-class", platformClassName, exception);
@@ -736,13 +741,14 @@ public class SessionsFactory {
         // Server class - XML schema default is org.eclipse.persistence.platform.server.CustomServerPlatform
         String serverClassName = platformConfig.getServerClassName();
         try {
-            Class serverClass = m_classLoader.loadClass(serverClassName);
+            @SuppressWarnings({"unchecked"})
+            Class<ServerPlatform> serverClass = (Class<ServerPlatform>) m_classLoader.loadClass(serverClassName);
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                Constructor constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(serverClass, new Class[] { org.eclipse.persistence.sessions.DatabaseSession.class }, false));
-                platform = (ServerPlatform)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] { session }));
+                Constructor<ServerPlatform> constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(serverClass, new Class[] { org.eclipse.persistence.sessions.DatabaseSession.class }, false));
+                platform = AccessController.doPrivileged(new PrivilegedInvokeConstructor<>(constructor, new Object[] { session }));
             }else{
-                Constructor constructor = PrivilegedAccessHelper.getConstructorFor(serverClass, new Class[] { org.eclipse.persistence.sessions.DatabaseSession.class }, false);
-                platform = (ServerPlatform)PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] { session });
+                Constructor<ServerPlatform> constructor = PrivilegedAccessHelper.getConstructorFor(serverClass, new Class[] { org.eclipse.persistence.sessions.DatabaseSession.class }, false);
+                platform = PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] { session });
             }
         } catch (Exception e) {
             throw SessionLoaderException.failedToLoadTag("server-class", serverClassName, e);
@@ -854,11 +860,12 @@ public class SessionsFactory {
         String exceptionHandlerClassName = sessionConfig.getExceptionHandlerClass();
         if (exceptionHandlerClassName != null) {
             try {
-                Class exceptionHandlerClass = m_classLoader.loadClass(exceptionHandlerClassName);
+                @SuppressWarnings({"unchecked"})
+                Class<ExceptionHandler> exceptionHandlerClass = (Class<ExceptionHandler>) m_classLoader.loadClass(exceptionHandlerClassName);
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    session.setExceptionHandler((ExceptionHandler)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(exceptionHandlerClass)));
+                    session.setExceptionHandler(AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(exceptionHandlerClass)));
                 }else{
-                    session.setExceptionHandler((ExceptionHandler)PrivilegedAccessHelper.newInstanceFromClass(exceptionHandlerClass));
+                    session.setExceptionHandler(PrivilegedAccessHelper.newInstanceFromClass(exceptionHandlerClass));
                 }
             } catch (Exception e) {
                 throw SessionLoaderException.failedToLoadTag("exception-handler-class", exceptionHandlerClassName, e);
@@ -998,8 +1005,9 @@ public class SessionsFactory {
         } else if (sequenceConfig instanceof XMLFileSequenceConfig) {
             try {
                 // Can no longer reference class directly as in a different project.
-                Class xmlClass = Class.forName("org.eclipse.persistence.eis.adapters.xmlfile.XMLFileSequence");
-                Sequence sequence = (Sequence)xmlClass.getConstructor().newInstance();
+                @SuppressWarnings({"unchecked"})
+                Class<Sequence> xmlClass = (Class<Sequence>) Class.forName("org.eclipse.persistence.eis.adapters.xmlfile.XMLFileSequence");
+                Sequence sequence = xmlClass.getConstructor().newInstance();
                 sequence.setName(name);
                 sequence.setInitialValue(size);
                 return sequence;
@@ -1077,13 +1085,14 @@ public class SessionsFactory {
     protected void buildOc4jJGroupsTransportManagerConfig(Oc4jJGroupsTransportManagerConfig tmConfig, RemoteCommandManager rcm) {
         TransportManager tm = null;
         try {
-            Class tmClass = m_classLoader.loadClass(tmConfig.getTransportManagerClassName());
+            @SuppressWarnings({"unchecked"})
+            Class<TransportManager> tmClass = (Class<TransportManager>) m_classLoader.loadClass(tmConfig.getTransportManagerClassName());
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                Constructor constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(tmClass, new Class[] { RemoteCommandManager.class, boolean.class, String.class }, false));
-                tm = (TransportManager)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] { rcm, tmConfig.useSingleThreadedNotification(), tmConfig.getTopicName() }));
+                Constructor<TransportManager> constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(tmClass, new Class[] { RemoteCommandManager.class, boolean.class, String.class }, false));
+                tm = AccessController.doPrivileged(new PrivilegedInvokeConstructor<>(constructor, new Object[] { rcm, tmConfig.useSingleThreadedNotification(), tmConfig.getTopicName() }));
             }else{
-                Constructor constructor = PrivilegedAccessHelper.getConstructorFor(tmClass, new Class[] { RemoteCommandManager.class, boolean.class, String.class }, false);
-                tm = (TransportManager)PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] { rcm, tmConfig.useSingleThreadedNotification(), tmConfig.getTopicName() });
+                Constructor<TransportManager> constructor = PrivilegedAccessHelper.getConstructorFor(tmClass, new Class[] { RemoteCommandManager.class, boolean.class, String.class }, false);
+                tm = PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] { rcm, tmConfig.useSingleThreadedNotification(), tmConfig.getTopicName() });
             }
         } catch (Exception e) {
             throw SessionLoaderException.failedToParseXML("Oc4jJGroupsTransportManager class is invalid: " + tmConfig.getTransportManagerClassName(), e);
@@ -1106,11 +1115,12 @@ public class SessionsFactory {
         String transportManagerClassName = tmConfig.getTransportClass();
         if (transportManagerClassName != null) {
             try {
-                Class transportManagerClass = m_classLoader.loadClass(transportManagerClassName);
+                @SuppressWarnings({"unchecked"})
+                Class<TransportManager> transportManagerClass = (Class<TransportManager>) m_classLoader.loadClass(transportManagerClassName);
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    tm = (TransportManager)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(transportManagerClass));
+                    tm = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(transportManagerClass));
                 }else{
-                    tm = (TransportManager)PrivilegedAccessHelper.newInstanceFromClass(transportManagerClass);
+                    tm = PrivilegedAccessHelper.newInstanceFromClass(transportManagerClass);
                 }
             } catch (Exception exception) {
                 throw SessionLoaderException.failedToLoadTag("transport-class", transportManagerClassName, exception);
@@ -1201,13 +1211,14 @@ public class SessionsFactory {
                 String listenerClassName = (String)e.nextElement();
 
                 try {
-                    Class listenerClass = m_classLoader.loadClass(listenerClassName);
+                    @SuppressWarnings({"unchecked"})
+                    Class<SessionEventListener> listenerClass = (Class<SessionEventListener>) m_classLoader.loadClass(listenerClassName);
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                        session.getEventManager().addListener((SessionEventListener)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(listenerClass)));
+                        session.getEventManager().addListener(AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(listenerClass)));
                     }else{
 
                     }
-                    session.getEventManager().addListener((SessionEventListener)PrivilegedAccessHelper.newInstanceFromClass(listenerClass));
+                    session.getEventManager().addListener(PrivilegedAccessHelper.newInstanceFromClass(listenerClass));
                 } catch (Exception exception) {
                     throw SessionLoaderException.failedToLoadTag("event-listener-class", listenerClassName, exception);
                 }
@@ -1239,7 +1250,7 @@ public class SessionsFactory {
             // use ConversionManager to avoid loading the JDK 1.4 class unless it is needed.
             ConversionManager conversionManager = new ConversionManager();
             conversionManager.setLoader(getClass().getClassLoader());
-            javaLog = (SessionLog)((Class)conversionManager.convertObject("org.eclipse.persistence.logging.JavaLog", Class.class)).getConstructor().newInstance();
+            javaLog = ((Class<SessionLog>)conversionManager.convertObject("org.eclipse.persistence.logging.JavaLog", Class.class)).getConstructor().newInstance();
             javaLog.setSession(session);
         } catch (Exception exception) {
             throw ValidationException.unableToLoadClass("org.eclipse.persistence.logging.JavaLog", exception);

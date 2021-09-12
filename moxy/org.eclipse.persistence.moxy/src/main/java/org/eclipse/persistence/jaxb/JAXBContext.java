@@ -1498,7 +1498,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
                     } else if (type == CoreClassConstants.XML_GREGORIAN_CALENDAR) {
                         name = Constants.ANY_SIMPLE_TYPE_QNAME;
                     } else {
-                        name = (QName) XMLConversionManager.getDefaultJavaTypes().get(type);
+                        name = XMLConversionManager.getDefaultJavaTypes().get(type);
                     }
                 }
             }

@@ -40,7 +40,7 @@ public class TransformationMappingUsesBasicIndirectionTest extends ProjectClassG
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
         descriptorToModify = project.getDescriptors().get(Employee.class);
-        for (Enumeration mappingsEnum = (descriptorToModify.getMappings()).elements();
+        for (Enumeration<DatabaseMapping> mappingsEnum = (descriptorToModify.getMappings()).elements();
              mappingsEnum.hasMoreElements(); ) {
             mappingToModify = (DatabaseMapping)mappingsEnum.nextElement();
 

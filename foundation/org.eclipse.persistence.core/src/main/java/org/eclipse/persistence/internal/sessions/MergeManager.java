@@ -336,7 +336,7 @@ public class MergeManager {
     }
 
     public void recordMerge(Object key, Object value, AbstractSession targetSession) {
-        Map sessionMap = this.objectsAlreadyMerged.get(targetSession);
+        Map<Object, Object> sessionMap = this.objectsAlreadyMerged.get(targetSession);
         if (sessionMap == null){
             sessionMap = new IdentityHashMap();
             this.objectsAlreadyMerged.put(targetSession, sessionMap);
@@ -345,7 +345,7 @@ public class MergeManager {
     }
 
     public boolean isAlreadyMerged(Object object, AbstractSession targetSession) {
-        Map sessionMap = this.objectsAlreadyMerged.get(targetSession);
+        Map<Object, Object> sessionMap = this.objectsAlreadyMerged.get(targetSession);
         if (sessionMap == null){
             return false;
         }
@@ -353,7 +353,7 @@ public class MergeManager {
     }
 
     public Object getMergedObject(Object key, AbstractSession targetSession){
-        Map sessionMap = this.objectsAlreadyMerged.get(targetSession);
+        Map<Object, Object> sessionMap = this.objectsAlreadyMerged.get(targetSession);
         if (sessionMap == null){
             return null;
         }
@@ -435,7 +435,7 @@ public class MergeManager {
             }
             // Iterate over each clone and let the object build merge to clones into the originals.
             this.session.getIdentityMapAccessorInstance().getWriteLockManager().acquireRequiredLocks(this, uowChangeSet);
-            Iterator objectChangeEnum = uowChangeSet.getAllChangeSets().keySet().iterator();
+            Iterator<ObjectChangeSet> objectChangeEnum = uowChangeSet.getAllChangeSets().keySet().iterator();
             Set<Class> classesChanged = new HashSet<>();
             while (objectChangeEnum.hasNext()) {
                 ObjectChangeSet objectChangeSet = (ObjectChangeSet)objectChangeEnum.next();
@@ -454,7 +454,7 @@ public class MergeManager {
                 classesChanged.add(objectChangeSet.getClassType(this.session));
             }
             if (uowChangeSet.hasDeletedObjects()) {
-                Iterator deletedObjects = uowChangeSet.getDeletedObjects().values().iterator();
+                Iterator<ObjectChangeSet> deletedObjects = uowChangeSet.getDeletedObjects().values().iterator();
                 while (deletedObjects.hasNext()) {
                     ObjectChangeSet changeSet = (ObjectChangeSet)deletedObjects.next();
                     changeSet.removeFromIdentityMap(this.session);

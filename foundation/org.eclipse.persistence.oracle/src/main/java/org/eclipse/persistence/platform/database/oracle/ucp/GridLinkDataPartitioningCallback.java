@@ -63,7 +63,7 @@ public class GridLinkDataPartitioningCallback extends UCPDataPartitioningCallbac
             return;
         }
         try {
-            Class dataSourceManager = PrivilegedAccessHelper.getClassForName("weblogic.jdbc.common.internal.DataSourceManager");
+            Class<Object> dataSourceManager = PrivilegedAccessHelper.getClassForName("weblogic.jdbc.common.internal.DataSourceManager");
             Method getInstance = PrivilegedAccessHelper.getMethod(dataSourceManager, "getInstance", null, false);
             Object instance = PrivilegedAccessHelper.invokeMethod(getInstance, null, null);
             Method getDataSourceService = PrivilegedAccessHelper.getMethod(instance.getClass(), "getDataSourceService", null, false);

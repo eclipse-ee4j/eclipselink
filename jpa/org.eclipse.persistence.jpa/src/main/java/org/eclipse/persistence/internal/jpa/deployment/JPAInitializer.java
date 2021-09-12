@@ -96,7 +96,7 @@ public abstract class JPAInitializer {
         // Bug#4452468  When globalInstrumentation is null, there is no weaving
         checkWeaving(mergedProperties);
 
-        Set tempLoaderSet = PersistenceUnitProcessor.buildClassSet(persistenceUnitInfo, m);
+        Set<String> tempLoaderSet = PersistenceUnitProcessor.buildClassSet(persistenceUnitInfo, m);
         // Create the temp loader that will not cache classes for entities in our persistence unit
         ClassLoader tempLoader = createTempLoader(tempLoaderSet);
         persistenceUnitInfo.setNewTempClassLoader(tempLoader);
@@ -206,7 +206,7 @@ public abstract class JPAInitializer {
      * that we will be deploying.
      */
     protected Set loadEntityClasses(Collection entityNames, ClassLoader classLoader) {
-        Set entityClasses = new HashSet();
+        Set entityClasses = new HashSet<>();
 
         // Load the classes using the loader passed in
         AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.JPA, "cmp_loading_entities_using_loader", classLoader);
@@ -260,10 +260,10 @@ public abstract class JPAInitializer {
     public void initialize(Map m) {
         boolean keepInitialMaps = keepAllPredeployedPersistenceUnits();
         if(keepInitialMaps) {
-            this.initialPuInfos = new HashMap();
+            this.initialPuInfos = new HashMap<>();
         }
         // always create initialEmSetupImpls - it's used to check for puName uniqueness in initPersistenceUnits
-        this.initialEmSetupImpls = new HashMap();
+        this.initialEmSetupImpls = new HashMap<>();
         // ailitchev - copied from findPersistenceUnitInfoInArchives: mkeith - get resource name from prop and include in subsequent call
         String descriptorPath = (String) m.get(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML);
         final Set<Archive> pars;

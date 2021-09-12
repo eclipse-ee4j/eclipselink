@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,7 @@ import oracle.sql.*;
  * on jdbc jar.
  */
 public class TIMESTAMPTypes {
-    public static final Class TIMESTAMP_CLASS = TIMESTAMP.class;
-    public static final Class TIMESTAMPLTZ_CLASS = TIMESTAMPLTZ.class;
-    public static final Class TIMESTAMPTZ_CLASS = TIMESTAMPTZ.class;
+    public static final Class<TIMESTAMP> TIMESTAMP_CLASS = TIMESTAMP.class;
+    public static final Class<TIMESTAMPLTZ> TIMESTAMPLTZ_CLASS = TIMESTAMPLTZ.class;
+    public static final Class<TIMESTAMPTZ> TIMESTAMPTZ_CLASS = TIMESTAMPTZ.class;
 }

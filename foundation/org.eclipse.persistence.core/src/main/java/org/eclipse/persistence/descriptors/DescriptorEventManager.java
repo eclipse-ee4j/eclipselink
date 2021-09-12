@@ -664,7 +664,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
 
         // Step 2 - Notify the Entity Listener's first, top -> down.
         for (int index = entityListenerEventManagers.size() - 1; index >= 0; index--) {
-            List entityListenerEventListeners = entityListenerEventManagers.get(index).getEntityListenerEventListeners();
+            List<DescriptorEventListener> entityListenerEventListeners = entityListenerEventManagers.get(index).getEntityListenerEventListeners();
 
             for (int i = 0; i < entityListenerEventListeners.size(); i++) {
                 DescriptorEventListener listener = (DescriptorEventListener) entityListenerEventListeners.get(i);
@@ -1055,7 +1055,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * @return initialized instance of {@link java.util.concurrent.atomic.AtomicIntegerArray}
      */
     private static <T> AtomicReferenceArray<T> newAtomicReferenceArray(final int length) {
-        final AtomicReferenceArray array = new AtomicReferenceArray<>(length);
+        final AtomicReferenceArray<T> array = new AtomicReferenceArray<>(length);
         for (int index = 0; index < length; array.set(index++, null));
         return array;
     }
@@ -1068,7 +1068,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      */
     private static <T> AtomicReferenceArray<T> newAtomicReferenceArray(final AtomicReferenceArray<T> src) {
         final int length = src.length();
-        final AtomicReferenceArray array = new AtomicReferenceArray<>(length);
+        final AtomicReferenceArray<T> array = new AtomicReferenceArray<>(length);
         for (int index = 0; index < length; array.set(index, src.get(index++)));
         return array;
     }

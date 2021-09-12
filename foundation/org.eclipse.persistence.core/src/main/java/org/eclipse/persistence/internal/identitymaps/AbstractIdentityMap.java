@@ -354,7 +354,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
     /**
      * Returns the class which should be used as an identity map in a descriptor by default.
      */
-    public static Class getDefaultIdentityMapClass() {
+    public static Class<? extends IdentityMap> getDefaultIdentityMapClass() {
         return ClassConstants.SoftCacheWeakIdentityMap_Class;
     }
 

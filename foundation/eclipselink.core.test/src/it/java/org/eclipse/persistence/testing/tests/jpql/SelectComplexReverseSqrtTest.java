@@ -24,8 +24,8 @@ public class SelectComplexReverseSqrtTest extends org.eclipse.persistence.testin
         Employee emp2 = (Employee)getTestEmployees().lastElement();
 
         String ejbqlString;
-        double salarySquareRoot1 = Math.sqrt(((double) emp1.getSalary()));
-        double salarySquareRoot2 = Math.sqrt(((double) emp2.getSalary()));
+        double salarySquareRoot1 = Math.sqrt(emp1.getSalary());
+        double salarySquareRoot2 = Math.sqrt(emp2.getSalary());
 
         ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
         ejbqlString = ejbqlString + salarySquareRoot1;

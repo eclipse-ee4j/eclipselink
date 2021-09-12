@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -310,7 +310,7 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
                 boolean result = false;
                 Iterator<Map.Entry<K, V>> objects = delegateSet.iterator();
                 while (objects.hasNext()) {
-                    Map.Entry object = objects.next();
+                    Map.Entry<K, V> object = objects.next();
                     if (!c.contains(object)) {
                         objects.remove();
                         raiseRemoveChangeEvent(object.getKey(), object.getValue());
@@ -615,7 +615,7 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
             @Override
             public boolean retainAll(Collection<?> c){
                 boolean result = false;
-                Iterator objects = delegateSet.iterator();
+                Iterator<K> objects = delegateSet.iterator();
                 while (objects.hasNext()) {
                     Object object = objects.next();
                     if (!c.contains(object)) {

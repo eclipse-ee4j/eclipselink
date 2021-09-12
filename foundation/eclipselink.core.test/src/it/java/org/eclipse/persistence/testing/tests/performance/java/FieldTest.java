@@ -72,7 +72,7 @@ public class FieldTest extends PerformanceComparisonTestCase {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
             protected Object variable;
 
-            public Class object = Object.class;
+            public Class<Object> object = Object.class;
 
             @Override
             public void test() {

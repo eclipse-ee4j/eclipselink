@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -82,10 +82,10 @@ public class ProxyIndirectionHandler implements InvocationHandler, Serializable 
                         result = "null";
                     } else {
                         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                            String toString = (String)AccessController.doPrivileged(new PrivilegedMethodInvoker(m, valueHolder.getValue(), args));
+                            String toString = AccessController.doPrivileged(new PrivilegedMethodInvoker<>(m, valueHolder.getValue(), args));
                             result = "{ " + toString + " }";
                         }else{
-                            String toString = (String)PrivilegedAccessHelper.invokeMethod(m, valueHolder.getValue(), args);
+                            String toString = PrivilegedAccessHelper.invokeMethod(m, valueHolder.getValue(), args);
                             result = "{ " + toString + " }";
                         }
                     }
@@ -102,7 +102,7 @@ public class ProxyIndirectionHandler implements InvocationHandler, Serializable 
                     throw ValidationException.nullUnderlyingValueHolderValue(m.getName());
                 } else {
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                        result = AccessController.doPrivileged(new PrivilegedMethodInvoker(m, value, args));
+                        result = AccessController.doPrivileged(new PrivilegedMethodInvoker<>(m, value, args));
                     }else{
                         result = PrivilegedAccessHelper.invokeMethod(m, value, args);
                     }

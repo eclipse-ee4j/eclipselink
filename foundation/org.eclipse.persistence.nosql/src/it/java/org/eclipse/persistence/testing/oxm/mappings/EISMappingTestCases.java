@@ -27,6 +27,7 @@ import jakarta.resource.cci.RecordFactory;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.eis.EISDescriptor;
 import org.eclipse.persistence.eis.mappings.*;
 import org.eclipse.persistence.internal.eis.adapters.xmlfile.XMLFileConnectionFactory;
@@ -96,8 +97,8 @@ public abstract class EISMappingTestCases extends OXTestCase {
             log("DEPLOYMENT XML: " + stringWriter.toString());
 
             Project newProject = XMLProjectReader.read(new StringReader(stringWriter.toString()));
-            Map descriptors = project.getDescriptors();
-            Iterator keysIterator = descriptors.keySet().iterator();
+            Map<Class<?>, ClassDescriptor> descriptors = project.getDescriptors();
+            Iterator<Class<?>> keysIterator = descriptors.keySet().iterator();
             while (keysIterator.hasNext()) {
                 Class nextClass = (Class)keysIterator.next();
                 EISDescriptor next = (EISDescriptor)descriptors.get(nextClass);

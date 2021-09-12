@@ -96,7 +96,7 @@ public class ParameterizedSubqueryTest extends TestCase {
     @Override
     public void test() {
         try {
-            List arguments = new ArrayList<Object>();
+            List<Object> arguments = new ArrayList<>();
             arguments.add(employeeId);
             arguments.add(projectName);
 

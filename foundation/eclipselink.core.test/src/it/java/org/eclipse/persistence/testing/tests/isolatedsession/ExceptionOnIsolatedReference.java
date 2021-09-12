@@ -32,7 +32,7 @@ public class ExceptionOnIsolatedReference extends TestCase {
     public void copyDescriptors(Session session) {
         Vector descriptors = new Vector();
 
-        for (Iterator iterator = session.getDescriptors().values().iterator(); iterator.hasNext(); ) {
+        for (Iterator<ClassDescriptor> iterator = session.getDescriptors().values().iterator(); iterator.hasNext(); ) {
             descriptors.addElement(iterator.next());
         }
         this.server.addDescriptors(descriptors);

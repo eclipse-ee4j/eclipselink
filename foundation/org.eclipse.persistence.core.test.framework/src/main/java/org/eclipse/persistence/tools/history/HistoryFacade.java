@@ -216,7 +216,7 @@ public class HistoryFacade {
             }
             descriptor.setHistoryPolicy(policy);
 
-            for (Enumeration mappings = descriptor.getMappings().elements();
+            for (Enumeration<DatabaseMapping> mappings = descriptor.getMappings().elements();
                  mappings.hasMoreElements(); ) {
                 DatabaseMapping mapping =
                     (DatabaseMapping)mappings.nextElement();

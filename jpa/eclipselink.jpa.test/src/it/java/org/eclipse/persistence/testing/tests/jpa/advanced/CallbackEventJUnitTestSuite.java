@@ -257,7 +257,7 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
     protected int getVersion(Employee emp) {
         Vector pk = new Vector();
         pk.add(emp.getId());
-        return (Integer) getServerSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(emp, pk, getServerSession());
+        return getServerSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(emp, pk, getServerSession());
     }
 
     // gf 2894:  merge does not trigger prePersist callbacks

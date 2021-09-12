@@ -17,6 +17,8 @@ package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import jakarta.persistence.criteria.CompoundSelection;
 import jakarta.persistence.criteria.Selection;
@@ -49,9 +51,9 @@ public class CompoundSelectionImpl extends SelectionImpl implements CompoundSele
 
     public CompoundSelectionImpl(Class javaType, Selection[] subSelections, boolean validate) {
         super(javaType, null);
-        this.subSelections = new ArrayList();
+        this.subSelections = new ArrayList<>();
         //used to validate that an alias is only used once
-        java.util.Map tempMap = new java.util.TreeMap();
+        Map<String, Selection> tempMap = new TreeMap<>();
         for (Selection sel : subSelections) {
             if (validate) {
                 if (sel.isCompoundSelection() && !((SelectionImpl)sel).isConstructor()) {

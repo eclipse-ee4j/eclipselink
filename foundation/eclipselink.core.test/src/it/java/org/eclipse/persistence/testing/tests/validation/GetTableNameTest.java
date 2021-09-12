@@ -18,6 +18,8 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 
+import java.util.Iterator;
+
 
 public class GetTableNameTest extends ExceptionTest {
     public GetTableNameTest() {
@@ -34,7 +36,7 @@ public class GetTableNameTest extends ExceptionTest {
     public void test() {
         try { //test if getTableName() throws casting exception
             org.eclipse.persistence.testing.models.employee.relational.EmployeeProject project = new org.eclipse.persistence.testing.models.employee.relational.EmployeeProject();
-            java.util.Iterator iterator = project.getDescriptors().values().iterator();
+            Iterator<ClassDescriptor> iterator = project.getDescriptors().values().iterator();
             while (iterator.hasNext()) {
                 ((ClassDescriptor)iterator.next()).getTableName();
             }

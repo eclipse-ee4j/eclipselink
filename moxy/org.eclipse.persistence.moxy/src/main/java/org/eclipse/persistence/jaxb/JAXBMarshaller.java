@@ -188,7 +188,7 @@ public class JAXBMarshaller implements jakarta.xml.bind.Marshaller {
                 return xmlroot;
             }
         } else {
-            xmlroot.setSchemaType((QName) org.eclipse.persistence.internal.oxm.XMLConversionManager.getDefaultJavaTypes().get(elt.getDeclaredType()));
+            xmlroot.setSchemaType(org.eclipse.persistence.internal.oxm.XMLConversionManager.getDefaultJavaTypes().get(elt.getDeclaredType()));
         }
 
         if (elt instanceof WrappedValue) {

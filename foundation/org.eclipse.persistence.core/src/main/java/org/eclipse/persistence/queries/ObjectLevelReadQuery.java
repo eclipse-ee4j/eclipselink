@@ -358,8 +358,8 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             if (!query.hasJoining()) {
                 return false;
             }
-            List joinedAttributes = getJoinedAttributeManager().getJoinedAttributeExpressions();
-            List otherJoinedAttributes = query.getJoinedAttributeManager().getJoinedAttributeExpressions();
+            List<Expression> joinedAttributes = getJoinedAttributeManager().getJoinedAttributeExpressions();
+            List<Expression> otherJoinedAttributes = query.getJoinedAttributeManager().getJoinedAttributeExpressions();
             int size = joinedAttributes.size();
             if (size != otherJoinedAttributes.size()) {
                 return false;
@@ -376,8 +376,8 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             if (!query.hasOrderByExpressions()) {
                 return false;
             }
-            List orderBys = getOrderByExpressions();
-            List otherOrderBys = query.getOrderByExpressions();
+            List<Expression> orderBys = getOrderByExpressions();
+            List<Expression> otherOrderBys = query.getOrderByExpressions();
             int size = orderBys.size();
             if (size != otherOrderBys.size()) {
                 return false;
@@ -1644,7 +1644,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
 
         //Add attribute fields
-        for(Iterator it = getPartialAttributeExpressions().iterator();it.hasNext();){
+        for(Iterator<Expression> it = getPartialAttributeExpressions().iterator(); it.hasNext();){
             Expression expression = (Expression)it.next();
             if (expression.isQueryKeyExpression()) {
                 expression.getBuilder().setSession(session.getRootSession(null));
@@ -1682,7 +1682,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
         //Build fields in same order as the fields of the descriptor to ensure field and join indexes match.
         Vector selectionFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
-        for (Iterator iterator = getDescriptor().getFields().iterator(); iterator.hasNext();) {
+        for (Iterator<DatabaseField> iterator = getDescriptor().getFields().iterator(); iterator.hasNext();) {
             DatabaseField field = (DatabaseField)iterator.next();
             if (localFields.contains(field)) {
                 selectionFields.add(field);
@@ -1724,7 +1724,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             }
         }
         // Add specified fields.
-        for (Iterator iterator = getExecutionFetchGroup().getAttributeNames().iterator(); iterator.hasNext();) {
+        for (Iterator<String> iterator = getExecutionFetchGroup().getAttributeNames().iterator(); iterator.hasNext();) {
             String attribute = (String)iterator.next();
             DatabaseMapping mapping = getDescriptor().getObjectBuilder().getMappingForAttributeName(attribute);
             if (mapping == null) {
@@ -1759,7 +1759,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
         // Build field list in the same order as descriptor's fields so that the fields printed in the usual order in SELECT clause.
         List<DatabaseField> fields = new ArrayList(fetchedFields.size());
-        for (Iterator iterator = getDescriptor().getFields().iterator(); iterator.hasNext();) {
+        for (Iterator<DatabaseField> iterator = getDescriptor().getFields().iterator(); iterator.hasNext();) {
             DatabaseField field = (DatabaseField)iterator.next();
             if (fetchedFields.contains(field)) {
                 fields.add(field);

@@ -94,7 +94,7 @@ public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
             predicateImpl.setIsNegated(true);
             return predicateImpl;
         }
-        List<Expression<?>> list = new ArrayList();
+        List<Expression<?>> list = new ArrayList<>();
         list.add(this);
         predicateImpl = new PredicateImpl(this.metamodel, this.currentNode.not(), list, this.booloperator);
         predicateImpl.setIsNegated(true);

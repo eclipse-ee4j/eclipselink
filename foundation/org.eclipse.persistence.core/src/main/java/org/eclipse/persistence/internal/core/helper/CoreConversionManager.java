@@ -32,7 +32,7 @@ public abstract class CoreConversionManager {
      * @exception ConversionException all exceptions will be thrown as this type.
      * @return the newly converted object
      */
-    public abstract Object convertObject(Object sourceObject, Class javaClass);
+    public abstract <T> T convertObject(Object sourceObject, Class<T> javaClass);
 
     /**
      * INTERNAL

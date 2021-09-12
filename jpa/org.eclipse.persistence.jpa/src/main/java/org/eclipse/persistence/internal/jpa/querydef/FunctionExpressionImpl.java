@@ -44,7 +44,7 @@ public class FunctionExpressionImpl<X> extends ExpressionImpl<X>{
         if (compoundExpressions != null){
             this.expressions = compoundExpressions;
         }else{
-            this.expressions = new ArrayList();
+            this.expressions = new ArrayList<>();
         }
     }
 

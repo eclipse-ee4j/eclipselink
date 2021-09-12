@@ -76,7 +76,7 @@ public class NewObjectWithOptimisticLockingTest extends ConfigurableCacheSyncDis
         }
 
         boolean found = false;
-        Iterator i = holder.getItems().iterator();
+        Iterator<ListItem> i = holder.getItems().iterator();
         while (i.hasNext()){
             ListItem item = (ListItem)i.next();
             if (item.getDescription() != null && item.getDescription().equals("test2")){
@@ -93,7 +93,7 @@ public class NewObjectWithOptimisticLockingTest extends ConfigurableCacheSyncDis
     public void reset(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holder = (ListHolder)uow.readObject(ListHolder.class);
-        Iterator i = holder.getItems().iterator();
+        Iterator<ListItem> i = holder.getItems().iterator();
         while (i.hasNext()){
             uow.deleteObject(i.next());
         }

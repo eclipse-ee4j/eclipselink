@@ -36,7 +36,7 @@ public class ShouldUseCacheIdentityMapTest extends ProjectClassGeneratorResultFi
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
-        for (Iterator iterator = project.getDescriptors().values().iterator(); iterator.hasNext(); ) {
+        for (Iterator<ClassDescriptor> iterator = project.getDescriptors().values().iterator(); iterator.hasNext(); ) {
             descriptorToModify = (ClassDescriptor)iterator.next();
             descriptorToModify.useCacheIdentityMap();
         }

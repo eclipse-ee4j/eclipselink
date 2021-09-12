@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,7 @@ import java.security.PrivilegedActionException;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -64,7 +65,7 @@ public class DevelopmentServices {
      * @exception ClassNotFoundException thrown then the IdenityMap for that class name could not be found
      */
     public void initializeIdentityMap(String className) throws ClassNotFoundException {
-        Class classToChange = (Class)getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
+        Class classToChange = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
         getSession().getIdentityMapAccessorInstance().initializeIdentityMap(classToChange);
     }
 
@@ -86,11 +87,11 @@ public class DevelopmentServices {
      * @exception ClassNotFoundException thrown then the IdenityMap for that class name could not be found
      */
     public void setIdentityMapForClass(String className, String identityMapClassType, int maxSize) throws ClassNotFoundException {
-        Class classToChange = (Class)getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
-        Class identityMapClass = null;
+        Class classToChange = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
+        Class<IdentityMap> identityMapClass = null;
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try{
-                identityMapClass = AccessController.doPrivileged(new PrivilegedClassForName(identityMapClassType));
+                identityMapClass = AccessController.doPrivileged(new PrivilegedClassForName<>(identityMapClassType));
             }catch (PrivilegedActionException ex){
                 throw (RuntimeException)ex.getCause();
             }
@@ -120,7 +121,7 @@ public class DevelopmentServices {
      * @exception ClassNotFoundException thrown then the IdenityMap for that class name could not be found
      */
     public void updateCacheSize(String className, int newSize) throws ClassNotFoundException {
-        Class classToChange = (Class)getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
+        Class classToChange = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
         getSession().getIdentityMapAccessorInstance().getIdentityMap(classToChange).updateMaxSize(newSize);
     }
 

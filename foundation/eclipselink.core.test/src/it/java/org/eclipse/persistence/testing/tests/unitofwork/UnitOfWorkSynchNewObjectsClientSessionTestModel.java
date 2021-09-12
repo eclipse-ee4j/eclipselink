@@ -27,7 +27,7 @@ public class UnitOfWorkSynchNewObjectsClientSessionTestModel extends UnitOfWorkC
 
     @Override
     public void setup() {
-        for (Iterator descriptors = getSession().getDescriptors().values().iterator(); descriptors.hasNext(); ) {
+        for (Iterator<ClassDescriptor> descriptors = getSession().getDescriptors().values().iterator(); descriptors.hasNext(); ) {
             ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
             descriptor.setCacheSynchronizationType(ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES);
         }
@@ -36,7 +36,7 @@ public class UnitOfWorkSynchNewObjectsClientSessionTestModel extends UnitOfWorkC
 
     @Override
     public void reset() {
-        for (Iterator descriptors = getSession().getDescriptors().values().iterator(); descriptors.hasNext(); ) {
+        for (Iterator<ClassDescriptor> descriptors = getSession().getDescriptors().values().iterator(); descriptors.hasNext(); ) {
             ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
             descriptor.setCacheSynchronizationType(ClassDescriptor.SEND_OBJECT_CHANGES);
         }

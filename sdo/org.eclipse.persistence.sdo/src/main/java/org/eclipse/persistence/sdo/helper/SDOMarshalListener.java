@@ -220,7 +220,7 @@ public class SDOMarshalListener implements XMLMarshalListener {
                 List unsetPropNames = changeSummary.getUnsetProps(nextModifiedDO);
                 if (!unsetPropNames.isEmpty()) {
                     XMLConversionManager xmlConversionManager = ((SDOXMLHelper)typeHelper.getHelperContext().getXMLHelper()).getXmlConversionManager();
-                    String unsetPropsString = (String)xmlConversionManager.convertObject(unsetPropNames, String.class);
+                    String unsetPropsString = xmlConversionManager.convertObject(unsetPropNames, String.class);
                     csNode.setAttributeNS(SDOConstants.SDO_URL, sdoPrefix +//
                                           SDOConstants.SDO_XPATH_NS_SEPARATOR_FRAGMENT +//
                                           SDOConstants.CHANGESUMMARY_UNSET, unsetPropsString);

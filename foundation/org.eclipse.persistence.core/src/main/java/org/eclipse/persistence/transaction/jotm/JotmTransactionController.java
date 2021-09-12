@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,11 +54,11 @@ public class JotmTransactionController extends JTATransactionController {
     protected TransactionManager acquireTransactionManager() throws Exception {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try{
-                Class clazz = AccessController.doPrivileged(new PrivilegedClassForName(TX_CURRENT_FACTORY_CLASS));
+                Class<? extends TransactionManager> clazz = AccessController.doPrivileged(new PrivilegedClassForName<>(TX_CURRENT_FACTORY_CLASS));
                 Method method = AccessController.doPrivileged(new PrivilegedGetMethod(clazz, TX_CURRENT_FACTORY_METHOD, null, false));
                 Method txMethod = AccessController.doPrivileged(new PrivilegedGetMethod(clazz, TX_MANAGER_FACTORY_METHOD, null, false));
-                Object current = AccessController.doPrivileged(new PrivilegedMethodInvoker(method, null, null));
-                return (TransactionManager) AccessController.doPrivileged(new PrivilegedMethodInvoker(txMethod, current, null));
+                TransactionManager current = AccessController.doPrivileged(new PrivilegedMethodInvoker<TransactionManager>(method, null, null));
+                return AccessController.doPrivileged(new PrivilegedMethodInvoker<>(txMethod, current, null));
             }catch (PrivilegedActionException ex){
                 if (ex.getCause() instanceof ClassNotFoundException){
                     throw (ClassNotFoundException)ex.getCause();
@@ -75,11 +75,11 @@ public class JotmTransactionController extends JTATransactionController {
                 throw (RuntimeException) ex.getCause();
             }
         }else{
-            Class clazz = PrivilegedAccessHelper.getClassForName(TX_CURRENT_FACTORY_CLASS);
+            Class<? extends TransactionManager> clazz = PrivilegedAccessHelper.getClassForName(TX_CURRENT_FACTORY_CLASS);
             Method method = PrivilegedAccessHelper.getMethod(clazz, TX_CURRENT_FACTORY_METHOD, null, false);
             Method txMethod = PrivilegedAccessHelper.getMethod(clazz, TX_MANAGER_FACTORY_METHOD, null, false);
-            Object current = PrivilegedAccessHelper.invokeMethod(method, null, null);
-            return (TransactionManager)PrivilegedAccessHelper.invokeMethod(txMethod, current, null);
+            TransactionManager current = PrivilegedAccessHelper.invokeMethod(method, null, null);
+            return PrivilegedAccessHelper.invokeMethod(txMethod, current, null);
         }
     }
 }

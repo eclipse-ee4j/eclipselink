@@ -34,7 +34,7 @@ public class DoubleToBigDecimalTestCases extends OXTestCase {
     public void testConvertDoubleToBigDecimal1() {
         String controlString = "1.1";
         Double controlDouble = Double.valueOf(controlString);
-        BigDecimal testBigDecimal = (BigDecimal) xmlConversionManager.convertObject(controlDouble, BigDecimal.class);
+        BigDecimal testBigDecimal = xmlConversionManager.convertObject(controlDouble, BigDecimal.class);
         String testString = String.valueOf(testBigDecimal);
         assertEquals(controlString, testString);
     }
@@ -42,7 +42,7 @@ public class DoubleToBigDecimalTestCases extends OXTestCase {
     public void testConvertDoubleToBigDecimal2a() {
         String controlString = "1";
         Double controlDouble = 1.0;
-        BigDecimal testBigDecimal = (BigDecimal) xmlConversionManager.convertObject(controlDouble, BigDecimal.class);
+        BigDecimal testBigDecimal = xmlConversionManager.convertObject(controlDouble, BigDecimal.class);
         String testString = String.valueOf(testBigDecimal);
         assertEquals(controlString, testString);
     }
@@ -50,7 +50,7 @@ public class DoubleToBigDecimalTestCases extends OXTestCase {
     public void testConvertDoubleToBigDecimal2b() {
         String controlString = "1";
         Double controlDouble = 1.0;
-        BigDecimal testBigDecimal = (BigDecimal) xmlConversionManager.convertObject(controlDouble, BigDecimal.class);
+        BigDecimal testBigDecimal = xmlConversionManager.convertObject(controlDouble, BigDecimal.class);
         String testString = String.valueOf(testBigDecimal);
         assertEquals(controlString, testString);
     }
@@ -58,7 +58,7 @@ public class DoubleToBigDecimalTestCases extends OXTestCase {
     public void testConvertDoubleToBigDecimal3a() {
         String controlString = "1.0E-10";
         Double controlDouble = Double.valueOf(controlString);
-        BigDecimal testBigDecimal = (BigDecimal) xmlConversionManager.convertObject(controlDouble, BigDecimal.class);
+        BigDecimal testBigDecimal = xmlConversionManager.convertObject(controlDouble, BigDecimal.class);
         String testString = String.valueOf(testBigDecimal);
         assertEquals(controlString, testString);
     }
@@ -66,7 +66,7 @@ public class DoubleToBigDecimalTestCases extends OXTestCase {
     public void testConvertDoubleToBigDecimal3b() {
         String controlString = "0.00000000010";
         Double controlDouble = Double.valueOf(controlString);
-        BigDecimal testBigDecimal = (BigDecimal) xmlConversionManager.convertObject(controlDouble, BigDecimal.class);
+        BigDecimal testBigDecimal = xmlConversionManager.convertObject(controlDouble, BigDecimal.class);
         String testString = String.valueOf(testBigDecimal);
         assertEquals("1.0E-10", testString);
     }
@@ -74,7 +74,7 @@ public class DoubleToBigDecimalTestCases extends OXTestCase {
     public void testConvertDoubleToBigDecimal4a() {
         String controlString = "1000000000";
         Double controlDouble = 1000000000.0;
-        BigDecimal testBigDecimal = (BigDecimal) xmlConversionManager.convertObject(controlDouble, BigDecimal.class);
+        BigDecimal testBigDecimal = xmlConversionManager.convertObject(controlDouble, BigDecimal.class);
         String testString = String.valueOf(testBigDecimal);
         assertEquals("1.0E+9", testString);
     }
@@ -82,7 +82,7 @@ public class DoubleToBigDecimalTestCases extends OXTestCase {
     public void testConvertDoubleToBigDecimal4b() {
         String controlString = "1000000000";
         Double controlDouble = 1000000000.0;
-        BigDecimal testBigDecimal = (BigDecimal) xmlConversionManager.convertObject(controlDouble, BigDecimal.class);
+        BigDecimal testBigDecimal = xmlConversionManager.convertObject(controlDouble, BigDecimal.class);
         String testString = String.valueOf(testBigDecimal);
         assertEquals("1.0E+9", testString);
     }

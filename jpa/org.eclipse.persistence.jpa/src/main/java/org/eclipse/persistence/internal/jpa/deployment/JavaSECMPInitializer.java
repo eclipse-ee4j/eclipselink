@@ -102,7 +102,7 @@ public class JavaSECMPInitializer extends JPAInitializer {
                         }
                         usesAgent = true;
                         initializer = new JavaSECMPInitializer(classLoader);
-                        initializer.initialize(m != null ? m : new HashMap(0));
+                        initializer.initialize(m != null ? m : new HashMap<>(0));
                         // all the transformers have been added to instrumentation, don't need it any more.
                         globalInstrumentation = null;
                     }
@@ -181,7 +181,7 @@ public class JavaSECMPInitializer extends JPAInitializer {
             try {
                 Class[] argsClasses = new Class[] { URL[].class, ClassLoader.class, Collection.class, boolean.class };
                 Object[] args = new Object[] { urlPath, currentLoader, col, shouldOverrideLoadClassForCollectionMembers };
-                Constructor classLoaderConstructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(TempEntityLoader.class, argsClasses, true));
+                Constructor classLoaderConstructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(TempEntityLoader.class, argsClasses, true));
                 tempLoader = (ClassLoader) AccessController.doPrivileged(new PrivilegedInvokeConstructor(classLoaderConstructor, args));
             } catch (PrivilegedActionException privilegedException) {
                 throw new PersistenceException(EntityManagerSetupException.failedToInstantiateTemporaryClassLoader(privilegedException));
@@ -236,7 +236,7 @@ public class JavaSECMPInitializer extends JPAInitializer {
      * The version of initializeFromMain that passes an empty map.
      */
     public static void initializeFromMain() {
-        initializeFromMain(new HashMap());
+        initializeFromMain(new HashMap<>());
     }
 
     /**
@@ -356,7 +356,7 @@ public class JavaSECMPInitializer extends JPAInitializer {
                 // it doesn't return true if the class has been loaded by parent loader
                 // (forced to live with that because findLoadedClass method defined as final protected:
                 //  neither can override it nor call it on the parent loader)
-                Class c = findLoadedClass(name);
+                Class<?> c = findLoadedClass(name);
                 if (c == null) {
                     c = findClass(name);
                 }

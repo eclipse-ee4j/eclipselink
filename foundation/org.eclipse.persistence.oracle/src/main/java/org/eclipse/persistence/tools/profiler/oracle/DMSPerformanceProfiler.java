@@ -504,7 +504,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
         getHeavyWeightNouns().put(ConnectionNounType, connectionsNoun);
         //ConnectionsInUse
         if (getSession().isServerSession()) {
-            Iterator enumtr = ((ServerSession)getSession()).getConnectionPools().keySet().iterator();
+            Iterator<String> enumtr = ((ServerSession)getSession()).getConnectionPools().keySet().iterator();
             while (enumtr.hasNext()) {
                 String poolName = (String)enumtr.next();
                 State connectionInUse = State.create(connectionsNoun, ConnectionInUse + "(" + poolName + ")", "", DMSLocalization.buildMessage("connection_in_used"), "not available");
@@ -663,7 +663,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
      */
     protected void destroyNounsByWeight(int weight) {
         if (weight == DMSConsole.NORMAL) {
-            Iterator iterator = getNormalWeightNouns().values().iterator();
+            Iterator<Noun> iterator = getNormalWeightNouns().values().iterator();
             while (iterator.hasNext()) {
                 ((Noun)iterator.next()).destroy();
             }
@@ -671,7 +671,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
             getNormalWeightSensors().clear();
         }
         if (weight == DMSConsole.HEAVY) {
-            Iterator iterator = getHeavyWeightNouns().values().iterator();
+            Iterator<Noun> iterator = getHeavyWeightNouns().values().iterator();
             while (iterator.hasNext()) {
                 ((Noun)iterator.next()).destroy();
             }
@@ -681,7 +681,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
             getHeavyWeightSensors().clear();
         }
         if (weight == DMSConsole.ALL) {
-            Iterator iterator = getAllWeightNouns().values().iterator();
+            Iterator<Noun> iterator = getAllWeightNouns().values().iterator();
             while (iterator.hasNext()) {
                 ((Noun)iterator.next()).destroy();
             }

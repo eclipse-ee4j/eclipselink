@@ -40,7 +40,7 @@ public class ConversionManagerOracleTestModel extends TestModel {
 
 
         try{
-            Class testCaseClass = Class.forName("org.eclipse.persistence.testing.tests.conversion.DataTypesConvertedFromAClassTest");
+            Class<?> testCaseClass = Class.forName("org.eclipse.persistence.testing.tests.conversion.DataTypesConvertedFromAClassTest");
             junit.framework.Test testCase = (junit.framework.Test)testCaseClass.getConstructor().newInstance();
             suite.addTest(testCase);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -125,7 +125,7 @@ public class EISDOMRecord extends org.eclipse.persistence.oxm.record.DOMRecord i
                     throw (Exception)ex.getCause();
                 }
             }else{
-                setDOM((Element)PrivilegedAccessHelper.invokeMethod(domMethod, record, null));
+                setDOM(PrivilegedAccessHelper.invokeMethod(domMethod, record, null));
             }
         } catch (Exception error) {
             throw new EISException(error);

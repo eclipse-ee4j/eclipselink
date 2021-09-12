@@ -562,7 +562,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
                 try {
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                         try {
-                            valueType = AccessController.doPrivileged(new PrivilegedClassForName(valueTypeName, true, classLoader));
+                            valueType = AccessController.doPrivileged(new PrivilegedClassForName<>(valueTypeName, true, classLoader));
                         } catch (PrivilegedActionException exception) {
                             throw ValidationException.classNotFoundWhileConvertingClassNames(valueTypeName, exception.getException());
                         }

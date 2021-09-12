@@ -138,7 +138,7 @@ public class XMLLogFormatter extends XMLFormatter {
 
             if (record.getConnection() != null) {
                 sb.append("  <connection>");
-                sb.append(String.valueOf(System.identityHashCode(record.getConnection())));
+                sb.append(System.identityHashCode(record.getConnection()));
                 sb.append("</connection>\n");
             }
 
@@ -161,7 +161,10 @@ public class XMLLogFormatter extends XMLFormatter {
             // bundle name, and params.
             ResourceBundle bundle = record.getResourceBundle();
             try {
-                if ((bundle != null) && (bundle.getString(record.getMessage()) != null)) {
+                if ((bundle != null)) {
+                    //check for missing entry in the bundle,
+                    //throws exception if not found
+                    bundle.getString(record.getMessage());
                     sb.append("  <key>");
                     escape(sb, record.getMessage());
                     sb.append("</key>\n");

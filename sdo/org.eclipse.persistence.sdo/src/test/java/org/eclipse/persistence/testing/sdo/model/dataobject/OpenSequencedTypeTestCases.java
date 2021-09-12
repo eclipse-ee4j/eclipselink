@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,6 @@ import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.dataobjects.OpenSequencedTypeImpl;
 import org.eclipse.persistence.testing.sdo.SDOTestCase;
 
-import commonj.sdo.Type;
 import commonj.sdo.helper.TypeHelper;
 
 public class OpenSequencedTypeTestCases extends SDOTestCase {
@@ -34,7 +33,7 @@ public class OpenSequencedTypeTestCases extends SDOTestCase {
 
         // Test that the implClass of the Type found in TypeHelper matches the
         // Class in our library (therefore not generated dynamically).
-        Class classFromLib = OpenSequencedTypeImpl.class;
+        Class<OpenSequencedTypeImpl> classFromLib = OpenSequencedTypeImpl.class;
         assertEquals("Classes did not match", classFromLib, typeFromTypeHelper.getImplClass());
     }
 

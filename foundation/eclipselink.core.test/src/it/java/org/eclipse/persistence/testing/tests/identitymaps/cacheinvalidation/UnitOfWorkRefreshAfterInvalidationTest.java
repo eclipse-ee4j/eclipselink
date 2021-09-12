@@ -76,7 +76,7 @@ public class UnitOfWorkRefreshAfterInvalidationTest extends TestCase {
     @Override
     public void verify() {
         // check for duplicates
-        List statements = this.sqlTracker.getSqlStatements();
+        List<String> statements = this.sqlTracker.getSqlStatements();
         Vector errors = new Vector();
         for (int i = 0; i < statements.size(); i++) {
             String statement = (String)statements.get(i);

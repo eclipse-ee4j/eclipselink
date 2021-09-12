@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,8 +54,8 @@ public class SelectedFieldsLockingPolicy extends FieldsLockingPolicy {
      */
     public SelectedFieldsLockingPolicy() {
         super();
-        this.lockFieldsByTable = new HashMap(4);
-        this.lockFields = new ArrayList();
+        this.lockFieldsByTable = new HashMap<>(4);
+        this.lockFields = new ArrayList<>();
     }
 
     /**
@@ -126,7 +126,7 @@ public class SelectedFieldsLockingPolicy extends FieldsLockingPolicy {
     protected List<DatabaseField> getLockFields(DatabaseTable table) {
         List<DatabaseField> temp = this.lockFieldsByTable.get(table);
         if (temp == null) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
         return temp;
     }
@@ -152,7 +152,7 @@ public class SelectedFieldsLockingPolicy extends FieldsLockingPolicy {
             lockFields.set(index, field);
             List<DatabaseField> fieldsForTable = getLockFieldsByTable().get(field.getTable());
             if (fieldsForTable == null) {
-                fieldsForTable = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+                fieldsForTable = new ArrayList<>();
                 getLockFieldsByTable().put(field.getTable(), fieldsForTable);
             }
             fieldsForTable.add(field);

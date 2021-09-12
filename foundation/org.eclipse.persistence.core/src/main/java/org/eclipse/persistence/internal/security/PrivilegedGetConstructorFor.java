@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,20 +17,20 @@ package org.eclipse.persistence.internal.security;
 import java.lang.reflect.Constructor;
 import java.security.PrivilegedExceptionAction;
 
-public class PrivilegedGetConstructorFor implements PrivilegedExceptionAction<Constructor> {
+public class PrivilegedGetConstructorFor<T> implements PrivilegedExceptionAction<Constructor<T>> {
 
-    private final Class javaClass;
+    private final Class<T> javaClass;
     private final Class[] args;
     private final boolean shouldSetAccessible;
 
-    public PrivilegedGetConstructorFor(Class javaClass, Class[] args, boolean shouldSetAccessible) {
+    public PrivilegedGetConstructorFor(Class<T> javaClass, Class[] args, boolean shouldSetAccessible) {
         this.javaClass = javaClass;
         this.args = args;
         this.shouldSetAccessible = shouldSetAccessible;
     }
 
     @Override
-    public Constructor run() throws NoSuchMethodException {
+    public Constructor<T> run() throws NoSuchMethodException {
         return PrivilegedAccessHelper.getConstructorFor(javaClass, args, shouldSetAccessible);
     }
 

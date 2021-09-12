@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -95,7 +95,7 @@ public class SDOPropertyEqualityTests extends TestCase {
     }
 
     private List<DataObject> queryDO() {
-        List result = new ArrayList<DataObject>();
+        List<DataObject> result = new ArrayList<>();
 
         DataObject item1DO = DataFactory.INSTANCE.create("org.example", "Item");
         item1DO.set("name", "Telephone");

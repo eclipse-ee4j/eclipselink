@@ -641,12 +641,12 @@ public class QueryOperation extends Operation {
                             Object xmlTypeFactory;
                             Method getStringMethod;
                             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                                oracleOPAQUE = AccessController.doPrivileged(new PrivilegedClassForName(IORACLEOPAQUE_STR, true, this.getClass().getClassLoader()));
-                                xmlTypeFactoryClass = AccessController.doPrivileged(new PrivilegedClassForName(XMLTYPEFACTORY_STR, true, this.getClass().getClassLoader()));
-                                xmlTypeFactoryConstructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(xmlTypeFactoryClass, new Class[0], true));
-                                xmlTypeFactory = AccessController.doPrivileged(new PrivilegedInvokeConstructor(xmlTypeFactoryConstructor, new Object[0]));
+                                oracleOPAQUE = AccessController.doPrivileged(new PrivilegedClassForName<>(IORACLEOPAQUE_STR, true, this.getClass().getClassLoader()));
+                                xmlTypeFactoryClass = AccessController.doPrivileged(new PrivilegedClassForName<>(XMLTYPEFACTORY_STR, true, this.getClass().getClassLoader()));
+                                xmlTypeFactoryConstructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(xmlTypeFactoryClass, new Class[0], true));
+                                xmlTypeFactory = AccessController.doPrivileged(new PrivilegedInvokeConstructor<>(xmlTypeFactoryConstructor, new Object[0]));
                                 getStringMethod = AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(xmlTypeFactoryClass, GETSTRING_METHOD, new Class[] {oracleOPAQUE}));
-                                fieldValue = AccessController.doPrivileged(new PrivilegedMethodInvoker(getStringMethod, fieldValue, new Object[] {}));
+                                fieldValue = AccessController.doPrivileged(new PrivilegedMethodInvoker<>(getStringMethod, fieldValue, new Object[] {}));
                             } else {
                                 oracleOPAQUE = PrivilegedAccessHelper.getClassForName(IORACLEOPAQUE_STR, false, this.getClass().getClassLoader());
                                 xmlTypeFactoryClass = PrivilegedAccessHelper.getClassForName(XMLTYPEFACTORY_STR, true, this.getClass().getClassLoader());

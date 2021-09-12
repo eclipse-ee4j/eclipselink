@@ -97,7 +97,7 @@ public class EntityResult extends SQLResult {
         try{
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    entityClass = AccessController.doPrivileged(new PrivilegedClassForName(entityClassName, true, classLoader));
+                    entityClass = AccessController.doPrivileged(new PrivilegedClassForName<>(entityClassName, true, classLoader));
                 } catch (PrivilegedActionException exception) {
                     throw ValidationException.classNotFoundWhileConvertingClassNames(entityClassName, exception.getException());
                 }
@@ -180,7 +180,7 @@ public class EntityResult extends SQLResult {
                 descriptor = query.getSession().getDescriptor(classValue);
             }
         }
-        for (Iterator mappings = descriptor.getMappings().iterator(); mappings.hasNext();) {
+        for (Iterator<DatabaseMapping> mappings = descriptor.getMappings().iterator(); mappings.hasNext();) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.next();
             FieldResult fieldResult = (FieldResult)this.getFieldResults().get(mapping.getAttributeName());
             if (fieldResult != null){
@@ -190,7 +190,7 @@ public class EntityResult extends SQLResult {
                     getValueFromRecordForMapping(entityRecord,mapping,fieldResult,record);
                 }
             } else {
-                for (Iterator fields = mapping.getFields().iterator(); fields.hasNext();) {
+                for (Iterator<DatabaseField> fields = mapping.getFields().iterator(); fields.hasNext();) {
                     DatabaseField field = (DatabaseField)fields.next();
                     entityRecord.put(field, record.get(field));
                 }
@@ -224,7 +224,7 @@ public class EntityResult extends SQLResult {
             return;
         }
         /** This processes each FieldResult stored in the collection of FieldResults individually */
-        Iterator fieldResults = fieldResult.getFieldResults().iterator();
+        Iterator<FieldResult> fieldResults = fieldResult.getFieldResults().iterator();
         while (fieldResults.hasNext()){
             FieldResult tempFieldResult = ((FieldResult)fieldResults.next());
             DatabaseField dbfield = processValueFromRecordForMapping(currentDescriptor,tempFieldResult.getMultipleFieldIdentifiers(),1);

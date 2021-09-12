@@ -150,7 +150,7 @@ public class TestVariation {
         Vector candidateFieldsNames = new Vector();
 
         for (int i = 0; i < allMethods.length; i++) {
-            Class returnType = allMethods[i].getReturnType();
+            Class<?> returnType = allMethods[i].getReturnType();
             Class[] parameterTypes = allMethods[i].getParameterTypes();
             if (returnType.equals(boolean.class) && (parameterTypes.length == 0)) {
                 candidateGetters.addElement(allMethods[i]);
@@ -163,7 +163,7 @@ public class TestVariation {
             }
         }
         for (int i = 0; i < allFields.length; i++) {
-            Class type = allFields[i].getType();
+            Class<?> type = allFields[i].getType();
             if (type.equals(boolean.class)) {
                 candidateFields.addElement(allFields[i]);
                 candidateFieldsNames.addElement(allFields[i].getName().toLowerCase());

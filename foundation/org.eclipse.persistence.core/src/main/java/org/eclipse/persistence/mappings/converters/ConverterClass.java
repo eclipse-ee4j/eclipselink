@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 Payara Services Ltd.
  *
  * This program and the accompanying materials are made available under the
@@ -122,17 +122,16 @@ public class ConverterClass<T extends AttributeConverter<X,Y>,X,Y> implements Co
         }
     }
 
-    @SuppressWarnings("unchecked")
     private Class<T> getAttributeConverterClass(ClassLoader classLoader) {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
-                    return AccessController.doPrivileged(new PrivilegedClassForName(attributeConverterClassName, true, classLoader));
+                    return AccessController.doPrivileged(new PrivilegedClassForName<T>(attributeConverterClassName, true, classLoader));
                 } catch (PrivilegedActionException exception) {
                     throw ValidationException.classNotFoundWhileConvertingClassNames(attributeConverterClassName, exception.getException());
                 }
             } else {
-                return PrivilegedAccessHelper.getClassForName(attributeConverterClassName, true, classLoader);
+                return PrivilegedAccessHelper.<T>getClassForName(attributeConverterClassName, true, classLoader);
             }
         } catch (ClassNotFoundException exception) {
             throw ValidationException.classNotFoundWhileConvertingClassNames(attributeConverterClassName, exception);
@@ -143,7 +142,7 @@ public class ConverterClass<T extends AttributeConverter<X,Y>,X,Y> implements Co
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    fieldClassification = AccessController.doPrivileged(new PrivilegedClassForName(fieldClassificationName, true, classLoader));
+                    fieldClassification = AccessController.doPrivileged(new PrivilegedClassForName<>(fieldClassificationName, true, classLoader));
                 } catch (PrivilegedActionException exception) {
                     throw ValidationException.classNotFoundWhileConvertingClassNames(fieldClassificationName, exception.getException());
                 }

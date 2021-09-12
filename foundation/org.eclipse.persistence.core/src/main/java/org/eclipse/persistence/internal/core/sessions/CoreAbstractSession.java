@@ -49,7 +49,7 @@ public abstract class CoreAbstractSession<
      * Return all registered descriptors.
      */
     @Override
-    public abstract Map<Class, DESCRIPTOR> getDescriptors();
+    public abstract Map<Class<?>, DESCRIPTOR> getDescriptors();
 
     /**
      * INTERNAL:
@@ -57,6 +57,6 @@ public abstract class CoreAbstractSession<
      * for specified class.
      * The platform is used for database specific behavior.
      */
-    public abstract PLATFORM getPlatform(Class domainClass);
+    public abstract PLATFORM getPlatform(Class<?> domainClass);
 
 }

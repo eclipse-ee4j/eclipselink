@@ -475,7 +475,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         wrappersHashMap.put(SDOConstants.SDO_SHORTOBJECT.getQName(), SDO_SHORTOBJECT_WRAPPER);
 
         // Now add these into the impl-to-type Map
-        Iterator wrappers = wrappersHashMap.values().iterator();
+        Iterator<SDOType> wrappers = wrappersHashMap.values().iterator();
         while (wrappers.hasNext()) {
             SDOWrapperType wrapper = (SDOWrapperType) wrappers.next();
             Iterator descriptors = wrapper.getDescriptorsMap().values().iterator();

@@ -20,6 +20,8 @@ import org.eclipse.persistence.descriptors.*;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.foundation.*;
 
+import java.util.Vector;
+
 /**
  * <p>
  * <b>Purpose</b>: Define a generic test for writing an object to the database.
@@ -103,9 +105,9 @@ public class WriteObjectTest extends TransactionalTestCase {
          * descriptor, which is then used to find the mappings and determine if
          * one exists that can be mutated
          */
-        Class objectClass = objectToBeMutated.getClass();
+        Class<? extends Object> objectClass = objectToBeMutated.getClass();
         ClassDescriptor descriptor = getSession().getProject().getClassDescriptor(objectClass);
-        java.util.Vector mappings = descriptor.getMappings();
+        Vector<DatabaseMapping> mappings = descriptor.getMappings();
 
         if (isInUOW) {
             mutationString += "U";

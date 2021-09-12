@@ -102,7 +102,7 @@ public class VerifyClientBrokerCreationTest extends AutoVerifyTestCase {
             throw new TestErrorException("Incorrect number of sessions in client broker");
 
         }
-        Iterator i = serverBroker.getSessionsByName().keySet().iterator();
+        Iterator<String> i = serverBroker.getSessionsByName().keySet().iterator();
         while (i.hasNext()){
             String key = (String)i.next();
             if (clientBroker.getSessionForName(key) == null) {

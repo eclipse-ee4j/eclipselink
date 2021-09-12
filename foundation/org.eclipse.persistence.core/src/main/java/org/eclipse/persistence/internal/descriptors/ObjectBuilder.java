@@ -257,13 +257,13 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         // Skip first table.
         for (int index = 1; index < size; index++) {
             DatabaseTable table = tables.get(index);
-            Map keyMapping = this.descriptor.getAdditionalTablePrimaryKeyFields().get(table);
+            Map<DatabaseField, DatabaseField> keyMapping = this.descriptor.getAdditionalTablePrimaryKeyFields().get(table);
 
             // Loop over the additionalTablePK fields and add the PK info for the table. The join might
             // be between a fk in the source table and pk in secondary table.
             if (keyMapping != null) {
-                Iterator primaryKeyFieldEnum = keyMapping.keySet().iterator();
-                Iterator secondaryKeyFieldEnum = keyMapping.values().iterator();
+                Iterator<DatabaseField> primaryKeyFieldEnum = keyMapping.keySet().iterator();
+                Iterator<DatabaseField> secondaryKeyFieldEnum = keyMapping.values().iterator();
                 while (primaryKeyFieldEnum.hasNext()) {
                     DatabaseField primaryKeyField = (DatabaseField)primaryKeyFieldEnum.next();
                     DatabaseField secondaryKeyField = (DatabaseField)secondaryKeyFieldEnum.next();
@@ -317,7 +317,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         if (size > 1) {
             handledMappings = new HashSet(size);
         }
-        List fields = row.getFields();
+        List<DatabaseField> fields = row.getFields();
         for (int index = 0; index < size; index++) {
             DatabaseField field = (DatabaseField)fields.get(index);
             assignReturnValueForField(object, query, row, field, handledMappings, changeSet);
@@ -333,7 +333,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         if (mapping != null) {
             assignReturnValueToMapping(object,  query, row, field, mapping, handledMappings, changeSet);
         }
-        List readOnlyMappings = getReadOnlyMappingsForField(field);
+        List<DatabaseMapping> readOnlyMappings = getReadOnlyMappingsForField(field);
         if (readOnlyMappings != null) {
             int size = readOnlyMappings.size();
             for (int index = 0; index < size; index++) {
@@ -522,7 +522,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             }
         }
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        List mappings = this.descriptor.getMappings();
+        List<DatabaseMapping> mappings = this.descriptor.getMappings();
 
         // PERF: Cache if all mappings should be read.
         boolean readAllMappings = query.shouldReadAllMappings();
@@ -664,7 +664,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         Object backup = descriptor.getCopyPolicy().buildClone(clone, unitOfWork);
 
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        List mappings = getCloningMappings();
+        List<DatabaseMapping> mappings = getCloningMappings();
         int size = mappings.size();
         if (descriptor.hasFetchGroupManager() && descriptor.getFetchGroupManager().isPartialObject(clone)) {
             FetchGroupManager fetchGroupManager = descriptor.getFetchGroupManager();
@@ -712,7 +712,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         Expression expression = null;
 
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        List mappings = this.descriptor.getMappings();
+        List<DatabaseMapping> mappings = this.descriptor.getMappings();
         for (int index = 0; index < mappings.size(); index++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
             if (expression == null) {
@@ -1595,14 +1595,14 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             return getPrimaryKeyExpression();
         }
 
-        Map keyMapping = this.descriptor.getAdditionalTablePrimaryKeyFields().get(table);
+        Map<DatabaseField, DatabaseField> keyMapping = this.descriptor.getAdditionalTablePrimaryKeyFields().get(table);
         if (keyMapping == null) {
             throw DescriptorException.multipleTablePrimaryKeyNotSpecified(this.descriptor);
         }
 
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = null;
-        for (Iterator primaryKeyEnum = keyMapping.values().iterator(); primaryKeyEnum.hasNext();) {
+        for (Iterator<DatabaseField> primaryKeyEnum = keyMapping.values().iterator(); primaryKeyEnum.hasNext();) {
             DatabaseField field = (DatabaseField)primaryKeyEnum.next();
             expression = (builder.getField(field).equal(builder.getParameter(field))).and(expression);
         }
@@ -1659,7 +1659,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      */
     public AbstractRecord buildRow(AbstractRecord databaseRow, Object object, AbstractSession session, WriteType writeType) {
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        List mappings = this.descriptor.getMappings();
+        List<DatabaseMapping> mappings = this.descriptor.getMappings();
         int mappingsSize = mappings.size();
         for (int index = 0; index < mappingsSize; index++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
@@ -1698,7 +1698,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      */
     public AbstractRecord buildRowForShallowInsert(AbstractRecord databaseRow, Object object, AbstractSession session) {
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        List mappings = this.descriptor.getMappings();
+        List<DatabaseMapping> mappings = this.descriptor.getMappings();
         int mappingsSize = mappings.size();
         for (int index = 0; index < mappingsSize; index++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
@@ -1823,7 +1823,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * contain entries for unchanged attributes.
      */
     public AbstractRecord buildRowForUpdate(AbstractRecord databaseRow, WriteObjectQuery query) {
-        for (Iterator mappings = getNonPrimaryKeyMappings().iterator(); mappings.hasNext();) {
+        for (Iterator<DatabaseMapping> mappings = getNonPrimaryKeyMappings().iterator(); mappings.hasNext();) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.next();
             mapping.writeFromObjectIntoRowForUpdate(query, databaseRow);
         }
@@ -1860,7 +1860,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     public AbstractRecord buildRowForUpdateWithChangeSet(WriteObjectQuery query) {
         AbstractRecord databaseRow = createRecord(query.getSession());
         AbstractSession session = query.getSession();
-        List changes = query.getObjectChangeSet().getChanges();
+        List<org.eclipse.persistence.sessions.changesets.ChangeRecord> changes = query.getObjectChangeSet().getChanges();
         int size = changes.size();
         for (int index = 0; index < size; index++) {
             ChangeRecord changeRecord = (ChangeRecord)changes.get(index);
@@ -1882,8 +1882,8 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             query.setShouldValidateUpdateCallCacheUse(true);
         }
 
-        for (Iterator mappings = this.descriptor.getMappings().iterator();
-                 mappings.hasNext();) {
+        for (Iterator<DatabaseMapping> mappings = this.descriptor.getMappings().iterator();
+             mappings.hasNext();) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.next();
             mapping.writeFromObjectIntoRowForWhereClause(query, databaseRow);
         }
@@ -1939,8 +1939,8 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     }
 
     public void buildTemplateInsertRow(AbstractSession session, AbstractRecord databaseRow) {
-        for (Iterator mappings = this.descriptor.getMappings().iterator();
-                 mappings.hasNext();) {
+        for (Iterator<DatabaseMapping> mappings = this.descriptor.getMappings().iterator();
+             mappings.hasNext();) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.next();
             mapping.writeInsertFieldsIntoRow(databaseRow, session);
         }
@@ -1994,8 +1994,8 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     public AbstractRecord buildTemplateUpdateRow(AbstractSession session) {
         AbstractRecord databaseRow = createRecord(session);
 
-        for (Iterator mappings = getNonPrimaryKeyMappings().iterator();
-                 mappings.hasNext();) {
+        for (Iterator<DatabaseMapping> mappings = getNonPrimaryKeyMappings().iterator();
+             mappings.hasNext();) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.next();
             mapping.writeUpdateFieldsIntoRow(databaseRow, session);
         }
@@ -2031,7 +2031,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      */
     public void buildPrimaryKeyAttributesIntoObject(Object original, AbstractRecord databaseRow, ObjectBuildingQuery query, AbstractSession session) throws DatabaseException, QueryException {
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        List mappings = this.primaryKeyMappings;
+        List<DatabaseMapping> mappings = this.primaryKeyMappings;
         int mappingsSize = mappings.size();
         for (int i = 0; i < mappingsSize; i++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(i);
@@ -2052,7 +2052,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         AbstractSession executionSession = query.getSession().getExecutionSession(query);
 
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        List pkMappings = getPrimaryKeyMappings();
+        List<DatabaseMapping> pkMappings = getPrimaryKeyMappings();
         int mappingsSize = pkMappings.size();
         for (int i = 0; i < mappingsSize; i++) {
             DatabaseMapping mapping = (DatabaseMapping)pkMappings.get(i);
@@ -2062,7 +2062,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 mapping.buildShallowOriginalFromRow(databaseRow, original, null, query, executionSession);
             }
         }
-        List mappings = this.descriptor.getMappings();
+        List<DatabaseMapping> mappings = this.descriptor.getMappings();
         mappingsSize = mappings.size();
         for (int i = 0; i < mappingsSize; i++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(i);
@@ -2087,7 +2087,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         }
         // PERF: Cache if all mappings should be read.
         boolean readAllMappings = query.shouldReadAllMappings();
-        List mappings = this.descriptor.getMappings();
+        List<DatabaseMapping> mappings = this.descriptor.getMappings();
         int size = mappings.size();
         FetchGroup executionFetchGroup = query.getExecutionFetchGroup(this.descriptor);
         for (int index = 0; index < size; index++) {
@@ -2461,7 +2461,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                     }
                 }
 
-                List mappings = descriptor.getMappings();
+                List<DatabaseMapping> mappings = descriptor.getMappings();
                 int size = mappings.size();
 
                 if (isSimple) {
@@ -2693,7 +2693,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      */
     public boolean compareObjects(Object firstObject, Object secondObject, AbstractSession session) {
         // PERF: Avoid iterator.
-        List mappings = this.descriptor.getMappings();
+        List<DatabaseMapping> mappings = this.descriptor.getMappings();
         for (int index = 0; index < mappings.size(); index++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
 
@@ -2713,7 +2713,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      */
     public void copyInto(Object source, Object target, boolean cloneOneToOneValueHolders) {
         // PERF: Avoid iterator.
-        List mappings = this.descriptor.getMappings();
+        List<DatabaseMapping> mappings = this.descriptor.getMappings();
         for (int index = 0; index < mappings.size(); index++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
             Object value = null;
@@ -2914,7 +2914,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             copyGroup.getCopies().put(original, copy);
 
             // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-            List mappings = getCloningMappings();
+            List<DatabaseMapping> mappings = getCloningMappings();
             int size = mappings.size();
             for (int index = 0; index < size; index++) {
                 ((DatabaseMapping)mappings.get(index)).buildCopy(copy, original, copyGroup);
@@ -2923,7 +2923,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             if (copyGroup.shouldResetPrimaryKey() && (!(this.descriptor.isDescriptorTypeAggregate()))) {
                 // Do not reset if any of the keys is mapped through a 1-1, i.e. back reference id has already changed.
                 boolean hasOneToOne = false;
-                List primaryKeyMappings = getPrimaryKeyMappings();
+                List<DatabaseMapping> primaryKeyMappings = getPrimaryKeyMappings();
                 size = primaryKeyMappings.size();
                 for (int index = 0; index < size; index++) {
                     if (((DatabaseMapping)primaryKeyMappings.get(index)).isOneToOneMapping()) {
@@ -3029,7 +3029,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         Expression subExp1;
         Expression subExp2;
         Expression subExpression;
-        List primaryKeyFields = this.descriptor.getPrimaryKeyFields();
+        List<DatabaseField> primaryKeyFields = this.descriptor.getPrimaryKeyFields();
 
         if(null != primaryKeyFields) {
             for (int index = 0; index < primaryKeyFields.size(); index++) {
@@ -3306,7 +3306,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             return databaseRow;
         }
         AbstractRecord primaryKeyRow = createRecord(getPrimaryKeyMappings().size(), session);
-        List primaryKeyFields = this.descriptor.getPrimaryKeyFields();
+        List<DatabaseField> primaryKeyFields = this.descriptor.getPrimaryKeyFields();
         for (int index = 0; index < primaryKeyFields.size(); index++) {
             // Ensure that the type extracted from the object is the same type as in the descriptor,
             // the main reason for this is that 1-1 can optimize on vh by getting from the row as the row-type.
@@ -3673,7 +3673,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      */
     public List<Class> getPrimaryKeyClassifications() {
         if (primaryKeyClassifications == null) {
-            List primaryKeyFields = this.descriptor.getPrimaryKeyFields();
+            List<DatabaseField> primaryKeyFields = this.descriptor.getPrimaryKeyFields();
             if(null == primaryKeyFields) {
                 return Collections.emptyList();
             }
@@ -3745,8 +3745,8 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             nonPrimaryKeyMappings = new ArrayList(10);
         }
 
-        for (Enumeration mappings = this.descriptor.getMappings().elements();
-                 mappings.hasMoreElements();) {
+        for (Enumeration<DatabaseMapping> mappings = this.descriptor.getMappings().elements();
+             mappings.hasMoreElements();) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.nextElement();
 
             // Add attribute to mapping association
@@ -3778,7 +3778,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             for (DatabaseField field : mapping.getFields()) {
 
                 if (mapping.isReadOnly()) {
-                    List readOnlyMappings = getReadOnlyMappingsByField().get(field);
+                    List<DatabaseMapping> readOnlyMappings = getReadOnlyMappingsByField().get(field);
 
                     if (readOnlyMappings == null) {
                         readOnlyMappings = new ArrayList();
@@ -3796,7 +3796,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                         DatabaseMapping aggregatedFieldMapping = aggregateObjectBuilder.getMappingForField(field);
 
                         if (aggregatedFieldMapping == null) { // mapping must be read-only
-                            List readOnlyMappings = getReadOnlyMappingsByField().get(field);
+                            List<DatabaseMapping> readOnlyMappings = getReadOnlyMappingsByField().get(field);
 
                             if (readOnlyMappings == null) {
                                 readOnlyMappings = new ArrayList();
@@ -3916,7 +3916,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         // For concurrency don't worry about doing this work twice, just make sure
         // if it happens don't add the same joined attributes twice.
         List<DatabaseMapping> joinedAttributes = null;
-        List mappings = this.descriptor.getMappings();
+        List<DatabaseMapping> mappings = this.descriptor.getMappings();
         for (int i = 0; i < mappings.size(); i++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(i);
             if (mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).isJoinFetched()) {
@@ -3986,7 +3986,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * Cache primary key and non primary key mappings.
      */
     public void initializePrimaryKey(AbstractSession session) throws DescriptorException {
-        List primaryKeyFields = this.descriptor.getPrimaryKeyFields();
+        List<DatabaseField> primaryKeyFields = this.descriptor.getPrimaryKeyFields();
         if ((null == primaryKeyFields || primaryKeyFields.isEmpty()) && getDescriptor().isAggregateCollectionDescriptor()) {
             // populate primaryKeys with all mapped fields found in the main table.
             DatabaseTable defaultTable = getDescriptor().getDefaultTable();
@@ -4015,7 +4015,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         //but no point doing it if the nonPrimaryKeyMappings collection is null
         if (nonPrimaryKeyMappings != null) {
             nonPrimaryKeyMappings.clear();
-            for (Iterator fields = getMappingsByField().keySet().iterator(); fields.hasNext();) {
+            for (Iterator<DatabaseField> fields = getMappingsByField().keySet().iterator(); fields.hasNext();) {
                 DatabaseField field = (DatabaseField)fields.next();
                 if (null ==primaryKeyFields || !primaryKeyFields.contains(field)) {
                     DatabaseMapping mapping = getMappingForField(field);
@@ -4194,7 +4194,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         if ((source != null) && changeSet.isNew() && (!this.descriptor.shouldUseFullChangeSetsForNewObjects())) {
             mergeIntoObject(target,  changeSet, true, source, mergeManager, targetSession, false, isTargetCloneOfOriginal, shouldMergeFetchGroup);
         } else {
-            List changes = changeSet.getChanges();
+            List<org.eclipse.persistence.sessions.changesets.ChangeRecord> changes = changeSet.getChanges();
             int size = changes.size();
             for (int index = 0; index < size; index++) {
                 ChangeRecord record = (ChangeRecord)changes.get(index);
@@ -4279,7 +4279,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * The domainObject sent as parameter is always a copy from the parent of unit of work.
      */
     public void populateAttributesForClone(Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession) {
-        List mappings = getCloningMappings();
+        List<DatabaseMapping> mappings = getCloningMappings();
         int size = mappings.size();
         if (this.descriptor.hasFetchGroupManager() && this.descriptor.getFetchGroupManager().isPartialObject(original)) {
             FetchGroupManager fetchGroupManager = this.descriptor.getFetchGroupManager();
@@ -4313,7 +4313,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             useOnlyMappingsExcludedFromSOP = databaseRow.get(concreteDescriptor.getSerializedObjectPolicy().getField()) != null;
         }
         boolean isUntriggeredResultSetRecord = databaseRow instanceof ResultSetRecord && ((ResultSetRecord)databaseRow).hasResultSet();
-        List batchExpressions = ((ReadAllQuery)query).getBatchReadAttributeExpressions();
+        List<Expression> batchExpressions = ((ReadAllQuery)query).getBatchReadAttributeExpressions();
         int size = batchExpressions.size();
         for (int index = 0; index < size; index++) {
             QueryKeyExpression queryKeyExpression = (QueryKeyExpression)batchExpressions.get(index);
@@ -4353,7 +4353,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             useOnlyMappingsExcludedFromSOP = databaseRow.get(concreteDescriptor.getSerializedObjectPolicy().getField()) != null;
         }
         Boolean isUntriggeredResultSetRecord = null;
-        List joinExpressions = joinManager.getJoinedAttributeExpressions();
+        List<Expression> joinExpressions = joinManager.getJoinedAttributeExpressions();
         int size = joinExpressions.size();
         for (int index = 0; index < size; index++) {
             QueryKeyExpression queryKeyExpression = (QueryKeyExpression)joinExpressions.get(index);
@@ -4592,8 +4592,8 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 return false;
             }
         } else {
-            for (Enumeration tables = this.descriptor.getTables().elements();
-                     tables.hasMoreElements();) {
+            for (Enumeration<DatabaseTable> tables = this.descriptor.getTables().elements();
+                 tables.hasMoreElements();) {
                 DatabaseTable table = (DatabaseTable)tables.nextElement();
 
                 SQLSelectStatement sqlStatement = new SQLSelectStatement();
@@ -4621,8 +4621,8 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         }
 
         // now ask each of the mappings to verify that the object has been deleted.
-        for (Enumeration mappings = this.descriptor.getMappings().elements();
-                 mappings.hasMoreElements();) {
+        for (Enumeration<DatabaseMapping> mappings = this.descriptor.getMappings().elements();
+             mappings.hasMoreElements();) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.nextElement();
 
             if (!mapping.verifyDelete(object, session)) {

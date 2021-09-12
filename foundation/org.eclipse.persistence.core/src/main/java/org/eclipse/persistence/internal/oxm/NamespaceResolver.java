@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -59,7 +59,7 @@ import org.w3c.dom.Node;
  */
 public class NamespaceResolver implements XMLNamespaceResolver {
     private static final String BASE_PREFIX = "ns";
-    private static final Vector EMPTY_VECTOR = VectorUtils.emptyVector();
+    private static final Vector<Namespace> EMPTY_VECTOR = VectorUtils.emptyVector();
 
     private String defaultNamespaceURI;
     private NamespaceResolverStorage prefixesToNamespaces;
@@ -275,7 +275,7 @@ public class NamespaceResolver implements XMLNamespaceResolver {
      * Used for deployment XML
      * @param names A Vector of namespace URIs
      */
-    public void setNamespaces(Vector names) {
+    public void setNamespaces(Vector<Namespace> names) {
         prefixesToNamespaces = new NamespaceResolverStorage(names.size());
         prefixesToNamespaces.setNamespaces(names);
     }

@@ -36,11 +36,13 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 import org.eclipse.persistence.config.SystemProperties;
@@ -65,7 +67,7 @@ import org.eclipse.persistence.logging.SessionLog;
  *    </ul>
  */
 public class ConversionManager extends CoreConversionManager implements Serializable, Cloneable {
-    protected Map defaultNullValues;
+    protected Map<Class<?>, Object> defaultNullValues;
     private static ZoneId defaultZoneOffset = null;
 
     /**
@@ -80,10 +82,10 @@ public class ConversionManager extends CoreConversionManager implements Serializ
     protected ClassLoader loader;
 
     /** Store the list of Classes that can be converted to from the key. */
-    protected Hashtable dataTypesConvertedFromAClass;
+    protected Map<Object, List<Class<?>>> dataTypesConvertedFromAClass;
 
     /** Store the list of Classes that can be converted from to the key. */
-    protected Hashtable dataTypesConvertedToAClass;
+    protected Map<Class<?>, List<Class<?>>> dataTypesConvertedToAClass;
 
     private static ZoneId getDefaultZoneOffset() {
         if (defaultZoneOffset == null) {
@@ -137,8 +139,8 @@ public class ConversionManager extends CoreConversionManager implements Serializ
     }
     
     public ConversionManager() {
-        this.dataTypesConvertedFromAClass = new Hashtable();
-        this.dataTypesConvertedToAClass = new Hashtable();
+        this.dataTypesConvertedFromAClass = new Hashtable<>();
+        this.dataTypesConvertedToAClass = new Hashtable<>();
     }
 
     /**
@@ -162,7 +164,8 @@ public class ConversionManager extends CoreConversionManager implements Serializ
      * @return the newly converted object
      */
     @Override
-    public Object convertObject(Object sourceObject, Class javaClass) throws ConversionException {
+    @SuppressWarnings({"unchecked"})
+    public <T> T convertObject(Object sourceObject, Class<T> javaClass) throws ConversionException {
         if (sourceObject == null) {
             // Check for default null conversion.
             // i.e. allow for null to be defaulted to "", or 0 etc.
@@ -174,66 +177,66 @@ public class ConversionManager extends CoreConversionManager implements Serializ
         }
 
         if ((sourceObject.getClass() == javaClass) || (javaClass == null) || (javaClass == ClassConstants.OBJECT) || (javaClass == ClassConstants.BLOB) || (javaClass == ClassConstants.CLOB)) {
-            return sourceObject;
+            return (T) sourceObject;
         }
 
         try {
             if (javaClass == ClassConstants.STRING) {
-                return convertObjectToString(sourceObject);
+                return (T) convertObjectToString(sourceObject);
             } else if (javaClass == ClassConstants.UTILDATE) {
-                return convertObjectToUtilDate(sourceObject);
+                return (T) convertObjectToUtilDate(sourceObject);
             } else if (javaClass == ClassConstants.SQLDATE) {
-                return convertObjectToDate(sourceObject);
+                return (T) convertObjectToDate(sourceObject);
             } else if (javaClass == ClassConstants.TIME) {
-                return convertObjectToTime(sourceObject);
+                return (T) convertObjectToTime(sourceObject);
             } else if (javaClass == ClassConstants.TIMESTAMP) {
-                return convertObjectToTimestamp(sourceObject);
+                return (T) convertObjectToTimestamp(sourceObject);
             } else if (javaClass == ClassConstants.TIME_LDATE) {
-                return convertObjectToLocalDate(sourceObject);
+                return (T) convertObjectToLocalDate(sourceObject);
             } else if (javaClass == ClassConstants.TIME_LDATETIME) {
-                return convertObjectToLocalDateTime(sourceObject);
+                return (T) convertObjectToLocalDateTime(sourceObject);
             } else if (javaClass == ClassConstants.TIME_LTIME) {
-                return convertObjectToLocalTime(sourceObject);
+                return (T) convertObjectToLocalTime(sourceObject);
             } else if (javaClass == ClassConstants.TIME_ODATETIME) {
-                return convertObjectToOffsetDateTime(sourceObject);
+                return (T) convertObjectToOffsetDateTime(sourceObject);
             } else if (javaClass == ClassConstants.TIME_OTIME) {
-                return convertObjectToOffsetTime(sourceObject);
+                return (T) convertObjectToOffsetTime(sourceObject);
             } else if ((javaClass == ClassConstants.CALENDAR) || (javaClass == ClassConstants.GREGORIAN_CALENDAR)) {
-                return convertObjectToCalendar(sourceObject);
+                return (T) convertObjectToCalendar(sourceObject);
             } else if ((javaClass == ClassConstants.CHAR) || (javaClass == ClassConstants.PCHAR && !(sourceObject instanceof Character))) {
-                return convertObjectToChar(sourceObject);
+                return (T) convertObjectToChar(sourceObject);
             } else if ((javaClass == ClassConstants.INTEGER) || (javaClass == ClassConstants.PINT && !(sourceObject instanceof Integer))) {
-                return convertObjectToInteger(sourceObject);
+                return (T) convertObjectToInteger(sourceObject);
             } else if ((javaClass == ClassConstants.DOUBLE) || (javaClass == ClassConstants.PDOUBLE && !(sourceObject instanceof Double))) {
-                return convertObjectToDouble(sourceObject);
+                return (T) convertObjectToDouble(sourceObject);
             } else if ((javaClass == ClassConstants.FLOAT) || (javaClass == ClassConstants.PFLOAT && !(sourceObject instanceof Float))) {
-                return convertObjectToFloat(sourceObject);
+                return (T) convertObjectToFloat(sourceObject);
             } else if ((javaClass == ClassConstants.LONG) || (javaClass == ClassConstants.PLONG && !(sourceObject instanceof Long))) {
-                return convertObjectToLong(sourceObject);
+                return (T) convertObjectToLong(sourceObject);
             } else if ((javaClass == ClassConstants.SHORT) || (javaClass == ClassConstants.PSHORT && !(sourceObject instanceof Short))) {
-                return convertObjectToShort(sourceObject);
+                return (T) convertObjectToShort(sourceObject);
             } else if ((javaClass == ClassConstants.BYTE) || (javaClass == ClassConstants.PBYTE && !(sourceObject instanceof Byte))) {
-                return convertObjectToByte(sourceObject);
+                return (T) convertObjectToByte(sourceObject);
             } else if (javaClass == ClassConstants.BIGINTEGER) {
-                return convertObjectToBigInteger(sourceObject);
+                return (T) convertObjectToBigInteger(sourceObject);
             } else if (javaClass == ClassConstants.BIGDECIMAL) {
-                return convertObjectToBigDecimal(sourceObject);
+                return (T) convertObjectToBigDecimal(sourceObject);
             } else if (javaClass == ClassConstants.NUMBER) {
-                return convertObjectToNumber(sourceObject);
+                return (T) convertObjectToNumber(sourceObject);
             } else if ((javaClass == ClassConstants.BOOLEAN) || (javaClass == ClassConstants.PBOOLEAN  && !(sourceObject instanceof Boolean))) {
-                return convertObjectToBoolean(sourceObject);
+                return (T) convertObjectToBoolean(sourceObject);
             } else if (javaClass == ClassConstants.APBYTE) {
-                return convertObjectToByteArray(sourceObject);
+                return (T) convertObjectToByteArray(sourceObject);
             } else if (javaClass == ClassConstants.ABYTE) {
-                return convertObjectToByteObjectArray(sourceObject);
+                return (T) convertObjectToByteObjectArray(sourceObject);
             } else if (javaClass == ClassConstants.APCHAR) {
-                return convertObjectToCharArray(sourceObject);
+                return (T) convertObjectToCharArray(sourceObject);
             } else if (javaClass == ClassConstants.ACHAR) {
-                return convertObjectToCharacterArray(sourceObject);
+                return (T) convertObjectToCharacterArray(sourceObject);
             } else if ((sourceObject.getClass() == ClassConstants.STRING) && (javaClass == ClassConstants.CLASS)) {
-                return convertObjectToClass(sourceObject);
+                return (T) convertObjectToClass(sourceObject);
             } else if(javaClass == ClassConstants.URL_Class) {
-                return convertObjectToUrl(sourceObject);
+                return (T) convertObjectToUrl(sourceObject);
             }
         } catch (ConversionException ce) {
             throw ce;
@@ -250,15 +253,15 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             ((javaClass == ClassConstants.PBYTE) &&  (sourceObject instanceof Byte)) ||
             ((javaClass == ClassConstants.PCHAR) &&  (sourceObject instanceof Character)) ||
             ((javaClass == ClassConstants.PSHORT) &&  (sourceObject instanceof Short)))) {
-            return sourceObject;
+            return (T) sourceObject;
         }
 
         // Delay this check as poor performance.
         if (javaClass.isInstance(sourceObject)) {
-            return sourceObject;
+            return (T) sourceObject;
         }
         if (ClassConstants.NOCONVERSION.isAssignableFrom(javaClass)) {
-            return sourceObject;
+            return (T) sourceObject;
         }
 
         throw ConversionException.couldNotBeConverted(sourceObject, javaClass);
@@ -474,7 +477,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
         if (sourceObject instanceof String) {
             if (((String)sourceObject).length() < 1) {
                 // ELBug336192 - Return default null value of char instead of returning null.
-                return (Character)getDefaultNullValue(ClassConstants.PCHAR);
+                return getDefaultNullValue(ClassConstants.PCHAR);
             }
             return ((String) sourceObject).charAt(0);
         }
@@ -522,8 +525,9 @@ public class ConversionManager extends CoreConversionManager implements Serializ
      * Build a valid Class from the string that is passed in
      *    @param sourceObject    Valid instance of String
      */
-    protected Class convertObjectToClass(Object sourceObject) throws ConversionException {
-        Class theClass = null;
+    @SuppressWarnings({"unchecked"})
+    protected <T> Class<T> convertObjectToClass(Object sourceObject) throws ConversionException {
+        Class<?> theClass = null;
         if (!(sourceObject instanceof String)) {
             throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.CLASS);
         }
@@ -536,7 +540,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
         } catch (Exception exception) {
             throw ConversionException.couldNotBeConvertedToClass(sourceObject, ClassConstants.CLASS, exception);
         }
-        return theClass;
+        return (Class<T>) theClass;
     }
 
     /**
@@ -738,7 +742,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
      */
     protected String convertObjectToString(Object sourceObject) throws ConversionException {
 
-        Class sourceObjectClass = sourceObject.getClass();
+        Class<?> sourceObjectClass = sourceObject.getClass();
 
         if (sourceObject instanceof java.lang.Number) {
             return sourceObject.toString();
@@ -764,7 +768,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
         } else if (sourceObjectClass == ClassConstants.ACHAR) {
             return new String(convertObjectToCharArray(sourceObject));
         } else if (sourceObject instanceof Class) {
-            return ((Class)sourceObject).getName();
+            return ((Class<?>)sourceObject).getName();
         } else if (sourceObjectClass == ClassConstants.CHAR) {
             return sourceObject.toString();
         } else if (sourceObject instanceof Clob) {
@@ -1102,7 +1106,8 @@ public class ConversionManager extends CoreConversionManager implements Serializ
      * Resolve the given String className into a class using this
      * ConversionManager's classloader.
      */
-    public Class convertClassNameToClass(String className) throws ConversionException {
+    @SuppressWarnings({"unchecked"})
+    public <T> Class<T> convertClassNameToClass(String className) throws ConversionException {
         return convertObjectToClass(className);
     }
 
@@ -1124,9 +1129,10 @@ public class ConversionManager extends CoreConversionManager implements Serializ
      * Allow for the null values for classes to be defaulted in one place.
      * Any nulls read from the database to be converted to the class will be given the specified null value.
      */
-    public Object getDefaultNullValue(Class theClass) {
+    @SuppressWarnings({"unchecked"})
+    public <T> T getDefaultNullValue(Class<T> theClass) {
         if (this.defaultNullValues == null) return null;
-        return getDefaultNullValues().get(theClass);
+        return (T) getDefaultNullValues().get(theClass);
     }
 
     /**
@@ -1134,7 +1140,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
      * Allow for the null values for classes to be defaulted in one place.
      * Any nulls read from the database to be converted to the class will be given the specified null value.
      */
-    public Map getDefaultNullValues() {
+    public Map<Class<?>, Object> getDefaultNullValues() {
         return defaultNullValues;
     }
 
@@ -1189,15 +1195,17 @@ public class ConversionManager extends CoreConversionManager implements Serializ
      * This should be used to load all classes as Class.forName can only
      * see classes on the same classpath as the eclipselink.jar.
      */
-    public static Class loadClass(String className) {
-        return (Class)getDefaultManager().convertObject(className, ClassConstants.CLASS);
+    @SuppressWarnings({"unchecked"})
+    public static <T> Class<T> loadClass(String className) {
+        return (Class<T>) getDefaultManager().convertObject(className, ClassConstants.CLASS);
     }
 
     /**
      * INTERNAL:
      * This is used to determine the wrapper class for a primitive.
      */
-    public static Class getObjectClass(Class javaClass) {
+    @SuppressWarnings({"unchecked"})
+    public static <T> Class<T> getObjectClass(Class<?> javaClass) {
         // Null means unknown always for classifications.
         if (javaClass == null) {
             return null;
@@ -1205,61 +1213,62 @@ public class ConversionManager extends CoreConversionManager implements Serializ
 
         if (javaClass.isPrimitive()) {
             if (javaClass == ClassConstants.PCHAR) {
-                return ClassConstants.CHAR;
+                return (Class<T>) ClassConstants.CHAR;
             }
             if (javaClass == ClassConstants.PINT) {
-                return ClassConstants.INTEGER;
+                return (Class<T>) ClassConstants.INTEGER;
             }
             if (javaClass == ClassConstants.PDOUBLE) {
-                return ClassConstants.DOUBLE;
+                return (Class<T>) ClassConstants.DOUBLE;
             }
             if (javaClass == ClassConstants.PFLOAT) {
-                return ClassConstants.FLOAT;
+                return (Class<T>) ClassConstants.FLOAT;
             }
             if (javaClass == ClassConstants.PLONG) {
-                return ClassConstants.LONG;
+                return (Class<T>) ClassConstants.LONG;
             }
             if (javaClass == ClassConstants.PSHORT) {
-                return ClassConstants.SHORT;
+                return (Class<T>) ClassConstants.SHORT;
             }
             if (javaClass == ClassConstants.PBYTE) {
-                return ClassConstants.BYTE;
+                return (Class<T>) ClassConstants.BYTE;
             }
             if (javaClass == ClassConstants.PBOOLEAN) {
-                return ClassConstants.BOOLEAN;
+                return (Class<T>) ClassConstants.BOOLEAN;
             }
             } else if (javaClass == ClassConstants.APBYTE) {
-                return ClassConstants.APBYTE;
+                return (Class<T>) ClassConstants.APBYTE;
             } else if (javaClass == ClassConstants.APCHAR) {
-                return ClassConstants.APCHAR;
+                return (Class<T>) ClassConstants.APCHAR;
             } else {
-                return javaClass;
+                return (Class<T>) javaClass;
             }
 
-        return javaClass;
+        return (Class<T>) javaClass;
     }
 
     /**
      * INTERNAL:
      * Returns a class based on the passed in string.
      */
-    public static Class getPrimitiveClass(String classType) {
+    @SuppressWarnings({"unchecked"})
+    public static <T> Class<T> getPrimitiveClass(String classType) {
         if (classType.equals("int")) {
-            return Integer.TYPE;
+            return (Class<T>) Integer.TYPE;
         } else if (classType.equals("boolean")) {
-            return Boolean.TYPE;
+            return (Class<T>) Boolean.TYPE;
         } else if (classType.equals("char")) {
-            return Character.TYPE;
+            return (Class<T>) Character.TYPE;
         } else if (classType.equals("short")) {
-            return Short.TYPE;
+            return (Class<T>) Short.TYPE;
         } else if (classType.equals("byte")) {
-            return Byte.TYPE;
+            return (Class<T>) Byte.TYPE;
         } else if (classType.equals("float")) {
-            return Float.TYPE;
+            return (Class<T>) Float.TYPE;
         } else if (classType.equals("double")) {
-            return Double.TYPE;
+            return (Class<T>) Double.TYPE;
         } else if (classType.equals("long")) {
-            return Long.TYPE;
+            return (Class<T>) Long.TYPE;
         }
 
         return null;
@@ -1280,9 +1289,9 @@ public class ConversionManager extends CoreConversionManager implements Serializ
      * Any nulls read from the database to be converted to the class will be given the specified null value.
      * Primitive null values should be set to the wrapper class.
      */
-    public void setDefaultNullValue(Class theClass, Object theValue) {
+    public void setDefaultNullValue(Class<?> theClass, Object theValue) {
         if (this.defaultNullValues == null){
-            this.defaultNullValues = new HashMap(5);
+            this.defaultNullValues = new HashMap<>(5);
         }
         getDefaultNullValues().put(theClass, theValue);
     }
@@ -1292,7 +1301,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
      * Allow for the null values for classes to be defaulted in one place.
      * Any nulls read from the database to be converted to the class will be given the specified null value.
      */
-    public void setDefaultNullValues(Map defaultNullValues) {
+    public void setDefaultNullValues(Map<Class<?>, Object> defaultNullValues) {
         this.defaultNullValues = defaultNullValues;
     }
 
@@ -1349,11 +1358,11 @@ public class ConversionManager extends CoreConversionManager implements Serializ
      * @param javaClass - the class that is converted from
      * @return - a vector of classes
      */
-    public Vector getDataTypesConvertedFrom(Class javaClass) {
+    public List<Class<?>> getDataTypesConvertedFrom(Class<?> javaClass) {
         if (dataTypesConvertedFromAClass.isEmpty()) {
             buildDataTypesConvertedFromAClass();
         }
-        return (Vector)dataTypesConvertedFromAClass.get(javaClass);
+        return dataTypesConvertedFromAClass.get(javaClass);
     }
 
     /**
@@ -1362,32 +1371,32 @@ public class ConversionManager extends CoreConversionManager implements Serializ
      * @param javaClass - the class that is converted to
      * @return - a vector of classes
      */
-    public Vector getDataTypesConvertedTo(Class javaClass) {
+    public List<Class<?>> getDataTypesConvertedTo(Class<?> javaClass) {
         if (dataTypesConvertedToAClass.isEmpty()) {
             buildDataTypesConvertedToAClass();
         }
-        return (Vector)dataTypesConvertedToAClass.get(javaClass);
+        return dataTypesConvertedToAClass.get(javaClass);
     }
 
-    protected Vector buildNumberVec() {
-        Vector vec = new Vector();
-        vec.addElement(BigInteger.class);
-        vec.addElement(BigDecimal.class);
-        vec.addElement(Byte.class);
-        vec.addElement(Double.class);
-        vec.addElement(Float.class);
-        vec.addElement(Integer.class);
-        vec.addElement(Long.class);
-        vec.addElement(Short.class);
-        vec.addElement(Number.class);
+    protected List<Class<?>> buildNumberVec() {
+        List<Class<?>> vec = new CopyOnWriteArrayList<>();
+        vec.add(BigInteger.class);
+        vec.add(BigDecimal.class);
+        vec.add(Byte.class);
+        vec.add(Double.class);
+        vec.add(Float.class);
+        vec.add(Integer.class);
+        vec.add(Long.class);
+        vec.add(Short.class);
+        vec.add(Number.class);
         return vec;
     }
 
-    protected Vector buildDateTimeVec() {
-        Vector vec = new Vector();
-        vec.addElement(java.util.Date.class);
-        vec.addElement(Timestamp.class);
-        vec.addElement(Calendar.class);
+    protected List<Class<?>> buildDateTimeVec() {
+        List<Class<?>> vec = new CopyOnWriteArrayList<>();
+        vec.add(java.util.Date.class);
+        vec.add(Timestamp.class);
+        vec.add(Calendar.class);
         return vec;
     }
 
@@ -1417,183 +1426,183 @@ public class ConversionManager extends CoreConversionManager implements Serializ
         dataTypesConvertedFromAClass.put(Character[].class, buildFromCharacterArrayVec());
     }
 
-    protected Vector buildFromBooleanVec() {
-        Vector vec = new Vector();
-        vec.addElement(String.class);
-        vec.addElement(Boolean.class);
-        vec.addElement(Integer.class);
-        vec.addElement(Long.class);
-        vec.addElement(Short.class);
-        vec.addElement(Number.class);
-        vec.addElement(Character[].class);
-        vec.addElement(char[].class);
-        vec.addElement(boolean.class);
-        vec.addElement(int.class);
-        vec.addElement(long.class);
-        vec.addElement(short.class);
+    protected List<Class<?>> buildFromBooleanVec() {
+        List<Class<?>> vec = new CopyOnWriteArrayList<>();
+        vec.add(String.class);
+        vec.add(Boolean.class);
+        vec.add(Integer.class);
+        vec.add(Long.class);
+        vec.add(Short.class);
+        vec.add(Number.class);
+        vec.add(Character[].class);
+        vec.add(char[].class);
+        vec.add(boolean.class);
+        vec.add(int.class);
+        vec.add(long.class);
+        vec.add(short.class);
         return vec;
     }
 
-    protected Vector buildFromNumberVec() {
-        Vector vec = buildNumberVec();
-        vec.addElement(String.class);
-        vec.addElement(Character.class);
-        vec.addElement(Boolean.class);
-        vec.addElement(Character[].class);
-        vec.addElement(char[].class);
-        vec.addElement(char.class);
-        vec.addElement(int.class);
-        vec.addElement(double.class);
-        vec.addElement(float.class);
-        vec.addElement(long.class);
-        vec.addElement(short.class);
-        vec.addElement(byte.class);
-        vec.addElement(boolean.class);
+    protected List<Class<?>> buildFromNumberVec() {
+        List<Class<?>> vec = buildNumberVec();
+        vec.add(String.class);
+        vec.add(Character.class);
+        vec.add(Boolean.class);
+        vec.add(Character[].class);
+        vec.add(char[].class);
+        vec.add(char.class);
+        vec.add(int.class);
+        vec.add(double.class);
+        vec.add(float.class);
+        vec.add(long.class);
+        vec.add(short.class);
+        vec.add(byte.class);
+        vec.add(boolean.class);
         return vec;
     }
 
-    protected Vector buildFromBigDecimalVec() {
+    protected List<Class<?>> buildFromBigDecimalVec() {
         return buildFromNumberVec();
     }
 
-    protected Vector buildFromBigIntegerVec() {
+    protected List<Class<?>> buildFromBigIntegerVec() {
         return buildFromNumberVec();
     }
 
-    protected Vector buildFromIntegerVec() {
+    protected List<Class<?>> buildFromIntegerVec() {
         return buildFromNumberVec();
     }
 
-    protected Vector buildFromFloatVec() {
+    protected List<Class<?>> buildFromFloatVec() {
         return buildFromNumberVec();
     }
 
-    protected Vector buildFromDoubleVec() {
+    protected List<Class<?>> buildFromDoubleVec() {
         return buildFromNumberVec();
     }
 
-    protected Vector buildFromShortVec() {
+    protected List<Class<?>> buildFromShortVec() {
         return buildFromNumberVec();
     }
 
-    protected Vector buildFromByteVec() {
+    protected List<Class<?>> buildFromByteVec() {
         return buildFromNumberVec();
     }
 
-    protected Vector buildFromLongVec() {
-        Vector vec = buildFromNumberVec();
+    protected List<Class<?>> buildFromLongVec() {
+        List<Class<?>> vec = buildFromNumberVec();
         vec.addAll(buildDateTimeVec());
-        vec.addElement(java.sql.Date.class);
-        vec.addElement(Time.class);
+        vec.add(java.sql.Date.class);
+        vec.add(Time.class);
         return vec;
     }
 
-    protected Vector buildFromStringVec() {
-        Vector vec = buildFromLongVec();
-        vec.addElement(Byte[].class);
-        vec.addElement(byte[].class);
-        vec.addElement(Clob.class);
+    protected List<Class<?>> buildFromStringVec() {
+        List<Class<?>> vec = buildFromLongVec();
+        vec.add(Byte[].class);
+        vec.add(byte[].class);
+        vec.add(Clob.class);
         return vec;
     }
 
-    protected Vector buildFromCharacterVec() {
-        Vector vec = new Vector();
-        vec.addElement(String.class);
-        vec.addElement(Boolean.class);
-        vec.addElement(Character[].class);
-        vec.addElement(Character.class);
-        vec.addElement(char[].class);
-        vec.addElement(char.class);
-        vec.addElement(boolean.class);
+    protected List<Class<?>> buildFromCharacterVec() {
+        List<Class<?>> vec = new CopyOnWriteArrayList<>();
+        vec.add(String.class);
+        vec.add(Boolean.class);
+        vec.add(Character[].class);
+        vec.add(Character.class);
+        vec.add(char[].class);
+        vec.add(char.class);
+        vec.add(boolean.class);
         return vec;
     }
 
-    protected Vector buildFromByteArrayVec() {
-        Vector vec = new Vector();
-        vec.addElement(String.class);
-        vec.addElement(byte[].class);
-        vec.addElement(Byte[].class);
-        vec.addElement(Character[].class);
-        vec.addElement(char[].class);
+    protected List<Class<?>> buildFromByteArrayVec() {
+        List<Class<?>> vec = new CopyOnWriteArrayList<>();
+        vec.add(String.class);
+        vec.add(byte[].class);
+        vec.add(Byte[].class);
+        vec.add(Character[].class);
+        vec.add(char[].class);
         return vec;
     }
 
-    protected Vector buildFromClobVec() {
-        Vector vec = new Vector();
-        vec.addElement(String.class);
-        vec.addElement(Character[].class);
-        vec.addElement(char[].class);
+    protected List<Class<?>> buildFromClobVec() {
+        List<Class<?>> vec = new CopyOnWriteArrayList<>();
+        vec.add(String.class);
+        vec.add(Character[].class);
+        vec.add(char[].class);
         return vec;
     }
 
-    protected Vector buildFromBlobVec() {
-        Vector vec = new Vector();
-        vec.addElement(String.class);
-        vec.addElement(Byte[].class);
-        vec.addElement(byte[].class);
-        vec.addElement(Character[].class);
-        vec.addElement(char[].class);
+    protected List<Class<?>> buildFromBlobVec() {
+        List<Class<?>> vec = new CopyOnWriteArrayList<>();
+        vec.add(String.class);
+        vec.add(Byte[].class);
+        vec.add(byte[].class);
+        vec.add(Character[].class);
+        vec.add(char[].class);
         return vec;
     }
 
-    protected Vector buildFromUtilDateVec() {
-        Vector vec = buildDateTimeVec();
-        vec.addElement(String.class);
-        vec.addElement(Long.class);
-        vec.addElement(java.sql.Date.class);
-        vec.addElement(Time.class);
-        vec.addElement(long.class);
-        vec.addElement(Character[].class);
-        vec.addElement(char[].class);
+    protected List<Class<?>> buildFromUtilDateVec() {
+        List<Class<?>> vec = buildDateTimeVec();
+        vec.add(String.class);
+        vec.add(Long.class);
+        vec.add(java.sql.Date.class);
+        vec.add(Time.class);
+        vec.add(long.class);
+        vec.add(Character[].class);
+        vec.add(char[].class);
         return vec;
     }
 
-    protected Vector buildFromTimestampVec() {
+    protected List<Class<?>>buildFromTimestampVec() {
         return buildFromUtilDateVec();
     }
 
-    protected Vector buildFromCalendarVec() {
+    protected List<Class<?>> buildFromCalendarVec() {
         return buildFromUtilDateVec();
     }
 
-    protected Vector buildFromDateVec() {
-        Vector vec = buildDateTimeVec();
-        vec.addElement(String.class);
-        vec.addElement(Long.class);
-        vec.addElement(java.sql.Date.class);
-        vec.addElement(long.class);
-        vec.addElement(Character[].class);
-        vec.addElement(char[].class);
+    protected List<Class<?>> buildFromDateVec() {
+        List<Class<?>> vec = buildDateTimeVec();
+        vec.add(String.class);
+        vec.add(Long.class);
+        vec.add(java.sql.Date.class);
+        vec.add(long.class);
+        vec.add(Character[].class);
+        vec.add(char[].class);
         return vec;
     }
 
-    protected Vector buildFromTimeVec() {
-        Vector vec = buildDateTimeVec();
-        vec.addElement(String.class);
-        vec.addElement(Long.class);
-        vec.addElement(Time.class);
-        vec.addElement(long.class);
-        vec.addElement(Character[].class);
-        vec.addElement(char[].class);
+    protected List<Class<?>> buildFromTimeVec() {
+        List<Class<?>> vec = buildDateTimeVec();
+        vec.add(String.class);
+        vec.add(Long.class);
+        vec.add(Time.class);
+        vec.add(long.class);
+        vec.add(Character[].class);
+        vec.add(char[].class);
         return vec;
     }
 
-    protected Vector buildFromByteObjectArraryVec() {
-        Vector vec = new Vector();
-        vec.addElement(Blob.class);
-        vec.addElement(byte[].class);
+    protected List<Class<?>> buildFromByteObjectArraryVec() {
+        List<Class<?>> vec = new CopyOnWriteArrayList<>();
+        vec.add(Blob.class);
+        vec.add(byte[].class);
         return vec;
     }
 
-    protected Vector buildFromCharArrayVec() {
-        Vector vec = new Vector();
-        vec.addElement(Clob.class);
+    protected List<Class<?>> buildFromCharArrayVec() {
+        List<Class<?>> vec = new CopyOnWriteArrayList<>();
+        vec.add(Clob.class);
         return vec;
     }
 
-    protected Vector buildFromCharacterArrayVec() {
-        Vector vec = new Vector();
-        vec.addElement(Clob.class);
+    protected List<Class<?>> buildFromCharacterArrayVec() {
+        List<Class<?>> vec = new CopyOnWriteArrayList<>();
+        vec.add(Clob.class);
         return vec;
     }
 
@@ -1623,159 +1632,159 @@ public class ConversionManager extends CoreConversionManager implements Serializ
         dataTypesConvertedToAClass.put(Blob.class, buildToBlobVec());
     }
 
-    protected Vector buildAllTypesToAClassVec() {
-        Vector vec = new Vector();
-        vec.addElement(String.class);
-        vec.addElement(Integer.class);
-        vec.addElement(java.util.Date.class);
-        vec.addElement(java.sql.Date.class);
-        vec.addElement(Time.class);
-        vec.addElement(Timestamp.class);
-        vec.addElement(Calendar.class);
-        vec.addElement(Character.class);
-        vec.addElement(Double.class);
-        vec.addElement(Float.class);
-        vec.addElement(Long.class);
-        vec.addElement(Short.class);
-        vec.addElement(Byte.class);
-        vec.addElement(BigInteger.class);
-        vec.addElement(BigDecimal.class);
-        vec.addElement(Number.class);
-        vec.addElement(Boolean.class);
-        vec.addElement(Character[].class);
-        vec.addElement(Blob.class);
-        vec.addElement(Clob.class);
+    protected List<Class<?>> buildAllTypesToAClassVec() {
+        List<Class<?>> vec = new CopyOnWriteArrayList<>();
+        vec.add(String.class);
+        vec.add(Integer.class);
+        vec.add(java.util.Date.class);
+        vec.add(java.sql.Date.class);
+        vec.add(Time.class);
+        vec.add(Timestamp.class);
+        vec.add(Calendar.class);
+        vec.add(Character.class);
+        vec.add(Double.class);
+        vec.add(Float.class);
+        vec.add(Long.class);
+        vec.add(Short.class);
+        vec.add(Byte.class);
+        vec.add(BigInteger.class);
+        vec.add(BigDecimal.class);
+        vec.add(Number.class);
+        vec.add(Boolean.class);
+        vec.add(Character[].class);
+        vec.add(Blob.class);
+        vec.add(Clob.class);
         return vec;
     }
 
-    protected Vector buildToBigDecimalVec() {
-        Vector vec = buildNumberVec();
-        vec.addElement(String.class);
+    protected List<Class<?>> buildToBigDecimalVec() {
+        List<Class<?>> vec = buildNumberVec();
+        vec.add(String.class);
         return vec;
     }
 
-    protected Vector buildToBigIntegerVec() {
+    protected List<Class<?>> buildToBigIntegerVec() {
         return buildToBigDecimalVec();
     }
 
-    protected Vector buildToBooleanVec() {
-        Vector vec = buildToBigDecimalVec();
-        vec.addElement(Character.class);
-        vec.addElement(Boolean.class);
+    protected List<Class<?>> buildToBooleanVec() {
+        List<Class<?>> vec = buildToBigDecimalVec();
+        vec.add(Character.class);
+        vec.add(Boolean.class);
         return vec;
     }
 
-    protected Vector buildToByteVec() {
+    protected List<Class<?>> buildToByteVec() {
         return buildToBigDecimalVec();
     }
 
-    protected Vector buildToDoubleVec() {
+    protected List<Class<?>> buildToDoubleVec() {
         return buildToBigDecimalVec();
     }
 
-    protected Vector buildToFloatVec() {
+    protected List<Class<?>> buildToFloatVec() {
         return buildToBigDecimalVec();
     }
 
-    protected Vector buildToIntegerVec() {
-        Vector vec = buildToBigDecimalVec();
-        vec.addElement(Boolean.class);
+    protected List<Class<?>> buildToIntegerVec() {
+        List<Class<?>> vec = buildToBigDecimalVec();
+        vec.add(Boolean.class);
         return vec;
     }
 
-    protected Vector buildToLongVec() {
-        Vector vec = buildToIntegerVec();
-        vec.addElement(Calendar.class);
-        vec.addElement(java.util.Date.class);
+    protected List<Class<?>> buildToLongVec() {
+        List<Class<?>> vec = buildToIntegerVec();
+        vec.add(Calendar.class);
+        vec.add(java.util.Date.class);
         return vec;
     }
 
-    protected Vector buildToNumberVec() {
+    protected List<Class<?>> buildToNumberVec() {
         return buildToIntegerVec();
     }
 
-    protected Vector buildToShortVec() {
+    protected List<Class<?>> buildToShortVec() {
         return buildToIntegerVec();
     }
 
-    protected Vector buildToByteArrayVec() {
-        Vector vec = new Vector();
-        vec.addElement(String.class);
-        vec.addElement(Blob.class);
-        vec.addElement(byte[].class);
-        vec.addElement(Byte[].class);
+    protected List<Class<?>> buildToByteArrayVec() {
+        List<Class<?>> vec = new CopyOnWriteArrayList<>();
+        vec.add(String.class);
+        vec.add(Blob.class);
+        vec.add(byte[].class);
+        vec.add(Byte[].class);
         return vec;
     }
 
-    protected Vector buildToByteObjectArrayVec() {
-        Vector vec = buildToByteArrayVec();
-        vec.addElement(Byte[].class);
+    protected List<Class<?>> buildToByteObjectArrayVec() {
+        List<Class<?>> vec = buildToByteArrayVec();
+        vec.add(Byte[].class);
         return vec;
     }
 
-    protected Vector buildToCharacterVec() {
-        Vector vec = buildToBigDecimalVec();
-        vec.addElement(Character.class);
+    protected List<Class<?>> buildToCharacterVec() {
+        List<Class<?>> vec = buildToBigDecimalVec();
+        vec.add(Character.class);
         return vec;
     }
 
-    protected Vector buildToCharacterArrayVec() {
+    protected List<Class<?>> buildToCharacterArrayVec() {
         return buildAllTypesToAClassVec();
     }
 
-    protected Vector buildToCharArrayVec() {
+    protected List<Class<?>> buildToCharArrayVec() {
         return buildAllTypesToAClassVec();
     }
 
-    protected Vector buildToStringVec() {
+    protected List<Class<?>> buildToStringVec() {
         return buildAllTypesToAClassVec();
     }
 
-    protected Vector buildToCalendarVec() {
-        Vector vec = buildDateTimeVec();
-        vec.addElement(String.class);
-        vec.addElement(Long.class);
-        vec.addElement(java.sql.Date.class);
-        vec.addElement(Time.class);
+    protected List<Class<?>> buildToCalendarVec() {
+        List<Class<?>> vec = buildDateTimeVec();
+        vec.add(String.class);
+        vec.add(Long.class);
+        vec.add(java.sql.Date.class);
+        vec.add(Time.class);
         return vec;
     }
 
-    protected Vector buildToTimestampVec() {
+    protected List<Class<?>> buildToTimestampVec() {
         return buildToCalendarVec();
     }
 
-    protected Vector buildToUtilDateVec() {
+    protected List<Class<?>> buildToUtilDateVec() {
         return buildToCalendarVec();
     }
 
-    protected Vector buildToDateVec() {
-        Vector vec = buildDateTimeVec();
-        vec.addElement(String.class);
-        vec.addElement(Long.class);
-        vec.addElement(java.sql.Date.class);
+    protected List<Class<?>> buildToDateVec() {
+        List<Class<?>> vec = buildDateTimeVec();
+        vec.add(String.class);
+        vec.add(Long.class);
+        vec.add(java.sql.Date.class);
         return vec;
     }
 
-    protected Vector buildToTimeVec() {
-        Vector vec = buildDateTimeVec();
-        vec.addElement(String.class);
-        vec.addElement(Long.class);
-        vec.addElement(Time.class);
+    protected List<Class<?>> buildToTimeVec() {
+        List<Class<?>> vec = buildDateTimeVec();
+        vec.add(String.class);
+        vec.add(Long.class);
+        vec.add(Time.class);
         return vec;
     }
 
-    protected Vector buildToBlobVec() {
-        Vector vec = new Vector();
-        vec.addElement(Byte[].class);
-        vec.addElement(byte[].class);
+    protected List<Class<?>> buildToBlobVec() {
+        List<Class<?>> vec = new CopyOnWriteArrayList<>();
+        vec.add(Byte[].class);
+        vec.add(byte[].class);
         return vec;
     }
 
-    protected Vector buildToClobVec() {
-        Vector vec = new Vector();
-        vec.addElement(String.class);
-        vec.addElement(char[].class);
-        vec.addElement(Character[].class);
+    protected List<Class<?>> buildToClobVec() {
+        List<Class<?>> vec = new CopyOnWriteArrayList<>();
+        vec.add(String.class);
+        vec.add(char[].class);
+        vec.add(Character[].class);
         return vec;
     }
 }

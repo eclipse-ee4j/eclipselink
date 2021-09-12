@@ -278,8 +278,8 @@ public class EntityManagerFactoryProvider {
      * @param source
      * @return the target object
      */
-    public static Map mergeMaps(Map target, Map source){
-        Map map = new HashMap();
+    public static <K, V> Map<K, V> mergeMaps(Map<K, V> target, Map<K, V> source){
+        Map<K, V> map = new HashMap<>();
         if (source != null){
             map.putAll(source);
         }
@@ -296,11 +296,11 @@ public class EntityManagerFactoryProvider {
      * @param keysToBeRemoved
      * @return the target object
      */
-    public static Map removeSpecifiedProperties(Map source, Collection keysToBeRemoved){
-        Map target = new HashMap();
+    public static <K, V> Map<K, V> removeSpecifiedProperties(Map<K, V> source, Collection<K> keysToBeRemoved){
+        Map<K, V> target = new HashMap<>();
         if (source != null){
             target.putAll(source);
-            Iterator it = keysToBeRemoved.iterator();
+            Iterator<K> it = keysToBeRemoved.iterator();
             while(it.hasNext()) {
                 target.remove(it.next());
             }
@@ -314,13 +314,13 @@ public class EntityManagerFactoryProvider {
      * @param keysToBeKept
      * @return the target object
      */
-    public static Map keepSpecifiedProperties(Map source, Collection keysToBeKept){
-        Map target = new HashMap();
+    public static <K, V> Map<K, V> keepSpecifiedProperties(Map<K, V> source, Collection<K> keysToBeKept){
+        Map target = new HashMap<>();
         if (source != null){
             target.putAll(source);
-            Iterator<Map.Entry> it = source.entrySet().iterator();
+            Iterator<Map.Entry<K, V>> it = source.entrySet().iterator();
             while(it.hasNext()) {
-                Map.Entry entry = it.next();
+                Map.Entry<K, V> entry = it.next();
                 if(keysToBeKept.contains(entry.getKey())) {
                     target.put(entry.getKey(), entry.getValue());
                 }
@@ -337,14 +337,14 @@ public class EntityManagerFactoryProvider {
      * @param keysToBeKept
      * @return the target object
      */
-    public static Map[] splitSpecifiedProperties(Map source, Collection keysToBeKept){
-        HashMap in = new HashMap();
-        HashMap out = new HashMap();
+    public static <K, V> Map<K, V>[] splitSpecifiedProperties(Map<K, V> source, Collection<K> keysToBeKept){
+        HashMap<K, V> in = new HashMap<>();
+        HashMap<K, V> out = new HashMap<>();
         Map[] target = new Map[]{in, out};
         if (source != null){
-            Iterator<Map.Entry> it = source.entrySet().iterator();
+            Iterator<Map.Entry<K, V>> it = source.entrySet().iterator();
             while(it.hasNext()) {
-                Map.Entry entry = it.next();
+                Map.Entry<K, V> entry = it.next();
                 if(keysToBeKept.contains(entry.getKey())) {
                     in.put(entry.getKey(), entry.getValue());
                 } else {
@@ -366,15 +366,16 @@ public class EntityManagerFactoryProvider {
      * @param keys is array of Maps of size n
      * @return the target object is array of Maps of size n+1
      */
-    public static Map[] splitProperties(Map source, Collection[] keys){
-        Map[] target = new Map[keys.length + 1];
+    public static <K, V> Map<K, V>[] splitProperties(Map<K, V> source, Collection<K>[] keys){
+        @SuppressWarnings({"unchecked"})
+        Map<K, V>[] target = (Map<K, V>[]) new Map[keys.length + 1];
         for (int i=0; i <= keys.length; i++) {
-            target[i] = new HashMap();
+            target[i] = new HashMap<>();
         }
         if (source != null){
-            Iterator<Map.Entry> it = source.entrySet().iterator();
+            Iterator<Map.Entry<K, V>> it = source.entrySet().iterator();
             while(it.hasNext()) {
-                Map.Entry entry = it.next();
+                Map.Entry<K, V> entry = it.next();
                 boolean isFound = false;
                 for (int i=0; i < keys.length && !isFound; i++) {
                     if (keys[i].contains(entry.getKey())) {

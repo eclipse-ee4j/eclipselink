@@ -79,7 +79,7 @@ public class STI_JoinedAttributeTest extends TestCase {
     private static boolean isTestMethod(Method m) {
         String name= m.getName();
         Class[] parameters= m.getParameterTypes();
-        Class returnType= m.getReturnType();
+        Class<?> returnType= m.getReturnType();
         return parameters.length == 0 && name.startsWith("test") && returnType.equals(Void.TYPE);
      }
 

@@ -253,7 +253,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         if (getBaseQuery().hasPartialAttributeExpressions()) {
             fieldIndex = getDescriptor().getPrimaryKeyFields().size(); // Query will select pks
             //next check for any partial attributes that are not joined attributes
-            Iterator partialAttributes = ((ObjectLevelReadQuery)getBaseQuery()).getPartialAttributeExpressions().iterator();
+            Iterator<Expression> partialAttributes = ((ObjectLevelReadQuery)getBaseQuery()).getPartialAttributeExpressions().iterator();
             while(partialAttributes.hasNext()){
                 Expression expression = (Expression)partialAttributes.next();
                 if (expression.isQueryKeyExpression()){
@@ -879,7 +879,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         }
         ObjectBuilder objectBuilder = getDescriptor().getObjectBuilder();
         if (objectBuilder.hasJoinedAttributes()) {
-            List mappingJoinedAttributes = objectBuilder.getJoinedAttributes();
+            List<DatabaseMapping> mappingJoinedAttributes = objectBuilder.getJoinedAttributes();
             if (!hasJoinedAttributeExpressions()) {
                 for (int i = 0; i < mappingJoinedAttributes.size(); i++) {
                     ForeignReferenceMapping mapping = (ForeignReferenceMapping) mappingJoinedAttributes.get(i);

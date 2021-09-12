@@ -17,8 +17,10 @@
 package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
@@ -148,7 +150,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
         if (((SingularAttribute)assoc).getType().getPersistenceType().equals(PersistenceType.BASIC)){
             throw new IllegalStateException(ExceptionLocalization.buildMessage("CAN_NOT_JOIN_TO_BASIC"));
         }
-        Class clazz = assoc.getBindableJavaType();
+        Class<Y> clazz = assoc.getBindableJavaType();
         Fetch<X, Y> join = null;
         ObjectExpression exp = ((ObjectExpression)this.currentNode).newDerivedExpressionNamed(assoc.getName());
         if (jt.equals(JoinType.LEFT)){
@@ -276,7 +278,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
             return new PathImpl<Y>(this, this.metamodel, att.getBindableJavaType(),this.currentNode.get(att.getName()), att);
         }else{
             Class<Y> clazz = att.getBindableJavaType();
-            Join join = new JoinImpl<X, Y>(this, this.metamodel.managedType(clazz), this.metamodel, clazz,this.currentNode.get(att.getName()), att);
+            Join<X, Y> join = new JoinImpl<>(this, this.metamodel.managedType(clazz), this.metamodel, clazz,this.currentNode.get(att.getName()), att);
             this.joins.add(join);
             return join;
         }
@@ -294,7 +296,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
     public <E, C extends java.util.Collection<E>> Expression<C> get(PluralAttribute<X, C, E> collection){
 
         // This is a special Expression that represents just the collection for member of etc...
-        return new ExpressionImpl<C>(this.metamodel, ClassConstants.Collection_Class ,this.currentNode.anyOf(collection.getName()));
+        return new ExpressionImpl<C>(this.metamodel, (Class<C>) ((Class<E>) Class.class) ,this.currentNode.anyOf(collection.getName()));
     }
 
     /**
@@ -306,7 +308,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
      */
     @Override
     public <K, V, M extends java.util.Map<K, V>> Expression<M> get(MapAttribute<X, K, V> map){
-        return new ExpressionImpl<M>(this.metamodel, ClassConstants.Map_Class ,this.currentNode.anyOf(map.getName()));
+        return new ExpressionImpl<M>(this.metamodel, (Class<M>) ((Class<?>) Class.class) ,this.currentNode.anyOf(map.getName()));
     }
 
     /**
@@ -367,7 +369,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
         if (((SingularAttribute)attribute).getType().getPersistenceType().equals(PersistenceType.BASIC)){
             throw new IllegalStateException(ExceptionLocalization.buildMessage("CAN_NOT_JOIN_TO_BASIC"));
         }
-        Class clazz = attribute.getBindableJavaType();
+        Class<Y> clazz = attribute.getBindableJavaType();
         Join<X, Y> join = null;
         ObjectExpression exp = ((ObjectExpression)this.currentNode).newDerivedExpressionNamed(attribute.getName());
         if (jt.equals(JoinType.LEFT)){
@@ -406,7 +408,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
     @Override
     public <Y> CollectionJoin<X, Y> join(CollectionAttribute<? super X, Y> collection, JoinType jt) {
         org.eclipse.persistence.expressions.Expression node;
-        Class clazz = collection.getBindableJavaType();
+        Class<Y> clazz = collection.getBindableJavaType();
         CollectionJoin<X, Y> join = null;
         if (jt.equals(JoinType.INNER)) {
             node = this.currentNode.anyOf(collection.getName());
@@ -428,7 +430,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
     @Override
     public <Y> SetJoin<X, Y> join(jakarta.persistence.metamodel.SetAttribute<? super X, Y> set, JoinType jt) {
         org.eclipse.persistence.expressions.Expression node;
-        Class clazz = set.getBindableJavaType();
+        Class<Y> clazz = set.getBindableJavaType();
         SetJoin<X, Y> join = null;
         if (jt.equals(JoinType.INNER)) {
             node = this.currentNode.anyOf(set.getName());
@@ -450,7 +452,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
     @Override
     public <Y> ListJoin<X, Y> join(ListAttribute<? super X, Y> list, JoinType jt) {
         org.eclipse.persistence.expressions.Expression node;
-        Class clazz = list.getBindableJavaType();
+        Class<Y> clazz = list.getBindableJavaType();
         ListJoin<X, Y> join = null;
         if (jt.equals(JoinType.INNER)) {
             node = this.currentNode.anyOf(list.getName());
@@ -472,7 +474,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
     @Override
     public <K, V> MapJoin<X, K, V> join(MapAttribute<? super X, K, V> map, JoinType jt) {
         org.eclipse.persistence.expressions.Expression node;
-        Class clazz = map.getBindableJavaType();
+        Class<V> clazz = map.getBindableJavaType();
         MapJoin<X, K, V> join = null;
         if (jt.equals(JoinType.INNER)) {
             node = this.currentNode.anyOf(map.getName());

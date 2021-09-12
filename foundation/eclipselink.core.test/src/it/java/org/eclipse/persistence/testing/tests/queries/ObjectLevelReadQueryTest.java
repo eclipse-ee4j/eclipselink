@@ -50,7 +50,7 @@ public abstract class ObjectLevelReadQueryTest extends TestCase {
     protected Session session;
 
     /** Some entity to be used in query. */
-    protected final Class entity = Employee.class;
+    protected final Class<Employee> entity = Employee.class;
 
     /** Some SQL call to be used in query. */
     protected final SQLCall call = new SQLCall("SELECT t0.EMP_ID FROM EMPLOYEE t0");

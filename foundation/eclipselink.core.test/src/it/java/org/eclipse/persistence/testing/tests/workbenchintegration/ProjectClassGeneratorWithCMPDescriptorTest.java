@@ -89,7 +89,7 @@ public class ProjectClassGeneratorWithCMPDescriptorTest extends AutoVerifyTestCa
                          "failure, or could result if you do not have the tools.jar from your JDK on the classpath.");
             }
             //Class projectClass = (Class) getSession().getPlatform().getConversionManager().convertObject(projectShortClassName, ClassConstants.CLASS);
-            Class projectClass = Class.forName(projectShortClassName);
+            Class<?> projectClass = Class.forName(projectShortClassName);
             generatedProject = (org.eclipse.persistence.sessions.Project)projectClass.getConstructor().newInstance();
         } catch (Exception exception) {
             throw new TestErrorException("Failed obtain new project instance from the generated and compiled project. " +

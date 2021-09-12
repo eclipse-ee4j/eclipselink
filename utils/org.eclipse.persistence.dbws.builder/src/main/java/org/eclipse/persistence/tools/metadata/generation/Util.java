@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,6 @@
 //     David McCann - 2.6.0 - July 09, 2013 - Initial Implementation
 package org.eclipse.persistence.tools.metadata.generation;
 
-import static org.eclipse.persistence.internal.helper.ClassConstants.Object_Class;
 import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes.XMLType;
 
 import java.sql.Types;
@@ -23,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.tools.oracleddl.metadata.DatabaseType;
@@ -360,7 +360,7 @@ public class Util {
     public static Class<?> getClassFromJDBCTypeName(String typeName, DatabasePlatform databasePlatform) {
         Class<?> clz = databasePlatform.getClassTypes().get(typeName);
         if (clz == null) {
-            return Object_Class;
+            return CoreClassConstants.OBJECT;
         }
         return clz;
     }

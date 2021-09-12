@@ -1370,7 +1370,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         Vector expectedResult = (Vector)getServerSession().executeQuery(raq);
 
-        double salarySquareRoot = Math.sqrt(((double) ((Employee) expectedResult.firstElement()).getSalary()));
+        double salarySquareRoot = Math.sqrt(((Employee) expectedResult.firstElement()).getSalary());
 
         clearCache();
 
@@ -1423,7 +1423,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         Vector expectedResult = (Vector)getServerSession().executeQuery(raq);
 
-        double salarySquareRoot = Math.sqrt(((double) ((Employee) expectedResult.firstElement()).getSalary()));
+        double salarySquareRoot = Math.sqrt(((Employee) expectedResult.firstElement()).getSalary());
 
         clearCache();
 

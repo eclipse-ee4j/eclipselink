@@ -49,7 +49,7 @@ public class UseTransparentMapOnCollectionMapping extends ProjectClassGeneratorR
         descriptorToModify = project.getDescriptors().get(Employee.class);
         policy = new TransparentIndirectionPolicy();
         mapPolicy = new MapContainerPolicy();
-        for (Enumeration mappingsEnum = (descriptorToModify.getMappings()).elements();
+        for (Enumeration<DatabaseMapping> mappingsEnum = (descriptorToModify.getMappings()).elements();
              mappingsEnum.hasMoreElements(); ) {
             mappingToModify = (DatabaseMapping)mappingsEnum.nextElement();
 

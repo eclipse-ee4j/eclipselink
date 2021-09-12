@@ -57,7 +57,7 @@ public class ClientServerTest extends AutoVerifyTestCase {
     public void copyDescriptors(Session session) {
         Vector descriptors = new Vector();
 
-        for (Iterator iterator = session.getDescriptors().values().iterator(); iterator.hasNext(); ) {
+        for (Iterator<ClassDescriptor> iterator = session.getDescriptors().values().iterator(); iterator.hasNext(); ) {
             ClassDescriptor desc = (ClassDescriptor)iterator.next();
             descriptors.addElement(desc);
             // it's an isolated descriptor, but the test requires no isolation.

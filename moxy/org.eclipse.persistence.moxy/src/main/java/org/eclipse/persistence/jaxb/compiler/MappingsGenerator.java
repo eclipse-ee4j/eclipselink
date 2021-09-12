@@ -2119,7 +2119,7 @@ public class MappingsGenerator {
                         Class declaredClass;
                         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                                 try {
-                                    declaredClass = AccessController.doPrivileged(new PrivilegedClassForName(componentType.getRawName(), false, helper.getClassLoader()));
+                                    declaredClass = AccessController.doPrivileged(new PrivilegedClassForName<>(componentType.getRawName(), false, helper.getClassLoader()));
                                 } catch (PrivilegedActionException exception) {
                                     throw JAXBException.classNotFoundException(componentType.getRawName());
                                 }
@@ -2139,7 +2139,7 @@ public class MappingsGenerator {
                         Class declaredClass;
                         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                                 try {
-                                    declaredClass = AccessController.doPrivileged(new PrivilegedClassForName(itemType.getRawName(), false, helper.getClassLoader()));
+                                    declaredClass = AccessController.doPrivileged(new PrivilegedClassForName<>(itemType.getRawName(), false, helper.getClassLoader()));
                                 } catch (PrivilegedActionException exception) {
                                     throw JAXBException.classNotFoundException(itemType.getRawName());
                                 }

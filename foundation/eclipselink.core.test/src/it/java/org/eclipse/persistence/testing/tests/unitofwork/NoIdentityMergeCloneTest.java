@@ -66,7 +66,7 @@ public class NoIdentityMergeCloneTest extends TransactionalTestCase {
         // because it may not be the same for all descriptors.
         this.checkCacheState = new Hashtable(10);
         this.identityMapTypes = new Hashtable(10);
-        Iterator iterator = getSession().getProject().getDescriptors().values().iterator();
+        Iterator<ClassDescriptor> iterator = getSession().getProject().getDescriptors().values().iterator();
         while (iterator.hasNext()) {
             ClassDescriptor descriptor = (ClassDescriptor)iterator.next();
             checkCacheState.put(descriptor,

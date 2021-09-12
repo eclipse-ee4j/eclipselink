@@ -32,7 +32,7 @@ public class Phone  {
     }
 
     public String toString() {
-        return "Phone(number=" + (Integer) number + ")";
+        return "Phone(number=" + number + ")";
     }
 
     public boolean equals(Object object) {

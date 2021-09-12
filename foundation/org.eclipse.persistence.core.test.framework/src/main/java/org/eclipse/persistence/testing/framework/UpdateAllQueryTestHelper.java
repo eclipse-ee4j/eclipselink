@@ -217,7 +217,7 @@ public class UpdateAllQueryTestHelper {
 
         if(handleChildren) {
             if(descriptor.hasInheritance() && descriptor.getInheritancePolicy().hasChildren()) {
-                Iterator it = descriptor.getInheritancePolicy().getChildDescriptors().iterator();
+                Iterator<ClassDescriptor> it = descriptor.getInheritancePolicy().getChildDescriptors().iterator();
                 while(it.hasNext()) {
                     ClassDescriptor childDescriptor = (ClassDescriptor)it.next();
                     Class childReferenceClass = childDescriptor.getJavaClass();

@@ -24,6 +24,7 @@ import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
 // EclipseLink imports
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.sessions.Project;
 
@@ -114,7 +115,7 @@ public abstract class NamespaceResolvableProject extends Project {
     protected abstract void buildDescriptors();
 
     protected void setNamespaceResolverOnDescriptors() {
-        for (Iterator descriptors = getDescriptors().values().iterator(); descriptors.hasNext();) {
+        for (Iterator<ClassDescriptor> descriptors = getDescriptors().values().iterator(); descriptors.hasNext();) {
             XMLDescriptor descriptor = (XMLDescriptor)descriptors.next();
             descriptor.setNamespaceResolver(ns);
         }

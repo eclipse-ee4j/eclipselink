@@ -598,7 +598,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      * inserted and added to the objectChangesList
      */
     public void removeObjectChangeSetFromNewList(ObjectChangeSet objectChangeSet, AbstractSession session) {
-        Map table = getNewObjectChangeSets().get(objectChangeSet.getClassType(session));
+        Map<ObjectChangeSet, ObjectChangeSet> table = getNewObjectChangeSets().get(objectChangeSet.getClassType(session));
         if (table != null) {
             table.remove(objectChangeSet);
         }
@@ -616,7 +616,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
         if (changeSet.isAggregate()) {
             getAggregateChangeSets().remove(changeSet);
         } else {
-            Map classChanges = getObjectChanges().get(object.getClass());
+            Map<ObjectChangeSet, ObjectChangeSet> classChanges = getObjectChanges().get(object.getClass());
             if (classChanges != null) {
                 classChanges.remove(changeSet);
             }

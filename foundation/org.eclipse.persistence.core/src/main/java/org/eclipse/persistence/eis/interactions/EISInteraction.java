@@ -241,8 +241,8 @@ public abstract class EISInteraction extends DatasourceCall {
                     recordName = valuesRow.getFields().get(0).getTableName();
                 }
                 MappedRecord record = accessor.getRecordFactory().createMappedRecord(recordName);
-                for (Iterator keysIterator = valuesRow.getFields().iterator();
-                         keysIterator.hasNext();) {
+                for (Iterator<DatabaseField> keysIterator = valuesRow.getFields().iterator();
+                     keysIterator.hasNext();) {
                     DatabaseField field = (DatabaseField)keysIterator.next();
                     Object elementValue = createRecordElement(field.getName(), valuesRow.get(field), accessor);
                     accessor.getEISPlatform().setValueInRecord(field.getName(), elementValue, record, accessor);

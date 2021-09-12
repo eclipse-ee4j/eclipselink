@@ -463,7 +463,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        attributeClass = AccessController.doPrivileged(new PrivilegedClassForName(getAttributeClassificationName(), true, classLoader));
+                        attributeClass = AccessController.doPrivileged(new PrivilegedClassForName<>(getAttributeClassificationName(), true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(getAttributeClassificationName(), exception.getException());
                     }
@@ -481,7 +481,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        fieldClassification = AccessController.doPrivileged(new PrivilegedClassForName(fieldClassificationClassName, true, classLoader));
+                        fieldClassification = AccessController.doPrivileged(new PrivilegedClassForName<>(fieldClassificationClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(fieldClassificationClassName, exception.getException());
                     }
@@ -952,7 +952,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
             }
         }
 
-        Map nullValues = session.getPlatform(this.descriptor.getJavaClass()).getConversionManager().getDefaultNullValues();
+        Map<Class<?>, Object> nullValues = session.getPlatform(this.descriptor.getJavaClass()).getConversionManager().getDefaultNullValues();
         bypassDefaultNullValueCheck = (!this.attributeClassification.isPrimitive()) &&
                 ((nullValues == null) || (!nullValues.containsKey(this.attributeClassification)));
     }

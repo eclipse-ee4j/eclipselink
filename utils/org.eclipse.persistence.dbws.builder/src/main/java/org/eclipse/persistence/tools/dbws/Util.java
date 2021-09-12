@@ -41,8 +41,6 @@ import static javax.xml.XMLConstants.NULL_NS_URI;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 import static org.eclipse.persistence.internal.helper.ClassConstants.BIGDECIMAL;
 import static org.eclipse.persistence.internal.helper.ClassConstants.BOOLEAN;
-import static org.eclipse.persistence.internal.helper.ClassConstants.JavaSqlDate_Class;
-import static org.eclipse.persistence.internal.helper.ClassConstants.JavaSqlTimestamp_Class;
 import static org.eclipse.persistence.internal.helper.ClassConstants.STRING;
 import static org.eclipse.persistence.internal.oxm.Constants.BASE_64_BINARY_QNAME;
 import static org.eclipse.persistence.internal.oxm.Constants.COLON;
@@ -74,6 +72,7 @@ import javax.xml.namespace.QName;
 
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.schema.model.Any;
 import org.eclipse.persistence.internal.oxm.schema.model.ComplexType;
@@ -674,10 +673,10 @@ public class Util {
                 return BOOLEAN;
             }
             if (DATE_STR.equals(typeName)) {
-                return JavaSqlDate_Class;
+                return CoreClassConstants.SQLDATE;
             }
             if (TIMESTAMP_STR.equals(typeName)) {
-                return JavaSqlTimestamp_Class;
+                return CoreClassConstants.TIMESTAMP;
             }
         }
         return STRING;

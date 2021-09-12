@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
@@ -69,7 +70,7 @@ public class NamedSubgraphMetadata extends ORMetadata {
         super(namedSubgraph, accessor);
 
         m_name = namedSubgraph.getAttributeString("name");
-        m_type = getMetadataClass(namedSubgraph.getAttributeClass("type", ClassConstants.Object_Class));
+        m_type = getMetadataClass(namedSubgraph.getAttributeClass("type", CoreClassConstants.OBJECT));
 
         for (Object attributeNode : namedSubgraph.getAttributeArray("attributeNodes")) {
             m_namedAttributeNodes.add(new NamedAttributeNodeMetadata((MetadataAnnotation) attributeNode, accessor));
@@ -161,7 +162,7 @@ public class NamedSubgraphMetadata extends ORMetadata {
         if (m_typeName != null && ! m_typeName.equals("")) {
             m_type = initXMLClassName(m_typeName);
         } else {
-            m_type = getMetadataClass(ClassConstants.Object_Class);
+            m_type = getMetadataClass(CoreClassConstants.OBJECT);
         }
     }
 

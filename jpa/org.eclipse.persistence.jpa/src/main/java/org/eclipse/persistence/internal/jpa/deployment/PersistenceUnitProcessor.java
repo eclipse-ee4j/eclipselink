@@ -137,9 +137,9 @@ public class PersistenceUnitProcessor {
         Set<String> set = new HashSet<String>();
         set.addAll(persistenceUnitInfo.getManagedClassNames());
         ClassLoader loader = persistenceUnitInfo.getClassLoader();
-        Iterator i = persistenceUnitInfo.getJarFileUrls().iterator();
+        Iterator<URL> i = persistenceUnitInfo.getJarFileUrls().iterator();
         while (i.hasNext()) {
-            set.addAll(getClassNamesFromURL((URL)i.next(), loader, properties));
+            set.addAll(getClassNamesFromURL(i.next(), loader, properties));
         }
         if (!persistenceUnitInfo.excludeUnlistedClasses()){
             set.addAll(getClassNamesFromURL(persistenceUnitInfo.getPersistenceUnitRootUrl(), loader, properties));
@@ -421,7 +421,7 @@ public class PersistenceUnitProcessor {
             descriptorPath = PrivilegedAccessHelper.getSystemProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT);
         }
         Set<Archive> archives = findPersistenceArchives(loader, descriptorPath, jarFileUrls, m);
-        Set<SEPersistenceUnitInfo> puInfos = new HashSet();
+        Set<SEPersistenceUnitInfo> puInfos = new HashSet<>();
         try {
             for(Archive archive : archives) {
                 List<SEPersistenceUnitInfo> puInfosFromArchive = getPersistenceUnits(archive, loader);
@@ -461,7 +461,7 @@ public class PersistenceUnitProcessor {
         } else {
             try {
                 if (loader != null) {
-                    Class archiveClass = loader.loadClass(factoryClassName);
+                    Class<?> archiveClass = loader.loadClass(factoryClassName);
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                         try {
                             factory = (ArchiveFactory)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(archiveClass));

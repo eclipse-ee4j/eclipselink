@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -85,9 +85,9 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
     @Override
     public void initializeServerNameAndVersion() {
         try {
-            Class clazz = PrivilegedAccessHelper.getClassForName("weblogic.version");
+            Class<Object> clazz = PrivilegedAccessHelper.getClassForName("weblogic.version");
             Method method = PrivilegedAccessHelper.getMethod(clazz, "getReleaseBuildVersion", null, false);
-            this.serverNameAndVersion = (String) PrivilegedAccessHelper.invokeMethod(method, null, null);
+            this.serverNameAndVersion = PrivilegedAccessHelper.invokeMethod(method, null, null);
             this.shouldClearStatementCache = Helper.compareVersions(this.serverNameAndVersion, "10.3.4") < 0;
         } catch (Exception exception) {
             getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, exception);
@@ -119,7 +119,7 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
     protected Class getWebLogicConnectionClass() {
         if (this.weblogicConnectionClass == null) {
             try {
-                this.weblogicConnectionClass = (Class) getDatabaseSession().getPlatform().convertObject("weblogic.jdbc.extensions.WLConnection", Class.class);
+                this.weblogicConnectionClass = getDatabaseSession().getPlatform().convertObject("weblogic.jdbc.extensions.WLConnection", Class.class);
             } catch (Throwable exception) {
                 getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, exception);
                 this.weblogicConnectionClass = void.class;
@@ -150,7 +150,7 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
     public Connection unwrapConnection(Connection connection) {
         if (getWebLogicConnectionClass().isInstance(connection) && getVendorConnectionMethod() != null) {
             try {
-                return (Connection) PrivilegedAccessHelper.invokeMethod(getVendorConnectionMethod(), connection);
+                return PrivilegedAccessHelper.invokeMethod(getVendorConnectionMethod(), connection);
             } catch (IllegalAccessException exception) {
                 getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, exception);
             } catch (InvocationTargetException exception) {

@@ -1216,7 +1216,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
             // Ignore, but can't check first because need to support running 9.0.4.
         }
         // Configure the JPA tests login and logging.
-        Map properties = org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper.getDatabaseProperties();
+        Map<String, String> properties = org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper.getDatabaseProperties();
         if(getExecutor().getSession().getDatasourceLogin() instanceof DatabaseLogin && getExecutor().getSession().getLogin().getConnector() instanceof DefaultConnector) {
             properties.put(PersistenceUnitProperties.JDBC_DRIVER, getExecutor().getSession().getLogin().getDriverClassName());
             properties.put(PersistenceUnitProperties.JDBC_URL, getExecutor().getSession().getLogin().getConnectionString());

@@ -70,7 +70,7 @@ public class MappingsTestCases extends SDOTestCase {
         assertTrue(doSimpleList.contains("FOO"));
         assertTrue(doSimpleList.contains("BAR"));
 
-        List simpleList = root.getSimpleList();
+        List<String> simpleList = root.getSimpleList();
         assertEquals(2, simpleList.size());
         assertTrue(simpleList.contains("FOO"));
         assertTrue(simpleList.contains("BAR"));

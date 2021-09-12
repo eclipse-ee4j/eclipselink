@@ -454,7 +454,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
     */
     public void applyORMMetadata(AbstractSession ormSession) {
         //Iterate over the ORM descriptors and check for matching OXM descriptors
-        Iterator ormDescriptors = ormSession.getDescriptors().values().iterator();
+        Iterator<ClassDescriptor> ormDescriptors = ormSession.getDescriptors().values().iterator();
         while(ormDescriptors.hasNext()) {
             ClassDescriptor ormDescriptor = (ClassDescriptor)ormDescriptors.next();
             Class javaClass = ormDescriptor.getJavaClass();
@@ -732,7 +732,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
          */
         private void addSession(DatabaseSession sessionToAdd) {
             if ((sessionToAdd.getDatasourceLogin() == null) || !(sessionToAdd.getDatasourceLogin().getDatasourcePlatform() instanceof XMLPlatform)) {
-                XMLPlatform platform = new SAXPlatform();
+                XMLPlatform<org.eclipse.persistence.internal.oxm.XMLUnmarshaller> platform = new SAXPlatform();
                 sessionToAdd.setLogin(new XMLLogin(platform));
             }
             DatabaseSession session = sessionToAdd.getProject().createDatabaseSession();
@@ -772,7 +772,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
                 dbSession = (DatabaseSession) SessionManager.getManager().getSession(sessionLoader, sessionName, privilegedGetClassLoaderForClass(this.getClass()), false, false, false);
             }
             if ((dbSession.getDatasourceLogin() == null) || !(dbSession.getDatasourceLogin().getDatasourcePlatform() instanceof XMLPlatform)) {
-                XMLPlatform platform = new SAXPlatform();
+                XMLPlatform<org.eclipse.persistence.internal.oxm.XMLUnmarshaller> platform = new SAXPlatform();
                 dbSession.setLogin(new XMLLogin(platform));
             }
             DatabaseSession session = dbSession.getProject().createDatabaseSession();
@@ -896,7 +896,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
         @Override
         protected void preLogin(Project project, ClassLoader classLoader) {
             if ((project.getDatasourceLogin() == null) || !(project.getDatasourceLogin().getDatasourcePlatform() instanceof XMLPlatform)) {
-                XMLPlatform platform = new SAXPlatform();
+                XMLPlatform<org.eclipse.persistence.internal.oxm.XMLUnmarshaller> platform = new SAXPlatform();
                 platform.getConversionManager().setLoader(classLoader);
                 project.setLogin(new XMLLogin(platform));
             }
@@ -905,7 +905,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
         private void setupDocumentPreservationPolicy(DatabaseSession session) {
             XMLLogin login = (XMLLogin) session.getDatasourceLogin();
             if (login.getDocumentPreservationPolicy() == null) {
-                Iterator iterator = session.getProject().getOrderedDescriptors().iterator();
+                Iterator<ClassDescriptor> iterator = session.getProject().getOrderedDescriptors().iterator();
                 while (iterator.hasNext()) {
                     Descriptor xmlDescriptor = (Descriptor) iterator.next();
                     if (xmlDescriptor.shouldPreserveDocument()) {

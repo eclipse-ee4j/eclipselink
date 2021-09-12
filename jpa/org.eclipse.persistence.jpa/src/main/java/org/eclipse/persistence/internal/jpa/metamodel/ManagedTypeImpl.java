@@ -771,7 +771,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
         // Note this method provides the same functionality of the more specific IdentifiableType.superType but is general to ManagedTypeImpl
         ManagedTypeImpl<?> aSuperType = null;
         // Get the superType if it exists (without using IdentifiableType.superType)
-        Class aSuperClass = this.getJavaType().getSuperclass();
+        Class<? super X> aSuperClass = this.getJavaType().getSuperclass();
         // The superclass for top-level types will be Object - which we will leave as a null supertype on the type
         if(null != aSuperClass && aSuperClass != ClassConstants.OBJECT &&
                 this.getMetamodel().getType(aSuperClass).isManagedType()) { // 315287: return null for BasicType
@@ -1077,7 +1077,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
          *     Exit(false) as soon as attribute is found in a superType - without continuing to the root
          *     continue as long as we find an attribute in the superType (essentially only MappedSuperclass parents)
          **/
-        Attribute anAttribute = this.getMembers().get(attributeName);
+        Attribute<X, ?> anAttribute = this.getMembers().get(attributeName);
         ManagedTypeImpl<?> aSuperType = getManagedSuperType();
 
         // Base Case: If we are at the root, check for the attribute and return results immediately
@@ -1095,7 +1095,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
             }
         } else {
            // Recursive Case: check hierarchy both if the immediate superclass is a MappedSuperclassType or EntityType
-           Attribute aSuperTypeAttribute = aSuperType.getMembers().get(attributeName);
+           Attribute<?, ?> aSuperTypeAttribute = aSuperType.getMembers().get(attributeName);
            // UC1.3 The immediate mappedSuperclass may have the attribute - we check it in the base case of the next recursive call
            if(null != aSuperTypeAttribute) {
                // return false immediately if a superType exists above the first level

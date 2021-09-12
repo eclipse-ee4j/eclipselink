@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,19 +18,19 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.security.PrivilegedExceptionAction;
 
-public class PrivilegedInvokeConstructor implements PrivilegedExceptionAction {
+public class PrivilegedInvokeConstructor<T> implements PrivilegedExceptionAction<T> {
 
-    private final Constructor constructor;
+    private final Constructor<T> constructor;
     private final Object[] args;
 
-    public PrivilegedInvokeConstructor(Constructor constructor, Object[] args) {
+    public PrivilegedInvokeConstructor(Constructor<T> constructor, Object[] args) {
         this.constructor = constructor;
         this.args = args;
     }
 
     @Override
-    public Object run() throws InstantiationException, InvocationTargetException, IllegalAccessException {
-        return PrivilegedAccessHelper.invokeConstructor(constructor, args);
+    public T run() throws InstantiationException, InvocationTargetException, IllegalAccessException {
+        return PrivilegedAccessHelper.<T>invokeConstructor(constructor, args);
     }
 }
 

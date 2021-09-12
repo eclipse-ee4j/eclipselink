@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -132,7 +132,7 @@ public class GlassfishPlatform extends JMXServerPlatformBase implements JMXEnabl
         // If GlassFish behavior changes, both reflective call below should be cached.
         Connection unwrappedConnection = null;
         try {
-            Class connectionWrapperClass = connection.getClass().getClassLoader().loadClass("com.sun.gjc.spi.base.ConnectionHolder");
+            Class<?> connectionWrapperClass = connection.getClass().getClassLoader().loadClass("com.sun.gjc.spi.base.ConnectionHolder");
             if(connectionWrapperClass.isInstance(connection) ) {
                 Method unwrapMethod = connectionWrapperClass.getDeclaredMethod("getConnection");
                 unwrappedConnection = (Connection) unwrapMethod.invoke(connection);

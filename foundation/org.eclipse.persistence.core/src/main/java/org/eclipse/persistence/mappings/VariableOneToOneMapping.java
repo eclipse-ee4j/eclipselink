@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -194,7 +194,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
             sourceToTarget.put(clonedField, getSourceToTargetQueryKeyNames().get(field));
         }
 
-        for (Enumeration enumtr = getForeignKeyFields().elements(); enumtr.hasMoreElements();) {
+        for (Enumeration<DatabaseField> enumtr = getForeignKeyFields().elements(); enumtr.hasMoreElements();) {
             DatabaseField field = (DatabaseField)enumtr.nextElement();
             foreignKeys.addElement(setOfKeys.get(field));
         }
@@ -323,7 +323,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
             return null;
         }
         // Search any of the implementor descriptors for a mapping for the query-key.
-        Iterator iterator = getReferenceDescriptor().getInterfacePolicy().getChildDescriptors().iterator();
+        Iterator<ClassDescriptor> iterator = getReferenceDescriptor().getInterfacePolicy().getChildDescriptors().iterator();
         if (iterator.hasNext()) {
             ClassDescriptor firstChild = (ClassDescriptor)iterator.next();
             DatabaseMapping mapping = firstChild.getObjectBuilder().getMappingForAttributeName(queryKey);
@@ -345,8 +345,8 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      */
     public Vector getForeignKeyFieldNames() {
         Vector fieldNames = new Vector(getForeignKeyFields().size());
-        for (Enumeration fieldsEnum = getForeignKeyFields().elements();
-                 fieldsEnum.hasMoreElements();) {
+        for (Enumeration<DatabaseField> fieldsEnum = getForeignKeyFields().elements();
+             fieldsEnum.hasMoreElements();) {
             fieldNames.addElement(((DatabaseField)fieldsEnum.nextElement()).getQualifiedName());
         }
 
@@ -475,7 +475,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     try {
-                        referenceClass = AccessController.doPrivileged(new PrivilegedClassForName(referenceClassName, true, classLoader));
+                        referenceClass = AccessController.doPrivileged(new PrivilegedClassForName<>(referenceClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(referenceClassName, exception.getException());
                     }
@@ -822,7 +822,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
             return;
         }
         if (isForeignKeyRelationship()) {
-            Enumeration foreignKeys = getForeignKeyFields().elements();
+            Enumeration<DatabaseField> foreignKeys = getForeignKeyFields().elements();
             while (foreignKeys.hasMoreElements()) {
                 record.put((DatabaseField)foreignKeys.nextElement(), null);
                 // EL Bug 319759 - if a field is null, then the update call cache should not be used
@@ -853,7 +853,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
             writeFromNullObjectIntoRow(record);
         } else {
             if (isForeignKeyRelationship()) {
-                Enumeration sourceFields = getForeignKeyFields().elements();
+                Enumeration<DatabaseField> sourceFields = getForeignKeyFields().elements();
                 ClassDescriptor descriptor = session.getDescriptor(referenceObject.getClass());
                 while (sourceFields.hasMoreElements()) {
                     DatabaseField sourceKey = (DatabaseField)sourceFields.nextElement();
@@ -894,7 +894,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
         } else {
             Object referenceObject = changeSet.getUnitOfWorkClone();
             if (isForeignKeyRelationship()) {
-                Enumeration sourceFields = getForeignKeyFields().elements();
+                Enumeration<DatabaseField> sourceFields = getForeignKeyFields().elements();
                 ClassDescriptor descriptor = session.getDescriptor(referenceObject.getClass());
                 while (sourceFields.hasMoreElements()) {
                     DatabaseField sourceKey = (DatabaseField)sourceFields.nextElement();
@@ -972,7 +972,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
             writeFromNullObjectIntoRow(record);
         } else {
             if (isForeignKeyRelationship()) {
-                Enumeration sourceFields = getForeignKeyFields().elements();
+                Enumeration<DatabaseField> sourceFields = getForeignKeyFields().elements();
                 ClassDescriptor descriptor = query.getSession().getDescriptor(referenceObject.getClass());
                 while (sourceFields.hasMoreElements()) {
                     DatabaseField sourceKey = (DatabaseField)sourceFields.nextElement();

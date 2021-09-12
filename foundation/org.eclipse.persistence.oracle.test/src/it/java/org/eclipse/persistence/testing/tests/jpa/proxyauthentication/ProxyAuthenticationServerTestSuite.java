@@ -535,7 +535,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
     }
 
     private Map createConnProperties() {
-        Map newProps = JUnitTestCaseHelper.getDatabaseProperties(PROXY_PU);
+        Map<String, String> newProps = JUnitTestCaseHelper.getDatabaseProperties(PROXY_PU);
         newProps.put(PersistenceUnitProperties.JDBC_USER, ProxyAuthenticationUsersAndProperties.connectionUser);
         newProps.put(PersistenceUnitProperties.JDBC_PASSWORD, ProxyAuthenticationUsersAndProperties.connectionPassword);
         return newProps;

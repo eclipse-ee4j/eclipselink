@@ -974,7 +974,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
             // Bug 3256198 - lazily initialize the argument types from their
             // class names
             if (this.argumentTypeNames != null) {
-                Iterator args = this.argumentTypeNames.iterator();
+                Iterator<String> args = this.argumentTypeNames.iterator();
                 while (args.hasNext()) {
                     String argumentTypeName = (String) args.next();
                     this.argumentTypes.add(Helper.getObjectClass(ConversionManager.loadClass(argumentTypeName)));
@@ -2017,8 +2017,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * types.
      */
     public List<DatabaseField> buildArgumentFields() {
-        List arguments = getArguments();
-        List argumentTypes = getArgumentTypes();
+        List<String> arguments = getArguments();
+        List<Class> argumentTypes = getArgumentTypes();
         List argumentFields = new ArrayList(arguments.size());
         int size = arguments.size();
         for (int index = 0; index < size; index++) {

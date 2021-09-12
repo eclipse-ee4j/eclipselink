@@ -329,11 +329,11 @@ public class OracleNoSQLPlatform extends EISPlatform {
             if (id instanceof CacheId) {
                 Object[] idValues = ((CacheId)id).getPrimaryKey();
                 for (Object idValue : idValues) {
-                    String idString = (String)accessor.getDatasourcePlatform().getConversionManager().convertObject(idValue, String.class);
+                    String idString = accessor.getDatasourcePlatform().getConversionManager().convertObject(idValue, String.class);
                     key.add(idString);
                 }
             } else {
-                String idString = (String)accessor.getDatasourcePlatform().getConversionManager().convertObject(id, String.class);
+                String idString = accessor.getDatasourcePlatform().getConversionManager().convertObject(id, String.class);
                 key.add(idString);
             }
         }

@@ -60,7 +60,7 @@ public class TypeHelperImpl
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
                     return AccessController.doPrivileged(
-                        new PrivilegedClassForName(typeName, true, classLoader));
+                        new PrivilegedClassForName<>(typeName, true, classLoader));
                 } catch (PrivilegedActionException exception) {
                     return null;
                 }

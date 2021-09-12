@@ -17,6 +17,7 @@ package org.eclipse.persistence.testing.tests.unitofwork;
 import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.*;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.foundation.*;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
@@ -154,7 +155,7 @@ public class MutableAttributeObject {
         descriptor.addDirectMapping("utilDate", "UTIL_DATE");
 
         /* Configure all of the mappings as mutable, except the id mapping */
-        Vector mappings = descriptor.getMappings();
+        Vector<DatabaseMapping> mappings = descriptor.getMappings();
         for (int i = 0; i < mappings.size(); i++) {
             AbstractDirectMapping mapping = (AbstractDirectMapping)mappings.get(i);
             if (!mapping.getAttributeName().equalsIgnoreCase("id")) {

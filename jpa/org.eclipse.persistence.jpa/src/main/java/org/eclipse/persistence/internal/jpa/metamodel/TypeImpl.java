@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -73,17 +73,18 @@ public abstract class TypeImpl<X> implements Type<X>, Serializable {
      *  Return the represented Java type.
      *  @return Java type
      */
+    @SuppressWarnings({"unchecked"})
     public Class<X> getJavaType(ClassLoader classLoader) {
         if (javaClass == null){
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        javaClass = AccessController.doPrivileged(new PrivilegedClassForName(javaClassName, true, classLoader));
+                        javaClass = (Class<X>) AccessController.doPrivileged(new PrivilegedClassForName(javaClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(javaClassName, exception.getException());
                     }
                 } else {
-                    javaClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(javaClassName, true, classLoader);
+                    javaClass = PrivilegedAccessHelper.getClassForName(javaClassName, true, classLoader);
                 }
             } catch (ClassNotFoundException exc){
                 throw ValidationException.classNotFoundWhileConvertingClassNames(javaClassName, exc);

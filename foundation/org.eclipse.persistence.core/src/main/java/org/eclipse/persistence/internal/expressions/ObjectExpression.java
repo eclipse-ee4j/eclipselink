@@ -161,7 +161,7 @@ public abstract class ObjectExpression extends DataExpression {
         HashMap tablesJoinExpressions = null;
         if(isUsingOuterJoinForMultitableInheritance()) {
             tablesJoinExpressions = new HashMap();
-            List childrenTables = getDescriptor().getInheritancePolicy().getChildrenTables();
+            List<DatabaseTable> childrenTables = getDescriptor().getInheritancePolicy().getChildrenTables();
             for( int i=0; i < childrenTables.size(); i++) {
                 DatabaseTable table = (DatabaseTable)childrenTables.get(i);
                 Expression joinExpression = getDescriptor().getInheritancePolicy().getChildrenTablesJoinExpressions().get(table);
@@ -585,7 +585,7 @@ public abstract class ObjectExpression extends DataExpression {
         ClassDescriptor descriptor = getDescriptor();
         List<DatabaseTable> tables = null;
         if (descriptor == null) {
-            List additionalTables = getAdditionalTables();
+            List<DatabaseTable> additionalTables = getAdditionalTables();
             if (additionalTables == null) {
                 return null;
             } else {
@@ -600,7 +600,7 @@ public abstract class ObjectExpression extends DataExpression {
         } else {
             tables = descriptor.getTables();
         }
-        List additionalTables = getAdditionalTables();
+        List<DatabaseTable> additionalTables = getAdditionalTables();
         if (additionalTables != null) {
             tables = new Vector(tables);
             Helper.addAllUniqueToList(tables, additionalTables);

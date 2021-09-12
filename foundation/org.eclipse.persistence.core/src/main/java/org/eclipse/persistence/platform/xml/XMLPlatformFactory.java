@@ -29,7 +29,7 @@ public class XMLPlatformFactory {
     public static final String XDK_PLATFORM_CLASS_NAME = "org.eclipse.persistence.platform.xml.xdk.XDKPlatform";
     public static final String JAXP_PLATFORM_CLASS_NAME = "org.eclipse.persistence.platform.xml.jaxp.JAXPPlatform";
     private static XMLPlatformFactory instance;
-    private Class xmlPlatformClass;
+    private Class<? extends XMLPlatform> xmlPlatformClass;
 
     private XMLPlatformFactory() {
         super();
@@ -52,7 +52,7 @@ public class XMLPlatformFactory {
      * Return the implementation class for the XMLPlatform.
      * @return the implementation class for the XMLPlatform.
      */
-    public Class getXMLPlatformClass() throws XMLPlatformException {
+    public Class<? extends XMLPlatform> getXMLPlatformClass() throws XMLPlatformException {
         if (null != xmlPlatformClass) {
             return xmlPlatformClass;
         }
@@ -80,7 +80,8 @@ public class XMLPlatformFactory {
             if (classLoader == null) {
                 classLoader = ClassLoader.getSystemClassLoader();
             }
-            Class newXMLPlatformClass = classLoader.loadClass(newXMLPlatformClassName);
+            @SuppressWarnings({"unchecked"})
+            Class<? extends XMLPlatform> newXMLPlatformClass = (Class<? extends XMLPlatform>) classLoader.loadClass(newXMLPlatformClassName);
             setXMLPlatformClass(newXMLPlatformClass);
             return xmlPlatformClass;
         } catch (ClassNotFoundException e) {
@@ -92,7 +93,7 @@ public class XMLPlatformFactory {
      * PUBLIC:
      * Set the implementation of XMLPlatform.
      */
-    public void setXMLPlatformClass(Class xmlPlatformClass) {
+    public void setXMLPlatformClass(Class<? extends XMLPlatform> xmlPlatformClass) {
         this.xmlPlatformClass = xmlPlatformClass;
     }
 

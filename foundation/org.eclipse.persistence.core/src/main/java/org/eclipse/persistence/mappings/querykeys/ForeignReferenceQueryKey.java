@@ -58,7 +58,7 @@ public class ForeignReferenceQueryKey extends QueryKey {
             if (referenceClassName != null){
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        referenceClass = AccessController.doPrivileged(new PrivilegedClassForName(referenceClassName, true, classLoader));
+                        referenceClass = AccessController.doPrivileged(new PrivilegedClassForName<>(referenceClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(referenceClassName, exception.getException());
                     }

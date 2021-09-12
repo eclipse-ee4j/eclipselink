@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -115,7 +115,7 @@ public class Door implements Serializable, Cloneable {
     }
 
     public Date calcWarrantyDate(Record row, Session session) {
-        Date date = (Date) ( session.getDatasourcePlatform().convertObject(row.get("SALE_DATE"), java.sql.Date.class ));
+        Date date = session.getDatasourcePlatform().convertObject(row.get("SALE_DATE"), Date.class );
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         int day = cal.get(Calendar.DAY_OF_MONTH);

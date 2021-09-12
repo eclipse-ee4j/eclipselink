@@ -748,8 +748,8 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
         }
 
         if (classDetails.shouldWeaveValueHolders()) {
-            for (Iterator iterator = classDetails.getAttributesMap().values().iterator(); iterator.hasNext();) {
-                AttributeDetails attributeDetails = (AttributeDetails) iterator.next();
+            for (Iterator<AttributeDetails> iterator = classDetails.getAttributesMap().values().iterator(); iterator.hasNext();) {
+                AttributeDetails attributeDetails = iterator.next();
                 if (attributeDetails.weaveValueHolders()) { // &&
                                                             // !attributeDetails.isAttributeOnSuperClass())
                                                             // {
@@ -1409,8 +1409,8 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
             boolean attributeAccess = false;
             // For each attribute we need to check what methods and variables to
             // add.
-            for (Iterator iterator = this.classDetails.getAttributesMap().values().iterator(); iterator.hasNext();) {
-                AttributeDetails attributeDetails = (AttributeDetails) iterator.next();
+            for (Iterator<AttributeDetails> iterator = this.classDetails.getAttributesMap().values().iterator(); iterator.hasNext();) {
+                AttributeDetails attributeDetails = iterator.next();
                 // Only add to classes that actually contain the attribute we
                 // are
                 // processing

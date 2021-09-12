@@ -158,18 +158,18 @@ public class DB2ZPlatform extends DB2Platform {
     @Override
     public void registerOutputParameter(CallableStatement statement, String name, int jdbcType) throws SQLException {
         try {
-            Class clazz = null;
+            Class<?> clazz = null;
             Method method = null;
             String methodName = "registerJccOutParameterAtName";
-            Class[] methodArgs = new Class[] {String.class, int.class};
+            Class<?>[] methodArgs = (Class<?>[]) new Class[] {String.class, int.class};
             Object[] parameters = new Object[] {name, jdbcType};
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
                     ClassLoader cl = AccessController.doPrivileged(new PrivilegedGetContextClassLoader(Thread.currentThread()));
-                    clazz = AccessController.doPrivileged(new PrivilegedClassForName(DB2_CALLABLESTATEMENT_CLASS, true, cl));
+                    clazz = AccessController.doPrivileged(new PrivilegedClassForName<>(DB2_CALLABLESTATEMENT_CLASS, true, cl));
                     method = AccessController.doPrivileged(new PrivilegedGetMethod(clazz, methodName, methodArgs, true));
                     Object o = statement.unwrap(clazz);
-                    AccessController.doPrivileged(new PrivilegedMethodInvoker(method, o, parameters));
+                    AccessController.doPrivileged(new PrivilegedMethodInvoker<>(method, o, parameters));
                 } catch (PrivilegedActionException ex) {
                     if (ex.getCause() instanceof ClassNotFoundException) {
                         throw (ClassNotFoundException) ex.getCause();
@@ -197,18 +197,18 @@ public class DB2ZPlatform extends DB2Platform {
     @Override
     public void registerOutputParameter(CallableStatement statement, String name, int jdbcType, String typeName) throws SQLException {
         try {
-            Class clazz = null;
+            Class<?> clazz = null;
             Method method = null;
             String methodName = "registerJccOutParameterAtName";
-            Class[] methodArgs = new Class[] {String.class, int.class, String.class};
+            Class<?>[] methodArgs = (Class<?>[]) new Class[] {String.class, int.class, String.class};
             Object[] parameters = new Object[] {name, jdbcType, typeName};
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
                     ClassLoader cl = AccessController.doPrivileged(new PrivilegedGetContextClassLoader(Thread.currentThread()));
-                    clazz = AccessController.doPrivileged(new PrivilegedClassForName(DB2_CALLABLESTATEMENT_CLASS, true, cl));
+                    clazz = AccessController.doPrivileged(new PrivilegedClassForName<>(DB2_CALLABLESTATEMENT_CLASS, true, cl));
                     method = AccessController.doPrivileged(new PrivilegedGetMethod(clazz, methodName, methodArgs, true));
                     Object o = statement.unwrap(clazz);
-                    AccessController.doPrivileged(new PrivilegedMethodInvoker(method, o, parameters));
+                    AccessController.doPrivileged(new PrivilegedMethodInvoker<>(method, o, parameters));
                 } catch (PrivilegedActionException ex) {
                     if (ex.getCause() instanceof ClassNotFoundException) {
                         throw (ClassNotFoundException) ex.getCause();
@@ -235,7 +235,7 @@ public class DB2ZPlatform extends DB2Platform {
             throws SQLException {
 
         String methodName = null;
-        Class[] methodArgs = null;
+        Class<?>[] methodArgs = null;
         Object[] parameters = null;
 
         // Process common types first.
@@ -244,101 +244,101 @@ public class DB2ZPlatform extends DB2Platform {
             if (usesStringBinding() && (((String)parameter).length() > getStringBindingSize())) {
                 CharArrayReader reader = new CharArrayReader(((String)parameter).toCharArray());
                 methodName = "setJccCharacterStreamAtName";
-                methodArgs = new Class[] {String.class, java.io.Reader.class, int.class};
+                methodArgs = (Class<?>[]) new Class[] {String.class, java.io.Reader.class, int.class};
                 parameters = new Object[] {name, reader, ((String)parameter).length()};
             } else {
                 //TODO find shouldUseGetSetNString() support for DB2/Z
                 methodName = "setJccStringAtName";
-                methodArgs = new Class[] {String.class, String.class};
+                methodArgs = (Class<?>[]) new Class[] {String.class, String.class};
                 parameters = new Object[] {name, parameter};
             }
         } else if (parameter instanceof Number) {
             Number number = (Number) parameter;
             if (number instanceof Integer) {
                 methodName = "setJccIntAtName";
-                methodArgs = new Class[] {String.class, int.class};
+                methodArgs = (Class<?>[]) new Class[] {String.class, int.class};
                 parameters = new Object[] {name, number.intValue()};
             } else if (number instanceof Long) {
                 methodName = "setJccLongAtName";
-                methodArgs = new Class[] {String.class, long.class};
+                methodArgs = (Class<?>[]) new Class[] {String.class, long.class};
                 parameters = new Object[] {name, number.longValue()};
             }  else if (number instanceof BigDecimal) {
                 methodName = "setJccBigDecimalAtName";
-                methodArgs = new Class[] {String.class, BigDecimal.class};
+                methodArgs = (Class<?>[]) new Class[] {String.class, BigDecimal.class};
                 parameters = new Object[] {name, number};
             } else if (number instanceof Double) {
                 methodName = "setJccDoubleAtName";
-                methodArgs = new Class[] {String.class, double.class};
+                methodArgs = (Class<?>[]) new Class[] {String.class, double.class};
                 parameters = new Object[] {name, number.doubleValue()};
             } else if (number instanceof Float) {
                 methodName = "setJccFloatAtName";
-                methodArgs = new Class[] {String.class, float.class};
+                methodArgs = (Class<?>[]) new Class[] {String.class, float.class};
                 parameters = new Object[] {name, number.floatValue()};
             } else if (number instanceof Short) {
                 methodName = "setJccShortAtName";
-                methodArgs = new Class[] {String.class, short.class};
+                methodArgs = (Class<?>[]) new Class[] {String.class, short.class};
                 parameters = new Object[] {name, number.shortValue()};
             } else if (number instanceof Byte) {
                 methodName = "setJccByteAtName";
-                methodArgs = new Class[] {String.class, byte.class};
+                methodArgs = (Class<?>[]) new Class[] {String.class, byte.class};
                 parameters = new Object[] {name, number.byteValue()};
             } else if (number instanceof BigInteger) {
                 // Convert to BigDecimal.
                 methodName = "setJccBigDecimalAtName";
-                methodArgs = new Class[] {String.class, BigDecimal.class};
+                methodArgs = (Class<?>[]) new Class[] {String.class, BigDecimal.class};
                 parameters = new Object[] {name, new BigDecimal((BigInteger) number)};
             } else {
                 methodName = "setJccObjectAtName";
-                methodArgs = new Class[] {String.class, Object.class};
+                methodArgs = (Class<?>[]) new Class[] {String.class, Object.class};
                 parameters = new Object[] {name, parameter};
             }
         } else if (parameter instanceof java.sql.Date){
             methodName = "setJccDateAtName";
-            methodArgs = new Class[] {String.class, java.sql.Date.class};
+            methodArgs = (Class<?>[]) new Class[] {String.class, java.sql.Date.class};
             parameters = new Object[] {name, parameter};
         } else if (parameter instanceof java.time.LocalDate){
             // Convert to java.sql.Date
             methodName = "setJccDateAtName";
-            methodArgs = new Class[] {String.class, java.sql.Date.class};
+            methodArgs = (Class<?>[]) new Class[] {String.class, java.sql.Date.class};
             parameters = new Object[] {name, java.sql.Date.valueOf((java.time.LocalDate) parameter)};
         } else if (parameter instanceof java.sql.Timestamp){
             methodName = "setJccTimestampAtName";
-            methodArgs = new Class[] {String.class, java.sql.Timestamp.class};
+            methodArgs = (Class<?>[]) new Class[] {String.class, java.sql.Timestamp.class};
             parameters = new Object[] {name, parameter};
         } else if (parameter instanceof java.time.LocalDateTime){
             // Convert to java.sql.Timestamp
             methodName = "setJccTimestampAtName";
-            methodArgs = new Class[] {String.class, java.sql.Timestamp.class};
+            methodArgs = (Class<?>[]) new Class[] {String.class, java.sql.Timestamp.class};
             parameters = new Object[] {name, java.sql.Timestamp.valueOf((java.time.LocalDateTime) parameter)};
         } else if (parameter instanceof java.time.OffsetDateTime) {
             // Convert to java.sql.Timestamp
             methodName = "setJccTimestampAtName";
-            methodArgs = new Class[] {String.class, java.sql.Timestamp.class};
+            methodArgs = (Class<?>[]) new Class[] {String.class, java.sql.Timestamp.class};
             parameters = new Object[] {name, java.sql.Timestamp.from(((java.time.OffsetDateTime) parameter).toInstant())};
         } else if (parameter instanceof java.sql.Time){
             methodName = "setJccTimeAtName";
-            methodArgs = new Class[] {String.class, java.sql.Time.class};
+            methodArgs = (Class<?>[]) new Class[] {String.class, java.sql.Time.class};
             parameters = new Object[] {name, parameter};
         } else if (parameter instanceof java.time.LocalTime){
             java.time.LocalTime lt = (java.time.LocalTime) parameter;
             java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), lt));
             methodName = "setJccTimestampAtName";
-            methodArgs = new Class[] {String.class, java.sql.Timestamp.class};
+            methodArgs = (Class<?>[]) new Class[] {String.class, java.sql.Timestamp.class};
             parameters = new Object[] {name, ts};
         } else if (parameter instanceof java.time.OffsetTime) {
             java.time.OffsetTime ot = (java.time.OffsetTime) parameter;
             java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), ot.toLocalTime()));
             methodName = "setJccTimestampAtName";
-            methodArgs = new Class[] {String.class, java.sql.Timestamp.class};
+            methodArgs = (Class<?>[]) new Class[] {String.class, java.sql.Timestamp.class};
             parameters = new Object[] {name, ts};
         } else if (parameter instanceof Boolean) {
             methodName = "setJccBooleanAtName";
-            methodArgs = new Class[] {String.class, boolean.class};
-            parameters = new Object[] {name, (Boolean) parameter};
+            methodArgs = (Class<?>[]) new Class[] {String.class, boolean.class};
+            parameters = new Object[] {name, parameter};
         } else if (parameter == null) {
             // Normally null is passed as a DatabaseField so the type is included, but in some case may be passed directly.
             methodName = "setJccNullAtName";
-            methodArgs = new Class[] {String.class, int.class};
+            methodArgs = (Class<?>[]) new Class[] {String.class, int.class};
             parameters = new Object[] {name, getJDBCType((Class)null)};
         } else if (parameter instanceof DatabaseField) {
             setNullFromDatabaseField((DatabaseField)parameter, statement, name);
@@ -346,42 +346,42 @@ public class DB2ZPlatform extends DB2Platform {
             if (usesStreamsForBinding()) {
                 ByteArrayInputStream inputStream = new ByteArrayInputStream((byte[])parameter);
                 methodName = "setJccBinaryStreamAtName";
-                methodArgs = new Class[] {String.class, java.io.InputStream.class, int.class};
+                methodArgs = (Class<?>[]) new Class[] {String.class, java.io.InputStream.class, int.class};
                 parameters = new Object[] {name, inputStream, ((byte[])parameter).length};
             } else {
                 methodName = "setJccBytesAtName";
-                methodArgs = new Class[] {String.class, byte[].class};
+                methodArgs = (Class<?>[]) new Class[] {String.class, byte[].class};
                 parameters = new Object[] {name, parameter};
             }
         }
         // Next process types that need conversion.
         else if (parameter instanceof Calendar) {
             methodName = "setJccTimestampAtName";
-            methodArgs = new Class[] {String.class, java.sql.Timestamp.class};
+            methodArgs = (Class<?>[]) new Class[] {String.class, java.sql.Timestamp.class};
             parameters = new Object[] {name, Helper.timestampFromDate(((Calendar)parameter).getTime())};
         } else if (parameter.getClass() == ClassConstants.UTILDATE) {
             methodName = "setJccTimestampAtName";
-            methodArgs = new Class[] {String.class, java.sql.Timestamp.class};
+            methodArgs = (Class<?>[]) new Class[] {String.class, java.sql.Timestamp.class};
             parameters = new Object[] {name, Helper.timestampFromDate((java.util.Date) parameter)};
         } else if (parameter instanceof Character) {
             methodName = "setJccStringAtName";
-            methodArgs = new Class[] {String.class, String.class};
+            methodArgs = (Class<?>[]) new Class[] {String.class, String.class};
             parameters = new Object[] {name, ((Character)parameter).toString()};
         } else if (parameter instanceof char[]) {
             methodName = "setJccStringAtName";
-            methodArgs = new Class[] {String.class, String.class};
+            methodArgs = (Class<?>[]) new Class[] {String.class, String.class};
             parameters = new Object[] {name, new String((char[])parameter)};
         } else if (parameter instanceof Character[]) {
             methodName = "setJccStringAtName";
-            methodArgs = new Class[] {String.class, String.class};
+            methodArgs = (Class<?>[]) new Class[] {String.class, String.class};
             parameters = new Object[] {name, convertObject(parameter, ClassConstants.STRING)};
         } else if (parameter instanceof Byte[]) {
             methodName = "setJccBytesAtName";
-            methodArgs = new Class[] {String.class, byte[].class};
+            methodArgs = (Class<?>[]) new Class[] {String.class, byte[].class};
             parameters = new Object[] {name, convertObject(parameter, ClassConstants.APBYTE)};
         } else if (parameter instanceof java.sql.SQLXML) {
             methodName = "setJccSQLXMLAtName";
-            methodArgs = new Class[] {String.class, java.sql.SQLXML.class};
+            methodArgs = (Class<?>[]) new Class[] {String.class, java.sql.SQLXML.class};
             parameters = new Object[] {name, parameter};
         } else if (parameter instanceof BindCallCustomParameter) {
             ((BindCallCustomParameter)(parameter)).set(this, statement, name, session);
@@ -389,25 +389,25 @@ public class DB2ZPlatform extends DB2Platform {
             StructConverter converter = typeConverters.get(parameter.getClass());
             java.sql.Struct struct = converter.convertToStruct(parameter, getConnection(session, statement.getConnection()));
             methodName = "setJccObjectAtName";
-            methodArgs = new Class[] {String.class, Object.class};
+            methodArgs = (Class<?>[]) new Class[] {String.class, Object.class};
             parameters = new Object[] {name, struct};
         } else {
             methodName = "setJccObjectAtName";
-            methodArgs = new Class[] {String.class, Object.class};
+            methodArgs = (Class<?>[]) new Class[] {String.class, Object.class};
             parameters = new Object[] {name, parameter};
         }
 
         if(methodName != null) {
             try {
-                Class clazz = null;
+                Class<?> clazz = null;
                 Method method = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     try {
                         ClassLoader cl = AccessController.doPrivileged(new PrivilegedGetContextClassLoader(Thread.currentThread()));
-                        clazz = AccessController.doPrivileged(new PrivilegedClassForName(DB2_PREPAREDSTATEMENT_CLASS, true, cl));
+                        clazz = AccessController.doPrivileged(new PrivilegedClassForName<>(DB2_PREPAREDSTATEMENT_CLASS, true, cl));
                         method = AccessController.doPrivileged(new PrivilegedGetMethod(clazz, methodName, methodArgs, true));
                         Object o = statement.unwrap(clazz);
-                        AccessController.doPrivileged(new PrivilegedMethodInvoker(method, o, parameters));
+                        AccessController.doPrivileged(new PrivilegedMethodInvoker<>(method, o, parameters));
                     } catch (PrivilegedActionException ex) {
                         if (ex.getCause() instanceof ClassNotFoundException) {
                             throw (ClassNotFoundException) ex.getCause();
@@ -432,30 +432,30 @@ public class DB2ZPlatform extends DB2Platform {
     @Override
     protected void setNullFromDatabaseField(DatabaseField databaseField, CallableStatement statement, String name) throws SQLException {
         String methodName = null;
-        Class[] methodArgs = null;
+        Class<?>[] methodArgs = null;
         Object[] parameters = null;
         if (databaseField instanceof ObjectRelationalDatabaseField) {
             ObjectRelationalDatabaseField field = (ObjectRelationalDatabaseField)databaseField;
             methodName = "setJccNullAtName";
-            methodArgs = new Class[] {String.class, int.class, String.class};
+            methodArgs = (Class<?>[]) new Class[] {String.class, int.class, String.class};
             parameters = new Object[] {name, field.getSqlType(), field.getSqlTypeName()};
         } else {
             int jdbcType = getJDBCTypeForSetNull(databaseField);
             methodName = "setJccNullAtName";
-            methodArgs = new Class[] {String.class, int.class};
+            methodArgs = (Class<?>[]) new Class[] {String.class, int.class};
             parameters = new Object[] {name, jdbcType};
         }
 
         try {
-            Class clazz = null;
+            Class<?> clazz = null;
             Method method = null;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
                     ClassLoader cl = AccessController.doPrivileged(new PrivilegedGetContextClassLoader(Thread.currentThread()));
-                    clazz = AccessController.doPrivileged(new PrivilegedClassForName(DB2_PREPAREDSTATEMENT_CLASS, true, cl));
+                    clazz = AccessController.doPrivileged(new PrivilegedClassForName<>(DB2_PREPAREDSTATEMENT_CLASS, true, cl));
                     method = AccessController.doPrivileged(new PrivilegedGetMethod(clazz, methodName, methodArgs, true));
                     Object o = statement.unwrap(clazz);
-                    AccessController.doPrivileged(new PrivilegedMethodInvoker(method, o, parameters));
+                    AccessController.doPrivileged(new PrivilegedMethodInvoker<>(method, o, parameters));
                 } catch (PrivilegedActionException ex) {
                     if (ex.getCause() instanceof ClassNotFoundException) {
                         throw (ClassNotFoundException) ex.getCause();
@@ -480,24 +480,24 @@ public class DB2ZPlatform extends DB2Platform {
     public Object getParameterValueFromDatabaseCall(CallableStatement statement, String name, AbstractSession session)
                 throws SQLException {
         String methodName = null;
-        Class[] methodArgs = null;
+        Class<?>[] methodArgs = null;
         Object[] parameters = null;
 
         methodName = "getJccObjectAtName";
-        methodArgs = new Class[] {String.class};
+        methodArgs = (Class<?>[]) new Class[] {String.class};
         parameters = new Object[] {name};
 
         if(methodName != null) {
             try {
-                Class clazz = null;
+                Class<?> clazz = null;
                 Method method = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     try {
                         ClassLoader cl = AccessController.doPrivileged(new PrivilegedGetContextClassLoader(Thread.currentThread()));
-                        clazz = AccessController.doPrivileged(new PrivilegedClassForName(DB2_CALLABLESTATEMENT_CLASS, true, cl));
+                        clazz = AccessController.doPrivileged(new PrivilegedClassForName<>(DB2_CALLABLESTATEMENT_CLASS, true, cl));
                         method = AccessController.doPrivileged(new PrivilegedGetMethod(clazz, methodName, methodArgs, true));
                         Object o = statement.unwrap(clazz);
-                        return AccessController.doPrivileged(new PrivilegedMethodInvoker(method, o, parameters));
+                        return AccessController.doPrivileged(new PrivilegedMethodInvoker<>(method, o, parameters));
                     } catch (PrivilegedActionException ex) {
                         if (ex.getCause() instanceof ClassNotFoundException) {
                             throw (ClassNotFoundException) ex.getCause();

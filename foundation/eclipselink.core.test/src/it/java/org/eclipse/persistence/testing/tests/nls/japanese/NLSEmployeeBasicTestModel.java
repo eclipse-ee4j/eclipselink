@@ -26,7 +26,6 @@ import org.eclipse.persistence.testing.framework.ReadObjectTest;
 import org.eclipse.persistence.testing.framework.WriteObjectTest;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 import org.eclipse.persistence.testing.models.employee.relational.EmployeeSystem;
-import org.eclipse.persistence.testing.tests.nls.japanese.NLSEmployee;
 
 /**
  * This model tests reading/writing/deleting through using the employee demo.
@@ -55,10 +54,10 @@ public class NLSEmployeeBasicTestModel extends TestModel {
         suite.setName("EmployeeDeleteObjectTestSuite");
         suite.setDescription("[NLS_Japanese] This suite tests the deletion of each object in the employee demo.");
 
-        Class employeeClass = NLSEmployee.class;
+        Class<NLSEmployee> employeeClass = NLSEmployee.class;
 
-        Class largeProjectClass = LargeProject.class;
-        Class smallProjectClass = SmallProject.class;
+        Class<LargeProject> largeProjectClass = LargeProject.class;
+        Class<SmallProject> smallProjectClass = SmallProject.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new NLSEmployeeDeleteTest(manager.getObject(employeeClass, "0001")));
@@ -122,9 +121,9 @@ public class NLSEmployeeBasicTestModel extends TestModel {
         suite.setName("EmployeeReadObjectTestSuite");
         suite.setDescription("[NLS_Japanese] This suite test the reading of each object in the employee demo.");
 
-        Class employeeClass = NLSEmployee.class;
-        Class largeProjectClass = LargeProject.class;
-        Class smallProjectClass = SmallProject.class;
+        Class<NLSEmployee> employeeClass = NLSEmployee.class;
+        Class<LargeProject> largeProjectClass = LargeProject.class;
+        Class<SmallProject> smallProjectClass = SmallProject.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new ReadObjectTest(manager.getObject(employeeClass, "0001")));
@@ -161,9 +160,9 @@ public class NLSEmployeeBasicTestModel extends TestModel {
         suite.setName("EmployeeUpdateObjectTestSuite");
         suite.setDescription("[NLS_Japanese] This suite tests the updating of each object in the employee demo.");
 
-        Class employeeClass = NLSEmployee.class;
-        Class largeProjectClass = LargeProject.class;
-        Class smallProjectClass = SmallProject.class;
+        Class<NLSEmployee> employeeClass = NLSEmployee.class;
+        Class<LargeProject> largeProjectClass = LargeProject.class;
+        Class<SmallProject> smallProjectClass = SmallProject.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new WriteObjectTest(manager.getObject(employeeClass, "0001")));

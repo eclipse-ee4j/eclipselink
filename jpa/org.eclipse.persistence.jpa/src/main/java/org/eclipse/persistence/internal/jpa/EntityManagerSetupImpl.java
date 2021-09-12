@@ -224,6 +224,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAsmFactory;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappingsReader;
 import org.eclipse.persistence.internal.jpa.metamodel.ManagedTypeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
@@ -256,7 +257,6 @@ import org.eclipse.persistence.jpa.metadata.MetadataSource;
 import org.eclipse.persistence.jpa.metadata.ProjectCache;
 import org.eclipse.persistence.jpa.metadata.XMLMetadataSource;
 import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.platform.database.events.DatabaseEventListener;
@@ -933,9 +933,9 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
         } else {
             if ((projectPlatform.getSequences() != null) && !projectPlatform.getSequences().isEmpty()) {
-                Iterator itProjectSequences = projectPlatform.getSequences().values().iterator();
+                Iterator<Sequence> itProjectSequences = projectPlatform.getSequences().values().iterator();
                 while (itProjectSequences.hasNext()) {
-                    Sequence sequence = (Sequence)itProjectSequences.next();
+                    Sequence sequence = itProjectSequences.next();
                     if (!sessionPlatform.getSequences().containsKey(sequence.getName())) {
                         sessionPlatform.addSequence(sequence);
                     }
@@ -990,9 +990,9 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     protected void assignCMP3Policy() {
         // all descriptors assigned CMP3Policy
         Project project = session.getProject();
-        for (Iterator iterator = project.getDescriptors().values().iterator(); iterator.hasNext();){
+        for (Iterator<ClassDescriptor> iterator = project.getDescriptors().values().iterator(); iterator.hasNext();){
             //bug:4406101  changed class cast to base class, which is used in projects generated from 904 xml
-            ClassDescriptor descriptor = (ClassDescriptor)iterator.next();
+            ClassDescriptor descriptor = iterator.next();
 
             if(descriptor.getCMPPolicy() == null) {
                 descriptor.setCMPPolicy(new CMP3Policy());
@@ -1369,7 +1369,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
 
     protected static Class findClass(String className, ClassLoader loader) throws ClassNotFoundException, PrivilegedActionException {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            return AccessController.doPrivileged(new PrivilegedClassForName(className, true, loader));
+            return AccessController.doPrivileged(new PrivilegedClassForName<>(className, true, loader));
         } else {
             return org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(className, true, loader);
         }
@@ -1538,9 +1538,9 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         ? CacheIsolationType.SHARED : CacheIsolationType.ISOLATED);
             }
 
-            Iterator it = session.getDescriptors().values().iterator();
+            Iterator<ClassDescriptor> it = session.getDescriptors().values().iterator();
             while (it.hasNext() && (!typeMap.isEmpty() || !sizeMap.isEmpty() || !sharedMap.isEmpty())) {
-                ClassDescriptor descriptor = (ClassDescriptor)it.next();
+                ClassDescriptor descriptor = it.next();
 
                 if (descriptor.isDescriptorTypeAggregate()) {
                     continue;
@@ -2078,9 +2078,9 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     // be returned if we we are mean to process these mappings
                     if (enableWeaving) {
                         // build a list of entities the persistence unit represented by this EntityManagerSetupImpl will use
-                        Collection entities = PersistenceUnitProcessor.buildEntityList(processor, classLoaderToUse);
+                        Collection<MetadataClass> entities = PersistenceUnitProcessor.buildEntityList(processor, classLoaderToUse);
                         this.weaver = TransformerFactory.createTransformerAndModifyProject(session, entities, classLoaderToUse, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal, weaveRest, weaveMappedSuperClass);
-                        session.getProject().setClassNamesForWeaving(new ArrayList(processor.getProject().getWeavableClassNames()));
+                        session.getProject().setClassNamesForWeaving(new ArrayList<>(processor.getProject().getWeavableClassNames()));
                     }
 
                     //moved from deployment:
@@ -2093,13 +2093,13 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 // The transformer is capable of altering domain classes to handle a LAZY hint for OneToOne mappings.  It will only
                 // be returned if we we are meant to process these mappings.
                 if (enableWeaving) {
-                    Collection persistenceClasses = new ArrayList();
+                    Collection persistenceClasses = new ArrayList<>();
                     MetadataAsmFactory factory = new MetadataAsmFactory(new MetadataLogger(session), classLoaderToUse);
                     if (shouldBuildProject) {
                         // If deploying from a sessions-xml it is still desirable to allow the classes to be weaved.
                         // build a list of entities the persistence unit represented by this EntityManagerSetupImpl will use
-                        for (Iterator iterator = session.getProject().getDescriptors().keySet().iterator(); iterator.hasNext(); ) {
-                            persistenceClasses.add(factory.getMetadataClass(((Class)iterator.next()).getName()));
+                        for (Iterator<Class<?>> iterator = session.getProject().getDescriptors().keySet().iterator(); iterator.hasNext(); ) {
+                            persistenceClasses.add(factory.getMetadataClass(iterator.next().getName()));
                         }
                     } else {
                         // build a list of entities the persistence unit represented by this EntityManagerSetupImpl will use
@@ -3989,11 +3989,11 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     try {
                         helperClass = AccessController.doPrivileged(
-                                new PrivilegedClassForName(helperClassName, true, appClassLoader));
+                                new PrivilegedClassForName<>(helperClassName, true, appClassLoader));
                     } catch (Throwable t) {
                         // Try the ClassLoader that loaded Eclipselink classes
                         ClassLoader eclipseLinkClassLoader = EntityManagerSetupImpl.class.getClassLoader();
-                        helperClass = AccessController.doPrivileged(new PrivilegedClassForName(helperClassName, true, eclipseLinkClassLoader));
+                        helperClass = AccessController.doPrivileged(new PrivilegedClassForName<>(helperClassName, true, eclipseLinkClassLoader));
                     }
                 } else {
                     try {
@@ -4041,7 +4041,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 validationMode = (ValidationMode) AccessController.doPrivileged(new PrivilegedMethodInvoker(method, persitenceUnitInfo));
             } else {
                 method = PrivilegedAccessHelper.getDeclaredMethod(PersistenceUnitInfo.class, "getValidationMode", null);
-                validationMode = (ValidationMode) PrivilegedAccessHelper.invokeMethod(method, persitenceUnitInfo, null);
+                validationMode = PrivilegedAccessHelper.invokeMethod(method, persitenceUnitInfo, null);
             }
         } catch (Throwable exception) {
             // We are running in JavaEE5 environment. Catch and swallow any exceptions and return null.
@@ -4087,7 +4087,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             boolean classInitialized = false;
             String className = MetadataHelper.getQualifiedCanonicalName(manType.getJavaType().getName(), getSession());
             try {
-                Class clazz = (Class)this.getSession().getDatasourcePlatform().convertObject(className, ClassConstants.CLASS);
+                Class clazz = this.getSession().getDatasourcePlatform().convertObject(className, ClassConstants.CLASS);
                 classInitialized=true;
                 this.getSession().log(SessionLog.FINER, SessionLog.METAMODEL, "metamodel_canonical_model_class_found", className);
                 String fieldName = "";
@@ -4177,7 +4177,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         updateCompositeMembersProperties(compositeMemberPuInfos, predeployProperties);
         // Don't log these properties - may contain passwords. The properties will be logged by contained persistence units.
         Map compositeMemberMapOfProperties = (Map)getConfigProperty(PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES, predeployProperties);
-        this.compositeMemberEmSetupImpls = new HashSet(compositeMemberPuInfos.size());
+        this.compositeMemberEmSetupImpls = new HashSet<>(compositeMemberPuInfos.size());
         this.processor = new MetadataProcessor();
         if (enableWeaving) {
             this.weaver = new PersistenceWeaver(new HashMap<String, ClassDetails>());
@@ -4272,7 +4272,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             boolean classInitialized = false;
             String className = MetadataHelper.getQualifiedCanonicalName(((ManagedTypeImpl)manType).getJavaTypeName(), getSession());
             try {
-                Class clazz = (Class)this.getSession().getDatasourcePlatform().convertObject(className, ClassConstants.CLASS);
+                Class clazz = this.getSession().getDatasourcePlatform().convertObject(className, ClassConstants.CLASS);
                 classInitialized=true;
                 this.getSession().log(SessionLog.FINER, SessionLog.METAMODEL, "metamodel_canonical_model_class_found", className);
                 Field[] fields = null;
@@ -4332,7 +4332,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * for required properties overrides values with those from composite properties.
      */
     protected void updateCompositeMembersProperties(Map compositeProperties) {
-        Set<SEPersistenceUnitInfo> compositePuInfos = new HashSet(compositeMemberEmSetupImpls.size());
+        Set<SEPersistenceUnitInfo> compositePuInfos = new HashSet<>(compositeMemberEmSetupImpls.size());
         for (EntityManagerSetupImpl compositeMemberEmSetupImpl : compositeMemberEmSetupImpls) {
             compositePuInfos.add((SEPersistenceUnitInfo)compositeMemberEmSetupImpl.persistenceUnitInfo);
         }
@@ -4351,10 +4351,10 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         Map compositeMemberMapOfProperties = (Map)getConfigProperty(PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES, compositeProperties);
         Map newCompositeMemberMapOfProperties;
         if (compositeMemberMapOfProperties == null) {
-            newCompositeMemberMapOfProperties = new HashMap(compositePuInfos.size());
+            newCompositeMemberMapOfProperties = new HashMap<>(compositePuInfos.size());
         } else {
             // Don't alter user-supplied properties' map - create a copy instead
-            newCompositeMemberMapOfProperties = new HashMap(compositeMemberMapOfProperties);
+            newCompositeMemberMapOfProperties = new HashMap<>(compositeMemberMapOfProperties);
         }
 
         for (SEPersistenceUnitInfo compositePuInfo : compositePuInfos) {
@@ -4362,10 +4362,10 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             Map compositeMemberProperties = (Map)newCompositeMemberMapOfProperties.get(compositeMemberPuName);
             Map newCompositeMemberProperties;
             if (compositeMemberProperties == null) {
-                newCompositeMemberProperties = new HashMap();
+                newCompositeMemberProperties = new HashMap<>();
             } else {
                 // Don't alter user-supplied properties - create a copy instead
-                newCompositeMemberProperties = new HashMap(compositeMemberProperties);
+                newCompositeMemberProperties = new HashMap<>(compositeMemberProperties);
             }
             overrideMemberProperties(newCompositeMemberProperties, compositeProperties);
             newCompositeMemberProperties = mergeMaps(newCompositeMemberProperties, compositePuInfo.getProperties());
@@ -4410,7 +4410,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      */
     protected static Map<String, SEPersistenceUnitInfo> getCompositeMemberPuInfoMap(PersistenceUnitInfo puInfo, Map predeployProperties) {
         Set<SEPersistenceUnitInfo> memeberPuInfoSet = PersistenceUnitProcessor.getPersistenceUnits(puInfo.getClassLoader(), predeployProperties, puInfo.getJarFileUrls());
-        HashMap<String, SEPersistenceUnitInfo> memberPuInfoMap = new HashMap(memeberPuInfoSet.size());
+        HashMap<String, SEPersistenceUnitInfo> memberPuInfoMap = new HashMap<>(memeberPuInfoSet.size());
         for (SEPersistenceUnitInfo memberPuInfo : memeberPuInfoSet) {
             // override transaction type with composite's transaction type
             memberPuInfo.setTransactionType(puInfo.getTransactionType());
@@ -4449,7 +4449,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * Return a Set of composite member SEPersistenceUnitInfo.
      */
     protected static Set<SEPersistenceUnitInfo> getCompositeMemberPuInfoSet(PersistenceUnitInfo puInfo, Map predeployProperties) {
-        return new HashSet(getCompositeMemberPuInfoMap(puInfo, predeployProperties).values());
+        return new HashSet<>(getCompositeMemberPuInfoMap(puInfo, predeployProperties).values());
     }
 
     public static void throwPersistenceUnitNameAlreadyInUseException(String puName, PersistenceUnitInfo newPuInfo, PersistenceUnitInfo exsitingPuInfo) {
@@ -4480,7 +4480,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         EntityManagerSetupImpl newSetupImpl = new EntityManagerSetupImpl(uniqueName, sessionName);
         newSetupImpl.setIsInContainerMode(isInContainerMode);
         newSetupImpl.enableWeaving = enableWeaving;
-        Map refreshProperties = new HashMap();
+        Map refreshProperties = new HashMap<>();
         refreshProperties.putAll(getSession().getProperties());
         if (properties != null){
             refreshProperties.putAll(properties);

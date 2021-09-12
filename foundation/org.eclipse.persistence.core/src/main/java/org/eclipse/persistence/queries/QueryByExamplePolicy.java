@@ -229,7 +229,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
                     throw (RuntimeException) ex.getCause();
                 }
             }else{
-                expression = (Expression)PrivilegedAccessHelper.invokeMethod(anOperator, expression, args);
+                expression = PrivilegedAccessHelper.invokeMethod(anOperator, expression, args);
             }
         } catch (NoSuchMethodException nsme) {
             Class superClass = attributeValueClass.getSuperclass();

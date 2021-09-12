@@ -67,7 +67,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
         suite.setName("EmployeeDeleteObjectTestSuite");
         suite.setDescription("This suite tests the deletion of each object in the employee demo.");
 
-        Class employeeClass = org.eclipse.persistence.testing.models.unidirectional.Employee.class;
+        Class<Employee> employeeClass = org.eclipse.persistence.testing.models.unidirectional.Employee.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new DeleteObjectTest(manager.getObject(employeeClass, "0001")));
@@ -124,7 +124,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
         suite.setName("EmployeeReadObjectTestSuite");
         suite.setDescription("This suite test the reading of each object in the employee demo.");
 
-        Class employeeClass = Employee.class;
+        Class<Employee> employeeClass = Employee.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new ReadObjectTest(manager.getObject(employeeClass, "0001")));
@@ -148,7 +148,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
         suite.setName("EmployeeComplexUpdateTestSuite");
         suite.setDescription("This suite tests the updating of each an employee by adding and/or removing managed employees and/or phones.");
 
-        Class employeeClass = Employee.class;
+        Class<Employee> employeeClass = Employee.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
         Employee originalEmployee = (Employee)manager.getObject(employeeClass, "0001");
         Employee otherEmployee = (Employee)manager.getObject(employeeClass, "0002");
@@ -378,7 +378,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
             uow.registerObject(employee);
             uow.commit();
 
-            version[0] = (Long) getSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(manager, manager.getId(), getAbstractSession());
+            version[0] = getSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(manager, manager.getId(), getAbstractSession());
 
             // test1 - add managed employee, manager's version should increment.
             uow = getSession().acquireUnitOfWork();
@@ -386,14 +386,14 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
             Employee employeeClone = (Employee)uow.registerObject(employee);
             managerClone.addManagedEmployee(employeeClone);
             uow.commit();
-            version[1] = (Long) getSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(manager, manager.getId(), getAbstractSession());
+            version[1] = getSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(manager, manager.getId(), getAbstractSession());
 
             // test2 - alter managed employee, manager's version should NOT increment.
             uow = getSession().acquireUnitOfWork();
             employeeClone = (Employee)uow.registerObject(employee);
             employeeClone.setFirstName("Altered");
             uow.commit();
-            version[2] = (Long) getSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(manager, manager.getId(), getAbstractSession());
+            version[2] = getSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(manager, manager.getId(), getAbstractSession());
 
             // test3- remove managed employee, manager's version should increment.
             uow = getSession().acquireUnitOfWork();
@@ -401,7 +401,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
             employeeClone = (Employee)uow.registerObject(employee);
             managerClone.removeManagedEmployee(employeeClone);
             uow.commit();
-            version[3] = (Long) getSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(manager, manager.getId(), getAbstractSession());
+            version[3] = getSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(manager, manager.getId(), getAbstractSession());
 
             PhoneNumber phone = new PhoneNumber("home", "613", "1111111");
 
@@ -411,14 +411,14 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
             PhoneNumber phoneClone = (PhoneNumber)uow.registerObject(phone);
             managerClone.addPhoneNumber(phoneClone);
             uow.commit();
-            version[4] = (Long) getSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(manager, manager.getId(), getAbstractSession());
+            version[4] = getSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(manager, manager.getId(), getAbstractSession());
 
             // test5- alter phone, manager's version should increment.
             uow = getSession().acquireUnitOfWork();
             phoneClone = (PhoneNumber)uow.registerObject(phone);
             phoneClone.setType("work");
             uow.commit();
-            version[5] = (Long) getSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(manager, manager.getId(), getAbstractSession());
+            version[5] = getSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(manager, manager.getId(), getAbstractSession());
 
             // test6- remove phone, manager's version should increment.
             uow = getSession().acquireUnitOfWork();
@@ -426,7 +426,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
             phoneClone = (PhoneNumber)uow.registerObject(phone);
             managerClone.removePhoneNumber(phoneClone);
             uow.commit();
-            version[6] = (Long) getSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(manager, manager.getId(), getAbstractSession());
+            version[6] = getSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(manager, manager.getId(), getAbstractSession());
         }
         @Override
         public void verify() {
@@ -598,7 +598,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
             super();
         }
         long getVersion(Employee emp) {
-            return (Long) getSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(emp, emp.getId(), getAbstractSession());
+            return getSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(emp, emp.getId(), getAbstractSession());
         }
         @Override
         public void reset() {

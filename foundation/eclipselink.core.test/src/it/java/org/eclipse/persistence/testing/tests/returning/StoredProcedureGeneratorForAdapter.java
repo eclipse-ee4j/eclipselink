@@ -58,8 +58,8 @@ public class StoredProcedureGeneratorForAdapter extends StoredProcedureGenerator
      */
     public void generateInsertStoredProceduresDefinitionsForProject(Project project) {
         verifyProject(project);
-        Map descrpts = project.getDescriptors();
-        Iterator iterator = descrpts.keySet().iterator();
+        Map<Class<?>, ClassDescriptor> descrpts = project.getDescriptors();
+        Iterator<Class<?>> iterator = descrpts.keySet().iterator();
         ClassDescriptor desc;
         while (iterator.hasNext()) {
             desc = (ClassDescriptor)descrpts.get(iterator.next());
@@ -78,8 +78,8 @@ public class StoredProcedureGeneratorForAdapter extends StoredProcedureGenerator
 
     public void generateUpdateStoredProceduresDefinitionsForProject(Project project) {
         verifyProject(project);
-        Map descrpts = project.getDescriptors();
-        Iterator iterator = descrpts.keySet().iterator();
+        Map<Class<?>, ClassDescriptor> descrpts = project.getDescriptors();
+        Iterator<Class<?>> iterator = descrpts.keySet().iterator();
         ClassDescriptor desc;
         while (iterator.hasNext()) {
             desc = (ClassDescriptor)descrpts.get(iterator.next());
@@ -101,7 +101,7 @@ public class StoredProcedureGeneratorForAdapter extends StoredProcedureGenerator
     }
 
     protected StoredProcedureDefinition generateStoredProcedureDefinition(ClassDescriptor desc, DatabaseQuery query, String namePrefix) {
-        Vector fields = desc.getFields();
+        Vector<DatabaseField> fields = desc.getFields();
         Hashtable namesNewToNames = null;
         if (shouldCapitalizeNames()) {
             namesNewToNames = new Hashtable();

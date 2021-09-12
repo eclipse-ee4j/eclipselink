@@ -282,7 +282,7 @@ public class ReadingThroughWriteConnectionInTransactionTest extends org.eclipse.
         if (getBackupReadConnections() != null) {
             return;
         }
-        List readConnections = getServerSession().getReadConnectionPool().getConnectionsAvailable();
+        List<Accessor> readConnections = getServerSession().getReadConnectionPool().getConnectionsAvailable();
         setBackupReadConnections(new Vector(readConnections));
         readConnections.clear();
         readConnections.add(null);
@@ -312,7 +312,7 @@ public class ReadingThroughWriteConnectionInTransactionTest extends org.eclipse.
             // as the result the write connection pool is not shutdown and the connections are leaked.
             // Let's close these connections here.
             try {
-                for (Iterator poolsEnum = ((ServerSession)getServerSession()).getConnectionPools().values().iterator(); poolsEnum.hasNext();) {
+                for (Iterator<ConnectionPool> poolsEnum = ((ServerSession)getServerSession()).getConnectionPools().values().iterator(); poolsEnum.hasNext();) {
                     ((ConnectionPool)poolsEnum.next()).shutDown();
                 }
             } catch (Exception ex) {
@@ -340,7 +340,7 @@ public class ReadingThroughWriteConnectionInTransactionTest extends org.eclipse.
      */
     private void restoreServerReadConnections() {
         if (getBackupReadConnections() != null) {
-            List readConnections = getServerSession().getReadConnectionPool().getConnectionsAvailable();
+            List<Accessor> readConnections = getServerSession().getReadConnectionPool().getConnectionsAvailable();
             readConnections.clear();
             readConnections.addAll(getBackupReadConnections());
             setBackupReadConnections(null);

@@ -153,7 +153,7 @@ public class CommitManager {
                 }
             } else {
                 // The commit order is all of the classes ordered by dependencies, this is done for deadlock avoidance.
-                List commitOrder = getCommitOrder();
+                List<Class> commitOrder = getCommitOrder();
                 int size = commitOrder.size();
                 for (int index = 0; index < size; index++) {
                     Class theClass = (Class)commitOrder.get(index);
@@ -311,7 +311,7 @@ public class CommitManager {
             if (objects.size() == 1) {
                 deleteAllObjects(objects.get(0).getClass(), objects, session);
             } else {
-                List commitOrder = getCommitOrder();
+                List<Class> commitOrder = getCommitOrder();
                 for (int orderIndex = commitOrder.size() - 1; orderIndex >= 0; orderIndex--) {
                     Class theClass = (Class)commitOrder.get(orderIndex);
                     deleteAllObjects(theClass, objects, session);

@@ -245,7 +245,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
     public void postCalculateChanges(org.eclipse.persistence.sessions.changesets.ChangeRecord changeRecord, UnitOfWorkImpl uow) {
         // targets are added to and/or removed to/from the source.
         CollectionChangeRecord collectionChangeRecord = (CollectionChangeRecord)changeRecord;
-        Iterator it = collectionChangeRecord.getAddObjectList().values().iterator();
+        Iterator<ObjectChangeSet> it = collectionChangeRecord.getAddObjectList().values().iterator();
         while(it.hasNext()) {
             ObjectChangeSet change = (ObjectChangeSet)it.next();
             if(!change.hasChanges()) {

@@ -37,7 +37,7 @@ public class PrivilegedMethodInvoker<T> implements PrivilegedExceptionAction<T> 
 
     @Override
     public T run() throws IllegalAccessException, InvocationTargetException {
-        return (T) PrivilegedAccessHelper.invokeMethod(method, target, args);
+        return PrivilegedAccessHelper.invokeMethod(method, target, args);
     }
 
 }

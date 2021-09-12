@@ -78,7 +78,7 @@ public class InsuranceBasicTestModel extends TestModel {
         suite.setName("InsuranceDeleteObjectTestSuite");
         suite.setDescription("This suite tests the deletion of each object in the insurance demo.");
 
-        Class holderClass = PolicyHolder.class;
+        Class<PolicyHolder> holderClass = PolicyHolder.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new DeleteObjectTest(manager.getObject(holderClass, "example1")));
@@ -130,7 +130,7 @@ public class InsuranceBasicTestModel extends TestModel {
         suite.setName("InsuranceReadObjectTestSuite");
         suite.setDescription("This suite test the reading of each object in the insurance demo.");
 
-        Class holderClass = PolicyHolder.class;
+        Class<PolicyHolder> holderClass = PolicyHolder.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new ReadObjectTest(manager.getObject(holderClass, "example1")));
@@ -146,7 +146,7 @@ public class InsuranceBasicTestModel extends TestModel {
         suite.setName("InsuranceUpdateObjectTestSuite");
         suite.setDescription("This suite tests the updating of each object in the insurance demo.");
 
-        Class holderClass = PolicyHolder.class;
+        Class<PolicyHolder> holderClass = PolicyHolder.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new WriteObjectTest(manager.getObject(holderClass, "example1")));
