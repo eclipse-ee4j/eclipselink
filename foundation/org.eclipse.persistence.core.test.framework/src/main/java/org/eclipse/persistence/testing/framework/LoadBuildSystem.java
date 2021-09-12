@@ -174,7 +174,7 @@ public class LoadBuildSystem {
         while (summaries.hasNext()) {
             LoadBuildSummary summary = (LoadBuildSummary)summaries.next();
             for (Iterator<TestResultsSummary> iterator = summary.getSummaries().iterator(); iterator.hasNext(); ) {
-                ((TestResultsSummary)iterator.next()).getResults();
+                iterator.next().getResults();
             }
             //for (int index = 0; index < 10; index++) {
                 CopyGroup group = new CopyGroup();

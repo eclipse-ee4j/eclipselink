@@ -185,7 +185,7 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
                     declaredNs = new ArrayList<>();
                 }
                 while(namespaces.hasNext()) {
-                    Namespace next = (Namespace)namespaces.next();
+                    Namespace next = namespaces.next();
                     contentHandler.startPrefixMapping(next.getPrefix(), next.getNamespaceURI());
                     declaredNs.add(next);
                 }

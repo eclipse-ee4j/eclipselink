@@ -1388,7 +1388,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         Expression builder = new ExpressionBuilder();
 
         for (Iterator<DatabaseField> keys = getTargetForeignKeyToSourceKeys().keySet().iterator(); keys.hasNext();) {
-            DatabaseField targetForeignKey = (DatabaseField)keys.next();
+            DatabaseField targetForeignKey = keys.next();
             DatabaseField sourceKey = getTargetForeignKeyToSourceKeys().get(targetForeignKey);
 
             expression = builder.getField(targetForeignKey).equal(builder.getParameter(sourceKey));
@@ -1456,7 +1456,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
         for (Enumeration<DatabaseField> sourcekeys = getSourceKeyFields().elements();
              sourcekeys.hasMoreElements();) {
-            DatabaseField sourceKey = (DatabaseField)sourcekeys.nextElement();
+            DatabaseField sourceKey = sourcekeys.nextElement();
 
             // CR#2587.  Try first to get the source key from the original query.  If that fails try to get it from the object.
             Object referenceKey = null;
@@ -1480,7 +1480,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         Vector fieldNames = new Vector(getSourceKeyFields().size());
         for (Enumeration<DatabaseField> fieldsEnum = getSourceKeyFields().elements();
              fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(((DatabaseField)fieldsEnum.nextElement()).getQualifiedName());
+            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
         }
 
         return fieldNames;
@@ -1503,7 +1503,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         Vector fieldNames = new Vector(getTargetForeignKeyFields().size());
         for (Enumeration<DatabaseField> fieldsEnum = getTargetForeignKeyFields().elements();
              fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(((DatabaseField)fieldsEnum.nextElement()).getQualifiedName());
+            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
         }
 
         return fieldNames;
@@ -2030,7 +2030,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         Expression builder = new ExpressionBuilder();
 
         for (Iterator<DatabaseField> keys = getTargetForeignKeyToSourceKeys().keySet().iterator(); keys.hasNext();) {
-            DatabaseField targetForeignKey = (DatabaseField)keys.next();
+            DatabaseField targetForeignKey = keys.next();
             DatabaseField sourceKey = getTargetForeignKeyToSourceKeys().get(targetForeignKey);
 
             expression = builder.getField(targetForeignKey).equal(builder.getParameter(sourceKey));

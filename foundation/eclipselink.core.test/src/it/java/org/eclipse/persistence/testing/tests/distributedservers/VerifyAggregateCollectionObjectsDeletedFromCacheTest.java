@@ -52,7 +52,7 @@ public class VerifyAggregateCollectionObjectsDeletedFromCacheTest extends Comple
 
         Customer customerx = (Customer)customers.get(0);
         Vector<Dependant> dependants = customerx.getDependants();
-        customerx.removeDependant((Dependant)dependants.lastElement());
+        customerx.removeDependant(dependants.lastElement());
         AgentBuilderHelper.removeCustomer(object, (Customer)customers.get(customers.size()-1));
     }
 

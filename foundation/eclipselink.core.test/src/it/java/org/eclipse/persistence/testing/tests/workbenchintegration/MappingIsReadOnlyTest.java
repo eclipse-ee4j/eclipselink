@@ -40,7 +40,7 @@ public class MappingIsReadOnlyTest extends ProjectClassGeneratorResultFileTest {
         descriptorToModify = project.getDescriptors().get(Employee.class);
         for (Enumeration<DatabaseMapping> mappingsEnum = (descriptorToModify.getMappings()).elements();
              mappingsEnum.hasMoreElements(); ) {
-            mappingToModify = (DatabaseMapping)mappingsEnum.nextElement();
+            mappingToModify = mappingsEnum.nextElement();
             mappingToModify.readOnly();
         }
     }

@@ -1086,7 +1086,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
         }
         for (Enumeration<DatabaseMapping> mappings = getReferenceDescriptor(attributeValue, session).getMappings().elements();
              mappings.hasMoreElements();) {
-            DatabaseMapping mapping = (DatabaseMapping)mappings.nextElement();
+            DatabaseMapping mapping = mappings.nextElement();
             if (!mapping.verifyDelete(attributeValue, session)) {
                 return false;
             }

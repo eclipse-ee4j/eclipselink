@@ -167,9 +167,9 @@ public class jiNoTestSet {
     @SuppressWarnings("unchecked")
     @Test
     public void runQuery() {
-        Session s = project.createDatabaseSession();
+        DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
-        ((DatabaseSession)s).login();
+        s.login();
         Object o = null;
         Vector queryArgs = new NonSynchronizedVector();
         queryArgs.add("test");
@@ -187,6 +187,6 @@ public class jiNoTestSet {
         DatabaseRecord record = (DatabaseRecord)results.get(0);
         Integer bool2int = (Integer)record.get("Y");
         assertTrue("wrong bool2int value", bool2int == 0);
-        ((DatabaseSession)s).logout();
+        s.logout();
     }
 }

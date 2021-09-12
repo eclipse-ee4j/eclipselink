@@ -15,6 +15,8 @@
 package org.eclipse.persistence.testing.tests.transactions;
 
 import java.util.*;
+
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.server.*;
 import org.eclipse.persistence.internal.databaseaccess.*;
@@ -313,7 +315,7 @@ public class ReadingThroughWriteConnectionInTransactionTest extends org.eclipse.
             // Let's close these connections here.
             try {
                 for (Iterator<ConnectionPool> poolsEnum = ((ServerSession)getServerSession()).getConnectionPools().values().iterator(); poolsEnum.hasNext();) {
-                    ((ConnectionPool)poolsEnum.next()).shutDown();
+                    poolsEnum.next().shutDown();
                 }
             } catch (Exception ex) {
                 // ignore
@@ -380,7 +382,7 @@ public class ReadingThroughWriteConnectionInTransactionTest extends org.eclipse.
     @Override
     public void test() {
         ClientSession client = getServerSession().acquireClientSession();
-        UnitOfWork uow = null;
+        UnitOfWorkImpl uow = null;
         UnitOfWork uow2 = null;
         Session session = null;
 
@@ -441,7 +443,7 @@ public class ReadingThroughWriteConnectionInTransactionTest extends org.eclipse.
 
             // Now do some post transaction testing.
             if (shouldUseUnitOfWork()) {
-                ((org.eclipse.persistence.internal.sessions.UnitOfWorkImpl)uow).rollbackTransaction();
+                uow.rollbackTransaction();
             } else {
                 client.rollbackTransaction();
             }

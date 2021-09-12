@@ -71,7 +71,7 @@ public class ForeignKeyConstraint implements Serializable {
             } else {
                 writer.write("FOREIGN KEY (");
                 for (Iterator<String> iterator = getSourceFields().iterator(); iterator.hasNext();) {
-                    writer.write((String)iterator.next());
+                    writer.write(iterator.next());
                     if (iterator.hasNext()) {
                         writer.write(", ");
                     }
@@ -80,7 +80,7 @@ public class ForeignKeyConstraint implements Serializable {
                 writer.write(getTargetTable());
                 writer.write(" (");
                 for (Iterator<String> iterator = getTargetFields().iterator(); iterator.hasNext();) {
-                    writer.write((String)iterator.next());
+                    writer.write(iterator.next());
                     if (iterator.hasNext()) {
                         writer.write(", ");
                     }

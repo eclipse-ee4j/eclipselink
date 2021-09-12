@@ -248,7 +248,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
 
         for (Iterator<DatabaseField> keys = getTargetForeignKeysToSourceKeys().keySet().iterator();
              keys.hasNext();) {
-            DatabaseField targetForeignKey = (DatabaseField)keys.next();
+            DatabaseField targetForeignKey = keys.next();
             DatabaseField sourceKey = getTargetForeignKeysToSourceKeys().get(targetForeignKey);
 
             Expression partialSelectionCriteria = builder.getField(targetForeignKey).equal(builder.getParameter(sourceKey));
@@ -276,8 +276,8 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         Enumeration<DatabaseField> sourceKeys = getSourceKeyFields().elements();
         for (Enumeration<DatabaseField> targetForeignKeys = getTargetForeignKeyFields().elements();
              targetForeignKeys.hasMoreElements();) {
-            DatabaseField targetForeignKey = (DatabaseField)targetForeignKeys.nextElement();
-            DatabaseField sourceKey = (DatabaseField)sourceKeys.nextElement();
+            DatabaseField targetForeignKey = targetForeignKeys.nextElement();
+            DatabaseField sourceKey = sourceKeys.nextElement();
             Expression targetExpression = builder.getField(targetForeignKey);
             Expression sourceExpression = builder.getParameter(sourceKey);
             // store the expressions in order to initialize their fields later
@@ -474,7 +474,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         Vector fieldNames = new Vector(getSourceKeyFields().size());
         for (Enumeration<DatabaseField> fieldsEnum = getSourceKeyFields().elements();
              fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(((DatabaseField)fieldsEnum.nextElement()).getQualifiedName());
+            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
         }
 
         return fieldNames;
@@ -517,7 +517,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         Vector fieldNames = new Vector(getTargetForeignKeyFields().size());
         for (Enumeration<DatabaseField> fieldsEnum = getTargetForeignKeyFields().elements();
              fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(((DatabaseField)fieldsEnum.nextElement()).getQualifiedName());
+            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
         }
 
         return fieldNames;

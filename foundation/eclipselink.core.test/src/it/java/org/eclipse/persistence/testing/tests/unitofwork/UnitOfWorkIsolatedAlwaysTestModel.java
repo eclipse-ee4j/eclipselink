@@ -35,7 +35,7 @@ public class UnitOfWorkIsolatedAlwaysTestModel extends UnitOfWorkClientSessionTe
     @Override
     public void setup() {
         for (Iterator<ClassDescriptor> descriptors = getSession().getDescriptors().values().iterator(); descriptors.hasNext(); ) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
+            ClassDescriptor descriptor = descriptors.next();
             descriptor.setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_CACHE_ALWAYS);
         }
         super.setup();
@@ -44,7 +44,7 @@ public class UnitOfWorkIsolatedAlwaysTestModel extends UnitOfWorkClientSessionTe
     @Override
     public void reset() {
         for (Iterator<ClassDescriptor> descriptors = getSession().getDescriptors().values().iterator(); descriptors.hasNext(); ) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
+            ClassDescriptor descriptor = descriptors.next();
             descriptor.setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_NEW_DATA_AFTER_TRANSACTION);
         }
         super.reset();

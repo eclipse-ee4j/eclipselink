@@ -33,9 +33,9 @@ public class DirectNullPolicyElementAbsentIsSetAbsentFalseTestCases extends XMLW
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        AbstractNullPolicy aNullPolicy = new NullPolicy();
+        NullPolicy aNullPolicy = new NullPolicy();
         // Alter unmarshal policy state
-        ((NullPolicy)aNullPolicy).setSetPerformedForAbsentNode(false);
+        aNullPolicy.setSetPerformedForAbsentNode(false);
         aNullPolicy.setNullRepresentedByEmptyNode(false); // no effect
         aNullPolicy.setNullRepresentedByXsiNil(false);  // no effect
         // Alter marshal policy state

@@ -61,7 +61,7 @@ CacheInvalidator {
         // fill out tableNames collection with all tables' names mapped by all descriptors
         Iterator<ClassDescriptor> descriptors = session.getDescriptors().values().iterator();
         while (descriptors.hasNext()) {
-            ClassDescriptor desc = (ClassDescriptor)descriptors.next();
+            ClassDescriptor desc = descriptors.next();
 
             // Create a Vector containing names of all tables mapped to the descriptor
             Vector descTableNames = desc.getTableNames();
@@ -94,7 +94,7 @@ CacheInvalidator {
         // loop through the descriptors to fill out tableNameToClass and tableNameToPkFieldNames
         Iterator<ClassDescriptor> descriptors = session.getDescriptors().values().iterator();
         while (descriptors.hasNext() && !tableNames.isEmpty()) {
-            ClassDescriptor desc = (ClassDescriptor)descriptors.next();
+            ClassDescriptor desc = descriptors.next();
 
             // Create a Vector containing names of all tables mapped to the descriptor
             Vector descTableNames = desc.getTableNames();

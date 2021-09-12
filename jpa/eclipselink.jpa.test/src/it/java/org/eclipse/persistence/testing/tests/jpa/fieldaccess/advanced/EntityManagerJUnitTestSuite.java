@@ -2663,12 +2663,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         query.setHint(QueryHints.BATCH, "e.manager.phoneNumbers");
 
         ReadAllQuery raq = (ReadAllQuery)query.getDatabaseQuery();
-        List expressions = raq.getBatchReadAttributeExpressions();
+        List<Expression> expressions = raq.getBatchReadAttributeExpressions();
         assertTrue(expressions.size() == 2);
-        Expression exp = (Expression)expressions.get(0);
+        Expression exp = expressions.get(0);
         assertTrue(exp.isQueryKeyExpression());
         assertTrue(exp.getName().equals("phoneNumbers"));
-        exp = (Expression)expressions.get(1);
+        exp = expressions.get(1);
         assertTrue(exp.isQueryKeyExpression());
         assertTrue(exp.getName().equals("phoneNumbers"));
 
@@ -2683,9 +2683,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
         beginTransaction(em);
         emp = em.find(Employee.class, id1);
-        Iterator it = emp.getManagedEmployees().iterator();
+        Iterator<Employee> it = emp.getManagedEmployees().iterator();
         while (it.hasNext()){
-            Employee managedEmp = (Employee)it.next();
+            Employee managedEmp = it.next();
             it.remove();
             managedEmp.setManager(null);
             em.remove(managedEmp);
@@ -2759,9 +2759,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
         beginTransaction(em);
         emp = em.find(Employee.class, id1);
-        Iterator it = emp.getManagedEmployees().iterator();
+        Iterator<Employee> it = emp.getManagedEmployees().iterator();
         while (it.hasNext()){
-            Employee managedEmp = (Employee)it.next();
+            Employee managedEmp = it.next();
             it.remove();
             managedEmp.setManager(null);
             em.remove(managedEmp);
@@ -5263,13 +5263,13 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             // if altering the test, make sure that emp still references (directly or through other objects) all the updated objects, so that all of them are copied.
             Map oldValueMap = copyGroupUpdated.getCopies();
             // using ChangeRecords bring back the original state of the object
-            Iterator itChangeSets = ((org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet)listener.uowChangeSet).getCloneToObjectChangeSet().entrySet().iterator();
+            Iterator<Map.Entry<Object, org.eclipse.persistence.internal.sessions.ObjectChangeSet>> itChangeSets = ((org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet)listener.uowChangeSet).getCloneToObjectChangeSet().entrySet().iterator();
             while(itChangeSets.hasNext()) {
-                Map.Entry entry = (Map.Entry)itChangeSets.next();
+                Map.Entry<Object, org.eclipse.persistence.internal.sessions.ObjectChangeSet> entry = itChangeSets.next();
                 Object object = entry.getKey();
                 ClassDescriptor descriptor = session.getDescriptor(object);
                 if(!descriptor.isAggregateDescriptor()) {
-                    ObjectChangeSet changeSet = (ObjectChangeSet)entry.getValue();
+                    ObjectChangeSet changeSet = entry.getValue();
                     if(!(deleted.contains(object)) && !changeSet.isNew()) {
                         List<ChangeRecord> changes = changeSet.getChanges();
                         if(changes != null && !changes.isEmpty()) {
@@ -5290,11 +5290,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             // now compare oldValue objects with corresponding backup objects
             itChangeSets = ((org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet)listener.uowChangeSet).getCloneToObjectChangeSet().entrySet().iterator();
             while(itChangeSets.hasNext()) {
-                Map.Entry entry = (Map.Entry)itChangeSets.next();
+                Map.Entry<Object, org.eclipse.persistence.internal.sessions.ObjectChangeSet> entry = itChangeSets.next();
                 Object object = entry.getKey();
                 ClassDescriptor descriptor = session.getDescriptor(object);
                 if(!descriptor.isAggregateDescriptor()) {
-                    ObjectChangeSet changeSet = (ObjectChangeSet)entry.getValue();
+                    ObjectChangeSet changeSet = entry.getValue();
                     if(!(deleted.contains(object)) && !changeSet.isNew()) {
                         List<ChangeRecord> changes = changeSet.getChanges();
                         if(changes != null && !changes.isEmpty()) {

@@ -62,7 +62,7 @@ public class StoredProcedureGeneratorForAdapter extends StoredProcedureGenerator
         Iterator<Class<?>> iterator = descrpts.keySet().iterator();
         ClassDescriptor desc;
         while (iterator.hasNext()) {
-            desc = (ClassDescriptor)descrpts.get(iterator.next());
+            desc = descrpts.get(iterator.next());
             if (desc.isDescriptorForInterface() || desc.isAggregateDescriptor()) {
                 continue;
             }
@@ -82,7 +82,7 @@ public class StoredProcedureGeneratorForAdapter extends StoredProcedureGenerator
         Iterator<Class<?>> iterator = descrpts.keySet().iterator();
         ClassDescriptor desc;
         while (iterator.hasNext()) {
-            desc = (ClassDescriptor)descrpts.get(iterator.next());
+            desc = descrpts.get(iterator.next());
             if (desc.isDescriptorForInterface() || desc.isAggregateDescriptor()) {
                 continue;
             }

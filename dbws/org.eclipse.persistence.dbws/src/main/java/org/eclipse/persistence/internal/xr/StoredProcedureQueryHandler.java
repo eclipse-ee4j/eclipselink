@@ -245,11 +245,11 @@ public class StoredProcedureQueryHandler extends QueryHandler {
 
     protected void setSingleResult(XRServiceAdapter xrService, StoredProcedureCall spCall, QName resultType) {
         if (getOutArguments().size() == 1) {
-            ProcedureArgument arg = getOutArguments().get(0);
+            ProcedureOutputArgument arg = getOutArguments().get(0);
             // check query's returnType or arg's returnType
             if (isCursorType(xrService, resultType) ||
                 ( arg instanceof ProcedureOutputArgument && isCursorType(xrService,
-                    ((ProcedureOutputArgument)arg).getResultType())))  {
+                    arg.getResultType())))  {
                 spCall.useNamedCursorOutputAsResultSet(arg.getName());
             } else {
                 spCall.addNamedOutputArgument(arg.getName());

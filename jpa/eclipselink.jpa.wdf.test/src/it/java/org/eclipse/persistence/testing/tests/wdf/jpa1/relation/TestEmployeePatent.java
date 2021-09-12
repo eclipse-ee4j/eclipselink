@@ -172,8 +172,8 @@ public class TestEmployeePatent extends JPA1Base {
         for (final Patent testPatent : testPatents) {
             checkMap.put(testPatent.getId(), testPatent);
         }
-        for (final Iterator iter = patents.iterator(); iter.hasNext();) {
-            final Patent patent = (Patent) iter.next();
+        for (final Iterator<Patent> iter = patents.iterator(); iter.hasNext();) {
+            final Patent patent = iter.next();
             final Patent check = checkMap.get(patent.getId());
             verify(check != null, "retrieved unknown patent with name >>" + patent.getId().getName() + "<<.");
             verify(check.getDescription().equals(patent.getDescription()), "patent with name >>" + patent.getId().getName()

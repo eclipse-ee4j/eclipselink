@@ -68,7 +68,7 @@ public class ExceptionHandlerLoginIntegrityTest extends org.eclipse.persistence.
         Map<Class<?>, ClassDescriptor> descriptors = project.getDescriptors();
 
         //java.util.Enumeration e =ht.elements();(Descriptor)e.nextElement();
-        ClassDescriptor descriptor = (ClassDescriptor)descriptors.get(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
+        ClassDescriptor descriptor = descriptors.get(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
 
         //add a non existent mapping so loggin will throw an integrity exception
         DirectToFieldMapping NonExistentFieldMapping = new DirectToFieldMapping();

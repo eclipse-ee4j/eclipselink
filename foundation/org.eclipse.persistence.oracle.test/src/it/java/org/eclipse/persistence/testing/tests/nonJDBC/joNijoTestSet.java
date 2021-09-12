@@ -176,9 +176,9 @@ public class joNijoTestSet {
     @SuppressWarnings("unchecked")
     @Test
     public void runQuery() {
-        Session s = project.createDatabaseSession();
+        DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
-        ((DatabaseSession)s).login();
+        s.login();
         Object o = null;
         Vector queryArgs = new NonSynchronizedVector();
         queryArgs.add(1);
@@ -198,6 +198,6 @@ public class joNijoTestSet {
         assertTrue("wrong y value", y.equals("test"));
         BigDecimal z = (BigDecimal)record.get("Z");
         assertTrue("wrong z value", z.intValue() == 46);
-        ((DatabaseSession)s).logout();
+        s.logout();
     }
 }

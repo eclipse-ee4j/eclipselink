@@ -163,7 +163,7 @@ public abstract class ObjectExpression extends DataExpression {
             tablesJoinExpressions = new HashMap();
             List<DatabaseTable> childrenTables = getDescriptor().getInheritancePolicy().getChildrenTables();
             for( int i=0; i < childrenTables.size(); i++) {
-                DatabaseTable table = (DatabaseTable)childrenTables.get(i);
+                DatabaseTable table = childrenTables.get(i);
                 Expression joinExpression = getDescriptor().getInheritancePolicy().getChildrenTablesJoinExpressions().get(table);
                 if (getBaseExpression() != null){
                     joinExpression = getBaseExpression().twist(joinExpression, this);

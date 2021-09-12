@@ -186,9 +186,9 @@ public class NojijioNoTestSet {
     @SuppressWarnings("unchecked")
     @Test
     public void runQuery() {
-        Session s = project.createDatabaseSession();
+        DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
-        ((DatabaseSession)s).login();
+        s.login();
         Object o = null;
         Vector queryArgs = new NonSynchronizedVector();
         queryArgs.add(104);
@@ -209,6 +209,6 @@ public class NojijioNoTestSet {
         assertTrue("wrong x value", x.intValue() == 48);
         String z = (String)record.get("Z");
         assertTrue("wrong z value", z.equals("FOOBAR"));
-        ((DatabaseSession)s).logout();
+        s.logout();
     }
 }

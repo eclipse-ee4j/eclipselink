@@ -160,7 +160,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitCriteriaSimpleTestSuiteBa
             int numRead = emps.size();
 
             // "SELECT e FROM Employee e WHERE :arg1=:arg2");
-            CriteriaQuery cq = qb.createQuery(Employee.class);
+            CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             cq.where(qb.equal(qb.parameter(Integer.class, "arg1"), qb.parameter(Integer.class, "arg2")));
             query = em.createQuery(cq);
 
@@ -192,7 +192,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitCriteriaSimpleTestSuiteBa
             int numRead = emps.size();
 
             // "SELECT e FROM Employee e WHERE 1=1");
-            CriteriaQuery cq = qb.createQuery(Employee.class);
+            CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             cq.where(qb.equal(qb.literal(1), 1));
             emps = em.createQuery(cq).getResultList();
 
@@ -221,8 +221,8 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitCriteriaSimpleTestSuiteBa
         CriteriaQuery<Tuple> criteria = qb.createTupleQuery();
 
         Root<Employee> emp = criteria.from(Employee.class);
-        Path unusedTupleElement = emp.get("normalHours"); // Receives IllegalArgumentException if metamodel is used
-        Path lastName = emp.get("lastName");
+        Path<Object> unusedTupleElement = emp.get("normalHours"); // Receives IllegalArgumentException if metamodel is used
+        Path<Object> lastName = emp.get("lastName");
         criteria.multiselect(lastName, emp.get("firstName"));
 
         TypedQuery<Tuple> query = em.createQuery(criteria);

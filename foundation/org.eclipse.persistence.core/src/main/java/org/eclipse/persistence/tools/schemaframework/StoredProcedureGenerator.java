@@ -170,7 +170,7 @@ public class StoredProcedureGenerator {
             outputWriter.write("{\n");
             Enumeration<ClassDescriptor> descriptorEnum = this.storedProcedures.keys();
             while (descriptorEnum.hasMoreElements()) {
-                descriptor = (ClassDescriptor)descriptorEnum.nextElement();
+                descriptor = descriptorEnum.nextElement();
                 if (descriptor.isDescriptorForInterface() || descriptor.isAggregateDescriptor()) {
                     continue;
                 }
@@ -178,8 +178,8 @@ public class StoredProcedureGenerator {
                 outputWriter.write("\npublic static void amend");
                 outputWriter.write(Helper.getShortClassName(descriptor.getJavaClass()));
                 outputWriter.write("ClassDescriptor(ClassDescriptor descriptor){\n\t");
-                storedProcedureVector = (Vector)this.storedProcedures.get(descriptor);
-                mappingHashtable = (Hashtable)this.mappingStoredProcedures.get(descriptor);
+                storedProcedureVector = this.storedProcedures.get(descriptor);
+                mappingHashtable = this.mappingStoredProcedures.get(descriptor);
                 definition = (StoredProcedureDefinition)storedProcedureVector.elementAt(0);
                 outputWriter.write("\n\t//INSERT QUERY\n");
                 outputWriter.write("\tInsertObjectQuery insertQuery = new InsertObjectQuery();\n\tStoredProcedureCall call = new StoredProcedureCall();\n");
@@ -327,7 +327,7 @@ public class StoredProcedureGenerator {
                 }
                 outputWriter.write("}\n");
             }
-            definition = (StoredProcedureDefinition)sequenceProcedures.get("SELECT");
+            definition = sequenceProcedures.get("SELECT");
             if (definition != null) {
                 outputWriter.write("\n\tValueReadQuery seqSelectQuery = new ValueReadQuery();\n\tcall = new StoredProcedureCall();\n");
                 outputWriter.write("\tcall.setProcedureName(\"");
@@ -398,7 +398,7 @@ public class StoredProcedureGenerator {
         Hashtable<String, StoredProcedureDefinition> mappingTable;
         for (Enumeration<DatabaseMapping> enumtr = mappings.elements(); enumtr.hasMoreElements();) {
             mappingTable = new Hashtable<>();
-            DatabaseMapping mapping = (DatabaseMapping)enumtr.nextElement();
+            DatabaseMapping mapping = enumtr.nextElement();
             if (mapping.isOneToManyMapping()) {
                 if (!getSession().getPlatform().isOracle()) {
                     //reads not supported in oracle
@@ -596,7 +596,7 @@ public class StoredProcedureGenerator {
         Vector<StoredProcedureDefinition> definitionVector;
         this.generateSequenceStoredProcedures(getSession().getProject());
         while (iterator.hasNext()) {
-            desc = (ClassDescriptor)descriptors.get(iterator.next());
+            desc = descriptors.get(iterator.next());
             if (desc.isDescriptorForInterface() || desc.isDescriptorTypeAggregate()) {
                 continue;
             }
@@ -621,11 +621,11 @@ public class StoredProcedureGenerator {
             Hashtable<String, Hashtable<String, StoredProcedureDefinition>> mappingDefinitions = this.generateMappingStoredProcedures(desc);
             for (Enumeration<Hashtable<String, StoredProcedureDefinition>> enum2 = mappingDefinitions.elements(); enum2.hasMoreElements();) {
                 Hashtable<String, StoredProcedureDefinition> table = enum2.nextElement();
-                definition = (StoredProcedureDefinition)table.get("1MREAD");
+                definition = table.get("1MREAD");
                 if (definition != null) {
                     this.writeDefinition(definition);
                 }
-                definition = (StoredProcedureDefinition)table.get("1MDALL");
+                definition = table.get("1MDALL");
                 if (definition != null) {
                     this.writeDefinition(definition);
                 }
@@ -686,7 +686,7 @@ public class StoredProcedureGenerator {
      */
     protected Class getFieldType(Object jdbcDataType) {
         Integer key = ((Number) jdbcDataType).intValue();
-        return (Class)intToTypeConverterHash.get(key);
+        return intToTypeConverterHash.get(key);
     }
 
     public String getPrefix() {

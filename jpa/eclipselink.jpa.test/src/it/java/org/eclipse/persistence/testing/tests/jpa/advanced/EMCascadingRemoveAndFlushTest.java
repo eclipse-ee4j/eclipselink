@@ -58,8 +58,8 @@ public class EMCascadingRemoveAndFlushTest extends EntityContainerTestBase  {
         try {
             beginTransaction();
             Employee employee = getEntityManager().find(Employee.class, empIDs[0]);
-            for (Iterator phones = employee.getPhoneNumbers().iterator(); phones.hasNext();){
-                this.phoneIDs.add(((PhoneNumber)phones.next()).buildPK());
+            for (Iterator<PhoneNumber> phones = employee.getPhoneNumbers().iterator(); phones.hasNext();){
+                this.phoneIDs.add(phones.next().buildPK());
             }
             getEntityManager().remove(employee);
 

@@ -21,10 +21,8 @@ import java.util.Map;
 
 import junit.textui.TestRunner;
 
-import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.testing.oxm.inheritance.Car;
 import org.eclipse.persistence.testing.oxm.inheritance.ParkingLot;
-import org.eclipse.persistence.testing.oxm.inheritance.Vehicle;
 import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
 public class CarClassExtractorTestCases extends XMLWithJSONMappingTestCases {
@@ -42,7 +40,7 @@ public class CarClassExtractorTestCases extends XMLWithJSONMappingTestCases {
 
     @Override
     protected Map<String, String> getNamespaces(){
-        Map map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         map.put("mynamespaceuri", "prefix");
         return map;
     }

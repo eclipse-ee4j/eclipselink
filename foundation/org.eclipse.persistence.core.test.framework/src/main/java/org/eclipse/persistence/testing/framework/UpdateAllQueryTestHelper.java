@@ -133,12 +133,12 @@ public class UpdateAllQueryTestHelper {
 
         UnitOfWork uow = mainSession.acquireUnitOfWork();
         // mainSession could be a ServerSession
-        Session session = uow.getParent();
+        AbstractSession session = uow.getParent();
 
         // report query results contain the values to be assigned for each object to be updated.
         Vector result = (Vector)session.executeQuery(rq);
         Vector objectsAfterOneByOneUpdate = new Vector(objects.size());
-        ((org.eclipse.persistence.internal.sessions.AbstractSession)session).beginTransaction();
+        session.beginTransaction();
         try {
             for (int i = 0; i < result.size(); i++) {
                 // read through uow the object(clone) to be updated
@@ -172,7 +172,7 @@ public class UpdateAllQueryTestHelper {
             }
         } finally {
             // transaction rolled back - objects back to the original state in the db.
-            ((org.eclipse.persistence.internal.sessions.AbstractSession)session).rollbackTransaction();
+            session.rollbackTransaction();
         }
         clearCache(mainSession);
 
@@ -181,7 +181,7 @@ public class UpdateAllQueryTestHelper {
         // mainSession could be a ServerSession
         session = uow.getParent();
         Vector objectsAfterUpdateAll = new Vector(objects.size());
-        ((org.eclipse.persistence.internal.sessions.AbstractSession)session).beginTransaction();
+        session.beginTransaction();
         try {
             uow.executeQuery(uq);
             // uow committed - objects updated.
@@ -196,7 +196,7 @@ public class UpdateAllQueryTestHelper {
             }
         } finally {
             // transaction rolled back - objects back to the original state in the db.
-            ((org.eclipse.persistence.internal.sessions.AbstractSession)session).rollbackTransaction();
+            session.rollbackTransaction();
         }
         clearCache(mainSession);
 
@@ -206,7 +206,7 @@ public class UpdateAllQueryTestHelper {
             Object obj = objects.elementAt(i);
             Object obj1 = objectsAfterOneByOneUpdate.elementAt(i);
             Object obj2 = objectsAfterUpdateAll.elementAt(i);
-            boolean equal = rq.getDescriptor().getObjectBuilder().compareObjects(obj, obj2, (org.eclipse.persistence.internal.sessions.AbstractSession)session);
+            boolean equal = rq.getDescriptor().getObjectBuilder().compareObjects(obj, obj2, session);
             if(!equal) {
                 classErrorMsg = classErrorMsg + "Difference: original = " + obj.toString() + "; afterOneByOneUpdate = " + obj1.toString() +"; afterUpdateAll = " + obj2.toString() + ";";
             }
@@ -219,7 +219,7 @@ public class UpdateAllQueryTestHelper {
             if(descriptor.hasInheritance() && descriptor.getInheritancePolicy().hasChildren()) {
                 Iterator<ClassDescriptor> it = descriptor.getInheritancePolicy().getChildDescriptors().iterator();
                 while(it.hasNext()) {
-                    ClassDescriptor childDescriptor = (ClassDescriptor)it.next();
+                    ClassDescriptor childDescriptor = it.next();
                     Class childReferenceClass = childDescriptor.getJavaClass();
                     UpdateAllQuery childUq = (UpdateAllQuery)uq.clone();
                     childUq.setReferenceClass(childReferenceClass);

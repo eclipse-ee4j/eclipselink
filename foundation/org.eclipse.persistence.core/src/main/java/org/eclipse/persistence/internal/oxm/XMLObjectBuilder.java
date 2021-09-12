@@ -549,7 +549,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
 
         for (Enumeration<DatabaseMapping> mappings = this.descriptor.getMappings().elements();
              mappings.hasMoreElements();) {
-            DatabaseMapping mapping = (DatabaseMapping)mappings.nextElement();
+            DatabaseMapping mapping = mappings.nextElement();
 
             // Add attribute to mapping association
             if (!mapping.isWriteOnly()) {

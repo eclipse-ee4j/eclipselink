@@ -479,7 +479,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
         if (!changeRecord.getOrderedChangeObjectList().isEmpty()) {
             Iterator<OrderedChangeObject> objects =changeRecord.getOrderedChangeObjectList().iterator();
             while (objects.hasNext()){
-                OrderedChangeObject changeObject = (OrderedChangeObject)objects.next();
+                OrderedChangeObject changeObject = objects.next();
                 objectChanges = changeObject.getChangeSet();
                 if (changeObject.getChangeType() == CollectionChangeEvent.REMOVE){
                     boolean objectRemoved = changeRecord.getRemoveObjectList().containsKey(objectChanges);
@@ -550,7 +550,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                 Iterator<ObjectChangeSet> removedObjects = changeRecord.getRemoveObjectList().keySet().iterator();
 
                 while (removedObjects.hasNext()) {
-                    objectChanges = (ObjectChangeSet) removedObjects.next();
+                    objectChanges = removedObjects.next();
                     removeFrom(objectChanges.getOldKey(), objectChanges.getTargetVersionOfSourceObject(mergeManager, targetSession), valueOfTarget, targetSession);
                     registerRemoveNewObjectIfRequired(objectChanges, mergeManager);
                 }

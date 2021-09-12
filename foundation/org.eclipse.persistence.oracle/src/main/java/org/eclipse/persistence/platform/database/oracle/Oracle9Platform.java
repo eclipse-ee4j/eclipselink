@@ -891,7 +891,7 @@ public class Oracle9Platform extends Oracle8Platform {
                 }else{
                     Class<XMLTypeFactory> xmlTypeFactoryClass = PrivilegedAccessHelper.getClassForName(className, true, this.getClass().getClassLoader());
                     Constructor<XMLTypeFactory> xmlTypeFactoryConstructor = PrivilegedAccessHelper.getConstructorFor(xmlTypeFactoryClass, new Class[0], true);
-                    xmlTypeFactory = (XMLTypeFactory)PrivilegedAccessHelper.invokeConstructor(xmlTypeFactoryConstructor, new Object[0]);
+                    xmlTypeFactory = PrivilegedAccessHelper.invokeConstructor(xmlTypeFactoryConstructor, new Object[0]);
                 }
             } catch (Exception e) {
                 throw QueryException.reflectiveCallOnTopLinkClassFailed(className, e);

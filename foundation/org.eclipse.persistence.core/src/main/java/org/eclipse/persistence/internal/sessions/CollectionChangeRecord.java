@@ -265,7 +265,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
         Map<ObjectChangeSet, ObjectChangeSet> changeSets = new HashMap<>();
         Iterator<ObjectChangeSet> addEnum = ((CollectionChangeRecord)mergeFromRecord).getAddObjectList().keySet().iterator();
         while (addEnum.hasNext()) {
-            ObjectChangeSet mergingObject = (ObjectChangeSet)addEnum.next();
+            ObjectChangeSet mergingObject = addEnum.next();
             ObjectChangeSet localChangeSet = mergeToChangeSet.findOrIntegrateObjectChangeSet(mergingObject, mergeFromChangeSet);
             if (getRemoveObjectList().containsKey(localChangeSet)) {
                 getRemoveObjectList().remove(localChangeSet);
@@ -277,7 +277,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
         changeSets = new HashMap<>();
         Iterator<ObjectChangeSet> removeEnum = ((CollectionChangeRecord)mergeFromRecord).getRemoveObjectList().keySet().iterator();
         while (removeEnum.hasNext()) {
-            ObjectChangeSet mergingObject = (ObjectChangeSet)removeEnum.next();
+            ObjectChangeSet mergingObject = removeEnum.next();
             ObjectChangeSet localChangeSet = mergeToChangeSet.findOrIntegrateObjectChangeSet(mergingObject, mergeFromChangeSet);
             if (getAddObjectList().containsKey(localChangeSet)) {
                 getAddObjectList().remove(localChangeSet);
@@ -290,7 +290,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
         List<OrderedChangeObject> orderedChangeSets = new ArrayList<>();
         Iterator<OrderedChangeObject> orderedChangeObjectEnum = ((CollectionChangeRecord)mergeFromRecord).getOrderedChangeObjectList().iterator();
         while (orderedChangeObjectEnum.hasNext()) {
-            OrderedChangeObject changeObject = (OrderedChangeObject)orderedChangeObjectEnum.next();
+            OrderedChangeObject changeObject = orderedChangeObjectEnum.next();
             ObjectChangeSet mergingObject = changeObject.getChangeSet();
             ObjectChangeSet localChangeSet = mergeToChangeSet.findOrIntegrateObjectChangeSet(mergingObject, mergeFromChangeSet);
 
@@ -362,13 +362,13 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
         } else {
             Iterator<ObjectChangeSet> changes = getAddObjectList().values().iterator();
             while (changes.hasNext()) {
-                ObjectChangeSet localChangeSet = mergeToChangeSet.findOrIntegrateObjectChangeSet((ObjectChangeSet)changes.next(), mergeFromChangeSet);
+                ObjectChangeSet localChangeSet = mergeToChangeSet.findOrIntegrateObjectChangeSet(changes.next(), mergeFromChangeSet);
                 addList.put(localChangeSet, localChangeSet);
             }
 
             changes = getRemoveObjectList().values().iterator();
             while (changes.hasNext()) {
-                ObjectChangeSet localChangeSet = mergeToChangeSet.findOrIntegrateObjectChangeSet((ObjectChangeSet)changes.next(), mergeFromChangeSet);
+                ObjectChangeSet localChangeSet = mergeToChangeSet.findOrIntegrateObjectChangeSet(changes.next(), mergeFromChangeSet);
                 removeList.put(localChangeSet, localChangeSet);
             }
         }
@@ -530,14 +530,14 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
            if(this.removeObjectList != null) {
                Iterator<ObjectChangeSet> it = this.removeObjectList.keySet().iterator();
                while(it.hasNext()) {
-                   ObjectChangeSet changeSet = (ObjectChangeSet)it.next();
+                   ObjectChangeSet changeSet = it.next();
                    cp.addInto(changeSet.getUnitOfWorkClone(), currentCollection, session);
                }
            }
            if(this.addObjectList != null) {
                Iterator<ObjectChangeSet> it = this.addObjectList.keySet().iterator();
                while(it.hasNext()) {
-                   ObjectChangeSet changeSet = (ObjectChangeSet)it.next();
+                   ObjectChangeSet changeSet = it.next();
                    cp.removeFrom(changeSet.getUnitOfWorkClone(), currentCollection, session);
                }
            }

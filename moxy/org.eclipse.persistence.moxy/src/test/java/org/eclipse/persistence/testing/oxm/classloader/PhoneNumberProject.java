@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,7 @@ public class PhoneNumberProject extends Project {
     private XMLDescriptor getPhoneNumberDescriptor() {
         try {
             ClassLoader phoneNumberClassLoader = new JARClassLoader("org/eclipse/persistence/testing/oxm/classloader/PhoneNumber.jar");
-            Class phoneNumberClass = phoneNumberClassLoader.loadClass("org.eclipse.persistence.testing.oxm.classloader.PhoneNumber");
+            Class<?> phoneNumberClass = phoneNumberClassLoader.loadClass("org.eclipse.persistence.testing.oxm.classloader.PhoneNumber");
 
             XMLDescriptor xmlDescriptor = new XMLDescriptor();
             xmlDescriptor.setJavaClass(phoneNumberClass);

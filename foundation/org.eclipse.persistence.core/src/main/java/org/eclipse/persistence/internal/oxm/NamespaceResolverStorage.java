@@ -104,7 +104,7 @@ public class NamespaceResolverStorage extends LinkedHashMap<String, String> {
 
     public void setNamespaces(Vector<Namespace> namespaces) {
         super.clear();
-        for (Namespace namespace : (Vector<Namespace>) namespaces) {
+        for (Namespace namespace : namespaces) {
             if ((namespace.getPrefix() != null) && (namespace.getNamespaceURI() != null)) {
                 super.put(namespace.getPrefix(), namespace.getNamespaceURI());
             }

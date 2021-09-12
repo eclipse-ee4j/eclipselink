@@ -557,7 +557,7 @@ public class TestExecutor {
                 log.write(indent + "Failures:");
                 log.write(CR);
                 for (Enumeration<TestFailure> failures = result.failures(); failures.hasMoreElements();) {
-                    junit.framework.TestFailure failure = (junit.framework.TestFailure)failures.nextElement();
+                    junit.framework.TestFailure failure = failures.nextElement();
                     String testString = failure.failedTest().toString();
                     int startIndex = testString.indexOf("(");
                     if (startIndex != -1) {
@@ -578,7 +578,7 @@ public class TestExecutor {
                 log.write(indent + "Errors:");
                 log.write(CR);
                 for (Enumeration<TestFailure> errors = result.errors(); errors.hasMoreElements();) {
-                    junit.framework.TestFailure error = (junit.framework.TestFailure)errors.nextElement();
+                    junit.framework.TestFailure error = errors.nextElement();
                     String testString = error.failedTest().toString();
                     int startIndex = testString.indexOf("(");
                     if (startIndex != -1) {

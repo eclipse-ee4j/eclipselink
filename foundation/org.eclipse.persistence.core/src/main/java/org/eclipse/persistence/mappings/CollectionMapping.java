@@ -1796,7 +1796,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         CollectionChangeRecord collectionChangeRecord = (CollectionChangeRecord)changeRecord;
         Iterator<ObjectChangeSet> it = collectionChangeRecord.getRemoveObjectList().values().iterator();
         while(it.hasNext()) {
-            ObjectChangeSet ocs = (ObjectChangeSet)it.next();
+            ObjectChangeSet ocs = it.next();
             containerPolicy.postCalculateChanges(ocs, referenceDescriptor, this, uow);
         }
     }

@@ -180,9 +180,9 @@ public class joNijioTestSet {
     @SuppressWarnings("unchecked")
     @Test
     public void runQuery() {
-        Session s = project.createDatabaseSession();
+        DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
-        ((DatabaseSession)s).login();
+        s.login();
         Object o = null;
         Vector queryArgs = new NonSynchronizedVector();
         queryArgs.add(1);
@@ -203,6 +203,6 @@ public class joNijioTestSet {
         assertTrue("wrong x value", x.intValue() == 51);
         String z = (String)record.get("Z");
         assertTrue("wrong z value", z.equals("test-thingie"));
-        ((DatabaseSession)s).logout();
+        s.logout();
     }
 }

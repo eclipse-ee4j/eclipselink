@@ -30,7 +30,7 @@ public class InheritanceHierarchyBuilder {
      * add it to the tree.
      */
     public static HierarchyNode getNodeForClass(String className, Hashtable<String, HierarchyNode> hierarchyTree) {
-        HierarchyNode node = (HierarchyNode)hierarchyTree.get(className);
+        HierarchyNode node = hierarchyTree.get(className);
         if (node == null) {
             node = new HierarchyNode(className);
             hierarchyTree.put(className, node);
@@ -43,7 +43,7 @@ public class InheritanceHierarchyBuilder {
         Hashtable<String, HierarchyNode> hierarchyTree = new Hashtable<>(descriptors.size());
         for (Iterator<ClassDescriptor> descriptorIterator = descriptors.values().iterator();
                  descriptorIterator.hasNext();) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptorIterator.next();
+            ClassDescriptor descriptor = descriptorIterator.next();
             String className = descriptor.getJavaClassName();
             if (className == null) {
                 className = descriptor.getJavaClass().getName();

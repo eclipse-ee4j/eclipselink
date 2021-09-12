@@ -60,7 +60,7 @@ public class ConcurrentReadBigBadObjectTest extends AutoVerifyTestCase {
         int mappings = v.size();
         int i = 0;
         while (i < mappings) {
-            m = (DatabaseMapping)v.get(i);
+            m = v.get(i);
             m.setWeight(Integer.MAX_VALUE - 1);
             i++;
         }

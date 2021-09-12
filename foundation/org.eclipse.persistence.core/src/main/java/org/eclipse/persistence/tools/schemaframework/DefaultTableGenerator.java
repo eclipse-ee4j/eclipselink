@@ -248,7 +248,7 @@ public class DefaultTableGenerator {
             Iterator<TableDefinition> tblDefIter = tblCreator.getTableDefinitions().iterator();
 
             while (tblDefIter.hasNext()) {
-                TableDefinition tblDef = (TableDefinition) tblDefIter.next();
+                TableDefinition tblDef = tblDefIter.next();
 
                 //check if the to-be-created table is already in the database
                 if (tablesInDatabase.contains(tblDef.getFullName())) {
@@ -558,7 +558,7 @@ public class DefaultTableGenerator {
     protected void resetTransformedFieldType(TransformationMapping mapping) {
         Iterator<FieldTransformation> transIter = mapping.getFieldTransformations().iterator();
         while (transIter.hasNext()) {
-            FieldTransformation transformation = (FieldTransformation) transIter.next();
+            FieldTransformation transformation = transIter.next();
 
             if (transformation instanceof MethodBasedFieldTransformation) {
                 MethodBasedFieldTransformation methodTransformation = (MethodBasedFieldTransformation) transformation;
@@ -605,7 +605,7 @@ public class DefaultTableGenerator {
 
         Iterator<DatabaseField> aggregateFieldIterator = mapping.getReferenceDescriptor().getFields().iterator();
         while (aggregateFieldIterator.hasNext()) {
-            DatabaseField dbField = (DatabaseField) aggregateFieldIterator.next();
+            DatabaseField dbField = aggregateFieldIterator.next();
             //add the target definition to the table definition
             FieldDefinition fieldDef = getFieldDefFromDBField(dbField);
             if (!targetTable.getFields().contains(fieldDef)) {
@@ -876,7 +876,7 @@ public class DefaultTableGenerator {
         DatabaseTable databaseTable = null;
         Iterator<DatabaseTable> dbTblIter = descriptor.getTables().iterator();
         while (dbTblIter.hasNext()) {
-            databaseTable = (DatabaseTable) dbTblIter.next();
+            databaseTable = dbTblIter.next();
             Map<DatabaseField, DatabaseField> srcFields = descriptor.getAdditionalTablePrimaryKeyFields().get(databaseTable);
             if ((null != srcFields) && srcFields.size() > 0) {
                 // srcFields is from the secondary field to the primary key field

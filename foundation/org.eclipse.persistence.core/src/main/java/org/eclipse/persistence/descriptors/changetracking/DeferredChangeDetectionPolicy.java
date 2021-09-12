@@ -192,7 +192,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
                 fetchGroup = descriptor.getFetchGroupManager().getObjectFetchGroup(clone);
             }
             for (int index = 0; index < mappingsSize; index++) {
-                DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
+                DatabaseMapping mapping = mappings.get(index);
                 if ((fetchGroup == null) || fetchGroup.containsAttributeInternal(mapping.getAttributeName())) {
                     changes.addChange(mapping.compareForChange(clone, backUp, changes, session));
                 }

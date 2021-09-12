@@ -128,8 +128,8 @@ public class EMRemoveAndCommitTests extends EntityContainerTestBase  {
                 }
                 employee.getManagedEmployees().remove(report);
             }
-            for (Iterator phones = employee.getPhoneNumbers().iterator(); phones.hasNext();){
-                this.phoneIDs.add(((PhoneNumber)phones.next()).buildPK());
+            for (Iterator<PhoneNumber> phones = employee.getPhoneNumbers().iterator(); phones.hasNext();){
+                this.phoneIDs.add(phones.next().buildPK());
             }
             getEntityManager().remove(employee);
             Address address = getEntityManager().find(Address.class, addrIDs[0]);

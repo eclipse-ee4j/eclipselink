@@ -857,7 +857,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
         //bug 275724: IdentityMapAccessor.invalidateClass() should not check ReadLock when invalidating
         Enumeration<CacheKey> keys = identityMap.keys(false); // do not check readlock
         while (keys.hasMoreElements()) {
-            CacheKey key = (CacheKey)keys.nextElement();
+            CacheKey key = keys.nextElement();
             Object obj = key.getObject();
             // 312503: When recurse is false we also invalidate all assignable implementing subclasses of [obj]
             if (recurseAndInvalidateToParentRoot || ((obj != null) && (null != myClass) && myClass.isAssignableFrom(obj.getClass()))) {
@@ -1155,7 +1155,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
         iterator.setSession(getSession());
         Iterator<ClassDescriptor> descriptors = getSession().getDescriptors().values().iterator();
         while (descriptors.hasNext()) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
+            ClassDescriptor descriptor = descriptors.next();
             IdentityMap cache = getIdentityMap(descriptor, true);
             if (cache != null) {
                 for (Enumeration mapEnum = cache.elements(); mapEnum.hasMoreElements();) {

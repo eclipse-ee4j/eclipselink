@@ -193,9 +193,9 @@ public class NijioNijioTestSet {
     @SuppressWarnings("unchecked")
     @Test
     public void runQuery() {
-        Session s = project.createDatabaseSession();
+        DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
-        ((DatabaseSession)s).login();
+        s.login();
         Object o = null;
         Vector queryArgs = new NonSynchronizedVector();
         queryArgs.add(107);
@@ -218,6 +218,6 @@ public class NijioNijioTestSet {
         assertTrue("wrong y value", y.intValue() == 158);
         String aa = (String)record.get("AA");
         assertTrue("wrong aa value", aa.equals("MERVISH"));
-        ((DatabaseSession)s).logout();
+        s.logout();
     }
 }

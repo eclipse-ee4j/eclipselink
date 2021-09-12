@@ -3814,7 +3814,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         if (this.unitOfWorkChangeSet.hasDeletedObjects()) {
             Map<ObjectChangeSet, ObjectChangeSet> deletedObjects = this.unitOfWorkChangeSet.getDeletedObjects();
             for (Iterator<ObjectChangeSet> removedObjects = deletedObjects.keySet().iterator(); removedObjects.hasNext(); ) {
-                ObjectChangeSet removedObjectChangeSet = (ObjectChangeSet) removedObjects.next();
+                ObjectChangeSet removedObjectChangeSet = removedObjects.next();
                 Object primaryKey = removedObjectChangeSet.getId();
                 ClassDescriptor descriptor = removedObjectChangeSet.getDescriptor();
                 // PERF: Do not remove if uow is isolated.
@@ -5429,7 +5429,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             Iterator<Map.Entry<Object, Object>> newEntries = this.newObjectsCloneToOriginal.entrySet().iterator();
             Map cloneToOriginals = getCloneToOriginals();
             while (newEntries.hasNext()) {
-                Map.Entry entry = (Map.Entry)newEntries.next();
+                Map.Entry<Object, Object> entry = newEntries.next();
                 Object clone = entry.getKey();
                 Object original = entry.getValue();
                 if (original != null) {

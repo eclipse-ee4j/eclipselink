@@ -976,7 +976,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
             if (this.argumentTypeNames != null) {
                 Iterator<String> args = this.argumentTypeNames.iterator();
                 while (args.hasNext()) {
-                    String argumentTypeName = (String) args.next();
+                    String argumentTypeName = args.next();
                     this.argumentTypes.add(Helper.getObjectClass(ConversionManager.loadClass(argumentTypeName)));
                 }
             }
@@ -2022,8 +2022,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         List argumentFields = new ArrayList(arguments.size());
         int size = arguments.size();
         for (int index = 0; index < size; index++) {
-            DatabaseField argumentField = new DatabaseField((String) arguments.get(index));
-            argumentField.setType((Class) argumentTypes.get(index));
+            DatabaseField argumentField = new DatabaseField(arguments.get(index));
+            argumentField.setType(argumentTypes.get(index));
             argumentFields.add(argumentField);
         }
 

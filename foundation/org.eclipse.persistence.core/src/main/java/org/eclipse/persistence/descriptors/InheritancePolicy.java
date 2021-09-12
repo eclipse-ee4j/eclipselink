@@ -868,7 +868,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
     public ClassDescriptor getSubclassDescriptor(Class theClass) {
         if (hasChildren()) {
             for (Iterator<ClassDescriptor> enumtr = getChildDescriptors().iterator(); enumtr.hasNext();) {
-                ClassDescriptor childDescriptor = (ClassDescriptor)enumtr.next();
+                ClassDescriptor childDescriptor = enumtr.next();
                 if (childDescriptor.getJavaClass().equals(theClass)) {
                     return childDescriptor;
                 } else {

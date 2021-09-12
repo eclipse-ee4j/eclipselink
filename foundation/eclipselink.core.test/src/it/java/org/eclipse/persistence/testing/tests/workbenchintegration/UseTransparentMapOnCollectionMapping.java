@@ -51,7 +51,7 @@ public class UseTransparentMapOnCollectionMapping extends ProjectClassGeneratorR
         mapPolicy = new MapContainerPolicy();
         for (Enumeration<DatabaseMapping> mappingsEnum = (descriptorToModify.getMappings()).elements();
              mappingsEnum.hasMoreElements(); ) {
-            mappingToModify = (DatabaseMapping)mappingsEnum.nextElement();
+            mappingToModify = mappingsEnum.nextElement();
 
             if (mappingToModify.isForeignReferenceMapping()) {
                 if (mappingToModify.isCollectionMapping()) {

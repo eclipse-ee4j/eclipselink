@@ -262,9 +262,9 @@ public class PLSQLrecordWithCompatibleTypeInOutTestSet  {
 
     @Test
     public void runQuery() {
-        Session s = project.createDatabaseSession();
+        DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
-        ((DatabaseSession)s).login();
+        s.login();
         Object[] attributes = {
             new BigDecimal(10),
             "MikeNorman",
@@ -304,6 +304,6 @@ public class PLSQLrecordWithCompatibleTypeInOutTestSet  {
         assertNull("MGR is supposed to be null",  result.manager);
         assertTrue("incorrect SAL" , result.salary.equals(3500F));
         assertTrue("incorrect DEPTNO" , result.department.equals(new BigDecimal(20)));
-        ((DatabaseSession)s).logout();
+        s.logout();
     }
 }

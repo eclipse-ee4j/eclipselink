@@ -3242,7 +3242,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
             // Also update all sessions in session manager.
             Iterator<Session> iterator = SessionManager.getManager().getSessions().values().iterator();
             while (iterator.hasNext()) {
-                ((Session)iterator.next()).setSessionLog(getSession().getSessionLog());
+                iterator.next().setSessionLog(getSession().getSessionLog());
             }
         }
     }
@@ -3410,7 +3410,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
                 .getIdentityMapAccessorInstance().getIdentityMap(
                         info.descriptor.getJavaClass());
         for (Enumeration<CacheKey> cacheEnum = map.keys(); cacheEnum.hasMoreElements();) {
-            CacheKey key = (CacheKey) cacheEnum.nextElement();
+            CacheKey key = cacheEnum.nextElement();
             if (info.descriptor.getJavaClass().isInstance(key.getObject())) {
                 cacheResults.addElement(key);
             }
@@ -3449,7 +3449,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         int index = 0;
         for (Iterator<ClassDescriptor> iterator = (getSession()).getDescriptors().values()
                 .iterator(); iterator.hasNext();) {
-            classes[index] = new ClassInfo((ClassDescriptor) iterator.next(),
+            classes[index] = new ClassInfo(iterator.next(),
                     useFullNames);
             index = index + 1;
         }

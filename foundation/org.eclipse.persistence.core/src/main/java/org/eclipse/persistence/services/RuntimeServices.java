@@ -302,7 +302,7 @@ public abstract class RuntimeServices {
         if (ClassConstants.ServerSession_Class.isAssignableFrom(getSession().getClass())) {
             Iterator<ConnectionPool> enumtr = ((ServerSession)getSession()).getConnectionPools().values().iterator();
             while (enumtr.hasNext()) {
-                ConnectionPool pool = (ConnectionPool)enumtr.next();
+                ConnectionPool pool = enumtr.next();
                 pool.shutDown();
                 pool.startUp();
             }
@@ -334,7 +334,7 @@ public abstract class RuntimeServices {
         Vector results = new Vector(map.getSize());
         Enumeration<CacheKey> objects = map.keys();
         while (objects.hasMoreElements()) {
-            results.add(((CacheKey)objects.nextElement()).getObject());
+            results.add(objects.nextElement().getObject());
         }
         return results;
     }
@@ -809,10 +809,10 @@ public abstract class RuntimeServices {
              filters.add(lineTokens.nextToken());
          }
          for (int i = 0; i < mappedClassNames.size(); i++) {
-             String className = (String)mappedClassNames.get(i);
-             String classNameLowerCase = ((String)mappedClassNames.get(i)).toLowerCase();
+             String className = mappedClassNames.get(i);
+             String classNameLowerCase = mappedClassNames.get(i).toLowerCase();
              for (int j = 0; j < filters.size(); j++) {
-                 String filterValue = (Helper.rightTrimString((String)filters.get(j)).trim()).toLowerCase();
+                 String filterValue = (Helper.rightTrimString(filters.get(j)).trim()).toLowerCase();
                  if (filterValue.indexOf('*') == 0) {
                      filterValue = filterValue.substring(1);
                  }
@@ -1080,7 +1080,7 @@ public abstract class RuntimeServices {
 
          CacheKey cacheKey;
          while (objects.hasMoreElements()) {
-             cacheKey = (CacheKey)objects.nextElement();
+             cacheKey = objects.nextElement();
              if(null != cacheKey && null != cacheKey.getKey() && null != cacheKey.getObject()) {
                  ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_print_cache_key_value",
                      cacheKey.getKey().toString(), cacheKey.getObject().toString());
@@ -1178,7 +1178,7 @@ public abstract class RuntimeServices {
          //use a table to eliminate duplicate classes. Ignore Aggregates
          Iterator<ClassDescriptor> descriptors = getSession().getProject().getDescriptors().values().iterator();
          while (descriptors.hasNext()) {
-             currentDescriptor = (ClassDescriptor)descriptors.next();
+             currentDescriptor = descriptors.next();
              if (!currentDescriptor.isAggregateDescriptor()) {
                  classesTable.put(currentDescriptor.getJavaClassName(), Boolean.TRUE);
              }
@@ -1413,7 +1413,7 @@ public abstract class RuntimeServices {
              CompositeType type = buildCompositeTypeForClassSummaryDetails();
              // get details for each class, and add the details to the summary
              for (int index = 0; index < mappedClassNames.size(); index++) {
-                 mappedClassName = (String)mappedClassNames.elementAt(index);
+                 mappedClassName = mappedClassNames.elementAt(index);
                  Map<String, String> data = buildLowlevelDetailsFor(mappedClassName);
                  final CompositeDataSupport support = new CompositeDataSupport(type, buildLowlevelDetailsFor(mappedClassName));
                  classSummaryDetails.add(ClassSummaryDetailBase.from(support));
@@ -1552,7 +1552,7 @@ public abstract class RuntimeServices {
 
              // get details for each class, and add the details to the summary
              for (int index = 0; index < mappedClassNames.size(); index++) {
-                 mappedClassName = (String)mappedClassNames.elementAt(index);
+                 mappedClassName = mappedClassNames.elementAt(index);
                  String[] key = new String[] { mappedClassName };
                  rowData.put(key, buildDetailsFor(mappedClassName, rowData.getTabularType().getRowType()));
              }
@@ -1590,7 +1590,7 @@ public abstract class RuntimeServices {
 
              // get details for each class, and add the details to the summary
              for (int index = 0; index < mappedClassNames.size(); index++) {
-                 mappedClassName = (String)mappedClassNames.elementAt(index);
+                 mappedClassName = mappedClassNames.elementAt(index);
                  String[] key = new String[] { mappedClassName };
                  rowData.put(key, buildDetailsFor(mappedClassName, rowData.getTabularType().getRowType()));
              }

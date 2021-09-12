@@ -104,7 +104,7 @@ public class VerifyClientBrokerCreationTest extends AutoVerifyTestCase {
         }
         Iterator<String> i = serverBroker.getSessionsByName().keySet().iterator();
         while (i.hasNext()){
-            String key = (String)i.next();
+            String key = i.next();
             if (clientBroker.getSessionForName(key) == null) {
                 throw new TestErrorException("Session " + key + " exists in server broker but not client broker.");
             }

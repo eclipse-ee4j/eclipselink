@@ -804,7 +804,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
         Hashtable table = new Hashtable(getFieldTransformations().size());
         Iterator<FieldTransformation> transformations = getFieldTransformations().iterator();
         while (transformations.hasNext()) {
-            FieldTransformation transformation = (FieldTransformation)transformations.next();
+            FieldTransformation transformation = transformations.next();
             if (transformation instanceof MethodBasedFieldTransformation) {
                 table.put(transformation.getField().getQualifiedName(), ((MethodBasedFieldTransformation)transformation).getMethodName());
             }
@@ -852,9 +852,9 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
                     if (session.getDatasourcePlatform() instanceof DatabasePlatform) {
                         Iterator<Map.Entry<Class, FieldTypeDefinition>> iterator = session.getPlatform().getFieldTypes().entrySet().iterator();
                         while (iterator.hasNext()) {
-                            Map.Entry entry = (Map.Entry)iterator.next();
-                            if (((FieldTypeDefinition)entry.getValue()).getName().equals(field.getColumnDefinition())) {
-                                field.setType((Class)entry.getKey());
+                            Map.Entry<Class, FieldTypeDefinition> entry = iterator.next();
+                            if (entry.getValue().getName().equals(field.getColumnDefinition())) {
+                                field.setType(entry.getKey());
                                 break;
                             }
                         }
@@ -1162,7 +1162,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
     public Vector getFieldNameToMethodNameAssociations() {
         Vector associations = new Vector();
         for (Iterator<FieldTransformation> source = getFieldTransformations().iterator(); source.hasNext();) {
-            FieldTransformation tf = (FieldTransformation)source.next();
+            FieldTransformation tf = source.next();
             if (tf instanceof MethodBasedFieldTransformation) {
                 Association ass = new Association();
                 ass.setKey(tf.getField().getQualifiedName());

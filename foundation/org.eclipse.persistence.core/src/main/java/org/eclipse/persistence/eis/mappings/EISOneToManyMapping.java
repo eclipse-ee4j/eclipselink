@@ -344,7 +344,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
         Expression builder = new ExpressionBuilder();
         Iterator<DatabaseField> keyIterator = getSourceForeignKeysToTargetKeys().keySet().iterator();
         while (keyIterator.hasNext()) {
-            DatabaseField foreignKey = (DatabaseField)keyIterator.next();
+            DatabaseField foreignKey = keyIterator.next();
             DatabaseField targetKey = getSourceForeignKeysToTargetKeys().get(foreignKey);
 
             Expression expression = builder.getField(targetKey).equal(builder.getParameter(foreignKey));

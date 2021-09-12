@@ -36,7 +36,6 @@ import jakarta.persistence.criteria.Root;
 import jakarta.persistence.metamodel.EntityType;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
@@ -123,9 +122,9 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
-        Join address = root.join("address");
+        Join<Object, Object> address = root.join("address");
         address.on(qb.equal(address.get("city"), "Ottawa"));
-        List testResult = em.createQuery(cq).getResultList();
+        List<Employee> testResult = em.createQuery(cq).getResultList();
 
         clearCache();
         closeEntityManager(em);
@@ -144,9 +143,9 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
-        Join phoneNumber = root.join("phoneNumbers");
+        Join<Object, Object> phoneNumber = root.join("phoneNumbers");
         phoneNumber.on(qb.equal(phoneNumber.get("areaCode"), "613"));
-        List testResult = em.createQuery(cq).getResultList();
+        List<Employee> testResult = em.createQuery(cq).getResultList();
 
         clearCache();
         closeEntityManager(em);
@@ -166,10 +165,10 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee>cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
-        Join address = root.join("address", JoinType.LEFT);
+        Join<Object, Object> address = root.join("address", JoinType.LEFT);
         address.on(qb.equal(address.get("city"), "Ottawa"));
         cq.where(qb.isNotNull(address.get("postalCode")));
-        List testResult = em.createQuery(cq).getResultList();
+        List<Employee> testResult = em.createQuery(cq).getResultList();
 
         clearCache();
         closeEntityManager(em);
@@ -196,7 +195,7 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         CriteriaBuilder qb = jpaEM.getCriteriaBuilder();
         CriteriaQuery<Employee>cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
-        Join address = root.join("manager", JoinType.LEFT).join("address", JoinType.LEFT);
+        Join<Object, Object> address = root.join("manager", JoinType.LEFT).join("address", JoinType.LEFT);
         address.on(qb.equal(address.get("city"), "Ottawa"));
         cq.where(qb.isNotNull(address.get("postalCode")));
         EJBQueryImpl testQuery = (EJBQueryImpl)jpaEM.createQuery(cq);

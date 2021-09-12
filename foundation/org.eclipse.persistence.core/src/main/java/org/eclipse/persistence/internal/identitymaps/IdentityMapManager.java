@@ -439,8 +439,8 @@ public class IdentityMapManager implements Serializable, Cloneable {
             manager = (IdentityMapManager)super.clone();
             manager.setIdentityMaps(new ConcurrentHashMap());
             for (Iterator<Map.Entry<Class, IdentityMap>> iterator = this.identityMaps.entrySet().iterator(); iterator.hasNext();) {
-                Map.Entry entry = (Map.Entry)iterator.next();
-                manager.identityMaps.put((Class)entry.getKey(), (IdentityMap)((IdentityMap)entry.getValue()).clone());
+                Map.Entry<Class, IdentityMap> entry = iterator.next();
+                manager.identityMaps.put(entry.getKey(), (IdentityMap) entry.getValue().clone());
             }
         } catch (CloneNotSupportedException exception) {
             throw new InternalError(exception.toString());
@@ -555,7 +555,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
             // cache the current time to avoid calculating it every time through the loop
             long currentTimeInMillis = System.currentTimeMillis();
             while (cacheEnum.hasMoreElements()) {
-                CacheKey key = (CacheKey)cacheEnum.nextElement();
+                CacheKey key = cacheEnum.nextElement();
                 if ((key.getObject() == null) || (!shouldReturnInvalidatedObjects && descriptor.getCacheInvalidationPolicy().isInvalidated(key, currentTimeInMillis))) {
                     continue;
                 }
@@ -649,7 +649,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 long currentTimeInMillis = System.currentTimeMillis();
                 //Enumeration doesn't checkReadLocks
                 for (Enumeration<CacheKey> cacheEnum = map.keys(false); cacheEnum.hasMoreElements();) {
-                    CacheKey key = (CacheKey)cacheEnum.nextElement();
+                    CacheKey key = cacheEnum.nextElement();
                     Object object = key.getObject();
                     if (object == null || cacheInvalidationPolicy.isInvalidated(key, currentTimeInMillis)) {
                         continue;
@@ -687,7 +687,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 if(isChildDescriptor) {
                     // Must check for inheritance.
                     for (Enumeration<CacheKey> cacheEnum = map.keys(false); cacheEnum.hasMoreElements();) {
-                        CacheKey key = (CacheKey)cacheEnum.nextElement();
+                        CacheKey key = cacheEnum.nextElement();
                         Object object = key.getObject();
                         if (object == null) {
                             continue;
@@ -700,7 +700,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 } else {
                     // if it's either a root class or there is no inheritance just invalidate the whole identity map
                     for (Enumeration<CacheKey> cacheEnum = map.keys(false); cacheEnum.hasMoreElements();) {
-                        CacheKey key = (CacheKey)cacheEnum.nextElement();
+                        CacheKey key = cacheEnum.nextElement();
                         key.setInvalidationState(CacheKey.CACHE_KEY_INVALID);
                     }
                 }
@@ -780,7 +780,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
         Iterator<Class> classes = getIdentityMaps().keySet().iterator();
         Vector results = new Vector(getIdentityMaps().size());
         while (classes.hasNext()) {
-            results.add(((Class)classes.next()).getName());
+            results.add(classes.next().getName());
         }
         return results;
     }
@@ -867,7 +867,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
             // cache the current time to avoid calculating it every time through the loop
             long currentTimeInMillis = System.currentTimeMillis();
             while (cacheEnum.hasMoreElements()) {
-                CacheKey key = (CacheKey)cacheEnum.nextElement();
+                CacheKey key = cacheEnum.nextElement();
                 if (!shouldReturnInvalidatedObjects && descriptor.getCacheInvalidationPolicy().isInvalidated(key, currentTimeInMillis)) {
                     continue;
                 }
@@ -1235,7 +1235,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
         }
 
         for (Enumeration<CacheKey> enumtr = map.keys(); enumtr.hasMoreElements();) {
-            org.eclipse.persistence.internal.identitymaps.CacheKey cacheKey = (org.eclipse.persistence.internal.identitymaps.CacheKey)enumtr.nextElement();
+            org.eclipse.persistence.internal.identitymaps.CacheKey cacheKey = enumtr.nextElement();
             Object object = cacheKey.getObject();
             if (businessClass.isInstance(object)) {
                 cacheCounter++;
@@ -1266,7 +1266,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
     public void printIdentityMaps() {
         for (Iterator<Class<?>> iterator = this.session.getDescriptors().keySet().iterator();
              iterator.hasNext();) {
-            Class businessClass = (Class)iterator.next();
+            Class<?> businessClass = iterator.next();
             ClassDescriptor descriptor = this.session.getDescriptor(businessClass);
             if (descriptor.hasInheritance()) {
                 if (descriptor.getInheritancePolicy().isRootParentDescriptor()) {
@@ -1288,7 +1288,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
         writer.write(TraceLocalization.buildMessage("lock_writer_header", null) + Helper.cr());
         Iterator<IdentityMap> idenityMapsIterator = this.session.getIdentityMapAccessorInstance().getIdentityMapManager().getIdentityMaps().values().iterator();
         while (idenityMapsIterator.hasNext()) {
-            IdentityMap idenityMap = (IdentityMap)idenityMapsIterator.next();
+            IdentityMap idenityMap = idenityMapsIterator.next();
             idenityMap.collectLocks(threadCollection);
         }
         Object[] parameters = new Object[1];

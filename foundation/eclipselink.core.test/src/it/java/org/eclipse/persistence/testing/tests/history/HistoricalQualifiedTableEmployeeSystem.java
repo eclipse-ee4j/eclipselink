@@ -55,14 +55,14 @@ public class HistoricalQualifiedTableEmployeeSystem extends EmployeeSystem {
 
         Vector<DatabaseField> targetRelationKeyFields = mapping.getTargetKeyFields();
         for (int i = 0; i < targetRelationKeyFields.size(); i++) {
-            String oldName = ((DatabaseField)targetRelationKeyFields.get(i)).getTable().getName();
-            ((DatabaseField)targetRelationKeyFields.get(i)).setTableName(user + "." + oldName);
+            String oldName = targetRelationKeyFields.get(i).getTable().getName();
+            targetRelationKeyFields.get(i).setTableName(user + "." + oldName);
         }
 
         Vector<DatabaseField> sourceRelationKeyFields = mapping.getSourceRelationKeyFields();
         for (int i = 0; i < sourceRelationKeyFields.size(); i++) {
-            String oldName = ((DatabaseField)sourceRelationKeyFields.get(i)).getTable().getName();
-            ((DatabaseField)sourceRelationKeyFields.get(i)).setTableName(user + "." + oldName);
+            String oldName = sourceRelationKeyFields.get(i).getTable().getName();
+            sourceRelationKeyFields.get(i).setTableName(user + "." + oldName);
         }
 
         DirectCollectionMapping dcmapping = (DirectCollectionMapping)empDescriptor.getMappingForAttributeName("responsibilitiesList");

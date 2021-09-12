@@ -153,9 +153,9 @@ public class Ni4TestSet {
     @SuppressWarnings("unchecked")
     @Test
     public void runQuery() {
-        Session s = project.createDatabaseSession();
+        DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
-        ((DatabaseSession)s).login();
+        s.login();
         Vector queryArgs = new NonSynchronizedVector();
         queryArgs.add(4);
         boolean worked = false;
@@ -168,6 +168,6 @@ public class Ni4TestSet {
           msg = e.getMessage();
         }
         assertTrue("invocation dec_in_test failed: " + msg, worked);
-        ((DatabaseSession)s).logout();
+        s.logout();
     }
 }

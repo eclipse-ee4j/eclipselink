@@ -20,7 +20,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import junit.textui.TestRunner;
 import org.w3c.dom.Document;
 import org.eclipse.persistence.oxm.*;
-import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 
 public class ClassLoaderTestCases extends OXTestCase {
@@ -48,30 +47,30 @@ public class ClassLoaderTestCases extends OXTestCase {
 
     public void testEmployeeClassLoaderWithSessionPath() throws Exception {
         XMLContext employeeXMLContext = new XMLContext("classloader", employeeClassLoader, "org/eclipse/persistence/testing/oxm/classloader/mySessions.xml");
-        Class controlClass = employeeClassLoader.loadClass(EMPLOYEE_CLASS);
+        Class<?> controlClass = employeeClassLoader.loadClass(EMPLOYEE_CLASS);
         Document employeeDocument = parse(EMPLOYEE_XML_RESOURCE);
         XMLUnmarshaller unmarshaller = employeeXMLContext.createUnmarshaller();
         Object employeeObject = unmarshaller.unmarshal(employeeDocument);
-        Class testClass = employeeObject.getClass();
+        Class<? extends Object> testClass = employeeObject.getClass();
     }
 
     public void testEmployeeClassLoader() throws Exception {
         XMLContext employeeXMLContext = getXMLContext(new EmployeeProject(), employeeClassLoader);
-        Class controlClass = employeeClassLoader.loadClass(EMPLOYEE_CLASS);
+        Class<?> controlClass = employeeClassLoader.loadClass(EMPLOYEE_CLASS);
 
         Document employeeDocument = parse(EMPLOYEE_XML_RESOURCE);
         XMLUnmarshaller unmarshaller = employeeXMLContext.createUnmarshaller();
         Object employeeObject = unmarshaller.unmarshal(employeeDocument);
-        Class testClass = employeeObject.getClass();
+        Class<? extends Object> testClass = employeeObject.getClass();
     }
 
     public void testPhoneNumberClassLoader() throws Exception {
         XMLContext phoneNumberXMLContext = getXMLContext(new PhoneNumberProject(), phoneNumberClassLoader);
-        Class controlClass = phoneNumberClassLoader.loadClass(PHONE_NUMBER_CLASS);
+        Class<?> controlClass = phoneNumberClassLoader.loadClass(PHONE_NUMBER_CLASS);
         XMLUnmarshaller unmarshaller = phoneNumberXMLContext.createUnmarshaller();
         Document phoneNumberDocument = parse(PHONE_NUMBER_XML_RESOURCE);
         Object phoneNumberObject = unmarshaller.unmarshal(phoneNumberDocument);
-        Class testClass = phoneNumberObject.getClass();
+        Class<? extends Object> testClass = phoneNumberObject.getClass();
     }
 
     private Document parse(String xmlResource) throws Exception {

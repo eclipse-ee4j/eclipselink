@@ -193,7 +193,7 @@ public class XMLBinaryDataHelper {
         try {
             Iterator<ImageWriter> itr = ImageIO.getImageWritersByMIMEType(mimeType);
             if (itr.hasNext()) {
-                ImageWriter w = (ImageWriter) itr.next();
+                ImageWriter w = itr.next();
                 w.setOutput(ImageIO.createImageOutputStream(outputStream));
                 w.write(convertToBufferedImage(image));
                 w.dispose();
@@ -327,7 +327,7 @@ public class XMLBinaryDataHelper {
             String mimeType = "image/png";
             Iterator<ImageWriter> itr = ImageIO.getImageWritersByMIMEType(mimeType);
             if (itr.hasNext()) {
-                ImageWriter w = (ImageWriter) itr.next();
+                ImageWriter w = itr.next();
                 w.setOutput(ImageIO.createImageOutputStream(outputStream));
                 w.write(convertToBufferedImage(image));
                 w.dispose();

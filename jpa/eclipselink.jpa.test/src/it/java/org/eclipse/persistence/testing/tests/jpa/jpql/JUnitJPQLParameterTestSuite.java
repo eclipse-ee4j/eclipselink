@@ -15,23 +15,20 @@
 
 package org.eclipse.persistence.testing.tests.jpa.jpql;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
+import jakarta.persistence.Parameter;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import jakarta.persistence.Query;
 import jakarta.persistence.EntityManager;
 
-import org.eclipse.persistence.testing.models.jpa.advanced.Address;
-import org.eclipse.persistence.testing.models.jpa.advanced.Department;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.Jigsaw;
 import org.eclipse.persistence.testing.models.jpa.advanced.JigsawPiece;
-import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.sessions.DatabaseSession;
@@ -39,7 +36,7 @@ import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
-import org.eclipse.persistence.testing.models.relationshipmaintenance.Dept;
+
 /**
  * <p>
  * <b>Purpose</b>: Test EJBQL parameter functionality.
@@ -194,7 +191,7 @@ public class JUnitJPQLParameterTestSuite extends JUnitTestCase {
         assertNotNull(em);
         Query query = em.createNamedQuery("findAllEmployeesOrderById");
         assertNotNull(query);
-        Set parameters = query.getParameters();
+        Set<Parameter<?>> parameters = query.getParameters();
         assertNotNull(parameters);
         assertEquals("Parameters size should be 0", 0, parameters.size());
     }

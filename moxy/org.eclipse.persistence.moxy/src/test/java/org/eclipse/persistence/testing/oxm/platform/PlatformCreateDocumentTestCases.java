@@ -16,7 +16,6 @@ package org.eclipse.persistence.testing.oxm.platform;
 
 import java.io.InputStream;
 
-import junit.framework.TestCase;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.platform.xml.XMLPlatformException;
@@ -186,7 +185,7 @@ public class PlatformCreateDocumentTestCases extends OXTestCase {
     }
 
     public void testCreateInvalidXMLPlatform2() throws Exception {
-        Class originalClass = XMLPlatformFactory.getInstance().getXMLPlatformClass();
+        Class<? extends XMLPlatform> originalClass = XMLPlatformFactory.getInstance().getXMLPlatformClass();
         String originalPlatform = System.getProperty("eclipselink.xml.platform");
         XMLPlatformFactory.getInstance().setXMLPlatformClass(null);
         try {
@@ -207,7 +206,7 @@ public class PlatformCreateDocumentTestCases extends OXTestCase {
     }
 
     public void testCreateNullXMLPlatform() throws Exception {
-        Class originalClass = XMLPlatformFactory.getInstance().getXMLPlatformClass();
+        Class<? extends XMLPlatform> originalClass = XMLPlatformFactory.getInstance().getXMLPlatformClass();
         String originalPlatform = System.getProperty("eclipselink.xml.platform");
         if (null == originalPlatform) {
             originalPlatform = "org.eclipse.persistence.platform.xml.jaxp.JAXPPlatform";

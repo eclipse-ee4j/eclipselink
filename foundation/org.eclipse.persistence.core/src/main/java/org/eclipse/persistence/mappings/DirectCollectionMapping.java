@@ -1352,7 +1352,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         Vector fieldNames = new Vector(getReferenceKeyFields().size());
         for (Enumeration<DatabaseField> fieldsEnum = getReferenceKeyFields().elements();
              fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(((DatabaseField)fieldsEnum.nextElement()).getQualifiedName());
+            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
         }
 
         return fieldNames;
@@ -1419,7 +1419,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         Vector fieldNames = new Vector(getSourceKeyFields().size());
         for (Enumeration<DatabaseField> fieldsEnum = getSourceKeyFields().elements();
              fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(((DatabaseField)fieldsEnum.nextElement()).getQualifiedName());
+            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
         }
 
         return fieldNames;
@@ -1753,7 +1753,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         AbstractRecord directRow = new DatabaseRecord();
         for (Enumeration<DatabaseField> referenceEnum = getReferenceKeyFields().elements();
              referenceEnum.hasMoreElements();) {
-            directRow.put((DatabaseField)referenceEnum.nextElement(), null);
+            directRow.put(referenceEnum.nextElement(), null);
         }
         directRow.put(getDirectField(), null);
         if(listOrderField != null) {
@@ -1781,7 +1781,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         }
 
         for (Enumeration<DatabaseField> referenceEnum = getReferenceKeyFields().elements(); referenceEnum.hasMoreElements();) {
-            DatabaseField field = (DatabaseField)referenceEnum.nextElement();
+            DatabaseField field = referenceEnum.nextElement();
 
             // Update the field first if the mapping is on a table per tenant entity.
             if (getDescriptor().hasTablePerMultitenantPolicy()) {
@@ -2655,7 +2655,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         // Make sure that each source key field is in the translation row.
         for (Enumeration<DatabaseField> sourceFieldsEnum = getSourceKeyFields().elements();
              sourceFieldsEnum.hasMoreElements();) {
-            DatabaseField sourceKey = (DatabaseField)sourceFieldsEnum.nextElement();
+            DatabaseField sourceKey = sourceFieldsEnum.nextElement();
             if (!translationRow.containsKey(sourceKey)) {
                 Object value = descriptor.getObjectBuilder().extractValueFromObjectForField(object, sourceKey, session);
                 translationRow.put(sourceKey, value);

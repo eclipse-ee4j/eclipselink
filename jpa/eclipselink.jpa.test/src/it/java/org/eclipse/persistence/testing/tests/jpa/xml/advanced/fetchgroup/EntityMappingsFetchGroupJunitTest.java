@@ -143,8 +143,8 @@ public class EntityMappingsFetchGroupJunitTest extends JUnitTestCase {
             EntityManager em = createEntityManager(m_persistenceUnit);
             Map properties = new HashMap();
             properties.put(QueryHints.FETCH_GROUP_NAME, "HeightAndWidth");
-            Class PadsClass = Pads.class;
-            Pads pads = (Pads) em.find(PadsClass, padsId, properties);
+            Class<Pads> PadsClass = Pads.class;
+            Pads pads = em.find(PadsClass, padsId, properties);
 
             try {
                 verifyFetchedField(PadsClass.getDeclaredField("height"), pads, 35.5);
@@ -167,8 +167,8 @@ public class EntityMappingsFetchGroupJunitTest extends JUnitTestCase {
             EntityManager em = createEntityManager(m_persistenceUnit);
             Map properties = new HashMap();
             properties.put(QueryHints.FETCH_GROUP_NAME, "AgeGroup");
-            Class ChestProtecterClass = ChestProtector.class;
-            ChestProtector chestProtector = (ChestProtector) em.find(ChestProtecterClass, chestProtectorId, properties);
+            Class<ChestProtector> ChestProtecterClass = ChestProtector.class;
+            ChestProtector chestProtector = em.find(ChestProtecterClass, chestProtectorId, properties);
 
             try {
                 verifyFetchedField(ChestProtecterClass.getField("ageGroup"), chestProtector, AgeGroup.INTERMEDIATE);
@@ -189,8 +189,8 @@ public class EntityMappingsFetchGroupJunitTest extends JUnitTestCase {
             EntityManager em = createEntityManager(m_persistenceUnit);
             Map properties = new HashMap();
             properties.put(QueryHints.FETCH_GROUP_NAME, "MSRP");
-            Class PadsClass = Pads.class;
-            Pads pads = (Pads) em.find(PadsClass, padsId, properties);
+            Class<Pads> PadsClass = Pads.class;
+            Pads pads = em.find(PadsClass, padsId, properties);
 
             try {
                 verifyFetchedField(PadsClass.getField("msrp"), pads, 999.99);

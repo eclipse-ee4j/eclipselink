@@ -2996,7 +2996,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     public List<DatabaseQuery> getAllQueries() {
         Vector allQueries = new Vector();
         for (Iterator<List<DatabaseQuery>> vectors = getQueries().values().iterator(); vectors.hasNext();) {
-            allQueries.addAll((Vector)vectors.next());
+            allQueries.addAll(vectors.next());
         }
         return allQueries;
     }
@@ -4967,7 +4967,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             Map<String, List<DatabaseQuery>> queries  = descriptor.getQueryManager().getQueries();
             if ((queries != null) && (queries.size() > 0)) {
                 for (Iterator<Map.Entry<String, List<DatabaseQuery>>> keyValueItr = queries.entrySet().iterator(); keyValueItr.hasNext();){
-                    Map.Entry entry = (Map.Entry) keyValueItr.next();
+                    Map.Entry<String, List<DatabaseQuery>> entry = keyValueItr.next();
                     Vector thisQueries = (Vector)entry.getValue();
                     if ((thisQueries != null) && (thisQueries.size() > 0)){
                         for( Iterator thisQueriesItr=thisQueries.iterator();thisQueriesItr.hasNext();){

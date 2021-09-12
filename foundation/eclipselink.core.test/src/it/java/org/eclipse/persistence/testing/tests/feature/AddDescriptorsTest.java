@@ -42,7 +42,7 @@ public class AddDescriptorsTest extends AutoVerifyTestCase {
             // then add all EmployeeSystem descriptors again
             Iterator<Class<?>> iterator = getSession().getDescriptors().keySet().iterator();
             while (iterator.hasNext()) {
-                Class cls = (Class)iterator.next();
+                Class<?> cls = iterator.next();
                 String packageName = Helper.getPackageName(cls);
                 if (packageName.equals("org.eclipse.persistence.testing.models.employee.interfaces")) {
                     getSession().getDescriptors().remove(cls);

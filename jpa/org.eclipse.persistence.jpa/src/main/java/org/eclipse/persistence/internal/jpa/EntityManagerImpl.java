@@ -2010,7 +2010,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[] { null }));
             }
 
-            UnitOfWork uow = getActivePersistenceContext(checkForTransaction(true)); // Throws TransactionRequiredException if no active transaction.
+            UnitOfWorkImpl uow = getActivePersistenceContext(checkForTransaction(true)); // Throws TransactionRequiredException if no active transaction.
 
             if (!contains(entity, uow)) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("cant_lock_not_managed_object", new Object[] { entity }));
@@ -2025,7 +2025,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                     || lockMode.name().equals(ObjectLevelReadQuery.PESSIMISTIC_FORCE_INCREMENT)) {
 
                 // return if the entity has previously been pessimistically locked
-                if (((UnitOfWorkImpl)uow).isPessimisticLocked(entity)) {
+                if (uow.isPessimisticLocked(entity)) {
                     return;
                 }
 

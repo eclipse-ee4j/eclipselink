@@ -59,7 +59,7 @@ public class FullIdentityMap extends AbstractIdentityMap {
         clone.setCacheKeys(new ConcurrentHashMap(this.cacheKeys.size()));
 
         for (Iterator<CacheKey> cacheKeysIterator = this.cacheKeys.values().iterator(); cacheKeysIterator.hasNext();) {
-            CacheKey key = (CacheKey)((CacheKey)cacheKeysIterator.next()).clone();
+            CacheKey key = (CacheKey) cacheKeysIterator.next().clone();
             clone.getCacheKeys().put(key.getKey(), key);
         }
 
@@ -74,7 +74,7 @@ public class FullIdentityMap extends AbstractIdentityMap {
     public void collectLocks(HashMap threadList) {
         Iterator<CacheKey> cacheKeyIterator = this.cacheKeys.values().iterator();
         while (cacheKeyIterator.hasNext()) {
-            CacheKey cacheKey = (CacheKey)cacheKeyIterator.next();
+            CacheKey cacheKey = cacheKeyIterator.next();
             if (cacheKey.isAcquired()) {
                 Thread activeThread = cacheKey.getActiveThread();
                 Set set = (Set)threadList.get(activeThread);
@@ -143,7 +143,7 @@ public class FullIdentityMap extends AbstractIdentityMap {
         Iterator<CacheKey> keys = this.cacheKeys.values().iterator();
 
         while (keys.hasNext()) {
-            CacheKey key = (CacheKey)keys.next();
+            CacheKey key = keys.next();
             Object object = key.getObject();
 
             if (object != null) {

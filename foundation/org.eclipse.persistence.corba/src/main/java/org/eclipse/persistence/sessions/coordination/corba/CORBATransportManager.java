@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -175,7 +175,7 @@ public abstract class CORBATransportManager extends TransportManager {
     @Override
     public void createLocalConnection() {
         // Register the remote connection in JNDI naming service
-        Object connectionImpl = buildCORBAConnection();
+        CORBAConnection connectionImpl = buildCORBAConnection();
 
         Object[] args = { rcm.getServiceId().getId() };
         rcm.logDebug("register_local_connection_in_jndi", args);
@@ -187,7 +187,7 @@ public abstract class CORBATransportManager extends TransportManager {
             return;
         }
 
-        localConnection = new CORBARemoteCommandConnection((CORBAConnection)connectionImpl);
+        localConnection = new CORBARemoteCommandConnection(connectionImpl);
         localConnection.setServiceId(rcm.getServiceId());
     }
 }

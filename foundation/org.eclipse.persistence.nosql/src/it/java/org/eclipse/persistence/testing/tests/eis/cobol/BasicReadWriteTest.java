@@ -36,7 +36,7 @@ public class BasicReadWriteTest extends CobolTest {
         resultRow = new CobolRow();
         //write to array
         while (fieldEnum.hasMoreElements()) {
-            DatabaseField databaseField = (DatabaseField)fieldEnum.nextElement();
+            DatabaseField databaseField = fieldEnum.nextElement();
             FieldMetaData field = recordMetaData.getFieldNamed(databaseField.getName());
             field.writeOnArray(row, recordData);
         }
@@ -44,7 +44,7 @@ public class BasicReadWriteTest extends CobolTest {
         //write to database row
         fieldEnum = row.getFields().elements();
         while (fieldEnum.hasMoreElements()) {
-            DatabaseField databaseField = (DatabaseField)fieldEnum.nextElement();
+            DatabaseField databaseField = fieldEnum.nextElement();
             FieldMetaData field = recordMetaData.getFieldNamed(databaseField.getName());
             field.writeOnRow(resultRow, recordData);
         }

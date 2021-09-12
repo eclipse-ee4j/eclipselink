@@ -14,23 +14,17 @@
 //     rbarkhouse - 2009-11-16 14:08:13 - initial implementation
 package org.eclipse.persistence.testing.oxm.dynamic;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
-import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.dynamic.DynamicTypeBuilder;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.factories.XMLProjectReader;
-import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
 public class DynamicTestCases extends XMLMappingTestCases {
@@ -141,7 +135,7 @@ public class DynamicTestCases extends XMLMappingTestCases {
     }
 
     private Object newInstance(String name) throws Exception {
-        Class theClass = dynamicClassLoader.loadClass(name);
+        Class<?> theClass = dynamicClassLoader.loadClass(name);
         Constructor constructor = theClass.getConstructors()[0];
 
         return constructor.newInstance();

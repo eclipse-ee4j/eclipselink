@@ -19,7 +19,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.util.ArrayList;
 
-import junit.framework.TestCase;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLMarshaller;
@@ -61,7 +60,7 @@ public class TwoProjectsTestSuite extends OXTestCase {
     public void testAddLoggedInSession() throws Exception {
         XMLContext xmlContext = new XMLContext(new CustomerProject());
         Project empProject = new EmployeeProject();
-        XMLPlatform platform = new SAXPlatform();
+        XMLPlatform<org.eclipse.persistence.internal.oxm.XMLUnmarshaller> platform = new SAXPlatform();
         empProject.setLogin(new XMLLogin(platform));
 
         DatabaseSession employeeSession = empProject.createDatabaseSession();
@@ -88,7 +87,7 @@ public class TwoProjectsTestSuite extends OXTestCase {
         XMLContext xmlContext = new XMLContext(new CustomerProject());
         Project empProject = new EmployeeProject();
 
-        XMLPlatform platform = new SAXPlatform();
+        XMLPlatform<org.eclipse.persistence.internal.oxm.XMLUnmarshaller> platform = new SAXPlatform();
         empProject.setLogin(new XMLLogin(platform));
 
         DatabaseSession employeeSession = empProject.createDatabaseSession();
@@ -114,7 +113,7 @@ public class TwoProjectsTestSuite extends OXTestCase {
         XMLContext xmlContext = new XMLContext(CONTEXT_PATH_SAX);
 
         Project empProject = new EmployeeProject();
-        XMLPlatform platform = new SAXPlatform();
+        XMLPlatform<org.eclipse.persistence.internal.oxm.XMLUnmarshaller> platform = new SAXPlatform();
         empProject.setLogin(new XMLLogin(platform));
 
         DatabaseSession employeeSession = empProject.createDatabaseSession();

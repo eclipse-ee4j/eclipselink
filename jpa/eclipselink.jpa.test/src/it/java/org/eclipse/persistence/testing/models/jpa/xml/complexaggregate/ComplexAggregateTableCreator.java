@@ -545,11 +545,11 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
     @Override
     public void replaceTables(DatabaseSession session, SchemaManager schemaManager) {
         if (session.getPlatform().isH2() || session.getPlatform().isHSQL()) {
-            for (Iterator iterator = getTableDefinitions().iterator(); iterator.hasNext(); ) {
-                TableDefinition table = (TableDefinition)iterator.next();
+            for (Iterator<TableDefinition> iterator = getTableDefinitions().iterator(); iterator.hasNext(); ) {
+                TableDefinition table = iterator.next();
                 if (table.getName().equals("XML_CITYSLICKER") || table.getName().equals("XML_COUNTRY_DWELLER")) {
-                    for (Iterator fields = table.getFields().iterator(); fields.hasNext(); ) {
-                        ((FieldDefinition)fields.next()).setIsPrimaryKey(false);
+                    for (Iterator<FieldDefinition> fields = table.getFields().iterator(); fields.hasNext(); ) {
+                        fields.next().setIsPrimaryKey(false);
                     }
                 }
             }

@@ -371,7 +371,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = wrapper.from(cq, Employee.class);
         wrapper.fetch(root, Employee_phoneNumbers, JoinType.LEFT);
-        List result = em.createQuery(cq).getResultList();
+        List<Employee> result = em.createQuery(cq).getResultList();
 
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
         ObjectOutputStream stream = new ObjectOutputStream(byteStream);
@@ -455,7 +455,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             clearCache();
 
             //"SELECT OBJECT(emp) FROM Employee emp"
-            List result = em.createQuery(em.getCriteriaBuilder().createQuery(Employee.class)).getResultList();
+            List<Employee> result = em.createQuery(em.getCriteriaBuilder().createQuery(Employee.class)).getResultList();
 
             assertTrue("Base Test Case Failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -479,7 +479,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Root<Employee> root = wrapper.from(cq, Employee.class);
             cq.where(qb.equal( qb.abs(wrapper.get(root, Employee_salary)), expectedResult.getSalary()) );
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("ABS test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -515,7 +515,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             Root<Employee> root = wrapper.from(cq, Employee.class);
             cq.where( qb.between(wrapper.<Employee,Comparable>get(root, Employee_id),
                     qb.<Comparable>literal(empId), qb.<Comparable>literal(employee.getId()) ) );
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("Between test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -544,7 +544,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Root<Employee> root = wrapper.from(cq, Employee.class);
             cq.where( qb.equal(wrapper.get(root, Employee_firstName), qb.concat(qb.literal(partOne), qb.literal(partTwo))) );
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("Concat test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -610,7 +610,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Root<Employee> root = wrapper.from(cq, Employee.class);
             cq.where( qb.like(qb.concat(wrapper.get(root, Employee_firstName), qb.literal("Smith") ), partOne+"Smith") );
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("Concat test with constraints failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -645,7 +645,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Root<Employee> root = wrapper.from(cq, Employee.class);
             cq.where( qb.like(qb.concat("Smith", wrapper.get(root, Employee_firstName) ), "Smith" + partOne) );
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("Concat test with constraints failed" , comparer.compareObjects(result, expectedResult));
         } finally {
@@ -681,7 +681,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).getResultList();
+            List<Long> result = em.createQuery(cq).getResultList();
             System.out.println(" results are :"+result);
 
             qb = em.getCriteriaBuilder();
@@ -717,7 +717,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Root<Employee> root = wrapper.from(cq, Employee.class);
             cq.where( qb.equal( wrapper.get(root, Employee_firstName), qb.concat(qb.literal(partOne), qb.concat( qb.literal(partTwo), qb.literal(partThree)) ) ) );
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("Concat test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -776,7 +776,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             cq.where( qb.equal(wrapper.get(root, Employee_lastName), qb.literal(emp.getLastName())));
             beginTransaction(em);
             try {
-                List result = em.createQuery(cq).getResultList();
+                List<String> result = em.createQuery(cq).getResultList();
 
                 assertTrue("Failed to return null value", result.contains(null));
             } finally {
@@ -852,7 +852,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             Root<Employee> root = wrapper.from(cq, Employee.class);
             Predicate firstOr = qb.or(qb.equal(wrapper.get(root, Employee_id), emp1.getId()), qb.equal(wrapper.get(root, Employee_id), emp2.getId()));
             cq.where( qb.or(firstOr, qb.equal(wrapper.get(root, Employee_id), emp3.getId())) );
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("Double OR test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -877,7 +877,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Root<Employee> root = wrapper.from(cq, Employee.class);
             cq.where( qb.equal(wrapper.get(root, Employee_firstName), expectedResult.getFirstName() ) );
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("Equals test failed", comparer.compareObjects(expectedResult, result));
         } finally {
@@ -905,7 +905,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Join<Employee, Employee> managedEmp =  wrapper.join(wrapper.from(cq, Employee.class), Employee_managedEmployees);
             cq.where( qb.equal(wrapper.get((Path) wrapper.get(managedEmp, Employee_address), Address_city), "Ottawa" ) );
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("Equals test with Join failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -933,7 +933,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Join<Employee,PhoneNumber> phones = wrapper.join(wrapper.from(cq, Employee.class), Employee_phoneNumbers);
             cq.where( qb.equal(phones, qb.parameter(PhoneNumber.class, "1") ) );
-            List result = em.createQuery(cq).setParameter("1", phoneNumber).getResultList();
+            List<Employee> result = em.createQuery(cq).setParameter("1", phoneNumber).getResultList();
 
             assertTrue("CollectionMemberIdentifierEqualsTest failed", comparer.compareObjects(expectedResult, result));
         } finally {
@@ -956,7 +956,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Root<Employee> root = wrapper.from(cq, Employee.class);
             cq.where( qb.equal(root, qb.parameter(Employee.class, "1") ) );
-            List result = em.createQuery(cq).setParameter("1", expectedResult).getResultList();
+            List<Employee> result = em.createQuery(cq).setParameter("1", expectedResult).getResultList();
 
             assertTrue("abstractSchemaIdentifierEqualsTest failed", comparer.compareObjects(expectedResult, result));
         } finally {
@@ -983,7 +983,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Root<Employee> root = wrapper.from(cq, Employee.class);
             cq.where( qb.notEqual(root, qb.parameter(Employee.class, "1") ) );
-            List result = em.createQuery(cq).setParameter("1", emp).getResultList();
+            List<Employee> result = em.createQuery(cq).setParameter("1", emp).getResultList();
 
             assertTrue("abstractSchemaIdentifierNotEqualsTest failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -1019,7 +1019,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Root<Employee> root = wrapper.from(cq, Employee.class);
-            Join phone = wrapper.join(root, Employee_phoneNumbers);
+            Join<Employee, Object> phone = wrapper.join(root, Employee_phoneNumbers);
             Predicate firstAnd = qb.and( qb.equal(wrapper.get(phone, PhoneNumber_areaCode), empPhoneNumbers.getAreaCode()),
                     qb.equal(wrapper.get(root, Employee_firstName), expectedResult.getFirstName()));
             cq.where( qb.and(firstAnd, qb.equal(wrapper.get(root, Employee_lastName), expectedResult.getLastName())) );
@@ -1064,7 +1064,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             cq.where( qb.in(wrapper.get(wrapper.from(cq, Employee.class), Employee_id)).value(expectedResult.getId()) );
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("Simple In Test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -1089,7 +1089,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             cq.where(wrapper.get(wrapper.from(cq, Employee.class), Employee_id).in(qb.parameter(List.class, "result")));
-            List result = em.createQuery(cq).setParameter("result", expectedResultList).getResultList();
+            List<Employee> result = em.createQuery(cq).setParameter("result", expectedResultList).getResultList();
 
             assertTrue("Simple In Test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -1117,7 +1117,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             Root<Employee> root = wrapper.from(cq, Employee.class);
             cq.where( qb.equal( qb.length(wrapper.get(root, Employee_firstName)) , expectedResult.getFirstName().length()) );
 
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("Simple Length Test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -1142,7 +1142,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             Root<Employee> root = wrapper.from(cq, Employee.class);
             cq.where( qb.like( wrapper.get(root, Employee_firstName), partialFirstName) );
 
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("Simple Like Test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -1175,7 +1175,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             Root<Employee> root = wrapper.from(cq, Employee.class);
             cq.where( qb.like( wrapper.get(root, Employee_firstName), qb.parameter(String.class, "1")) );
 
-            List result = em.createQuery(cq).setParameter("1", partialFirstName).getResultList();
+            List<Employee> result = em.createQuery(cq).setParameter("1", partialFirstName).getResultList();
 
             assertTrue("Simple Like Test with Parameter failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -1220,7 +1220,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
         }
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).setParameter("pattern", patternString).setParameter("esc", escChar).getResultList();
+            List<Address> result = em.createQuery(cq).setParameter("pattern", patternString).setParameter("esc", escChar).getResultList();
 
             assertTrue("Simple Escape Underscore test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -1254,7 +1254,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             Root<Employee> root = wrapper.from(cq, Employee.class);
             cq.where( qb.not(qb.between(wrapper.get(root, Employee_id), emp1.getId(), emp2.getId())) );
 
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("Simple Not Between Test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -1280,7 +1280,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             cq.where( qb.notEqual(wrapper.get(wrapper.from(cq, Employee.class), Employee_id), emp.getId()) );
 
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("Simple Like Test with Parameter failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -1315,7 +1315,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             Root<Employee> root = wrapper.from(cq, Employee.class);
             cq.where( qb.not(qb.in(wrapper.get(root, Employee_id)).value(emp.getId())) );
 
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("Simple Not In Test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -1349,7 +1349,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             Root<Employee> root = wrapper.from(cq, Employee.class);
             cq.where( qb.notLike(wrapper.get(root, Employee_firstName), partialFirstName ) );
 
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("Simple Not Like Test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -1377,7 +1377,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("Simple Or followed by And Test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -1404,13 +1404,13 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = wrapper.from(cq, Employee.class);
-        jakarta.persistence.criteria.Expression empFName = wrapper.get(root, Employee_firstName);
+        jakarta.persistence.criteria.Expression<Object> empFName = wrapper.get(root, Employee_firstName);
         Predicate andOpp = qb.and(qb.equal(empFName, "Bob"), qb.equal(wrapper.get(root, Employee_lastName), "Smith"));
         cq.where( qb.or( qb.equal(empFName, "John"), andOpp ) );
 
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("Simple Or followed by And With Static Names Test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -1432,12 +1432,12 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.id = " + emp1.getId() + "OR emp.id = " + emp2.getId()
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
-        jakarta.persistence.criteria.Expression empId = wrapper.get(wrapper.from(cq, Employee.class), Employee_id);
+        jakarta.persistence.criteria.Expression<Object> empId = wrapper.get(wrapper.from(cq, Employee.class), Employee_id);
         cq.where( qb.or( qb.equal(empId, emp1.getId()), qb.equal(empId, emp2.getId()) ) );
 
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
             clearCache();
 
             assertTrue("Simple Or Test failed", comparer.compareObjects(result, expectedResult));
@@ -1476,7 +1476,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).setParameter(parameterName, expectedResult.getFirstName()).getResultList();
+            List<Employee> result = em.createQuery(cq).setParameter(parameterName, expectedResult.getFirstName()).getResultList();
 
             assertTrue("Simple Parameter Test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -1552,7 +1552,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("Simple Reverse Abs test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -1579,7 +1579,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("Simple Reverse Concat test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -1602,7 +1602,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("Simple Reverse Equals test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -1625,7 +1625,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("Simple Reverse Length test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -1664,7 +1664,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).setParameter("1", parameters.get(0)).getResultList();
+            List<Employee> result = em.createQuery(cq).setParameter("1", parameters.get(0)).getResultList();
 
             assertTrue("Simple Reverse Parameter test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -1701,7 +1701,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("Simple Reverse Square Root test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -1729,7 +1729,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("Simple Reverse SubString test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -1766,7 +1766,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("Simple Square Root test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -1791,7 +1791,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
             assertTrue("Simple SubString test failed", comparer.compareObjects(result, expectedResult));
         } finally {
             rollbackTransaction(em);
@@ -1988,7 +1988,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("Simple Mod test failed", comparer.compareObjects(result, expectedResult));
 
@@ -2034,7 +2034,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("Simple Is empty test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -2064,7 +2064,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("Simple is not empty test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -2108,7 +2108,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).getResultList();
+            List<Address> result = em.createQuery(cq).getResultList();
 
             assertTrue("Simple Escape Underscore test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -2138,7 +2138,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("Simple small Project Member Of Projects test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -2175,7 +2175,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).setParameter("1", smallProject).getResultList();
+            List<Employee> result = em.createQuery(cq).setParameter("1", smallProject).getResultList();
 
             assertTrue("Simple small Project NOT Member Of Projects test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -2208,7 +2208,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).getResultList();
+            List<Long> result = em.createQuery(cq).getResultList();
 
             assertTrue("Simple Select Count One To One test failed", expectedResult.elementAt(0).equals(result.get(0)));
         } finally {
@@ -2244,7 +2244,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).getResultList();
+            List<Address> result = em.createQuery(cq).getResultList();
 
             assertTrue("Simple Select One To One test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -2281,7 +2281,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).getResultList();
+            List<PhoneNumber> result = em.createQuery(cq).getResultList();
 
             assertTrue("Simple select Phonenumber Declared In IN Clause test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -2372,7 +2372,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
         sq.select(qb.min(subroot.<Number>get("number")));//number is a string? not sure this will work.
 
         Root<Employee> root = wrapper.from(cq, Employee.class);
-        Join phone = wrapper.join(root, Employee_phoneNumbers);
+        Join<Employee, Object> phone = wrapper.join(root, Employee_phoneNumbers);
         cq.where(qb.equal(wrapper.get(phone, PhoneNumber_number), qb.all(sq)));
 
         beginTransaction(em);
@@ -2539,7 +2539,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
                 qb.parameter(BigDecimal.class, "1").as(Comparable.class), qb.parameter(Integer.class, "2").as(Comparable.class)));
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).setParameter("1", empId1).setParameter("2", emp2.getId()).getResultList();
+            List<Employee> result = em.createQuery(cq).setParameter("1", empId1).setParameter("2", emp2.getId()).getResultList();
 
             assertTrue("Simple select between with parameter test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -2582,7 +2582,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).setParameter("1", empId1).setParameter("2", emp2.getId()).getResultList();
+            List<Employee> result = em.createQuery(cq).setParameter("1", empId1).setParameter("2", emp2.getId()).getResultList();
 
             assertTrue("Simple select between with parameter test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -2602,7 +2602,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
         cq.where(qb.equal(wrapper.get(wrapper.from(cq, Employee.class), Employee_status), Employee.EmployeeStatus.FULL_TIME));
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
             result.size();
         } finally {
             rollbackTransaction(em);
@@ -2624,7 +2624,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).getResultList();
+            List<Project> result = em.createQuery(cq).getResultList();
 
             assertTrue("SimpleTypeTest", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -2655,7 +2655,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
         cq.orderBy(qb.asc(wrapper.get(root, Employee_firstName)));
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).getResultList();
+            List<String> result = em.createQuery(cq).getResultList();
 
             assertTrue("SimpleTypeTest", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -2674,10 +2674,10 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("Incorrect number of results returned.", result.size() == 1);
-            assertTrue("Incorrect Employee returned", ((Employee)result.get(0)).getFirstName().equals("Bob"));
+            assertTrue("Incorrect Employee returned", result.get(0).getFirstName().equals("Bob"));
 
         } finally {
             rollbackTransaction(em);
@@ -2701,7 +2701,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).getResultList();
+            List<Object> result = em.createQuery(cq).getResultList();
 
             assertTrue("Incorrect number of results returned.", result.size() == 1);
             assertTrue("Incorrect Employee returned", result.get(0).equals("Bob"));
@@ -2725,10 +2725,10 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("Incorrect number of results returned.", result.size() == 1);
-            assertTrue("Incorrect Employee returned", ((Employee)result.get(0)).getFirstName().equals("Bob"));
+            assertTrue("Incorrect Employee returned", result.get(0).getFirstName().equals("Bob"));
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
@@ -2751,7 +2751,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).getResultList();
+            List<Object> result = em.createQuery(cq).getResultList();
 
             assertTrue("Incorrect number of results returned.", result.size() == 1);
             assertTrue("Incorrect Employee returned", result.get(0).equals("Robert"));
@@ -2780,10 +2780,10 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).getResultList();
+            List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("Incorrect number of results returned.", result.size() == 1);
-            assertTrue("Incorrect Employee returned", ((Employee)result.get(0)).getFirstName().equals("Bob"));
+            assertTrue("Incorrect Employee returned", result.get(0).getFirstName().equals("Bob"));
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
@@ -2811,7 +2811,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq).getResultList();
+            List<Object> result = em.createQuery(cq).getResultList();
 
             assertTrue("Incorrect number of results returned.", result.size() == 1);
             assertTrue("Incorrect Employee returned", result.get(0).equals("Robert"));
@@ -2845,7 +2845,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
         cq1.where(qb1.equal(exp, 5000));
         beginTransaction(em);
         try {
-            List result = em.createQuery(cq1).getResultList();
+            List<Employee> result = em.createQuery(cq1).getResultList();
             assertTrue("LargeProject cast failed.", comparer.compareObjects(result, expectedResult));
         } finally {
             rollbackTransaction(em);
@@ -2902,7 +2902,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             jakarta.persistence.criteria.Expression exp = wrapper.get((Path)join.as(BlueLight.class), BlueLight_discount);
             cq1.where(qb1.equal(exp, 10) );
 
-            List result = em.createQuery(cq1).getResultList();
+            List<BeerConsumer> result = em.createQuery(cq1).getResultList();
             assertTrue("LargeProject cast failed.", comparer.compareObjects(result, expectedResult));
         } finally {
             if (isTransactionActive(em)) {
@@ -2956,7 +2956,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             jakarta.persistence.criteria.Expression exp = wrapper.get((Path)join.as(SportsCar.class), SportsCar_maxSpeed);
             cq1.where(qb1.equal(exp, 200) );
 
-            List result = em.createQuery(cq1).getResultList();
+            List<Person> result = em.createQuery(cq1).getResultList();
             assertTrue("OneToOne cast failed.", comparer.compareObjects(result, expectedResult));
         } finally {
             if (isTransactionActive(em)) {
@@ -2976,7 +2976,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
         CriteriaQuery<Tuple> criteria = qb.createTupleQuery();
 
         Root<Employee> emp = wrapper.from(criteria, Employee.class);
-        jakarta.persistence.criteria.Expression exp = wrapper.get(emp, Employee_lastName);
+        jakarta.persistence.criteria.Expression<Object> exp = wrapper.get(emp, Employee_lastName);
 
         criteria.multiselect(exp, qb.count(exp));
         criteria.where(qb.conjunction());

@@ -47,10 +47,10 @@ public class TestPatentReview extends JPA1Base {
             em.persist(patent);
             em.persist(patentReview);
             env.commitTransactionAndClear(em);
-            Object found = em.find(PatentReview.class, 17);
+            PatentReview found = em.find(PatentReview.class, 17);
             verify(found != null, "nothing found");
             verify(found instanceof PatentReview, "wrong instance: " + found.getClass().getName());
-            PatentReview review = (PatentReview) found;
+            PatentReview review = found;
             verify(review.getPatent() != null, "patent is null");
             Patent pat = review.getPatent();
             PatentId id = pat.getId();

@@ -59,9 +59,10 @@ public class TestRunner1Bean implements TestRunner1 {
         // load the test class and create an instance
         TestCase testInstance = null;
         try {
-            Class testClass = getClass().getClassLoader().loadClass(className);
-            Constructor c = testClass.getConstructor(new Class[] { String.class });
-            testInstance = (TestCase) c.newInstance(new Object[] { test });
+            @SuppressWarnings({"unchecked"})
+            Class<? extends TestCase> testClass = (Class<? extends TestCase>) getClass().getClassLoader().loadClass(className);
+            Constructor<? extends TestCase> c = testClass.getConstructor(new Class[] { String.class });
+            testInstance = c.newInstance(new Object[] { test });
         } catch (ClassNotFoundException e) {
             throw new EJBException(e);
         } catch (NoSuchMethodException e) {

@@ -705,7 +705,7 @@ public class ExpressionPanel extends JPanel {
                  getDescriptor().getMappings().elements();
                  mappingsEnum.hasMoreElements(); ) {
                 DatabaseMapping mapping =
-                    (DatabaseMapping)mappingsEnum.nextElement();
+                        mappingsEnum.nextElement();
                 if (mapping.isDirectToFieldMapping()) {
                     getAttributeCombo().addItem(mapping.getAttributeName());
                 }

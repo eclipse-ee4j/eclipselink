@@ -172,9 +172,9 @@ public class NojiNoTestSet {
     @SuppressWarnings("unchecked")
     @Test
     public void runQuery() {
-        Session s = project.createDatabaseSession();
+        DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
-        ((DatabaseSession)s).login();
+        s.login();
         Object o = null;
         Vector queryArgs = new NonSynchronizedVector();
         queryArgs.add("test");
@@ -194,6 +194,6 @@ public class NojiNoTestSet {
         assertTrue("wrong bint2bigdec value", bint2bigdec.intValue() == 42);
         Integer bool2int = (Integer)record.get("Z");
         assertTrue("wrong bool2int value", bool2int == 1);
-        ((DatabaseSession)s).logout();
+        s.logout();
     }
 }

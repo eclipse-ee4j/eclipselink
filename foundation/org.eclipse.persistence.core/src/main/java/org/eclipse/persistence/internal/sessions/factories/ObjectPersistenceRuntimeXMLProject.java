@@ -582,7 +582,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 Vector<Association> associations = mapping.getAggregateToSourceFieldAssociations();
                 Vector translations = new Vector(associations.size());
                 for (int index = 0; index < associations.size(); index++) {
-                    Association association = (Association)associations.get(index);
+                    Association association = associations.get(index);
                     FieldTranslation translation = new FieldTranslation();
                     translation.setKey(new DatabaseField((String)association.getKey()));
                     translation.setValue(association.getValue());
@@ -3609,7 +3609,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 List associations = new ArrayList(sourceToTargetKeyFields.size());
                 Iterator<Map.Entry<DatabaseField, DatabaseField>> iterator = sourceToTargetKeyFields.entrySet().iterator();
                 while (iterator.hasNext()) {
-                    Map.Entry entry = (Map.Entry)iterator.next();
+                    Map.Entry<DatabaseField, DatabaseField> entry = iterator.next();
                     associations.add(new Association(entry.getKey(), entry.getValue()));
                 }
                 return associations;

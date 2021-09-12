@@ -620,7 +620,7 @@ public class Populate {
      */
     public void assertCount(EntityManager em, Class entityClass, int count) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery criteria = cb.createQuery();
+        CriteriaQuery<Object> criteria = cb.createQuery();
         Root entity = criteria.from(entityClass);
         criteria.select(cb.count(entity));
         Query query = em.createQuery(criteria);

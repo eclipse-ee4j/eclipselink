@@ -20,6 +20,7 @@ import org.eclipse.persistence.descriptors.*;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.foundation.*;
 
+import java.util.Enumeration;
 import java.util.Vector;
 
 /**
@@ -113,7 +114,7 @@ public class WriteObjectTest extends TransactionalTestCase {
             mutationString += "U";
         }
 
-        java.util.Enumeration en = mappings.elements();
+        Enumeration<DatabaseMapping> en = mappings.elements();
 
         /**
          * Parse the mappings for the object's descriptor to find a suitable
@@ -126,7 +127,7 @@ public class WriteObjectTest extends TransactionalTestCase {
          * mappings has been fully parsed (whichever occurs first)
          */
         while (en.hasMoreElements ()) {
-            dbMapping = (DatabaseMapping) en.nextElement();
+            dbMapping = en.nextElement();
 
             if (!dbMapping.isPrimaryKeyMapping()
                     && dbMapping.isDirectToFieldMapping()

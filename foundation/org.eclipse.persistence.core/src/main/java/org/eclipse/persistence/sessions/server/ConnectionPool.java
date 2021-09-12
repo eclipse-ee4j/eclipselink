@@ -476,7 +476,7 @@ public class ConnectionPool {
 
         for (Iterator<Accessor> iterator = getConnectionsAvailable().iterator(); iterator.hasNext();) {
             try {
-                ((Accessor)iterator.next()).disconnect(getOwner());
+                iterator.next().disconnect(getOwner());
             } catch (DatabaseException exception) {
                 // Ignore.
             }
@@ -484,7 +484,7 @@ public class ConnectionPool {
 
         for (Iterator<Accessor> iterator = getConnectionsUsed().iterator(); iterator.hasNext();) {
             try {
-                ((Accessor)iterator.next()).disconnect(getOwner());
+                iterator.next().disconnect(getOwner());
             } catch (DatabaseException exception) {
                 // Ignore.
             }

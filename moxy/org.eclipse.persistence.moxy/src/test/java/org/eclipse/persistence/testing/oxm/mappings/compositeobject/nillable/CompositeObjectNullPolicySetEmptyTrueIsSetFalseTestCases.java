@@ -40,11 +40,11 @@ public class CompositeObjectNullPolicySetEmptyTrueIsSetFalseTestCases extends XM
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
 
-        AbstractNullPolicy aNullPolicy = new NullPolicy();
+        NullPolicy aNullPolicy = new NullPolicy();
         // Alter unmarshal policy state
         aNullPolicy.setNullRepresentedByEmptyNode(true); // false=new Manager, true=null
         aNullPolicy.setNullRepresentedByXsiNil(false); // No effect
-        ((NullPolicy)aNullPolicy).setSetPerformedForAbsentNode(false); // non-default
+        aNullPolicy.setSetPerformedForAbsentNode(false); // non-default
 
         // Alter marshal policy state
         aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);

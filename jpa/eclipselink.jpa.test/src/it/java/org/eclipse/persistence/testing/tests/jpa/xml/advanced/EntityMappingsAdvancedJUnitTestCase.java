@@ -2050,8 +2050,8 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
     }
 
     public void testDeleteAll(){
-        Map descriptors = getServerSession(m_persistenceUnit).getDescriptors();
-        ClassDescriptor descriptor = (ClassDescriptor)descriptors.get(Department.class);
+        Map<Class<?>, ClassDescriptor> descriptors = getServerSession(m_persistenceUnit).getDescriptors();
+        ClassDescriptor descriptor = descriptors.get(Department.class);
         OneToManyMapping mapping = (OneToManyMapping)descriptor.getMappingForAttributeName("equipment");
         assertFalse("<delete-all> xml did not work correctly", mapping.mustDeleteReferenceObjectsOneByOne());
     }

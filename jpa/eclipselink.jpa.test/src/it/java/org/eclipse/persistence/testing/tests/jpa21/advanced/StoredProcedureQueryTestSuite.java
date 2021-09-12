@@ -16,7 +16,6 @@
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
 import java.util.List;
-import java.util.Set;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Parameter;
@@ -27,12 +26,7 @@ import jakarta.persistence.TransactionRequiredException;
 import junit.framework.TestSuite;
 import junit.framework.Test;
 
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.jpa.StoredProcedureQueryImpl;
-import org.eclipse.persistence.jpa.JpaEntityManager;
-
 import org.eclipse.persistence.queries.ResultSetMappingQuery;
-import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.queries.ColumnResult;
 import org.eclipse.persistence.queries.ConstructorResult;
 import org.eclipse.persistence.queries.EntityResult;
@@ -241,8 +235,8 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 query.setParameter("old_p_code_v", postalCodeTypo);
 
                 // Make these calls to test the getParameter call with a name.
-                Parameter paramNew = query.getParameter("new_p_code_v");
-                Parameter paramOld = query.getParameter("old_p_code_v");
+                Parameter<?> paramNew = query.getParameter("new_p_code_v");
+                Parameter<?> paramOld = query.getParameter("old_p_code_v");
 
                 Object results = query.getSingleResult();
             } catch (IllegalStateException e) {
@@ -953,9 +947,9 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 query.setParameter(2, 2);
 
                 // Make this call to test the getParameter call with a position.
-                Parameter param1 = query.getParameter(1);
-                Parameter param2 = query.getParameter(2);
-                Parameter param3 = query.getParameter(3);
+                Parameter<?> param1 = query.getParameter(1);
+                Parameter<?> param2 = query.getParameter(2);
+                Parameter<?> param3 = query.getParameter(3);
 
             } catch (IllegalArgumentException e) {
                 if (isTransactionActive(em)){

@@ -19,6 +19,7 @@
 package org.eclipse.persistence.testing.tests.jpa.xml.merge.inherited;
 
 import java.sql.Date;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -239,10 +240,10 @@ public class EntityMappingsMergeInheritedJUnitTestCase extends JUnitTestCase {
             beginTransaction(em);
 
             BeerConsumer cm = em.find(BeerConsumer.class, beerConsumerId);
-            java.util.Collection phones = cm.getTelephoneNumbers().values();
+            Collection<TelephoneNumber> phones = cm.getTelephoneNumbers().values();
             assertTrue("Wrong phonenumbers associated with BeerConsumer", phones.size() == 2);
-            for (Iterator iterator = phones.iterator(); iterator.hasNext();){
-                    TelephoneNumber phone = (TelephoneNumber)(iterator.next());
+            for (Iterator<TelephoneNumber> iterator = phones.iterator(); iterator.hasNext();){
+                    TelephoneNumber phone = iterator.next();
                     assertTrue("Wrong owner of the telephone",phone.getBeerConsumer().getId() == beerConsumerId);
             }
 

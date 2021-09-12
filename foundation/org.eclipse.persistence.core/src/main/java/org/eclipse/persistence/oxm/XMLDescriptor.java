@@ -585,7 +585,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
         // Allow mapping pre init, must be done before validate.
         for (Enumeration<DatabaseMapping> mappingsEnum = getMappings().elements(); mappingsEnum.hasMoreElements();) {
             try {
-                DatabaseMapping mapping = (DatabaseMapping) mappingsEnum.nextElement();
+                DatabaseMapping mapping = mappingsEnum.nextElement();
                 mapping.preInitialize(session);
             } catch (DescriptorException exception) {
                 session.getIntegrityChecker().handleError(exception);
@@ -765,7 +765,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
         }
 
         for (Enumeration<DatabaseMapping> mappingsEnum = getMappings().elements(); mappingsEnum.hasMoreElements();) {
-            DatabaseMapping mapping = (DatabaseMapping) mappingsEnum.nextElement();
+            DatabaseMapping mapping = mappingsEnum.nextElement();
             validateMappingType(mapping);
             mapping.initialize(session);
             if(mapping.isObjectReferenceMapping()) {

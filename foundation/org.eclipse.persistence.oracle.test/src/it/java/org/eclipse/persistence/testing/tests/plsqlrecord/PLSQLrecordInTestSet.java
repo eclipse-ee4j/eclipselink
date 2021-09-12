@@ -273,9 +273,9 @@ public class PLSQLrecordInTestSet  {
 
     @Test
     public void runQuery() {
-        Session s = project.createDatabaseSession();
+        DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
-        ((DatabaseSession)s).login();
+        s.login();
         NonSynchronizedVector queryArgs = new NonSynchronizedVector();
         queryArgs.add(new BigDecimal(10));
         queryArgs.add("MikeNorman");
@@ -295,6 +295,6 @@ public class PLSQLrecordInTestSet  {
             msg = e.getMessage();
         }
         assertTrue("invocation rec_test failed: " + msg, worked);
-        ((DatabaseSession)s).logout();
+        s.logout();
     }
 }

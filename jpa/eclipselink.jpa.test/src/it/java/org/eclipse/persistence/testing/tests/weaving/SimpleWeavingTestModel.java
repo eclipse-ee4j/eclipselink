@@ -18,6 +18,7 @@ package org.eclipse.persistence.testing.tests.weaving;
 import java.util.*;
 
 // TopLink Testing Framework
+import junit.framework.Test;
 import org.eclipse.persistence.testing.framework.*;
 
 public class SimpleWeavingTestModel extends TestModel {
@@ -29,7 +30,7 @@ public class SimpleWeavingTestModel extends TestModel {
     @Override
     public void addTests() {
         junit.framework.TestSuite testsuite = (junit.framework.TestSuite)SimpleWeaverTestSuite.suite();
-        for (Enumeration e = testsuite.tests(); e.hasMoreElements();) {
+        for (Enumeration<Test> e = testsuite.tests(); e.hasMoreElements();) {
             junit.framework.TestCase testcase =    (junit.framework.TestCase)e.nextElement();
             addTest(new JUnitTestCase(testcase));
         }

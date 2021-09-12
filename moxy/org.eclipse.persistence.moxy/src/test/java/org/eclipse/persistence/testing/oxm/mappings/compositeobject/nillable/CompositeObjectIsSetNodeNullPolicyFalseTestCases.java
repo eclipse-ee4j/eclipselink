@@ -34,13 +34,13 @@ public class CompositeObjectIsSetNodeNullPolicyFalseTestCases extends XMLWithJSO
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
 
-        AbstractNullPolicy aNullPolicy = new IsSetNullPolicy();
+        IsSetNullPolicy aNullPolicy = new IsSetNullPolicy();
         // alter unmarshal policy state
         aNullPolicy.setNullRepresentedByEmptyNode(false);
         aNullPolicy.setNullRepresentedByXsiNil(false);
         // alter marshal policy state
         aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.ABSENT_NODE);
-        ((IsSetNullPolicy)aNullPolicy).setIsSetMethodName("isSetManager");
+        aNullPolicy.setIsSetMethodName("isSetManager");
         Project aProject = new CompositeObjectNodeNullPolicyProject(true);
         XMLCompositeObjectMapping aMapping = (XMLCompositeObjectMapping)aProject.getDescriptor(Team.class)//
         .getMappingForAttributeName("manager");

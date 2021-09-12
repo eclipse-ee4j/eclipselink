@@ -456,7 +456,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
         //Iterate over the ORM descriptors and check for matching OXM descriptors
         Iterator<ClassDescriptor> ormDescriptors = ormSession.getDescriptors().values().iterator();
         while(ormDescriptors.hasNext()) {
-            ClassDescriptor ormDescriptor = (ClassDescriptor)ormDescriptors.next();
+            ClassDescriptor ormDescriptor = ormDescriptors.next();
             Class javaClass = ormDescriptor.getJavaClass();
             AbstractSession oxmSession = null;
             try {

@@ -43,8 +43,8 @@ public class DirectIsSetOptionalNodeNullPolicyNonNillableElementNonDefaultSetNon
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         // use default policy with default flags and marshal enum
-        AbstractNullPolicy aNullPolicy = new IsSetNullPolicy();
-        ((IsSetNullPolicy)aNullPolicy).setIsSetMethodName("isSetFirstName");
+        IsSetNullPolicy aNullPolicy = new IsSetNullPolicy();
+        aNullPolicy.setIsSetMethodName("isSetFirstName");
         Project aProject = new DirectNodeNullPolicyProject(true);
         XMLDirectMapping aMapping = (XMLDirectMapping)aProject.getDescriptor(Employee.class)//
         .getMappingForAttributeName("firstName");

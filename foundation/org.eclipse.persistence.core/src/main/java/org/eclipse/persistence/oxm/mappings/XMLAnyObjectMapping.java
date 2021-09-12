@@ -335,7 +335,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
                     return objectValue;
                 }
             } else if (next.getNodeType() == Node.ELEMENT_NODE) {
-                ClassDescriptor referenceDescriptor = null;
+                XMLDescriptor referenceDescriptor = null;
 
                 //In this case it must be an element so we need to dig up the descriptor
                 //make a nested record and build an object from it.
@@ -374,7 +374,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
                     // wrap the object in an XMLRoot
                     // if we know the descriptor use it to wrap the Element in an XMLRoot (if necessary)
                     if (referenceDescriptor != null) {
-                        return ((XMLDescriptor) referenceDescriptor).wrapObjectInXMLRoot(objVal, next.getNamespaceURI(), next.getLocalName(), next.getPrefix(), false, record.isNamespaceAware(),record.getUnmarshaller());
+                        return referenceDescriptor.wrapObjectInXMLRoot(objVal, next.getNamespaceURI(), next.getLocalName(), next.getPrefix(), false, record.isNamespaceAware(),record.getUnmarshaller());
                     }
                     // no descriptor, so manually build the XMLRoot
                     return buildXMLRoot(next, objVal);
@@ -576,7 +576,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
         Iterator<DatabaseMapping> mappings = parentDesc.getMappings().iterator();
         int mappingsInContext = 0;
         while (mappings.hasNext()) {
-            DatabaseMapping next = (DatabaseMapping) mappings.next();
+            DatabaseMapping next = mappings.next();
             if (!(next == this)) {
                 XMLField nextField = (XMLField) next.getField();
                 XPathFragment frag = getFragmentToCompare(nextField, field);

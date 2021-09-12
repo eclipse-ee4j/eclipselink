@@ -249,9 +249,9 @@ public class PLSQLrecordWithCompatibleTypeOutTestSet  {
 
     @Test
     public void runQuery() {
-        Session s = project.createDatabaseSession();
+        DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
-        ((DatabaseSession)s).login();
+        s.login();
         boolean worked = false;
         String msg = null;
         PLSQLEmployeeType result = null;
@@ -272,6 +272,6 @@ public class PLSQLrecordWithCompatibleTypeOutTestSet  {
         assertTrue("incorrect SAL" , result.salary.equals(6000F));
         assertNull("COMM is supposed to be null", result.commission);
         assertTrue("incorrect DEPTNO" , result.department.equals(new BigDecimal(20)));
-        ((DatabaseSession)s).logout();
+        s.logout();
     }
 }

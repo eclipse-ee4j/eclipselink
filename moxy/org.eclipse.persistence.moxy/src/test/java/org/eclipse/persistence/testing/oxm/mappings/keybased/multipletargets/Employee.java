@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,7 @@ public class Employee extends org.eclipse.persistence.testing.oxm.mappings.keyba
             return false;
         }
         Employee tgtEmp = ((Employee) obj);
-        ArrayList tgtAddresses = tgtEmp.addresses;
+        ArrayList<Address> tgtAddresses = tgtEmp.addresses;
         if (this.addresses == null) {
             return tgtAddresses == null;
         }
@@ -40,8 +40,8 @@ public class Employee extends org.eclipse.persistence.testing.oxm.mappings.keyba
             return false;
         }
 
-        for (Iterator addIt = this.addresses.iterator(); addIt.hasNext(); ) {
-            Address address = (Address) addIt.next();
+        for (Iterator<Address> addIt = this.addresses.iterator(); addIt.hasNext(); ) {
+            Address address = addIt.next();
             if (!(tgtAddresses.contains(address))) {
                 return false;
             }

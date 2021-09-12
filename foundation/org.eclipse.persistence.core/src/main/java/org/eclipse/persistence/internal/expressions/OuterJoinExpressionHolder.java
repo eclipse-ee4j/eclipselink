@@ -145,7 +145,7 @@ public class OuterJoinExpressionHolder implements Comparable, Serializable
             int tablesSize = targetTables.size();
             // skip main table - start with i=1
             for(int i=1; i < tablesSize; i++) {
-                DatabaseTable table = (DatabaseTable)targetTables.get(i);
+                DatabaseTable table = targetTables.get(i);
                 Expression onExpression = outerJoinedAdditionalJoinCriteria.get(table);
                 if (onExpression != null) {
                     DatabaseTable alias = onExpression.aliasForTable(table);

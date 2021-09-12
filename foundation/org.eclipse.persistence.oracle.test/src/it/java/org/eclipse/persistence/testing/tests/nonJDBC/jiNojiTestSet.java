@@ -179,9 +179,9 @@ public class jiNojiTestSet {
     @SuppressWarnings("unchecked")
     @Test
     public void runQuery() {
-        Session s = project.createDatabaseSession();
+        DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
-        ((DatabaseSession)s).login();
+        s.login();
         Object o = null;
         Vector queryArgs = new NonSynchronizedVector();
         queryArgs.add("test");
@@ -200,6 +200,6 @@ public class jiNojiTestSet {
         DatabaseRecord record = (DatabaseRecord)results.get(0);
         BigDecimal y = (BigDecimal)record.get("Y");
         assertTrue("wrong y value", y.intValue() == 44);
-        ((DatabaseSession)s).logout();
+        s.logout();
     }
 }

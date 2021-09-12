@@ -201,7 +201,7 @@ public class JUnitTestCaseHelper {
         Map compositeMap = new HashMap();
         properties.put(PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES, compositeMap);
         Map<String, String> defaultProperties = getDatabaseProperties();
-        String logLevel = (String)defaultProperties.get(PersistenceUnitProperties.LOGGING_LEVEL);
+        String logLevel = defaultProperties.get(PersistenceUnitProperties.LOGGING_LEVEL);
         if (logLevel != null) {
             properties.put(PersistenceUnitProperties.LOGGING_LEVEL, logLevel);
         }

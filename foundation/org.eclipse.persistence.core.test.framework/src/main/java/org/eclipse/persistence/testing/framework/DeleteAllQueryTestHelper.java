@@ -80,11 +80,11 @@ public class DeleteAllQueryTestHelper {
         // first delete using the original TopLink approach - one by one.
         UnitOfWork uow = mainSession.acquireUnitOfWork();
         // mainSession could be a ServerSession
-        Session session = uow.getParent();
+        AbstractSession session = uow.getParent();
 
         // Will need to bring the db back to its original state
         // so that comparison of the deletion result would be possible.
-        ((AbstractSession)session).beginTransaction();
+        session.beginTransaction();
 
         Vector objectsToDelete = uow.readAllObjects(referenceClass, selectionExpression);
 
@@ -96,7 +96,7 @@ public class DeleteAllQueryTestHelper {
 
         Vector objectsLeftAfterOriginalDeletion = session.readAllObjects(rootClass);
 
-        ((AbstractSession)session).rollbackTransaction();
+        session.rollbackTransaction();
 
         // now delete using DeleteAllQuery.
         clearCache(mainSession);
@@ -111,7 +111,7 @@ public class DeleteAllQueryTestHelper {
         // Will need to bring the db back to its original state
         // so that the in case thre are children descriptors
         // they would still have objects to work with.
-        ((AbstractSession)session).beginTransaction();
+        session.beginTransaction();
 
         DeleteAllQuery query = new DeleteAllQuery(referenceClass, selectionExpression);
         query.setShouldDeferExecutionInUOW(shouldDeferExecutionInUOW);
@@ -157,7 +157,7 @@ public class DeleteAllQueryTestHelper {
             }
         }
 
-        ((AbstractSession)session).rollbackTransaction();
+        session.rollbackTransaction();
 
         if(classErrorMsg.length() > 0) {
             String className = referenceClass.getName();
@@ -169,7 +169,7 @@ public class DeleteAllQueryTestHelper {
             if(descriptor.hasInheritance() && descriptor.getInheritancePolicy().hasChildren()) {
                 Iterator<ClassDescriptor> it = descriptor.getInheritancePolicy().getChildDescriptors().iterator();
                 while(it.hasNext()) {
-                    ClassDescriptor childDescriptor = (ClassDescriptor)it.next();
+                    ClassDescriptor childDescriptor = it.next();
                     Class childReferenceClass = childDescriptor.getJavaClass();
                     errorMsg += execute(mainSession, childReferenceClass, selectionExpression, shouldDeferExecutionInUOW, handleChildren, rootClass);
                 }

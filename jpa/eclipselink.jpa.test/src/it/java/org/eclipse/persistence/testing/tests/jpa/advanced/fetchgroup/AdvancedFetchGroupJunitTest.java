@@ -29,9 +29,7 @@ import org.eclipse.persistence.config.QueryHints;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
-import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.AdvancedFetchGroupTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.ChestProtector;
@@ -146,8 +144,8 @@ public class AdvancedFetchGroupJunitTest extends JUnitTestCase {
             EntityManager em = createEntityManager();
             Map properties = new HashMap();
             properties.put(QueryHints.FETCH_GROUP_NAME, "HeightAndWidth");
-            Class PadsClass = Pads.class;
-            Pads pads = (Pads) em.find(PadsClass, padsId, properties);
+            Class<Pads> PadsClass = Pads.class;
+            Pads pads = em.find(PadsClass, padsId, properties);
 
             try {
                 verifyFetchedField(PadsClass.getDeclaredField("height"), pads, 35.5);
@@ -170,8 +168,8 @@ public class AdvancedFetchGroupJunitTest extends JUnitTestCase {
             EntityManager em = createEntityManager();
             Map properties = new HashMap();
             properties.put(QueryHints.FETCH_GROUP_NAME, "AgeGroup");
-            Class chestProtectorClass = ChestProtector.class;
-            ChestProtector chestProtector = (ChestProtector) em.find(chestProtectorClass, chestProtectorId, properties);
+            Class<ChestProtector> chestProtectorClass = ChestProtector.class;
+            ChestProtector chestProtector = em.find(chestProtectorClass, chestProtectorId, properties);
 
             try {
                 verifyFetchedField(chestProtectorClass.getField("ageGroup"), chestProtector, AgeGroup.INTERMEDIATE);
@@ -192,8 +190,8 @@ public class AdvancedFetchGroupJunitTest extends JUnitTestCase {
             EntityManager em = createEntityManager();
             Map properties = new HashMap();
             properties.put(QueryHints.FETCH_GROUP_NAME, "MSRP");
-            Class PadsClass = Pads.class;
-            Pads pads = (Pads) em.find(PadsClass, padsId, properties);
+            Class<Pads> PadsClass = Pads.class;
+            Pads pads = em.find(PadsClass, padsId, properties);
 
             try {
                 verifyFetchedField(PadsClass.getField("msrp"), pads, 999.99);

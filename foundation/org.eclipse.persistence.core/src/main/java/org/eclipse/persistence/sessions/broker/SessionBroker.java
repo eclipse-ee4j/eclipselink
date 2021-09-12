@@ -111,7 +111,7 @@ public class SessionBroker extends DatabaseSessionImpl {
         AbstractSession session;
         Iterator<String> names = this.getSessionsByName().keySet().iterator();
         while (names.hasNext()) {
-            sessionName = (String)names.next();
+            sessionName = names.next();
             session = getSessionForName(sessionName);
             if (session.isServerSession()) {
                 ServerSession serverSession = (ServerSession)session;
@@ -156,7 +156,7 @@ public class SessionBroker extends DatabaseSessionImpl {
         AbstractSession session;
         Iterator<String> names = this.getSessionsByName().keySet().iterator();
         while (names.hasNext()) {
-            sessionName = (String)names.next();
+            sessionName = names.next();
             session = getSessionForName(sessionName);
             historicalBroker.registerSession(sessionName, (AbstractSession)session.acquireHistoricalSession(clause));
         }
@@ -174,7 +174,7 @@ public class SessionBroker extends DatabaseSessionImpl {
         RuntimeException exception = null;
         for (Iterator<AbstractSession> sessionEnum = getSessionsByName().values().iterator();
              sessionEnum.hasNext();) {
-            AbstractSession session = (AbstractSession)sessionEnum.next();
+            AbstractSession session = sessionEnum.next();
             try {
                 session.releaseJTSConnection();
             } catch (RuntimeException ex) {
@@ -247,7 +247,7 @@ public class SessionBroker extends DatabaseSessionImpl {
     protected void basicBeginTransaction() throws DatabaseException {
         for (Iterator<AbstractSession> sessionEnum = getSessionsByName().values().iterator();
              sessionEnum.hasNext();) {
-            AbstractSession session = (AbstractSession)sessionEnum.next();
+            AbstractSession session = sessionEnum.next();
             session.beginTransaction();
         }
     }
@@ -263,14 +263,14 @@ public class SessionBroker extends DatabaseSessionImpl {
         // Do one last check it make sure that all sessions are still connected.
         for (Iterator<AbstractSession> sessionEnum = getSessionsByName().values().iterator();
              sessionEnum.hasNext();) {
-            AbstractSession session = (AbstractSession)sessionEnum.next();
+            AbstractSession session = sessionEnum.next();
             if (!session.isConnected()) {
                 throw DatabaseException.databaseAccessorNotConnected();
             }
         }
         for (Iterator<AbstractSession> sessionEnum = getSessionsByName().values().iterator();
              sessionEnum.hasNext();) {
-            AbstractSession session = (AbstractSession)sessionEnum.next();
+            AbstractSession session = sessionEnum.next();
             session.commitTransaction();
         }
     }
@@ -284,7 +284,7 @@ public class SessionBroker extends DatabaseSessionImpl {
         DatabaseException globalException = null;
         for (Iterator<AbstractSession> sessionEnum = getSessionsByName().values().iterator();
              sessionEnum.hasNext();) {
-            AbstractSession session = (AbstractSession)sessionEnum.next();
+            AbstractSession session = sessionEnum.next();
             try {
                 session.rollbackTransaction();
             } catch (DatabaseException exception) {
@@ -309,7 +309,7 @@ public class SessionBroker extends DatabaseSessionImpl {
 
             Iterator<String> names = this.getSessionsByName().keySet().iterator();
             while (names.hasNext()) {
-                sessionName = (String)names.next();
+                sessionName = names.next();
                 ssession = getSessionForName(sessionName);
                 if (ssession instanceof org.eclipse.persistence.sessions.server.ClientSession) {
                     if (((ClientSession)ssession).getParent().getBroker().containsQuery(queryName)) {
@@ -380,7 +380,7 @@ public class SessionBroker extends DatabaseSessionImpl {
     @Override
     public AsOfClause getAsOfClause() {
         for (Iterator<AbstractSession> enumtr = getSessionsByName().values().iterator(); enumtr.hasNext();) {
-            return ((AbstractSession)enumtr.next()).getAsOfClause();
+            return enumtr.next().getAsOfClause();
         }
         return null;
     }
@@ -662,7 +662,7 @@ public class SessionBroker extends DatabaseSessionImpl {
     public boolean isClientSessionBroker() {
         for (Iterator<AbstractSession> sessionEnum = getSessionsByName().values().iterator();
              sessionEnum.hasNext();) {
-            AbstractSession session = (AbstractSession)sessionEnum.next();
+            AbstractSession session = sessionEnum.next();
             if (session.isClientSession()) {
                 return true;
             }
@@ -683,7 +683,7 @@ public class SessionBroker extends DatabaseSessionImpl {
 
         for (Iterator<AbstractSession> sessionEnum = getSessionsByName().values().iterator();
              sessionEnum.hasNext();) {
-            AbstractSession session = (AbstractSession)sessionEnum.next();
+            AbstractSession session = sessionEnum.next();
             if (!session.isConnected()) {
                 return false;
             }
@@ -699,7 +699,7 @@ public class SessionBroker extends DatabaseSessionImpl {
     public boolean isServerSessionBroker() {
         for (Iterator<AbstractSession> sessionEnum = getSessionsByName().values().iterator();
              sessionEnum.hasNext();) {
-            AbstractSession session = (AbstractSession)sessionEnum.next();
+            AbstractSession session = sessionEnum.next();
             if (session.isServerSession()) {
                 return true;
             }
@@ -853,8 +853,8 @@ public class SessionBroker extends DatabaseSessionImpl {
             Iterator<ClassDescriptor> descriptors = session.getDescriptors().values().iterator();
             Iterator<Class<?>> classes = session.getDescriptors().keySet().iterator();
             while (descriptors.hasNext()) {
-                ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
-                Class descriptorClass = (Class)classes.next();
+                ClassDescriptor descriptor = descriptors.next();
+                Class<?> descriptorClass = classes.next();
                 getSessionNamesByClass().put(descriptorClass, name);
                 if(this.shouldUseDescriptorAliases) {
                     String alias = descriptor.getAlias();
@@ -896,7 +896,7 @@ public class SessionBroker extends DatabaseSessionImpl {
         RuntimeException exception = null;
         AbstractSession session;
         for (Iterator<AbstractSession> enumtr = getSessionsByName().values().iterator(); enumtr.hasNext();) {
-            session = (AbstractSession)enumtr.next();
+            session = enumtr.next();
             try {
                 session.release();
             } catch (RuntimeException ex) {
@@ -951,7 +951,7 @@ public class SessionBroker extends DatabaseSessionImpl {
 
         for (Iterator<AbstractSession> sessionEnum = getSessionsByName().values().iterator();
              sessionEnum.hasNext();) {
-            AbstractSession session = (AbstractSession)sessionEnum.next();
+            AbstractSession session = sessionEnum.next();
             session.setIntegrityChecker(integrityChecker);
         }
     }
@@ -968,7 +968,7 @@ public class SessionBroker extends DatabaseSessionImpl {
 
         for (Iterator<AbstractSession> sessionEnum = getSessionsByName().values().iterator();
              sessionEnum.hasNext();) {
-            AbstractSession session = (AbstractSession)sessionEnum.next();
+            AbstractSession session = sessionEnum.next();
             session.setSessionLog(log);
         }
     }
@@ -985,7 +985,7 @@ public class SessionBroker extends DatabaseSessionImpl {
 
         for (Iterator<AbstractSession> sessionEnum = getSessionsByName().values().iterator();
              sessionEnum.hasNext();) {
-            AbstractSession session = (AbstractSession)sessionEnum.next();
+            AbstractSession session = sessionEnum.next();
             session.setLog(log);
         }
     }
@@ -1001,7 +1001,7 @@ public class SessionBroker extends DatabaseSessionImpl {
 
         for (Iterator<AbstractSession> sessionEnum = getSessionsByName().values().iterator();
              sessionEnum.hasNext();) {
-            AbstractSession session = (AbstractSession)sessionEnum.next();
+            AbstractSession session = sessionEnum.next();
             session.setProfiler(profiler);
         }
     }
@@ -1034,7 +1034,7 @@ public class SessionBroker extends DatabaseSessionImpl {
             super.setSynchronized(synched);
             Iterator<AbstractSession> itSessions = getSessionsByName().values().iterator();
             while(itSessions.hasNext()) {
-                ((AbstractSession)itSessions.next()).setSynchronized(synched);
+                itSessions.next().setSynchronized(synched);
             }
         }
     }
@@ -1049,14 +1049,14 @@ public class SessionBroker extends DatabaseSessionImpl {
     public void writesCompleted() {
         for (Iterator<AbstractSession> sessionEnum = getSessionsByName().values().iterator();
              sessionEnum.hasNext();) {
-            AbstractSession session = (AbstractSession)sessionEnum.next();
+            AbstractSession session = sessionEnum.next();
             if (!session.isConnected()) {
                 throw DatabaseException.databaseAccessorNotConnected();
             }
         }
         for (Iterator<AbstractSession> sessionEnum = getSessionsByName().values().iterator();
              sessionEnum.hasNext();) {
-            AbstractSession session = (AbstractSession)sessionEnum.next();
+            AbstractSession session = sessionEnum.next();
             session.writesCompleted();
         }
     }

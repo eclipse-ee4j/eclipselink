@@ -193,7 +193,7 @@ public class QueryKeyExpression extends ObjectExpression {
         int tablesSize = tables.size();
         if (shouldUseOuterJoin() || (!getSession().getPlatform().shouldPrintInnerJoinInWhereClause())) {
             for (int i=1; i < tablesSize; i++) {
-                DatabaseTable table = (DatabaseTable)tables.elementAt(i);
+                DatabaseTable table = tables.elementAt(i);
                 Expression joinExpression = getDescriptor().getQueryManager().getTablesJoinExpressions().get(table);
                 joinExpression = this.baseExpression.twist(joinExpression, this);
                 if (getDescriptor().getHistoryPolicy() != null) {
@@ -206,7 +206,7 @@ public class QueryKeyExpression extends ObjectExpression {
             List<DatabaseTable> childrenTables = getDescriptor().getInheritancePolicy().getChildrenTables();
             tablesSize = childrenTables.size();
             for (int i=0; i < tablesSize; i++) {
-                DatabaseTable table = (DatabaseTable)childrenTables.get(i);
+                DatabaseTable table = childrenTables.get(i);
                 Expression joinExpression = getDescriptor().getInheritancePolicy().getChildrenTablesJoinExpressions().get(table);
                 joinExpression = this.baseExpression.twist(joinExpression, this);
                 tablesJoinExpressions.put(table, joinExpression);

@@ -55,7 +55,7 @@ public class CciJMSConnectionFactory implements jakarta.resource.cci.ConnectionF
     public jakarta.resource.cci.Connection getConnection(ConnectionSpec spec) throws EISException {
         CciJMSConnectionSpec jmsSpec = null;
         Session session = null;
-        jakarta.jms.Connection conn = null;
+        QueueConnection conn = null;
         jakarta.jms.ConnectionFactory factory;
 
         try {
@@ -84,7 +84,7 @@ public class CciJMSConnectionFactory implements jakarta.resource.cci.ConnectionF
             // 'AUTO_ACKNOWLEDGE' - session automatically acknowledges a client's receipt of a message either:
             //   - when the session has successfully returned from a call to receive
             //   - when the listener the session has called to process the message successfully returns
-            session = ((QueueConnection)conn).createQueueSession(true, Session.AUTO_ACKNOWLEDGE);
+            session = conn.createQueueSession(true, Session.AUTO_ACKNOWLEDGE);
         } catch (Exception e) {
             throw EISException.createException(e);
         }

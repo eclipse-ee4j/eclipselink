@@ -120,7 +120,7 @@ public class ClientServerTest extends AutoVerifyTestCase {
             ConnectionPool pool = server.serverSession.getConnectionPools().get("default");
             List<Accessor> connections = pool.getConnectionsAvailable();
             for (Iterator<Accessor> iterator = connections.iterator(); iterator.hasNext(); ) {
-                if (((DatabaseAccessor)iterator.next()).isConnected()) {
+                if (iterator.next().isConnected()) {
                     counter = counter + 1;
                 }
             }

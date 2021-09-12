@@ -455,7 +455,7 @@ public class TreatAsExpression extends QueryKeyExpression {
             tableSize = tables.size();
             //look up the joins from the parent descriptor to our tables.
             for (int i=0; i < tableSize; i++) {
-                DatabaseTable table = (DatabaseTable)tables.elementAt(i);
+                DatabaseTable table = tables.elementAt(i);
                 Expression joinExpression = parentDescriptor.getInheritancePolicy().getChildrenTablesJoinExpressions().get(table);
                 //Some of our tables might be the in our parent as well, so ignore the lack of a joinExpression
                 if (joinExpression != null) {
@@ -469,7 +469,7 @@ public class TreatAsExpression extends QueryKeyExpression {
             List<DatabaseTable> childrenTables = getDescriptor().getInheritancePolicy().getChildrenTables();
             tableSize = childrenTables.size();
             for (int i=0; i < tableSize; i++) {
-                DatabaseTable table = (DatabaseTable)childrenTables.get(i);
+                DatabaseTable table = childrenTables.get(i);
                 Expression joinExpression = getDescriptor().getInheritancePolicy().getChildrenTablesJoinExpressions().get(table);
                 joinExpression = this.baseExpression.twist(joinExpression, this);
                 tablesJoinExpressions.put(table, joinExpression);
@@ -499,7 +499,7 @@ public class TreatAsExpression extends QueryKeyExpression {
                     parentDescriptor.getInheritancePolicy().hasMultipleTableChild() ) {
                 //look up the joins from the parent descriptor to our tables.
                 for (int i=0; i < tablesSize; i++) {
-                    DatabaseTable table = (DatabaseTable)tables.elementAt(i);
+                    DatabaseTable table = tables.elementAt(i);
                     Expression joinExpression = parentDescriptor.getInheritancePolicy().getChildrenTablesJoinExpressions().get(table);
                     //Some of our tables might be the in our parent as well, so ignore the lack of a joinExpression
                     if (joinExpression != null) {

@@ -247,7 +247,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         CollectionChangeRecord collectionChangeRecord = (CollectionChangeRecord)changeRecord;
         Iterator<ObjectChangeSet> it = collectionChangeRecord.getAddObjectList().values().iterator();
         while(it.hasNext()) {
-            ObjectChangeSet change = (ObjectChangeSet)it.next();
+            ObjectChangeSet change = it.next();
             if(!change.hasChanges()) {
                 change.setShouldModifyVersionField(Boolean.TRUE);
                 ((org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet)change.getUOWChangeSet()).addObjectChangeSet(change, uow, false);
@@ -256,7 +256,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         // in the mapping is privately owned then the target will be deleted - no need to modify target version.
         it = collectionChangeRecord.getRemoveObjectList().values().iterator();
         while(it.hasNext()) {
-            ObjectChangeSet change = (ObjectChangeSet)it.next();
+            ObjectChangeSet change = it.next();
             if (!isPrivateOwned()){
                 if(!change.hasChanges()) {
                     change.setShouldModifyVersionField(Boolean.TRUE);

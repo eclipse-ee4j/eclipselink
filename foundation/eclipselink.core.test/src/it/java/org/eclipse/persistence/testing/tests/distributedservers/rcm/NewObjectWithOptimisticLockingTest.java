@@ -78,7 +78,7 @@ public class NewObjectWithOptimisticLockingTest extends ConfigurableCacheSyncDis
         boolean found = false;
         Iterator<ListItem> i = holder.getItems().iterator();
         while (i.hasNext()){
-            ListItem item = (ListItem)i.next();
+            ListItem item = i.next();
             if (item.getDescription() != null && item.getDescription().equals("test2")){
                 found = true;
             }

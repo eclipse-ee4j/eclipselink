@@ -542,7 +542,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
         Set fetchedAttributes = isObjectPartial ? fetchGroupInObject.getAttributeNames() : null;
         int size = mappings.size();
         for (int index = 0; index < size; index++) {
-            DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
+            DatabaseMapping mapping = mappings.get(index);
             if ((!isObjectPartial) || ((fetchedAttributes != null) && fetchedAttributes.contains(mapping.getAttributeName()))) {
                 // Only refresh the fetched attributes into clones.
                 mapping.buildClone(cachedObject, null, workingClone, null, uow);

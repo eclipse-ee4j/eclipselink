@@ -554,7 +554,7 @@ public class SessionsFactory {
                 Iterator<String> i = converterClassConfig.getStructConverterClasses().iterator();
 
                 while (i.hasNext()) {
-                    String converterClassName = (String)i.next();
+                    String converterClassName = i.next();
                     try {
                         Class<StructConverter> converterClass = (Class<StructConverter>) m_classLoader.loadClass(converterClassName);
                         StructConverter converter = null;

@@ -44,7 +44,7 @@ public class TransparentIndirectionPolicyInstanceTest extends ProjectClassGenera
         descriptorToModify = project.getDescriptors().get(Employee.class);
         for (Enumeration<DatabaseMapping> mappingsEnum = (descriptorToModify.getMappings()).elements();
              mappingsEnum.hasMoreElements(); ) {
-            mappingToModify = (DatabaseMapping)mappingsEnum.nextElement();
+            mappingToModify = mappingsEnum.nextElement();
 
             if (mappingToModify.isForeignReferenceMapping()) {
                 ((ForeignReferenceMapping)mappingToModify).setIndirectionPolicy(new TransparentIndirectionPolicy());

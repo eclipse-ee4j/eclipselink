@@ -154,9 +154,9 @@ public class Ni8TestSet {
     @SuppressWarnings("unchecked")
     @Test
     public void runQuery() {
-        Session s = project.createDatabaseSession();
+        DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
-        ((DatabaseSession)s).login();
+        s.login();
         Vector queryArgs = new NonSynchronizedVector();
         queryArgs.add(8);
         boolean worked = false;
@@ -182,6 +182,6 @@ public class Ni8TestSet {
           msg = e.getMessage();
         }
         assertFalse("invocation positive_in_test with neg number worked: " + msg, worked);
-        ((DatabaseSession)s).logout();
+        s.logout();
     }
 }

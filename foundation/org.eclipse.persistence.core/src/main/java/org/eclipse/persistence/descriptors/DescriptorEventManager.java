@@ -667,7 +667,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
             List<DescriptorEventListener> entityListenerEventListeners = entityListenerEventManagers.get(index).getEntityListenerEventListeners();
 
             for (int i = 0; i < entityListenerEventListeners.size(); i++) {
-                DescriptorEventListener listener = (DescriptorEventListener) entityListenerEventListeners.get(i);
+                DescriptorEventListener listener = entityListenerEventListeners.get(i);
                 notifyListener(listener, event);
             }
         }

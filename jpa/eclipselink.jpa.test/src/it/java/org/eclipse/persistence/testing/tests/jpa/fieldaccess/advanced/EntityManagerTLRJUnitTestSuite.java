@@ -2521,12 +2521,12 @@ public class EntityManagerTLRJUnitTestSuite extends JUnitTestCase {
         query.setHint(QueryHints.BATCH, "e.manager.phoneNumbers");
 
         ReadAllQuery raq = (ReadAllQuery)query.getDatabaseQuery();
-        List expressions = raq.getBatchReadAttributeExpressions();
+        List<Expression> expressions = raq.getBatchReadAttributeExpressions();
         assertTrue(expressions.size() == 2);
-        Expression exp = (Expression)expressions.get(0);
+        Expression exp = expressions.get(0);
         assertTrue(exp.isQueryKeyExpression());
         assertTrue(exp.getName().equals("phoneNumbers"));
-        exp = (Expression)expressions.get(1);
+        exp = expressions.get(1);
         assertTrue(exp.isQueryKeyExpression());
         assertTrue(exp.getName().equals("phoneNumbers"));
 
@@ -2541,9 +2541,9 @@ public class EntityManagerTLRJUnitTestSuite extends JUnitTestCase {
 
         beginTransaction(em);
         emp = em.find(Employee.class, id1);
-        Iterator it = emp.getManagedEmployees().iterator();
+        Iterator<Employee> it = emp.getManagedEmployees().iterator();
         while (it.hasNext()){
-            Employee managedEmp = (Employee)it.next();
+            Employee managedEmp = it.next();
             it.remove();
             managedEmp.setManager(null);
             em.remove(managedEmp);
@@ -2617,9 +2617,9 @@ public class EntityManagerTLRJUnitTestSuite extends JUnitTestCase {
 
         beginTransaction(em);
         emp = em.find(Employee.class, id1);
-        Iterator it = emp.getManagedEmployees().iterator();
+        Iterator<Employee> it = emp.getManagedEmployees().iterator();
         while (it.hasNext()){
-            Employee managedEmp = (Employee)it.next();
+            Employee managedEmp = it.next();
             it.remove();
             managedEmp.setManager(null);
             em.remove(managedEmp);

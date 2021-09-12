@@ -72,7 +72,7 @@ public class CascadeLockingPolicy {
             ExpressionBuilder builder = new ExpressionBuilder();
 
             while (keys.hasNext()) {
-                String keyField = ((DatabaseField) keys.next()).getQualifiedName();
+                String keyField = keys.next().getQualifiedName();
 
                 if (selectionCriteria == null) {
                     selectionCriteria = builder.getField(keyField).equal(builder.getParameter(keyField));

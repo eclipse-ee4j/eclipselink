@@ -825,7 +825,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
             this.readConnectionPool.shutDown();
 
             for (Iterator<ConnectionPool> poolsEnum = getConnectionPools().values().iterator(); poolsEnum.hasNext();) {
-                ((ConnectionPool)poolsEnum.next()).shutDown();
+                poolsEnum.next().shutDown();
             }
         }
     }

@@ -271,7 +271,7 @@ public class SQLSelectStatement extends SQLStatement {
                 } else {// do normal outer stuff for Informix
                     for (Enumeration<DatabaseTable> target = outerExpression.getMapping().getReferenceDescriptor().getTables().elements();
                          target.hasMoreElements();) {
-                        DatabaseTable newTarget = (DatabaseTable)target.nextElement();
+                        DatabaseTable newTarget = target.nextElement();
                         DatabaseTable newAlias = outerExpression.aliasForTable(newTarget);
                         writer.write(", OUTER ");
                         writer.write(newTarget.getQualifiedNameDelimited(printer.getPlatform()));
@@ -761,7 +761,7 @@ public class SQLSelectStatement extends SQLStatement {
         printer.getWriter().write(" ORDER BY ");
 
         for (Iterator<Expression> expressionsEnum = getOrderByExpressions().iterator(); expressionsEnum.hasNext();) {
-            Expression expression = (Expression)expressionsEnum.next();
+            Expression expression = expressionsEnum.next();
             expression.printSQL(printer);
 
             if (expressionsEnum.hasNext()) {
@@ -780,7 +780,7 @@ public class SQLSelectStatement extends SQLStatement {
         }
 
         for (Iterator<Expression> expressionsEnum = getUnionExpressions().iterator(); expressionsEnum.hasNext();) {
-            Expression expression = (Expression)expressionsEnum.next();
+            Expression expression = expressionsEnum.next();
             printer.getWriter().write(" ");
             expression.printSQL(printer);
             printer.printString(")");
@@ -1581,7 +1581,7 @@ public class SQLSelectStatement extends SQLStatement {
                 if (map != null) {
                     Iterator<Expression> it = map.values().iterator();
                     while(it.hasNext()) {
-                        criteria = (Expression)it.next();
+                        criteria = it.next();
                         if(criteria != null) {
                             allExpressions.add(criteria);
                         }

@@ -34,13 +34,13 @@ public class DirectCollectionIsSetNodeNullPolicyTrueTestCases extends XMLWithJSO
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
 
-        AbstractNullPolicy aNullPolicy = new IsSetNullPolicy();
+        IsSetNullPolicy aNullPolicy = new IsSetNullPolicy();
         // alter unmarshal policy state
         aNullPolicy.setNullRepresentedByXsiNil(true);
         // alter marshal policy state
         aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
 
-        ((IsSetNullPolicy) aNullPolicy).setIsSetMethodName("isSetTasks");
+        aNullPolicy.setIsSetMethodName("isSetTasks");
 
         Project aProject = new DirectCollectionNodeNullPolicyProject(true);
         ClassDescriptor aDescriptor = aProject.getDescriptor(Employee.class);

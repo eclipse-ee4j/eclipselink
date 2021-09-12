@@ -199,7 +199,7 @@ public interface DatabaseType {
                 DatabaseRecord newOutputRow, List<DatabaseField> outputRowFields, List outputRowValues) {
             DatabaseField field = null;
             for (Iterator<DatabaseField> i = outputRowFields.iterator(); i.hasNext(); ) {
-                DatabaseField f = (DatabaseField)i.next();
+                DatabaseField f = i.next();
                 if (f.getName().equals(outArg.name)) {
                     field = f;
                     break;
