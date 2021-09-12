@@ -146,9 +146,9 @@ public abstract class OXTestCase extends XMLTestCase {
     public XMLContext getXMLContext(Project project) {
         if (platform == Platform.DOC_PRES) {
             Collection<ClassDescriptor> descriptors = project.getDescriptors().values();
-            java.util.Iterator iter = descriptors.iterator();
+            Iterator<ClassDescriptor> iter = descriptors.iterator();
             while (iter.hasNext()) {
-                ClassDescriptor nextDesc = (ClassDescriptor)iter.next();
+                ClassDescriptor nextDesc = iter.next();
                 if (nextDesc instanceof org.eclipse.persistence.oxm.XMLDescriptor) {
                     ((org.eclipse.persistence.oxm.XMLDescriptor)nextDesc).setShouldPreserveDocument(true);
                 }

@@ -38,9 +38,9 @@ public final class MyHashMapAdapter extends XmlAdapter<MyHashMapType, LinkedHash
 
     @Override
     public LinkedHashMap unmarshal(MyHashMapType arg0) throws Exception {
-        LinkedHashMap map = new LinkedHashMap<Integer, String>();
-        for (Iterator typeIt = arg0.entry.iterator(); typeIt.hasNext(); ) {
-            MyHashMapEntryType eType = (MyHashMapEntryType) typeIt.next();
+        LinkedHashMap<Integer, String> map = new LinkedHashMap<Integer, String>();
+        for (Iterator<MyHashMapEntryType> typeIt = arg0.entry.iterator(); typeIt.hasNext(); ) {
+            MyHashMapEntryType eType = typeIt.next();
             map.put(eType.key, eType.value);
         }
         return map;

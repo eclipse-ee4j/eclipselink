@@ -23,6 +23,7 @@ import java.util.Map;
 import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.Employee;
@@ -107,7 +108,7 @@ public class ConflictingListObjectsTypeTestCases extends TypeMappingInfoWithJSON
     }
 
     public void testDescriptorsSize(){
-        List descriptors = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext().getSession(0).getProject().getOrderedDescriptors();
+        List<ClassDescriptor> descriptors = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext().getSession(0).getProject().getOrderedDescriptors();
         assertEquals(2, descriptors.size());
     }
 

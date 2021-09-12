@@ -18,6 +18,8 @@ import java.io.InputStream;
 import java.util.Map;
 
 import jakarta.xml.bind.JAXBException;
+
+import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
@@ -357,11 +359,11 @@ public class DynamicJAXBContextFactory {
     private static void fixDateTimeConversion(DynamicJAXBContext ctx) {
         XMLConversionManager conversionManager = (XMLConversionManager) ctx.getXMLContext().getSession().getDatasourcePlatform().getConversionManager();
 
-        Map defaultXmlTypes = XMLConversionManager.getDefaultXMLTypes();
+        Map<QName, Class<?>> defaultXmlTypes = XMLConversionManager.getDefaultXMLTypes();
         defaultXmlTypes.remove(Constants.DATE_TIME_QNAME);
         defaultXmlTypes.put(Constants.DATE_TIME_QNAME, CoreClassConstants.XML_GREGORIAN_CALENDAR);
 
-        Map defaultJavaTypes = XMLConversionManager.getDefaultJavaTypes();
+        Map<Class<?>, QName> defaultJavaTypes = XMLConversionManager.getDefaultJavaTypes();
         defaultJavaTypes.remove(CoreClassConstants.CALENDAR);
         defaultJavaTypes.put(CoreClassConstants.XML_GREGORIAN_CALENDAR, Constants.DATE_TIME_QNAME);
     }

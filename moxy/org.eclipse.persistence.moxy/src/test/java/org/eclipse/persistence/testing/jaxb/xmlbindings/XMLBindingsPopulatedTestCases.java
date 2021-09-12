@@ -167,12 +167,12 @@ public class XMLBindingsPopulatedTestCases extends JAXBWithJSONTestCases{
         XmlElement javaAttribute = new XmlElement();
         javaAttribute.setName("elementName");
         javaAttribute.setJavaAttribute("theJavaAttributeValue");
-        JAXBElement jbe = new JAXBElement<XmlElement>(new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-element"), XmlElement.class, javaAttribute);
+        JAXBElement<XmlElement> jbe = new JAXBElement<XmlElement>(new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-element"), XmlElement.class, javaAttribute);
 
         XmlElement javaAttribute2 = new XmlElement();
         javaAttribute2.setName("elementName2");
         javaAttribute2.setJavaAttribute("theJavaAttributeValue2");
-        JAXBElement jbe2 = new JAXBElement<XmlElement>(new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-element"), XmlElement.class, javaAttribute2);
+        JAXBElement<XmlElement> jbe2 = new JAXBElement<XmlElement>(new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-element"), XmlElement.class, javaAttribute2);
 
         XmlAttribute javaAttribute3 = new XmlAttribute();
         javaAttribute3.setContainerType("someContainerType");
@@ -182,7 +182,7 @@ public class XMLBindingsPopulatedTestCases extends JAXBWithJSONTestCases{
         javaAttribute3.setReadOnly(Boolean.TRUE);
         javaAttribute3.setRequired(Boolean.TRUE);
 
-        JAXBElement jbe3 = new JAXBElement<XmlAttribute>(new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-attribute"), XmlAttribute.class, javaAttribute3);
+        JAXBElement<XmlAttribute> jbe3 = new JAXBElement<XmlAttribute>(new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-attribute"), XmlAttribute.class, javaAttribute3);
         javaAttributes.getJavaAttribute().add(jbe);
 
         javaAttributes.getJavaAttribute().add(jbe3);
@@ -212,7 +212,7 @@ public class XMLBindingsPopulatedTestCases extends JAXBWithJSONTestCases{
         //unmarshal from JSON
         StringReader sr = new StringReader(sw.toString());
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
-        JAXBElement jbe = jaxbUnmarshaller.unmarshal(new StreamSource(sr), XmlBindings.class);
+        JAXBElement<XmlBindings> jbe = jaxbUnmarshaller.unmarshal(new StreamSource(sr), XmlBindings.class);
         Object unmarshalledJSON = jbe.getValue();
 
         //marshal to XML again

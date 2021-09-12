@@ -30,6 +30,7 @@ import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 
 import junit.framework.TestCase;
+import org.w3c.dom.Node;
 
 public class JAXBHelperTestCases extends TestCase {
     private JAXBContext jaxbContext;
@@ -60,7 +61,7 @@ public class JAXBHelperTestCases extends TestCase {
     }
 
     public void testCastToJAXBBinder() throws Exception {
-        Binder binder = jaxbContext.createBinder();
+        Binder<Node> binder = jaxbContext.createBinder();
         assertTrue(JAXBHelper.getBinder(binder) instanceof JAXBBinder);
     }
 
@@ -93,12 +94,12 @@ public class JAXBHelperTestCases extends TestCase {
     }
 
     public void testUnwrapJAXBBinderToJAXBImpl() throws Exception {
-        Binder binder = jaxbContext.createBinder();
+        Binder<Node> binder = jaxbContext.createBinder();
         assertTrue(JAXBHelper.unwrap(binder, JAXBBinder.class) instanceof JAXBBinder);
     }
 
     public void testUnwrapJAXBBinderToXMLBinder() throws Exception {
-        Binder binder = jaxbContext.createBinder();
+        Binder<Node> binder = jaxbContext.createBinder();
         assertTrue(JAXBHelper.unwrap(binder, XMLBinder.class) instanceof XMLBinder);
     }
 }

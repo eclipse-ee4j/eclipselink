@@ -25,7 +25,6 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
@@ -82,7 +81,7 @@ public class XmlRegistryTestCases extends JAXBWithJSONTestCases {
 
         FooBar foobar = new FooBar();
         QName name = new QName("foo");
-        JAXBElement jaxbElement = new JAXBElement<String>(name, String.class, "This is some foo.");
+        JAXBElement<String> jaxbElement = new JAXBElement<String>(name, String.class, "This is some foo.");
         return jaxbElement;
     }
 }

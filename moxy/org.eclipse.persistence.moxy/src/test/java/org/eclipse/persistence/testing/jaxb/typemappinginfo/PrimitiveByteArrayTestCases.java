@@ -79,7 +79,7 @@ public class PrimitiveByteArrayTestCases extends TypeMappingInfoWithJSONTestCase
     }
 
     public void testTypeMappingInfoToSchemaType() throws Exception {
-        Map theMap = ((org.eclipse.persistence.jaxb.JAXBContext) jaxbContext).getTypeMappingInfoToSchemaType();
+        Map<TypeMappingInfo, QName> theMap = ((org.eclipse.persistence.jaxb.JAXBContext) jaxbContext).getTypeMappingInfoToSchemaType();
         assertNotNull(theMap);
         assertEquals(1, theMap.size());
         assertNotNull(theMap.get(getTypeMappingInfos()[0]));

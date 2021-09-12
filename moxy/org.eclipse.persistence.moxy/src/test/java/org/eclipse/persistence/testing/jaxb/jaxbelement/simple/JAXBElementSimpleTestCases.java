@@ -25,7 +25,7 @@ public class JAXBElementSimpleTestCases extends JAXBElementTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbelement/simple/employee.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbelement/simple/employee.json";
     private final static String CONTROL_ELEMENT_NAME = "employee-name";
-    private final static Class targetClass = String.class;
+    private final static Class<String> targetClass = String.class;
 
     public JAXBElementSimpleTestCases(String name) throws Exception {
         super(name);

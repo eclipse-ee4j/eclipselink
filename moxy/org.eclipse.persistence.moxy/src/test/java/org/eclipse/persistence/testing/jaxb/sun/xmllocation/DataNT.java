@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,8 +51,8 @@ public class DataNT {
         }
 
         String subDataS = "\n";
-        for (Iterator iterator = subData.iterator(); iterator.hasNext();) {
-            SubDataNT type = (SubDataNT) iterator.next();
+        for (Iterator<SubDataNT> iterator = subData.iterator(); iterator.hasNext();) {
+            SubDataNT type = iterator.next();
             subDataS += "\t" + type.toString() + "\n";
         }
 

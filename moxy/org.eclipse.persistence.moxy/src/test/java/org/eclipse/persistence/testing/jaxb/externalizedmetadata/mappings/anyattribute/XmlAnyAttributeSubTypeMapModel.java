@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,8 +39,8 @@ public class XmlAnyAttributeSubTypeMapModel {
             return false;
         }
 
-        Map thisChildren = this.children;
-        Map otherChildren = modelObj.children;
+        Map<QName, String> thisChildren = this.children;
+        Map<QName, String> otherChildren = modelObj.children;
 
         if (thisChildren == null) {
             return (otherChildren == null || otherChildren.size() == 0);
@@ -54,7 +54,7 @@ public class XmlAnyAttributeSubTypeMapModel {
             return false;
         }
 
-        Iterator values1 = thisChildren.keySet().iterator();
+        Iterator<QName> values1 = thisChildren.keySet().iterator();
         while(values1.hasNext()) {
             Object key1 = values1.next();
             Object value1 = thisChildren.get(key1);

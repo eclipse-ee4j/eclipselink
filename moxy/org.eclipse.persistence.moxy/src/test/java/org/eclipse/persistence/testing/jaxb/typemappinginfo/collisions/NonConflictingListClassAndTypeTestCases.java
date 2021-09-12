@@ -19,14 +19,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.List;
 
 import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
-import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestCases;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoWithJSONTestCases;
 
 public class NonConflictingListClassAndTypeTestCases extends TypeMappingInfoWithJSONTestCases{
@@ -94,7 +93,7 @@ public class NonConflictingListClassAndTypeTestCases extends TypeMappingInfoWith
     }
 
     public void testDescriptorsSize(){
-        List descriptors = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext().getSession(0).getProject().getOrderedDescriptors();
+        List<ClassDescriptor> descriptors = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext().getSession(0).getProject().getOrderedDescriptors();
         assertEquals(2, descriptors.size());
     }
 }

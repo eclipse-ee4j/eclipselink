@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,8 +17,6 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anyat
 import java.util.Iterator;
 import java.util.Map;
 import javax.xml.namespace.QName;
-
-import org.eclipse.persistence.testing.oxm.mappings.anyattribute.withoutgroupingelement.Root;
 
 public class Employee {
     public Map<QName, String> stuff;
@@ -48,8 +46,8 @@ public class Employee {
             return false;
         }
 
-        Map thisStuff = this.stuff;
-        Map otherStuff = empObj.stuff;
+        Map<QName, String> thisStuff = this.stuff;
+        Map<QName, String> otherStuff = empObj.stuff;
 
         if (thisStuff == null) {
             return (otherStuff == null || otherStuff.size() == 0);
@@ -63,7 +61,7 @@ public class Employee {
             return false;
         }
 
-        Iterator values1 = thisStuff.keySet().iterator();
+        Iterator<QName> values1 = thisStuff.keySet().iterator();
         while(values1.hasNext()) {
             Object key1 = values1.next();
             Object value1 = thisStuff.get(key1);

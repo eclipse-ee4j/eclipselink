@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -144,7 +144,7 @@ public class JsonSchemaGenerator {
         if(rootClass.isArray() || isCollection(rootClass)) {
             schema.setType(JsonType.ARRAY);
             schema.setItems(new Property());
-            Class itemType = Object.class;
+            Class<Object> itemType = Object.class;
 
             if(rootClass.isArray()) {
                 itemType = rootClass.getComponentType();
@@ -454,7 +454,7 @@ public class JsonSchemaGenerator {
                     String propertyName = getNameForFragment(frag);
 
                     XMLField targetField = (XMLField) mapping.getSourceToTargetKeyFieldAssociations().get(nextField);
-                    Class type = CoreClassConstants.STRING;
+                    Class<String> type = CoreClassConstants.STRING;
                     if(reference != null) {
                         type = getTypeForTargetField(targetField, reference);
                     }
@@ -627,7 +627,7 @@ public class JsonSchemaGenerator {
                     XPathFragment frag = nextField.getXPathFragment();
                     String propName = getNameForFragment(frag);
                     XMLField targetField = (XMLField) mapping.getSourceToTargetKeyFieldAssociations().get(nextField);
-                    Class type = CoreClassConstants.STRING;
+                    Class<String> type = CoreClassConstants.STRING;
                     if(reference != null) {
                         type = getTypeForTargetField(targetField, reference);
                     }

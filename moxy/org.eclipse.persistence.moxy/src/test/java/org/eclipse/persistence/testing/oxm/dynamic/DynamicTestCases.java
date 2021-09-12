@@ -136,7 +136,7 @@ public class DynamicTestCases extends XMLMappingTestCases {
 
     private Object newInstance(String name) throws Exception {
         Class<?> theClass = dynamicClassLoader.loadClass(name);
-        Constructor constructor = theClass.getConstructors()[0];
+        Constructor<?> constructor = theClass.getConstructors()[0];
 
         return constructor.newInstance();
     }

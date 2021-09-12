@@ -49,7 +49,7 @@ public class NoRootElementTestCases extends JSONMarshalUnmarshalTestCases{
     @Override
     public Object getReadControlObject(){
         QName name = new QName("addressWithRootElement");
-        JAXBElement jbe = new JAXBElement<Address>(name, Address.class, (Address)getControlObject());
+        JAXBElement<Address> jbe = new JAXBElement<Address>(name, Address.class, (Address)getControlObject());
         return jbe;
     }
 

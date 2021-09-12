@@ -43,7 +43,7 @@ public class AttributeFormDefaultQualifiedTestCases extends JAXBWithJSONTestCase
         types[0] = Address.class;
         setTypes(types);
 
-        Map namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("myns","ns0");
         jaxbMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);

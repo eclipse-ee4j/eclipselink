@@ -49,8 +49,8 @@ import org.xml.sax.SAXParseException;
  * @see jakarta.xml.bind.annotation.adapters.XmlAdapter
  */
 public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.converters.XMLConverterAdapter {
-    protected Class boundType = Object.class;
-    protected Class valueType = Object.class;
+    protected Class<Object> boundType = Object.class;
+    protected Class<Object> valueType = Object.class;
     protected Class<?> xmlAdapterClass;
     protected String xmlAdapterClassName;
     protected XmlAdapter xmlAdapter;

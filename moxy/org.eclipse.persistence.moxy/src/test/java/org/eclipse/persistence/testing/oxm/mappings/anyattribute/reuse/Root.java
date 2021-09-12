@@ -32,7 +32,7 @@ public class Root {
 
     public boolean equals(Object object) {
         if (object instanceof Root) {
-            Map collection1 = any;
+            Map<Object, Object> collection1 = any;
             Map collection2 = ((Root) object).getAny();
             if (collection1 == null && collection2 == null) {
                 return true;
@@ -49,7 +49,7 @@ public class Root {
             } else if (any.getClass() != ((Root) object).getAny().getClass()) {
                 return false;
             } else {
-                Iterator values1 = any.keySet().iterator();
+                Iterator<Object> values1 = any.keySet().iterator();
                 Iterator values2 = ((Root) object).getAny().keySet().iterator();
                 while (values1.hasNext()) {
                     Object key1 = values1.next();
@@ -69,7 +69,7 @@ public class Root {
         if (any == null) {
             return value;
         }
-        Iterator keys = any.keySet().iterator();
+        Iterator<Object> keys = any.keySet().iterator();
         while (keys.hasNext()) {
             Object key = keys.next();
             value += "\tKey:" + key + " --> Value:" + any.get(key) + "\n";

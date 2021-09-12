@@ -32,7 +32,7 @@ public class XmlElementsEnumTestCases extends TestCase {
         urls[0] = Thread.currentThread().getContextClassLoader().getResource("org/eclipse/persistence/testing/jaxb/classloader/enum.jar");
         URLClassLoader classLoader = new URLClassLoader(urls);
 
-        Class classAClass = classLoader.loadClass("org.eclipse.persistence.testing.jaxb.classloader.Root");
+        Class<?> classAClass = classLoader.loadClass("org.eclipse.persistence.testing.jaxb.classloader.Root");
 
         classes[0] = classAClass;
         JAXBContext ctx = JAXBContextFactory.createContext(classes, null, classLoader);

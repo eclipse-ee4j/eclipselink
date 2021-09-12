@@ -38,7 +38,7 @@ public class StringNilTestCases extends JAXBWithJSONTestCases {
 
     @Override
     protected Object getControlObject() {
-        JAXBElement value = new StringObjectFactory().createStringRoot();
+        JAXBElement<String> value = new StringObjectFactory().createStringRoot();
         value.setValue(null);
         value.setNil(true);
         return value;

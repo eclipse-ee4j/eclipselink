@@ -17,16 +17,15 @@ package org.eclipse.persistence.testing.jaxb.xmlelementrefs.adapter;
 import java.util.ArrayList;
 
 import jakarta.xml.bind.Binder;
-import jakarta.xml.bind.DatatypeConverter;
 import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
-import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.eclipse.persistence.testing.jaxb.JAXBXMLComparer;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 public class XmlElementRefsAdapterTestCases extends JAXBWithJSONTestCases{
 
@@ -77,7 +76,7 @@ public class XmlElementRefsAdapterTestCases extends JAXBWithJSONTestCases{
     }
 
     public void testBinder() throws Exception{
-        Binder binder = jaxbContext.createBinder();
+        Binder<Node> binder = jaxbContext.createBinder();
         Document doc = parser.parse(ClassLoader.getSystemResourceAsStream(XML_RESOURCE));
         Foo unmarshalled =  (Foo)binder.unmarshal(doc);
         byte[] bytes = XMLConversionManager.getDefaultXMLManager().convertObject("001122", byte[].class);

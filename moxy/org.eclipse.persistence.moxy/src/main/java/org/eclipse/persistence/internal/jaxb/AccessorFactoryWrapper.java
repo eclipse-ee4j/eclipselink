@@ -41,7 +41,7 @@ public class AccessorFactoryWrapper {
 
     public AccessorFactoryWrapper(Object factory) {
         this.accessorFactory = factory;
-        Class accessorClass = factory.getClass();
+        Class<? extends Object> accessorClass = factory.getClass();
         try {
             createPropertyAccessorMethod = PrivilegedAccessHelper.getDeclaredMethod(accessorClass, ACCESSOR_FACTORY_CREATE_PROPERTY_ACCESSOR, new Class[]{Class.class, Method.class, Method.class});
             createFieldAccessorMethod = PrivilegedAccessHelper.getDeclaredMethod(accessorClass, ACCESSOR_FACTORY_CREATE_FIELD_ACCESSOR, new Class[]{Class.class, Field.class, boolean.class});

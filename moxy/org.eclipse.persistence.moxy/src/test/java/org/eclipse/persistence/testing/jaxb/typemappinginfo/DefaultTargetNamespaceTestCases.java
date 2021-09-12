@@ -21,7 +21,6 @@ import java.util.Map;
 import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
@@ -61,7 +60,7 @@ public class DefaultTargetNamespaceTestCases extends TypeMappingInfoWithJSONTest
         cust.lastName = "Doe";
         cust.phoneNumber = "123-456-7890";
 
-        JAXBElement elem = new JAXBElement<Customer>(new QName("overridden/namespace", "customer"), Customer.class, cust);
+        JAXBElement<Customer> elem = new JAXBElement<Customer>(new QName("overridden/namespace", "customer"), Customer.class, cust);
         return elem;
     }
 

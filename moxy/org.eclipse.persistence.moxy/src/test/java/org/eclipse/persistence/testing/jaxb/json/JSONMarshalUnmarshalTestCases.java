@@ -146,7 +146,7 @@ public abstract class JSONMarshalUnmarshalTestCases extends JSONTestCases{
     public void generateJSONSchema(List<InputStream> controlSchemas) throws Exception {
         MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
 
-        Class theClass = getWriteControlObject().getClass();
+        Class<? extends Object> theClass = getWriteControlObject().getClass();
         if(theClass == JAXBElement.class){
              theClass = ((JAXBElement) getWriteControlObject()).getValue().getClass();
         }

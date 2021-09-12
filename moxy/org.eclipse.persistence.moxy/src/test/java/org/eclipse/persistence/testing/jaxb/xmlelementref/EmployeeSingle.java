@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,8 +25,8 @@ public class EmployeeSingle {
     public JAXBElement<Integer> intRoot;
 
     public boolean equals(Object emp) {
-        JAXBElement root1 = this.intRoot;
-        JAXBElement root2 = ((EmployeeSingle)emp).intRoot;
+        JAXBElement<Integer> root1 = this.intRoot;
+        JAXBElement<Integer> root2 = ((EmployeeSingle)emp).intRoot;
 
         return root1.getName().equals(root2.getName()) && root1.getValue().equals(root2.getValue()) && root1.getDeclaredType() == root2.getDeclaredType();
     }

@@ -14,18 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.jaxb.inheritance;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.json.JsonSchemaOutputResolver;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class JAXBInheritanceTestCases extends JAXBWithJSONTestCases {
@@ -85,7 +81,7 @@ public class JAXBInheritanceTestCases extends JAXBWithJSONTestCases {
         if(isUnmarshalTest()) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
             StreamSource ss = new StreamSource(instream);
-            JAXBElement testObject = getJAXBUnmarshaller().unmarshal(ss, A.class);
+            JAXBElement<A> testObject = getJAXBUnmarshaller().unmarshal(ss, A.class);
             Object value = testObject.getValue();
             instream.close();
             assertTrue(value instanceof E);
@@ -98,7 +94,7 @@ public class JAXBInheritanceTestCases extends JAXBWithJSONTestCases {
             log(testObject.toString());
 
             JAXBElement controlObj = (JAXBElement)getControlObject();
-            JAXBElement testObj = testObject;
+            JAXBElement<A> testObj = testObject;
             compareJAXBElementObjects(controlObj, testObj);
         }
     }

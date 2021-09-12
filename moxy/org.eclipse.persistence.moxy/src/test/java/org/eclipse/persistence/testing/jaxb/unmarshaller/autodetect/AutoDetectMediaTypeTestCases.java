@@ -18,22 +18,15 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Unmarshaller;
+
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.oxm.MediaType;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
-import org.eclipse.persistence.testing.oxm.mappings.choicecollection.ref.Address;
-import org.eclipse.persistence.testing.oxm.mappings.choicecollection.ref.Employee;
-import org.eclipse.persistence.testing.oxm.mappings.choicecollection.ref.PhoneNumber;
-import org.eclipse.persistence.testing.oxm.mappings.choicecollection.ref.Root;
 
 public class AutoDetectMediaTypeTestCases extends JAXBWithJSONTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/unmarshaller/autodetect/employee-collection.xml";
@@ -117,7 +110,7 @@ public class AutoDetectMediaTypeTestCases extends JAXBWithJSONTestCases {
         String systemId = file.toURI().toURL().toExternalForm();
 
         StreamSource ss = new StreamSource(systemId);
-        JAXBElement jbe = jaxbUnmarshaller.unmarshal(ss, EmployeeCollection.class);
+        JAXBElement<EmployeeCollection> jbe = jaxbUnmarshaller.unmarshal(ss, EmployeeCollection.class);
 
         jsonToObjectTest(jbe.getValue());
 
@@ -128,7 +121,7 @@ public class AutoDetectMediaTypeTestCases extends JAXBWithJSONTestCases {
         String systemId = file.toURI().toURL().toExternalForm();
 
         StreamSource ss = new StreamSource(systemId);
-        JAXBElement jbe  = jaxbUnmarshaller.unmarshal(ss, EmployeeCollection.class);
+        JAXBElement<EmployeeCollection> jbe  = jaxbUnmarshaller.unmarshal(ss, EmployeeCollection.class);
         xmlToObjectTest(jbe.getValue());
 
     }
@@ -138,7 +131,7 @@ public class AutoDetectMediaTypeTestCases extends JAXBWithJSONTestCases {
         String systemId = file.getAbsolutePath();
 
         StreamSource ss = new StreamSource(systemId);
-        JAXBElement jbe = jaxbUnmarshaller.unmarshal(ss, EmployeeCollection.class);
+        JAXBElement<EmployeeCollection> jbe = jaxbUnmarshaller.unmarshal(ss, EmployeeCollection.class);
 
         jsonToObjectTest(jbe.getValue());
 
@@ -149,7 +142,7 @@ public class AutoDetectMediaTypeTestCases extends JAXBWithJSONTestCases {
         String systemId = file.getAbsolutePath();
 
         StreamSource ss = new StreamSource(systemId);
-        JAXBElement jbe  = jaxbUnmarshaller.unmarshal(ss, EmployeeCollection.class);
+        JAXBElement<EmployeeCollection> jbe  = jaxbUnmarshaller.unmarshal(ss, EmployeeCollection.class);
         xmlToObjectTest(jbe.getValue());
 
     }

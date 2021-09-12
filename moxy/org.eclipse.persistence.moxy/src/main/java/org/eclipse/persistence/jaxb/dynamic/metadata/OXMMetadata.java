@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -79,7 +79,7 @@ public class OXMMetadata extends Metadata {
                     JavaType type = iterator.next();
                     //Check to see if it's a static class or if should be treated as dynamic
                     try {
-                        Class staticClass = dynamicClassLoader.getParent().loadClass(Helper.getQualifiedJavaTypeName(type.getName(), pkgName));
+                        Class<?> staticClass = dynamicClassLoader.getParent().loadClass(Helper.getQualifiedJavaTypeName(type.getName(), pkgName));
                         oxmJavaClasses.add(new JavaClassImpl(staticClass, null));
                     } catch(Exception ex) {
                         type.setName(Helper.getQualifiedJavaTypeName(type.getName(), pkgName));

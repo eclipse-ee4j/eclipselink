@@ -16,9 +16,7 @@ package org.eclipse.persistence.testing.jaxb.json.attribute;
 
 import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
@@ -47,14 +45,14 @@ public class SimpleBeanAttrNullTestCases extends JAXBWithJSONTestCases {
 
     @Override
     public Object getReadControlObject() {
-        JAXBElement jbe = new JAXBElement<SimpleBean>(new QName("simpleBean"), SimpleBean.class, new SimpleBean());
+        JAXBElement<SimpleBean> jbe = new JAXBElement<SimpleBean>(new QName("simpleBean"), SimpleBean.class, new SimpleBean());
         return jbe;
     }
 
 
     @Override
     protected Object getJSONReadControlObject() {
-        JAXBElement jbe = new JAXBElement<SimpleBean>(new QName(""), SimpleBean.class,  new SimpleBean());
+        JAXBElement<SimpleBean> jbe = new JAXBElement<SimpleBean>(new QName(""), SimpleBean.class,  new SimpleBean());
         return jbe;
     }
 

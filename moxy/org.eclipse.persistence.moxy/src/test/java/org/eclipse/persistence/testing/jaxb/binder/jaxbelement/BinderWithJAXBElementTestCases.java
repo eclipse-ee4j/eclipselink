@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,6 @@
 //     Matt MacIvor - 2.3
 package org.eclipse.persistence.testing.jaxb.binder.jaxbelement;
 
-import java.io.File;
 import java.io.StringReader;
 
 import jakarta.xml.bind.Binder;
@@ -46,13 +45,13 @@ public class BinderWithJAXBElementTestCases extends TestCase {
 
         JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{Employee.class}, null);
 
-        Binder binder = ctx.createBinder();
+        Binder<Node> binder = ctx.createBinder();
 
-        JAXBElement emp = binder.unmarshal(parser.parse(new StringReader(xml)), Employee.class);
-        ((Employee)emp.getValue()).id = 456;
+        JAXBElement<Employee> emp = binder.unmarshal(parser.parse(new StringReader(xml)), Employee.class);
+        emp.getValue().id = 456;
         binder.updateXML(emp);
 
         JAXBXMLComparer comparer = new JAXBXMLComparer();
-        assertTrue("Marshalled document does not match the control document.", comparer.isNodeEqual(controlDocument, ((Node)binder.getXMLNode(emp)).getOwnerDocument()));
+        assertTrue("Marshalled document does not match the control document.", comparer.isNodeEqual(controlDocument, binder.getXMLNode(emp).getOwnerDocument()));
     }
 }

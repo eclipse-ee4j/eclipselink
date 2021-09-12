@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -116,14 +116,14 @@ public class JavaMethodImpl implements JavaMethod {
     }
 
     public JavaClass getResolvedType() {
-        Class returnType = PrivilegedAccessHelper.getMethodReturnType(jMethod);
+        Class<Object> returnType = PrivilegedAccessHelper.getMethodReturnType(jMethod);
         return javaModelImpl.getClass(returnType);
     }
 
     @Override
     public JavaClass getReturnType() {
         Type type = jMethod.getGenericReturnType();
-        Class returnType = PrivilegedAccessHelper.getMethodReturnType(jMethod);
+        Class<Object> returnType = PrivilegedAccessHelper.getMethodReturnType(jMethod);
         if (type instanceof ParameterizedType) {
             ParameterizedType pType = (ParameterizedType) type;
             return new JavaClassImpl(pType, returnType, javaModelImpl);
