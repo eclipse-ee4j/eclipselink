@@ -94,7 +94,7 @@ public final class ExceptionMessageGenerator {
             ResourceBundle bundle = null;
             bundle = ResourceBundle.getBundle("org.eclipse.persistence.exceptions.i18n.ExceptionResource", Locale.getDefault(), getLoader());
             String errorMessage = bundle.getString("ErrorFormattingMessage");
-            Vector vec = new Vector();
+            Vector<Object> vec = new Vector<>();
             if (arguments != null) {
                 for (int index = 0; index < arguments.length; index++) {
                     try {

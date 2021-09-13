@@ -901,7 +901,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             primaryKey = id;
         } else {
             CMPPolicy policy = descriptor.getCMPPolicy();
-            Class pkClass = policy.getPKClass();
+            Class<Object> pkClass = policy.getPKClass();
             if ((pkClass != null) && (pkClass != id.getClass()) && (!BasicTypeHelperImpl.getInstance().isStrictlyAssignableFrom(pkClass, id.getClass()))) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("invalid_pk_class", new Object[] { descriptor.getCMPPolicy().getPKClass(), id.getClass() }));
             }

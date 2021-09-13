@@ -26,10 +26,10 @@ import org.eclipse.persistence.internal.localization.*;
  * @author James Sutherland
  */
 public class Profile implements Serializable, Cloneable {
-    protected Class queryClass;
-    protected Class domainClass;
+    protected Class<?> queryClass;
+    protected Class<?> domainClass;
     protected long numberOfInstancesEffected;
-    protected Hashtable operationTimings;
+    protected Map<String, Long> operationTimings;
     protected long localTime;
     protected long profileTime;
     protected long totalTime;
@@ -38,7 +38,7 @@ public class Profile implements Serializable, Cloneable {
 
     public Profile() {
         this.numberOfInstancesEffected = 0;
-        this.operationTimings = new Hashtable();
+        this.operationTimings = new Hashtable<>();
         this.totalTime = 0;
         this.localTime = 0;
         this.longestTime = 0;
@@ -61,7 +61,7 @@ public class Profile implements Serializable, Cloneable {
         return null;
     }
 
-    public Class getDomainClass() {
+    public Class<?> getDomainClass() {
         return domainClass;
     }
 
@@ -84,7 +84,7 @@ public class Profile implements Serializable, Cloneable {
         return (getNumberOfInstancesEffected() * 1000) / getTotalTime();
     }
 
-    public Hashtable getOperationTimings() {
+    public Map<String, Long> getOperationTimings() {
         return operationTimings;
     }
 
@@ -92,7 +92,7 @@ public class Profile implements Serializable, Cloneable {
         return profileTime;
     }
 
-    public Class getQueryClass() {
+    public Class<?> getQueryClass() {
         return queryClass;
     }
 
@@ -111,7 +111,7 @@ public class Profile implements Serializable, Cloneable {
         return totalTime;
     }
 
-    public void setDomainClass(Class domainClass) {
+    public void setDomainClass(Class<?> domainClass) {
         this.domainClass = domainClass;
     }
 
@@ -127,7 +127,7 @@ public class Profile implements Serializable, Cloneable {
         this.numberOfInstancesEffected = numberOfInstancesEffected;
     }
 
-    public void setOperationTimings(Hashtable operationTimings) {
+    public void setOperationTimings(Map<String, Long> operationTimings) {
         this.operationTimings = operationTimings;
     }
 
@@ -135,7 +135,7 @@ public class Profile implements Serializable, Cloneable {
         this.profileTime = profileTime;
     }
 
-    public void setQueryClass(Class queryClass) {
+    public void setQueryClass(Class<?> queryClass) {
         this.queryClass = queryClass;
     }
 
@@ -182,10 +182,9 @@ public class Profile implements Serializable, Cloneable {
                 writer.write("\t" + ToStringLocalization.buildMessage("profiling_time", null) + "=" + getProfileTime() + "," + cr);
             }
 
-            for (Enumeration operationNames = getOperationTimings().keys();
-                     operationNames.hasMoreElements();) {
-                String operationName = (String)operationNames.nextElement();
-                long operationTime = (Long) getOperationTimings().get(operationName);
+            for (Map.Entry<String, Long> entry: getOperationTimings().entrySet()) {
+                String operationName = entry.getKey();
+                long operationTime = entry.getValue();
 
                 if (operationTime != 0) {
                     profiler.writeNestingTabs(writer);

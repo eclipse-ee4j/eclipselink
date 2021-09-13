@@ -323,7 +323,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
                     throw QueryException.invalidContainerClass(containerClass, ClassConstants.Collection_Class);
                 }
             } else if (query.isReadObjectQuery()) {
-                List resultList = new ArrayList<>();
+                List<Object> resultList = new ArrayList<>();
                 Object result = executeReadQuery();
                 if (result != null) {
                     resultList.add(executeReadQuery());

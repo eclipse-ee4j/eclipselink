@@ -193,7 +193,7 @@ public class TransformerFactory {
 
                 classDetails.getVirtualAccessMethods().addAll(descriptor.getVirtualAttributeMethods());
 
-                List unMappedAttributes = storeAttributeMappings(metaClass, classDetails, descriptor.getMappings(), weaveValueHoldersForClass);
+                List<DatabaseMapping> unMappedAttributes = storeAttributeMappings(metaClass, classDetails, descriptor.getMappings(), weaveValueHoldersForClass);
                 classDetailsMap.put(classDetails.getClassName() ,classDetails);
 
                 classDetails.setShouldWeaveConstructorOptimization((classDetails.getDescribedClass().getFields().size() - (descriptor.getMappings().size() - unMappedAttributes.size()))<=0);

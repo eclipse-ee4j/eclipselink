@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -87,7 +87,7 @@ public class StoredFunctionDefinition extends StoredProcedureDefinition {
      * Prints return for stored function
      */
     public void setReturnType(Class type) {
-        FieldDefinition argument = (FieldDefinition)getArguments().firstElement();
+        FieldDefinition argument = getArguments().get(0);
         argument.setType(type);
     }
 
@@ -98,7 +98,7 @@ public class StoredFunctionDefinition extends StoredProcedureDefinition {
     protected void printReturn(Writer writer, AbstractSession session) throws ValidationException {
         try {
             session.getPlatform().printStoredFunctionReturnKeyWord(writer);
-            FieldDefinition argument = (FieldDefinition)getArguments().firstElement();
+            FieldDefinition argument = getArguments().get(0);
 
             // argumentType should be OUT: getArgumentTypes().firstElement() == OUT;
             // but should be printed as IN

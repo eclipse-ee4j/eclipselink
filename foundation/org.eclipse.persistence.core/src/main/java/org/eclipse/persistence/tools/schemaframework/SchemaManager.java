@@ -314,7 +314,7 @@ public class SchemaManager {
      *        false if it should be dropped.
      * @param replace - true if table definitions and sequence definitions should be replaced.
      */
-    protected void processSequenceDefinition(SequenceDefinition definition, final boolean createTables, final boolean createSequences, final boolean replace, HashSet<String> createdTableNames, HashSet<String> droppedTableNames) throws EclipseLinkException {
+    protected void processSequenceDefinition(SequenceDefinition definition, final boolean createTables, final boolean createSequences, final boolean replace, Set<String> createdTableNames, Set<String> droppedTableNames) throws EclipseLinkException {
         try {
             // Handle the table definitions first.
             if (definition.isTableSequenceDefinition()) {
@@ -403,14 +403,14 @@ public class SchemaManager {
         // Not required on Sybase native etc.
         if (sequencing != null && sequencing.whenShouldAcquireValueForAll() != Sequencing.AFTER_INSERT) {
             // Build the sequence definitions.
-            HashSet<SequenceDefinition> sequenceDefinitions = buildSequenceDefinitions();
+            Set<SequenceDefinition> sequenceDefinitions = buildSequenceDefinitions();
 
             // Now process the sequence definitions.
             // CR 3870467, do not log stack
             boolean shouldLogExceptionStackTrace = session.getSessionLog().shouldLogExceptionStackTrace();
             session.getSessionLog().setShouldLogExceptionStackTrace(false);
-            HashSet<String> createdSequenceTableNames = new HashSet();
-            HashSet<String> droppedSequenceTableNames = new HashSet();
+            Set<String> createdSequenceTableNames = new HashSet<>();
+            Set<String> droppedSequenceTableNames = new HashSet<>();
 
             for (SequenceDefinition sequenceDefinition : sequenceDefinitions) {
                 processSequenceDefinition(sequenceDefinition, createSequenceTables, createSequences, replaceSequences, createdSequenceTableNames, droppedSequenceTableNames);
@@ -425,10 +425,10 @@ public class SchemaManager {
      * INTERNAL:
      * Build the sequence definitions.
      */
-    protected HashSet<SequenceDefinition> buildSequenceDefinitions() {
+    protected Set<SequenceDefinition> buildSequenceDefinitions() {
         // Remember the processed - to handle each sequence just once.
-        HashSet processedSequenceNames = new HashSet();
-        HashSet<SequenceDefinition> sequenceDefinitions = new HashSet<>();
+        Set<String> processedSequenceNames = new HashSet<>();
+        Set<SequenceDefinition> sequenceDefinitions = new HashSet<>();
 
         for (ClassDescriptor descriptor : getSession().getDescriptors().values()) {
             if (descriptor.usesSequenceNumbers()) {

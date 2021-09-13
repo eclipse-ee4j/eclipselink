@@ -34,7 +34,6 @@ import org.eclipse.persistence.mappings.AggregateMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.VariableOneToOneMapping;
-import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.mappings.structures.ReferenceMapping;
 
 /**
@@ -225,7 +224,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
                         // This exception will be warned about below
                         if(null == aJavaType) {
                             AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_attribute_class_type_is_null", this);
-                            return MetamodelImpl.DEFAULT_ELEMENT_TYPE_FOR_UNSUPPORTED_MAPPINGS;
+                            return (Class<T>) MetamodelImpl.DEFAULT_ELEMENT_TYPE_FOR_UNSUPPORTED_MAPPINGS;
                         }
                     }
                 }

@@ -48,8 +48,8 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
      * The profiler can be registered with a session to log performance information on queries.
      */
     public PerformanceMonitor() {
-        this.operationTimings = new ConcurrentHashMap();
-        this.operationStartTimesByThread = new ConcurrentHashMap();
+        this.operationTimings = new ConcurrentHashMap<>();
+        this.operationStartTimesByThread = new ConcurrentHashMap<>();
         this.lastDumpTime = System.currentTimeMillis();
         this.dumpTime = 60000; // 1 minute
         this.profileWeight = SessionProfiler.ALL;

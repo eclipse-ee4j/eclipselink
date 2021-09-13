@@ -112,7 +112,7 @@ public class StaticWeaveClassTransformer {
             if (persistenceUnitsList==null) {
                 throw PersistenceUnitLoadingException.couldNotGetUnitInfoFromUrl(inputArchiveURL);
             }
-            Map emptyMap = new HashMap<>(0);
+            Map<Object, Object> emptyMap = new HashMap<>(0);
             Iterator<SEPersistenceUnitInfo> persistenceUnitsIterator = persistenceUnitsList.iterator();
             while (persistenceUnitsIterator.hasNext()) {
                 SEPersistenceUnitInfo unitInfo = persistenceUnitsIterator.next();

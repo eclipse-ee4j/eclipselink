@@ -38,8 +38,8 @@ public class ForeignKeyConstraint implements Serializable {
 
     public ForeignKeyConstraint() {
         this.name = "";
-        this.sourceFields = new ArrayList();
-        this.targetFields = new ArrayList();
+        this.sourceFields = new ArrayList<>();
+        this.targetFields = new ArrayList<>();
         this.targetTable = "";
         this.shouldCascadeOnDelete = false;
     }

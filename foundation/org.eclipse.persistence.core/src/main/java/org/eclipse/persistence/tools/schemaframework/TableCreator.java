@@ -389,7 +389,7 @@ public class TableCreator {
     /**
      * Set the tables.
      */
-    public void setTableDefinitions(Vector tableDefinitions) {
+    public void setTableDefinitions(List<TableDefinition> tableDefinitions) {
         this.tableDefinitions = tableDefinitions;
     }
 
@@ -497,7 +497,7 @@ public class TableCreator {
                         //Table exists, add individual fields as necessary
 
                         //hash the table's existing columns by name
-                        final Map<DatabaseField, DatabaseRecord> columns = new HashMap(columnInfo.size());
+                        final Map<DatabaseField, DatabaseRecord> columns = new HashMap<>(columnInfo.size());
                         final DatabaseField columnNameLookupField = new DatabaseField("COLUMN_NAME");
                         final DatabaseField schemaLookupField = new DatabaseField("TABLE_SCHEM");
                         boolean schemaMatchFound = false;

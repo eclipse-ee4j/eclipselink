@@ -112,7 +112,7 @@ public class JoinImpl<Z, X> extends FromImpl<Z, X> implements Join<Z, X>, Fetch<
         if (((ExpressionImpl)this.on).isPredicate()) return (Predicate)this.on;
 
         //see queryBuilder.isTrue(this.on);
-        List list = new ArrayList<>();
+        List<Expression<?>> list = new ArrayList<>();
         list.add(this.on);
         return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)this.on).getCurrentNode().equal(true), list, "equals");
     }
@@ -140,7 +140,7 @@ public class JoinImpl<Z, X> extends FromImpl<Z, X> implements Join<Z, X>, Fetch<
                         ((CompoundExpressionImpl)restrictions[i]).getCurrentNode());
                 ((CompoundExpressionImpl)a).setParentNode(currentNode);
                 ((CompoundExpressionImpl)restrictions[i]).setParentNode(currentNode);
-                ArrayList list = new ArrayList<>();
+                List<Expression<?>> list = new ArrayList<>();
                 list.add(a);
                 list.add(restrictions[i]);
                 a = new PredicateImpl(this.metamodel, currentNode, list, BooleanOperator.AND);

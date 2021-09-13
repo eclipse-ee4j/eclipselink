@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -97,7 +97,7 @@ public class ArchiveFactoryImpl implements ArchiveFactory {
                 result = new JarFileArchive(rootUrl, new JarFile(f), descriptorLocation);
             }
         } else if ("jar".equals(protocol)) { // NOI18N
-            JarURLConnection conn = JarURLConnection.class.cast(rootUrl.openConnection());
+            JarURLConnection conn = (JarURLConnection) rootUrl.openConnection();
             conn.setUseCaches(false);
             JarEntry je = conn.getJarEntry();
             if (je == null) {

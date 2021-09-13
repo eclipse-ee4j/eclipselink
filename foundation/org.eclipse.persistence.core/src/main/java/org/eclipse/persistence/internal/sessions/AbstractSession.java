@@ -457,15 +457,15 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         String validation = (String)getProperty(PersistenceUnitProperties.JPQL_VALIDATION);
         JPAQueryBuilder builder = null;
         try {
-            Class parserClass = null;
+            Class<? extends JPAQueryBuilder> parserClass = null;
             // use class.forName() to avoid loading parser classes for JAXB
             // Use Class.forName not thread class loader to avoid class loader issues.
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 parserClass = AccessController.doPrivileged(new PrivilegedClassForName<>(queryBuilderClassName));
-                builder = (JPAQueryBuilder)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(parserClass));
+                builder = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(parserClass));
             } else {
                 parserClass = PrivilegedAccessHelper.getClassForName(queryBuilderClassName);
-                builder = (JPAQueryBuilder)PrivilegedAccessHelper.newInstanceFromClass(parserClass);
+                builder = PrivilegedAccessHelper.newInstanceFromClass(parserClass);
             }
         } catch (Exception e) {
             throw new IllegalStateException("Could not load the JPQL parser class." /* TODO: Localize string */, e);
@@ -627,10 +627,10 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Add the query to the session queries.
      */
     protected synchronized void addQuery(DatabaseQuery query, boolean nameMustBeUnique) {
-        Vector queriesByName = (Vector)getQueries().get(query.getName());
+        List<DatabaseQuery> queriesByName = getQueries().get(query.getName());
         if (queriesByName == null) {
             // lazily create Vector in Hashtable.
-            queriesByName = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+            queriesByName = new ArrayList<>();
             getQueries().put(query.getName(), queriesByName);
         }
 
@@ -642,8 +642,8 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             }
         }else{
             // Check that we do not already have a query that matched it
-            for (Iterator enumtr = queriesByName.iterator(); enumtr.hasNext();) {
-                DatabaseQuery existingQuery = (DatabaseQuery)enumtr.next();
+            for (Iterator<DatabaseQuery> enumtr = queriesByName.iterator(); enumtr.hasNext();) {
+                DatabaseQuery existingQuery = enumtr.next();
                 if (Helper.areTypesAssignable(query.getArgumentTypes(), existingQuery.getArgumentTypes())) {
                     throw ValidationException.existingQueryTypeConflict(query, existingQuery);
                 }
@@ -1603,7 +1603,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      */
     @Override
     public Object executeQuery(String queryName, Class domainClass, Object arg1) throws DatabaseException {
-        Vector argumentValues = new Vector();
+        Vector<Object> argumentValues = new Vector<>();
         argumentValues.addElement(arg1);
         return executeQuery(queryName, domainClass, argumentValues);
     }
@@ -1618,7 +1618,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      */
     @Override
     public Object executeQuery(String queryName, Class domainClass, Object arg1, Object arg2) throws DatabaseException {
-        Vector argumentValues = new Vector();
+        Vector<Object> argumentValues = new Vector<>();
         argumentValues.addElement(arg1);
         argumentValues.addElement(arg2);
         return executeQuery(queryName, domainClass, argumentValues);
@@ -1634,7 +1634,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      */
     @Override
     public Object executeQuery(String queryName, Class domainClass, Object arg1, Object arg2, Object arg3) throws DatabaseException {
-        Vector argumentValues = new Vector();
+        Vector<Object> argumentValues = new Vector<>();
         argumentValues.addElement(arg1);
         argumentValues.addElement(arg2);
         argumentValues.addElement(arg3);
@@ -1691,7 +1691,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      */
     @Override
     public Object executeQuery(String queryName, Object arg1) throws DatabaseException {
-        Vector argumentValues = new Vector();
+        Vector<Object> argumentValues = new Vector<>();
         argumentValues.addElement(arg1);
         return executeQuery(queryName, argumentValues);
     }
@@ -1705,7 +1705,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      */
     @Override
     public Object executeQuery(String queryName, Object arg1, Object arg2) throws DatabaseException {
-        Vector argumentValues = new Vector();
+        Vector<Object> argumentValues = new Vector<>();
         argumentValues.addElement(arg1);
         argumentValues.addElement(arg2);
         return executeQuery(queryName, argumentValues);
@@ -1720,7 +1720,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      */
     @Override
     public Object executeQuery(String queryName, Object arg1, Object arg2, Object arg3) throws DatabaseException {
-        Vector argumentValues = new Vector();
+        Vector<Object> argumentValues = new Vector<>();
         argumentValues.addElement(arg1);
         argumentValues.addElement(arg2);
         argumentValues.addElement(arg3);
@@ -1995,7 +1995,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             synchronized (this) {
                 if ((this.accessors == null) && (this.project != null) && (this.project.getDatasourceLogin() != null)) {
                     // PERF: lazy init, not always required.
-                    List<Accessor> newAccessors = new ArrayList(1);
+                    List<Accessor> newAccessors = new ArrayList<>(1);
                     newAccessors.add(this.project.getDatasourceLogin().buildAccessor());
                     this.accessors = newAccessors;
                 }
@@ -2916,7 +2916,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     @Override
     public Map<String, Object> getProperties() {
         if (properties == null) {
-            properties = new HashMap(5);
+            properties = new HashMap<>(5);
         }
         return properties;
     }
@@ -2965,7 +2965,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     public Map<String, List<DatabaseQuery>> getQueries() {
         // PERF: lazy init, not normally required.
         if (queries == null) {
-            queries = new HashMap(5);
+            queries = new HashMap<>(5);
         }
         return queries;
     }
@@ -2994,7 +2994,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @see #getQueries()
      */
     public List<DatabaseQuery> getAllQueries() {
-        Vector allQueries = new Vector();
+        List<DatabaseQuery> allQueries = new Vector<>();
         for (Iterator<List<DatabaseQuery>> vectors = getQueries().values().iterator(); vectors.hasNext();) {
             allQueries.addAll(vectors.next());
         }
@@ -3053,11 +3053,11 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @see #getQuery(String, List)
      */
     public DatabaseQuery getQuery(String name, Vector arguments, boolean shouldSearchParent) {
-        Vector queries = (Vector)getQueries().get(name);
+        List<DatabaseQuery> queries = getQueries().get(name);
         if ((queries != null) && !queries.isEmpty()) {
             // Short circuit the simple, most common case of only one query.
             if (queries.size() == 1) {
-                return (DatabaseQuery)queries.firstElement();
+                return queries.get(0);
             }
 
             // CR#3754; Predrag; mar 19/2002;
@@ -3075,8 +3075,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             for (int i = 0; i < argumentTypesSize; i++) {
                 argumentTypes.addElement(arguments.elementAt(i).getClass());
             }
-            for (Enumeration queriesEnum = queries.elements(); queriesEnum.hasMoreElements();) {
-                DatabaseQuery query = (DatabaseQuery)queriesEnum.nextElement();
+            for (DatabaseQuery query: queries) {
                 if (Helper.areTypesAssignable(argumentTypes, query.getArgumentTypes())) {
                     return query;
                 }
@@ -3853,14 +3852,14 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Remove the specific query with the given queryName and argumentTypes.
      */
     public void removeQuery(String queryName, Vector argumentTypes) {
-        Vector queries = (Vector)getQueries().get(queryName);
+        List<DatabaseQuery> queries = getQueries().get(queryName);
         if (queries == null) {
             return;
         } else {
             DatabaseQuery query = null;
-            for (Enumeration enumtr = queries.elements(); enumtr.hasMoreElements();) {
-                query = (DatabaseQuery)enumtr.nextElement();
+            for (DatabaseQuery q: queries) {
                 if (Helper.areTypesAssignable(argumentTypes, query.getArgumentTypes())) {
+                    query = q;
                     break;
                 }
             }
@@ -3935,7 +3934,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Set the accessor.
      */
     public void setAccessor(Accessor accessor) {
-        this.accessors = new ArrayList(1);
+        this.accessors = new ArrayList<>(1);
         this.accessors.add(accessor);
     }
 
@@ -4137,7 +4136,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
              * the key:value type values at design time. putAll() is not
              * synchronized. We clone all maps whether immutable or not.
              */
-            properties = new HashMap();
+            properties = new HashMap<>();
             // Shallow copy all internal key:value pairs - a null propertiesMap will throw a NPE
             properties.putAll(propertiesMap);
         }
@@ -4968,10 +4967,10 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             if ((queries != null) && (queries.size() > 0)) {
                 for (Iterator<Map.Entry<String, List<DatabaseQuery>>> keyValueItr = queries.entrySet().iterator(); keyValueItr.hasNext();){
                     Map.Entry<String, List<DatabaseQuery>> entry = keyValueItr.next();
-                    Vector thisQueries = (Vector)entry.getValue();
+                    List<DatabaseQuery> thisQueries = entry.getValue();
                     if ((thisQueries != null) && (thisQueries.size() > 0)){
-                        for( Iterator thisQueriesItr=thisQueries.iterator();thisQueriesItr.hasNext();){
-                            DatabaseQuery queryToBeAdded = (DatabaseQuery)thisQueriesItr.next();
+                        for( Iterator<DatabaseQuery> thisQueriesItr=thisQueries.iterator();thisQueriesItr.hasNext();){
+                            DatabaseQuery queryToBeAdded = thisQueriesItr.next();
                             if (allowSameQueryNameDiffArgsCopyToSession){
                                 addQuery(queryToBeAdded, false);
                             } else {

@@ -111,7 +111,7 @@ public class CMP3Policy extends CMPPolicy {
      * @param allMappings
      */
     protected void addReadOnlyMappings(ClassDescriptor aDescriptor, DatabaseField field, List allMappings) {
-        List readOnlyMappings = aDescriptor.getObjectBuilder().getReadOnlyMappingsForField(field);
+        List<DatabaseMapping> readOnlyMappings = aDescriptor.getObjectBuilder().getReadOnlyMappingsForField(field);
 
         if (readOnlyMappings != null) {
             allMappings.addAll(readOnlyMappings);
@@ -261,7 +261,7 @@ public class CMP3Policy extends CMPPolicy {
                     DatabaseField targetKey = refmapping.getSourceToTargetKeyFields().get(pkElementArray[index].getDatabaseField());
                     CMPPolicy refPolicy = refmapping.getReferenceDescriptor().getCMPPolicy();
                     if (refPolicy.isCMP3Policy()){
-                        Class aPKClass = refPolicy.getPKClass();
+                        Class<Object> aPKClass = refPolicy.getPKClass();
                         if ((aPKClass != null) && (aPKClass != fieldValue.getClass()) && (!aPKClass.isAssignableFrom(fieldValue.getClass()))) {
                             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("invalid_pk_class", new Object[] { aPKClass, fieldValue.getClass() }));
                         }
@@ -363,11 +363,11 @@ public class CMP3Policy extends CMPPolicy {
         fieldToAccessorMap = new HashMap<DatabaseField,KeyElementAccessor>();
         int numberOfIDFields = aDescriptor.getPrimaryKeyFields().size();
         pkAttributes = new KeyElementAccessor[numberOfIDFields];
-        Iterator attributesIter = aDescriptor.getPrimaryKeyFields().iterator();
+        Iterator<DatabaseField> attributesIter = aDescriptor.getPrimaryKeyFields().iterator();
 
         // Used fields in case it is an embedded class
         for (int i = 0; attributesIter.hasNext(); i++) {
-            DatabaseField field = (DatabaseField)attributesIter.next();
+            DatabaseField field = attributesIter.next();
 
             // We need to check all mappings for this field, not just the writable one and instead of
             // having multiple sections of duplicate code we'll just add the writable mapping directly
@@ -747,7 +747,7 @@ public class CMP3Policy extends CMPPolicy {
                 DatabaseField targetKey = refmapping.getSourceToTargetKeyFields().get(accessor.getDatabaseField());
                 CMPPolicy refPolicy = refmapping.getReferenceDescriptor().getCMPPolicy();
                 if (refPolicy.isCMP3Policy()){
-                    Class pkClass = refPolicy.getPKClass();
+                    Class<Object> pkClass = refPolicy.getPKClass();
                     if ((pkClass != null) && (pkClass != fieldValue.getClass()) && (!pkClass.isAssignableFrom(fieldValue.getClass()))) {
                         throw new IllegalArgumentException(ExceptionLocalization.buildMessage("invalid_pk_class", new Object[] { refPolicy.getPKClass(), fieldValue.getClass() }));
                     }

@@ -32,7 +32,7 @@ public class IndexDefinition extends DatabaseObjectDefinition {
     protected boolean isUnique;
 
     public IndexDefinition() {
-        this.fields = new ArrayList();
+        this.fields = new ArrayList<>();
     }
 
     public boolean isUnique() {

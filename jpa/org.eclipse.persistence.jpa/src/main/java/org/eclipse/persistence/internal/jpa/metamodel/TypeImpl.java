@@ -62,7 +62,7 @@ public abstract class TypeImpl<X> implements Type<X>, Serializable {
         if(null == javaClass && null == javaClassName) {
             AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_typeImpl_javaClass_should_not_be_null", this, null); // exporting (this) outside the constructor breaks concurrency
             // Default to Object to avoid a NPE - in the case where javaClass is not set or not set yet via Project.convertClassNamesToClasses()
-            this.javaClass = MetamodelImpl.DEFAULT_ELEMENT_TYPE_FOR_UNSUPPORTED_MAPPINGS;
+            this.javaClass = (Class<X>) MetamodelImpl.DEFAULT_ELEMENT_TYPE_FOR_UNSUPPORTED_MAPPINGS;
         } else {
             this.javaClassName = javaClassName;
             this.javaClass = javaClass;
