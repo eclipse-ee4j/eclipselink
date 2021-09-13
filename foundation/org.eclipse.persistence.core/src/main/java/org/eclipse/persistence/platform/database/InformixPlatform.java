@@ -45,6 +45,13 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 public class InformixPlatform extends org.eclipse.persistence.platform.database.DatabasePlatform {
 
 
+    /**
+     * Default constructor.
+     */
+    public InformixPlatform() {
+        super();
+    }
+
     @Override
     public void initializeConnectionData(Connection connection) throws SQLException {
 
@@ -141,10 +148,8 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
     }
 
     @Override
-    protected Hashtable buildFieldTypes() {
-        Hashtable fieldTypeMapping;
-
-        fieldTypeMapping = new Hashtable();
+    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
+        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
         fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("SMALLINT default 0", false));
 
         fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("INTEGER", false));
@@ -239,9 +244,8 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
      * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal maximums are dependent upon their precision {@literal &} Scale
      */
     @Override
-    public Hashtable maximumNumericValues() {
-        Hashtable values = new Hashtable();
-
+    public Hashtable<Class<? extends Number>, ? super Number> maximumNumericValues() {
+        Hashtable<Class<? extends Number>, ? super Number> values = new Hashtable<>();
         values.put(Integer.class, Integer.MAX_VALUE);
         values.put(Long.class, Long.MAX_VALUE);
         values.put(Double.class, (double) Float.MAX_VALUE);
@@ -259,9 +263,8 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
      * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal minimums are dependent upon their precision {@literal &} Scale
      */
     @Override
-    public Hashtable minimumNumericValues() {
-        Hashtable values = new Hashtable();
-
+    public Hashtable<Class<? extends Number>, ? super Number> minimumNumericValues() {
+        Hashtable<Class<? extends Number>, ? super Number> values = new Hashtable<>();
         values.put(Integer.class, Integer.MIN_VALUE);
         values.put(Long.class, Long.MIN_VALUE);
         values.put(Double.class, 1.4012984643247149E-44);// The double values are weird. They lose precision at E-45

@@ -30,9 +30,17 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
  * @since TOPLink/Java 1.0
  */
 public class AccessPlatform extends org.eclipse.persistence.platform.database.DatabasePlatform {
+
+    /**
+     * Default constructor.
+     */
+    public AccessPlatform() {
+        super();
+    }
+
     @Override
-    protected Map<String, Class> buildClassTypes() {
-        Map<String, Class> classTypeMapping = super.buildClassTypes();
+    protected Map<String, Class<?>> buildClassTypes() {
+        Map<String, Class<?>> classTypeMapping = super.buildClassTypes();
 
         // In access LONG means numeric not CLOB like in Oracle
         classTypeMapping.put("LONG", Long.class);
@@ -42,10 +50,8 @@ public class AccessPlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     @Override
-    protected Hashtable buildFieldTypes() {
-        Hashtable fieldTypeMapping;
-
-        fieldTypeMapping = new Hashtable();
+    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
+        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
         fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("BIT", false));
 
         fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("LONG", false));
@@ -121,8 +127,8 @@ public class AccessPlatform extends org.eclipse.persistence.platform.database.Da
      * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal maximums are dependent upon their precision {@literal &} Scale
      */
     @Override
-    public Hashtable maximumNumericValues() {
-        Hashtable values = new Hashtable();
+    public Hashtable<Class<? extends Number>, ? super Number> maximumNumericValues() {
+        Hashtable<Class<? extends Number>, ? super Number> values = new Hashtable<>();
 
         values.put(Integer.class, Integer.MAX_VALUE);
         values.put(Long.class, Long.MAX_VALUE);
@@ -141,8 +147,8 @@ public class AccessPlatform extends org.eclipse.persistence.platform.database.Da
      * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal minimums are dependent upon their precision {@literal &} Scale
      */
     @Override
-    public Hashtable minimumNumericValues() {
-        Hashtable values = new Hashtable();
+    public Hashtable<Class<? extends Number>, ? super Number> minimumNumericValues() {
+        Hashtable<Class<? extends Number>, ? super Number> values = new Hashtable<>();
 
         values.put(Integer.class, Integer.MIN_VALUE);
         values.put(Long.class, Long.MIN_VALUE);

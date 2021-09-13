@@ -318,8 +318,8 @@ public class Oracle9Platform extends Oracle8Platform {
      * Add TIMESTAMP, TIMESTAMP WITH TIME ZONE and TIMESTAMP WITH LOCAL TIME ZONE
      */
     @Override
-    protected Hashtable buildFieldTypes() {
-        Hashtable fieldTypes = super.buildFieldTypes();
+    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
+        Hashtable<Class<?>, FieldTypeDefinition> fieldTypes = super.buildFieldTypes();
         fieldTypes.put(org.w3c.dom.Document.class, new FieldTypeDefinition("sys.XMLType"));
         //Bug#3381652 10g database does not accept Time for DATE field
         fieldTypes.put(java.sql.Time.class, new FieldTypeDefinition("TIMESTAMP", false));
@@ -351,8 +351,8 @@ public class Oracle9Platform extends Oracle8Platform {
      * Add TIMESTAMP, TIMESTAMP WITH TIME ZONE and TIMESTAMP WITH LOCAL TIME ZONE
      */
     @Override
-    protected Map<String, Class> buildClassTypes() {
-        Map<String, Class> classTypeMapping = super.buildClassTypes();
+    protected Map<String, Class<?>> buildClassTypes() {
+        Map<String, Class<?>> classTypeMapping = super.buildClassTypes();
         classTypeMapping.put("TIMESTAMP", ORACLE_SQL_TIMESTAMP);
         classTypeMapping.put("TIMESTAMP WITH TIME ZONE", ORACLE_SQL_TIMESTAMPTZ);
         classTypeMapping.put("TIMESTAMP WITH LOCAL TIME ZONE", ORACLE_SQL_TIMESTAMPLTZ);
@@ -622,30 +622,30 @@ public class Oracle9Platform extends Oracle8Platform {
         return "SYSTIMESTAMP";
     }
 
-    protected Vector buildToTIMESTAMPVec() {
-        Vector vec = new Vector();
-        vec.addElement(java.util.Date.class);
-        vec.addElement(Timestamp.class);
-        vec.addElement(Calendar.class);
-        vec.addElement(String.class);
-        vec.addElement(Long.class);
-        vec.addElement(Date.class);
-        vec.addElement(Time.class);
+    protected List<Class<?>> buildToTIMESTAMPVec() {
+        List<Class<?>> vec = new Vector<>();
+        vec.add(java.util.Date.class);
+        vec.add(Timestamp.class);
+        vec.add(Calendar.class);
+        vec.add(String.class);
+        vec.add(Long.class);
+        vec.add(Date.class);
+        vec.add(Time.class);
         return vec;
     }
 
-    protected Vector buildToNStringCharVec() {
-        Vector vec = new Vector();
-        vec.addElement(String.class);
-        vec.addElement(Character.class);
+    protected List<Class<?>> buildToNStringCharVec() {
+        List<Class<?>> vec = new Vector<>();
+        vec.add(String.class);
+        vec.add(Character.class);
         return vec;
     }
 
-    protected Vector buildToNClobVec() {
-        Vector vec = new Vector();
-        vec.addElement(String.class);
-        vec.addElement(Character[].class);
-        vec.addElement(char[].class);
+    protected List<Class<?>> buildToNClobVec() {
+        List<Class<?>> vec = new Vector<>();
+        vec.add(String.class);
+        vec.add(Character[].class);
+        vec.add(char[].class);
         return vec;
     }
 
@@ -739,11 +739,11 @@ public class Oracle9Platform extends Oracle8Platform {
      * @return - a vector of classes
      */
     @Override
-    public List getDataTypesConvertedFrom(Class javaClass) {
+    public List<Class<?>> getDataTypesConvertedFrom(Class<?> javaClass) {
         if (dataTypesConvertedFromAClass == null) {
-            dataTypesConvertedFromAClass = new Hashtable(5);
+            dataTypesConvertedFromAClass = new Hashtable<>(5);
         }
-        List dataTypes = (List) dataTypesConvertedFromAClass.get(javaClass);
+        List<Class<?>> dataTypes = dataTypesConvertedFromAClass.get(javaClass);
         if (dataTypes != null) {
             return dataTypes;
         }
@@ -770,11 +770,11 @@ public class Oracle9Platform extends Oracle8Platform {
      * @return - a vector of classes
      */
     @Override
-    public List getDataTypesConvertedTo(Class javaClass) {
+    public List<Class<?>> getDataTypesConvertedTo(Class<?> javaClass) {
         if (dataTypesConvertedToAClass == null) {
-            dataTypesConvertedToAClass = new Hashtable(5);
+            dataTypesConvertedToAClass = new Hashtable<>(5);
         }
-        List dataTypes = (Vector) dataTypesConvertedToAClass.get(javaClass);
+        List<Class<?>> dataTypes = dataTypesConvertedToAClass.get(javaClass);
         if (dataTypes != null) {
             return dataTypes;
         }

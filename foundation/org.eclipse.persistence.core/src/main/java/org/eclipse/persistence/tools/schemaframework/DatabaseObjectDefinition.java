@@ -86,8 +86,8 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
                 throw ValidationException.javaTypeIsNotAValidDatabaseType(type);
             }
         } else if (name != null) { //translate generic type name
-            final Map<String, Class> fieldTypes = platform.getClassTypes();
-            final Class typeFromName = fieldTypes.get(name);
+            final Map<String, Class<?>> fieldTypes = platform.getClassTypes();
+            final Class<?> typeFromName = fieldTypes.get(name);
             if (typeFromName == null) { // if unknown type name, use as it is
                 fieldType = new FieldTypeDefinition(name);
             } else {

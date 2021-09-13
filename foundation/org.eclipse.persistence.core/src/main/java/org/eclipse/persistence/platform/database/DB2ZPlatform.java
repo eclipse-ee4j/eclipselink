@@ -68,8 +68,8 @@ public class DB2ZPlatform extends DB2Platform {
     }
 
     @Override
-    protected Hashtable buildFieldTypes() {
-        Hashtable<Class<?>, Object> res = super.buildFieldTypes();
+    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
+        Hashtable<Class<?>, FieldTypeDefinition> res = super.buildFieldTypes();
         if (getUseNationalCharacterVaryingTypeForString()) {
             res.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE));
         }
@@ -200,6 +200,7 @@ public class DB2ZPlatform extends DB2Platform {
             Class<?> clazz = null;
             Method method = null;
             String methodName = "registerJccOutParameterAtName";
+            @SuppressWarnings({"rawtypes"})
             Class<?>[] methodArgs = (Class<?>[]) new Class[] {String.class, int.class, String.class};
             Object[] parameters = new Object[] {name, jdbcType, typeName};
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
@@ -230,6 +231,7 @@ public class DB2ZPlatform extends DB2Platform {
     }
 
     @Override
+    @SuppressWarnings({"rawtypes"})
     public void setParameterValueInDatabaseCall(Object parameter,
             CallableStatement statement, String name, AbstractSession session)
             throws SQLException {
@@ -430,6 +432,7 @@ public class DB2ZPlatform extends DB2Platform {
     }
 
     @Override
+    @SuppressWarnings({"rawtypes"})
     protected void setNullFromDatabaseField(DatabaseField databaseField, CallableStatement statement, String name) throws SQLException {
         String methodName = null;
         Class<?>[] methodArgs = null;
@@ -477,6 +480,7 @@ public class DB2ZPlatform extends DB2Platform {
     }
 
     @Override
+    @SuppressWarnings({"rawtypes"})
     public Object getParameterValueFromDatabaseCall(CallableStatement statement, String name, AbstractSession session)
                 throws SQLException {
         String methodName = null;

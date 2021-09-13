@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2005, 2020 IBM Corporation. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,11 +28,12 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.queries.ValueReadQuery;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 import java.io.Writer;
 import java.io.IOException;
@@ -282,8 +283,8 @@ public class DerbyPlatform extends DB2Platform {
     }
 
     @Override
-    protected Hashtable buildFieldTypes() {
-        Hashtable fieldTypeMapping = new Hashtable();
+    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
+        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
 
         fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("SMALLINT DEFAULT 0", false));
 
@@ -350,7 +351,7 @@ public class DerbyPlatform extends DB2Platform {
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.Extract);
         exOperator.setName("EXTRACT");
-        Vector v = NonSynchronizedVector.newInstance(5);
+        List<String> v = new ArrayList<>(5);
         v.add("");
         v.add("(");
         v.add(")");

@@ -287,8 +287,8 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     }
 
     @Override
-    protected Hashtable buildFieldTypes() {
-        Hashtable fieldTypeMapping = new Hashtable();
+    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
+        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
 
         fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("SMALLINT DEFAULT 0", false));
 
@@ -496,8 +496,8 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
      * precision {@literal &} Scale
      */
     @Override
-    public Hashtable maximumNumericValues() {
-        Hashtable values = new Hashtable();
+    public Hashtable<Class<? extends Number>, ? super Number> maximumNumericValues() {
+        Hashtable<Class<? extends Number>, ? super Number> values = new Hashtable<>();
 
         values.put(Integer.class, Integer.MAX_VALUE);
         values.put(Long.class, (long) Integer.MAX_VALUE);
@@ -520,8 +520,8 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
      * precision {@literal &} Scale
      */
     @Override
-    public Hashtable minimumNumericValues() {
-        Hashtable values = new Hashtable();
+    public Hashtable<Class<? extends Number>, ? super Number> minimumNumericValues() {
+        Hashtable<Class<? extends Number>, ? super Number> values = new Hashtable<>();
 
         values.put(Integer.class, Integer.MIN_VALUE);
         values.put(Long.class, (long) Integer.MIN_VALUE);
@@ -566,7 +566,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.Concat);
-        Vector v = new Vector(5);
+        Vector<String> v = new Vector<>(5);
         v.add("VARCHAR(");
         v.add(" || ");
         v.add(")");
@@ -584,7 +584,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         ExpressionOperator operator = new ExpressionOperator();
         operator.setType(ExpressionOperator.FunctionOperator);
         operator.setSelector(ExpressionOperator.LeftTrim2);
-        Vector v = new Vector(5);
+        Vector<String> v = new Vector<>(5);
         v.add("TRIM(LEADING ");
         v.add(" FROM ");
         v.add(")");
@@ -606,7 +606,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         ExpressionOperator operator = new ExpressionOperator();
         operator.setType(ExpressionOperator.FunctionOperator);
         operator.setSelector(ExpressionOperator.RightTrim2);
-        Vector v = new Vector(5);
+        Vector<String> v = new Vector<>(5);
         v.add("TRIM(TRAILING ");
         v.add(" FROM ");
         v.add(")");

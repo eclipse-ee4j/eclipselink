@@ -850,9 +850,9 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
                 } else if (field.getColumnDefinition() != null) {
                     // Search for the type for this field definition.
                     if (session.getDatasourcePlatform() instanceof DatabasePlatform) {
-                        Iterator<Map.Entry<Class, FieldTypeDefinition>> iterator = session.getPlatform().getFieldTypes().entrySet().iterator();
+                        Iterator<Map.Entry<Class<?>, FieldTypeDefinition>> iterator = session.getPlatform().getFieldTypes().entrySet().iterator();
                         while (iterator.hasNext()) {
-                            Map.Entry<Class, FieldTypeDefinition> entry = iterator.next();
+                            Map.Entry<Class<?>, FieldTypeDefinition> entry = iterator.next();
                             if (entry.getValue().getName().equals(field.getColumnDefinition())) {
                                 field.setType(entry.getKey());
                                 break;
