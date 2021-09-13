@@ -33,9 +33,11 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -166,10 +168,8 @@ public class MySQLPlatform extends DatabasePlatform {
      * Return the mapping of class types to database types for the schema framework.
      */
     @Override
-    protected Hashtable buildFieldTypes() {
-        Hashtable fieldTypeMapping;
-
-        fieldTypeMapping = new Hashtable();
+    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
+        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
         fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("TINYINT(1) default 0", false));
 
         fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("INTEGER", false));
@@ -403,9 +403,9 @@ public class MySQLPlatform extends DatabasePlatform {
     protected ExpressionOperator logOperator() {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(ExpressionOperator.Log);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
-        v.addElement("LOG(10, ");
-        v.addElement(")");
+        List<String> v = new ArrayList<>(2);
+        v.add("LOG(10, ");
+        v.add(")");
         result.printsAs(v);
         result.bePrefix();
         result.setNodeClass(FunctionExpression.class);
@@ -421,9 +421,9 @@ public class MySQLPlatform extends DatabasePlatform {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.ToNumber);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
-        v.addElement("CONVERT(");
-        v.addElement(", SIGNED)");
+        List<String> v = new ArrayList<>(2);
+        v.add("CONVERT(");
+        v.add(", SIGNED)");
         exOperator.printsAs(v);
         exOperator.bePrefix();
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
@@ -438,9 +438,9 @@ public class MySQLPlatform extends DatabasePlatform {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.ToDate);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
-        v.addElement("CONVERT(");
-        v.addElement(", DATETIME)");
+        List<String> v = new ArrayList<>(2);
+        v.add("CONVERT(");
+        v.add(", DATETIME)");
         exOperator.printsAs(v);
         exOperator.bePrefix();
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
@@ -455,9 +455,9 @@ public class MySQLPlatform extends DatabasePlatform {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.ToChar);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
-        v.addElement("CONVERT(");
-        v.addElement(", CHAR)");
+        List<String> v = new ArrayList<>(2);
+        v.add("CONVERT(");
+        v.add(", CHAR)");
         exOperator.printsAs(v);
         exOperator.bePrefix();
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
@@ -472,9 +472,9 @@ public class MySQLPlatform extends DatabasePlatform {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.DateToString);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
-        v.addElement("CONVERT(");
-        v.addElement(", CHAR)");
+        List<String> v = new ArrayList<>(2);
+        v.add("CONVERT(");
+        v.add(", CHAR)");
         exOperator.printsAs(v);
         exOperator.bePrefix();
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
@@ -490,10 +490,10 @@ public class MySQLPlatform extends DatabasePlatform {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.LeftTrim2);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(5);
-        v.addElement("TRIM(LEADING ");
-        v.addElement(" FROM ");
-        v.addElement(")");
+        List<String> v = new ArrayList<>(5);
+        v.add("TRIM(LEADING ");
+        v.add(" FROM ");
+        v.add(")");
         exOperator.printsAs(v);
         exOperator.bePrefix();
         int[] indices = {1, 0};
@@ -511,10 +511,10 @@ public class MySQLPlatform extends DatabasePlatform {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.RightTrim2);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(5);
-        v.addElement("TRIM(TRAILING ");
-        v.addElement(" FROM ");
-        v.addElement(")");
+        List<String> v = new ArrayList<>(5);
+        v.add("TRIM(TRAILING ");
+        v.add(" FROM ");
+        v.add(")");
         exOperator.printsAs(v);
         exOperator.bePrefix();
         int[] indices = {1, 0};

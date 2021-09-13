@@ -123,7 +123,7 @@ import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 public class DatabasePlatform extends DatasourcePlatform {
 
     /** Holds a map of values used to map JAVA types to database types for table creation */
-    protected transient Map<Class, FieldTypeDefinition> fieldTypes;
+    protected transient Map<Class<?>, FieldTypeDefinition> fieldTypes;
 
     /** Indicates that native SQL should be used for literal values instead of ODBC escape format
     Only used with Oracle, Sybase &amp; DB2 */
@@ -199,7 +199,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     protected boolean shouldOptimizeDataConversion;
 
     /** Stores mapping of class types to database types for schema creation. */
-    protected transient Map<String, Class> classTypes;
+    protected transient Map<String, Class<?>> classTypes;
 
     /** Allow for case in field names to be ignored as some databases are not case sensitive and when using custom this can be an issue. */
     public static boolean shouldIgnoreCaseOnFieldComparisons = false;
@@ -678,8 +678,8 @@ public class DatabasePlatform extends DatasourcePlatform {
     /**
      * Return the mapping of class types to database types for the schema framework.
      */
-    protected Map<String, Class> buildClassTypes() {
-        Map<String, Class> classTypeMapping = new HashMap<>();
+    protected Map<String, Class<?>> buildClassTypes() {
+        Map<String, Class<?>> classTypeMapping = new HashMap<>();
         // Key the Map the other way for table creation.
         classTypeMapping.put("NUMBER", java.math.BigInteger.class);
         classTypeMapping.put("DECIMAL", java.math.BigDecimal.class);
@@ -730,10 +730,8 @@ public class DatabasePlatform extends DatasourcePlatform {
     /**
      * Return the mapping of class types to database types for the schema framework.
      */
-    protected Hashtable buildFieldTypes() {
-        Hashtable fieldTypeMapping;
-
-        fieldTypeMapping = new Hashtable();
+    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
+        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
         fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("NUMBER", 1));
 
         fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("NUMBER", 10));
@@ -1154,7 +1152,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     /**
      * Return the class type to database type mapping for the schema framework.
      */
-    public Map<String, Class> getClassTypes() {
+    public Map<String, Class<?>> getClassTypes() {
         if (classTypes == null) {
             classTypes = buildClassTypes();
         }
@@ -1229,14 +1227,14 @@ public class DatabasePlatform extends DatasourcePlatform {
      * Return the field type object describing this databases platform specific representation
      * of the Java primitive class name.
      */
-    public FieldTypeDefinition getFieldTypeDefinition(Class javaClass) {
+    public FieldTypeDefinition getFieldTypeDefinition(Class<?> javaClass) {
         return getFieldTypes().get(javaClass);
     }
 
     /**
      * Return the class type to database type mappings for the schema framework.
      */
-    public Map<Class, FieldTypeDefinition> getFieldTypes() {
+    public Map<Class<?>, FieldTypeDefinition> getFieldTypes() {
         if (this.fieldTypes == null) {
             this.fieldTypes = buildFieldTypes();
         }
@@ -1677,8 +1675,8 @@ public class DatabasePlatform extends DatasourcePlatform {
      * might also be useful to end users attempting to sanitize values.
      * <p><b>NOTE</b>: BigInteger &amp; BigDecimal maximums are dependent upon their precision &amp; Scale
      */
-    public Hashtable maximumNumericValues() {
-        Hashtable values = new Hashtable();
+    public Hashtable<Class<? extends Number>, ? super Number> maximumNumericValues() {
+        Hashtable<Class<? extends Number>, ? super Number> values = new Hashtable<>();
 
         values.put(Integer.class, Integer.MAX_VALUE);
         values.put(Long.class, Long.MAX_VALUE);
@@ -1696,8 +1694,8 @@ public class DatabasePlatform extends DatasourcePlatform {
      * might also be useful to end users attempting to sanitize values.
      * <p><b>NOTE</b>: BigInteger &amp; BigDecimal minimums are dependent upon their precision &amp; Scale
      */
-    public Hashtable minimumNumericValues() {
-        Hashtable values = new Hashtable();
+    public Hashtable<Class<? extends Number>, ? super Number> minimumNumericValues() {
+        Hashtable<Class<? extends Number>, ? super Number> values = new Hashtable<>();
 
         values.put(Integer.class, Integer.MIN_VALUE);
         values.put(Long.class, Long.MIN_VALUE);
@@ -1904,7 +1902,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         castSizeForVarcharParameter = maxLength;
     }
 
-    protected void setClassTypes(Hashtable classTypes) {
+    protected void setClassTypes(Map<String, Class<?>> classTypes) {
         this.classTypes = classTypes;
     }
 
@@ -1924,7 +1922,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         this.driverName = driverName;
     }
 
-    protected void setFieldTypes(Hashtable theFieldTypes) {
+    protected void setFieldTypes(Map<Class<?>, FieldTypeDefinition> theFieldTypes) {
         fieldTypes = theFieldTypes;
     }
 

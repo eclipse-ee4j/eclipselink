@@ -29,7 +29,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.exceptions.ConversionException;
@@ -72,13 +71,13 @@ public class DatasourcePlatform implements Platform {
     protected ValueReadQuery timestampQuery;
 
     /** Operators specific to this platform */
-    protected transient Map platformOperators;
+    protected transient Map<Integer, ExpressionOperator> platformOperators;
 
     /** Store the list of Classes that can be converted to from the key. */
-    protected Hashtable dataTypesConvertedFromAClass;
+    protected Hashtable<Class<?>, List<Class<?>>> dataTypesConvertedFromAClass;
 
     /** Store the list of Classes that can be converted from to the key. */
-    protected Hashtable dataTypesConvertedToAClass;
+    protected Hashtable<Class<?>, List<Class<?>>> dataTypesConvertedToAClass;
 
     /** Store default sequence */
     protected Sequence defaultSequence;
@@ -195,11 +194,11 @@ public class DatasourcePlatform implements Platform {
             setDefaultSequence(defaultSequenceClone);
         }
         if (getSequences() != null) {
-            HashMap sequencesCopy = new HashMap(getSequences());
-            HashMap sequencesDeepClone = new HashMap(getSequences().size());
-            Iterator it = sequencesCopy.values().iterator();
+            Map<String, Sequence> sequencesCopy = new HashMap<>(getSequences());
+            Map<String, Sequence> sequencesDeepClone = new HashMap<>(getSequences().size());
+            Iterator<Sequence> it = sequencesCopy.values().iterator();
             while (it.hasNext()) {
-                Sequence sequence = (Sequence)it.next();
+                Sequence sequence = it.next();
                 if ((defaultSequenceClone != null) && (sequence == getDefaultSequence())) {
                     sequencesDeepClone.put(defaultSequenceClone.getName(), defaultSequenceClone);
                 } else {
@@ -402,7 +401,7 @@ public class DatasourcePlatform implements Platform {
      * Initialize any platform-specific operators
      */
     protected void initializePlatformOperators() {
-        this.platformOperators = new HashMap();
+        this.platformOperators = new HashMap<>();
 
         // Outer join
         addOperator(ExpressionOperator.equalOuterJoin());
@@ -717,7 +716,7 @@ public class DatasourcePlatform implements Platform {
      * @param javaClass - the class that is converted from
      * @return - a vector of classes
      */
-    public List getDataTypesConvertedFrom(Class javaClass) {
+    public List<Class<?>> getDataTypesConvertedFrom(Class<?> javaClass) {
         return getConversionManager().getDataTypesConvertedFrom(javaClass);
     }
 
@@ -727,7 +726,7 @@ public class DatasourcePlatform implements Platform {
      * @param javaClass - the class that is converted to
      * @return - a vector of classes
      */
-    public List getDataTypesConvertedTo(Class javaClass) {
+    public List<Class<?>> getDataTypesConvertedTo(Class<?> javaClass) {
         return getConversionManager().getDataTypesConvertedTo(javaClass);
     }
 
@@ -789,18 +788,19 @@ public class DatasourcePlatform implements Platform {
         synchronized(sequencesLock) {
             if (isSessionConnected) {
                 if (this.sequences == null) {
-                    this.sequences = new HashMap();
+                    this.sequences = new HashMap<>();
                     this.sequences.put(sequence.getName(), sequence);
                 } else {
                     if (!this.sequences.containsKey(sequence.getName())) {
-                        Map newSequences = (Map)((HashMap)this.sequences).clone();
+                        @SuppressWarnings({"unchecked"})
+                        Map<String, Sequence> newSequences = (Map<String, Sequence>)((HashMap<String, Sequence>)this.sequences).clone();
                         newSequences.put(sequence.getName(), sequence);
                         this.sequences = newSequences;
                     }
                 }
             } else {
                 if (this.sequences == null) {
-                    this.sequences = new HashMap();
+                    this.sequences = new HashMap<>();
                 }
                 this.sequences.put(sequence.getName(), sequence);
             }
@@ -872,11 +872,11 @@ public class DatasourcePlatform implements Platform {
         if ((getSequences() == null) || getSequences().isEmpty()) {
             return null;
         }
-        Map sequencesCopy = new HashMap(getSequences());
-        Map sequencesToWrite = new HashMap();
-        Iterator it = sequencesCopy.values().iterator();
+        Map<String, Sequence> sequencesCopy = new HashMap<>(getSequences());
+        Map<String, Sequence> sequencesToWrite = new HashMap<>();
+        Iterator<Sequence> it = sequencesCopy.values().iterator();
         while (it.hasNext()) {
-            Sequence sequence = (Sequence)it.next();
+            Sequence sequence = it.next();
             if (!(sequence instanceof DefaultSequence) || ((DefaultSequence)sequence).hasPreallocationSize()) {
                 sequencesToWrite.put(sequence.getName(), sequence);
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2008 Markus KARG(markus-karg@users.sourceforge.net).
  *
  * This program and the accompanying materials are made available under the
@@ -72,8 +72,8 @@ public class SQLAnywherePlatform extends SybasePlatform {
         return fieldTypeMapping;
     }*/
     @Override
-    protected Hashtable buildFieldTypes() {
-        Hashtable fieldTypeMapping = super.buildFieldTypes();
+    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
+        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = super.buildFieldTypes();
         fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("BIT", false));
         return fieldTypeMapping;
     }

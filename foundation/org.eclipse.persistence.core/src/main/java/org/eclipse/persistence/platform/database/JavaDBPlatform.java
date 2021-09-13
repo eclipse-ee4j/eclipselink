@@ -25,4 +25,11 @@ public class JavaDBPlatform extends DerbyPlatform {
     // The only purpose of this class is to allow use of JavaDBPlatform as a
     // synonym for DerbyPlatform
     // All the Derby specific code should be added to DerbyPlatform
+
+    /**
+     * Default constructor.
+     */
+    public JavaDBPlatform() {
+        super();
+    }
 }

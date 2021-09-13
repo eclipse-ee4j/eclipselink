@@ -50,11 +50,18 @@ public class Oracle8Platform extends OraclePlatform {
     protected int lobValueLimits = 0;
 
     /**
+     * Default constructor.
+     */
+    public Oracle8Platform() {
+        super();
+    }
+
+    /**
      * INTERNAL:
      */
     @Override
-    protected Hashtable buildFieldTypes() {
-        Hashtable fieldTypeMapping = super.buildFieldTypes();
+    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
+        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = super.buildFieldTypes();
 
         fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("BLOB", false));
         fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("CLOB", false));

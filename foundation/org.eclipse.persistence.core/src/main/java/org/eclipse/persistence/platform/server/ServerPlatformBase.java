@@ -302,7 +302,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
             ExternalTransactionController controller = null;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    controller = (ExternalTransactionController)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(this.getExternalTransactionControllerClass()));
+                    controller = AccessController.<ExternalTransactionController>doPrivileged(new PrivilegedNewInstanceFromClass<>(this.getExternalTransactionControllerClass()));
                 } catch (PrivilegedActionException exception) {
                     Exception throwableException = exception.getException();
                     if (throwableException instanceof InstantiationException) {
@@ -312,7 +312,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
                     }
                 }
             } else {
-                controller = (ExternalTransactionController)PrivilegedAccessHelper.newInstanceFromClass(this.getExternalTransactionControllerClass());
+                controller = PrivilegedAccessHelper.<ExternalTransactionController>newInstanceFromClass(this.getExternalTransactionControllerClass());
             }
             getDatabaseSession().setExternalTransactionController(controller);
         } catch (InstantiationException instantiationException) {

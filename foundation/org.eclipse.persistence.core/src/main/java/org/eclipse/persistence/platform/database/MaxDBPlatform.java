@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2009, 2018 Markus Karg, SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -25,8 +25,9 @@ import java.sql.Clob;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.expressions.ListExpressionOperator;
@@ -113,8 +114,8 @@ public final class MaxDBPlatform extends DatabasePlatform {
     }
 
     @Override
-    protected Hashtable buildFieldTypes() {
-        final Hashtable<Class, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
+    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
+        final Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
         fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("SMALLINT", false)); // TODO boolean
         fieldTypeMapping.put(Number.class, new FieldTypeDefinition("DOUBLE PRECISION", false));
         fieldTypeMapping.put(Short.class, new FieldTypeDefinition("SMALLINT", false));
@@ -239,11 +240,11 @@ public final class MaxDBPlatform extends DatabasePlatform {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.NullIf);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(4);
-        v.addElement(" (CASE WHEN ");
-        v.addElement(" = ");
-        v.addElement(" THEN NULL ELSE ");
-        v.addElement(" END) ");
+        List<String> v = new ArrayList<>(4);
+        v.add(" (CASE WHEN ");
+        v.add(" = ");
+        v.add(" THEN NULL ELSE ");
+        v.add(" END) ");
         exOperator.printsAs(v);
         exOperator.bePrefix();
         int[] indices = {0, 1, 0};

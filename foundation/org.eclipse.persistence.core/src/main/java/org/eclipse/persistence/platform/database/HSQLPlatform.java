@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,10 +57,8 @@ public class HSQLPlatform extends DatabasePlatform {
     }
 
     @Override
-    protected Hashtable buildFieldTypes() {
-        Hashtable fieldTypeMapping;
-
-        fieldTypeMapping = super.buildFieldTypes();
+    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
+        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = super.buildFieldTypes();
         fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("BOOLEAN", false));
 
         fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("INTEGER", false));
@@ -111,9 +109,9 @@ public class HSQLPlatform extends DatabasePlatform {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.ToNumber);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
-        v.addElement("CONVERT(");
-        v.addElement(",DECIMAL)");
+        List<String> v = new ArrayList<>(2);
+        v.add("CONVERT(");
+        v.add(",DECIMAL)");
         exOperator.printsAs(v);
         exOperator.bePrefix();
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
@@ -128,9 +126,9 @@ public class HSQLPlatform extends DatabasePlatform {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.Trim);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
-        v.addElement("TRIM(FROM ");
-        v.addElement(")");
+        List<String> v = new ArrayList<>(2);
+        v.add("TRIM(FROM ");
+        v.add(")");
         exOperator.printsAs(v);
         exOperator.bePrefix();
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
@@ -146,10 +144,10 @@ public class HSQLPlatform extends DatabasePlatform {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.RightTrim2);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(5);
-        v.addElement("TRIM(TRAILING ");
-        v.addElement(" FROM ");
-        v.addElement(")");
+        List<String> v = new ArrayList<>(5);
+        v.add("TRIM(TRAILING ");
+        v.add(" FROM ");
+        v.add(")");
         exOperator.printsAs(v);
         exOperator.bePrefix();
         int[] indices = {1, 0};
@@ -167,12 +165,12 @@ public class HSQLPlatform extends DatabasePlatform {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.Greatest);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(5);
-        v.addElement("CASEWHEN(");
-        v.addElement(" >= ");
-        v.addElement(", ");
-        v.addElement(", ");
-        v.addElement(")");
+        List<String> v = new ArrayList<>(5);
+        v.add("CASEWHEN(");
+        v.add(" >= ");
+        v.add(", ");
+        v.add(", ");
+        v.add(")");
         exOperator.printsAs(v);
         exOperator.bePrefix();
         int[] indices = {0, 1, 0, 1};

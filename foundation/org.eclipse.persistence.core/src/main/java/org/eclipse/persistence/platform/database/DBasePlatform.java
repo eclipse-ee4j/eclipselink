@@ -33,11 +33,17 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * @since TOPLink/Java 1.0
  */
 public class DBasePlatform extends org.eclipse.persistence.platform.database.DatabasePlatform {
-    @Override
-    protected Hashtable buildFieldTypes() {
-        Hashtable fieldTypeMapping;
 
-        fieldTypeMapping = new Hashtable();
+    /**
+     * Default constructor.
+     */
+    public DBasePlatform() {
+        super();
+    }
+
+    @Override
+    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
+        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
         fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("NUMBER", 1));
 
         fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("NUMBER", 11));
@@ -134,8 +140,8 @@ public class DBasePlatform extends org.eclipse.persistence.platform.database.Dat
      * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal minimums are dependent upon their precision {@literal &} Scale
      */
     @Override
-    public Hashtable maximumNumericValues() {
-        Hashtable values = new Hashtable();
+    public Hashtable<Class<? extends Number>, ? super Number> maximumNumericValues() {
+        Hashtable<Class<? extends Number>, ? super Number> values = new Hashtable<>();
 
         values.put(Integer.class, Integer.MAX_VALUE);
         values.put(Long.class, Long.valueOf("922337203685478000"));
@@ -154,8 +160,8 @@ public class DBasePlatform extends org.eclipse.persistence.platform.database.Dat
      * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal minimums are dependent upon their precision {@literal &} Scale
      */
     @Override
-    public Hashtable minimumNumericValues() {
-        Hashtable values = new Hashtable();
+    public Hashtable<Class<? extends Number>, ? super Number> minimumNumericValues() {
+        Hashtable<Class<? extends Number>, ? super Number> values = new Hashtable<>();
 
         values.put(Integer.class, Integer.MIN_VALUE);
         values.put(Long.class, Long.valueOf("-922337203685478000"));
