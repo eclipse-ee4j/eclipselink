@@ -60,16 +60,16 @@ public class WebLogic_12_Platform extends WebLogic_10_Platform {
         private Method getPartitionIdMethod;
         private Method getPartitionNameMethod;
         private Method isGlobalRuntimeMethod;
-        private static final Class cicManagerClass;
+        private static final Class<?> cicManagerClass;
         private static volatile ContextHelper instance;
         private static final String CIC_MANAGER_RESOURCE_NAME = "META-INF/services/weblogic.invocation.ComponentInvocationContextManager";
         private static final String CIC_MANAGER_CLASS_NAME = "weblogic.invocation.ComponentInvocationContextManager";
 
         static {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                cicManagerClass = AccessController.doPrivileged(new PrivilegedAction<Class>() {
+                cicManagerClass = AccessController.doPrivileged(new PrivilegedAction<Class<?>>() {
                     @Override
-                    public Class run() {
+                    public Class<?> run() {
                         return getCicManagerClass(CIC_MANAGER_RESOURCE_NAME, CIC_MANAGER_CLASS_NAME);
                     }
                 });
@@ -78,7 +78,7 @@ public class WebLogic_12_Platform extends WebLogic_10_Platform {
             }
         }
 
-        private static Class getCicManagerClass(String cicManagerResourceName, String cicManagerClassName) {
+        private static Class<?> getCicManagerClass(String cicManagerResourceName, String cicManagerClassName) {
             try {
                 if (WebLogic_12_Platform.class.getClassLoader().getResource(cicManagerResourceName) != null) {
                     return PrivilegedAccessHelper.getClassForName(cicManagerClassName);
@@ -90,7 +90,7 @@ public class WebLogic_12_Platform extends WebLogic_10_Platform {
             }
         }
 
-        private ContextHelper(final Class managerClass, final String contextClassName) {
+        private ContextHelper(final Class<?> managerClass, final String contextClassName) {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 AccessController.doPrivileged(new PrivilegedAction<Void>() {
                     @Override
@@ -104,14 +104,15 @@ public class WebLogic_12_Platform extends WebLogic_10_Platform {
             }
         }
 
-        private void initialize(final Class managerClass, final String contextClassName) {
+        @SuppressWarnings({"rawtypes"})
+        private void initialize(final Class<?> managerClass, final String contextClassName) {
             try {
                 // Get component invocation manager
                 final Method getInstance = PrivilegedAccessHelper.getDeclaredMethod(managerClass, "getInstance", new Class[]{});
                 cicManagerInstance = PrivilegedAccessHelper.invokeMethod(getInstance, managerClass);
                 // Get component invocation context
                 getCurrentCicMethod = PrivilegedAccessHelper.getMethod(managerClass, "getCurrentComponentInvocationContext", new Class[]{}, true);
-                final Class<Object> cicClass = PrivilegedAccessHelper.getClassForName(contextClassName);
+                final Class<?> cicClass = PrivilegedAccessHelper.getClassForName(contextClassName);
                 getPartitionIdMethod = PrivilegedAccessHelper.getDeclaredMethod(cicClass, "getPartitionId", new Class[]{});
                 getPartitionNameMethod = PrivilegedAccessHelper.getDeclaredMethod(cicClass, "getPartitionName", new Class[]{});
                 isGlobalRuntimeMethod = PrivilegedAccessHelper.getDeclaredMethod(cicClass, "isGlobalRuntime", new Class[]{});

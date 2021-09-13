@@ -33,6 +33,7 @@ import org.eclipse.persistence.platform.server.JMXServerPlatformBase;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
 import org.eclipse.persistence.services.glassfish.MBeanGlassfishRuntimeServices;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.ExternalTransactionController;
 import org.eclipse.persistence.transaction.glassfish.GlassfishTransactionController;
 import org.eclipse.persistence.transaction.glassfish.GlassfishTransactionController11;
 
@@ -92,7 +93,7 @@ public class GlassfishPlatform extends JMXServerPlatformBase implements JMXEnabl
      * @see ServerPlatformBase#initializeExternalTransactionController()
      */
     @Override
-    public Class getExternalTransactionControllerClass() {
+    public Class<? extends ExternalTransactionController> getExternalTransactionControllerClass() {
         if (externalTransactionControllerClass == null) {
             // JTA 1.1 exixts since Glassfish 3. Check JTA 1.1 availability to set proper JTa transaction controller.
             externalTransactionControllerClass = isJTA11()

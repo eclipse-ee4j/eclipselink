@@ -28,6 +28,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.server.JMXServerPlatformBase;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.ExternalTransactionController;
 import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.transaction.was.WebSphereTransactionController;
 
@@ -47,12 +48,12 @@ public class WebSpherePlatform extends JMXServerPlatformBase {
     /**
      * Cached WAS connection class used to reflectively check connections and unwrap them.
      */
-    protected Class websphereConnectionClass;
+    protected Class<?> websphereConnectionClass;
 
     /**
      * Cached WAS util class used to reflectively check connections and unwrap them.
      */
-    protected Class websphereUtilClass;
+    protected Class<?> websphereUtilClass;
 
     /**
      * Cached WAS util method used for unwrapping connections.
@@ -81,7 +82,7 @@ public class WebSpherePlatform extends JMXServerPlatformBase {
      * @see org.eclipse.persistence.platform.server.ServerPlatformBase#initializeExternalTransactionController()
      */
     @Override
-    public Class getExternalTransactionControllerClass() {
+    public Class<? extends ExternalTransactionController> getExternalTransactionControllerClass() {
         if (externalTransactionControllerClass == null){
             externalTransactionControllerClass = WebSphereTransactionController.class;
         }
@@ -92,7 +93,7 @@ public class WebSpherePlatform extends JMXServerPlatformBase {
     /**
      * Return the class (interface) for the WebSphere JDBC connection wrapper.
      */
-    protected Class getWebsphereUtilClass() {
+    protected Class<?> getWebsphereUtilClass() {
         if (this.websphereUtilClass == null) {
             try {
                 this.websphereUtilClass = getDatabaseSession().getPlatform().convertObject("com.ibm.ws.rsadapter.jdbc.WSJdbcUtil", Class.class);
@@ -107,7 +108,7 @@ public class WebSpherePlatform extends JMXServerPlatformBase {
     /**
      * Return the class (interface) for the WebSphere JDBC connection wrapper.
      */
-    protected Class getWebsphereConnectionClass() {
+    protected Class<?> getWebsphereConnectionClass() {
         if (this.websphereConnectionClass == null) {
             try {
                 this.websphereConnectionClass = getDatabaseSession().getPlatform().convertObject("com.ibm.ws.rsadapter.jdbc.WSJdbcConnection", Class.class);
@@ -125,7 +126,8 @@ public class WebSpherePlatform extends JMXServerPlatformBase {
     protected Method getVendorConnectionMethod() {
         if ((this.vendorConnectionMethod == null) && (!getWebsphereUtilClass().equals(void.class))) {
             try {
-                Class args[] = new Class[1];
+                @SuppressWarnings({"rawtypes"})
+                Class<?>[] args = (Class<?>[]) new Class[1];
                 args[0] = getWebsphereConnectionClass();
                 this.vendorConnectionMethod = PrivilegedAccessHelper.getDeclaredMethod(getWebsphereUtilClass(), "getNativeConnection", args);
             } catch (NoSuchMethodException exception) {

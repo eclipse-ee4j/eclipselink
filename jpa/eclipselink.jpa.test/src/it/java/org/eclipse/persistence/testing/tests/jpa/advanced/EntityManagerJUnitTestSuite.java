@@ -152,6 +152,7 @@ import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.DefaultConnector;
+import org.eclipse.persistence.sessions.ExternalTransactionController;
 import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionEvent;
@@ -13245,7 +13246,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
 
         @Override
-        public Class getExternalTransactionControllerClass() {
+        public Class<? extends ExternalTransactionController> getExternalTransactionControllerClass() {
             return null;
         }
     }

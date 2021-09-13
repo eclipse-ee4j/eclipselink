@@ -27,6 +27,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.server.JMXServerPlatformBase;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.ExternalTransactionController;
 import org.eclipse.persistence.transaction.wls.WebLogicTransactionController;
 
 /**
@@ -49,7 +50,7 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
      * Cached WLS connection class used to reflectively check connections and
      * unwrap them.
      */
-    protected Class weblogicConnectionClass;
+    protected Class<?> weblogicConnectionClass;
 
     /**
      * Cached WLConnection.getVendorConnection() Method used for
@@ -106,7 +107,7 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
      * @see org.eclipse.persistence.platform.server.ServerPlatformBase#initializeExternalTransactionController()
      */
     @Override
-    public Class getExternalTransactionControllerClass() {
+    public Class<? extends ExternalTransactionController> getExternalTransactionControllerClass() {
         if (externalTransactionControllerClass == null) {
             externalTransactionControllerClass = WebLogicTransactionController.class;
         }
@@ -116,7 +117,7 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
     /**
      * Return the class (interface) for the WebLogic JDBC connection wrapper.
      */
-    protected Class getWebLogicConnectionClass() {
+    protected Class<?> getWebLogicConnectionClass() {
         if (this.weblogicConnectionClass == null) {
             try {
                 this.weblogicConnectionClass = getDatabaseSession().getPlatform().convertObject("weblogic.jdbc.extensions.WLConnection", Class.class);
@@ -131,6 +132,7 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
     /**
      * Return the method for the WebLogic JDBC connection wrapper vendorConnection.
      */
+    @SuppressWarnings({"rawtypes"})
     protected Method getVendorConnectionMethod() {
         if ((this.vendorConnectionMethod == null) && (!getWebLogicConnectionClass().equals(void.class))) {
             try {
@@ -164,6 +166,7 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
     /**
      * Return the method for the WebLogic connection clearStatementCache method.
      */
+    @SuppressWarnings({"rawtypes"})
     protected Method getClearStatementCacheMethod() {
         if ((this.clearStatementCacheMethod == null) && (!getWebLogicConnectionClass().equals(void.class))) {
             try {

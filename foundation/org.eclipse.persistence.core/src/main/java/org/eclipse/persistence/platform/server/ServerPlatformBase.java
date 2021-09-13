@@ -106,7 +106,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * externalTransactionControllerClass: This is a user-specifiable class defining the class
      * of external transaction controller to be set into the DatabaseSession
      */
-    protected Class externalTransactionControllerClass;
+    protected Class<? extends ExternalTransactionController> externalTransactionControllerClass;
 
 
     /**
@@ -253,7 +253,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * @see #disableJTA()
      */
     @Override
-    public abstract Class getExternalTransactionControllerClass();
+    public abstract Class<? extends ExternalTransactionController> getExternalTransactionControllerClass();
 
     /**
      * INTERNAL: setExternalTransactionControllerClass(Class newClass): Set the class of external
@@ -264,9 +264,10 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * @see #isJTAEnabled()
      * @see #disableJTA()
      * @see #initializeExternalTransactionController()
+     * @param newClass
      */
     @Override
-    public void setExternalTransactionControllerClass(Class newClass) {
+    public void setExternalTransactionControllerClass(Class<? extends ExternalTransactionController> newClass) {
         this.externalTransactionControllerClass = newClass;
     }
 
@@ -302,7 +303,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
             ExternalTransactionController controller = null;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    controller = AccessController.<ExternalTransactionController>doPrivileged(new PrivilegedNewInstanceFromClass<>(this.getExternalTransactionControllerClass()));
+                    controller = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(this.getExternalTransactionControllerClass()));
                 } catch (PrivilegedActionException exception) {
                     Exception throwableException = exception.getException();
                     if (throwableException instanceof InstantiationException) {
@@ -312,7 +313,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
                     }
                 }
             } else {
-                controller = PrivilegedAccessHelper.<ExternalTransactionController>newInstanceFromClass(this.getExternalTransactionControllerClass());
+                controller = PrivilegedAccessHelper.newInstanceFromClass(this.getExternalTransactionControllerClass());
             }
             getDatabaseSession().setExternalTransactionController(controller);
         } catch (InstantiationException instantiationException) {

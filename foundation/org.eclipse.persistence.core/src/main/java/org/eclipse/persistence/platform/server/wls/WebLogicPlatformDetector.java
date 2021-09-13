@@ -26,6 +26,12 @@ import org.eclipse.persistence.platform.server.ServerPlatformDetector;
 
 public class WebLogicPlatformDetector implements ServerPlatformDetector {
 
+    /**
+     * Default constructor.
+     */
+    public WebLogicPlatformDetector() {
+    }
+
     @Override
     public String checkPlatform() {
         String platform = null;

@@ -48,6 +48,7 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.server.JMXEnabledPlatform;
 import org.eclipse.persistence.services.weblogic.MBeanWebLogicRuntimeServices;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.ExternalTransactionController;
 import org.eclipse.persistence.transaction.wls.WebLogicTransactionController11;
 
 /**
@@ -315,6 +316,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
             try {
                 // perform a reflective public java.lang.String
                 // weblogic.work.ExecuteThreadRuntime.<getMethodName>
+                @SuppressWarnings({"rawtypes"})
                 Method getMethod = PrivilegedAccessHelper.getPublicMethod(executeThread.getClass(), getMethodName, new Class[] {}, false);
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     classLoaderOrString = AccessController.doPrivileged(new PrivilegedMethodInvoker<>(getMethod, executeThread, null));
@@ -398,6 +400,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
      * so use this if available.
      */
     @Override
+    @SuppressWarnings({"rawtypes"})
     protected Method getVendorConnectionMethod() {
         if ((this.vendorConnectionMethod == null) && (!getWebLogicConnectionClass().equals(void.class))) {
             try {
@@ -437,7 +440,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
      * @see org.eclipse.persistence.platform.server.ServerPlatformBase#initializeExternalTransactionController()
      */
     @Override
-    public Class getExternalTransactionControllerClass() {
+    public Class<? extends ExternalTransactionController> getExternalTransactionControllerClass() {
         if (externalTransactionControllerClass == null) {
             externalTransactionControllerClass = WebLogicTransactionController11.class;
         }

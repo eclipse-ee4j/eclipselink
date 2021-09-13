@@ -23,6 +23,7 @@ import java.sql.Connection;
 import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.ExternalTransactionController;
 
 public class TestServerPlatform extends ServerPlatformBase {
     public TestServerPlatform(DatabaseSession newDatabaseSession) {
@@ -37,7 +38,7 @@ public class TestServerPlatform extends ServerPlatformBase {
     }
 
     @Override
-    public Class getExternalTransactionControllerClass() {
+    public Class<? extends ExternalTransactionController> getExternalTransactionControllerClass() {
         return null;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2016, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -22,6 +22,13 @@ public class WebSphereEJBEmbeddableTransactionController extends WebSphereTransa
     // Class and method to execute to obtain the TransactionManager
     private final static String TX_MANAGER_FACTORY_CLASS = "com.ibm.tx.jta.embeddable.EmbeddableTransactionManagerFactory";
     private final static String TX_MANAGER_FACTORY_METHOD = "getTransactionManager";
+
+    /**
+     * Default constructor
+     */
+    public WebSphereEJBEmbeddableTransactionController() {
+        super();
+    }
 
     @Override
     protected String getTxManagerFactoryClass() {
