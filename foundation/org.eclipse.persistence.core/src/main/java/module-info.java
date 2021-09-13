@@ -112,6 +112,7 @@ module org.eclipse.persistence.core {
     exports org.eclipse.persistence.sessions.coordination.jms;
     exports org.eclipse.persistence.sessions.coordination.rmi;
     exports org.eclipse.persistence.sessions.factories;
+    exports org.eclipse.persistence.sessions.interceptors;
     exports org.eclipse.persistence.sessions.remote;
     exports org.eclipse.persistence.sessions.remote.rmi;
     exports org.eclipse.persistence.sessions.serializers;
