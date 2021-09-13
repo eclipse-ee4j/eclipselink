@@ -44,7 +44,7 @@ public class IncludeRootTrueWithXMLRootElementTestCases extends IncludeRootFalse
     @Override
     public Object getReadControlObject() {
         QName name = new QName("addressWithRootElement");
-        JAXBElement jbe = new JAXBElement<AddressWithRootElement>(name, AddressWithRootElement.class, (AddressWithRootElement)getControlObject());
+        JAXBElement<AddressWithRootElement> jbe = new JAXBElement<AddressWithRootElement>(name, AddressWithRootElement.class, (AddressWithRootElement)getControlObject());
         return jbe;
     }
 

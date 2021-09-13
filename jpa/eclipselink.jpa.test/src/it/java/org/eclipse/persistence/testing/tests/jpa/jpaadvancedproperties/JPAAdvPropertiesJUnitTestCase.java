@@ -28,6 +28,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.sessions.SessionEventListener;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer;
@@ -98,7 +99,7 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
             em.remove(em.find(org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer.class, customerId));
             commitTransaction(em);
 
-            List listeners = session.getEventManager().getListeners();
+            List<SessionEventListener> listeners = session.getEventManager().getListeners();
             boolean doseCustomizedSessionEventListenerExists=false;
             for (int i =0;i<listeners.size();i++){
                 Object aListener = listeners.get(i);

@@ -219,7 +219,7 @@ public class HistoryFacade {
             for (Enumeration<DatabaseMapping> mappings = descriptor.getMappings().elements();
                  mappings.hasMoreElements(); ) {
                 DatabaseMapping mapping =
-                    (DatabaseMapping)mappings.nextElement();
+                        mappings.nextElement();
                 if (mapping instanceof ManyToManyMapping) {
                     ManyToManyMapping m2mMapping = (ManyToManyMapping)mapping;
                     policy = (HistoryPolicy)basePolicy.clone();

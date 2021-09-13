@@ -146,9 +146,9 @@ public class NoTestSet {
     @SuppressWarnings("unchecked")
     @Test
     public void runQuery() {
-        Session s = project.createDatabaseSession();
+        DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
-        ((DatabaseSession)s).login();
+        s.login();
         Object o = null;
         boolean worked = false;
         String msg = null;
@@ -162,6 +162,6 @@ public class NoTestSet {
         assertTrue("invocation no failed: " + msg, worked);
         Integer bool2int = (Integer)o;
         assertTrue("wrong bool2int value", bool2int == 1);
-        ((DatabaseSession)s).logout();
+        s.logout();
     }
 }

@@ -111,7 +111,7 @@ public class XMLPlatformFactory {
                     throw (RuntimeException) ex.getCause();
                 }
             }else{
-                return (XMLPlatform)PrivilegedAccessHelper.newInstanceFromClass(getXMLPlatformClass());
+                return PrivilegedAccessHelper.newInstanceFromClass(getXMLPlatformClass());
 
             }
         } catch (IllegalAccessException e) {

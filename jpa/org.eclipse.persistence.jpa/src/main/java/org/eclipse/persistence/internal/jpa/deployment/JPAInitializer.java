@@ -206,7 +206,7 @@ public abstract class JPAInitializer {
      * that we will be deploying.
      */
     protected Set loadEntityClasses(Collection entityNames, ClassLoader classLoader) {
-        Set entityClasses = new HashSet<>();
+        Set<Object> entityClasses = new HashSet<>();
 
         // Load the classes using the loader passed in
         AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.JPA, "cmp_loading_entities_using_loader", classLoader);

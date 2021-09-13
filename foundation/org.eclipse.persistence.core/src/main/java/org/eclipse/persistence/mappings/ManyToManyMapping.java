@@ -957,7 +957,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         // Make sure that each source key field is in the translation row.
         for (Enumeration<DatabaseField> sourceFieldsEnum = getSourceKeyFields().elements();
              sourceFieldsEnum.hasMoreElements();) {
-            DatabaseField sourceKey = (DatabaseField)sourceFieldsEnum.nextElement();
+            DatabaseField sourceKey = sourceFieldsEnum.nextElement();
             if (!translationRow.containsKey(sourceKey)) {
                 Object value = descriptor.getObjectBuilder().extractValueFromObjectForField(object, sourceKey, session);
                 translationRow.put(sourceKey, value);

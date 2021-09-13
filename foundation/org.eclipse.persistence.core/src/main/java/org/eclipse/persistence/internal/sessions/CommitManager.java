@@ -156,7 +156,7 @@ public class CommitManager {
                 List<Class> commitOrder = getCommitOrder();
                 int size = commitOrder.size();
                 for (int index = 0; index < size; index++) {
-                    Class theClass = (Class)commitOrder.get(index);
+                    Class theClass = commitOrder.get(index);
                     commitAllObjectsForClassWithChangeSet(uowChangeSet, theClass);
                 }
             }
@@ -313,7 +313,7 @@ public class CommitManager {
             } else {
                 List<Class> commitOrder = getCommitOrder();
                 for (int orderIndex = commitOrder.size() - 1; orderIndex >= 0; orderIndex--) {
-                    Class theClass = (Class)commitOrder.get(orderIndex);
+                    Class theClass = commitOrder.get(orderIndex);
                     deleteAllObjects(theClass, objects, session);
                 }
             }

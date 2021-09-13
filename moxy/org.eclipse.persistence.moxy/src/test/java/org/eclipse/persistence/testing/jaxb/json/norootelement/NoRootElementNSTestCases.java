@@ -51,7 +51,7 @@ public class NoRootElementNSTestCases extends JSONMarshalUnmarshalTestCases {
     @Override
     public Object getReadControlObject(){
         QName name = new QName("");
-        JAXBElement jbe = new JAXBElement<Address>(name, Address.class, (Address)getControlObject());
+        JAXBElement<Address> jbe = new JAXBElement<Address>(name, Address.class, (Address)getControlObject());
         return jbe;
     }
 

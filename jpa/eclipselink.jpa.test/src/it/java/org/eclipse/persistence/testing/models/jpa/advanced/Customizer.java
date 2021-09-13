@@ -65,7 +65,7 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
 
         if (Boolean.parseBoolean(System.getProperty("sop"))) {
             boolean isRecoverable = Boolean.parseBoolean(System.getProperty("sop.recoverable"));
-            Class sopClass = Class.forName("oracle.toplink.exalogic.sop.SerializedObjectPolicy");
+            Class<?> sopClass = Class.forName("oracle.toplink.exalogic.sop.SerializedObjectPolicy");
             Method setIsRecoverableMethod = null;
             if (isRecoverable) {
                 setIsRecoverableMethod = sopClass.getDeclaredMethod("setIsRecoverable", new Class[] {boolean.class});

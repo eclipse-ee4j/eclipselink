@@ -242,9 +242,9 @@ public class PLSQLrecordOutTestSet  {
 
     @Test
     public void runQuery() {
-        Session s = project.createDatabaseSession();
+        DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
-        ((DatabaseSession)s).login();
+        s.login();
         OutputRowSessionEventAdapter outputParametersDetected
             = new OutputRowSessionEventAdapter();
         s.getEventManager().addListener(outputParametersDetected);
@@ -276,6 +276,6 @@ public class PLSQLrecordOutTestSet  {
         assertNull("COMM is supposed to be null",  record.get("COMM"));
         assertTrue("incorrect DEPTNO" ,
             record.get("DEPTNO").equals(new BigDecimal(20)));
-        ((DatabaseSession)s).logout();
+        s.logout();
     }
 }

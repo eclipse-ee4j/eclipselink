@@ -14,17 +14,13 @@
 //     rbarkhouse - 2.2 - initial implementation
 package org.eclipse.persistence.testing.jaxb.dynamic;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -35,42 +31,27 @@ import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 
 import junit.framework.TestCase;
 
-import org.eclipse.persistence.config.DescriptorCustomizer;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.ClassExtractor;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
-import org.eclipse.persistence.mappings.transformers.AttributeTransformerAdapter;
-import org.eclipse.persistence.mappings.transformers.FieldTransformerAdapter;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import org.eclipse.persistence.sessions.Record;
-import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.testing.jaxb.dynamic.util.Computer;
-import org.eclipse.persistence.testing.jaxb.dynamic.util.ComputerAdapter;
 import org.eclipse.persistence.testing.jaxb.dynamic.util.LinkAdapter;
 import org.eclipse.persistence.testing.jaxb.dynamic.util.LinkAdapterString;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 public class DynamicJAXBFromOXMTestCases extends TestCase {
 
@@ -1253,8 +1234,8 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         DynamicEntity readCompany = (DynamicEntity) jaxbContext.createUnmarshaller().unmarshal(companyDoc);
 
         ArrayList<DynamicEntity> readEmployees = readCompany.get("employees");
-        for (Iterator iterator = readEmployees.iterator(); iterator.hasNext();) {
-            DynamicEntity emp = (DynamicEntity) iterator.next();
+        for (Iterator<DynamicEntity> iterator = readEmployees.iterator(); iterator.hasNext();) {
+            DynamicEntity emp = iterator.next();
             DynamicEntity add = emp.get("address");
 
             String idString = ((Integer)emp.get("id")).toString();

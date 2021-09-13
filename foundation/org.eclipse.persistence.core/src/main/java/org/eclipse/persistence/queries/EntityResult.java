@@ -181,7 +181,7 @@ public class EntityResult extends SQLResult {
             }
         }
         for (Iterator<DatabaseMapping> mappings = descriptor.getMappings().iterator(); mappings.hasNext();) {
-            DatabaseMapping mapping = (DatabaseMapping)mappings.next();
+            DatabaseMapping mapping = mappings.next();
             FieldResult fieldResult = (FieldResult)this.getFieldResults().get(mapping.getAttributeName());
             if (fieldResult != null){
                 if (mapping.getFields().size() == 1 ) {
@@ -191,7 +191,7 @@ public class EntityResult extends SQLResult {
                 }
             } else {
                 for (Iterator<DatabaseField> fields = mapping.getFields().iterator(); fields.hasNext();) {
-                    DatabaseField field = (DatabaseField)fields.next();
+                    DatabaseField field = fields.next();
                     entityRecord.put(field, record.get(field));
                 }
             }
@@ -226,7 +226,7 @@ public class EntityResult extends SQLResult {
         /** This processes each FieldResult stored in the collection of FieldResults individually */
         Iterator<FieldResult> fieldResults = fieldResult.getFieldResults().iterator();
         while (fieldResults.hasNext()){
-            FieldResult tempFieldResult = ((FieldResult)fieldResults.next());
+            FieldResult tempFieldResult = fieldResults.next();
             DatabaseField dbfield = processValueFromRecordForMapping(currentDescriptor,tempFieldResult.getMultipleFieldIdentifiers(),1);
              if (mapping.isOneToOneMapping()){
                 dbfield = (((OneToOneMapping)mapping).getTargetToSourceKeyFields().get(dbfield));

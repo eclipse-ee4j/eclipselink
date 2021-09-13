@@ -164,9 +164,9 @@ public class NijiTestSet {
     @SuppressWarnings("unchecked")
     @Test
     public void runQuery() {
-        Session s = project.createDatabaseSession();
+        DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
-        ((DatabaseSession)s).login();
+        s.login();
         Vector queryArgs = new NonSynchronizedVector();
         queryArgs.add(0);
         queryArgs.add("test");
@@ -180,6 +180,6 @@ public class NijiTestSet {
           msg = e.getMessage();
         }
         assertTrue("invocation niji failed: " + msg, worked);
-        ((DatabaseSession)s).logout();
+        s.logout();
     }
 }

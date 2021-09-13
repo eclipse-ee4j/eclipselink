@@ -62,7 +62,7 @@ public class UniqueKeyConstraint implements Serializable {
             writer.write("UNIQUE (");
             for (Enumeration<String> sourceEnum = getSourceFields().elements();
                  sourceEnum.hasMoreElements();) {
-                writer.write((String)sourceEnum.nextElement());
+                writer.write(sourceEnum.nextElement());
                 if (sourceEnum.hasMoreElements()) {
                     writer.write(", ");
                 }

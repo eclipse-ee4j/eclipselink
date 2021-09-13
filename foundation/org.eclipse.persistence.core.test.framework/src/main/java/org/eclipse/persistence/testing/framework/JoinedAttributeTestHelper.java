@@ -99,7 +99,7 @@ public class JoinedAttributeTestHelper {
             Object object = iterator.next();
             boolean remove = false;
             for (Iterator<Expression> joinsIterator = queryWithJoins.getJoinedAttributeManager().getJoinedAttributeExpressions().iterator(); joinsIterator.hasNext(); ) {
-                Expression joinExpression = (Expression)joinsIterator.next();
+                Expression joinExpression = joinsIterator.next();
                 joinExpression.getBuilder().setSession(session);
                 joinExpression.getBuilder().setQueryClass(queryWithJoins.getReferenceClass());
                 // Instantiate value holders that should be instantiated.
@@ -156,7 +156,7 @@ public class JoinedAttributeTestHelper {
                 iterator.remove();
             } else {
                 for (Iterator<Expression> joinsIterator = queryWithJoins.getJoinedAttributeManager().getJoinedAttributeExpressions().iterator(); joinsIterator.hasNext(); ) {
-                    Expression joinExpression = (Expression)joinsIterator.next();
+                    Expression joinExpression = joinsIterator.next();
                     // Instantiate value holders that should be instantiated.
                     joinExpression.valueFromObject(object, session, null, valueHolderPolicy, false);
                 }
@@ -345,7 +345,7 @@ public class JoinedAttributeTestHelper {
 
         Vector<DatabaseMapping> mappings = desc.getMappings();
         for (int index = 0; index < mappings.size(); index++) {
-            DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
+            DatabaseMapping mapping = mappings.get(index);
             String mappingErrorMsg = compareAttributes(obj1, obj2, mapping, session, processed);
             errorMsg += mappingErrorMsg;
         }

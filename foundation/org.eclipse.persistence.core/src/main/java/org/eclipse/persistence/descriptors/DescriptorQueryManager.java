@@ -499,7 +499,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     public Vector getAllQueries() {
         Vector allQueries = new Vector();
         for (Iterator<List<DatabaseQuery>> vectors = getQueries().values().iterator(); vectors.hasNext();) {
-            allQueries.addAll((Vector)vectors.next());
+            allQueries.addAll(vectors.next());
         }
         return allQueries;
     }

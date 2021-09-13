@@ -72,7 +72,7 @@ public class InsertUpdateStoredProcedureAdapter implements ProjectAndDatabaseAda
         int removed = 0;
         Iterator<ClassDescriptor> descriptors = project.getDescriptors().values().iterator();
         while (descriptors.hasNext()) {
-            ClassDescriptor desc = (ClassDescriptor)descriptors.next();
+            ClassDescriptor desc = descriptors.next();
             if (desc.getOptimisticLockingPolicy() != null) {
                 desc.setOptimisticLockingPolicy(null);
                 removed++;

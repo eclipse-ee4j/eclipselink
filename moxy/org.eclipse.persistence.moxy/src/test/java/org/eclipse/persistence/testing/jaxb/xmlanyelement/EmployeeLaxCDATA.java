@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,12 +49,12 @@ public class EmployeeLaxCDATA {
 
         XMLComparer comparer = new XMLComparer();
 
-        Object next1 = element;
-        Object next2 =  emp.element;
+        Element next1 = element;
+        Element next2 =  emp.element;
 
         if((next1 instanceof Element) && (next2 instanceof Element)) {
-            Element nextElem1 = (Element)next1;
-            Element nextElem2 = (Element)next2;
+            Element nextElem1 = next1;
+            Element nextElem2 = next2;
             if(!(comparer.isNodeEqual(nextElem1, nextElem2))) {
                 return false;
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,9 +20,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.annotation.XmlAnyElement;
 import jakarta.xml.bind.annotation.XmlAttribute;
-import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlElementRefs;
 import jakarta.xml.bind.annotation.XmlMixed;
@@ -49,7 +47,7 @@ public class Customer {
         StringBuffer sb = new StringBuffer();
         sb.append("Employee [" + id + "] " + name + "\n");
 
-        for (Iterator iterator = contacts.iterator(); iterator.hasNext();) {
+        for (Iterator<Object> iterator = contacts.iterator(); iterator.hasNext();) {
             Object o = iterator.next();
             try {
                 JAXBElement e = (JAXBElement) o;
@@ -75,8 +73,8 @@ public class Customer {
         if (!(this.name.equals(c.name))) return false;
 
         // Compare contacts
-        ListIterator e1 = this.contacts.listIterator();
-        ListIterator e2 = c.contacts.listIterator();
+        ListIterator<Object> e1 = this.contacts.listIterator();
+        ListIterator<Object> e2 = c.contacts.listIterator();
         while (e1.hasNext() && e2.hasNext()) {
             Object o1 = e1.next();
             Object o2 = e2.next();

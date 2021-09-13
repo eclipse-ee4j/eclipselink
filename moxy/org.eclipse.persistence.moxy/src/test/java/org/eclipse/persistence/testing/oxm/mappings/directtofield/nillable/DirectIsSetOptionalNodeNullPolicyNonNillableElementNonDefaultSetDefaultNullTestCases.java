@@ -47,14 +47,14 @@ public class DirectIsSetOptionalNodeNullPolicyNonNillableElementNonDefaultSetDef
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        AbstractNullPolicy aNullPolicy = new IsSetNullPolicy();
+        IsSetNullPolicy aNullPolicy = new IsSetNullPolicy();
         // alter unmarshal policy state
         aNullPolicy.setNullRepresentedByEmptyNode(true);
         aNullPolicy.setNullRepresentedByXsiNil(false);
         // alter marshal policy state
         aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
 
-        ((IsSetNullPolicy)aNullPolicy).setIsSetMethodName("isSetFirstName");
+        aNullPolicy.setIsSetMethodName("isSetFirstName");
         Project aProject = new DirectNodeNullPolicyProject(true);
         XMLDescriptor employeeDescriptor = (XMLDescriptor) aProject.getDescriptor(Employee.class);
         NamespaceResolver namespaceResolver = new NamespaceResolver();

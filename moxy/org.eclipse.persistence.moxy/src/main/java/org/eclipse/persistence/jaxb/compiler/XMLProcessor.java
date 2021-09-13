@@ -142,7 +142,7 @@ public class XMLProcessor {
         // process each XmlBindings in the map
         XmlBindings xmlBindings;
         for (String packageName : xmlBindingMap.keySet()) {
-            ArrayList classesToProcess = pkgToClassMap.get(packageName);
+            ArrayList<JavaClass> classesToProcess = pkgToClassMap.get(packageName);
             if (classesToProcess == null) {
                 getLogger().logWarning("jaxb_metadata_warning_no_classes_to_process", new Object[] { packageName });
                 continue;
@@ -176,7 +176,7 @@ public class XMLProcessor {
             }
 
             // build an array of JavaModel classes to process
-            JavaClass[] javaClasses = (JavaClass[]) classesToProcess.toArray(new JavaClass[classesToProcess.size()]);
+            JavaClass[] javaClasses = classesToProcess.toArray(new JavaClass[classesToProcess.size()]);
 
             // handle xml-enums
             // build a map of enum class names to XmlEnum objects
@@ -379,14 +379,14 @@ public class XMLProcessor {
 
         }
         for (String packageName : xmlBindingMap.keySet()) {
-            ArrayList classesToProcess = pkgToClassMap.get(packageName);
+            ArrayList<JavaClass> classesToProcess = pkgToClassMap.get(packageName);
             if (classesToProcess == null) {
                 getLogger().logWarning("jaxb_metadata_warning_no_classes_to_process", new Object[] { packageName });
                 continue;
             }
 
             xmlBindings = xmlBindingMap.get(packageName);
-            JavaClass[] javaClasses = (JavaClass[]) classesToProcess.toArray(new JavaClass[classesToProcess.size()]);
+            JavaClass[] javaClasses = classesToProcess.toArray(new JavaClass[classesToProcess.size()]);
             // post-build the TypeInfo objects
             javaClasses = aProcessor.postBuildTypeInfo(javaClasses);
 
@@ -1086,8 +1086,8 @@ public class XMLProcessor {
         }
         // handle null policy
         if (xmlAttribute.getXmlAbstractNullPolicy() != null) {
-            JAXBElement jaxbElt = xmlAttribute.getXmlAbstractNullPolicy();
-            oldProperty.setNullPolicy((XmlAbstractNullPolicy) jaxbElt.getValue());
+            JAXBElement<? extends XmlAbstractNullPolicy> jaxbElt = xmlAttribute.getXmlAbstractNullPolicy();
+            oldProperty.setNullPolicy(jaxbElt.getValue());
         }
         // set user-defined properties
         if (xmlAttribute.getXmlProperties() != null  && xmlAttribute.getXmlProperties().getXmlProperty().size() > 0) {
@@ -1300,8 +1300,8 @@ public class XMLProcessor {
         }
         // handle null policy
         if (xmlElement.getXmlAbstractNullPolicy() != null) {
-            JAXBElement jaxbElt = xmlElement.getXmlAbstractNullPolicy();
-            oldProperty.setNullPolicy((XmlAbstractNullPolicy) jaxbElt.getValue());
+            JAXBElement<? extends XmlAbstractNullPolicy> jaxbElt = xmlElement.getXmlAbstractNullPolicy();
+            oldProperty.setNullPolicy(jaxbElt.getValue());
         }
         // set user-defined properties
         if (xmlElement.getXmlProperties() != null  && xmlElement.getXmlProperties().getXmlProperty().size() > 0) {
@@ -1567,8 +1567,8 @@ public class XMLProcessor {
         }
         // handle null policy
         if (xmlValue.getXmlAbstractNullPolicy() != null) {
-            JAXBElement jaxbElt = xmlValue.getXmlAbstractNullPolicy();
-            oldProperty.setNullPolicy((XmlAbstractNullPolicy) jaxbElt.getValue());
+            JAXBElement<? extends XmlAbstractNullPolicy> jaxbElt = xmlValue.getXmlAbstractNullPolicy();
+            oldProperty.setNullPolicy(jaxbElt.getValue());
         }
         // set user-defined properties
         if (xmlValue.getXmlProperties() != null  && xmlValue.getXmlProperties().getXmlProperty().size() > 0) {
@@ -1700,7 +1700,7 @@ public class XMLProcessor {
         XmlBindings xmlBindings;
         for (String packageName : xmlBindingMap.keySet()) {
             xmlBindings = xmlBindingMap.get(packageName);
-            ArrayList classes = new ArrayList<JavaClass>();
+            ArrayList<JavaClass> classes = new ArrayList<JavaClass>();
             // add binding classes - the Java Model will be used to get a
             // JavaClass via class name
             JavaTypes jTypes = xmlBindings.getJavaTypes();
@@ -1737,7 +1737,7 @@ public class XMLProcessor {
                 if (allExistingClasses != null) {
                     allExistingClasses.add(jClass);
                 } else {
-                    ArrayList classes = new ArrayList<JavaClass>();
+                    ArrayList<JavaClass> classes = new ArrayList<JavaClass>();
                     classes.add(jClass);
                     theMap.put(pkg, classes);
                 }

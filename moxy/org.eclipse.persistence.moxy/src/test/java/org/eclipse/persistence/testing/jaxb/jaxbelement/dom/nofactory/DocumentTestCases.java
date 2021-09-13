@@ -14,19 +14,12 @@
 //     Denise Smith - October 2012
 package org.eclipse.persistence.testing.jaxb.jaxbelement.dom.nofactory;
 
-import javax.print.Doc;
-import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Marshaller;
-import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.eclipse.persistence.oxm.XMLConstants;
+import javax.xml.namespace.QName;
+
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
-import org.eclipse.persistence.testing.jaxb.jaxbelement.dom.ObjectFactory;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 public class DocumentTestCases extends JAXBWithJSONTestCases{
 
@@ -48,7 +41,7 @@ public class DocumentTestCases extends JAXBWithJSONTestCases{
         try {
 
             doc = parser.parse(this.getClass().getClassLoader().getResourceAsStream(XML_RESOURCE_ORIGINAL));
-            JAXBElement  obj = new JAXBElement<Object>(new QName("mynamespace", "mynewname"), Object.class, doc);
+            JAXBElement<Object> obj = new JAXBElement<Object>(new QName("mynamespace", "mynewname"), Object.class, doc);
             return obj;
         } catch (Exception e) {
             e.printStackTrace();

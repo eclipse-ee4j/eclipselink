@@ -280,9 +280,9 @@ public class PLSQLrecordInOutTestSet  {
 
     @Test
     public void runQuery() {
-        Session s = project.createDatabaseSession();
+        DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
-        ((DatabaseSession)s).login();
+        s.login();
         NonSynchronizedVector queryArgs = new NonSynchronizedVector();
         queryArgs.add(new BigDecimal(10));
         queryArgs.add("MikeNorman");
@@ -312,6 +312,6 @@ public class PLSQLrecordInOutTestSet  {
         assertTrue("incorrect SAL" , result.salary.equals(3500F));
         assertNull("COMM is supposed to be null", result.commission);
         assertTrue("incorrect DEPTNO" , result.department.equals(new BigDecimal(20)));
-        ((DatabaseSession)s).logout();
+        s.logout();
     }
 }

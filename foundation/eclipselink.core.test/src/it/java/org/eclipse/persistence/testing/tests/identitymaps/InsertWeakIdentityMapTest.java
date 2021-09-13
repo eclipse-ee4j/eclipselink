@@ -94,7 +94,7 @@ public class InsertWeakIdentityMapTest extends TestCase {
         // they all should have been garbage collected.
         Map<Object, CacheKey> cache = getIdentityMap().getCacheKeys();
         for (Iterator<CacheKey> iterator = cache.values().iterator(); iterator.hasNext(); ) {
-            CacheKey key = (CacheKey)iterator.next();
+            CacheKey key = iterator.next();
             if (key.getObject() != null) {
                 throw new TestErrorException("A WeakCacheKey with a non-empty WeakReference was found. The garbage collection did not clear the cache as expected.");
             }

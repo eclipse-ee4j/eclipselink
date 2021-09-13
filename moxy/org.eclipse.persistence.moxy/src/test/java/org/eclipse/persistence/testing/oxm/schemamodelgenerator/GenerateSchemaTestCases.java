@@ -28,6 +28,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelGenerator;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
@@ -73,7 +74,7 @@ public class GenerateSchemaTestCases extends TestCase {
      *
      */
     protected void loginProject(Project prj) {
-        XMLPlatform platform = new SAXPlatform();
+        XMLPlatform<XMLUnmarshaller> platform = new SAXPlatform();
         prj.setLogin(new XMLLogin(platform));
         DatabaseSession session = prj.createDatabaseSession();
         session.setLogLevel(SessionLog.OFF);

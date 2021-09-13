@@ -315,7 +315,7 @@ public class EntityManagerFactoryProvider {
      * @return the target object
      */
     public static <K, V> Map<K, V> keepSpecifiedProperties(Map<K, V> source, Collection<K> keysToBeKept){
-        Map target = new HashMap<>();
+        Map<K, V> target = new HashMap<>();
         if (source != null){
             target.putAll(source);
             Iterator<Map.Entry<K, V>> it = source.entrySet().iterator();

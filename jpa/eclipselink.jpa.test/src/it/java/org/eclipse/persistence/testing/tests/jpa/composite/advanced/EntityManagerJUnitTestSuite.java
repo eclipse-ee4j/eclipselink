@@ -70,7 +70,6 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.spi.LoadState;
 import jakarta.persistence.spi.ProviderUtil;
 
-import junit.framework.TestCase;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.CacheUsageIndirectionPolicy;
 import org.eclipse.persistence.config.CascadePolicy;
@@ -105,6 +104,7 @@ import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
@@ -115,7 +115,6 @@ import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.platform.server.was.WebSphere_7_Platform;
 import org.eclipse.persistence.queries.CursoredStreamPolicy;
@@ -145,7 +144,6 @@ import org.eclipse.persistence.sessions.SessionEventListener;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.sessions.broker.SessionBroker;
 import org.eclipse.persistence.sessions.changesets.ChangeRecord;
-import org.eclipse.persistence.sessions.changesets.ObjectChangeSet;
 import org.eclipse.persistence.sessions.changesets.UnitOfWorkChangeSet;
 import org.eclipse.persistence.sessions.server.ClientSession;
 import org.eclipse.persistence.sessions.server.ConnectionPolicy;
@@ -3828,9 +3826,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         if(!manager_NotInCache.getLastName().endsWith("_Updated")) {
             errorMsg = errorMsg + "manager_NotInCache lastName NOT updated; ";
         }
-        Iterator it = manager_NotInCache.getManagedEmployees().iterator();
+        Iterator<Employee> it = manager_NotInCache.getManagedEmployees().iterator();
         while(it.hasNext()) {
-            Employee emp = (Employee)it.next();
+            Employee emp = it.next();
             if(emp.getId() == employee_1_NotInCache_id) {
                 if(!emp.getLastName().endsWith("_Updated")) {
                     errorMsg = errorMsg + "employee_1_NotInCache lastName NOT updated; ";
@@ -3853,7 +3851,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
         it = manager_InCache.getManagedEmployees().iterator();
         while(it.hasNext()) {
-            Employee emp = (Employee)it.next();
+            Employee emp = it.next();
             if(emp.getId() == employee_1_InCache_id) {
                 if(!emp.getLastName().endsWith("_Updated")) {
                     errorMsg = errorMsg + "employee_1_InCache lastName NOT updated; ";
@@ -3876,7 +3874,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
         it = manager_New.getManagedEmployees().iterator();
         while(it.hasNext()) {
-            Employee emp = (Employee)it.next();
+            Employee emp = it.next();
             if(emp.getId() == employee_2_NotInCache_id) {
                 if(!emp.getLastName().endsWith("_Updated")) {
                     errorMsg = errorMsg + "employee_2_NotInCache_id lastName NOT updated; ";
@@ -4922,7 +4920,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
-            Map m1 = em.getProperties();
+            Map<String, Object> m1 = em.getProperties();
             m1.remove("eclipselink.weaving");
         } catch (UnsupportedOperationException use) {
             return;
@@ -5380,12 +5378,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         query.setHint(QueryHints.BATCH_SIZE, "10");
 
         ReadAllQuery raq = (ReadAllQuery)query.getDatabaseQuery();
-        List expressions = raq.getBatchReadAttributeExpressions();
+        List<Expression> expressions = raq.getBatchReadAttributeExpressions();
         assertTrue(expressions.size() == 2);
-        Expression exp = (Expression)expressions.get(0);
+        Expression exp = expressions.get(0);
         assertTrue(exp.isQueryKeyExpression());
         assertTrue(exp.getName().equals("phoneNumbers"));
-        exp = (Expression)expressions.get(1);
+        exp = expressions.get(1);
         assertTrue(exp.isQueryKeyExpression());
         assertTrue(exp.getName().equals("phoneNumbers"));
 
@@ -5400,9 +5398,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
         beginTransaction(em);
         emp = em.find(Employee.class, id1);
-        Iterator it = emp.getManagedEmployees().iterator();
+        Iterator<Employee> it = emp.getManagedEmployees().iterator();
         while (it.hasNext()){
-            Employee managedEmp = (Employee)it.next();
+            Employee managedEmp = it.next();
             it.remove();
             managedEmp.setManager(null);
             em.remove(managedEmp);
@@ -5494,9 +5492,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
         beginTransaction(em);
         emp = em.find(Employee.class, id1);
-        Iterator it = emp.getManagedEmployees().iterator();
+        Iterator<Employee> it = emp.getManagedEmployees().iterator();
         while (it.hasNext()){
-            Employee managedEmp = (Employee)it.next();
+            Employee managedEmp = it.next();
             it.remove();
             managedEmp.setManager(null);
             em.remove(managedEmp);
@@ -9320,9 +9318,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             beginTransaction(em);
             try {
                 emp = em.find(Employee.class, id1);
-                Iterator it = emp.getManagedEmployees().iterator();
+                Iterator<Employee> it = emp.getManagedEmployees().iterator();
                 while (it.hasNext()) {
-                    Employee managedEmp = (Employee) it.next();
+                    Employee managedEmp = it.next();
                     it.remove();
                     managedEmp.setManager(null);
                     em.remove(managedEmp);
@@ -10341,14 +10339,14 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             // if altering the test, make sure that emp still references (directly or through other objects) all the updated objects, so that all of them are copied.
             Map oldValueMap = copyGroupUpdated.getCopies();
             // using ChangeRecords bring back the original state of the object
-            Iterator itChangeSets = ((org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet)listener.uowChangeSet).getCloneToObjectChangeSet().entrySet().iterator();
+            Iterator<Map.Entry<Object, org.eclipse.persistence.internal.sessions.ObjectChangeSet>> itChangeSets = ((org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet)listener.uowChangeSet).getCloneToObjectChangeSet().entrySet().iterator();
             while(itChangeSets.hasNext()) {
-                Map.Entry entry = (Map.Entry)itChangeSets.next();
+                Map.Entry<Object, org.eclipse.persistence.internal.sessions.ObjectChangeSet> entry = itChangeSets.next();
                 Object object = entry.getKey();
                 ClassDescriptor descriptor = dbs.getDescriptor(object);
                 if(!descriptor.isAggregateDescriptor()) {
-                    ObjectChangeSet changeSet = (ObjectChangeSet)entry.getValue();
-                    if(!((org.eclipse.persistence.internal.sessions.ObjectChangeSet)changeSet).shouldBeDeleted() && !changeSet.isNew()) {
+                    org.eclipse.persistence.internal.sessions.ObjectChangeSet changeSet = entry.getValue();
+                    if(!changeSet.shouldBeDeleted() && !changeSet.isNew()) {
                         List<ChangeRecord> changes = changeSet.getChanges();
                         if(changes != null && !changes.isEmpty()) {
                             Object oldValueObject = oldValueMap.get(object);
@@ -10366,12 +10364,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             // now compare oldValue objects with corresponding backup objects
             itChangeSets = ((org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet)listener.uowChangeSet).getCloneToObjectChangeSet().entrySet().iterator();
             while(itChangeSets.hasNext()) {
-                Map.Entry entry = (Map.Entry)itChangeSets.next();
+                Map.Entry<Object, org.eclipse.persistence.internal.sessions.ObjectChangeSet> entry = itChangeSets.next();
                 Object object = entry.getKey();
                 ClassDescriptor descriptor = dbs.getDescriptor(object);
                 if(!descriptor.isAggregateDescriptor()) {
-                    ObjectChangeSet changeSet = (ObjectChangeSet)entry.getValue();
-                    if(!((org.eclipse.persistence.internal.sessions.ObjectChangeSet)changeSet).shouldBeDeleted() && !changeSet.isNew()) {
+                    ObjectChangeSet changeSet = entry.getValue();
+                    if(!changeSet.shouldBeDeleted() && !changeSet.isNew()) {
                         List<ChangeRecord> changes = changeSet.getChanges();
                         if(changes != null && !changes.isEmpty()) {
                             Object oldValueObject = oldValueMap.get(object);

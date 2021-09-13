@@ -74,7 +74,7 @@ public abstract class AdapterWithReturnObjectControl implements ProjectAndDataba
 
     public void getChange(org.eclipse.persistence.sessions.Record row, Session session, Object object1, Object object2, ClassDescriptor desc, boolean useUOW, WriteType writeType) {
         for (Enumeration<DatabaseMapping> mappings = desc.getMappings().elements(); mappings.hasMoreElements(); ) {
-            DatabaseMapping mapping = (DatabaseMapping)mappings.nextElement();
+            DatabaseMapping mapping = mappings.nextElement();
             if (!mapping.isReadOnly()) {
                 getChange(row, mapping, session, object1, object2, useUOW, writeType);
             }
@@ -96,14 +96,14 @@ public abstract class AdapterWithReturnObjectControl implements ProjectAndDataba
                 mapping.writeFromObjectIntoRow(object2, (DatabaseRecord)row, (AbstractSession)session, writeType);
             }
         } else {
-            org.eclipse.persistence.sessions.Record row1 = new DatabaseRecord();
-            org.eclipse.persistence.sessions.Record row2 = new DatabaseRecord();
-            mapping.writeFromObjectIntoRow(object1, (DatabaseRecord)row1, (AbstractSession)session, writeType);
-            mapping.writeFromObjectIntoRow(object2, (DatabaseRecord)row2, (AbstractSession)session, writeType);
+            DatabaseRecord row1 = new DatabaseRecord();
+            DatabaseRecord row2 = new DatabaseRecord();
+            mapping.writeFromObjectIntoRow(object1, row1, (AbstractSession)session, writeType);
+            mapping.writeFromObjectIntoRow(object2, row2, (AbstractSession)session, writeType);
 
             for (int i = 0; i < row1.size(); i++) {
-                DatabaseField field = ((DatabaseRecord)row1).getFields().elementAt(i);
-                Object valueBefore = ((DatabaseRecord)row1).getValues().elementAt(i);
+                DatabaseField field = row1.getFields().elementAt(i);
+                Object valueBefore = row1.getValues().elementAt(i);
                 Object valueAfter = row2.get(field);
                 boolean changed;
                 if (valueAfter == null) {
@@ -127,7 +127,7 @@ public abstract class AdapterWithReturnObjectControl implements ProjectAndDataba
         ReadObjectQuery query = new ReadObjectQuery();
         query.setSession((AbstractSession)session);
         for (Enumeration<DatabaseMapping> mappings = desc.getMappings().elements(); mappings.hasMoreElements(); ) {
-            DatabaseMapping mapping = (DatabaseMapping)mappings.nextElement();
+            DatabaseMapping mapping = mappings.nextElement();
             mapping.readFromRowIntoObject((DatabaseRecord)row, query.getJoinedAttributeManager(), object, null, query, query.getSession(), true);
         }
         return object;

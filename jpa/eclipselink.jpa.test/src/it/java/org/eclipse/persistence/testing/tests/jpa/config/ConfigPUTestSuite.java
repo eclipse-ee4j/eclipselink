@@ -92,7 +92,7 @@ public class ConfigPUTestSuite extends JUnitTestCase {
         PersistenceUnit pu = new PersistenceUnitImpl("ConfigPUTestSuite", Thread.currentThread().getContextClassLoader());
 
         // Need to get the user specified database properties.
-        Map properties = JUnitTestCaseHelper.getDatabaseProperties();
+        Map<String, String> properties = JUnitTestCaseHelper.getDatabaseProperties();
         pu.setProperty(JDBC_DRIVER, properties.get(JDBC_DRIVER));
         pu.setProperty(JDBC_URL, properties.get(JDBC_URL));
         pu.setProperty(JDBC_USER, properties.get(JDBC_USER));

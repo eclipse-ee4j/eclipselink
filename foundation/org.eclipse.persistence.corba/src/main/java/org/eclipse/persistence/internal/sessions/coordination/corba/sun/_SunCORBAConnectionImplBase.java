@@ -44,7 +44,7 @@ public abstract class _SunCORBAConnectionImplBase extends ObjectImpl implements 
     @Override
     public org.omg.CORBA.portable.OutputStream _invoke(String $method, InputStream in, ResponseHandler $rh) {
         OutputStream out = null;
-        Integer __method = (Integer) _methods.get($method);
+        Integer __method = _methods.get($method);
         if (__method == null) {
             throw new BAD_OPERATION(0, CompletionStatus.COMPLETED_MAYBE);
         }

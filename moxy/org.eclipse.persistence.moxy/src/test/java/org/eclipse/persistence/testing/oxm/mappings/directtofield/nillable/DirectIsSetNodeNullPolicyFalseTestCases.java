@@ -31,13 +31,13 @@ public class DirectIsSetNodeNullPolicyFalseTestCases extends XMLWithJSONMappingT
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
 
-        AbstractNullPolicy aNullPolicy = new IsSetNullPolicy();
+        IsSetNullPolicy aNullPolicy = new IsSetNullPolicy();
         // alter unmarshal policy state
         aNullPolicy.setNullRepresentedByEmptyNode(false); // no effect
         aNullPolicy.setNullRepresentedByXsiNil(false); // no effect
         // alter marshal policy state
         aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
-        ((IsSetNullPolicy)aNullPolicy).setIsSetMethodName("isSetFirstName");
+        aNullPolicy.setIsSetMethodName("isSetFirstName");
         Project aProject = new DirectNodeNullPolicyProject(true);
         XMLDirectMapping aMapping = (XMLDirectMapping)aProject.getDescriptor(Employee.class)//
         .getMappingForAttributeName("firstName");

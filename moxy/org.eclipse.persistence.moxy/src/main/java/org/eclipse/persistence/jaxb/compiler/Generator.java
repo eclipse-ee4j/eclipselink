@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ import jakarta.xml.bind.SchemaOutputResolver;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.core.sessions.CoreProject;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
@@ -44,6 +45,8 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.Project;
 
 /**
@@ -205,8 +208,8 @@ public class Generator {
         processAdditionalElements(additionalGlobalElements, annotationsProcessor);
 
         schemaGenerator.generateSchema(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfos(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToPackageInfoMappings(), annotationsProcessor.getGlobalElements(), annotationsProcessor.getArrayClassesToGeneratedClasses());
-        CoreProject proj = new SchemaModelProject();
-        XMLContext context = new XMLContext((Project)proj);
+        Project proj = new SchemaModelProject();
+        XMLContext context = new XMLContext(proj);
         XMLMarshaller marshaller = context.createMarshaller();
         Descriptor schemaDescriptor = (Descriptor)proj.getDescriptor(Schema.class);
 
@@ -226,8 +229,8 @@ public class Generator {
         processAdditionalElements(additionalGlobalElements, annotationsProcessor);
 
         schemaGenerator.generateSchema(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfos(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToPackageInfoMappings(), annotationsProcessor.getGlobalElements(), annotationsProcessor.getArrayClassesToGeneratedClasses(), outputResolver);
-        CoreProject proj = new SchemaModelProject();
-        XMLContext context = new XMLContext((Project)proj);
+        Project proj = new SchemaModelProject();
+        XMLContext context = new XMLContext(proj);
         XMLMarshaller marshaller = context.createMarshaller();
 
         Descriptor schemaDescriptor = (Descriptor)proj.getDescriptor(Schema.class);

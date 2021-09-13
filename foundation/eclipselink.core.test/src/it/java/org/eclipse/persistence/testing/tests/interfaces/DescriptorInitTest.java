@@ -51,7 +51,7 @@ public class DescriptorInitTest extends TestCase {
     @Override
     public void test() {
         for (Iterator<ClassDescriptor> iterator = project.getDescriptors().values().iterator(); iterator.hasNext(); ) {
-            ClassDescriptor descriptor = (ClassDescriptor)iterator.next();
+            ClassDescriptor descriptor = iterator.next();
             String className = descriptor.getJavaClass().toString();
 
             String part1;
@@ -84,7 +84,7 @@ public class DescriptorInitTest extends TestCase {
     public void verify() {
         //Make sure all Descriptors have been initialized.
         for (Iterator<ClassDescriptor> iterator = project.getDescriptors().values().iterator(); iterator.hasNext(); ) {
-            ClassDescriptor descriptor = (ClassDescriptor)iterator.next();
+            ClassDescriptor descriptor = iterator.next();
             if (!descriptor.isFullyInitialized()) {
                 throw new TestErrorException("Descriptor \"" + descriptor + "\" is NOT INITIALIZED");
             }

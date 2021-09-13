@@ -255,7 +255,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             //next check for any partial attributes that are not joined attributes
             Iterator<Expression> partialAttributes = ((ObjectLevelReadQuery)getBaseQuery()).getPartialAttributeExpressions().iterator();
             while(partialAttributes.hasNext()){
-                Expression expression = (Expression)partialAttributes.next();
+                Expression expression = partialAttributes.next();
                 if (expression.isQueryKeyExpression()){
                     if (!getJoinedMappingExpressions().contains(expression) && ! getJoinedAttributeExpressions().contains(expression)){
                         fieldIndex += ((QueryKeyExpression)expression).getFields().size();

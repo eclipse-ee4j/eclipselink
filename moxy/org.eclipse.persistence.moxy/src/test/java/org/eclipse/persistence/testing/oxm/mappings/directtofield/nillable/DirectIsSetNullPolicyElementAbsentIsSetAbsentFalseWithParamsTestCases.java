@@ -34,7 +34,7 @@ public class DirectIsSetNullPolicyElementAbsentIsSetAbsentFalseWithParamsTestCas
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        AbstractNullPolicy aNullPolicy = new IsSetNullPolicy();
+        IsSetNullPolicy aNullPolicy = new IsSetNullPolicy();
         // Alter unmarshal policy state
         aNullPolicy.setNullRepresentedByEmptyNode(false); // no effect
         aNullPolicy.setNullRepresentedByXsiNil(false);  // no effect
@@ -49,11 +49,11 @@ public class DirectIsSetNullPolicyElementAbsentIsSetAbsentFalseWithParamsTestCas
         Object[] isSetParameters = {"x","y", Boolean.TRUE, 255, (short) 32767, 1L, 1.0, -1.0f, (byte) 32, 'C'};
         //Object[] isSetParameters = {"x","y"};
 
-        ((IsSetNullPolicy)aNullPolicy).setIsSetMethodName("isSetFirstName");
+        aNullPolicy.setIsSetMethodName("isSetFirstName");
         // Class[]
-        ((IsSetNullPolicy)aNullPolicy).setIsSetParameterTypes(isSetParameterTypes);
+        aNullPolicy.setIsSetParameterTypes(isSetParameterTypes);
         // Object[]
-        ((IsSetNullPolicy)aNullPolicy).setIsSetParameters(isSetParameters);
+        aNullPolicy.setIsSetParameters(isSetParameters);
         Project aProject = new DirectIsSetNodeNullPolicyProject(true);
         XMLDirectMapping aMapping = (XMLDirectMapping)aProject.getDescriptor(EmployeeIsSetParams.class)//
         .getMappingForAttributeName("firstName");

@@ -38,7 +38,7 @@ import org.eclipse.persistence.testing.models.jpa22.advanced.Runner;
 
 public class EntityGraphTestSuite extends JUnitTestCase {
     protected boolean m_reset = false;
-    protected Map guaranteedIds = new HashMap<>();
+    protected Map<Object, Object> guaranteedIds = new HashMap<>();
 
     public EntityGraphTestSuite() {}
 
@@ -101,7 +101,7 @@ public class EntityGraphTestSuite extends JUnitTestCase {
 
     public void testsubclassSubgraphs(){
         EntityManager em = createEntityManager();
-        EntityGraph employeeGraph = em.createEntityGraph(Project.class);
+        EntityGraph<Project> employeeGraph = em.createEntityGraph(Project.class);
         employeeGraph.addSubclassSubgraph(LargeProject.class).addAttributeNodes("budget");
         employeeGraph.addAttributeNodes("description");
         List<Project> result = em.createQuery("Select p from Project p where type(p) = LargeProject").setHint(QueryHints.JPA_FETCH_GRAPH, employeeGraph).getResultList();
@@ -115,7 +115,7 @@ public class EntityGraphTestSuite extends JUnitTestCase {
 
     public void testEmbeddedFetchGroup(){
         EntityManager em = createEntityManager();
-        EntityGraph employeeGraph = em.createEntityGraph(Employee.class);
+        EntityGraph<Employee> employeeGraph = em.createEntityGraph(Employee.class);
         employeeGraph.addSubgraph("period").addAttributeNodes("startDate");
         Employee result = (Employee) em.createQuery("Select e from Employee e").setMaxResults(1).setHint(QueryHints.JPA_FETCH_GRAPH, employeeGraph).getResultList().get(0);
         PersistenceUnitUtil util = em.getEntityManagerFactory().getPersistenceUnitUtil();
@@ -130,7 +130,7 @@ public class EntityGraphTestSuite extends JUnitTestCase {
 
     public void testNestedEmbeddedFetchGroup(){
         EntityManager em = createEntityManager();
-        EntityGraph fetchGraph = em.createEntityGraph(Runner.class);
+        EntityGraph<Runner> fetchGraph = em.createEntityGraph(Runner.class);
         fetchGraph.addSubgraph("info").addSubgraph("status").addAttributeNodes("runningStatus");
         Runner result = (Runner)em.createQuery("Select r from Runner r").setMaxResults(1).setHint(QueryHints.JPA_FETCH_GRAPH, fetchGraph).getResultList().get(0);
         PersistenceUnitUtil util = em.getEntityManagerFactory().getPersistenceUnitUtil();
@@ -146,7 +146,7 @@ public class EntityGraphTestSuite extends JUnitTestCase {
 
     public void testLoadGroup(){
         EntityManager em = createEntityManager();
-        EntityGraph employeeGraph = em.createEntityGraph(Employee.class);
+        EntityGraph<Employee> employeeGraph = em.createEntityGraph(Employee.class);
         employeeGraph.addAttributeNodes("address");
         Employee result = (Employee) em.createQuery("Select e from Employee e").setMaxResults(1).setHint(QueryHints.JPA_LOAD_GRAPH, employeeGraph).getResultList().get(0);
         PersistenceUnitUtil util = em.getEntityManagerFactory().getPersistenceUnitUtil();
@@ -157,7 +157,7 @@ public class EntityGraphTestSuite extends JUnitTestCase {
 
     public void testEmbeddedFetchGroupRefresh(){
         EntityManager em = createEntityManager();
-        EntityGraph employeeGraph = em.createEntityGraph(Employee.class);
+        EntityGraph<Employee> employeeGraph = em.createEntityGraph(Employee.class);
         employeeGraph.addSubgraph("period").addAttributeNodes("startDate");
         Employee result = (Employee) em.createQuery("Select e from Employee e order by e.salary desc").setMaxResults(1).setHint(QueryHints.JPA_FETCH_GRAPH, employeeGraph).getResultList().get(0);
         PersistenceUnitUtil util = em.getEntityManagerFactory().getPersistenceUnitUtil();
@@ -169,7 +169,7 @@ public class EntityGraphTestSuite extends JUnitTestCase {
 
     public void testMapKeyFetchGroupRefresh(){
         EntityManager em = createEntityManager();
-        EntityGraph runnerGraph = em.createEntityGraph(Runner.class);
+        EntityGraph<Runner> runnerGraph = em.createEntityGraph(Runner.class);
         runnerGraph.addKeySubgraph("shoes");
         Runner result = (Runner) em.createQuery("Select r from Runner r join r.shoes s").setHint(QueryHints.JPA_FETCH_GRAPH, runnerGraph).getResultList().get(0);
         PersistenceUnitUtil util = em.getEntityManagerFactory().getPersistenceUnitUtil();

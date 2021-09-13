@@ -40,20 +40,20 @@ public class JSONAttributeNoXmlRootElementJAXBElementTestCases extends JAXBWithJ
 
     @Override
     public Object getReadControlObject() {
-        JAXBElement jbe = new JAXBElement<AddressNoRoot>(new QName("street"), AddressNoRoot.class, new AddressNoRoot());
+        JAXBElement<AddressNoRoot> jbe = new JAXBElement<AddressNoRoot>(new QName("street"), AddressNoRoot.class, new AddressNoRoot());
         return jbe;
     }
 
 
     @Override
     protected Object getJSONReadControlObject() {
-        JAXBElement jbe = new JAXBElement<AddressNoRoot>(new QName(""), AddressNoRoot.class, getAddress());
+        JAXBElement<AddressNoRoot> jbe = new JAXBElement<AddressNoRoot>(new QName(""), AddressNoRoot.class, getAddress());
         return jbe;
     }
 
     @Override
     protected Object getControlObject() {
-        JAXBElement jbe = new JAXBElement<AddressNoRoot>(new QName(""), AddressNoRoot.class, getAddress());
+        JAXBElement<AddressNoRoot> jbe = new JAXBElement<AddressNoRoot>(new QName(""), AddressNoRoot.class, getAddress());
         return jbe;
 
 

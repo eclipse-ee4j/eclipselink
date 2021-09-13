@@ -67,15 +67,15 @@ public class UnitOfWorkTest extends WriteObjectTest {
 
     protected void changeUnitOfWorkWorkingCopy() {
         Company company = (Company)this.unitOfWorkWorkingCopy;
-        Vector vehicles = company.getVehicles().getValue();
+        Vector<Vehicle> vehicles = company.getVehicles().getValue();
 
         //delete a vehicle
         //    vehicles.removeElement(vehicles.firstElement());
         Car car = Car.example2();
         car.setOwner(company);
 
-        for (Enumeration enumtr = vehicles.elements(); enumtr.hasMoreElements();) {
-            ((Vehicle)enumtr.nextElement()).change();
+        for (Enumeration<Vehicle> enumtr = vehicles.elements(); enumtr.hasMoreElements();) {
+            enumtr.nextElement().change();
 
         }
 

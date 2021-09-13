@@ -129,7 +129,7 @@ public class TestNode extends JPA1Base {
             children = root2.getChildren();
             verify(children.contains(child), "child not contained in set of children");
             root1 = em.find(Node.class, root1Id);
-            Set children1 = root1.getChildren();
+            Set<Node> children1 = root1.getChildren();
             verify(children1 == null || children1.isEmpty(), "children of root1 not null or empty");
             env.rollbackTransactionAndClear(em);
         } finally {

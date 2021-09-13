@@ -164,9 +164,9 @@ public class jiNiTestSet {
     @SuppressWarnings("unchecked")
     @Test
     public void runQuery() {
-        Session s = project.createDatabaseSession();
+        DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
-        ((DatabaseSession)s).login();
+        s.login();
         Vector queryArgs = new NonSynchronizedVector();
         queryArgs.add("test");
         queryArgs.add(0);
@@ -180,6 +180,6 @@ public class jiNiTestSet {
           msg = e.getMessage();
         }
         assertTrue("invocation jiNi failed: " + msg, worked);
-        ((DatabaseSession)s).logout();
+        s.logout();
     }
 }

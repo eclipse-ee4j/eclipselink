@@ -48,7 +48,7 @@ public class JSONAttributeNoXmlRootElementInheritanceTestCases extends JSONMarsh
 
     @Override
     public Object getReadControlObject() {
-        JAXBElement jbe = new JAXBElement<AddressNoRoot>(new QName(""), AddressNoRoot.class, (AddressNoRoot)getControlObject());
+        JAXBElement<AddressNoRoot> jbe = new JAXBElement<AddressNoRoot>(new QName(""), AddressNoRoot.class, (AddressNoRoot)getControlObject());
         return jbe;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,7 @@ import org.eclipse.persistence.indirection.*;
 public class Company implements Serializable {
     public Number id;
     public String name;
-    public ValueHolderInterface<Vector<? extends Vehicle>> vehicles;
+    public ValueHolderInterface<Vector<Vehicle>> vehicles;
     public ValueHolderInterface<Vector<CompanyWorker>> workers;
 
     public Company() {
@@ -73,7 +73,7 @@ public class Company implements Serializable {
 
     public static Company example3() {
         Company company = new Company();
-        Vector<NonFueledVehicle> vehicle = new Vector<>();
+        Vector<Vehicle> vehicle = new Vector<>();
 
         vehicle.addElement(Boat.example1(company));
         vehicle.addElement(Bicycle.example3(company));
@@ -95,7 +95,7 @@ public class Company implements Serializable {
         return workers;
     }
 
-    public ValueHolderInterface<Vector<? extends Vehicle>> getVehicles() {
+    public ValueHolderInterface<Vector<Vehicle>> getVehicles() {
         return vehicles;
     }
 

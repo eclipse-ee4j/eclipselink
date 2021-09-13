@@ -100,7 +100,7 @@ public abstract class EISMappingTestCases extends OXTestCase {
             Map<Class<?>, ClassDescriptor> descriptors = project.getDescriptors();
             Iterator<Class<?>> keysIterator = descriptors.keySet().iterator();
             while (keysIterator.hasNext()) {
-                Class nextClass = (Class)keysIterator.next();
+                Class<?> nextClass = keysIterator.next();
                 EISDescriptor next = (EISDescriptor)descriptors.get(nextClass);
                 for (int i = 0; i < next.getMappings().size(); i++) {
                     DatabaseMapping nextMapping = next.getMappings().get(i);

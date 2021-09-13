@@ -38,7 +38,7 @@ public class GetTableNameTest extends ExceptionTest {
             org.eclipse.persistence.testing.models.employee.relational.EmployeeProject project = new org.eclipse.persistence.testing.models.employee.relational.EmployeeProject();
             Iterator<ClassDescriptor> iterator = project.getDescriptors().values().iterator();
             while (iterator.hasNext()) {
-                ((ClassDescriptor)iterator.next()).getTableName();
+                iterator.next().getTableName();
             }
         } catch (EclipseLinkException exception) {
             caughtException = exception;

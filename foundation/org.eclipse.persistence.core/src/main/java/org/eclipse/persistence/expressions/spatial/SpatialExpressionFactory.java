@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.expressions.spatial;
 
+import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.persistence.expressions.Expression;
@@ -133,7 +134,7 @@ public final class SpatialExpressionFactory {
      * @param operator the ordinal of the operator
      */
     public static Expression getSpatialExpression(int operator, Expression geom1, Object geom2, String params) {
-        Vector vParameters = new Vector(2);
+        List<Object> vParameters = new Vector<>(2);
         vParameters.add(geom2);
         //Bug 5885276, the empty string either like " " or "" needs to be substituted
         //by null prior to passing to Geometry call.

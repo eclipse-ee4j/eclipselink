@@ -39,11 +39,11 @@ public class CompositeObjectNullPolicyAbsentIsSetAbsentTrueTestCases extends XML
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
 
-        AbstractNullPolicy aNullPolicy = new NullPolicy();
+        NullPolicy aNullPolicy = new NullPolicy();
         // Alter unmarshal policy state
         aNullPolicy.setNullRepresentedByEmptyNode(false); // No effect
         aNullPolicy.setNullRepresentedByXsiNil(false);
-        ((NullPolicy)aNullPolicy).setSetPerformedForAbsentNode(true); // default
+        aNullPolicy.setSetPerformedForAbsentNode(true); // default
         // Alter marshal policy state
         aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.ABSENT_NODE);
 

@@ -309,7 +309,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         Vector<DatabaseField> fields = getReferenceFields();
         int size = fields.size();
         for (int index = 0; index < size; index++) {
-            DatabaseField field = (DatabaseField)fields.get(index);
+            DatabaseField field = fields.get(index);
             Object value = databaseRow.get(field);
             if (value != null) {
                 return false;
@@ -556,7 +556,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         }
         Enumeration<DatabaseMapping> mappings = referenceDescriptor.getMappings().elements();
         for (; mappings.hasMoreElements();) {
-            DatabaseMapping mapping = (DatabaseMapping)mappings.nextElement();
+            DatabaseMapping mapping = mappings.nextElement();
             if (value == null) {
                 attributeValue = null;
             } else {
@@ -583,7 +583,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         //Enumeration mappingsEnum = getSourceToTargetKeyFields().elements();
         Enumeration<DatabaseMapping> mappingsEnum = getReferenceDescriptor().getMappings().elements();
         for (; mappingsEnum.hasMoreElements();) {
-            DatabaseMapping mapping = (DatabaseMapping)mappingsEnum.nextElement();
+            DatabaseMapping mapping = mappingsEnum.nextElement();
             String attributeName = mapping.getAttributeName();
             Expression join = expression.get(attributeName).equal(argument.get(attributeName));
             if (attributeByAttributeComparison == null) {
@@ -1615,7 +1615,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         if (referencedDescriptor == null) {
             Iterator<ClassDescriptor> ordered = project.getOrderedDescriptors().iterator();
             while (ordered.hasNext() && referencedDescriptor == null){
-                ClassDescriptor descriptor = (ClassDescriptor)ordered.next();
+                ClassDescriptor descriptor = ordered.next();
                 if (descriptor.getJavaClassName().equals(getReferenceClassName())){
                     referencedDescriptor = descriptor;
                 }
@@ -1628,7 +1628,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             // Also check subclasses.
             if (referencedDescriptor.hasInheritance()) {
                 for (Iterator<ClassDescriptor> iterator = referencedDescriptor.getInheritancePolicy().getChildDescriptors().iterator(); iterator.hasNext(); ) {
-                    ClassDescriptor subclassDescriptor = (ClassDescriptor)iterator.next();
+                    ClassDescriptor subclassDescriptor = iterator.next();
                     if (!subclassDescriptor.supportsChangeTracking(project)) {
                         return false;
                     }
@@ -1762,7 +1762,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             List values = row.getValues();
             List<DatabaseField> aggregateFields = getReferenceFields();
             for(int i=0; i < size; i++) {
-                DatabaseField field = (DatabaseField)fields.get(i);
+                DatabaseField field = fields.get(i);
                 if(aggregateFields.contains(field)) {
                     aggregateRow.add(field, values.get(i));
                 }
@@ -1890,7 +1890,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         Hashtable fieldNames = new Hashtable(fieldAssociations.size() + 1);
         for (Enumeration<Association> associationsEnum = fieldAssociations.elements();
              associationsEnum.hasMoreElements();) {
-            Association association = (Association)associationsEnum.nextElement();
+            Association association = associationsEnum.nextElement();
             fieldNames.put(association.getKey(), association.getValue());
         }
 
@@ -2014,7 +2014,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         // EL Bug 326977
         Vector fieldsToTranslate = (Vector) clonedDescriptor.getFields().clone();
         for (Iterator<QueryKey> qkIterator = clonedDescriptor.getQueryKeys().values().iterator(); qkIterator.hasNext();) {
-            QueryKey queryKey = (QueryKey)qkIterator.next();
+            QueryKey queryKey = qkIterator.next();
             if (queryKey.isDirectQueryKey()) {
                 DatabaseField field = ((DirectQueryKey)queryKey).getField();
                 fieldsToTranslate.add(field);
@@ -2024,7 +2024,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         // EL Bug 332080 - translate foreign reference mapping source key fields
         if (!clonedDescriptor.getObjectBuilder().isSimple()) {
             for (Iterator<DatabaseMapping> dcIterator = clonedDescriptor.getMappings().iterator(); dcIterator.hasNext();) {
-                DatabaseMapping mapping = (DatabaseMapping)dcIterator.next();
+                DatabaseMapping mapping = dcIterator.next();
                 if (mapping.isForeignReferenceMapping()) {
                     Collection fkFields = ((ForeignReferenceMapping)mapping).getFieldsForTranslationInAggregate();
                     if (fkFields != null && !fkFields.isEmpty()) {

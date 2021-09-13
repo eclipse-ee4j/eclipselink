@@ -29,12 +29,12 @@ import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.From;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Root;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.exceptions.QueryException;
@@ -129,7 +129,7 @@ public class QueryTestSuite extends JUnitTestCase {
     public void testTypedQueryParameter(){
         EntityManager em = createEntityManager();
         TypedQuery<Employee> query = em.createQuery("select e from Employee e where e.firstName = :firstName", Employee.class);
-        Parameter parameter = query.getParameter("firstName");
+        Parameter<?> parameter = query.getParameter("firstName");
         assertTrue("Parameter did not return correct type", parameter.getParameterType().equals(String.class));
     }
 
@@ -216,8 +216,8 @@ public class QueryTestSuite extends JUnitTestCase {
     public void testCriteriaGetGroupList(){
         EntityManager em = createEntityManager();
         CriteriaBuilder qb = em.getCriteriaBuilder();
-        CriteriaQuery query = qb.createQuery(Employee.class);
-        List groupList = query.getGroupList();
+        CriteriaQuery<Employee> query = qb.createQuery(Employee.class);
+        List<Expression<?>> groupList = query.getGroupList();
         assertNotNull("getGroupList returned null.", groupList);
     }
 
@@ -241,7 +241,7 @@ public class QueryTestSuite extends JUnitTestCase {
     public void testCriteriaGetJoinType(){
         EntityManager em = createEntityManager();
         CriteriaBuilder qbuilder = em.getCriteriaBuilder();
-        CriteriaQuery query = qbuilder.createQuery(Employee.class);
+        CriteriaQuery<Employee> query = qbuilder.createQuery(Employee.class);
         Root<Employee> employee = query.from(Employee.class);
         JoinType jt =  employee.join("phoneNumbers", JoinType.LEFT).getJoinType();
         assertEquals("The join type was incorect.", jt, JoinType.LEFT);
@@ -250,7 +250,7 @@ public class QueryTestSuite extends JUnitTestCase {
     public void testCriteriaIsCorelated(){
         EntityManager em = createEntityManager();
         CriteriaBuilder qbuilder = em.getCriteriaBuilder();
-        CriteriaQuery query = qbuilder.createQuery(Employee.class);
+        CriteriaQuery<Employee> query = qbuilder.createQuery(Employee.class);
         From<Employee, Employee> employee = query.from(Employee.class);
         boolean isCorr = employee.isCorrelated();
         assertFalse(isCorr);

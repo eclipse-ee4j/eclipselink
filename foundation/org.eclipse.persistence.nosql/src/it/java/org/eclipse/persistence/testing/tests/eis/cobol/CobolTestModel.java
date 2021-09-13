@@ -518,7 +518,7 @@ public class CobolTestModel extends org.eclipse.persistence.testing.framework.Te
 
         Enumeration<DatabaseField> fieldsEnum = row1.getFields().elements();
         while (fieldsEnum.hasMoreElements()) {
-            DatabaseField field = (DatabaseField)fieldsEnum.nextElement();
+            DatabaseField field = fieldsEnum.nextElement();
             DatabaseField fieldMatch = row2.getField(field);
             if (fieldMatch == null) {
                 return false;

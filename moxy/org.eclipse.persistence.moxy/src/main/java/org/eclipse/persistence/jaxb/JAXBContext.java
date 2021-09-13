@@ -63,6 +63,7 @@ import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jaxb.JAXBSchemaOutputResolver;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.internal.jaxb.ObjectGraphImpl;
@@ -723,7 +724,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
     public ObjectGraph createObjectGraph(String typeName) {
         ClassLoader loader = this.contextInput.classLoader;
         try {
-            Class cls = PrivilegedAccessHelper.getClassForName(typeName, true, loader);
+            Class<Object> cls = PrivilegedAccessHelper.getClassForName(typeName, true, loader);
             return createObjectGraph(cls);
         } catch (Exception ex) {
             throw ConversionException.couldNotBeConvertedToClass(typeName, Class.class, ex);
@@ -878,7 +879,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
             while (tokenizer.hasMoreElements()) {
                 String path = tokenizer.nextToken();
                 try {
-                    Class objectFactory = classLoader.loadClass(path + ".ObjectFactory");
+                    Class<?> objectFactory = classLoader.loadClass(path + ".ObjectFactory");
                     if (isJAXB2ObjectFactory(objectFactory, classLoader)) {
                         classes.add(objectFactory);
                         foundMetadata = true;
@@ -1022,7 +1023,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
                 }
             }
 
-            XMLPlatform platform = new SAXPlatform();
+            XMLPlatform<org.eclipse.persistence.internal.oxm.XMLUnmarshaller> platform = new SAXPlatform();
             platform.getConversionManager().setLoader(loader);
             XMLContext xmlContext = new XMLContext((Project) proj, loader, sessionEventListeners());
 
@@ -1054,7 +1055,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
             if (jTypes != null) {
                 for (JavaType javaType : jTypes.getJavaType()) {
                     try {
-                        Class jClass = classLoader.loadClass(getQualifiedJavaTypeName(javaType.getName(), xmlBindings.getPackageName()));
+                        Class<?> jClass = classLoader.loadClass(getQualifiedJavaTypeName(javaType.getName(), xmlBindings.getPackageName()));
                         if (!additionalClasses.contains(jClass)) {
                             additionalClasses.add(jClass);
                         }
@@ -1068,7 +1069,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
 
         private boolean isJAXB2ObjectFactory(Class objectFactoryClass, ClassLoader classLoader) {
             try {
-                Class xmlRegistry = PrivilegedAccessHelper.getClassForName("jakarta.xml.bind.annotation.XmlRegistry", false, classLoader);
+                Class<Object> xmlRegistry = PrivilegedAccessHelper.getClassForName("jakarta.xml.bind.annotation.XmlRegistry", false, classLoader);
                 if (objectFactoryClass.isAnnotationPresent(xmlRegistry)) {
                     return true;
                 }
@@ -1205,7 +1206,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
                 }
             }
 
-            XMLPlatform platform = new SAXPlatform();
+            XMLPlatform<org.eclipse.persistence.internal.oxm.XMLUnmarshaller> platform = new SAXPlatform();
             platform.getConversionManager().setLoader(loader);
             XMLContext xmlContext = new XMLContext((Project) proj, loader, sessionEventListeners());
 
@@ -1254,7 +1255,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
 
                 for (JavaType javaType : jTypes.getJavaType()) {
                     try {
-                        Class nextClass = classLoader.loadClass(getQualifiedJavaTypeName(javaType.getName(), xmlBindings.getPackageName()));
+                        Class<?> nextClass = classLoader.loadClass(getQualifiedJavaTypeName(javaType.getName(), xmlBindings.getPackageName()));
                         if (!(existingClasses.contains(nextClass))) {
                             TypeMappingInfo typeMappingInfo = new TypeMappingInfo();
                             typeMappingInfo.setType(nextClass);
@@ -1348,11 +1349,11 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
         }
 
         private Class getBoundTypeForXmlAdapterClass(Class adapterClass) {
-            Class boundType = Object.class;
+            Class<Object> boundType = Object.class;
 
             for (Method method : PrivilegedAccessHelper.getDeclaredMethods(adapterClass)) {
                 if (method.getName().equals("marshal")) {
-                    Class returnType = PrivilegedAccessHelper.getMethodReturnType(method);
+                    Class<Object> returnType = PrivilegedAccessHelper.getMethodReturnType(method);
                     if (!returnType.getName().equals(boundType.getName())) {
                         boundType = returnType;
                         break;
@@ -1364,7 +1365,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
 
         private void updateNamespaces() {
 
-            Collection descriptors = xmlContext.getSession().getDescriptors().values();
+            Collection<ClassDescriptor> descriptors = xmlContext.getSession().getDescriptors().values();
 
             for (Object descriptor : descriptors) {
                 Descriptor desc = (Descriptor) descriptor;
@@ -1393,7 +1394,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
 
             for (Object mapping : mappings) {
                 DatabaseMapping nextMapping = (DatabaseMapping) mapping;
-                Vector fields = nextMapping.getFields();
+                Vector<DatabaseField> fields = nextMapping.getFields();
                 updateResolverForFields(fields, nr);
                 Descriptor refDesc = (Descriptor) nextMapping.getReferenceDescriptor();
                 if (refDesc != null && !processed.contains(refDesc)) {
@@ -1412,7 +1413,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
 
         private void updateResolverForFields(Collection fields, org.eclipse.persistence.internal.oxm.NamespaceResolver nr) {
             for (Object field1 : fields) {
-                Field field = (XMLField) field1;
+                Field<XMLConversionManager, NamespaceResolver> field = (XMLField) field1;
                 XPathFragment currentFragment = field.getXPathFragment();
 
                 while (currentFragment != null) {

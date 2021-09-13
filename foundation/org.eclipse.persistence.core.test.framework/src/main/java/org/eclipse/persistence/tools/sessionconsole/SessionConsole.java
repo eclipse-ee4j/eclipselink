@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.tools.sessionconsole;
 
+import java.lang.reflect.Constructor;
 import java.net.URL;
 
 import javax.swing.*;
@@ -2101,7 +2102,7 @@ public class SessionConsole extends JFrame {
                     Class.forName("com.ibm.uvm.abt.edit.WindowCloser");
                 Class[] parmTypes = { java.awt.Window.class };
                 Object[] parms = { aSessionInspectorFrame };
-                java.lang.reflect.Constructor aCtor =
+                Constructor<?> aCtor =
                     aCloserClass.getConstructor(parmTypes);
                 aCtor.newInstance(parms);
             } catch (java.lang.Throwable exc) {

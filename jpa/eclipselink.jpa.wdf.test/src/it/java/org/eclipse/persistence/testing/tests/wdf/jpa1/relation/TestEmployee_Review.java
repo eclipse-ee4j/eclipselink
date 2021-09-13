@@ -61,7 +61,7 @@ public class TestEmployee_Review extends JPA1Base {
             env.beginTransaction(em);
             Employee employee = em.find(Employee.class, 7);
             verify(employee != null, "employee not found");
-            Set reviews = employee.getReviews();
+            Set<Review> reviews = employee.getReviews();
             verify(reviews.size() == 2, "set has wrong size");
             verify(reviews.contains(_review1), "missing review 1");
             verify(reviews.contains(_review2), "missing review 2");
@@ -90,11 +90,11 @@ public class TestEmployee_Review extends JPA1Base {
             env.beginTransaction(em);
             Employee employee = em.find(Employee.class, 7);
             verify(employee != null, "employee not found");
-            Set reviews = employee.getReviews();
+            Set<Review> reviews = employee.getReviews();
             verify(reviews.size() == 2, "set has wrong size");
             verify(reviews.contains(_review1), "missing review 1");
             verify(reviews.contains(_review2), "missing review 2");
-            Iterator iter = reviews.iterator();
+            Iterator<Review> iter = reviews.iterator();
             while (iter.hasNext()) {
                 verify(em.contains(iter.next()), "review in collection not contained in em");
             }
@@ -120,7 +120,7 @@ public class TestEmployee_Review extends JPA1Base {
             }
             Employee employee = em.find(Employee.class, 7);
             verify(employee != null, "employee not found");
-            Set reviews = employee.getReviews();
+            Set<Review> reviews = employee.getReviews();
             try {
                 reviews.size();
                 if (failureExpected) {
@@ -145,7 +145,7 @@ public class TestEmployee_Review extends JPA1Base {
             Employee employee = em.find(Employee.class, 7);
             verify(employee != null, "employee not found");
             employee = AbstractBaseTest.serializeDeserialize(employee);
-            Set reviews = employee.getReviews();
+            Set<Review> reviews = employee.getReviews();
             try {
                 reviews.size();
                 flop("missing persistence exception");
@@ -169,7 +169,7 @@ public class TestEmployee_Review extends JPA1Base {
             env.beginTransaction(em);
             Employee employee = em.find(Employee.class, 7);
             verify(employee != null, "employee not found");
-            Set reviews = employee.getReviews();
+            Set<Review> reviews = employee.getReviews();
             // touch the set
             verify(reviews.size() == 2, "set has wrong size");
             env.rollbackTransactionAndClear(em);

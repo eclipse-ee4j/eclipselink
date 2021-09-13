@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,6 @@
 //     tware - initial implementation as part of extensibility feature
 package org.eclipse.persistence.testing.models.jpa.extensibility;
 
-import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -22,7 +21,6 @@ import java.util.Map;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.Transient;
 import jakarta.persistence.Table;
 
 import org.eclipse.persistence.annotations.VirtualAccessMethods;
@@ -113,7 +111,7 @@ public class Address {
         buf.append(city + ", ");
         buf.append(country + ", ");
         buf.append(postalCode);
-        Iterator i = extensions.keySet().iterator();
+        Iterator<String> i = extensions.keySet().iterator();
         while (i.hasNext()){
             buf.append("," + extensions.get(i.next()));
         }

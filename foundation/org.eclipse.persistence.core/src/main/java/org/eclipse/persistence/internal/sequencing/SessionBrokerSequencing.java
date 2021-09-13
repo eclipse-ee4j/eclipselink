@@ -27,7 +27,7 @@ class SessionBrokerSequencing implements Sequencing {
         boolean hasSequencing = false;
         Iterator<AbstractSession> sessionEnum = br.getSessionsByName().values().iterator();
         while (sessionEnum.hasNext() && !hasSequencing) {
-            AbstractSession session = (AbstractSession)sessionEnum.next();
+            AbstractSession session = sessionEnum.next();
             hasSequencing = session.getSequencing() != null;
         }
         return hasSequencing;
@@ -43,7 +43,7 @@ class SessionBrokerSequencing implements Sequencing {
         boolean first = true;
         Iterator<AbstractSession> sessionEnum = broker.getSessionsByName().values().iterator();
         while ((first || (whenShouldAcquireValueForAll != UNDEFINED)) && sessionEnum.hasNext()) {
-            AbstractSession session = (AbstractSession)sessionEnum.next();
+            AbstractSession session = sessionEnum.next();
             Sequencing sequencing = session.getSequencing();
             if (sequencing != null) {
                 if (first) {

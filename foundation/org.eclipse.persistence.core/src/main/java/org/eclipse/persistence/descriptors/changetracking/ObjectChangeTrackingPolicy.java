@@ -151,7 +151,7 @@ public class ObjectChangeTrackingPolicy extends DeferredChangeDetectionPolicy {
             int size = mappings.size();
             // Only cascade fetched mappings.
             for (int index = 0; index < size; index++) {
-                DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
+                DatabaseMapping mapping = mappings.get(index);
                 if (!isPartialObject || fetchGroupManager.isAttributeFetched(clone, mapping.getAttributeName())) {
                     mapping.setChangeListener(clone, listener, uow);
                 }

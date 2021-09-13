@@ -41,7 +41,7 @@ public class SessionBrokerIdentityMapAccessor extends IdentityMapAccessor {
     public void initializeAllIdentityMaps() {
         for (Iterator<AbstractSession> sessionEnum = ((SessionBroker)session).getSessionsByName().values().iterator();
              sessionEnum.hasNext();) {
-            AbstractSession session = (AbstractSession)sessionEnum.next();
+            AbstractSession session = sessionEnum.next();
             session.getIdentityMapAccessorInstance().initializeAllIdentityMaps();
         }
         super.initializeAllIdentityMaps();
@@ -59,7 +59,7 @@ public class SessionBrokerIdentityMapAccessor extends IdentityMapAccessor {
     public void initializeIdentityMaps() {
         for (Iterator<AbstractSession> sessionEnum = ((SessionBroker)session).getSessionsByName().values().iterator();
              sessionEnum.hasNext();) {
-            AbstractSession session = (AbstractSession)sessionEnum.next();
+            AbstractSession session = sessionEnum.next();
             session.getIdentityMapAccessorInstance().initializeIdentityMaps();
         }
         super.initializeIdentityMaps();

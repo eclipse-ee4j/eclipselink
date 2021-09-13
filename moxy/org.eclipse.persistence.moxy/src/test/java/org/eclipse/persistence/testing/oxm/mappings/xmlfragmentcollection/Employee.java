@@ -54,12 +54,12 @@ public class Employee {
         if(size != size2) {
           return false;
         }
-        Iterator nodesIter = xmlnodes.iterator();
-        Iterator empNodesIter = emp.xmlnodes.iterator();
+        Iterator<Node> nodesIter = xmlnodes.iterator();
+        Iterator<Node> empNodesIter = emp.xmlnodes.iterator();
         while(nodesIter.hasNext())
         {
-          Node next = (Node)nodesIter.next();
-          Node next2 = (Node)empNodesIter.next();
+          Node next = nodesIter.next();
+          Node next2 = empNodesIter.next();
            try {
             if(next2.getNodeType() == Node.ATTRIBUTE_NODE && next.getNodeType() == Node.ATTRIBUTE_NODE) {
                 Attr att1 = (Attr)next2;
@@ -116,9 +116,9 @@ public class Employee {
         writer.write(" " + lastName);
         TransformerFactory factory = TransformerFactory.newInstance();
         if(xmlnodes != null){
-          Iterator iter = xmlnodes.iterator();
+          Iterator<Node> iter = xmlnodes.iterator();
           while(iter.hasNext()){
-            Node xmlNode = (Node)iter.next();
+            Node xmlNode = iter.next();
             try {
                 Transformer tf = factory.newTransformer();
                 DOMSource source = new DOMSource(xmlNode);

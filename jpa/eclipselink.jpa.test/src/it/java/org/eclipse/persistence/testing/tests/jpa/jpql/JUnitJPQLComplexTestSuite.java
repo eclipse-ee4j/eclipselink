@@ -1036,7 +1036,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query.setParameter("id1", empWithOutManager.getId());
         query.setParameter("id2", empWithManager.getId());
         List result = query.getResultList();
-        List expectedResult = Arrays.asList(new Employee[] {empWithManager.getManager()});
+        List<Employee> expectedResult = Arrays.asList(new Employee[] {empWithManager.getManager()});
         Assert.assertTrue("Complex Join test failed", comparer.compareObjects(result, expectedResult));
 
         // Select the related manager of empWithOutManager and empWithManager
@@ -1084,7 +1084,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query.setParameter("id1", empWithOutManager.getId());
         query.setParameter("id2", empWithManager.getId());
         List result = query.getResultList();
-        List expectedResult = Arrays.asList(new Employee[] {empWithManager.getManager()});
+        List<Employee> expectedResult = Arrays.asList(new Employee[] {empWithManager.getManager()});
         Assert.assertTrue("Complex Join test failed", comparer.compareObjects(result, expectedResult));
 
         // Select the related manager of empWithOutManager and empWithManager
@@ -1363,7 +1363,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         // find an employee with managed employees
         for (Iterator i = emps.iterator(); i.hasNext();) {
             Employee e = (Employee)i.next();
-            Collection managed = e.getManagedEmployees();
+            Collection<Employee> managed = e.getManagedEmployees();
             if ((managed != null) && (managed.size() > 0)) {
                 emp = e;
                 break;
@@ -1377,13 +1377,13 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         LongHolder result = (LongHolder)query.getSingleResult();
 
         // calculate expected result
-        Collection managed = emp.getManagedEmployees();
+        Collection<Employee> managed = emp.getManagedEmployees();
         int count = 0;
         int sum = 0;
         if (managed != null) {
             count = managed.size();
-            for (Iterator i = managed.iterator(); i.hasNext();) {
-                Employee e = (Employee)i.next();
+            for (Iterator<Employee> i = managed.iterator(); i.hasNext();) {
+                Employee e = i.next();
                 sum += e.getSalary();
             }
         }
@@ -1401,7 +1401,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         List<EmployeeDetail> expectedResult = new ArrayList<EmployeeDetail>();
         for (Iterator i = emps.iterator(); i.hasNext();) {
             Employee e = (Employee)i.next();
-            Collection managed = e.getManagedEmployees();
+            Collection<Employee> managed = e.getManagedEmployees();
             if ((managed != null) && (managed.size() > 0)) {
                 EmployeeDetail d = new EmployeeDetail(
                     e.getFirstName(), e.getLastName(), Long.valueOf(managed.size()));
@@ -1648,7 +1648,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         // find an employees with projects
         for (Iterator i = allEmps.iterator(); i.hasNext();) {
             Employee e = (Employee)i.next();
-            Collection projects = e.getProjects();
+            Collection<Project> projects = e.getProjects();
             if ((projects != null) && (projects.size() > 0)) {
                 expectedResult.add(e.getId());
             }
@@ -1670,7 +1670,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         // find an employees with projects
         for (Iterator i = allEmps.iterator(); i.hasNext();) {
             Employee e = (Employee)i.next();
-            Collection projects = e.getProjects();
+            Collection<Project> projects = e.getProjects();
             if ((projects == null) || (projects.size() == 0)) {
                 expectedResult.add(e.getId());
             }
@@ -1712,15 +1712,15 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         for (Iterator i = allEmps.iterator(); i.hasNext();) {
             Employee e = (Employee)i.next();
             // Get Dealers
-            Collection dealers = e.getDealers();
+            Collection<Dealer> dealers = e.getDealers();
             if (dealers != null && dealers.size() > 0) {
-                for (Iterator dealerIter = dealers.iterator(); dealerIter.hasNext();) {
-                    Dealer d = (Dealer)dealerIter.next();
+                for (Iterator<Dealer> dealerIter = dealers.iterator(); dealerIter.hasNext();) {
+                    Dealer d = dealerIter.next();
                     // Get Customers.
-                    Collection customers = d.getCustomers();
+                    Collection<Customer> customers = d.getCustomers();
                     if (customers != null && customers.size() > 0) {
-                        for (Iterator custIter = customers.iterator(); custIter.hasNext();) {
-                            Customer c = (Customer)custIter.next();
+                        for (Iterator<Customer> custIter = customers.iterator(); custIter.hasNext();) {
+                            Customer c = custIter.next();
                             // Verify Budget
                             if (c.getBudget() > 0) {
                                 expectedResult.add(e.getId());
@@ -1781,7 +1781,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         // find an employees with projects
         for (Iterator i = allEmps.iterator(); i.hasNext();) {
             Employee e = (Employee)i.next();
-            Collection projects = e.getProjects();
+            Collection<Project> projects = e.getProjects();
             if ((projects != null) && (projects.size() > 0)) {
                 expectedResult.add(e);
             }

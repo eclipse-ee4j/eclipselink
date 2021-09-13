@@ -14,7 +14,6 @@
 // mmacivor - April 25/2008 - 1.0M8 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.simpledocument;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 import jakarta.xml.bind.JAXBElement;
@@ -39,7 +38,7 @@ public class SimpleDocumentByteArrayTestCases extends JAXBWithJSONTestCases {
 
         @Override
         protected Object getControlObject() {
-            JAXBElement value = new ByteArrayObjectFactory().createBase64Root();
+            JAXBElement<Byte[]> value = new ByteArrayObjectFactory().createBase64Root();
             value.setValue(new Byte[]{(byte) 1, (byte) 2, (byte) 3, (byte) 4, (byte) 5, (byte) 6, (byte) 7});
             return value;
         }

@@ -372,7 +372,7 @@ public class PersistenceUnit {
     public String getPersistenceUnitProperty(final String name) {
         Object objVal = persistenceUnitProperties.get(name);
         if (objVal instanceof String) {
-            return String.class.cast(objVal);
+            return (String) objVal;
         } else {
             return objVal != null ? objVal.toString() : null;
         }

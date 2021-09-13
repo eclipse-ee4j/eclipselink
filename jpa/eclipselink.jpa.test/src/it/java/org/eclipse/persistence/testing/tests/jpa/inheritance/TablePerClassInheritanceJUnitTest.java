@@ -202,10 +202,10 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
         assertTrue("The elimination was not a direct elimination", directElimination.isDirectElimination());
 
         // Validate the weapon that was used for the direct elimination.
-        Weapon weapon = ((DirectElimination) directElimination).getDirectWeapon();
+        DirectWeapon weapon = ((DirectElimination) directElimination).getDirectWeapon();
         assertNotNull("The direct elimination's weapon was null", weapon);
         assertTrue("The direct elimination's weapon was not a direct weapon", weapon.isDirectWeapon());
-        assertTrue("The direct elimination's weapon was not a gun", ((DirectWeapon) weapon).isGun());
+        assertTrue("The direct elimination's weapon was not a gun", weapon.isGun());
 
         closeEntityManager(em);
     }
@@ -253,10 +253,10 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
         assertTrue("The elimination was not an idirect elimination", indirectElimination.isIndirectElimination());
 
         // Validate the weapon that was used for the direct elimination.
-        Weapon weapon = ((IndirectElimination) indirectElimination).getIndirectWeapon();
+        IndirectWeapon weapon = ((IndirectElimination) indirectElimination).getIndirectWeapon();
         assertNotNull("The indirect elimination's weapon was null", weapon);
         assertTrue("The indirect elimination's weapon was not an idirect weapon", weapon.isIndirectWeapon());
-        assertTrue("The indirect elimination's weapon was not a bomb", ((IndirectWeapon) weapon).isBomb());
+        assertTrue("The indirect elimination's weapon was not a bomb", weapon.isBomb());
 
         closeEntityManager(em);
     }

@@ -476,7 +476,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
 
     @Override
     public Predicate in(Object... values) {
-        List list = new ArrayList<>();
+        List<Expression<?>> list = new ArrayList<>();
         list.add(this);
         return new CompoundExpressionImpl(this.metamodel, this.currentNode.in(values), list, "in");
     }
@@ -489,7 +489,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      */
     @Override
     public Predicate in(Expression<?>... values) {
-        List list = new ArrayList<>();
+        List<Expression<?>> list = new ArrayList<>();
         list.add(this);
         for (Expression exp: values){
             if (!((InternalExpression)exp).isLiteral() && !((InternalExpression) exp).isParameter()){
@@ -509,7 +509,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      */
     @Override
     public Predicate in(Collection<?> values) {
-        List list = new ArrayList<>();
+        List<Expression<?>> list = new ArrayList<>();
         list.add(this);
         return new CompoundExpressionImpl(this.metamodel, this.currentNode.in(values), list, "in");
     }
@@ -521,14 +521,14 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      */
     @Override
     public Predicate in(Expression<Collection<?>> values) {
-        List list = new ArrayList<>();
+        List<Expression<?>> list = new ArrayList<>();
         list.add(this);
         return new CompoundExpressionImpl(this.metamodel, this.currentNode.in(((InternalSelection)values).getCurrentNode()), list, "in");
     }
 
     @Override
     public Predicate isNotNull() {
-        List list = new ArrayList<>();
+        List<Expression<?>> list = new ArrayList<>();
         list.add(this);
         return new CompoundExpressionImpl(this.metamodel, this.currentNode.notNull(), list, "not null");
     }
@@ -536,7 +536,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
 
     @Override
     public Predicate isNull() {
-        List list = new ArrayList<>();
+        List<Expression<?>> list = new ArrayList<>();
         list.add(this);
         return new CompoundExpressionImpl(this.metamodel, this.currentNode.isNull(), list, "is null");
     }

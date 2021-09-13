@@ -52,7 +52,7 @@ public class WeakIdentityMap extends FullIdentityMap {
      */
     protected void cleanupDeadCacheKeys() {
         for (Iterator<CacheKey> iterator = getCacheKeys().values().iterator(); iterator.hasNext();) {
-            CacheKey key = (CacheKey)iterator.next();
+            CacheKey key = iterator.next();
             if (key.getObject() == null) {
                 // Check lock first.
                 // Change for CR 2317

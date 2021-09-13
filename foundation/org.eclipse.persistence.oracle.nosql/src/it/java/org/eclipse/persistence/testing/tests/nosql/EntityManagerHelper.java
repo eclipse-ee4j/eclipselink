@@ -59,7 +59,7 @@ public class EntityManagerHelper {
             return new JEEPlatform();
         } else {
             try {
-                return (ServerPlatform)Class.forName(platformClass).newInstance();
+                return (ServerPlatform)Class.forName(platformClass).getConstructor().newInstance();
             } catch (Exception ex) {
                 LOG.log(SessionLog.WARNING, String.format(
                         "Could not initiaize ServerPlatform: %s", ex.getLocalizedMessage()));

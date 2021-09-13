@@ -43,7 +43,6 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.Vector;
 
@@ -63,7 +62,6 @@ import jakarta.persistence.spi.LoadState;
 import jakarta.persistence.spi.ProviderUtil;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.annotations.BatchFetchType;
@@ -161,7 +159,6 @@ import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Ra
 import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Sandwich;
 import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.School;
 import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Student;
-import org.eclipse.persistence.testing.models.jpa.advanced.MyTestEntity;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.tools.schemaframework.StoredFunctionDefinition;
 import org.eclipse.persistence.exceptions.QueryException;
@@ -894,7 +891,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         assertEquals(budgetSingularAttribute, budgetAttribute);
         assertTrue(declaredAttributes.contains(budgetSingularAttribute));
         // check the type
-        Class budgetClass = budgetSingularAttribute.getJavaType();
+        Class<?> budgetClass = budgetSingularAttribute.getJavaType();
         // Verify whether we expect a boxed class or not
         assertEquals(double.class, budgetClass);
         //assertEquals(Double.class, budgetClass);
@@ -910,7 +907,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         assertEquals(PersistenceType.ENTITY, entityBuyer.getPersistenceType());
         assertEquals(Buyer.class, entityBuyer.getJavaType());
         // verify EnumSet is a SingularAttribute
-        Attribute buyingDaysAttribute = entityBuyer.getAttribute("buyingDays");
+        Attribute<? super Buyer, ?> buyingDaysAttribute = entityBuyer.getAttribute("buyingDays");
         assertNotNull(buyingDaysAttribute);
         // Check persistent attribute type
         assertEquals(PersistentAttributeType.BASIC, buyingDaysAttribute.getPersistentAttributeType());
@@ -942,7 +939,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         //* @param <K> The type of the key of the represented Map
         //* @param <V> The type of the value of the represented Map
         //public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.Map<K, V>, V>
-        Attribute buyerCreditCards = entityBuyer.getAttribute("creditCards");
+        Attribute<? super Buyer, ?> buyerCreditCards = entityBuyer.getAttribute("creditCards");
         assertNotNull(buyerCreditCards);
         assertTrue(buyerCreditCards.isCollection());
         assertTrue(buyerCreditCards instanceof MapAttributeImpl);
@@ -2180,7 +2177,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
 
     public void testRelationshipReadDuringClone(){
         EntityManager em = createEntityManager();
-        Session session = getServerSession();
+        AbstractSession session = getServerSession();
         ClassDescriptor departmentDesc = session.getDescriptor(Department.class);
         DescriptorEventAdapter listener = new DescriptorEventAdapter(){
             @Override
@@ -2191,7 +2188,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         departmentDesc.getDescriptorEventManager().addListener(listener);
         em.createQuery("SELECT e from Equipment e where e.department is not null").getResultList();
         departmentDesc.getDescriptorEventManager().removeListener(listener);
-        departmentDesc.getDescriptorEventManager().initialize((AbstractSession) session);
+        departmentDesc.getDescriptorEventManager().initialize(session);
         closeEntityManager(em);
     }
 

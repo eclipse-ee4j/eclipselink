@@ -35,13 +35,13 @@ public class DirectIsSetNullPolicyElementSetNillableIsSetFalseTestCases extends 
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        AbstractNullPolicy aNullPolicy = new IsSetNullPolicy();
+        IsSetNullPolicy aNullPolicy = new IsSetNullPolicy();
         // Alter unmarshal policy state
         aNullPolicy.setNullRepresentedByEmptyNode(false); // no effect
         aNullPolicy.setNullRepresentedByXsiNil(false);  // no effect
         // Alter marshal policy state
         aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
-        ((IsSetNullPolicy)aNullPolicy).setIsSetMethodName("isSetFirstName");
+        aNullPolicy.setIsSetMethodName("isSetFirstName");
         Project aProject = new DirectNodeNullPolicyProject(true);
 
         // Add xsi namespace map entry to the resolver (we don't pick up the one on the xml instance doc)

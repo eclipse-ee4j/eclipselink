@@ -29,6 +29,7 @@ import java.util.Map;
 import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.jaxb.compiler.facets.Facet;
 import org.eclipse.persistence.internal.jaxb.GenericsClassHelper;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -43,6 +44,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlMarshalNullRepresentation;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation;
+import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
 
 /**
@@ -1124,7 +1126,7 @@ public class Property implements Cloneable {
         if (getXmlPath() == null) {
             return false;
         }
-        Field field = new XMLField(getXmlPath());
+        Field<XMLConversionManager, NamespaceResolver> field = new XMLField(getXmlPath());
         XPathFragment frag = field.getXPathFragment();
         // loop until we have the last non-null, non-attribute, non-text fragment
         while (true) {

@@ -168,9 +168,9 @@ public class NojiTestSet {
     @SuppressWarnings("unchecked")
     @Test
     public void runQuery() {
-        Session s = project.createDatabaseSession();
+        DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
-        ((DatabaseSession)s).login();
+        s.login();
         Vector queryArgs = new NonSynchronizedVector();
         queryArgs.add("testsdfsdfasdfsdfsdfsdfsdfsdfdfsdfsdffds");
         boolean worked = false;
@@ -189,6 +189,6 @@ public class NojiTestSet {
         DatabaseRecord record = (DatabaseRecord)results.get(0);
         BigDecimal x = (BigDecimal)record.get("X");
         assertTrue("wrong x value", x.intValue() == 33);
-        ((DatabaseSession)s).logout();
+        s.logout();
     }
 }

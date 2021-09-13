@@ -162,7 +162,7 @@ public class JAXBListOfObjectsNonRootTestCases extends JAXBListOfObjectsNoJSONTe
         test.add("ccc");
         listofObjects.setStringMyList(test);
 
-        LinkedList stringQueue = new LinkedList<String>();
+        LinkedList<String> stringQueue = new LinkedList<String>();
         stringQueue.add("ddd");
         stringQueue.add("eee");
         listofObjects.setStringQueue(stringQueue);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,8 +41,8 @@ import java.util.List;
             if(model.items.size() != items.size()) {
                 return false;
             }
-            Iterator items1 = model.items.iterator();
-            Iterator items2 = items.iterator();
+            Iterator<String> items1 = model.items.iterator();
+            Iterator<String> items2 = items.iterator();
             while(items1.hasNext()) {
                 if(!(items1.next().equals(items2.next()))) {
                     System.out.println("returning false");

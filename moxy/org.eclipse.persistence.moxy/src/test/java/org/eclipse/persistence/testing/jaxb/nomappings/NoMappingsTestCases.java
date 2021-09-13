@@ -45,13 +45,13 @@ public class NoMappingsTestCases extends JAXBWithJSONTestCases{
 
     @Override
     public Object getJSONReadControlObject() {
-        JAXBElement jbe = new JAXBElement<SomeClass>(new QName(""), SomeClass.class, new SomeClass());
+        JAXBElement<SomeClass> jbe = new JAXBElement<SomeClass>(new QName(""), SomeClass.class, new SomeClass());
         return jbe;
     }
 
     @Override
     public Object getReadControlObject() {
-        JAXBElement jbe = new JAXBElement<SomeClass>(new QName("someClass"), SomeClass.class, new SomeClass());
+        JAXBElement<SomeClass> jbe = new JAXBElement<SomeClass>(new QName("someClass"), SomeClass.class, new SomeClass());
         return jbe;
     }
 

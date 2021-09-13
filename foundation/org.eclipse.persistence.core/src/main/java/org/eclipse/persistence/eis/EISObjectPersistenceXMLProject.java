@@ -180,7 +180,7 @@ public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
                     XMLInteraction interaction = (XMLInteraction)object;
                     Vector argumentNames = interaction.getArgumentNames();
                     Vector arguments = interaction.getArguments();
-                    Vector interactionArguments = new Vector(arguments.size());
+                    Vector<InteractionArgument> interactionArguments = new Vector<>(arguments.size());
                     for (int index = 0; index < arguments.size(); index++) {
                         InteractionArgument interactionArgument = new InteractionArgument();
                         interactionArgument.setArgumentName((String)argumentNames.get(index));
@@ -238,7 +238,7 @@ public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
                     XMLInteraction interaction = (XMLInteraction)object;
                     Vector arguments = interaction.getOutputArguments();
                     Vector argumentNames = interaction.getOutputArgumentNames();
-                    Vector interactionArguments = new Vector(arguments.size());
+                    Vector<InteractionArgument> interactionArguments = new Vector<>(arguments.size());
                     for (int index = 0; index < arguments.size(); index++) {
                         InteractionArgument interactionArgument = new InteractionArgument();
                         interactionArgument.setKey(((DatabaseField)arguments.get(index)).getName());
@@ -252,8 +252,8 @@ public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
                 public void setAttributeValueInObject(Object object, Object value) {
                     XMLInteraction interaction = (XMLInteraction)object;
                     Vector interactionArguments = (Vector)value;
-                    Vector arguments = new Vector(interactionArguments.size());
-                    Vector argumentNames = new Vector(interactionArguments.size());
+                    Vector<DatabaseField> arguments = new Vector<>(interactionArguments.size());
+                    Vector<String> argumentNames = new Vector<>(interactionArguments.size());
                     for (int index = 0; index < interactionArguments.size(); index++) {
                         InteractionArgument interactionArgument = (InteractionArgument)interactionArguments.get(index);
                         arguments.add(new DatabaseField((String)interactionArgument.getKey()));
@@ -377,10 +377,10 @@ public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
                 @Override
                 public Object getAttributeValueFromObject(Object object) {
                     Map<DatabaseField, DatabaseField> sourceToTargetKeyFields = ((EISOneToOneMapping)object).getSourceToTargetKeyFields();
-                    List associations = new ArrayList(sourceToTargetKeyFields.size());
+                    List<Association> associations = new ArrayList<>(sourceToTargetKeyFields.size());
                     Iterator<Map.Entry<DatabaseField, DatabaseField>> iterator = sourceToTargetKeyFields.entrySet().iterator();
                     while (iterator.hasNext()) {
-                        Map.Entry entry = (Map.Entry)iterator.next();
+                        Map.Entry<DatabaseField, DatabaseField> entry = iterator.next();
                         associations.add(new Association(entry.getKey(), entry.getValue()));
                     }
                     return associations;

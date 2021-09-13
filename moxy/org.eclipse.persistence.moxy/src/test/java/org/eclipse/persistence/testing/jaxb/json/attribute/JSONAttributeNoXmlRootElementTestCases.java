@@ -18,7 +18,6 @@ import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
@@ -42,14 +41,14 @@ public class JSONAttributeNoXmlRootElementTestCases extends JAXBWithJSONTestCase
 
     @Override
     public Object getReadControlObject() {
-        JAXBElement jbe = new JAXBElement<AddressNoRoot>(new QName("street"), AddressNoRoot.class, new AddressNoRoot());
+        JAXBElement<AddressNoRoot> jbe = new JAXBElement<AddressNoRoot>(new QName("street"), AddressNoRoot.class, new AddressNoRoot());
         return jbe;
     }
 
 
     @Override
     protected Object getJSONReadControlObject() {
-        JAXBElement jbe = new JAXBElement<AddressNoRoot>(new QName(""), AddressNoRoot.class, (AddressNoRoot) getControlObject());
+        JAXBElement<AddressNoRoot> jbe = new JAXBElement<AddressNoRoot>(new QName(""), AddressNoRoot.class, (AddressNoRoot) getControlObject());
         return jbe;
     }
 

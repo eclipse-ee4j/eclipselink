@@ -476,9 +476,9 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         Iterator<Map.Entry<DatabaseTable, DatabaseTable>> itEntries = selectStatement.getTableAliases().entrySet().iterator();
         DatabaseTable aliasTable = null;
         while(itEntries.hasNext()) {
-            Map.Entry entry = (Map.Entry)itEntries.next();
+            Map.Entry<DatabaseTable, DatabaseTable> entry = itEntries.next();
             if(table.equals(entry.getValue())) {
-                aliasTable = (DatabaseTable)entry.getKey();
+                aliasTable = entry.getKey();
                 aliasTables.add(aliasTable);
             }
         }
@@ -1510,7 +1510,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             Iterator<ClassDescriptor> it = descriptor.getInheritancePolicy().getChildDescriptors().iterator();
             while (it.hasNext()) {
                 // Define the same query for the child
-                ClassDescriptor childDescriptor = (ClassDescriptor)it.next();
+                ClassDescriptor childDescriptor = it.next();
 
                 // Most databases support delete cascade constraints by specifying a ON DELETE CASCADE option when defining foreign key constraints.
                 // However some databases which don't support foreign key constraints cannot use delete cascade constraints.
@@ -2534,7 +2534,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         Vector allFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
         Iterator<DatabaseField> it = rootDescriptor.getFields().iterator();
         while(it.hasNext()) {
-            DatabaseField field = (DatabaseField)it.next();
+            DatabaseField field = it.next();
             if(rootTable.equals(field.getTable())) {
                 allFields.add(field);
             }
@@ -2653,7 +2653,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
 
             Iterator<ClassDescriptor> it = descriptor.getInheritancePolicy().getChildDescriptors().iterator();
             while (it.hasNext()) {
-                ClassDescriptor childDescriptor = (ClassDescriptor)it.next();
+                ClassDescriptor childDescriptor = it.next();
 
                 // Need to process only "multiple tables" child descriptors
                 if ((childDescriptor.getTables().size() > descriptor.getTables().size()) ||
@@ -2689,7 +2689,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         Vector allFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
         Iterator<DatabaseField> it = getDescriptor().getFields().iterator();
         while(it.hasNext()) {
-            DatabaseField field = (DatabaseField)it.next();
+            DatabaseField field = it.next();
             if(table.equals(field.getTable())) {
                 allFields.add(field);
             }

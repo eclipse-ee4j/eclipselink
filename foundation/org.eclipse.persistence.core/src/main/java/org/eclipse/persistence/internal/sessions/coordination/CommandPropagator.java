@@ -90,7 +90,7 @@ public class CommandPropagator implements Runnable {
         Iterator<RemoteConnection> connections = rcm.getTransportManager().getConnectionsToExternalServicesForCommandPropagation().values().iterator();
 
         while (connections.hasNext()) {
-            connection = (RemoteConnection)connections.next();
+            connection = connections.next();
             this.propagateCommand(connection);
         }
     }
@@ -203,12 +203,12 @@ public class CommandPropagator implements Runnable {
                 // There is only one connection - no need for yet another thread.
                 // Set the connection into the current one
                 // so that it's recognized as async propagation in handleCommunicationException method.
-                this.connection = (RemoteConnection)iterator.next();
+                this.connection = iterator.next();
                 propagateCommand(this.connection);
             } else {
                 // This is the top level thread. We need to spawn off a bunch of async connection threads
                 while (iterator.hasNext()) {
-                    RemoteConnection remoteConnection = (RemoteConnection)iterator.next();
+                    RemoteConnection remoteConnection = iterator.next();
                     CommandPropagator propagator = new CommandPropagator(this.rcm, this.command, this.commandBytes, remoteConnection);
                     this.rcm.getServerPlatform().launchContainerRunnable(propagator);
                 }

@@ -346,7 +346,7 @@ public abstract class TransportManager {
             connectionsToExternalServices = new Hashtable(3);
 
             while (connections.hasMoreElements()) {
-                ((RemoteConnection)connections.nextElement()).close();
+                connections.nextElement().close();
             }
         }
     }

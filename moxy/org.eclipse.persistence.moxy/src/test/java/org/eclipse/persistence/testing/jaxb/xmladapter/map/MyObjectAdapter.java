@@ -41,7 +41,7 @@ public class MyObjectAdapter extends XmlAdapter<MyObject, HashMap<Integer, Strin
 
     @Override
     public HashMap<Integer, String> unmarshal(MyObject arg0) throws Exception {
-        HashMap theMap = new HashMap<Integer, String>();
+        HashMap<Integer, String> theMap = new HashMap<Integer, String>();
         List<String> keys = arg0.getKeys();
         List<String> values = arg0.getValues();
         for(int i=0; i<keys.size(); i++){

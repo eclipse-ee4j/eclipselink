@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,26 +26,26 @@ import org.eclipse.persistence.exceptions.*;
  * </p>
  */
 public class PackageDefinition extends DatabaseObjectDefinition {
-    protected Vector statements;
-    protected Vector procedures;
+    protected List<String> statements;
+    protected List<StoredProcedureDefinition> procedures;
 
     public PackageDefinition() {
-        this.statements = new Vector();
-        this.procedures = new Vector();
+        this.statements = new Vector<>();
+        this.procedures = new Vector<>();
     }
 
     /**
      * Packages can contain sets of procedures.
      */
     public void addProcedures(StoredProcedureDefinition procedure) {
-        getProcedures().addElement(procedure);
+        getProcedures().add(procedure);
     }
 
     /**
      * The statements are the SQL lines of code.
      */
     public void addStatement(String statement) {
-        getStatements().addElement(statement);
+        getStatements().add(statement);
     }
 
     /**
@@ -59,16 +59,14 @@ public class PackageDefinition extends DatabaseObjectDefinition {
             writer.write("CREATE PACKAGE " + getFullName());
             writer.write(" AS");
             writer.write("\n");
-            for (Enumeration statementsEnum = getStatements().elements();
-                     statementsEnum.hasMoreElements();) {
-                writer.write((String)statementsEnum.nextElement());
+            for (String statement: statements) {
+                writer.write(statement);
                 writer.write(platform.getBatchDelimiterString());
                 writer.write("\n");
             }
-            for (Enumeration proceduresEnum = getProcedures().elements();
-                     proceduresEnum.hasMoreElements();) {
+            for (StoredProcedureDefinition procedure: procedures) {
                 writer.write("\n");
-                String procedureString = ((StoredProcedureDefinition)proceduresEnum.nextElement()).buildCreationWriter(session, writer).toString();
+                String procedureString = procedure.buildCreationWriter(session, writer).toString();
                 writer.write(procedureString.substring(7, procedureString.length()));
                 writer.write("\n");
             }
@@ -97,28 +95,28 @@ public class PackageDefinition extends DatabaseObjectDefinition {
     /**
      * Packages can contain sets of procedures.
      */
-    public Vector getProcedures() {
+    public List<StoredProcedureDefinition> getProcedures() {
         return procedures;
     }
 
     /**
      * The statements are the SQL lines of code.
      */
-    public Vector getStatements() {
+    public List<String> getStatements() {
         return statements;
     }
 
     /**
      * Packages can contain sets of procedures.
      */
-    public void setProcedures(Vector procedures) {
+    public void setProcedures(List<StoredProcedureDefinition> procedures) {
         this.procedures = procedures;
     }
 
     /**
      * The statements are the SQL lines of code.
      */
-    public void setStatements(Vector statements) {
+    public void setStatements(List<String> statements) {
         this.statements = statements;
     }
 }

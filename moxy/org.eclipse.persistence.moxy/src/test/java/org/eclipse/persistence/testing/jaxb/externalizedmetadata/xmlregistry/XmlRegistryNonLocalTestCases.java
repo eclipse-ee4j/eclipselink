@@ -25,7 +25,6 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
@@ -43,7 +42,7 @@ public class XmlRegistryNonLocalTestCases extends JAXBWithJSONTestCases{
     @Override
     protected Object getControlObject() {
         QName name = new QName("foos");
-        JAXBElement jaxbElement = new JAXBElement<Integer>(name, Integer.class, 5);
+        JAXBElement<Integer> jaxbElement = new JAXBElement<Integer>(name, Integer.class, 5);
         return jaxbElement;
     }
 

@@ -244,7 +244,7 @@ public class MongoDatabaseInteraction implements Interaction {
     public MongoRecord buildRecordFromDBObject(Document object) {
         MongoRecord record = new MongoRecord();
         for (Iterator<Map.Entry<String, Object>> iterator = object.entrySet().iterator(); iterator.hasNext(); ) {
-            Map.Entry entry = (Map.Entry)iterator.next();
+            Map.Entry<String, Object> entry = iterator.next();
             if (entry.getValue() instanceof BasicDBList) {
                 List values = new ArrayList();
                 for (Iterator<Object> valuesIterator = ((BasicDBList)entry.getValue()).iterator(); valuesIterator.hasNext(); ) {

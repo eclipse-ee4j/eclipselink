@@ -82,7 +82,7 @@ public class ReadWeakIdentityMapTest extends TestCase {
             Map<Object, CacheKey> cache = getIdentityMap().getCacheKeys();
             numObjects = 0;
             for (Iterator<CacheKey> iterator = cache.values().iterator(); iterator.hasNext();) {
-                CacheKey key = (CacheKey)iterator.next();
+                CacheKey key = iterator.next();
                 if (key.getObject() != null) {
                     numObjects++;
                 }

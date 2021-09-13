@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlList;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.eclipse.persistence.internal.jaxb.AccessorFactoryWrapper;
@@ -334,13 +335,13 @@ public class CompilerHelper {
      */
     static Class getTypeFromAdapterClass(Class adapterClass) {
         if (adapterClass != null) {
-            Class declJavaType = Object.class;
+            Class<Object> declJavaType = Object.class;
             // look for marshal method
             Method[] tacMethods = PrivilegedAccessHelper.getMethods(adapterClass);
             for (int i = 0; i < tacMethods.length; i++) {
                 Method method = tacMethods[i];
                 if (method.getName().equals("marshal")) {
-                    Class returnType = PrivilegedAccessHelper.getMethodReturnType(method);
+                    Class<Object> returnType = PrivilegedAccessHelper.getMethodReturnType(method);
                     if (!(returnType == declJavaType)) {
                         declJavaType = returnType;
                         return declJavaType;
@@ -413,7 +414,7 @@ public class CompilerHelper {
                             if (nextAnnotation instanceof XmlJavaTypeAdapter) {
                                 Class typeClass = ((XmlJavaTypeAdapter) nextAnnotation).type();
                                 if (typeClass.getName().equals("jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter$DEFAULT")) {
-                                    Class adapterClass = ((XmlJavaTypeAdapter) nextAnnotation).value();
+                                    Class<? extends XmlAdapter> adapterClass = ((XmlJavaTypeAdapter) nextAnnotation).value();
                                     return getTypeFromAdapterClass(adapterClass);
                                 }
                                 return typeClass;
@@ -462,7 +463,7 @@ public class CompilerHelper {
                         return PrivilegedAccessHelper.getClassForName(actualType);
                     } else {
                         String adapterClassName = element.getXmlJavaTypeAdapter().getValue();
-                        Class adapterClass = PrivilegedAccessHelper.getClassForName(adapterClassName);
+                        Class<Object> adapterClass = PrivilegedAccessHelper.getClassForName(adapterClassName);
                         return getTypeFromAdapterClass(adapterClass);
                     }
                 }
@@ -472,7 +473,7 @@ public class CompilerHelper {
 
                     final Type tmiType = tmi.getType();
                     if (isCollectionType(tmiType)) {
-                        final Class itemType = PrivilegedAccessHelper.getClassForName(actualType);
+                        final Class<Object> itemType = PrivilegedAccessHelper.getClassForName(actualType);
                         Type parameterizedType = new ParameterizedType() {
                             Type[] typeArgs = { itemType };
 

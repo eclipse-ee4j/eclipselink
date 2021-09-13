@@ -49,7 +49,7 @@ public class IDResolverWrapper extends IDResolver {
 
     public IDResolverWrapper(Object sunResolver) {
         this.resolver = sunResolver;
-        Class resolverClass = sunResolver.getClass();
+        Class<? extends Object> resolverClass = sunResolver.getClass();
 
         try {
             this.bindMethod = PrivilegedAccessHelper.getMethod(resolverClass, BIND_METHOD_NAME, BIND_PARAMS, false);

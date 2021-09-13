@@ -14,13 +14,10 @@
 //     Denise Smith - May 2013
 package org.eclipse.persistence.testing.jaxb.xmlanyelement;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 
-import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.Marshaller;
-import jakarta.xml.bind.Unmarshaller;
+
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.MarshallerProperties;
@@ -63,9 +60,9 @@ public class XmlAnyJAXBElementTestCases extends JAXBWithJSONTestCases{
         Thing thing3 = new Thing();
         thing3.name = "thing3name";
 
-        JAXBElement jb1 = new JAXBElement<Thing>(new QName("something"), Thing.class, thing1);
-        JAXBElement jb2 = new JAXBElement<Thing>(new QName("address"), Thing.class, thing2);
-        JAXBElement jb3 = new JAXBElement<Thing>(new QName("thing"), Thing.class, thing3);
+        JAXBElement<Thing> jb1 = new JAXBElement<Thing>(new QName("something"), Thing.class, thing1);
+        JAXBElement<Thing> jb2 = new JAXBElement<Thing>(new QName("address"), Thing.class, thing2);
+        JAXBElement<Thing> jb3 = new JAXBElement<Thing>(new QName("thing"), Thing.class, thing3);
 
         r.things.add(jb1);
         r.things.add(jb2);

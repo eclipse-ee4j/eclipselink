@@ -1645,7 +1645,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
         //Add attribute fields
         for(Iterator<Expression> it = getPartialAttributeExpressions().iterator(); it.hasNext();){
-            Expression expression = (Expression)it.next();
+            Expression expression = it.next();
             if (expression.isQueryKeyExpression()) {
                 expression.getBuilder().setSession(session.getRootSession(null));
                 expression.getBuilder().setQueryClass(getDescriptor().getJavaClass());
@@ -1683,7 +1683,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         //Build fields in same order as the fields of the descriptor to ensure field and join indexes match.
         Vector selectionFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
         for (Iterator<DatabaseField> iterator = getDescriptor().getFields().iterator(); iterator.hasNext();) {
-            DatabaseField field = (DatabaseField)iterator.next();
+            DatabaseField field = iterator.next();
             if (localFields.contains(field)) {
                 selectionFields.add(field);
             } else {
@@ -1725,7 +1725,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
         // Add specified fields.
         for (Iterator<String> iterator = getExecutionFetchGroup().getAttributeNames().iterator(); iterator.hasNext();) {
-            String attribute = (String)iterator.next();
+            String attribute = iterator.next();
             DatabaseMapping mapping = getDescriptor().getObjectBuilder().getMappingForAttributeName(attribute);
             if (mapping == null) {
                 throw QueryException.fetchGroupAttributeNotMapped(attribute);
@@ -1760,7 +1760,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         // Build field list in the same order as descriptor's fields so that the fields printed in the usual order in SELECT clause.
         List<DatabaseField> fields = new ArrayList(fetchedFields.size());
         for (Iterator<DatabaseField> iterator = getDescriptor().getFields().iterator(); iterator.hasNext();) {
-            DatabaseField field = (DatabaseField)iterator.next();
+            DatabaseField field = iterator.next();
             if (fetchedFields.contains(field)) {
                 fields.add(field);
             }

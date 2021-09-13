@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -124,7 +124,7 @@ public class JaxbClassLoader extends ClassLoader {
     }
 
     public Class generateClass(String className, byte[] bytes) {
-        Class theClass = this.defineClass(className, bytes, 0, bytes.length);
+        Class<?> theClass = this.defineClass(className, bytes, 0, bytes.length);
         generatedClasses.put(className, theClass);
         return theClass;
     }

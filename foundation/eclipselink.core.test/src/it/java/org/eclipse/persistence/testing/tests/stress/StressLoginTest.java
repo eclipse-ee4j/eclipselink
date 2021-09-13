@@ -41,8 +41,8 @@ public void test( )
 
     try {
         for (int i = 0; i < stressLevel; i++) {
-            Session session = new Project(getSession().getDatasourceLogin().clone()).createDatabaseSession();
-            ((DatabaseSession) session).login();
+            DatabaseSession session = new Project(getSession().getDatasourceLogin().clone()).createDatabaseSession();
+            session.login();
             sessions.addElement(session);
         }
         getSession().readObject(Address.class);

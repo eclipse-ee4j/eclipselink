@@ -2093,7 +2093,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 // The transformer is capable of altering domain classes to handle a LAZY hint for OneToOne mappings.  It will only
                 // be returned if we we are meant to process these mappings.
                 if (enableWeaving) {
-                    Collection persistenceClasses = new ArrayList<>();
+                    Collection<MetadataClass> persistenceClasses = new ArrayList<>();
                     MetadataAsmFactory factory = new MetadataAsmFactory(new MetadataLogger(session), classLoaderToUse);
                     if (shouldBuildProject) {
                         // If deploying from a sessions-xml it is still desirable to allow the classes to be weaved.
@@ -4480,7 +4480,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         EntityManagerSetupImpl newSetupImpl = new EntityManagerSetupImpl(uniqueName, sessionName);
         newSetupImpl.setIsInContainerMode(isInContainerMode);
         newSetupImpl.enableWeaving = enableWeaving;
-        Map refreshProperties = new HashMap<>();
+        Map<Object, Object> refreshProperties = new HashMap<>();
         refreshProperties.putAll(getSession().getProperties());
         if (properties != null){
             refreshProperties.putAll(properties);

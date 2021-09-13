@@ -156,9 +156,9 @@ public class Ni1TestSet {
     @SuppressWarnings("unchecked")
     @Test
     public void runQuery() {
-        Session s = project.createDatabaseSession();
+        DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
-        ((DatabaseSession)s).login();
+        s.login();
         Vector queryArgs = new NonSynchronizedVector();
         queryArgs.add(1);
         boolean worked = false;
@@ -171,6 +171,6 @@ public class Ni1TestSet {
           msg = e.getMessage();
         }
         assertTrue("invocation bool_test failed: " + msg, worked);
-        ((DatabaseSession)s).logout();
+        s.logout();
     }
 }

@@ -3309,7 +3309,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         DatabaseField field = new DatabaseField(qualifiedFieldName, getStartDelimiter(), getEndDelimiter());
         Iterator<ClassDescriptor> descriptors = session.getDescriptors().values().iterator();
         while (descriptors.hasNext()) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
+            ClassDescriptor descriptor = descriptors.next();
             if (!descriptor.usesSequenceNumbers()) {
                 continue;
             }

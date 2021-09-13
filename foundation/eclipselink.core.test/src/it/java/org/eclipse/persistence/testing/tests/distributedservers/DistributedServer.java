@@ -44,7 +44,7 @@ public abstract class DistributedServer {
             this.session = new SessionBroker();
             Iterator<String> enumtr = ((SessionBroker)testSssion).getSessionsByName().keySet().iterator();
             while (enumtr.hasNext()) {
-                String name = (String)enumtr.next();
+                String name = enumtr.next();
                 DatabaseSession newMemberSession = ((SessionBroker)testSssion).getSessionForName(name).getProject().createDatabaseSession();
                 ((SessionBroker)this.session).registerSession(name, newMemberSession);
             }
@@ -56,11 +56,11 @@ public abstract class DistributedServer {
         if (testSssion.isSessionBroker()) {
             Iterator<String> enumtr = ((SessionBroker)testSssion).getSessionsByName().keySet().iterator();
             while (enumtr.hasNext()) {
-                String name = (String)enumtr.next();
-                Session oldMemberSession = ((SessionBroker)testSssion).getSessionForName(name);
-                Session newMemberSession = ((SessionBroker)this.session).getSessionForName(name);
-                ((AbstractSession)newMemberSession).getAccessor().closeConnection();
-                ((AbstractSession)newMemberSession).setAccessor(((AbstractSession)oldMemberSession).getAccessor());
+                String name = enumtr.next();
+                AbstractSession oldMemberSession = ((SessionBroker)testSssion).getSessionForName(name);
+                AbstractSession newMemberSession = ((SessionBroker)this.session).getSessionForName(name);
+                newMemberSession.getAccessor().closeConnection();
+                newMemberSession.setAccessor(oldMemberSession.getAccessor());
             }
         } else {
             ((AbstractSession)this.session).getAccessor().closeConnection();

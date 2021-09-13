@@ -27,7 +27,7 @@ import org.w3c.dom.Document;
 public class JAXBElementEnumTestCases extends JAXBElementTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbelement/enum/coin.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbelement/enum/coin.json";
-    private final static Class targetClass = Coin.class;
+    private final static Class<Coin> targetClass = Coin.class;
 
     public JAXBElementEnumTestCases(String name) throws Exception {
         super(name);

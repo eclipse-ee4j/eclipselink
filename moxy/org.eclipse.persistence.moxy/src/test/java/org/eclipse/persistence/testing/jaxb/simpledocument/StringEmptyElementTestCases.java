@@ -33,7 +33,7 @@ public class StringEmptyElementTestCases extends JAXBWithJSONTestCases {
 
     @Override
     protected Object getControlObject() {
-        JAXBElement value = new StringObjectFactory().createStringRoot();
+        JAXBElement<String> value = new StringObjectFactory().createStringRoot();
         value.setValue("");
         return value;
     }

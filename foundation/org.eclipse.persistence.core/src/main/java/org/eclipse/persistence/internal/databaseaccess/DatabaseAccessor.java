@@ -1559,7 +1559,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             // Check the cache by sql string, must synchronize check and removal.
             Map<String, Statement> statementCache = getStatementCache();
             synchronized (statementCache) {
-                statement = (PreparedStatement)statementCache.get(call.getSQLString());
+                statement = statementCache.get(call.getSQLString());
                 if (statement != null) {
                     // Need to remove to allow concurrent statement execution.
                     statementCache.remove(call.getSQLString());

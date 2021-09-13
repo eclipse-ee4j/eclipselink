@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -70,8 +70,8 @@ public class DomHandlerConverter implements XMLConverter {
             ConversionManager cMgr = session.getDatasourcePlatform().getConversionManager();
             Class<? extends DomHandler> domHandlerClass = PrivilegedAccessHelper.getClassForName(domHandlerClassName, true, cMgr.getLoader());
 
-            Constructor cons = PrivilegedAccessHelper.getDeclaredConstructorFor(domHandlerClass, new Class[]{}, true);
-            this.domHandler = (DomHandler)PrivilegedAccessHelper.invokeConstructor(cons, new Object[]{});
+            Constructor<? extends DomHandler> cons = PrivilegedAccessHelper.getDeclaredConstructorFor(domHandlerClass, new Class[]{}, true);
+            this.domHandler = PrivilegedAccessHelper.invokeConstructor(cons, new Object[]{});
 
             Method createUnmarshallerMethod = PrivilegedAccessHelper.getDeclaredMethod(domHandlerClass, "createUnmarshaller", new Class[]{ValidationEventHandler.class});
             resultType = PrivilegedAccessHelper.getMethodReturnType(createUnmarshallerMethod);

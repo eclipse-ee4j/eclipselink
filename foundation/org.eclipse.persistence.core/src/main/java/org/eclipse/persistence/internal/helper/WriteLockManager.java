@@ -280,7 +280,7 @@ public class WriteLockManager {
             boolean isPartialObject = (fetchGroupManager != null) && fetchGroupManager.isPartialObject(objectForClone);
             for (Iterator<DatabaseMapping> mappings = descriptor.getLockableMappings().iterator();
                  mappings.hasNext();) {
-                DatabaseMapping mapping = (DatabaseMapping)mappings.next();
+                DatabaseMapping mapping = mappings.next();
                 // Only cascade fetched mappings.
                 if (!isPartialObject || (fetchGroupManager.isAttributeFetched(objectForClone, mapping.getAttributeName()))) {
                     // any mapping in this list must not have indirection.
@@ -599,7 +599,7 @@ public class WriteLockManager {
         RuntimeException exception = null;
         while (locks.hasNext()) {
             try {
-                CacheKey cacheKeyToRemove = (CacheKey) locks.next();
+                CacheKey cacheKeyToRemove = locks.next();
                 if (cacheKeyToRemove.getObject() == null) {
                     cacheKeyToRemove.removeFromOwningMap();
                 }

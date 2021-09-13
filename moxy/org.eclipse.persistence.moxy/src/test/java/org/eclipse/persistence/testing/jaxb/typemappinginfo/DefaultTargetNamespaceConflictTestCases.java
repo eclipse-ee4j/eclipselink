@@ -89,10 +89,10 @@ public class DefaultTargetNamespaceConflictTestCases extends TypeMappingInfoWith
         jaxbMarshaller.marshal(otherThing, sw);
 
         InputSource is = new InputSource(new StringReader(sw.toString()));
-        Node doc = parser.parse(is);
+        Document doc = parser.parse(is);
         assertNotNull(doc);
         assertTrue(doc instanceof Document);
-        Element root = ((Document)doc).getDocumentElement();
+        Element root = doc.getDocumentElement();
         assertEquals("namespace1",root.getNamespaceURI());
     }
 

@@ -78,7 +78,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
 
     @Override
     public Predicate in(Object... values) {
-        List list = new ArrayList<>();
+        List<Expression<?>> list = new ArrayList<>();
         list.add(this);
         return new CompoundExpressionImpl(this.metamodel, this.currentNode.in(values), list, "in");
     }
@@ -99,7 +99,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
                 // and route the execution to the right method
                 return in((Expression<Collection<?>>) values[0]);
             }
-            List list = new ArrayList<>();
+            List<Expression<?>> list = new ArrayList<>();
             list.add(this);
             if (values.length == 1 && ((InternalExpression) values[0]).isSubquery()) {
                 list.add(values[0]);
@@ -130,7 +130,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
      */
     @Override
     public Predicate in(Collection<?> values) {
-        List list = new ArrayList<>();
+        List<Expression<?>> list = new ArrayList<>();
         list.add(this);
         return new InImpl(this.metamodel, this, values, list);
     }
@@ -142,7 +142,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
      */
     @Override
     public Predicate in(Expression<Collection<?>> values) {
-        List list = new ArrayList<>();
+        List<Expression<?>> list = new ArrayList<>();
         list.add(values);
         list.add(this);
         return new InImpl(metamodel, this, (ExpressionImpl)values, list);
@@ -150,7 +150,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
 
     @Override
     public Predicate isNotNull() {
-        List list = new ArrayList<>();
+        List<Expression<?>> list = new ArrayList<>();
         list.add(this);
         return new CompoundExpressionImpl(this.metamodel, this.currentNode.notNull(), list, "not null");
     }
@@ -158,7 +158,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
 
     @Override
     public Predicate isNull() {
-        List list = new ArrayList<>();
+        List<Expression<?>> list = new ArrayList<>();
         list.add(this);
         return new CompoundExpressionImpl(this.metamodel, this.currentNode.isNull(), list, "is null");
     }

@@ -74,6 +74,7 @@ import jakarta.xml.bind.annotation.XmlTransient;
 import jakarta.xml.bind.annotation.XmlType;
 import jakarta.xml.bind.annotation.XmlType.DEFAULT;
 import jakarta.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapters;
 import javax.xml.namespace.QName;
@@ -508,7 +509,7 @@ public final class AnnotationsProcessor {
         typeMappingInfosToGeneratedClasses = new HashMap<TypeMappingInfo, Class>();
         typeMappingInfosToSchemaTypes = new HashMap<TypeMappingInfo, QName>();
         elementDeclarations = new HashMap<String, Map<QName, ElementDeclaration>>();
-        Map globalElements = new HashMap<QName, ElementDeclaration>();
+        Map<QName, ElementDeclaration> globalElements = new HashMap<>();
         elementDeclarations.put(XmlElementDecl.GLOBAL.class.getName(), globalElements);
         localElements = new ArrayList<ElementDeclaration>();
 
@@ -815,17 +816,17 @@ public final class AnnotationsProcessor {
                     info.setXmlNameTransformer(nsInfoXmlNameTransformer);
                 } else if (helper.isAnnotationPresent(javaClass, XmlNameTransformer.class)) {
                     XmlNameTransformer xmlNameTransformer = (XmlNameTransformer) helper.getAnnotation(javaClass, XmlNameTransformer.class);
-                    Class nameTransformerClass = xmlNameTransformer.value();
+                    Class<? extends XMLNameTransformer> nameTransformerClass = xmlNameTransformer.value();
                     try {
-                        info.setXmlNameTransformer((XMLNameTransformer) nameTransformerClass.getConstructor().newInstance());
+                        info.setXmlNameTransformer(nameTransformerClass.getConstructor().newInstance());
                     } catch (ReflectiveOperationException ex) {
                         throw JAXBException.exceptionWithNameTransformerClass(nameTransformerClass.getName(), ex);
                     }
                 } else if (helper.isAnnotationPresent(javaClass.getPackage(), XmlNameTransformer.class)) {
                     XmlNameTransformer xmlNameTransformer = (XmlNameTransformer) helper.getAnnotation(javaClass.getPackage(), XmlNameTransformer.class);
-                    Class nameTransformerClass = xmlNameTransformer.value();
+                    Class<? extends XMLNameTransformer> nameTransformerClass = xmlNameTransformer.value();
                     try {
-                        info.setXmlNameTransformer((XMLNameTransformer) nameTransformerClass.getConstructor().newInstance());
+                        info.setXmlNameTransformer(nameTransformerClass.getConstructor().newInstance());
                     } catch (ReflectiveOperationException ex) {
                         throw JAXBException.exceptionWithNameTransformerClass(nameTransformerClass.getName(), ex);
                     }
@@ -2064,7 +2065,7 @@ public final class AnnotationsProcessor {
         if (helper.isAnnotationPresent(javaHasAnnotations, XmlPath.class)) {
             XmlPath xmlPath = (XmlPath) helper.getAnnotation(javaHasAnnotations, XmlPath.class);
             property.setXmlPath(xmlPath.value());
-            Field tempField = new XMLField(xmlPath.value());
+            Field<XMLConversionManager, NamespaceResolver> tempField = new XMLField(xmlPath.value());
             boolean isAttribute = tempField.getLastXPathFragment().isAttribute();
             property.setIsAttribute(isAttribute);
             // set schema name
@@ -3215,8 +3216,8 @@ public final class AnnotationsProcessor {
     public HashMap<String, Property> getPropertyMapFromArrayList(ArrayList<Property> props) {
         HashMap propMap = new HashMap(props.size());
 
-        for (Object next : props) {
-            propMap.put(((Property)next).getPropertyName(), next);
+        for (Property next : props) {
+            propMap.put(next.getPropertyName(), next);
         }
         return propMap;
     }
@@ -3286,7 +3287,7 @@ public final class AnnotationsProcessor {
         }
 
         info.setClassName(javaClass.getQualifiedName());
-        Class restrictionClass = String.class;
+        Class<?> restrictionClass = String.class;
         QName restrictionBase = getSchemaTypeFor(helper.getJavaClass(restrictionClass));
 
         if (helper.isAnnotationPresent(javaClass, XmlEnum.class)) {
@@ -3808,7 +3809,7 @@ public final class AnnotationsProcessor {
             String url;
             String localName;
             String defaultValue = null;
-            Class scopeClass = jakarta.xml.bind.annotation.XmlElementDecl.GLOBAL.class;
+            Class<XmlElementDecl.GLOBAL> scopeClass = jakarta.xml.bind.annotation.XmlElementDecl.GLOBAL.class;
 
             if (xmlEltDecl != null) {
                 url = xmlEltDecl.getNamespace();
@@ -3884,7 +3885,7 @@ public final class AnnotationsProcessor {
 
             if (helper.isAnnotationPresent(next, XmlJavaTypeAdapter.class)) {
                 XmlJavaTypeAdapter typeAdapter = (XmlJavaTypeAdapter) helper.getAnnotation(next, XmlJavaTypeAdapter.class);
-                Class typeAdapterClass = typeAdapter.value();
+                Class<? extends XmlAdapter> typeAdapterClass = typeAdapter.value();
                 declaration.setJavaTypeAdapterClass(typeAdapterClass);
 
                 Class declJavaType = CompilerHelper.getTypeFromAdapterClass(typeAdapterClass);
@@ -4011,12 +4012,12 @@ public final class AnnotationsProcessor {
         if(elem == null){
             return false;
         }
-        List annotations = (List<JavaAnnotation>) elem.getAnnotations();
+        List<JavaAnnotation> annotations = (List<JavaAnnotation>) elem.getAnnotations();
         if (annotations == null || annotations.isEmpty()) {
             return false;
         }
-        for (Object annotation : annotations) {
-            String nextName = ((JavaAnnotation) annotation).getName();
+        for (JavaAnnotation annotation : annotations) {
+            String nextName = annotation.getName();
             if (nextName.startsWith(JAVAX_XML_BIND_ANNOTATION)
                     || nextName.startsWith(OXM_ANNOTATIONS)
                     || nextName.equals(CompilerHelper.XML_LOCATION_ANNOTATION_NAME)

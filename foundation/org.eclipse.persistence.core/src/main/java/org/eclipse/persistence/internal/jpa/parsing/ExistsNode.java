@@ -75,7 +75,7 @@ public class ExistsNode extends Node {
         // get generated.
         List<ReportItem> items = reportQuery.getItems();
         for (Iterator<ReportItem> i = items.iterator(); i.hasNext();) {
-            ReportItem item = (ReportItem)i.next();
+            ReportItem item = i.next();
             Expression expr = item.getAttributeExpression();
             reportQuery.addNonFetchJoinedAttribute(expr);
         }

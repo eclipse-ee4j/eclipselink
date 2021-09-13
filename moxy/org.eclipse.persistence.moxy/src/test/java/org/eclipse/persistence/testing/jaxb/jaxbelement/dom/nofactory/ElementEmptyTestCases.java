@@ -14,10 +14,8 @@
 //     Denise Smith - October 2012
 package org.eclipse.persistence.testing.jaxb.jaxbelement.dom.nofactory;
 
-import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Marshaller;
+
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -46,7 +44,7 @@ public class ElementEmptyTestCases extends JAXBWithJSONTestCases{
             doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
             Element elm = doc.createElementNS("AGroupDef/annotation", "rootchild");
             elm.setTextContent("");
-            JAXBElement  obj = new JAXBElement<Object>(new QName("mynamespace", "mynewname"), Object.class, elm);
+            JAXBElement<Object> obj = new JAXBElement<Object>(new QName("mynamespace", "mynewname"), Object.class, elm);
             return obj;
         } catch (Exception e) {
             e.printStackTrace();

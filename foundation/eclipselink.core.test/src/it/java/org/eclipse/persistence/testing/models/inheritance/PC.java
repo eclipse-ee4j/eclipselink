@@ -33,7 +33,7 @@ public class PC extends Computer {
         // tests rely on the ammendment method.
         Enumeration<DatabaseMapping> mappings = descriptor.getMappings().elements();
         while (mappings.hasMoreElements()) {
-            DatabaseMapping mapping = (DatabaseMapping)mappings.nextElement();
+            DatabaseMapping mapping = mappings.nextElement();
             if (mapping.isTransformationMapping()) {
                 Object pctype = ((TransformationMapping)mapping).getFieldNameToMethodNames().get("PCTYPE");
                 if (pctype != null) {

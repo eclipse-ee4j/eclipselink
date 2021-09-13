@@ -151,7 +151,7 @@ public class AnnotationProxy implements InvocationHandler {
             return null;
         }
 
-        Class returnType = method.getReturnType();
+        Class<?> returnType = method.getReturnType();
         Object value = getComponents().get(method.getName());
 
         if (value == null && returnType == boolean.class) {

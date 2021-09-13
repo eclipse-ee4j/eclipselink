@@ -17,7 +17,6 @@ package org.eclipse.persistence.testing.jaxb.simpledocument;
 import java.io.StringReader;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 
 import jakarta.xml.bind.JAXBElement;
 
@@ -66,7 +65,7 @@ public class SimpleDocumentDateTestCases extends JAXBWithJSONTestCases {
 
         @Override
         protected Object getControlObject() {
-        JAXBElement value = new DateObjectFactory().createDateRoot();
+        JAXBElement<Date> value = new DateObjectFactory().createDateRoot();
 
         Calendar cal = Calendar.getInstance();
         cal.clear();

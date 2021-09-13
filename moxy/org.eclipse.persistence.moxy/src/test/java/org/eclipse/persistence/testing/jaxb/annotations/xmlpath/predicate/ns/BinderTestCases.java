@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,6 +24,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.oxm.XMLTestCase;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 public class BinderTestCases extends XMLTestCase {
 
@@ -43,7 +44,7 @@ public class BinderTestCases extends XMLTestCase {
 
     public void testUnmarshal() throws Exception {
         JAXBContext jc = JAXBContextFactory.createContext(new Class[] {Customer.class}, null);
-        Binder binder = jc.createBinder();
+        Binder<Node> binder = jc.createBinder();
         Customer test = (Customer) binder.unmarshal(getControlDocument());
 
         assertEquals(getControlObject(), test);

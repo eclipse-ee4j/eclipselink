@@ -133,7 +133,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
             Vector summariesHasResult = new Vector();
             for (Enumeration<TestResultsSummary> enumtr = selectedSummary.getLoadBuildSummary().getSummaries().elements();
                  enumtr.hasMoreElements();) {
-                TestResultsSummary summary = (TestResultsSummary)enumtr.nextElement();
+                TestResultsSummary summary = enumtr.nextElement();
                 if ((summary.getResults() != null) && (summary.getResults().size() != 0)) {
                     summariesHasResult.addElement(summary);
                 }
@@ -761,7 +761,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
         Vector rootSummaries = new Vector();
 
         for (Enumeration<TestResultsSummary> enumtr = loadBuild.getSummaries().elements(); enumtr.hasMoreElements();) {
-            TestResultsSummary summary = (TestResultsSummary)enumtr.nextElement();
+            TestResultsSummary summary = enumtr.nextElement();
             if (summary.getParent() == null) {
                 rootSummaries.addElement(summary);
             }
@@ -780,7 +780,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
 
         for (Enumeration<TestResultsSummary> enumtr = theSummary.getLoadBuildSummary().getSummaries().elements();
              enumtr.hasMoreElements();) {
-            TestResultsSummary summary = (TestResultsSummary)enumtr.nextElement();
+            TestResultsSummary summary = enumtr.nextElement();
             if ((summary.getParent() != null) && summary.getParent().getName().equals(theSummary.getName())) {
                 children.addElement(summary);
             }

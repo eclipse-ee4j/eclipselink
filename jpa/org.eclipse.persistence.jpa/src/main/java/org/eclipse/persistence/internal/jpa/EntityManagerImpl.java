@@ -901,7 +901,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             primaryKey = id;
         } else {
             CMPPolicy policy = descriptor.getCMPPolicy();
-            Class pkClass = policy.getPKClass();
+            Class<Object> pkClass = policy.getPKClass();
             if ((pkClass != null) && (pkClass != id.getClass()) && (!BasicTypeHelperImpl.getInstance().isStrictlyAssignableFrom(pkClass, id.getClass()))) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("invalid_pk_class", new Object[] { descriptor.getCMPPolicy().getPKClass(), id.getClass() }));
             }
@@ -2010,7 +2010,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[] { null }));
             }
 
-            UnitOfWork uow = getActivePersistenceContext(checkForTransaction(true)); // Throws TransactionRequiredException if no active transaction.
+            UnitOfWorkImpl uow = getActivePersistenceContext(checkForTransaction(true)); // Throws TransactionRequiredException if no active transaction.
 
             if (!contains(entity, uow)) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("cant_lock_not_managed_object", new Object[] { entity }));
@@ -2025,7 +2025,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                     || lockMode.name().equals(ObjectLevelReadQuery.PESSIMISTIC_FORCE_INCREMENT)) {
 
                 // return if the entity has previously been pessimistically locked
-                if (((UnitOfWorkImpl)uow).isPessimisticLocked(entity)) {
+                if (uow.isPessimisticLocked(entity)) {
                     return;
                 }
 

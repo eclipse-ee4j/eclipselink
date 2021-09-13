@@ -394,16 +394,16 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
         raq.setSelectionCriteria(raq.getExpressionBuilder().get("lastName").equal("Way").or(raq.getExpressionBuilder().get("lastName").equal("Jones")));
         Employee emp = (Employee)((Vector)getDbSession().executeQuery(raq)).firstElement();
         emp.getPhoneNumbers();
-        for (Iterator iterator = emp.getPhoneNumbers().iterator(); iterator.hasNext();){
-            ((PhoneNumber)iterator.next()).getOwner();
+        for (Iterator<PhoneNumber> iterator = emp.getPhoneNumbers().iterator(); iterator.hasNext();){
+            iterator.next().getOwner();
         }
 
         raq = new ReadAllQuery(Address.class);
         raq.setSelectionCriteria(raq.getExpressionBuilder().get("city").like("%ttawa%"));
         Address addr = (Address)((Vector)getDbSession().executeQuery(raq)).firstElement();
         addr.getEmployees();
-        for (Iterator iterator = addr.getEmployees().iterator(); iterator.hasNext();){
-            ((Employee)iterator.next()).getAddress();
+        for (Iterator<Employee> iterator = addr.getEmployees().iterator(); iterator.hasNext();){
+            iterator.next().getAddress();
         }
 
         getDbSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -459,16 +459,16 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
         raq.setSelectionCriteria(raq.getExpressionBuilder().notEmpty("phoneNumbers"));
         Employee emp = (Employee)((Vector)getDbSession().executeQuery(raq)).firstElement();
         emp.getPhoneNumbers();
-        for (Iterator iterator = emp.getPhoneNumbers().iterator(); iterator.hasNext();){
-            ((PhoneNumber)iterator.next()).getOwner();
+        for (Iterator<PhoneNumber> iterator = emp.getPhoneNumbers().iterator(); iterator.hasNext();){
+            iterator.next().getOwner();
         }
 
         raq = new ReadAllQuery(Address.class);
         raq.setSelectionCriteria(raq.getExpressionBuilder().get("city").like("%ttawa%"));
         Address addr = (Address)((Vector)getDbSession().executeQuery(raq)).firstElement();
         addr.getEmployees();
-        for (Iterator iterator = addr.getEmployees().iterator(); iterator.hasNext();){
-            Employee addrEmp = (Employee)iterator.next();
+        for (Iterator<Employee> iterator = addr.getEmployees().iterator(); iterator.hasNext();){
+            Employee addrEmp = iterator.next();
             addrEmp.getAddress();
             addrEmp.getPhoneNumbers().size(); // as the report query will join in all phones to all emps, make sure we can compare.
         }
@@ -540,8 +540,8 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
         raq.setSelectionCriteria(raq.getExpressionBuilder().get("city").like("%ttawa%"));
         Address addr = (Address)((Vector)getDbSession().executeQuery(raq)).firstElement();
         addr.getEmployees();
-        for (Iterator iterator = addr.getEmployees().iterator(); iterator.hasNext();){
-            ((Employee)iterator.next()).getAddress();
+        for (Iterator<Employee> iterator = addr.getEmployees().iterator(); iterator.hasNext();){
+            iterator.next().getAddress();
         }
 
         getDbSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -603,8 +603,8 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
         raq.setSelectionCriteria(raq.getExpressionBuilder().get("city").like("%ttawa%"));
         Address addr = (Address)((Vector)getDbSession().executeQuery(raq)).firstElement();
         addr.getEmployees();
-        for (Iterator iterator = addr.getEmployees().iterator(); iterator.hasNext();){
-            ((Employee)iterator.next()).getAddress();
+        for (Iterator<Employee> iterator = addr.getEmployees().iterator(); iterator.hasNext();){
+            iterator.next().getAddress();
         }
 
         getDbSession().getIdentityMapAccessor().initializeAllIdentityMaps();

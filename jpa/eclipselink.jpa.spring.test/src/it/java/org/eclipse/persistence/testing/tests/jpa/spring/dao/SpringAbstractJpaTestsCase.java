@@ -160,7 +160,7 @@ public abstract class SpringAbstractJpaTestsCase {
         Truck truck = new Truck("namedQuery");
         try {
             dao.persist(truck);
-            List l = dao.findByNamedQuery("findTruckByDriverName", "namedQuery");
+            List<?> l = dao.findByNamedQuery("findTruckByDriverName", "namedQuery");
             assertTrue(l.contains(truck));
         }catch (Exception e){
             assertFalse("Error during named query: " + e, true);

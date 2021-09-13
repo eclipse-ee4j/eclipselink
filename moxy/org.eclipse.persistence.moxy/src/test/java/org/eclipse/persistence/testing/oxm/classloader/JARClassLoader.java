@@ -103,9 +103,9 @@ protected Class customLoadUnresolvedClass(String className) throws ClassNotFound
  * and store them in the hashtable.
  */
 protected void extractPackageNames(String jarFileName) {
-    Enumeration stream = this.buildJARFile(jarFileName).entries();
+    Enumeration<? extends ZipEntry> stream = this.buildJARFile(jarFileName).entries();
     while (stream.hasMoreElements()) {
-        String entryName = ((ZipEntry) stream.nextElement()).getName();
+        String entryName = stream.nextElement().getName();
         int endIndex = entryName.lastIndexOf("/");
         // skip over entries for files in the root directory and directories
         if ((endIndex != -1) && (endIndex != (entryName.length() - 1))) {
@@ -174,7 +174,7 @@ protected byte[] loadData(ZipFile jarFile, ZipEntry jarEntry) throws IOException
  */
 protected Class loadUnresolvedClass(String className) throws ClassNotFoundException {
     // check whether we already loaded the class
-    Class c = this.findLoadedClass(className);
+    Class<?> c = this.findLoadedClass(className);
     if (c != null) {
         return c;
     }

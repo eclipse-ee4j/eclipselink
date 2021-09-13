@@ -550,8 +550,8 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * Build a foreign key constraint using FieldDefinition.getForeignKeyFieldName().
      */
     protected ForeignKeyConstraint buildForeignKeyConstraint(FieldDefinition field, DatabasePlatform platform) {
-        Vector sourceFields = new Vector();
-        Vector targetFields = new Vector();
+        List<String> sourceFields = new Vector<>();
+        List<String> targetFields = new Vector<>();
         ForeignKeyConstraint fkConstraint = new ForeignKeyConstraint();
         DatabaseField tempTargetField = new DatabaseField(field.getForeignKeyFieldName());
         DatabaseField tempSourceField = new DatabaseField(field.getName());
@@ -797,10 +797,10 @@ public class TableDefinition extends DatabaseObjectDefinition {
             }
         }
         if (foreignKeyMap != null) {
-            clone.setForeignKeyMap(new HashMap(this.foreignKeyMap));
+            clone.setForeignKeyMap(new HashMap<>(this.foreignKeyMap));
         }
         if (uniqueKeys != null) {
-            clone.setUniqueKeys(new ArrayList(this.uniqueKeys));
+            clone.setUniqueKeys(new ArrayList<>(this.uniqueKeys));
         }
         return clone;
     }

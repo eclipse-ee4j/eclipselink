@@ -14,7 +14,6 @@
 // Oracle = 2.2 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.classloader;
 
-import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 
@@ -33,7 +32,7 @@ public class InnerClassTestCases extends TestCase {
         urls[0] = Thread.currentThread().getContextClassLoader().getResource("org/eclipse/persistence/testing/jaxb/classloader/innerClass.jar");
         URLClassLoader classLoader = new URLClassLoader(urls);
 
-        Class classAClass = classLoader.loadClass("org.eclipse.persistence.testing.jaxb.classloader.ClassWithInnerClass");
+        Class<?> classAClass = classLoader.loadClass("org.eclipse.persistence.testing.jaxb.classloader.ClassWithInnerClass");
 
         classes[0] = classAClass;
         JAXBContext ctx = JAXBContextFactory.createContext(classes, null, Thread.currentThread().getContextClassLoader());

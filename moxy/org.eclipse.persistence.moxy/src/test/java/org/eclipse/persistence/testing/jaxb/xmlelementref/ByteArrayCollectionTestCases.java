@@ -17,11 +17,10 @@ package org.eclipse.persistence.testing.jaxb.xmlelementref;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.Unmarshaller;
+
 import javax.xml.namespace.QName;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class ByteArrayCollectionTestCases  extends JAXBWithJSONTestCases {
@@ -56,8 +55,8 @@ public class ByteArrayCollectionTestCases  extends JAXBWithJSONTestCases {
         byteArrayList2.add(bytes3);
         byteArrayList2.add(bytes4);
 
-        JAXBElement elem1 = new JAXBElement<List>(new QName("things"), List.class, byteArrayList);
-        JAXBElement elem2 = new JAXBElement<List>(new QName("things"), List.class, byteArrayList2);
+        JAXBElement<List> elem1 = new JAXBElement<List>(new QName("things"), List.class, byteArrayList);
+        JAXBElement<List> elem2 = new JAXBElement<List>(new QName("things"), List.class, byteArrayList2);
 
         theList.add(elem1);
         theList.add(elem2);

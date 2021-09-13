@@ -258,7 +258,7 @@ public class CoreAttributeGroup<
         if (hasItems()) {
             clone.items = new HashMap<>();
             for (ATTRIBUTE_ITEM item : this.items.values()){
-                clone.items.put(item.getAttributeName(), (ATTRIBUTE_ITEM) item.clone((Map<CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>, CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>>)cloneMap, clone));
+                clone.items.put(item.getAttributeName(), (ATTRIBUTE_ITEM) item.clone(cloneMap, clone));
             }
         }
         return clone;

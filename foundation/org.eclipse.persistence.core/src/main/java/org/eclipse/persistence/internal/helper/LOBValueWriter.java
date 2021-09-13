@@ -96,7 +96,7 @@ public class LOBValueWriter {
         Enumeration enumValues = dbCall.getContexts().getValues().elements();
         AbstractSession executionSession = dbCall.getQuery().getSession().getExecutionSession(dbCall.getQuery());
         while (enumFields.hasMoreElements()) {
-            DatabaseField field = (DatabaseField)enumFields.nextElement();
+            DatabaseField field = enumFields.nextElement();
             Object value = enumValues.nextElement();
 
             //write the value through the locator

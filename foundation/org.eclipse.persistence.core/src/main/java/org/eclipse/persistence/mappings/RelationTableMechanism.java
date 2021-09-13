@@ -318,7 +318,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
         Vector fieldNames = new Vector(getSourceKeyFields().size());
         for (Enumeration<DatabaseField> fieldsEnum = getSourceKeyFields().elements();
              fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(((DatabaseField)fieldsEnum.nextElement()).getQualifiedName());
+            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
         }
 
         return fieldNames;
@@ -419,7 +419,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
         Vector fieldNames = new Vector(getSourceRelationKeyFields().size());
         for (Enumeration<DatabaseField> fieldsEnum = getSourceRelationKeyFields().elements();
              fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(((DatabaseField)fieldsEnum.nextElement()).getQualifiedName());
+            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
         }
 
         return fieldNames;
@@ -442,7 +442,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
         Vector fieldNames = new Vector(getTargetKeyFields().size());
         for (Enumeration<DatabaseField> fieldsEnum = getTargetKeyFields().elements();
              fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(((DatabaseField)fieldsEnum.nextElement()).getQualifiedName());
+            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
         }
 
         return fieldNames;
@@ -477,7 +477,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
         Vector fieldNames = new Vector(getTargetRelationKeyFields().size());
         for (Enumeration<DatabaseField> fieldsEnum = getTargetRelationKeyFields().elements();
              fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(((DatabaseField)fieldsEnum.nextElement()).getQualifiedName());
+            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
         }
 
         return fieldNames;
@@ -734,7 +734,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
         }
 
         for (Enumeration<DatabaseField> entry = getSourceRelationKeyFields().elements(); entry.hasMoreElements();) {
-            DatabaseField field = (DatabaseField)entry.nextElement();
+            DatabaseField field = entry.nextElement();
 
             // Update the fields table first if the mapping is from a table per tenant entity.
             ClassDescriptor sourceDescriptor = mapping.getDescriptor();
@@ -781,7 +781,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
         }
 
         for (Enumeration<DatabaseField> targetEnum = getTargetRelationKeyFields().elements(); targetEnum.hasMoreElements();) {
-            DatabaseField field = (DatabaseField)targetEnum.nextElement();
+            DatabaseField field = targetEnum.nextElement();
 
             // Update the fields table first if the mapping is from a table per tenant entity.
             ClassDescriptor referenceDescriptor = mapping.getReferenceDescriptor();

@@ -672,7 +672,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         } else {
             ReportQuery reportQuery = null;
             if (this.queryResult.equals(ResultType.TUPLE)) {
-                List list = new ArrayList<>();
+                List<Object> list = new ArrayList<>();
                 list.add(this.selection);
                 reportQuery = new TupleQuery(list);
             } else {

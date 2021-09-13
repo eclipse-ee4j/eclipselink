@@ -188,9 +188,9 @@ public class jiNiNijiTestSet {
     @SuppressWarnings("unchecked")
     @Test
     public void runQuery() {
-        Session s = project.createDatabaseSession();
+        DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
-        ((DatabaseSession)s).login();
+        s.login();
         DataModifyQuery query = (DataModifyQuery)project.getClassDescriptor(Empty.class).
             getQueryManager().getQuery("jiNiNiji");
         Vector queryArgs = new NonSynchronizedVector();
@@ -208,6 +208,6 @@ public class jiNiNijiTestSet {
           msg = e.getMessage();
         }
         assertTrue("invocation jiNiNiji failed: " + msg, worked);
-        ((DatabaseSession)s).logout();
+        s.logout();
     }
 }

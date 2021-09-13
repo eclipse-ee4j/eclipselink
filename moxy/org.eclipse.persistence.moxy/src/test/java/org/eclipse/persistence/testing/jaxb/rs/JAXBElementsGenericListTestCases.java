@@ -28,8 +28,6 @@ import javax.xml.namespace.QName;
 import junit.framework.TestCase;
 
 import org.eclipse.persistence.jaxb.rs.MOXyJsonProvider;
-import org.eclipse.persistence.testing.jaxb.rs.model.Bar;
-import org.eclipse.persistence.testing.jaxb.rs.model.Foo;
 
 /**
  * Tests {@code List<JAXBElement<String>>} marshal/unmarshal via MOXyJsonPrivder.
@@ -81,8 +79,8 @@ public class JAXBElementsGenericListTestCases extends TestCase {
         }
 
         for (int i = 0; i < list1.size(); i++) {
-            JAXBElement element1 = list1.get(i);
-            JAXBElement element2 = list2.get(i);
+            JAXBElement<String> element1 = list1.get(i);
+            JAXBElement<String> element2 = list2.get(i);
 
             if (!equalsJAXBElements(element1, element2)) {
                 return false;

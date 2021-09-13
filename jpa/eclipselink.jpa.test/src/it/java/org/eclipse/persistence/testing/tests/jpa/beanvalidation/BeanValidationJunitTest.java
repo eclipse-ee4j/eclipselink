@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -132,7 +132,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
         } catch (ConstraintViolationException e) {
             assertTrue("Transaction not marked for roll back when ConstraintViolation is thrown", getRollbackOnly(em)) ;
             Set<ConstraintViolation<?>> constraintViolations = e.getConstraintViolations();
-            ConstraintViolation constraintViolation = constraintViolations.iterator().next();
+            ConstraintViolation<?> constraintViolation = constraintViolations.iterator().next();
             Object invalidValue = constraintViolation.getInvalidValue();
             assertTrue("Invalid value should be " + invalidName, invalidName.equals(invalidValue));
             gotConstraintViolations = true;
@@ -166,7 +166,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
         } catch (ConstraintViolationException e) {
             assertTrue("Transaction not marked for roll back when ConstraintViolation is thrown", getRollbackOnly(em)) ;
             Set<ConstraintViolation<?>> constraintViolations = e.getConstraintViolations();
-            ConstraintViolation constraintViolation = constraintViolations.iterator().next();
+            ConstraintViolation<?> constraintViolation = constraintViolations.iterator().next();
             Object invalidValue = constraintViolation.getInvalidValue();
             assertTrue("Invalid value should be " + invalidName, invalidName.equals(invalidValue));
             gotConstraintViolations = true;
@@ -204,7 +204,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
         } catch (ConstraintViolationException e) {
             assertTrue("Transaction not marked for roll back when ConstraintViolation is thrown", getRollbackOnly(em)) ;
             Set<ConstraintViolation<?>> constraintViolations = e.getConstraintViolations();
-            ConstraintViolation constraintViolation = constraintViolations.iterator().next();
+            ConstraintViolation<?> constraintViolation = constraintViolations.iterator().next();
             Object invalidValue = constraintViolation.getInvalidValue();
             assertTrue("Invalid value should be " + low_salary, invalidName.equals(invalidValue));
             gotConstraintViolations = true;
@@ -269,17 +269,17 @@ public class BeanValidationJunitTest extends JUnitTestCase {
             commitTransaction(em);
           } catch (RuntimeException e) {
             assertFalse("Transaction not marked for roll back when ConstraintViolation is thrown", isTransactionActive(em));;
-            Object cause = e.getCause();
+            Throwable cause = e.getCause();
             while(cause != null) {
                 if (cause instanceof ConstraintViolationException){
                     ConstraintViolationException cve = (ConstraintViolationException)cause;
                     Set<ConstraintViolation<?>> constraintViolations = cve.getConstraintViolations();
-                    ConstraintViolation constraintViolation = constraintViolations.iterator().next();
+                    ConstraintViolation<?> constraintViolation = constraintViolations.iterator().next();
                     assertTrue("Invalid value should be " + invalidName, invalidName.equals(constraintViolation.getInvalidValue() ) );
                     gotConstraintViolations = true;
                     break;
                 }else
-                    cause = ((Throwable)cause).getCause();
+                    cause = cause.getCause();
             }
         } finally {
             if (isTransactionActive(em)) {

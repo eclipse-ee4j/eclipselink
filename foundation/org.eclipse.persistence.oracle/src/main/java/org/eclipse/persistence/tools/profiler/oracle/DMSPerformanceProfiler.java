@@ -506,7 +506,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
         if (getSession().isServerSession()) {
             Iterator<String> enumtr = ((ServerSession)getSession()).getConnectionPools().keySet().iterator();
             while (enumtr.hasNext()) {
-                String poolName = (String)enumtr.next();
+                String poolName = enumtr.next();
                 State connectionInUse = State.create(connectionsNoun, ConnectionInUse + "(" + poolName + ")", "", DMSLocalization.buildMessage("connection_in_used"), "not available");
                 getHeavyWeightSensors().put(poolName, connectionInUse);
             }
@@ -665,7 +665,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
         if (weight == DMSConsole.NORMAL) {
             Iterator<Noun> iterator = getNormalWeightNouns().values().iterator();
             while (iterator.hasNext()) {
-                ((Noun)iterator.next()).destroy();
+                iterator.next().destroy();
             }
             getNormalWeightNouns().clear();
             getNormalWeightSensors().clear();
@@ -673,7 +673,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
         if (weight == DMSConsole.HEAVY) {
             Iterator<Noun> iterator = getHeavyWeightNouns().values().iterator();
             while (iterator.hasNext()) {
-                ((Noun)iterator.next()).destroy();
+                iterator.next().destroy();
             }
             getHeavyWeightNouns().clear();
             destroySensorsByWeight(DMSConsole.HEAVY);
@@ -683,7 +683,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
         if (weight == DMSConsole.ALL) {
             Iterator<Noun> iterator = getAllWeightNouns().values().iterator();
             while (iterator.hasNext()) {
-                ((Noun)iterator.next()).destroy();
+                iterator.next().destroy();
             }
             getAllWeightNouns().clear();
             destroySensorsByWeight(DMSConsole.ALL);

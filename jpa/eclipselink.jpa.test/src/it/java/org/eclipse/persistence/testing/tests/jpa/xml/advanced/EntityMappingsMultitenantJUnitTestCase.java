@@ -47,7 +47,6 @@ import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Capo;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Contract;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.MafiaFamily;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Mafioso;
-import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Mafioso.Gender;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Mason;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Party;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Riding;
@@ -842,7 +841,7 @@ public class EntityMappingsMultitenantJUnitTestCase extends JUnitTestCase {
 
     public void testTablePerTenantC() {
         // Set the tenant through EMF properties.
-        Map properties = JUnitTestCaseHelper.getDatabaseProperties();
+        Map<String, String> properties = JUnitTestCaseHelper.getDatabaseProperties();
         properties.put(PersistenceUnitProperties.EXCLUDE_ECLIPSELINK_ORM_FILE, "true");
         properties.put(PersistenceUnitProperties.MULTITENANT_SHARED_EMF, "false");
         properties.put(PersistenceUnitProperties.SESSION_NAME, "extended-multi-tenant-C");

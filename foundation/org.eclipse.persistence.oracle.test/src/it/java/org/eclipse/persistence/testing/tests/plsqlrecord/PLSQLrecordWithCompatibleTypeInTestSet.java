@@ -254,9 +254,9 @@ public class PLSQLrecordWithCompatibleTypeInTestSet  {
 
     @Test
     public void runQuery() {
-        Session s = project.createDatabaseSession();
+        DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
-        ((DatabaseSession)s).login();
+        s.login();
         Object[] attributes = {
             new BigDecimal(10),
             "MikeNorman",
@@ -288,6 +288,6 @@ public class PLSQLrecordWithCompatibleTypeInTestSet  {
             msg = e.getMessage();
         }
         assertTrue("invocation rec_test failed: " + msg, worked);
-        ((DatabaseSession)s).logout();
+        s.logout();
     }
 }

@@ -102,7 +102,7 @@ public class CommitOrderDependencyNode {
     public void recordMappingDependencies() {
         for (Enumeration<DatabaseMapping> mappings = getDescriptor().getMappings().elements();
              mappings.hasMoreElements();) {
-            DatabaseMapping mapping = (DatabaseMapping)mappings.nextElement();
+            DatabaseMapping mapping = mappings.nextElement();
             if (mapping.isForeignReferenceMapping()) {
                 if (mapping.hasConstraintDependency()) {
                     Class ownedClass;

@@ -110,7 +110,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
         }
         final EntyA a = new EntyA();
 
-        final Actor actor = new Actor<EntyA>() {
+        final Actor<EntyA> actor = new Actor<>() {
 
             @Override
             public void setup(EntityManager em) {
@@ -152,7 +152,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
         }
         final EntyA a = new EntyA();
 
-        final Actor actor = new Actor<EntyA>() {
+        final Actor<EntyA> actor = new Actor<>() {
 
             @Override
             public void setup(EntityManager em) {
@@ -193,7 +193,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
         }
         final Equipment eq = new Equipment();
 
-        final Actor actor = new Actor<Equipment>() {
+        final Actor<Equipment> actor = new Actor<>() {
 
             @Override
             public void setup(EntityManager em) {
@@ -241,7 +241,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
         }
         final Employee emp = new Employee();
 
-        final Actor actor = new Actor<Employee>() {
+        final Actor<Employee> actor = new Actor<>() {
 
             @Override
             public void setup(EntityManager em) {
@@ -282,7 +282,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
         }
         final EntyA entyA = new EntyA();
 
-        final Actor actor = new Actor<EntyA>() {
+        final Actor<EntyA> actor = new Actor<>() {
 
             @Override
             public void setup(EntityManager em) {
@@ -333,7 +333,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
         }
         final EntyA entyA = new EntyA();
 
-        final Actor actor = new Actor<EntyA>() {
+        final Actor<EntyA> actor = new Actor<>() {
 
             @Override
             public void setup(EntityManager em) {

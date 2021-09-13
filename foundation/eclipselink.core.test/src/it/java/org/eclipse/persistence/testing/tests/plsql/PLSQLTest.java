@@ -79,7 +79,7 @@ public class PLSQLTest extends TestCase {
             DatabaseRecord record = (DatabaseRecord)this.result;
             DatabaseRecord queryRecord = (DatabaseRecord)queryResult;
             for (Iterator<DatabaseField> iterator = record.getFields().iterator(); iterator.hasNext(); ) {
-                DatabaseField field = (DatabaseField)iterator.next();
+                DatabaseField field = iterator.next();
                 Object value = record.get(field);
                 Object queryValue = queryRecord.get(field);
                 if (value instanceof Number) {

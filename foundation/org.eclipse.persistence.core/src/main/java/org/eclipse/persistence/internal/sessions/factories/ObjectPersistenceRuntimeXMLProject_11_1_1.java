@@ -1001,9 +1001,9 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
             List storedProcedureArguments = new Vector();
             for (int i = spc.getFirstParameterIndexForCallString(); i < parameterTypes.size(); i++) {
                 StoredProcedureArgument spa = null;
-                Integer direction = (Integer)parameterTypes.get(i);
+                Integer direction = parameterTypes.get(i);
                 Object argument = parameters.get(i);
-                String argumentName = (String)procedureArgumentNames.get(i);
+                String argumentName = procedureArgumentNames.get(i);
                 if (direction.equals(IN)) {
                     spa = new StoredProcedureArgument();
                 }
@@ -1717,8 +1717,8 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                  List associations = new ArrayList(fields.size());
                  Iterator<Map.Entry<String, DatabaseType>> iterator = fields.entrySet().iterator();
                  while (iterator.hasNext()) {
-                     Map.Entry entry = (Map.Entry)iterator.next();
-                     associations.add(new ObjectTypeFieldAssociation(entry.getKey().toString(),  wrapType((DatabaseType) entry.getValue())));
+                     Map.Entry<String, DatabaseType> entry = iterator.next();
+                     associations.add(new ObjectTypeFieldAssociation(entry.getKey().toString(),  wrapType(entry.getValue())));
                  }
                  return associations;
              }
@@ -1729,7 +1729,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                  Map<String, DatabaseType> fieldMap = new LinkedHashMap<>(associations.size() + 1);
                  Iterator<ObjectTypeFieldAssociation> iterator = associations.iterator();
                  while (iterator.hasNext()) {
-                     ObjectTypeFieldAssociation association = (ObjectTypeFieldAssociation)iterator.next();
+                     ObjectTypeFieldAssociation association = iterator.next();
                      fieldMap.put((String) association.getKey(), unwrapType((DatabaseTypeWrapper)association.getValue()));
                  }
                  objectType.setFields(fieldMap);

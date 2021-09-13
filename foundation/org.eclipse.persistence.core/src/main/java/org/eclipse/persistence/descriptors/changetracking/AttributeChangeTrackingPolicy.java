@@ -75,7 +75,7 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
                 if (changes.hasDeferredAttributes()){
                     //need to calculate the changes for these attributes.
                     for (Iterator<String> iterator = changes.getDeferredSet().iterator(); iterator.hasNext();){
-                        DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForAttributeName((String)iterator.next());
+                        DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForAttributeName(iterator.next());
                         mapping.calculateDeferredChanges((ChangeRecord)changes.getChangesForAttributeNamed(mapping.getAttributeName()), session);
                     }
                     changes.getDeferredSet().clear();
@@ -94,7 +94,7 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
                 List<DatabaseMapping> mappings = descriptor.getMappings();
                 int size = mappings.size();
                 for (int index = 0; index < size; index++) {
-                    DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
+                    DatabaseMapping mapping = mappings.get(index);
                     if ((fetchGroup == null) || fetchGroup.containsAttributeInternal(mapping.getAttributeName())) {
                         changes.addChange(mapping.compareForChange(clone, null, changes, session));
                     }

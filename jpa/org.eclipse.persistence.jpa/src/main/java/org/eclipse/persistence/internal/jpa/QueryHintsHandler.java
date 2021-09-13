@@ -767,7 +767,7 @@ public class QueryHintsHandler {
             } else if (valueToApply.equals(QueryType.ValueRead)) {
                 newQuery = new ValueReadQuery();
             } else {
-                Class queryClass = loadClass((String)valueToApply, query, loader);
+                Class<?> queryClass = loadClass((String)valueToApply, query, loader);
                 newQuery = (DatabaseQuery)newInstance(queryClass, query, QueryHints.QUERY_TYPE);
             }
             newQuery.copyFromQuery(query);
@@ -2115,7 +2115,7 @@ public class QueryHintsHandler {
                 if (valueToApply instanceof Class) {
                     redirector = newInstance((Class)valueToApply, query, QueryHints.QUERY_REDIRECTOR);
                 } else if (valueToApply instanceof String) {
-                    Class redirectorClass = loadClass((String)valueToApply, query, loader);
+                    Class<?> redirectorClass = loadClass((String)valueToApply, query, loader);
                     redirector = newInstance(redirectorClass, query, QueryHints.QUERY_REDIRECTOR);
                 }
                 query.setRedirector((QueryRedirector)redirector);

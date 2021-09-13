@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -93,12 +93,12 @@ public class JavaModelImpl implements JavaModel {
     public JavaClass getClass(String className) {
         try {
             if (className.contains("[")) {
-                Class clazz = Class.forName(className);
+                Class<?> clazz = Class.forName(className);
                 if (clazz != null) {
                     return getClass(clazz);
                 }
             }
-            Class clazz = this.classLoader.loadClass(className);
+            Class<?> clazz = this.classLoader.loadClass(className);
             return getClass(clazz);
         } catch(ClassNotFoundException e) {
             throw JAXBException.classNotFoundException(className);

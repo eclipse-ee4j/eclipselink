@@ -39,7 +39,7 @@ public class CompositeObjectIsSetNodeNullPolicyTrueTestCases extends XMLWithJSON
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
 
-        AbstractNullPolicy aNullPolicy = new IsSetNullPolicy();
+        IsSetNullPolicy aNullPolicy = new IsSetNullPolicy();
         // alter unmarshal policy state
         aNullPolicy.setNullRepresentedByEmptyNode(false); // No effect
         aNullPolicy.setNullRepresentedByXsiNil(true);
@@ -47,7 +47,7 @@ public class CompositeObjectIsSetNodeNullPolicyTrueTestCases extends XMLWithJSON
         // alter marshal policy state
         aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);//.EMPTY_NODE);//.ABSENT_NODE);
 
-        ((IsSetNullPolicy)aNullPolicy).setIsSetMethodName("isSetManager");
+        aNullPolicy.setIsSetMethodName("isSetManager");
         Project aProject = new CompositeObjectNodeNullPolicyProject(true);
         XMLDescriptor teamDescriptor = (XMLDescriptor) aProject.getDescriptor(Team.class);
         NamespaceResolver namespaceResolver = new NamespaceResolver();

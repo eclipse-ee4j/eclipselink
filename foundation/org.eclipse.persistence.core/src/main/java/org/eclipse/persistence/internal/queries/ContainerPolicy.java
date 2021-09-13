@@ -1118,7 +1118,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
         // Step 1 - iterate over the removed changes and remove them from the container.
         Iterator<ObjectChangeSet> removeObjects = changeRecord.getRemoveObjectList().keySet().iterator();
         while (removeObjects.hasNext()) {
-            objectChanges = (ObjectChangeSet) removeObjects.next();
+            objectChanges = removeObjects.next();
             removeFrom(objectChanges.getOldKey(), objectChanges.getTargetVersionOfSourceObject(mergeManager, targetSession), valueOfTarget, targetSession);
             if (!mergeManager.shouldMergeChangesIntoDistributedCache()) {
                 mergeManager.registerRemovedNewObjectIfRequired(objectChanges.getUnitOfWorkClone());
@@ -1128,7 +1128,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
         // Step 2 - iterate over the added changes and add them to the container.
         Iterator<ObjectChangeSet> addObjects = changeRecord.getAddObjectList().keySet().iterator();
         while (addObjects.hasNext()) {
-            objectChanges = (ObjectChangeSet) addObjects.next();
+            objectChanges = addObjects.next();
             Object object = null;
             if (shouldMergeCascadeParts) {
                 object = mergeCascadeParts(objectChanges, mergeManager, targetSession);

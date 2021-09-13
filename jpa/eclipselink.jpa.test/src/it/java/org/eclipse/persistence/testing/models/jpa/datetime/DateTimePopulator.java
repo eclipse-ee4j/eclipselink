@@ -48,7 +48,7 @@ public class DateTimePopulator {
         boolean hasSetTruncateDate = false;
         if (session.getPlatform().isOracle9()) {
             try {
-                Class clazz = PrivilegedAccessHelper.getClassForName("org.eclipse.persistence.platform.database.oracle.Oracle9Platform");
+                Class<Object> clazz = PrivilegedAccessHelper.getClassForName("org.eclipse.persistence.platform.database.oracle.Oracle9Platform");
                 Method getDriverVersionMethod = PrivilegedAccessHelper.getMethod(clazz, "getDriverVersion", null, false);
                 String driverVersion = PrivilegedAccessHelper.invokeMethod(getDriverVersionMethod, session.getPlatform(), null);
                 if (Helper.compareVersions(driverVersion, "12.1") >= 0) {
@@ -72,7 +72,7 @@ public class DateTimePopulator {
         if (hasSetTruncateDate) {
             // Now setting shouldTruncateDate flag back to its original value "false".
             try {
-                Class clazz = PrivilegedAccessHelper.getClassForName("org.eclipse.persistence.platform.database.oracle.Oracle9Platform");
+                Class<Object> clazz = PrivilegedAccessHelper.getClassForName("org.eclipse.persistence.platform.database.oracle.Oracle9Platform");
                 Method setShouldTruncateDateMethod = PrivilegedAccessHelper.getMethod(clazz, "setShouldTruncateDate", new Class[]{boolean.class}, false);
                 PrivilegedAccessHelper.invokeMethod(setShouldTruncateDateMethod, session.getPlatform(), new Object[]{false});
             } catch (Exception ex) {

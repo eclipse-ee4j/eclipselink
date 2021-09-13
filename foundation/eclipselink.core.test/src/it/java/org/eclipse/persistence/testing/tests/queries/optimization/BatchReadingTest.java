@@ -51,10 +51,10 @@ public class BatchReadingTest extends TestCase {
     @Override
     public void verify() {
         PopulationManager manager = PopulationManager.getDefaultManager();
-        Vector v = manager.getAllObjectsForClass(Restaurant.class);
+        Vector<Object> v = manager.getAllObjectsForClass(Restaurant.class);
         for (Enumeration enumtr = result.elements(); enumtr.hasMoreElements(); ) {
             Restaurant resDatabase = (Restaurant)enumtr.nextElement();
-            for (Enumeration enum1 = v.elements(); enum1.hasMoreElements(); ) {
+            for (Enumeration<Object> enum1 = v.elements(); enum1.hasMoreElements(); ) {
                 Restaurant resPop = (Restaurant)enum1.nextElement();
                 if (resDatabase.getName().equals(resPop.getName())) {
                     if (!((AbstractSession)getSession()).compareObjects(resDatabase, resPop)) {

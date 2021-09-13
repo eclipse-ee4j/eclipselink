@@ -22,9 +22,9 @@ import java.util.List;
 import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
-import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestCases;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoWithJSONTestCases;
 
 public class ConflictingStringArrayClassesTestCases extends TypeMappingInfoWithJSONTestCases{
@@ -97,7 +97,7 @@ public class ConflictingStringArrayClassesTestCases extends TypeMappingInfoWithJ
     }
 
     public void testDescriptorsSize(){
-        List descriptors = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext().getSession(0).getProject().getOrderedDescriptors();
+        List<ClassDescriptor> descriptors = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext().getSession(0).getProject().getOrderedDescriptors();
         assertEquals(1, descriptors.size());
     }
 }

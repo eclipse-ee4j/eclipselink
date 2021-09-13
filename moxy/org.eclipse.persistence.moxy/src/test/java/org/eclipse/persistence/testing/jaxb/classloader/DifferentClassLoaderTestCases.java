@@ -14,14 +14,12 @@
 // Denise Smith - September 10 /2009
 package org.eclipse.persistence.testing.jaxb.classloader;
 
-import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
-import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.ClassA;
 
 public class DifferentClassLoaderTestCases extends JAXBWithJSONTestCases {
 
@@ -43,7 +41,7 @@ public class DifferentClassLoaderTestCases extends JAXBWithJSONTestCases {
         URLClassLoader classLoaderA = new URLClassLoader(urls);
 
 
-        Class classAClass = classLoaderA.loadClass("org.eclipse.persistence.testing.jaxb.classloader.ClassA");
+        Class<?> classAClass = classLoaderA.loadClass("org.eclipse.persistence.testing.jaxb.classloader.ClassA");
         ClassLoader test = classAClass.getClassLoader();
         classes[1] = classAClass;
         rootClass = classAClass;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 Payara Services Ltd.
  *
  * This program and the accompanying materials are made available under the
@@ -803,14 +803,14 @@ public class RelationshipsTestSuite {
                 XMLUnmarshaller unmarshaller = context.createUnmarshaller();
                 Project orProject = (Project)unmarshaller.unmarshal(
                         new StringReader(RELATIONSHIPS_OR_PROJECT));
-                DatasourceLogin login = new DatabaseLogin();
+                DatabaseLogin login = new DatabaseLogin();
                 login.setUserName(username);
                 login.setPassword(password);
-                ((DatabaseLogin)login).setConnectionString(url);
-                ((DatabaseLogin)login).setDriverClassName(driver);
+                login.setConnectionString(url);
+                login.setDriverClassName(driver);
                 Platform platform = new MySQLPlatform();
                 login.setDatasourcePlatform(platform);
-                ((DatabaseLogin)login).bindAllParameters();
+                login.bindAllParameters();
                 orProject.setDatasourceLogin(login);
                 Project oxProject = (Project)unmarshaller.unmarshal(
                     new StringReader(RELATIONSHIPS_OX_PROJECT));

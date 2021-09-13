@@ -44,13 +44,13 @@ public class ElementOrderingTestCases extends JAXBWithJSONTestCases {
 
     @Override
     protected Object getJSONReadControlObject() {
-        JAXBElement elem = new JAXBElement<AlbumInfo>(new QName(""), AlbumInfo.class, (AlbumInfo) getWriteControlObject());
+        JAXBElement<AlbumInfo> elem = new JAXBElement<AlbumInfo>(new QName(""), AlbumInfo.class, (AlbumInfo) getWriteControlObject());
         return elem;
     }
 
     @Override
     protected Object getControlObject() {
-        JAXBElement elem = new JAXBElement<AlbumInfo>(new QName("albumInfo"), AlbumInfo.class, (AlbumInfo) getWriteControlObject());
+        JAXBElement<AlbumInfo> elem = new JAXBElement<AlbumInfo>(new QName("albumInfo"), AlbumInfo.class, (AlbumInfo) getWriteControlObject());
         return elem;
     }
 

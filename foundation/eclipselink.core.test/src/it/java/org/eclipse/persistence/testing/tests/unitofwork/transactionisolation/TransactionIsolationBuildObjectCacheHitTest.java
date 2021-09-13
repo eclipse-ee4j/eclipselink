@@ -80,7 +80,7 @@ public class TransactionIsolationBuildObjectCacheHitTest extends TestCase {
         List<String> statements = sqlTracker.getSqlStatements();
         Vector errors = new Vector();
         for (int i = 0; i < statements.size(); i++) {
-            String statement = (String)statements.get(i);
+            String statement = statements.get(i);
             // the statements collection should not contain any duplicates
             int occurrences = Helper.countOccurrencesOf(statement, statements);
             if (occurrences > 1) {

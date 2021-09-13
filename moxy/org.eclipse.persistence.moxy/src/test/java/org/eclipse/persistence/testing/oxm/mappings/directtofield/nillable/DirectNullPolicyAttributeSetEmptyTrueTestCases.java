@@ -52,9 +52,9 @@ public class DirectNullPolicyAttributeSetEmptyTrueTestCases extends XMLWithJSONM
 
     private void updateNullPolicyForAttribute(Project aProject, String attributeName){
 
-        AbstractNullPolicy aNullPolicy = new NullPolicy();
+        NullPolicy aNullPolicy = new NullPolicy();
         // Alter unmarshal policy state
-        ((NullPolicy)aNullPolicy).setSetPerformedForAbsentNode(true); // no effect
+        aNullPolicy.setSetPerformedForAbsentNode(true); // no effect
         aNullPolicy.setNullRepresentedByEmptyNode(true); // no effect
         aNullPolicy.setNullRepresentedByXsiNil(false);  // no effect
         //  Alter marshal policy state

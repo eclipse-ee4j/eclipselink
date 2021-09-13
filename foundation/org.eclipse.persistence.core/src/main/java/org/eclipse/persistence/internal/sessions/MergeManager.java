@@ -438,7 +438,7 @@ public class MergeManager {
             Iterator<ObjectChangeSet> objectChangeEnum = uowChangeSet.getAllChangeSets().keySet().iterator();
             Set<Class> classesChanged = new HashSet<>();
             while (objectChangeEnum.hasNext()) {
-                ObjectChangeSet objectChangeSet = (ObjectChangeSet)objectChangeEnum.next();
+                ObjectChangeSet objectChangeSet = objectChangeEnum.next();
                 // Don't read the object here.  If it is null then we won't merge it at this stage, unless it
                 // is being referenced which will force the load later.
                 Object object = objectChangeSet.getTargetVersionOfSourceObject(this, this.session, false);
@@ -456,7 +456,7 @@ public class MergeManager {
             if (uowChangeSet.hasDeletedObjects()) {
                 Iterator<ObjectChangeSet> deletedObjects = uowChangeSet.getDeletedObjects().values().iterator();
                 while (deletedObjects.hasNext()) {
-                    ObjectChangeSet changeSet = (ObjectChangeSet)deletedObjects.next();
+                    ObjectChangeSet changeSet = deletedObjects.next();
                     changeSet.removeFromIdentityMap(this.session);
                     classesChanged.add(changeSet.getClassType(this.session));
                 }

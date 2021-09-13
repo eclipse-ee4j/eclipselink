@@ -53,7 +53,7 @@ public class XMLBindingsTestCases extends JAXBWithJSONTestCases{
         XmlElement javaAttribute = new XmlElement();
         javaAttribute.setName("elementName");
         javaAttribute.setJavaAttribute("theJavaAttributeValue");
-        JAXBElement jbe = new JAXBElement<XmlElement>(new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-element"), XmlElement.class, javaAttribute);
+        JAXBElement<XmlElement> jbe = new JAXBElement<XmlElement>(new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-element"), XmlElement.class, javaAttribute);
         javaAttributes.getJavaAttribute().add(jbe);
         javaType.setJavaAttributes(javaAttributes);
         types.getJavaType().add(javaType);
