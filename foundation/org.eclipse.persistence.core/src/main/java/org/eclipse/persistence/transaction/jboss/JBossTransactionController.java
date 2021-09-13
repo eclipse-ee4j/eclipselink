@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,13 @@ public class JBossTransactionController extends JTATransactionController {
 
     public static final String JNDI_TRANSACTION_MANAGER_NAME_AS4 = "java:/TransactionManager";
     public static final String JNDI_TRANSACTION_MANAGER_NAME_AS7 = "java:jboss/TransactionManager";
+
+    /**
+     * Default constructor
+     */
+    public JBossTransactionController() {
+        super();
+    }
 
     /**
      * INTERNAL:

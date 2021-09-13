@@ -346,7 +346,7 @@ public abstract class AbstractSynchronizationListener implements Synchronization
         } else if(getTransactionController().numSessionsRequiringSequencingCallback() > 1) {
             SequencingCallback callback = null;
             if(sequencingCallbackMap == null) {
-                sequencingCallbackMap = new HashMap(getTransactionController().numSessionsRequiringSequencingCallback());
+                sequencingCallbackMap = new HashMap<>(getTransactionController().numSessionsRequiringSequencingCallback());
             } else {
                 callback = sequencingCallbackMap.get(dbSession);
             }

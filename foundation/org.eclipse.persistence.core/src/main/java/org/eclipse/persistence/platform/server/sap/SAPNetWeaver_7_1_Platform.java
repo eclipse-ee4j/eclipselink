@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2009, 2016 SAP, IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -24,6 +24,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.ExternalTransactionController;
 import org.eclipse.persistence.transaction.sap.SAPNetWeaverTransactionController;
 
 /**
@@ -49,7 +50,7 @@ public class SAPNetWeaver_7_1_Platform extends ServerPlatformBase {
     }
 
     @Override
-    public Class getExternalTransactionControllerClass() {
+    public Class<? extends ExternalTransactionController> getExternalTransactionControllerClass() {
         if (externalTransactionControllerClass == null){
             externalTransactionControllerClass = SAPNetWeaverTransactionController.class;
         }

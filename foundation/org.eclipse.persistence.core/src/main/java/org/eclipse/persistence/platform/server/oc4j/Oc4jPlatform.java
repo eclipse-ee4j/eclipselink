@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@
 package org.eclipse.persistence.platform.server.oc4j;
 
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.ExternalTransactionController;
 import org.eclipse.persistence.transaction.oc4j.Oc4jTransactionController;
 import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
@@ -54,7 +55,7 @@ public class Oc4jPlatform extends ServerPlatformBase {
      * @see ServerPlatformBase#initializeExternalTransactionController()
      */
     @Override
-    public Class getExternalTransactionControllerClass() {
+    public Class<? extends ExternalTransactionController> getExternalTransactionControllerClass() {
         if (externalTransactionControllerClass == null){
             externalTransactionControllerClass = Oc4jTransactionController.class;
         }

@@ -52,7 +52,7 @@ import org.eclipse.persistence.sessions.broker.SessionBroker;
 public abstract class AbstractTransactionController implements ExternalTransactionController {
 
     /** Table of external transaction object keys and unit of work values */
-    protected ConcurrentMap unitsOfWork;
+    protected ConcurrentMap<Object, UnitOfWorkImpl> unitsOfWork;
 
     /** The session this controller is responsible for controlling */
     protected AbstractSession session;
@@ -61,7 +61,7 @@ public abstract class AbstractTransactionController implements ExternalTransacti
     protected SynchronizationListenerFactory listenerFactory;
 
     /** PERF: Cache the active uow in a thread local. */
-    protected ThreadLocal activeUnitOfWorkThreadLocal;
+    protected ThreadLocal<UnitOfWorkImpl> activeUnitOfWorkThreadLocal;
 
     /** Table of external transaction object keys and sequencing listeners values. */
     /** Non-null only in case sequencing callbacks are used: numSessionsRequiringSequencingCallback {@literal >} 0 */
@@ -89,8 +89,8 @@ public abstract class AbstractTransactionController implements ExternalTransacti
      * Return a new controller.
      */
     protected AbstractTransactionController() {
-        this.unitsOfWork = new ConcurrentHashMap();
-        this.activeUnitOfWorkThreadLocal = new ThreadLocal();
+        this.unitsOfWork = new ConcurrentHashMap<>();
+        this.activeUnitOfWorkThreadLocal = new ThreadLocal<>();
     }
 
     /**
@@ -348,13 +348,13 @@ public abstract class AbstractTransactionController implements ExternalTransacti
 
         // PERF: Cache the active unit of work in a thread local.
         // This is just a heuristic, so uses == and no tx-key and direct access as extremely high throughput.
-        UnitOfWorkImpl activeUnitOfWork = (UnitOfWorkImpl)this.activeUnitOfWorkThreadLocal.get();
+        UnitOfWorkImpl activeUnitOfWork = this.activeUnitOfWorkThreadLocal.get();
         if (activeUnitOfWork != null) {
             if (transaction == activeUnitOfWork.getTransaction()) {
                 return activeUnitOfWork;
             }
         }
-        activeUnitOfWork = (UnitOfWorkImpl)getUnitsOfWork().get(transactionKey);
+        activeUnitOfWork = getUnitsOfWork().get(transactionKey);
         if (activeUnitOfWork != null) {
             activeUnitOfWork.setTransaction(transaction);
         }
@@ -406,7 +406,7 @@ public abstract class AbstractTransactionController implements ExternalTransacti
      * Return the hashtable keyed on the external transaction objects with values
      * that are the associated units of work.
      */
-    public Map getUnitsOfWork() {
+    public Map<Object, UnitOfWorkImpl> getUnitsOfWork() {
         return unitsOfWork;
     }
 
@@ -414,7 +414,7 @@ public abstract class AbstractTransactionController implements ExternalTransacti
      * INTERNAL:
      * Set the table of transactions to units of work.
      */
-    protected void setUnitsOfWork(ConcurrentMap unitsOfWork) {
+    protected void setUnitsOfWork(ConcurrentMap<Object, UnitOfWorkImpl> unitsOfWork) {
         this.unitsOfWork = unitsOfWork;
     }
 
@@ -518,11 +518,11 @@ public abstract class AbstractTransactionController implements ExternalTransacti
         if (newNumSessionsRequiringSequencingCallback > numSessionsRequiringSequencingCallback) {
             // keep the old map if already exists, never remove existing map
             if (this.sequencingListeners == null) {
-                this.sequencingListeners = new ConcurrentHashMap();
+                this.sequencingListeners = new ConcurrentHashMap<>();
             }
             // keep the old map if already exists, never remove existing map
             if (this.currentlyProcessedListeners == null) {
-                this.currentlyProcessedListeners = new ConcurrentHashMap();
+                this.currentlyProcessedListeners = new ConcurrentHashMap<>();
             }
             this.numSessionsRequiringSequencingCallback = newNumSessionsRequiringSequencingCallback;
         }

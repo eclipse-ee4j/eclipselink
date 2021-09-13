@@ -105,6 +105,7 @@ public final class ServerPlatformUtils {
      *
      * @see ServerPlatformBase#ServerPlatformBase(DatabaseSession)
      */
+    @SuppressWarnings({"rawtypes"})
     public static ServerPlatform createServerPlatform(DatabaseSession session, String platformClass, ClassLoader loader) {
         if (platformClass == null) {
             throw ServerPlatformException.invalidServerPlatformClass(null, null);
@@ -127,7 +128,7 @@ public final class ServerPlatformUtils {
                 throw ServerPlatformException.serverPlatformClassNotFound(platformClass, ex);
             }
         }
-        final Class[] paramTypes = new Class[] { DatabaseSession.class };
+        final Class<?>[] paramTypes = (Class<?>[]) new Class[] { DatabaseSession.class };
         final Object[] params = new Object[] { session };
         ServerPlatform platform = null;
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {

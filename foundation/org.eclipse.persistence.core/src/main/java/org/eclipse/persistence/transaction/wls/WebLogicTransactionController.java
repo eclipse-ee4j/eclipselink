@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,13 @@ import org.eclipse.persistence.transaction.JTATransactionController;
 public class WebLogicTransactionController extends JTATransactionController {
 
     static final String JNDI_TRANSACTION_MANAGER_NAME = "weblogic.transaction.TransactionManager";
+
+    /**
+     * Default constructor
+     */
+    public WebLogicTransactionController() {
+        super();
+    }
 
     /**
      * INTERNAL:

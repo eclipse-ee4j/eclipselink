@@ -97,6 +97,7 @@ import org.eclipse.persistence.sequencing.TableSequence;
 import org.eclipse.persistence.sequencing.UnaryTableSequence;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatasourceLogin;
+import org.eclipse.persistence.sessions.ExternalTransactionController;
 import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.Project;
@@ -735,13 +736,13 @@ public class SessionsFactory {
     /**
      * INTERNAL:
      */
+    @SuppressWarnings({"unchecked"})
     protected ServerPlatform buildCustomServerPlatformConfig(CustomServerPlatformConfig platformConfig, DatabaseSessionImpl session) {
         ServerPlatform platform;
 
         // Server class - XML schema default is org.eclipse.persistence.platform.server.CustomServerPlatform
         String serverClassName = platformConfig.getServerClassName();
         try {
-            @SuppressWarnings({"unchecked"})
             Class<ServerPlatform> serverClass = (Class<ServerPlatform>) m_classLoader.loadClass(serverClassName);
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 Constructor<ServerPlatform> constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(serverClass, new Class[] { org.eclipse.persistence.sessions.DatabaseSession.class }, false));
@@ -758,7 +759,7 @@ public class SessionsFactory {
         String externalTransactionControllerClass = platformConfig.getExternalTransactionControllerClass();
         if (externalTransactionControllerClass != null) {
             try {
-                platform.setExternalTransactionControllerClass(m_classLoader.loadClass(externalTransactionControllerClass));
+                platform.setExternalTransactionControllerClass((Class<ExternalTransactionController>) m_classLoader.loadClass(externalTransactionControllerClass));
             } catch (Exception exception) {
                 throw SessionLoaderException.failedToLoadTag("external-transaction-controller-class", externalTransactionControllerClass, exception);
             }
