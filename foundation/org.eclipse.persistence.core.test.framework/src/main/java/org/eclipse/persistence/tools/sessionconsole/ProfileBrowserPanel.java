@@ -28,10 +28,10 @@ import org.eclipse.persistence.sessions.SessionProfiler;
  * This panel allows for the browsing of performance profiles.
  */
 public class ProfileBrowserPanel extends JPanel {
-    private List<Profile> fieldProfiles = new ArrayList();
+    private List<Profile> fieldProfiles = new ArrayList<>();
     private JScrollPane ivjProfileScrollPane = null;
     private JTable ivjProfilesTable = null;
-    private JComboBox ivjGroupByChoice = null;
+    private JComboBox<String> ivjGroupByChoice = null;
     private JLabel ivjGroupByLabel = null;
     private JCheckBox ivjQualifyClassNameCheckbox = null;
     IvjEventHandler ivjEventHandler = new IvjEventHandler();
@@ -70,7 +70,7 @@ public class ProfileBrowserPanel extends JPanel {
         super(isDoubleBuffered);
     }
 
-    public static void browseProfiles(Vector profiles) {
+    public static void browseProfiles(List<Profile> profiles) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             JFrame frame = new JFrame();
@@ -90,16 +90,16 @@ public class ProfileBrowserPanel extends JPanel {
      * INTERNAL:
      * Return a map of summary profiles reporting on the profile contained.
      */
-    public Vector buildProfileSummaryByClass() {
-        Hashtable summaries = new Hashtable();
+    public List<Profile> buildProfileSummaryByClass() {
+        Hashtable<Class<?>, Profile> summaries = new Hashtable<>();
 
         for (Profile profile : getProfiles()) {
-            Class domainClass = profile.getDomainClass();
+            Class<?> domainClass = profile.getDomainClass();
             if (domainClass == null) {
                 domainClass = Void.class;
             }
 
-            Profile summary = (Profile)summaries.get(domainClass);
+            Profile summary = summaries.get(domainClass);
             if (summary == null) {
                 summary = new Profile();
                 summary.setDomainClass(domainClass);
@@ -111,13 +111,10 @@ public class ProfileBrowserPanel extends JPanel {
                                  profile.getLocalTime());
             summary.setNumberOfInstancesEffected(summary.getNumberOfInstancesEffected() +
                                                  profile.getNumberOfInstancesEffected());
-            for (Enumeration operationNames =
-                 profile.getOperationTimings().keys();
-                 operationNames.hasMoreElements(); ) {
-                String name = (String)operationNames.nextElement();
-                Long oldTime = (Long)summary.getOperationTimings().get(name);
-                long profileTime =
-                        (Long) profile.getOperationTimings().get(name);
+            for (Map.Entry<String, Long> entry: profile.getOperationTimings().entrySet()) {
+                String name = entry.getKey();
+                Long oldTime = summary.getOperationTimings().get(name);
+                long profileTime = entry.getValue();
                 long newTime;
                 if (oldTime == null) {
                     newTime = profileTime;
@@ -128,10 +125,10 @@ public class ProfileBrowserPanel extends JPanel {
             }
         }
 
-        Vector summary = new Vector();
-        for (Enumeration profilesEnum = summaries.elements();
+        List<Profile> summary = new Vector<>();
+        for (Enumeration<Profile> profilesEnum = summaries.elements();
              profilesEnum.hasMoreElements(); ) {
-            summary.addElement(profilesEnum.nextElement());
+            summary.add(profilesEnum.nextElement());
         }
         return summary;
     }
@@ -140,17 +137,17 @@ public class ProfileBrowserPanel extends JPanel {
      * INTERNAL:
      * Return a map of summary profiles reporting on the profile contained.
      */
-    public Vector buildProfileSummaryByQuery() {
-        Hashtable summaries = new Hashtable();
+    public List<Profile> buildProfileSummaryByQuery() {
+        Hashtable<Class<?>, Profile> summaries = new Hashtable<>();
 
         for (Profile profile : getProfiles()) {
-            Class queryType = profile.getQueryClass();
+            Class<?> queryType = profile.getQueryClass();
             //CR 3050 PWK - If we don't know the query class, we need to use void.
             //This avoids a null pointer exception when adding to the hashtable.
             if (queryType == null) {
                 queryType = Void.class;
             }
-            Profile summary = (Profile)summaries.get(queryType);
+            Profile summary = summaries.get(queryType);
             if (summary == null) {
                 summary = new Profile();
                 summary.setQueryClass(queryType);
@@ -162,13 +159,10 @@ public class ProfileBrowserPanel extends JPanel {
                                  profile.getLocalTime());
             summary.setNumberOfInstancesEffected(summary.getNumberOfInstancesEffected() +
                                                  profile.getNumberOfInstancesEffected());
-            for (Enumeration operationNames =
-                 profile.getOperationTimings().keys();
-                 operationNames.hasMoreElements(); ) {
-                String name = (String)operationNames.nextElement();
-                Long oldTime = (Long)summary.getOperationTimings().get(name);
-                long profileTime =
-                        (Long) profile.getOperationTimings().get(name);
+            for (Map.Entry<String, Long> entry: profile.getOperationTimings().entrySet()) {
+                String name = entry.getKey();
+                Long oldTime = summary.getOperationTimings().get(name);
+                long profileTime = entry.getValue();
                 long newTime;
                 if (oldTime == null) {
                     newTime = profileTime;
@@ -179,10 +173,10 @@ public class ProfileBrowserPanel extends JPanel {
             }
         }
 
-        Vector summary = new Vector();
-        for (Enumeration profilesEnum = summaries.elements();
+        Vector<Profile> summary = new Vector<>();
+        for (Enumeration<Profile> profilesEnum = summaries.elements();
              profilesEnum.hasMoreElements(); ) {
-            summary.addElement(profilesEnum.nextElement());
+            summary.add(profilesEnum.nextElement());
         }
         return summary;
     }
@@ -191,12 +185,12 @@ public class ProfileBrowserPanel extends JPanel {
      * INTERNAL:
      * Return a map of summary profiles reporting on the profile contained.
      */
-    public Vector buildProfileSummaryByQueryAndClass() {
-        Hashtable summaries = new Hashtable();
+    public List<Profile> buildProfileSummaryByQueryAndClass() {
+        Map<Class<?>, Map<Class<?>, Profile>> summaries = new Hashtable<>();
 
         for (Profile profile : getProfiles()) {
-            Class queryType = profile.getQueryClass();
-            Class queryClass = profile.getDomainClass();
+            Class<?> queryType = profile.getQueryClass();
+            Class<?> queryClass = profile.getDomainClass();
             if (queryClass == null) {
                 queryClass = Void.class;
             }
@@ -207,12 +201,12 @@ public class ProfileBrowserPanel extends JPanel {
             }
 
 
-            Hashtable summaryByQuery = (Hashtable)summaries.get(queryType);
+            Map<Class<?>, Profile> summaryByQuery = summaries.get(queryType);
             if (summaryByQuery == null) {
-                summaryByQuery = new Hashtable();
+                summaryByQuery = new Hashtable<>();
                 summaries.put(queryType, summaryByQuery);
             }
-            Profile summary = (Profile)summaryByQuery.get(queryClass);
+            Profile summary = summaryByQuery.get(queryClass);
             if (summary == null) {
                 summary = new Profile();
                 summary.setQueryClass(queryType);
@@ -225,13 +219,10 @@ public class ProfileBrowserPanel extends JPanel {
                                  profile.getLocalTime());
             summary.setNumberOfInstancesEffected(summary.getNumberOfInstancesEffected() +
                                                  profile.getNumberOfInstancesEffected());
-            for (Enumeration operationNames =
-                 profile.getOperationTimings().keys();
-                 operationNames.hasMoreElements(); ) {
-                String name = (String)operationNames.nextElement();
-                Long oldTime = (Long)summary.getOperationTimings().get(name);
-                long profileTime =
-                        (Long) profile.getOperationTimings().get(name);
+            for (Map.Entry<String, Long> entry: profile.getOperationTimings().entrySet()) {
+                String name = entry.getKey();
+                Long oldTime = summary.getOperationTimings().get(name);
+                long profileTime = entry.getValue();
                 long newTime;
                 if (oldTime == null) {
                     newTime = profileTime;
@@ -242,14 +233,9 @@ public class ProfileBrowserPanel extends JPanel {
             }
         }
 
-        Vector summary = new Vector();
-        for (Enumeration profilesEnum = summaries.elements();
-             profilesEnum.hasMoreElements(); ) {
-            for (Enumeration byQueryEnum =
-                 ((Hashtable)profilesEnum.nextElement()).elements();
-                 byQueryEnum.hasMoreElements(); ) {
-                summary.addElement(byQueryEnum.nextElement());
-            }
+        List<Profile> summary = new Vector<>();
+        for (Map<Class<?>, Profile> m: summaries.values()) {
+            summary.addAll(m.values());
         }
         return summary;
     }
@@ -294,10 +280,10 @@ public class ProfileBrowserPanel extends JPanel {
      * Return the GroupByChoice property value.
      * @return javax.swing.JComboBox
      */
-    private javax.swing.JComboBox getGroupByChoice() {
+    private javax.swing.JComboBox<String> getGroupByChoice() {
         if (ivjGroupByChoice == null) {
             try {
-                ivjGroupByChoice = new javax.swing.JComboBox();
+                ivjGroupByChoice = new javax.swing.JComboBox<>();
                 ivjGroupByChoice.setName("GroupByChoice");
                 ivjGroupByChoice.setBackground(java.awt.SystemColor.window);
                 // user code begin {1}
@@ -479,20 +465,20 @@ public class ProfileBrowserPanel extends JPanel {
 
     public void resetProfiles() {
         DefaultTableModel model = new DefaultTableModel();
-        Vector columns = new Vector();
-        columns.addElement("Query");
-        columns.addElement("Class");
-        columns.addElement("Total Time");
-        columns.addElement("Local Time");
-        columns.addElement("# of Objects");
-        columns.addElement("Object/Second");
-        columns.addElement("SQL Prepare");
-        columns.addElement("SQL Execute");
-        columns.addElement("Row Fetch");
-        columns.addElement("Cache");
-        columns.addElement("Object Building");
-        columns.addElement("Query Prepare");
-        columns.addElement("SQL Generation");
+        Vector<String> columns = new Vector<>();
+        columns.add("Query");
+        columns.add("Class");
+        columns.add("Total Time");
+        columns.add("Local Time");
+        columns.add("# of Objects");
+        columns.add("Object/Second");
+        columns.add("SQL Prepare");
+        columns.add("SQL Execute");
+        columns.add("Row Fetch");
+        columns.add("Cache");
+        columns.add("Object Building");
+        columns.add("Query Prepare");
+        columns.add("SQL Generation");
         model.setColumnIdentifiers(columns);
 
         List<Profile> profiles = getProfiles();

@@ -139,7 +139,7 @@ public abstract class SpringJunitTestCase extends TestCase {
         assertTrue(r.getAverageTimeMins() == 150);
 
         em.executeNativeQuery("DELETE FROM SPRING_TLE_ROUTE WHERE (ID="+route.getId()+")");
-        List l = em.createNativeQuery(
+        List<?> l = em.createNativeQuery(
                 "SELECT id as ID, averageTimeMins as AVERAGETIMEMINS FROM SPRING_TLE_ROUTE WHERE (ID="+route.getId()+")", Route.class)
                 .getResultList();
         assertTrue(l.size() == 0);
