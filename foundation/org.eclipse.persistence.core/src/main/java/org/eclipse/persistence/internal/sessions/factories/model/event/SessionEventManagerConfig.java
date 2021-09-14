@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,21 +20,21 @@ import java.util.Vector;
  * INTERNAL:
  */
 public class SessionEventManagerConfig {
-    private Vector m_sessionEventListeners;
+    private Vector<String> m_sessionEventListeners;
 
     public SessionEventManagerConfig() {
-        m_sessionEventListeners = new Vector();
+        m_sessionEventListeners = new Vector<>();
     }
 
     public void addSessionEventListener(String listener) {
         m_sessionEventListeners.add(listener);
     }
 
-    public void setSessionEventListeners(Vector sessionEventListeners) {
+    public void setSessionEventListeners(Vector<String> sessionEventListeners) {
         m_sessionEventListeners = sessionEventListeners;
     }
 
-    public Vector getSessionEventListeners() {
+    public Vector<String> getSessionEventListeners() {
         return m_sessionEventListeners;
     }
 }

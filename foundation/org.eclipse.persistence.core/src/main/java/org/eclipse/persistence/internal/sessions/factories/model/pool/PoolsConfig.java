@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,10 +23,10 @@ public class PoolsConfig {
     private ReadConnectionPoolConfig m_readConnectionPoolConfig;
     private WriteConnectionPoolConfig m_writeConnectionPoolConfig;
     private ConnectionPoolConfig m_sequenceConnectionPoolConfig;
-    private Vector m_connectionPoolConfigs;
+    private Vector<ConnectionPoolConfig> m_connectionPoolConfigs;
 
     public PoolsConfig() {
-        m_connectionPoolConfigs = new Vector();
+        m_connectionPoolConfigs = new Vector<>();
     }
 
     public void setReadConnectionPoolConfig(ReadConnectionPoolConfig readConnectionPoolConfig) {
@@ -57,11 +57,11 @@ public class PoolsConfig {
         m_connectionPoolConfigs.add(connectionPoolConfig);
     }
 
-    public void setConnectionPoolConfigs(Vector connectionPoolConfigs) {
+    public void setConnectionPoolConfigs(Vector<ConnectionPoolConfig> connectionPoolConfigs) {
         m_connectionPoolConfigs = connectionPoolConfigs;
     }
 
-    public Vector getConnectionPoolConfigs() {
+    public Vector<ConnectionPoolConfig> getConnectionPoolConfigs() {
         return m_connectionPoolConfigs;
     }
 }

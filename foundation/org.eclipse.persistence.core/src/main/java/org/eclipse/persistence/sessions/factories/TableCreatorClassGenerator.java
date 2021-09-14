@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -355,7 +355,7 @@ public class TableCreatorClassGenerator {
             startIndex = dotIndex + 1;
             dotIndex = packageName.indexOf('.', startIndex);
         }
-        writer.write(packageName.substring(startIndex, packageName.length()));
+        writer.write(packageName.substring(startIndex));
 
         return writer.toString();
     }
@@ -368,7 +368,7 @@ public class TableCreatorClassGenerator {
     public void setClassName(String newClassName) {
         int lastDotIndex = newClassName.lastIndexOf('.');
         if (lastDotIndex >= 0) {
-            className = newClassName.substring(lastDotIndex + 1, newClassName.length());
+            className = newClassName.substring(lastDotIndex + 1);
             setPackageName(newClassName.substring(0, lastDotIndex));
         } else {
             className = newClassName;
@@ -382,7 +382,7 @@ public class TableCreatorClassGenerator {
      * If the file does not include .java it will be appended.
      */
     public void setOutputFileName(String newOutputFileName) {
-        if (newOutputFileName.indexOf(".java") < 0) {
+        if (!newOutputFileName.contains(".java")) {
             outputFileName = newOutputFileName + ".java";
         } else {
             outputFileName = newOutputFileName;

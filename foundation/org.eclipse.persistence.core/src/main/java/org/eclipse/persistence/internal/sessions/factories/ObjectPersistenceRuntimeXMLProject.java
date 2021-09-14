@@ -452,7 +452,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 AggregateCollectionMapping mapping = (AggregateCollectionMapping)object;
                 List<DatabaseField> sourceFields = mapping.getSourceKeyFields();
                 List<DatabaseField> targetFields = mapping.getTargetForeignKeyFields();
-                List associations = new ArrayList(sourceFields.size());
+                List<Association> associations = new ArrayList<>(sourceFields.size());
                 for (int index = 0; index < sourceFields.size(); index++) {
                     associations.add(new Association(targetFields.get(index), sourceFields.get(index)));
                 }
@@ -462,12 +462,13 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 AggregateCollectionMapping mapping = (AggregateCollectionMapping)object;
-                List associations = (List)value;
+                @SuppressWarnings({"unchecked"})
+                List<Association> associations = (List<Association>) value;
                 mapping.setSourceKeyFields(NonSynchronizedVector.newInstance(associations.size()));
                 mapping.setTargetForeignKeyFields(NonSynchronizedVector.newInstance(associations.size()));
-                Iterator iterator = associations.iterator();
+                Iterator<Association> iterator = associations.iterator();
                 while (iterator.hasNext()) {
-                    Association association = (Association)iterator.next();
+                    Association association = iterator.next();
                     mapping.getSourceKeyFields().add((DatabaseField)association.getValue());
                     mapping.getTargetForeignKeyFields().add((DatabaseField)association.getKey());
                 }
@@ -579,8 +580,8 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                  * changed getAggregateToSourceFieldAssociations to hold String->DatabaseField associations
                  */
                 AggregateObjectMapping mapping = (AggregateObjectMapping)object;
-                Vector<Association> associations = mapping.getAggregateToSourceFieldAssociations();
-                Vector translations = new Vector(associations.size());
+                List<Association> associations = mapping.getAggregateToSourceFieldAssociations();
+                Vector<FieldTranslation> translations = new Vector<>(associations.size());
                 for (int index = 0; index < associations.size(); index++) {
                     Association association = associations.get(index);
                     FieldTranslation translation = new FieldTranslation();
@@ -594,9 +595,10 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 AggregateObjectMapping mapping = (AggregateObjectMapping)object;
-                Vector associations = (Vector)value;
+                @SuppressWarnings({"unchecked"})
+                Vector<Association> associations = (Vector<Association>)value;
                 for (int index = 0; index < associations.size(); index++) {
-                    Association association = (Association)associations.get(index);
+                    Association association = associations.get(index);
                     association.setKey(((DatabaseField)association.getKey()).getQualifiedName());
                 }
 
@@ -728,8 +730,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         platformMapping.setGetMethodName("getDatasourcePlatform");
         platformMapping.setSetMethodName("usePlatform");
         platformMapping.setConverter(new Converter() {
-            protected DatabaseMapping mapping;
-            private Map platformList;
+            private Map<String, String> platformList;
             private String oldPrefix = "oracle.toplink.";
             private String newPrefix = "org.eclipse.persistence.";
             private String oldOxmPrefix = oldPrefix + "ox.";
@@ -756,17 +757,17 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                     }
                 }
                 // convert deprecated platforms to new platforms
-                Object result = platformList.get(fieldValue);
+                String result = platformList.get(fieldValue);
                 if (result != null) {
                     fieldValue = result;
                 }
 
                 Object attributeValue;
-                Class attributeClass = session.getDatasourcePlatform().convertObject(fieldValue, ClassConstants.CLASS);
+                Class<?> attributeClass = session.getDatasourcePlatform().convertObject(fieldValue, ClassConstants.CLASS);
                 try {
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                         try {
-                            attributeValue = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(attributeClass));
+                            attributeValue = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(attributeClass));
                         }
                         catch (PrivilegedActionException exception) {
                             throw ConversionException.couldNotBeConverted(fieldValue, attributeClass, exception.getException());
@@ -790,7 +791,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
 
             @Override
             public void initialize(DatabaseMapping mapping, Session session) {
-                this.platformList = new HashMap();
+                this.platformList = new HashMap<>();
                 this.platformList.put("org.eclipse.persistence.internal.databaseaccess.AccessPlatform", "org.eclipse.persistence.platform.database.AccessPlatform");
                 this.platformList.put("org.eclipse.persistence.internal.databaseaccess.AttunityPlatform", "org.eclipse.persistence.platform.database.AttunityPlatform");
                 this.platformList.put("org.eclipse.persistence.internal.databaseaccess.CloudscapePlatform", "org.eclipse.persistence.platform.database.CloudscapePlatform");
@@ -808,10 +809,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 this.platformList.put("org.eclipse.persistence.oraclespecific.Oracle8Platform", "org.eclipse.persistence.platform.database.oracle.Oracle8Platform");
                 this.platformList.put("org.eclipse.persistence.oraclespecific.Oracle9Platform", "org.eclipse.persistence.platform.database.oracle.Oracle9Platform");
                 this.platformList.put("org.eclipse.persistence.platform.database.SQLAnyWherePlatform", "org.eclipse.persistence.platform.database.SQLAnywherePlatform");
-                this.mapping = mapping;
                 // CR#... Mapping must also have the field classification.
-                if (this.mapping.isDirectToFieldMapping()) {
-                    AbstractDirectMapping directMapping = (AbstractDirectMapping)this.mapping;
+                if (mapping.isDirectToFieldMapping()) {
+                    AbstractDirectMapping directMapping = (AbstractDirectMapping) mapping;
 
                     // Allow user to specify field type to override computed value. (i.e. blob, nchar)
                     if (directMapping.getFieldClassification() == null) {
@@ -1261,8 +1261,8 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         operatorConverter.addConversionValue("ascending", ExpressionOperator.getOperator(ExpressionOperator.Ascending));
         operatorConverter.addConversionValue("descending", ExpressionOperator.getOperator(ExpressionOperator.Descending));
         // These are platform specific so not on operator.
-        operatorConverter.addConversionValue("upper", new ExpressionOperator(ExpressionOperator.ToUpperCase, NonSynchronizedVector.newInstance(0)));
-        operatorConverter.addConversionValue("lower", new ExpressionOperator(ExpressionOperator.ToLowerCase, NonSynchronizedVector.newInstance(0)));
+        operatorConverter.addConversionValue("upper", new ExpressionOperator(ExpressionOperator.ToUpperCase, new ArrayList<>(0)));
+        operatorConverter.addConversionValue("lower", new ExpressionOperator(ExpressionOperator.ToLowerCase, new ArrayList<>(0)));
         // Aggregate functions
         operatorConverter.addConversionValue("count", ExpressionOperator.getOperator(ExpressionOperator.Count));
         operatorConverter.addConversionValue("sum", ExpressionOperator.getOperator(ExpressionOperator.Sum));
@@ -1270,8 +1270,8 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         operatorConverter.addConversionValue("maximum", ExpressionOperator.getOperator(ExpressionOperator.Maximum));
         operatorConverter.addConversionValue("minimum", ExpressionOperator.getOperator(ExpressionOperator.Minimum));
         // standardDeviation is platform specific.
-        operatorConverter.addConversionValue("standardDeviation", new ExpressionOperator(ExpressionOperator.StandardDeviation, NonSynchronizedVector.newInstance(0)));
-        operatorConverter.addConversionValue("variance", new ExpressionOperator(ExpressionOperator.Variance, NonSynchronizedVector.newInstance(0)));
+        operatorConverter.addConversionValue("standardDeviation", new ExpressionOperator(ExpressionOperator.StandardDeviation, new ArrayList<>(0)));
+        operatorConverter.addConversionValue("variance", new ExpressionOperator(ExpressionOperator.Variance, new ArrayList<>(0)));
         operatorConverter.addConversionValue("distinct", ExpressionOperator.getOperator(ExpressionOperator.Distinct));
         operatorMapping.setConverter(operatorConverter);
         operatorMapping.setXPath("@function");
@@ -1350,7 +1350,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 List<String> arguments = query.getArguments();
                 List<String> types = query.getArgumentTypeNames();
                 List<Object> values = query.getArgumentValues();
-                Vector queryArguments = new Vector(arguments.size());
+                Vector<QueryArgument> queryArguments = new Vector<>(arguments.size());
                 for (int index = 0; index < arguments.size(); index++) {
                     QueryArgument queryArgument = new QueryArgument();
                     queryArgument.setKey(arguments.get(index));
@@ -1372,12 +1372,13 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 DatabaseQuery query = (DatabaseQuery)object;
-                List queryArguments = (List)value;
+                @SuppressWarnings({"unchecked"})
+                List<QueryArgument> queryArguments = (List<QueryArgument>)value;
                 List<String> arguments = new ArrayList<>(queryArguments.size());
                 List<Class> types = new ArrayList<>(queryArguments.size());
                 List<Object> values = new ArrayList<>(queryArguments.size());
                 for (int index = 0; index < queryArguments.size(); index++) {
-                    QueryArgument queryArgument = (QueryArgument)queryArguments.get(index);
+                    QueryArgument queryArgument = queryArguments.get(index);
                     arguments.add((String)queryArgument.getKey());
                     if (queryArgument.getValue() != null) {
                         values.add(queryArgument.getValue());
@@ -2045,9 +2046,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public Object getAttributeValueFromObject(Object object) {
                 DatabaseMapping mapping = (DatabaseMapping)object;
-                Vector propertyAssociations = new NonSynchronizedVector();
-                for (Iterator i = mapping.getProperties().entrySet().iterator(); i.hasNext();) {
-                    Map.Entry me = (Map.Entry)i.next();
+                List<PropertyAssociation> propertyAssociations = new ArrayList<>();
+                for (Iterator<Map.Entry<?, ?>> i = mapping.getProperties().entrySet().iterator(); i.hasNext();) {
+                    Map.Entry<?, ?> me = i.next();
                     PropertyAssociation propertyAssociation = new PropertyAssociation();
                     propertyAssociation.setKey(me.getKey());
                     propertyAssociation.setValue(me.getValue());
@@ -2059,9 +2060,10 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 DatabaseMapping mapping = (DatabaseMapping)object;
-                Vector propertyAssociations = (Vector)value;
+                @SuppressWarnings({"unchecked"})
+                List<PropertyAssociation> propertyAssociations = (List<PropertyAssociation>) value;
                 for (int i = 0; i < propertyAssociations.size(); i++) {
-                    PropertyAssociation propertyAssociation = (PropertyAssociation)propertyAssociations.get(i);
+                    PropertyAssociation propertyAssociation = propertyAssociations.get(i);
                     mapping.getProperties().put(propertyAssociation.getKey(), propertyAssociation.getValue());
                 }
             }
@@ -2423,9 +2425,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public Object getAttributeValueFromObject(Object object) {
                 ClassDescriptor desc = (ClassDescriptor)object;
-                Vector propertyAssociations = new NonSynchronizedVector();
-                for (Iterator i = desc.getProperties().entrySet().iterator(); i.hasNext();) {
-                    Map.Entry me = (Map.Entry)i.next();
+                List<PropertyAssociation> propertyAssociations = new ArrayList<>();
+                for (Iterator<Map.Entry<?, ?>> i = desc.getProperties().entrySet().iterator(); i.hasNext();) {
+                    Map.Entry<?, ?> me = i.next();
                     PropertyAssociation propertyAssociation = new PropertyAssociation();
                     propertyAssociation.setKey(me.getKey());
                     propertyAssociation.setValue(me.getValue());
@@ -2437,9 +2439,10 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 ClassDescriptor desc = (ClassDescriptor)object;
-                Vector propertyAssociations = (Vector)value;
+                @SuppressWarnings({"unchecked"})
+                List<PropertyAssociation> propertyAssociations = (List<PropertyAssociation>) value;
                 for (int i = 0; i < propertyAssociations.size(); i++) {
-                    PropertyAssociation propertyAssociation = (PropertyAssociation)propertyAssociations.get(i);
+                    PropertyAssociation propertyAssociation = propertyAssociations.get(i);
                     desc.getProperties().put(propertyAssociation.getKey(), propertyAssociation.getValue());
                 }
             }
@@ -2469,9 +2472,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public Object getAttributeValueFromObject(Object object) {
                 ClassDescriptor mapping = (ClassDescriptor)object;
-                Vector associations = mapping.getMultipleTablePrimaryKeyAssociations();
+                List<Association> associations = mapping.getMultipleTablePrimaryKeyAssociations();
                 for (int index = 0; index < associations.size(); index++) {
-                    Association association = (Association)associations.get(index);
+                    Association association = associations.get(index);
                     association.setKey(new DatabaseField((String)association.getKey()));
                     association.setValue(new DatabaseField((String)association.getValue()));
                 }
@@ -2481,9 +2484,10 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 ClassDescriptor mapping = (ClassDescriptor)object;
-                Vector associations = (Vector)value;
+                @SuppressWarnings({"unchecked"})
+                List<Association> associations = (List<Association>) value;
                 for (int index = 0; index < associations.size(); index++) {
-                    Association association = (Association)associations.get(index);
+                    Association association = associations.get(index);
                     association.setKey(((DatabaseField)association.getKey()).getQualifiedName());
                     association.setValue(((DatabaseField)association.getValue()).getQualifiedName());
                 }
@@ -2502,9 +2506,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public Object getAttributeValueFromObject(Object object) {
                 ClassDescriptor mapping = (ClassDescriptor)object;
-                Vector associations = mapping.getMultipleTableForeignKeyAssociations();
+                List<Association> associations = mapping.getMultipleTableForeignKeyAssociations();
                 for (int index = 0; index < associations.size(); index++) {
-                    Association association = (Association)associations.get(index);
+                    Association association = associations.get(index);
                     association.setKey(new DatabaseField((String)association.getKey()));
                     association.setValue(new DatabaseField((String)association.getValue()));
                 }
@@ -2514,9 +2518,10 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 ClassDescriptor mapping = (ClassDescriptor)object;
-                Vector associations = (Vector)value;
+                @SuppressWarnings({"unchecked"})
+                List<Association> associations = (List<Association>) value;
                 for (int index = 0; index < associations.size(); index++) {
-                    Association association = (Association)associations.get(index);
+                    Association association = associations.get(index);
                     association.setKey(((DatabaseField)association.getKey()).getQualifiedName());
                     association.setValue(((DatabaseField)association.getValue()).getQualifiedName());
                 }
@@ -2610,7 +2615,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             public Object getAttributeValueFromObject(Object object) {
                 List<DatabaseField> sourceFields = ((DirectCollectionMapping)object).getSourceKeyFields();
                 List<DatabaseField> referenceFields = ((DirectCollectionMapping)object).getReferenceKeyFields();
-                List associations = new ArrayList(sourceFields.size());
+                List<Association> associations = new ArrayList<>(sourceFields.size());
                 for (int index = 0; index < sourceFields.size(); index++) {
                     associations.add(new Association(referenceFields.get(index), sourceFields.get(index)));
                 }
@@ -2620,12 +2625,13 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 DirectCollectionMapping mapping = (DirectCollectionMapping)object;
-                List associations = (List)value;
+                @SuppressWarnings({"unchecked"})
+                List<Association> associations = (List<Association>)value;
                 mapping.setSourceKeyFields(NonSynchronizedVector.newInstance(associations.size()));
                 mapping.setReferenceKeyFields(NonSynchronizedVector.newInstance(associations.size()));
-                Iterator iterator = associations.iterator();
+                Iterator<Association> iterator = associations.iterator();
                 while (iterator.hasNext()) {
-                    Association association = (Association)iterator.next();
+                    Association association = iterator.next();
                     mapping.getSourceKeyFields().add((DatabaseField)association.getValue());
                     mapping.getReferenceKeyFields().add((DatabaseField)association.getKey());
                 }
@@ -3221,7 +3227,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             public Object getAttributeValueFromObject(Object object) {
                 List<DatabaseField> sourceFields = ((ManyToManyMapping)object).getSourceKeyFields();
                 List<DatabaseField> relationFields = ((ManyToManyMapping)object).getSourceRelationKeyFields();
-                List associations = new ArrayList(sourceFields.size());
+                List<Association> associations = new ArrayList<>(sourceFields.size());
                 for (int index = 0; index < sourceFields.size(); index++) {
                     associations.add(new Association(relationFields.get(index), sourceFields.get(index)));
                 }
@@ -3231,12 +3237,13 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 ManyToManyMapping mapping = (ManyToManyMapping)object;
-                List associations = (List)value;
+                @SuppressWarnings({"unchecked"})
+                List<Association> associations = (List<Association>)value;
                 mapping.setSourceKeyFields(NonSynchronizedVector.newInstance(associations.size()));
                 mapping.setSourceRelationKeyFields(NonSynchronizedVector.newInstance(associations.size()));
-                Iterator iterator = associations.iterator();
+                Iterator<Association> iterator = associations.iterator();
                 while (iterator.hasNext()) {
-                    Association association = (Association)iterator.next();
+                    Association association = iterator.next();
                     mapping.getSourceKeyFields().add((DatabaseField)association.getValue());
                     mapping.getSourceRelationKeyFields().add((DatabaseField)association.getKey());
                 }
@@ -3254,7 +3261,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             public Object getAttributeValueFromObject(Object object) {
                 List<DatabaseField> targetFields = ((ManyToManyMapping)object).getTargetKeyFields();
                 List<DatabaseField> relationFields = ((ManyToManyMapping)object).getTargetRelationKeyFields();
-                List associations = new ArrayList(targetFields.size());
+                List<Association> associations = new ArrayList<>(targetFields.size());
                 for (int index = 0; index < targetFields.size(); index++) {
                     associations.add(new Association(relationFields.get(index), targetFields.get(index)));
                 }
@@ -3264,12 +3271,13 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 ManyToManyMapping mapping = (ManyToManyMapping)object;
-                List associations = (List)value;
+                @SuppressWarnings({"unchecked"})
+                List<Association> associations = (List<Association>)value;
                 mapping.setTargetKeyFields(NonSynchronizedVector.newInstance(associations.size()));
                 mapping.setTargetRelationKeyFields(NonSynchronizedVector.newInstance(associations.size()));
-                Iterator iterator = associations.iterator();
+                Iterator<Association> iterator = associations.iterator();
                 while (iterator.hasNext()) {
-                    Association association = (Association)iterator.next();
+                    Association association = iterator.next();
                     mapping.getTargetKeyFields().add((DatabaseField)association.getValue());
                     mapping.getTargetRelationKeyFields().add((DatabaseField)association.getKey());
                 }
@@ -3507,7 +3515,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             public Object getAttributeValueFromObject(Object object) {
                 List<DatabaseField> sourceFields = ((OneToManyMapping)object).getSourceKeyFields();
                 List<DatabaseField> targetFields = ((OneToManyMapping)object).getTargetForeignKeyFields();
-                List associations = new ArrayList(sourceFields.size());
+                List<Association> associations = new ArrayList<>(sourceFields.size());
                 for (int index = 0; index < sourceFields.size(); index++) {
                     associations.add(new Association(targetFields.get(index), sourceFields.get(index)));
                 }
@@ -3517,12 +3525,13 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 OneToManyMapping mapping = (OneToManyMapping)object;
-                List associations = (List)value;
+                @SuppressWarnings({"unchecked"})
+                List<Association> associations = (List<Association>)value;
                 mapping.setSourceKeyFields(NonSynchronizedVector.newInstance(associations.size()));
                 mapping.setTargetForeignKeyFields(NonSynchronizedVector.newInstance(associations.size()));
-                Iterator iterator = associations.iterator();
+                Iterator<Association> iterator = associations.iterator();
                 while (iterator.hasNext()) {
-                    Association association = (Association)iterator.next();
+                    Association association = iterator.next();
                     mapping.getSourceKeyFields().add((DatabaseField)association.getValue());
                     mapping.getTargetForeignKeyFields().add((DatabaseField)association.getKey());
                 }
@@ -3606,7 +3615,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public Object getAttributeValueFromObject(Object object) {
                 Map<DatabaseField, DatabaseField> sourceToTargetKeyFields = ((OneToOneMapping)object).getSourceToTargetKeyFields();
-                List associations = new ArrayList(sourceToTargetKeyFields.size());
+                List<Association> associations = new ArrayList<>(sourceToTargetKeyFields.size());
                 Iterator<Map.Entry<DatabaseField, DatabaseField>> iterator = sourceToTargetKeyFields.entrySet().iterator();
                 while (iterator.hasNext()) {
                     Map.Entry<DatabaseField, DatabaseField> entry = iterator.next();
@@ -3618,12 +3627,13 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 OneToOneMapping mapping = (OneToOneMapping)object;
-                List associations = (List)value;
-                mapping.setSourceToTargetKeyFields(new HashMap(associations.size() + 1));
-                mapping.setTargetToSourceKeyFields(new HashMap(associations.size() + 1));
-                Iterator iterator = associations.iterator();
+                @SuppressWarnings({"unchecked"})
+                List<Association> associations = (List<Association>)value;
+                mapping.setSourceToTargetKeyFields(new HashMap<>(associations.size() + 1));
+                mapping.setTargetToSourceKeyFields(new HashMap<>(associations.size() + 1));
+                Iterator<Association> iterator = associations.iterator();
                 while (iterator.hasNext()) {
-                    Association association = (Association)iterator.next();
+                    Association association = iterator.next();
                     mapping.getSourceToTargetKeyFields().put((DatabaseField)association.getKey(), (DatabaseField)association.getValue());
                     mapping.getTargetToSourceKeyFields().put((DatabaseField)association.getValue(), (DatabaseField)association.getKey());
                 }
@@ -4555,7 +4565,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         return descriptor;
     }
 
-    protected ClassDescriptor buildTypesafeEnumConverterDescriptor(Class jaxbTypesafeEnumConverter) {
+    protected ClassDescriptor buildTypesafeEnumConverterDescriptor(Class<?> jaxbTypesafeEnumConverter) {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(jaxbTypesafeEnumConverter);
 
@@ -4670,10 +4680,10 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public Object getAttributeValueFromObject(Object object) {
                 VariableOneToOneMapping mapping = (VariableOneToOneMapping)object;
-                Vector associations = mapping.getSourceToTargetQueryKeyFieldAssociations();
-                Vector queryKeyReferences = new Vector(associations.size());
+                List<Association> associations = mapping.getSourceToTargetQueryKeyFieldAssociations();
+                Vector<QueryKeyReference> queryKeyReferences = new Vector<>(associations.size());
                 for (int index = 0; index < associations.size(); index++) {
-                    Association association = (Association)associations.get(index);
+                    Association association = associations.get(index);
                     QueryKeyReference reference = new QueryKeyReference();
                     reference.setKey(new DatabaseField((String)association.getKey()));
                     reference.setValue(association.getValue());
@@ -4685,9 +4695,10 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 VariableOneToOneMapping mapping = (VariableOneToOneMapping)object;
-                Vector associations = (Vector)value;
+                @SuppressWarnings({"unchecked"})
+                Vector<Association> associations = (Vector<Association>)value;
                 for (int index = 0; index < associations.size(); index++) {
-                    Association association = (Association)associations.get(index);
+                    Association association = associations.get(index);
                     association.setKey(((DatabaseField)association.getKey()).getQualifiedName());
                 }
                 mapping.setSourceToTargetQueryKeyFieldAssociations(associations);

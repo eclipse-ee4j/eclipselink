@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,18 +23,18 @@ public class HierarchyNode {
     //  the class that this node represents
     public String className;
     public HierarchyNode parent;
-    public ArrayList children;
+    public List<HierarchyNode> children;
 
     /**
      * This member will hold the different definition types that should be implemented by the code generated children
      * Used mostly in CMP code generation
      */
-    public ArrayList definitions;
+    public List<?> definitions;
 
     public HierarchyNode(String className) {
         this.className = className;
-        this.children = new ArrayList();
-        this.definitions = new ArrayList();
+        this.children = new ArrayList<>();
+        this.definitions = new ArrayList<>();
     }
 
     public void setParent(HierarchyNode parent) {
@@ -48,7 +48,7 @@ public class HierarchyNode {
         }
     }
 
-    public List getChildren() {
+    public List<HierarchyNode> getChildren() {
         return this.children;
     }
 
@@ -62,7 +62,6 @@ public class HierarchyNode {
 
     @Override
     public String toString() {
-        String result = "HierarchyNode:\n\t" + className + "\n" + children + "\n end HierarchyNode\n";
-        return result;
+        return "HierarchyNode:\n\t" + className + "\n" + children + "\n end HierarchyNode\n";
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@
 package org.eclipse.persistence.internal.codegen;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  * INTERNAL:
@@ -31,7 +32,7 @@ public class NonreflectiveAttributeDefinition extends AttributeDefinition {
         this.type = "";
     }
 
-    private void adjustType(Map typeNameMap) {
+    private void adjustType(Map<String, Set<String>> typeNameMap) {
         String adjustedTypeName = adjustTypeName(getTypeName(), typeNameMap);
 
         if (!getTypeName().equals(adjustedTypeName)) {
@@ -40,7 +41,7 @@ public class NonreflectiveAttributeDefinition extends AttributeDefinition {
     }
 
     @Override
-    protected void adjustTypeNames(Map typeNameMap) {
+    protected void adjustTypeNames(Map<String, Set<String>> typeNameMap) {
         adjustType(typeNameMap);
         super.adjustTypeNames(typeNameMap);
     }

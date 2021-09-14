@@ -24,6 +24,10 @@ import java.util.*;
  */
 public class InheritanceHierarchyBuilder {
 
+    private InheritanceHierarchyBuilder() {
+        //no instance please
+    }
+
     /**
      * INTERNAL:
      * Based on a class name either return a pre-existing node from the hierarchyTree or build one and
@@ -38,7 +42,7 @@ public class InheritanceHierarchyBuilder {
         return node;
     }
 
-    public static Hashtable buildInheritanceHierarchyTree(Project project) {
+    public static Hashtable<String, HierarchyNode> buildInheritanceHierarchyTree(Project project) {
         Map<Class<?>, ClassDescriptor> descriptors = project.getDescriptors();
         Hashtable<String, HierarchyNode> hierarchyTree = new Hashtable<>(descriptors.size());
         for (Iterator<ClassDescriptor> descriptorIterator = descriptors.values().iterator();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,24 +35,24 @@ import org.eclipse.persistence.internal.helper.Helper;
  */
 public class ClassDefinition extends CodeDefinition {
     protected String packageName;
-    protected Vector imports;
+    protected Vector<String> imports;
     protected int type;
     public static final int CLASS_TYPE = 1;
     public static final int INTERFACE_TYPE = 2;
     protected String superClass;
-    protected Vector interfaces;
-    protected Vector attributes;
-    protected Vector methods;
-    protected Vector innerClasses;
+    protected Vector<String> interfaces;
+    protected Vector<AttributeDefinition> attributes;
+    protected Vector<MethodDefinition> methods;
+    protected Vector<ClassDefinition> innerClasses;
 
     public ClassDefinition() {
         this.packageName = "";
-        this.imports = new Vector(3);
+        this.imports = new Vector<>(3);
         this.type = CLASS_TYPE;
-        this.interfaces = new Vector(3);
-        this.attributes = new Vector();
-        this.methods = new Vector();
-        this.innerClasses = new Vector(3);
+        this.interfaces = new Vector<>(3);
+        this.attributes = new Vector<>();
+        this.methods = new Vector<>();
+        this.innerClasses = new Vector<>(3);
     }
 
     public void addAttribute(AttributeDefinition attribute) {
@@ -69,8 +69,8 @@ public class ClassDefinition extends CodeDefinition {
         }
     }
 
-    private void addImports(Map typeNameMap) {
-        for (Map.Entry<String, Set<String>> entry : (Set<Map.Entry<String, Set<String>>>) typeNameMap.entrySet()) {
+    private void addImports(Map<String, Set<String>> typeNameMap) {
+        for (Map.Entry<String, Set<String>> entry : typeNameMap.entrySet()) {
             String shortName = entry.getKey();
             Set<String> packageNames = entry.getValue();
 
@@ -100,36 +100,36 @@ public class ClassDefinition extends CodeDefinition {
         getMethods().addElement(method);
     }
 
-    private void addTypeNamesToMap(HashMap typeNameMap) {
+    private void addTypeNamesToMap(HashMap<String, Set<String>> typeNameMap) {
         putTypeNameInMap(getSuperClass(), typeNameMap);
 
-        for (Iterator i = getInterfaces().iterator(); i.hasNext();) {
-            putTypeNameInMap((String)i.next(), typeNameMap);
+        for (Iterator<String> i = getInterfaces().iterator(); i.hasNext();) {
+            putTypeNameInMap(i.next(), typeNameMap);
         }
 
-        for (Iterator i = getAttributes().iterator(); i.hasNext();) {
-            ((AttributeDefinition)i.next()).putTypeNamesInMap(typeNameMap);
+        for (Iterator<AttributeDefinition> i = getAttributes().iterator(); i.hasNext();) {
+            (i.next()).putTypeNamesInMap(typeNameMap);
         }
 
-        for (Iterator i = getMethods().iterator(); i.hasNext();) {
-            ((MethodDefinition)i.next()).putTypeNamesInMap(typeNameMap);
+        for (Iterator<MethodDefinition> i = getMethods().iterator(); i.hasNext();) {
+            i.next().putTypeNamesInMap(typeNameMap);
         }
     }
 
-    private void adjustTypeNames(HashMap typeNameMap) {
+    private void adjustTypeNames(HashMap<String, Set<String>> typeNameMap) {
         setSuperClass(adjustTypeName(getSuperClass(), typeNameMap));
 
-        for (Iterator i = new Vector(getInterfaces()).iterator(); i.hasNext();) {
-            String interfaceName = (String)i.next();
+        for (Iterator<String> i = new Vector<>(getInterfaces()).iterator(); i.hasNext();) {
+            String interfaceName = i.next();
             replaceInterface(interfaceName, adjustTypeName(interfaceName, typeNameMap));
         }
 
-        for (Iterator i = getAttributes().iterator(); i.hasNext();) {
-            ((AttributeDefinition)i.next()).adjustTypeNames(typeNameMap);
+        for (Iterator<AttributeDefinition> i = getAttributes().iterator(); i.hasNext();) {
+            (i.next()).adjustTypeNames(typeNameMap);
         }
 
-        for (Iterator i = getMethods().iterator(); i.hasNext();) {
-            ((MethodDefinition)i.next()).adjustTypeNames(typeNameMap);
+        for (Iterator<MethodDefinition> i = getMethods().iterator(); i.hasNext();) {
+            i.next().adjustTypeNames(typeNameMap);
         }
     }
 
@@ -149,7 +149,7 @@ public class ClassDefinition extends CodeDefinition {
     public void calculateImports() {
         // Calculate type name map for class definition.
         // Key - short type name, Value - Set of package names for that type name
-        HashMap typeNameMap = new HashMap();
+        HashMap<String, Set<String>> typeNameMap = new HashMap<>();
         addTypeNamesToMap(typeNameMap);
 
         // Go back through class def, pulling out imports and removing package names from
@@ -164,23 +164,23 @@ public class ClassDefinition extends CodeDefinition {
         return getMethods().contains(method);
     }
 
-    protected Vector getAttributes() {
+    protected Vector<AttributeDefinition> getAttributes() {
         return attributes;
     }
 
-    protected Vector getImports() {
+    protected Vector<String> getImports() {
         return imports;
     }
 
-    protected Vector getInnerClasses() {
+    protected Vector<ClassDefinition> getInnerClasses() {
         return innerClasses;
     }
 
-    protected Vector getInterfaces() {
+    protected Vector<String> getInterfaces() {
         return interfaces;
     }
 
-    protected Vector getMethods() {
+    protected Vector<MethodDefinition> getMethods() {
         return methods;
     }
 
@@ -208,11 +208,11 @@ public class ClassDefinition extends CodeDefinition {
         }
     }
 
-    private void setImports(Vector imports) {
+    private void setImports(Vector<String> imports) {
         this.imports = imports;
     }
 
-    private void setMethods(Vector methods) {
+    private void setMethods(Vector<MethodDefinition> methods) {
         this.methods = methods;
     }
 
@@ -233,29 +233,29 @@ public class ClassDefinition extends CodeDefinition {
     }
 
     protected void sortImports() {
-        setImports(new Vector(new TreeSet(getImports())));
+        setImports(new Vector<>(new TreeSet<>(getImports())));
     }
 
     protected void sortMethods() {
         //Object methodArray[] = getMethods().toArray();
-        Object[] methodArray = Helper.arrayFromVector(getMethods());
+        MethodDefinition[] methodArray = getMethods().toArray(new MethodDefinition[0]);
 
-        Comparator comparison = new Comparator() {
+        Comparator<MethodDefinition> comparison = new Comparator<MethodDefinition>() {
             @Override
-            public int compare(Object first, Object second) {
-                if (((MethodDefinition)first).isConstructor()) {
+            public int compare(MethodDefinition first, MethodDefinition second) {
+                if (first.isConstructor()) {
                     return -1;
-                } else if (((MethodDefinition)second).isConstructor()) {
+                } else if (second.isConstructor()) {
                     return 1;
                 } else {
-                    return ((MethodDefinition)first).getName().compareTo(((MethodDefinition)second).getName());
+                    return first.getName().compareTo(second.getName());
                 }
             }
         };
 
         Arrays.sort(methodArray, comparison);
 
-        Vector sortedMethods = new Vector(getMethods().size());
+        Vector<MethodDefinition> sortedMethods = new Vector<>(getMethods().size());
         for (int index = 0; index < methodArray.length; index++) {
             sortedMethods.addElement(methodArray[index]);
         }
@@ -275,8 +275,8 @@ public class ClassDefinition extends CodeDefinition {
             generator.cr();
         }
 
-        for (Enumeration importsEnum = getImports().elements(); importsEnum.hasMoreElements();) {
-            String importLine = (String)importsEnum.nextElement();
+        for (Enumeration<String> importsEnum = getImports().elements(); importsEnum.hasMoreElements();) {
+            String importLine = importsEnum.nextElement();
             generator.write("import ");
             generator.write(importLine);
             generator.writeln(";");
@@ -308,9 +308,9 @@ public class ClassDefinition extends CodeDefinition {
         }
 
         boolean isFirst = true;
-        for (Enumeration interfacesEnum = getInterfaces().elements();
-                 interfacesEnum.hasMoreElements();) {
-            String interfaceName = (String)interfacesEnum.nextElement();
+        for (Enumeration<String> interfacesEnum = getInterfaces().elements();
+             interfacesEnum.hasMoreElements();) {
+            String interfaceName = interfacesEnum.nextElement();
 
             if (isFirst) {
                 if (isInterface()) {
@@ -331,10 +331,10 @@ public class ClassDefinition extends CodeDefinition {
         generator.writeln(" {");
         generator.cr();
 
-        for (Enumeration attributesEnum = getAttributes().elements();
-                 attributesEnum.hasMoreElements();) {
+        for (Enumeration<AttributeDefinition> attributesEnum = getAttributes().elements();
+             attributesEnum.hasMoreElements();) {
             generator.tab();
-            ((AttributeDefinition)attributesEnum.nextElement()).write(generator);
+            (attributesEnum.nextElement()).write(generator);
             generator.cr();
         }
 
@@ -342,16 +342,16 @@ public class ClassDefinition extends CodeDefinition {
             generator.cr();
         }
 
-        for (Enumeration methodsEnum = getMethods().elements(); methodsEnum.hasMoreElements();) {
-            ((MethodDefinition)methodsEnum.nextElement()).write(generator);
+        for (Enumeration<MethodDefinition> methodsEnum = getMethods().elements(); methodsEnum.hasMoreElements();) {
+            methodsEnum.nextElement().write(generator);
             generator.cr();
             generator.cr();
         }
 
         //used for Oc4j code gen
-        for (Enumeration innerClassesEnum = getInnerClasses().elements();
-                 innerClassesEnum.hasMoreElements();) {
-            ((ClassDefinition)innerClassesEnum.nextElement()).write(generator);
+        for (Enumeration<ClassDefinition> innerClassesEnum = getInnerClasses().elements();
+             innerClassesEnum.hasMoreElements();) {
+            (innerClassesEnum.nextElement()).write(generator);
             generator.cr();
             generator.cr();
         }

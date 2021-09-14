@@ -639,10 +639,10 @@ public class SessionsFactory {
 
         // Properties (assumes they are all valid)
         if (loginConfig.getPropertyConfigs() != null) {
-            Enumeration e = loginConfig.getPropertyConfigs().elements();
+            Enumeration<PropertyConfig> e = loginConfig.getPropertyConfigs().elements();
 
             while (e.hasMoreElements()) {
-                PropertyConfig propertyConfig = (PropertyConfig)e.nextElement();
+                PropertyConfig propertyConfig = e.nextElement();
                 login.getProperties().put(propertyConfig.getName(), propertyConfig.getValue());
             }
         }
@@ -673,9 +673,9 @@ public class SessionsFactory {
             }
 
             // Connection pools
-            Enumeration e = poolsConfig.getConnectionPoolConfigs().elements();
+            Enumeration<ConnectionPoolConfig> e = poolsConfig.getConnectionPoolConfigs().elements();
             while (e.hasMoreElements()) {
-                ConnectionPoolConfig connectionPoolConfig = (ConnectionPoolConfig)e.nextElement();
+                ConnectionPoolConfig connectionPoolConfig = e.nextElement();
                 serverSession.addConnectionPool(buildConnectionPoolConfig(connectionPoolConfig, serverSession));
             }
         }
@@ -736,7 +736,7 @@ public class SessionsFactory {
     /**
      * INTERNAL:
      */
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings({"unchecked", "rawtypes"})
     protected ServerPlatform buildCustomServerPlatformConfig(CustomServerPlatformConfig platformConfig, DatabaseSessionImpl session) {
         ServerPlatform platform;
 
@@ -1083,10 +1083,10 @@ public class SessionsFactory {
     /**
      * INTERNAL:
      */
+    @SuppressWarnings({"unchecked", "rawtypes"})
     protected void buildOc4jJGroupsTransportManagerConfig(Oc4jJGroupsTransportManagerConfig tmConfig, RemoteCommandManager rcm) {
         TransportManager tm = null;
         try {
-            @SuppressWarnings({"unchecked"})
             Class<TransportManager> tmClass = (Class<TransportManager>) m_classLoader.loadClass(tmConfig.getTransportManagerClassName());
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 Constructor<TransportManager> constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(tmClass, new Class[] { RemoteCommandManager.class, boolean.class, String.class }, false));
@@ -1158,10 +1158,10 @@ public class SessionsFactory {
         tm.setInitialContextFactoryName(namingConfig.getInitialContextFactoryName());
 
         // Properties (assumes they are all valid)
-        Enumeration e = namingConfig.getPropertyConfigs().elements();
+        Enumeration<PropertyConfig> e = namingConfig.getPropertyConfigs().elements();
 
         while (e.hasMoreElements()) {
-            PropertyConfig propertyConfig = (PropertyConfig)e.nextElement();
+            PropertyConfig propertyConfig = e.nextElement();
             tm.getRemoteContextProperties().put(propertyConfig.getName(), propertyConfig.getValue());
         }
     }
@@ -1206,10 +1206,10 @@ public class SessionsFactory {
      */
     protected void processSessionEventManagerConfig(SessionEventManagerConfig sessionEventManagerConfig, AbstractSession session) {
         if (sessionEventManagerConfig != null) {
-            Enumeration e = sessionEventManagerConfig.getSessionEventListeners().elements();
+            Enumeration<String> e = sessionEventManagerConfig.getSessionEventListeners().elements();
 
             while (e.hasMoreElements()) {
-                String listenerClassName = (String)e.nextElement();
+                String listenerClassName = e.nextElement();
 
                 try {
                     @SuppressWarnings({"unchecked"})
@@ -1245,6 +1245,7 @@ public class SessionsFactory {
     /**
      * INTERNAL:
      */
+    @SuppressWarnings({"unchecked"})
     protected SessionLog buildJavaLogConfig(JavaLogConfig javaLogConfig, AbstractSession session) {
         SessionLog javaLog = null;
         try {
