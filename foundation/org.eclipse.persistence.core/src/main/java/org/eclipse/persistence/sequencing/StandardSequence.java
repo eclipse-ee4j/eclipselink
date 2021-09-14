@@ -76,7 +76,7 @@ public abstract class StandardSequence extends Sequence {
     }
 
     @Override
-    public Vector getGeneratedVector(Accessor accessor, AbstractSession writeSession, String seqName, int size) {
+    public Vector<?> getGeneratedVector(Accessor accessor, AbstractSession writeSession, String seqName, int size) {
         if (shouldUsePreallocation()) {
             Number value = updateAndSelectSequence(accessor, writeSession, seqName, size);
             if (value == null) {
@@ -97,10 +97,10 @@ public abstract class StandardSequence extends Sequence {
      * @param seqName String is sequencing number field name
      * @param size int size of Vector to create.
      */
-    protected Vector createVector(Number sequence, String seqName, int size) {
+    protected Vector<Number> createVector(Number sequence, String seqName, int size) {
         long nextSequence = sequence.longValue();
 
-        Vector sequencesForName = new Vector(size);
+        Vector<Number> sequencesForName = new Vector<>(size);
         nextSequence = nextSequence - size;
 
         // Check for incorrect values return to validate that the sequence is setup correctly.
@@ -122,10 +122,10 @@ public abstract class StandardSequence extends Sequence {
      * @param seqName String is sequencing number field name
      * @param size int size of Vector to create.
      */
-    protected Vector createVectorAtNextVal(Number sequence, String seqName, int size) {
+    protected Vector<Number> createVectorAtNextVal(Number sequence, String seqName, int size) {
         long nextSequence = sequence.longValue();
 
-        Vector sequencesForName = new Vector(size);
+        Vector<Number> sequencesForName = new Vector<>(size);
 
         // Check for incorrect values return to validate that the sequence is setup correctly.
         // PRS 36451 intvalue would wrap

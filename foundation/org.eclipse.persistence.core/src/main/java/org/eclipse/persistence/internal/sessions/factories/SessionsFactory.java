@@ -628,10 +628,10 @@ public class SessionsFactory {
             }
 
             if ((loginConfig.getSequencingConfig().getSequenceConfigs() != null) && !loginConfig.getSequencingConfig().getSequenceConfigs().isEmpty()) {
-                Enumeration eSequenceConfigs = loginConfig.getSequencingConfig().getSequenceConfigs().elements();
+                Enumeration<SequenceConfig> eSequenceConfigs = loginConfig.getSequencingConfig().getSequenceConfigs().elements();
 
                 while (eSequenceConfigs.hasMoreElements()) {
-                    Sequence sequence = buildSequence((SequenceConfig)eSequenceConfigs.nextElement());
+                    Sequence sequence = buildSequence(eSequenceConfigs.nextElement());
                     login.addSequence(sequence);
                 }
             }

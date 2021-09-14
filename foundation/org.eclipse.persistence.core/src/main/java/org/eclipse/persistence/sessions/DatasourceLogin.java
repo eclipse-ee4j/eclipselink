@@ -819,7 +819,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     /**
      * Returns a map of sequence names to Sequences (may be null).
      */
-    public Map getSequences() {
+    public Map<String, Sequence> getSequences() {
         return getDatasourcePlatform().getSequences();
     }
 
@@ -851,7 +851,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * INTERNAL:
      * Used only for writing the login into XML or Java.
      */
-    public Map getSequencesToWrite() {
+    public Map<String, Sequence> getSequencesToWrite() {
         return getDatasourcePlatform().getSequencesToWrite();
     }
 
@@ -859,7 +859,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * INTERNAL:
      * Used only for reading the login from XML.
      */
-    public void setSequences(Map sequences) {
+    public void setSequences(Map<String, Sequence> sequences) {
         getDatasourcePlatform().setSequences(sequences);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ import java.util.concurrent.*;
  * @see SequencingManager
  */
 class PreallocationHandler implements SequencingLogInOut {
-    protected Map<String, Queue> preallocatedSequences;
+    protected Map<String, Queue<Object>> preallocatedSequences;
 
     public PreallocationHandler() {
         super();
@@ -34,13 +34,13 @@ class PreallocationHandler implements SequencingLogInOut {
      * If there is not one, a new empty Queue is registered.
      * This queue is thread-safe, and threads can concurrent poll the queue to remove the first element.
      */
-    public Queue getPreallocated(String sequenceName) {
-        Queue sequences = preallocatedSequences.get(sequenceName);
+    public Queue<Object> getPreallocated(String sequenceName) {
+        Queue<Object> sequences = preallocatedSequences.get(sequenceName);
         if (sequences == null) {
             synchronized (preallocatedSequences) {
                 sequences = preallocatedSequences.get(sequenceName);
                 if (sequences == null) {
-                    sequences = new ConcurrentLinkedQueue();
+                    sequences = new ConcurrentLinkedQueue<>();
                     preallocatedSequences.put(sequenceName, sequences);
                 }
             }
@@ -70,7 +70,7 @@ class PreallocationHandler implements SequencingLogInOut {
      * but so handy for testing.
      */
     public void initializePreallocated() {
-        preallocatedSequences = new ConcurrentHashMap(20);
+        preallocatedSequences = new ConcurrentHashMap<>(20);
     }
 
     /**
@@ -87,7 +87,7 @@ class PreallocationHandler implements SequencingLogInOut {
      * Although this method is thread-safe, a lock should typically be obtained from the sequence manager before calling this method,
      * to ensure sequential numbers.
      */
-    public void setPreallocated(String seqName, Vector sequences) {
+    public void setPreallocated(String seqName, Vector<?> sequences) {
         getPreallocated(seqName).addAll(sequences);
     }
 }

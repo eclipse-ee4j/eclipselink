@@ -106,7 +106,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
     private SequencingConnectionHandler connectionHandler;
     private Map<String, PreallocationHandler> preallocationHandler;
     private int whenShouldAcquireValueForAll;
-    private Vector connectedSequences;
+    private Vector<Sequence> connectedSequences;
     boolean atLeastOneSequenceShouldUseTransaction;
     boolean atLeastOneSequenceShouldUsePreallocation;
 
@@ -292,7 +292,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
     }
 
     @Override
-    public Object getNextValue(Class cls) {
+    public Object getNextValue(Class<?> cls) {
         return getNextValue(getOwnerSession(), cls);
     }
 
@@ -314,7 +314,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         }
     }
 
-    protected void setLocks(Map locks) {
+    protected void setLocks(Map<String, ConcurrencyManager> locks) {
         this.locks = locks;
     }
 
@@ -341,13 +341,13 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         return manager;
     }
 
-    protected Sequence getSequence(Class cls) {
+    protected Sequence getSequence(Class<?> cls) {
         //** should check here that sequencing is used?
         String seqName = getOwnerSession().getDescriptor(cls).getSequenceNumberName();
         return getSequence(seqName);
     }
 
-    protected void logDebugPreallocation(String seqName, Object firstSequenceValue, Vector sequences) {
+    protected void logDebugPreallocation(String seqName, Object firstSequenceValue, Vector<?> sequences) {
         if (getOwnerSession().shouldLog(SessionLog.FINEST, SessionLog.SEQUENCING)) {
             // the first value has been already removed from sequences vector
             Object[] args = { seqName, sequences.size() + 1, firstSequenceValue, sequences.lastElement() };
@@ -355,7 +355,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         }
     }
 
-    protected void logDebugLocalPreallocation(AbstractSession writeSession, String seqName, Vector sequences, Accessor accessor) {
+    protected void logDebugLocalPreallocation(AbstractSession writeSession, String seqName, Vector<?> sequences, Accessor accessor) {
         if (writeSession.shouldLog(SessionLog.FINEST, SessionLog.SEQUENCING)) {
             Object[] args = { seqName, sequences.size(), sequences.firstElement(), sequences.lastElement() };
             writeSession.log(SessionLog.FINEST, SessionLog.SEQUENCING, "sequencing_localPreallocation", args, accessor);
@@ -388,7 +388,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
     class Preallocation_Transaction_NoAccessor_State extends State implements SequencingCallbackFactory {
 
         final class SequencingCallbackImpl implements SequencingCallback {
-            Map localSequences = new HashMap();
+            Map<String, Vector<?>> localSequences = new HashMap<>();
             String context;
 
             /**
@@ -401,7 +401,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
                 afterCommitInternal(context, localSequences, accessor);
             }
 
-            public Map getPreallocatedSequenceValues() {
+            public Map<String, Vector<?>> getPreallocatedSequenceValues() {
                 return localSequences;
             }
         }
@@ -423,12 +423,12 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         /**
          * Release any locally allocated sequence back to the global sequence pool.
          */
-        void afterCommitInternal(String context, Map localSequences, Accessor accessor) {
-            Iterator it = localSequences.entrySet().iterator();
+        void afterCommitInternal(String context, Map<String, Vector<?>> localSequences, Accessor accessor) {
+            Iterator<Map.Entry<String, Vector<?>>> it = localSequences.entrySet().iterator();
             while(it.hasNext()) {
-                Map.Entry entry = (Map.Entry)it.next();
-                String seqName = (String)entry.getKey();
-                Vector localSequenceForName = (Vector)entry.getValue();
+                Map.Entry<String, Vector<?>> entry = it.next();
+                String seqName = entry.getKey();
+                Vector<?> localSequenceForName = entry.getValue();
                 if (!localSequenceForName.isEmpty()) {
                     getPreallocationHandler(context).setPreallocated(seqName, localSequenceForName);
                     // clear all localSequencesForName
@@ -465,7 +465,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         public Object getNextValue(Sequence sequence, AbstractSession writeSession) {
             String seqName = sequence.getName();
             if(sequence.getPreallocationSize() > 1) {
-                Queue sequencesForName = getPreallocationHandler(getContext(writeSession)).getPreallocated(seqName);
+                Queue<Object> sequencesForName = getPreallocationHandler(getContext(writeSession)).getPreallocated(seqName);
                 // First grab the first sequence value without locking, a lock is only required if empty.
                 Object sequenceValue = sequencesForName.poll();
                 if (sequenceValue != null) {
@@ -498,15 +498,15 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
                 }
 
                 Accessor accessor;
-                Vector localSequencesForName;
+                Vector<?> localSequencesForName;
                 if (!keepLocked) {
                     writeSession.beginTransaction();//write accessor is set in begin
                 }
                 try {
                     accessor = writeSession.getAccessor();
                     SequencingCallbackImpl seqCallbackImpl = getCallbackImpl(writeSession, accessor);
-                    Map localSequences = seqCallbackImpl.getPreallocatedSequenceValues();
-                    localSequencesForName = (Vector)localSequences.get(seqName);
+                    Map<String, Vector<?>> localSequences = seqCallbackImpl.getPreallocatedSequenceValues();
+                    localSequencesForName = localSequences.get(seqName);
                     if ((localSequencesForName == null) || localSequencesForName.isEmpty()) {
                         localSequencesForName = sequence.getGeneratedVector(null, writeSession);
                         localSequences.put(seqName, localSequencesForName);
@@ -601,7 +601,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
             String seqName = sequence.getName();
             if(sequence.getPreallocationSize() > 1) {
                 PreallocationHandler handler = getPreallocationHandler(getContext(writeSession));
-                Queue sequencesForName = handler.getPreallocated(seqName);
+                Queue<Object> sequencesForName = handler.getPreallocated(seqName);
                 // First try to get the next sequence value without locking.
                 Object sequenceValue = sequencesForName.poll();
                 if (sequenceValue != null) {
@@ -620,7 +620,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
                     try {
                         accessor.beginTransaction(writeSession);
                         try {
-                            Vector sequences = sequence.getGeneratedVector(accessor, writeSession);
+                            Vector<?> sequences = sequence.getGeneratedVector(accessor, writeSession);
                             accessor.commitTransaction(writeSession);
                             // Remove the first value before adding to the global cache to ensure this thread gets one.
                             sequenceValue = sequences.remove(0);
@@ -683,7 +683,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
             String seqName = sequence.getName();
             if(sequence.getPreallocationSize() > 1) {
                 PreallocationHandler handler = getPreallocationHandler(getContext(writeSession));
-                Queue sequencesForName = handler.getPreallocated(seqName);
+                Queue<Object> sequencesForName = handler.getPreallocated(seqName);
                 // First try to get the next sequence value without locking.
                 Object sequenceValue = sequencesForName.poll();
                 if (sequenceValue != null) {
@@ -696,7 +696,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
                     if (sequenceValue != null) {
                         return sequenceValue;
                     }
-                    Vector sequences = sequence.getGeneratedVector(null, writeSession);
+                    Vector<?> sequences = sequence.getGeneratedVector(null, writeSession);
                     // Remove the first value before adding to the global cache to ensure this thread gets one.
                     sequenceValue = sequences.remove(0);
                     // copy remaining values to global cache.
@@ -752,9 +752,10 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
 
     /**
      * If sequencing is connected initialize the sequences used by descriptors, otherwise connect.
+     * @param descriptors
      */
     @Override
-    public void onAddDescriptors(Collection descriptors) {
+    public void onAddDescriptors(Collection<ClassDescriptor> descriptors) {
         if (!isConnected()) {
             onConnect();
             return;
@@ -769,8 +770,9 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
 
     /**
      * Initialize the sequences on login.
+     * @param descriptors class descriptors for which to initialize sequencing
      */
-    protected void onConnectInternal(Collection descriptors) {
+    protected void onConnectInternal(Collection<ClassDescriptor> descriptors) {
         // This method is called in two distinct cases.
         //
         // Connect case.
@@ -864,7 +866,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         }
         // In AddDescriptors case locks may have been already created
         if (atLeastOneSequenceShouldUsePreallocation && getLocks() == null) {
-            setLocks(new ConcurrentHashMap(20));
+            setLocks(new ConcurrentHashMap<>(20));
         }
         // In AddDescriptors case the factory may have been already created and listeners initialized.
         boolean hasSequencingCallbackFactory = isSequencingCallbackRequired();
@@ -947,11 +949,11 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
      * If passed collection is null then connect all sequences used by owner session's descriptors.
      * Otherwise connect sequences used by passed descriptors.
      */
-    protected void onConnectSequences(Collection descriptors) {
+    protected void onConnectSequences(Collection<ClassDescriptor> descriptors) {
         boolean isConnected = isConnected();
         int nAlreadyConnectedSequences = 0;
         if (connectedSequences == null) {
-            connectedSequences = new Vector();
+            connectedSequences = new Vector<>();
         } else {
             nAlreadyConnectedSequences = connectedSequences.size();
         }
@@ -961,9 +963,9 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         if (descriptors == null) {
             descriptors = getOwnerSession().getDescriptors().values();
         }
-        Iterator itDescriptors = descriptors.iterator();
+        Iterator<ClassDescriptor> itDescriptors = descriptors.iterator();
         while (itDescriptors.hasNext()) {
-            ClassDescriptor descriptor = (ClassDescriptor)itDescriptors.next();
+            ClassDescriptor descriptor = itDescriptors.next();
             // Find root sequence, because inheritance needs to be resolved here.
             // TODO: The way we initialize sequencing needs to be in line with descriptor init.
             ClassDescriptor parentDescriptor = descriptor;
@@ -1006,7 +1008,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
                 // defaultSequence has to disconnect the last
                 for (int i = connectedSequences.size() - 1; i >= nAlreadyConnectedSequences; i--) {
                     try {
-                        Sequence sequenceToDisconnect = (Sequence)connectedSequences.elementAt(i);
+                        Sequence sequenceToDisconnect = connectedSequences.elementAt(i);
                         sequenceToDisconnect.onDisconnect(getOwnerSession().getDatasourcePlatform());
                     } catch (RuntimeException ex2) {
                         //ignore
@@ -1050,7 +1052,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         // defaultSequence has to disconnect the last
         for (int i = connectedSequences.size() - 1; i >= nAlreadyConnectedSequences; i--) {
             try {
-                Sequence sequenceToDisconnect = (Sequence)connectedSequences.elementAt(i);
+                Sequence sequenceToDisconnect = connectedSequences.elementAt(i);
                 sequenceToDisconnect.onDisconnect(getOwnerSession().getDatasourcePlatform());
             } catch (RuntimeException ex) {
                 if (exception == null) {
@@ -1076,7 +1078,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
 
         int nSize = connectedSequences.size();
         for (int i = nAlreadyConnectedSequences; i < nSize; i++) {
-            Sequence sequence = (Sequence)connectedSequences.get(i);
+            Sequence sequence = connectedSequences.get(i);
             State state = getState(sequence.shouldUsePreallocation(), sequence.shouldUseTransaction());
             if (state == null) {
                 createState(sequence.shouldUsePreallocation(), sequence.shouldUseTransaction());
@@ -1135,31 +1137,32 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
     }
 
     @Override
-    public Object getNextValue(AbstractSession writeSession, Class cls) {
+    public Object getNextValue(AbstractSession writeSession, Class<?> cls) {
         Sequence sequence = getSequence(cls);
         State state = getState(sequence.shouldUsePreallocation(), sequence.shouldUseTransaction());
         return state.getNextValue(sequence, writeSession);
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     protected void logDebugSequencingConnected(int nAlreadyConnectedSequences) {
-        Vector[] sequenceVectors = new Vector[NUMBER_OF_STATES];
+        Vector<Sequence>[] sequenceVectors = (Vector<Sequence>[]) new Vector[NUMBER_OF_STATES];
         int size = connectedSequences.size();
         for (int i = nAlreadyConnectedSequences; i < size; i++) {
-            Sequence sequence = (Sequence)connectedSequences.get(i);
+            Sequence sequence = connectedSequences.get(i);
             int stateId = getStateId(sequence.shouldUsePreallocation(), sequence.shouldUseTransaction());
-            Vector v = sequenceVectors[stateId];
+            Vector<Sequence> v = sequenceVectors[stateId];
             if (v == null) {
-                v = new Vector();
+                v = new Vector<>();
                 sequenceVectors[stateId] = v;
             }
             v.addElement(sequence);
         }
         for (int i = 0; i < NUMBER_OF_STATES; i++) {
-            Vector v = sequenceVectors[i];
+            Vector<Sequence> v = sequenceVectors[i];
             if (v != null) {
                 getOwnerSession().log(SessionLog.FINEST, SessionLog.SEQUENCING, "sequencing_connected", states[i]);
                 for (int j = 0; j < v.size(); j++) {
-                    Sequence sequence = (Sequence)v.elementAt(j);
+                    Sequence sequence = v.elementAt(j);
                     Object[] args = { sequence.getName(), Integer.toString(sequence.getPreallocationSize()),
                             Integer.toString(sequence.getInitialValue())};
                     getOwnerSession().log(SessionLog.FINEST, SessionLog.SEQUENCING, "sequence_without_state", args);

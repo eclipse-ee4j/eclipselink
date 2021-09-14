@@ -902,7 +902,7 @@ public class DatasourcePlatform implements Platform {
      * Sets sequences - for XML support only
      */
     @Override
-    public void setSequences(Map sequences) {
+    public void setSequences(Map<String, Sequence> sequences) {
         this.sequences = sequences;
     }
 

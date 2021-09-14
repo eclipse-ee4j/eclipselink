@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -156,7 +156,7 @@ public class UnaryTableSequence extends QuerySequence {
 
     protected void buildUpdateString1() {
         updateString1 = "UPDATE ";
-        if (qualifier != "") {
+        if (!qualifier.isEmpty()) {
             updateString1 = updateString1 + qualifier + '.';
         }
     }
@@ -173,7 +173,7 @@ public class UnaryTableSequence extends QuerySequence {
 
     protected void buildSelectString1() {
         selectString1 = "SELECT * FROM ";
-        if (qualifier != "") {
+        if (!qualifier.isEmpty()) {
             selectString1 = selectString1 + qualifier + '.';
         }
     }

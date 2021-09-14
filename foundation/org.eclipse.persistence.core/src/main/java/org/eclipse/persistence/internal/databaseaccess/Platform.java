@@ -246,13 +246,13 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
      * INTERNAL:
      * Returns a map of sequence names to Sequences (may be null).
      */
-    Map getSequences();
+    Map<String, Sequence> getSequences();
 
     /**
      * INTERNAL:
      * Used only for writing into XML or Java.
      */
-    Map getSequencesToWrite();
+    Map<String, Sequence> getSequencesToWrite();
 
     /**
      * INTERNAL:
@@ -264,7 +264,7 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
      * INTERNAL:
      * Used only for reading from XML.
      */
-    void setSequences(Map sequences);
+    void setSequences(Map<String, Sequence> sequences);
 
     /**
      * INTERNAL:

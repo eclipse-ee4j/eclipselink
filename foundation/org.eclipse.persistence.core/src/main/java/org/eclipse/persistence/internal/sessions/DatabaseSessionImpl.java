@@ -327,8 +327,9 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * INTERNAL:
      * If sequencing is connected then initializes sequences referenced by the passed descriptors,
      * otherwise connects sequencing.
+     * @param descriptors class descriptors
      */
-    public void addDescriptorsToSequencing(Collection descriptors) {
+    public void addDescriptorsToSequencing(Collection<ClassDescriptor> descriptors) {
         getSequencingHome().onAddDescriptors(descriptors);
     }
 

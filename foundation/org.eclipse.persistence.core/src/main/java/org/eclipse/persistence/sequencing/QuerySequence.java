@@ -93,7 +93,12 @@ public class QuerySequence extends StandardSequence {
     public boolean equals(Object obj) {
         if (obj instanceof QuerySequence && super.equals(obj)) {
             QuerySequence other = (QuerySequence)obj;
-            return (getSelectQuery() == other.getSelectQuery()) && (getUpdateQuery() == other.getUpdateQuery()) && (shouldAcquireValueAfterInsert() == other.shouldAcquireValueAfterInsert()) && (shouldUseTransaction() == other.shouldUseTransaction()) && (shouldSkipUpdate() == other.shouldSkipUpdate()) && (shouldSelectBeforeUpdate() == other.shouldSelectBeforeUpdate());
+            return (getSelectQuery() == other.getSelectQuery())
+                    && (getUpdateQuery() == other.getUpdateQuery())
+                    && (shouldAcquireValueAfterInsert() == other.shouldAcquireValueAfterInsert())
+                    && (shouldUseTransaction() == other.shouldUseTransaction())
+                    && (shouldSkipUpdate() == other.shouldSkipUpdate())
+                    && (shouldSelectBeforeUpdate() == other.shouldSelectBeforeUpdate());
 
         } else {
             return false;
@@ -323,7 +328,7 @@ public class QuerySequence extends StandardSequence {
                 query.setAccessor(accessor);
             }
         }
-        Vector args = createArguments(query, seqName, size);
+        Vector<Object> args = createArguments(query, seqName, size);
         query.setIsUserDefinedSQLCall(false);
         if (args != null) {
             return writeSession.executeQuery(query, args);
@@ -356,7 +361,7 @@ public class QuerySequence extends StandardSequence {
                 query.setAccessor(accessor);
             }
         }
-        Vector args = createArguments(query, seqName, sizeOrNewValue);
+        Vector<Object> args = createArguments(query, seqName, sizeOrNewValue);
         query.setIsUserDefinedSQLCall(false);
         if (args != null) {
             writeSession.executeQuery(query, args);
@@ -368,10 +373,10 @@ public class QuerySequence extends StandardSequence {
     /**
     * INTERNAL:
     */
-    protected Vector createArguments(DatabaseQuery query, String seqName, Number sizeOrNewValue) {
+    protected Vector<Object> createArguments(DatabaseQuery query, String seqName, Number sizeOrNewValue) {
         int nArgs = query.getArguments().size();
         if (nArgs > 0) {
-            Vector args = new Vector(nArgs);
+            Vector<Object> args = new Vector<>(nArgs);
             args.addElement(seqName);
             if (nArgs > 1) {
                 args.addElement(sizeOrNewValue);

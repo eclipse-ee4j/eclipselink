@@ -59,7 +59,7 @@ class SessionBrokerSequencing implements Sequencing {
     }
 
     // internal
-    protected Sequencing get(Class cls) {
+    protected Sequencing get(Class<?> cls) {
         return broker.getSessionForClass(cls).getSequencing();
     }
 
@@ -69,7 +69,7 @@ class SessionBrokerSequencing implements Sequencing {
     }
 
     @Override
-    public Object getNextValue(Class cls) {
+    public Object getNextValue(Class<?> cls) {
         return get(cls).getNextValue(cls);
     }
 }

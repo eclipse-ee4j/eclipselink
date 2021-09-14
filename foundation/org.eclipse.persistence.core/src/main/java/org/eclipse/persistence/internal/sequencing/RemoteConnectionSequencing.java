@@ -15,7 +15,7 @@
 package org.eclipse.persistence.internal.sequencing;
 
 import java.util.Hashtable;
-import org.eclipse.persistence.internal.sequencing.Sequencing;
+
 import org.eclipse.persistence.internal.sessions.remote.RemoteConnection;
 import org.eclipse.persistence.internal.sessions.remote.RemoteFunctionCall;
 import org.eclipse.persistence.internal.sessions.remote.SequencingFunctionCall;
@@ -29,6 +29,7 @@ import org.eclipse.persistence.internal.sessions.remote.SequencingFunctionCall;
  * are implemented as static inner classes in SequenceFunctionCall class:
  * like SequencingFunctionCall.DoesExist.
  */
+@SuppressWarnings({"rawtypes"})
 class RemoteConnectionSequencing implements Sequencing {
     protected RemoteConnection remoteConnection;
     protected Hashtable classToShouldAcquireValueAfterInsert;
@@ -52,7 +53,7 @@ class RemoteConnectionSequencing implements Sequencing {
     }
 
     @Override
-    public Object getNextValue(Class cls) {
+    public Object getNextValue(Class<?> cls) {
         return processFunctionCall(new SequencingFunctionCall.GetNextValue(cls));
     }
 
