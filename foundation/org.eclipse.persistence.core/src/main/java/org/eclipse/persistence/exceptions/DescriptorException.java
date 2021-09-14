@@ -32,6 +32,8 @@ import java.util.Collection;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 
 /**
  *    <B>Purpose</B>: This exception is used for any problem that is detected with a descriptor or mapping.
@@ -1260,7 +1262,17 @@ public class DescriptorException extends ValidationException {
 
     public static DescriptorException nullPointerWhileConstructorInstantiation(ClassDescriptor descriptor, Throwable exception) {
         Object[] args = {  };
-
+//        SessionLog log = AbstractSessionLog.getLog();
+//        Throwable curr = exception;
+//        int count = 0;
+//        while (curr != null && count++ < 10) {
+//            log.log(SessionLog.INFO, curr.getMessage());
+//            StackTraceElement[] els = curr.getStackTrace();
+//            for (StackTraceElement el : els) {
+//                log.log(SessionLog.INFO, String.format("  - %s", el.toString()));
+//            }
+//            curr = curr.getCause();
+//        }
         DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, NULL_POINTER_WHILE_CONSTRUCTOR_INSTANTIATION, args), descriptor, exception);
         descriptorException.setErrorCode(NULL_POINTER_WHILE_CONSTRUCTOR_INSTANTIATION);
         return descriptorException;

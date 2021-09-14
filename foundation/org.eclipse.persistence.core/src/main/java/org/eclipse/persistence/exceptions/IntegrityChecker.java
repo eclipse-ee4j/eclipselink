@@ -19,6 +19,8 @@ import java.io.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 
 /**
  *    <p><b>Purpose</b>: IntegrityChecker is used for catching all the descriptor exceptions,
@@ -148,9 +150,23 @@ public class IntegrityChecker implements Serializable {
      * This method will throw the exception or add the exceptions into a vector depending on the value of shouldCatchExceptions.
      */
     public void handleError(RuntimeException runtimeException) {
+        SessionLog log = AbstractSessionLog.getLog();
         if (!shouldCatchExceptions()) {
             throw runtimeException;
         }
+//        if (runtimeException instanceof NullPointerException) {
+//            log.log(SessionLog.INFO, "Handling NPE");
+//            Throwable curr = runtimeException;
+//            int count = 0;
+//            while (curr != null && count++ < 10) {
+//                log.log(SessionLog.INFO, curr.getMessage());
+//                StackTraceElement[] els = curr.getStackTrace();
+//                for (StackTraceElement el : els) {
+//                    log.log(SessionLog.INFO, String.format("  - %s", el.toString()));
+//                }
+//                curr = curr.getCause();
+//            }
+//        }
         getCaughtExceptions().addElement(runtimeException);
     }
 

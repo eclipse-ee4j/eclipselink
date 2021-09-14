@@ -119,6 +119,20 @@ public class PrivilegedAccessHelper {
             } else {
                 return findDeclaredField(superclass, fieldName);
             }
+        } catch (Throwable t) {
+            SessionLog log = AbstractSessionLog.getLog();
+            log.log(SessionLog.INFO, "Handling NPE");
+            Throwable curr = t;
+            int count = 0;
+            while (curr != null && count++ < 10) {
+                log.log(SessionLog.INFO, curr.getMessage());
+                StackTraceElement[] els = curr.getStackTrace();
+                for (StackTraceElement el : els) {
+                    log.log(SessionLog.INFO, String.format("  - %s", el.toString()));
+                }
+                curr = curr.getCause();
+            }
+            throw t;
         }
     }
 

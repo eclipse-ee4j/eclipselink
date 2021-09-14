@@ -866,6 +866,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
 
         @Override
         protected JAXBContextState createContextState() throws jakarta.xml.bind.JAXBException {
+            SessionLog log = AbstractSessionLog.getLog();
             boolean foundMetadata = false;
             List<Class> classes = new ArrayList<>();
 
@@ -933,12 +934,23 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
                 return new JAXBContextState(xmlContext);
             } catch (Exception exception) {
                 sessionLoadingException = exception;
+                log.log(SessionLog.INFO, "EROR -- XMLContext");
+                Throwable curr = exception;
+                int count = 0;
+                while(curr != null && count++ < 10) {
+                    log.log(SessionLog.INFO, curr.getMessage());
+                    StackTraceElement[] els = curr.getStackTrace();
+                    for (StackTraceElement el : els) {
+                        log.log(SessionLog.INFO, String.format("  - %s", el.toString()));
+                    }
+                    curr = curr.getCause();
+                }
+                
             }
             JAXBException jaxbException = JAXBException.noObjectFactoryOrJaxbIndexInPath(contextPath);
             if (sessionLoadingException != null) {
                 jaxbException.setInternalException(sessionLoadingException);
             }
-            SessionLog log = AbstractSessionLog.getLog();
             log.logThrowable(SessionLog.INFO, jaxbException);
             throw new jakarta.xml.bind.JAXBException(jaxbException);
         }
