@@ -32,6 +32,7 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -42,6 +43,7 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -244,13 +246,13 @@ public class Helper extends CoreHelper implements Serializable {
         }
     }
 
-    public static Vector addAllUniqueToVector(Vector objects, List objectsToAdd) {
+    public static <T> Vector<T> addAllUniqueToVector(Vector<T> objects, List<T> objectsToAdd) {
         if (objectsToAdd == null) {
             return objects;
         }
         int size = objectsToAdd.size();
         for (int index = 0; index < size; index++) {
-            Object element = objectsToAdd.get(index);
+            T element = objectsToAdd.get(index);
             if (!objects.contains(element)) {
                 objects.add(element);
             }
@@ -258,13 +260,13 @@ public class Helper extends CoreHelper implements Serializable {
         return objects;
     }
 
-    public static List addAllUniqueToList(List objects, List objectsToAdd) {
+    public static <T> List<T> addAllUniqueToList(List<T> objects, List<T> objectsToAdd) {
         if (objectsToAdd == null) {
             return objects;
         }
         int size = objectsToAdd.size();
         for (int index = 0; index < size; index++) {
-            Object element = objectsToAdd.get(index);
+            T element = objectsToAdd.get(index);
             if (!objects.contains(element)) {
                 objects.add(element);
             }
@@ -354,9 +356,9 @@ public class Helper extends CoreHelper implements Serializable {
     /**
       * Create a new Vector containing all of the map elements.
       */
-    public static Vector buildVectorFromMapElements(Map map) {
-        Vector vector = new Vector(map.size());
-        Iterator iterator = map.values().iterator();
+    public static <T> Vector<T> buildVectorFromMapElements(Map<?, T> map) {
+        Vector<T> vector = new Vector<>(map.size());
+        Iterator<T> iterator = map.values().iterator();
 
         while (iterator.hasNext()) {
             vector.addElement(iterator.next());

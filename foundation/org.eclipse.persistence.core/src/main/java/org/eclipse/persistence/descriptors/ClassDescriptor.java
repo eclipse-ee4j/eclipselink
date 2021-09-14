@@ -2613,7 +2613,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     public Map<DatabaseTable, Set<DatabaseTable>> getMultipleTableForeignKeys() {
         if (multipleTableForeignKeys == null) {
-            multipleTableForeignKeys = new HashMap(5);
+            multipleTableForeignKeys = new HashMap<>(5);
         }
         return multipleTableForeignKeys;
     }
@@ -4790,11 +4790,8 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * INTERNAL:
      * This method is used by the  XML Deployment ClassDescriptor to read and write these mappings
      */
-    public void setForeignKeyFieldNamesForMultipleTable(Vector associations) throws DescriptorException {
-        Enumeration foreignKeys = associations.elements();
-
-        while (foreignKeys.hasMoreElements()) {
-            Association association = (Association) foreignKeys.nextElement();
+    public void setForeignKeyFieldNamesForMultipleTable(List<Association> associations) throws DescriptorException {
+        for (Association association: associations) {
             addForeignKeyFieldNameForMultipleTable((String) association.getKey(), (String) association.getValue());
         }
     }

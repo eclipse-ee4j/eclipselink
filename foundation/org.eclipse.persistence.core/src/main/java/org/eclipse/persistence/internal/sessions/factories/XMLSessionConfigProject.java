@@ -830,7 +830,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         platformClassMapping.setSetMethodName("setPlatformClass");
         platformClassMapping.setXPath("platform-class/text()");
         platformClassMapping.setConverter(new Converter(){
-            private Map platformList;
+            private Map<String, String> platformList;
             private String oldPrefix = "oracle.toplink.";
             private String newPrefix = "org.eclipse.persistence.";
             private String oldOxmPrefix = oldPrefix + "ox.";
@@ -869,7 +869,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
 
             @Override
             public void initialize(DatabaseMapping mapping, Session session){
-                this.platformList = new HashMap();
+                this.platformList = new HashMap<>();
                 this.platformList.put("org.eclipse.persistence.internal.databaseaccess.AccessPlatform", "org.eclipse.persistence.platform.database.AccessPlatform");
                 this.platformList.put("org.eclipse.persistence.internal.databaseaccess.AttunityPlatform", "org.eclipse.persistence.platform.database.AttunityPlatform");
                 this.platformList.put("org.eclipse.persistence.internal.databaseaccess.CloudscapePlatform", "org.eclipse.persistence.platform.database.CloudscapePlatform");
@@ -1225,7 +1225,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         return descriptor;
     }
 
-    public ClassDescriptor buildServerPlatformConfigDescriptorFor(Class serverPlatformClass) {
+    public ClassDescriptor buildServerPlatformConfigDescriptorFor(Class<?> serverPlatformClass) {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(serverPlatformClass);
         descriptor.getInheritancePolicy().setParentClass(ServerPlatformConfig.class);

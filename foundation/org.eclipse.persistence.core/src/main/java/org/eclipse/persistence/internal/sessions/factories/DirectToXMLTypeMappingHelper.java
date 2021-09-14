@@ -32,21 +32,22 @@ public class DirectToXMLTypeMappingHelper {
 
     private static DirectToXMLTypeMappingHelper singleton = null;
 
+    protected DirectToXMLTypeMappingHelper() {
+    }
+
     public static DirectToXMLTypeMappingHelper getInstance() {
 
         if (singleton == null) {
-            Class helperClass = null;
+            Class<? extends DirectToXMLTypeMappingHelper> helperClass = null;
 
             try {
-                helperClass = new PrivilegedClassForName<>("org.eclipse.persistence.sessions.factories.OracleDirectToXMLTypeMappingHelper").run();
+                helperClass = new PrivilegedClassForName<DirectToXMLTypeMappingHelper>("org.eclipse.persistence.sessions.factories.OracleDirectToXMLTypeMappingHelper").run();
             } catch (Throwable cnfe) {
                 helperClass = DirectToXMLTypeMappingHelper.class;
             }
             try {
-                singleton = (DirectToXMLTypeMappingHelper) new PrivilegedNewInstanceFromClass(helperClass).run();
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException("Helper create failed: " + helperClass);
-            } catch (InstantiationException e) {
+                singleton = new PrivilegedNewInstanceFromClass<>(helperClass).run();
+            } catch (ReflectiveOperationException e) {
                 throw new RuntimeException("Helper create failed: " + helperClass);
             }
         }

@@ -16,6 +16,7 @@ package org.eclipse.persistence.internal.sessions.factories.model.login;
 
 import java.util.Vector;
 import org.eclipse.persistence.internal.security.SecurableObjectHolder;
+import org.eclipse.persistence.internal.sessions.factories.model.property.PropertyConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.sequencing.SequencingConfig;
 
 /**
@@ -30,7 +31,7 @@ public abstract class LoginConfig {
     private boolean m_externalConnectionPooling;
     private boolean m_externalTransactionController;
     private SequencingConfig m_sequencingConfig;
-    private Vector m_propertyConfigs;
+    private Vector<PropertyConfig> m_propertyConfigs;
 
     protected LoginConfig() {
         // Without setting the encryption class name the object holder will
@@ -156,11 +157,11 @@ public abstract class LoginConfig {
         return m_sequencingConfig;
     }
 
-    public void setPropertyConfigs(Vector propertyConfigs) {
+    public void setPropertyConfigs(Vector<PropertyConfig> propertyConfigs) {
         m_propertyConfigs = propertyConfigs;
     }
 
-    public Vector getPropertyConfigs() {
+    public Vector<PropertyConfig> getPropertyConfigs() {
         return m_propertyConfigs;
     }
 }

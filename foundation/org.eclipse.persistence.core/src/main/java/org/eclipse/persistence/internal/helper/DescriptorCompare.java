@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,12 +24,12 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
  * Use to sort vectors of strings.
  * Avoid using this class as sun.misc is not part of many VM's like Netscapes.
  */
-public class DescriptorCompare implements Comparator, Serializable {
+public class DescriptorCompare implements Comparator<ClassDescriptor>, Serializable {
 
     private static final long serialVersionUID = -2792350655245140468L;
 
     @Override
-    public int compare(Object arg1, Object arg2) {
-        return ((ClassDescriptor)arg1).getJavaClassName().compareTo(((ClassDescriptor)arg2).getJavaClassName());
+    public int compare(ClassDescriptor arg1, ClassDescriptor arg2) {
+        return arg1.getJavaClassName().compareTo(arg2.getJavaClassName());
     }
 }

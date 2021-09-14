@@ -355,9 +355,9 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                 @Override
                 public Object getAttributeValueFromObject(Object object) {
                     ClassDescriptor descriptor = (ClassDescriptor) object;
-                    Vector associations = descriptor.getMultipleTableForeignKeyAssociations();
+                    List<Association> associations = descriptor.getMultipleTableForeignKeyAssociations();
                     for (int index = 0; index < associations.size(); index++) {
-                        Association association = (Association) associations.get(index);
+                        Association association = associations.get(index);
                         String targetPrimaryKeyFieldName = (String) association.getKey();
                         association.setKey(new DatabaseField((String) association.getValue()));
                         association.setValue(new DatabaseField(targetPrimaryKeyFieldName));
@@ -367,9 +367,9 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                 @Override
                 public void setAttributeValueInObject(Object object, Object value) {
                     ClassDescriptor descriptor = (ClassDescriptor) object;
-                    Vector associations = (Vector) value;
+                    List<Association> associations = (List<Association>) value;
                     for (int index = 0; index < associations.size(); index++) {
-                        Association association = (Association) associations.get(index);
+                        Association association = associations.get(index);
                         association.setKey(((DatabaseField) association.getKey()).getQualifiedName());
                         association.setValue(((DatabaseField) association.getValue()).getQualifiedName());
                     }
@@ -616,11 +616,11 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         sourceToTargetKeyFieldAssociationsMapping.setAttributeAccessor(new AttributeAccessor() {
                 @Override
                 public Object getAttributeValueFromObject(Object object) {
-                    Map sourceToTargetKeyFields = ((XMLObjectReferenceMapping) object).getSourceToTargetKeyFieldAssociations();
-                    List associations = new ArrayList(sourceToTargetKeyFields.size());
-                    Iterator iterator = sourceToTargetKeyFields.entrySet().iterator();
+                    Map<XMLField, XMLField> sourceToTargetKeyFields = ((XMLObjectReferenceMapping) object).getSourceToTargetKeyFieldAssociations();
+                    List<Association> associations = new ArrayList<>(sourceToTargetKeyFields.size());
+                    Iterator<Map.Entry<XMLField, XMLField>> iterator = sourceToTargetKeyFields.entrySet().iterator();
                     while (iterator.hasNext()) {
-                        Map.Entry entry = (Map.Entry)iterator.next();
+                        Map.Entry<XMLField, XMLField> entry = iterator.next();
                         associations.add(new Association(entry.getKey(), entry.getValue()));
                     }
                     return associations;
@@ -629,11 +629,11 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                 @Override
                 public void setAttributeValueInObject(Object object, Object value) {
                     XMLObjectReferenceMapping mapping = (XMLObjectReferenceMapping) object;
-                    List associations = (List)value;
-                    mapping.setSourceToTargetKeyFieldAssociations(new HashMap(associations.size() + 1));
-                    Iterator iterator = associations.iterator();
+                    List<Association> associations = (List<Association>)value;
+                    mapping.setSourceToTargetKeyFieldAssociations(new HashMap<>(associations.size() + 1));
+                    Iterator<Association> iterator = associations.iterator();
                     while (iterator.hasNext()) {
-                        Association association = (Association)iterator.next();
+                        Association association = iterator.next();
                         mapping.getSourceToTargetKeyFieldAssociations().put(association.getKey(), association.getValue());
                     }
                 }
@@ -744,10 +744,10 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
      *           be nested inner classes of ObjectPersistenceRuntimeXMLProject_11_1_1
      *           so that they don't 'leak' out into the runtime
      */
-    class StoredProcedureArgument {
+    static class StoredProcedureArgument {
           String argumentName;
           String argumentFieldName;
-          Class argumentType;
+          Class<?> argumentType;
           String argumentTypeName;
           int argumentSQLType = NULL_SQL_TYPE;
           String argumentSqlTypeName;
@@ -811,7 +811,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         }
     }
 
-    class StoredProcedureInOutArgument extends StoredProcedureArgument {
+    static class StoredProcedureInOutArgument extends StoredProcedureArgument {
           String outputArgumentName;
           StoredProcedureInOutArgument() {
               super();
@@ -825,7 +825,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
           }
     }
 
-    class StoredProcedureOutArgument extends StoredProcedureArgument {
+    static class StoredProcedureOutArgument extends StoredProcedureArgument {
         StoredProcedureOutArgument() {
             super();
         }
@@ -838,7 +838,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         }
     }
 
-    class StoredProcedureOutCursorArgument extends StoredProcedureOutArgument {
+    static class StoredProcedureOutCursorArgument extends StoredProcedureOutArgument {
         StoredProcedureOutCursorArgument() {
             super();
         }
@@ -860,28 +860,26 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
 
     // Made static for performance reasons.
     static class StoredProcedureArgumentInstantiationPolicy extends InstantiationPolicy {
-        ObjectPersistenceRuntimeXMLProject_11_1_1 outer;
         StoredProcedureArgumentType argType;
-        StoredProcedureArgumentInstantiationPolicy(
-            ObjectPersistenceRuntimeXMLProject_11_1_1 outer, StoredProcedureArgumentType argType) {
-            this.outer = outer;
+        StoredProcedureArgumentInstantiationPolicy(StoredProcedureArgumentType argType) {
             this.argType = argType;
         }
+
         @Override
         public Object buildNewInstance() throws DescriptorException {
             Object arg = null;
             switch (argType) {
                 case STORED_PROCEDURE_ARG:
-                    arg = outer.new StoredProcedureArgument();
+                    arg = new StoredProcedureArgument();
                     break;
                 case STORED_PROCEDURE_INOUT_ARG:
-                    arg = outer.new StoredProcedureInOutArgument();
+                    arg = new StoredProcedureInOutArgument();
                     break;
                 case STORED_PROCEDURE_OUT_ARG:
-                    arg = outer.new StoredProcedureOutArgument();
+                    arg = new StoredProcedureOutArgument();
                     break;
                 case STORED_PROCEDURE_OUTCURSOR_ARG:
-                    arg = outer.new StoredProcedureOutCursorArgument();
+                    arg = new StoredProcedureOutCursorArgument();
                     break;
             }
             return arg;
@@ -893,8 +891,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(StoredProcedureArgument.class);
         // need policy 'cause TreeBuilder cannot use default constructor
-        descriptor.setInstantiationPolicy(new StoredProcedureArgumentInstantiationPolicy(this,
-            StoredProcedureArgumentType.STORED_PROCEDURE_ARG));
+        descriptor.setInstantiationPolicy(new StoredProcedureArgumentInstantiationPolicy(StoredProcedureArgumentType.STORED_PROCEDURE_ARG));
         descriptor.descriptorIsAggregate();
 
         descriptor.setDefaultRootElement("argument");
@@ -953,8 +950,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
 
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(StoredProcedureInOutArgument.class);
-        descriptor.setInstantiationPolicy(new StoredProcedureArgumentInstantiationPolicy(this,
-            StoredProcedureArgumentType.STORED_PROCEDURE_INOUT_ARG));
+        descriptor.setInstantiationPolicy(new StoredProcedureArgumentInstantiationPolicy(StoredProcedureArgumentType.STORED_PROCEDURE_INOUT_ARG));
         descriptor.getInheritancePolicy().setParentClass(StoredProcedureArgument.class);
 
         //used in case the in databasefield is named different than the out databasefield
@@ -970,8 +966,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
 
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(StoredProcedureOutArgument.class);
-        descriptor.setInstantiationPolicy(new StoredProcedureArgumentInstantiationPolicy(this,
-            StoredProcedureArgumentType.STORED_PROCEDURE_OUT_ARG));
+        descriptor.setInstantiationPolicy(new StoredProcedureArgumentInstantiationPolicy(StoredProcedureArgumentType.STORED_PROCEDURE_OUT_ARG));
         descriptor.getInheritancePolicy().setParentClass(StoredProcedureArgument.class);
 
         return descriptor;
@@ -981,14 +976,13 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
 
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(StoredProcedureOutCursorArgument.class);
-        descriptor.setInstantiationPolicy(new StoredProcedureArgumentInstantiationPolicy(this,
-            StoredProcedureArgumentType.STORED_PROCEDURE_OUTCURSOR_ARG));
+        descriptor.setInstantiationPolicy(new StoredProcedureArgumentInstantiationPolicy(StoredProcedureArgumentType.STORED_PROCEDURE_OUTCURSOR_ARG));
         descriptor.getInheritancePolicy().setParentClass(StoredProcedureArgument.class);
 
         return descriptor;
     }
 
-    class StoredProcedureArgumentsAccessor extends AttributeAccessor {
+    static class StoredProcedureArgumentsAccessor extends AttributeAccessor {
         StoredProcedureArgumentsAccessor() {
             super();
         }
@@ -996,11 +990,11 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         public Object getAttributeValueFromObject(Object anObject) throws DescriptorException {
             StoredProcedureCall spc = (StoredProcedureCall)anObject;
             List<Integer> parameterTypes = spc.getParameterTypes();
-            List parameters = spc.getParameters();
+            List<?> parameters = spc.getParameters();
             List<String> procedureArgumentNames = spc.getProcedureArgumentNames();
-            List storedProcedureArguments = new Vector();
+            List<StoredProcedureArgument> storedProcedureArguments = new Vector<>();
             for (int i = spc.getFirstParameterIndexForCallString(); i < parameterTypes.size(); i++) {
-                StoredProcedureArgument spa = null;
+                StoredProcedureArgument spa;
                 Integer direction = parameterTypes.get(i);
                 Object argument = parameters.get(i);
                 String argumentName = procedureArgumentNames.get(i);
@@ -1050,9 +1044,9 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         public void setAttributeValueInObject(Object domainObject, Object attributeValue) throws DescriptorException {
             StoredProcedureCall spc = (StoredProcedureCall)domainObject;
             // vector of parameters/arguments to be added the call
-            Vector procedureArguments = (Vector)attributeValue;
+            List<StoredProcedureArgument> procedureArguments = (Vector<StoredProcedureArgument>)attributeValue;
             for (int i = 0; i < procedureArguments.size(); i++) {
-                StoredProcedureArgument spa = (StoredProcedureArgument)procedureArguments.get(i);
+                StoredProcedureArgument spa = procedureArguments.get(i);
                 Integer direction = spa.getDirection();
                 DatabaseField dbField = spa.getDatabaseField();
                 spc.getProcedureArgumentNames().add(spa.argumentName);
@@ -1122,7 +1116,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         return descriptor;
     }
 
-    class StoredFunctionResultAccessor extends AttributeAccessor {
+    static class StoredFunctionResultAccessor extends AttributeAccessor {
         StoredFunctionResultAccessor() {
             super();
         }
@@ -1423,8 +1417,8 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
              // Convert the collection of Strings to an array of Object values (round-trip)
              if(value instanceof Collection) {
                  int i = 0;
-                 Object[] parameters = new Object[((Collection)value).size()];
-                 for(Iterator anIterator = ((Collection)value).iterator(); anIterator.hasNext();) {
+                 Object[] parameters = new Object[((Collection<?>)value).size()];
+                 for(Iterator<?> anIterator = ((Collection<?>)value).iterator(); anIterator.hasNext();) {
                         // Lookup the object type via the predefined parameterTypes array and convert based on that type
                         parameters[i] = XMLConversionManager.getDefaultXMLManager().convertObject(//
                                 anIterator.next(), ((IsSetNullPolicy)object).getIsSetParameterTypes()[i++]);
@@ -1458,19 +1452,20 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          }
 
          @Override
+         @SuppressWarnings({"unchecked", "rawtypes"})
          public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
              try {
                  // Get the Class of each entry in the collection
                  if(value instanceof Collection) {
-                     Class[] parameterTypes = new Class[((Collection)value).size()];
+                     Class<?>[] parameterTypes = new Class[((Collection<?>)value).size()];
                      int i = 0;
-                     for(Iterator anIterator = ((Collection)value).iterator(); anIterator.hasNext();) {
-                         parameterTypes[i++] = Class.forName((String)anIterator.next());
+                     for(Iterator<String> anIterator = ((Collection<String>)value).iterator(); anIterator.hasNext();) {
+                         parameterTypes[i++] = Class.forName(anIterator.next());
                      }
                      ((IsSetNullPolicy)object).setIsSetParameterTypes(parameterTypes);
                  } else {
                      // cast to class array
-                     ((IsSetNullPolicy)object).setIsSetParameterTypes((Class[])value);
+                     ((IsSetNullPolicy)object).setIsSetParameterTypes((Class<?>[])value);
                  }
              } catch (ClassNotFoundException e) {
                  throw new RuntimeException(e);
@@ -1714,11 +1709,11 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
              @Override
             public Object getAttributeValueFromObject(Object object) {
                  Map<String, DatabaseType> fields = ((OracleObjectType) object).getFields();
-                 List associations = new ArrayList(fields.size());
+                 List<ObjectTypeFieldAssociation> associations = new ArrayList<>(fields.size());
                  Iterator<Map.Entry<String, DatabaseType>> iterator = fields.entrySet().iterator();
                  while (iterator.hasNext()) {
                      Map.Entry<String, DatabaseType> entry = iterator.next();
-                     associations.add(new ObjectTypeFieldAssociation(entry.getKey().toString(),  wrapType(entry.getValue())));
+                     associations.add(new ObjectTypeFieldAssociation(entry.getKey(),  wrapType(entry.getValue())));
                  }
                  return associations;
              }
@@ -1730,7 +1725,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                  Iterator<ObjectTypeFieldAssociation> iterator = associations.iterator();
                  while (iterator.hasNext()) {
                      ObjectTypeFieldAssociation association = iterator.next();
-                     fieldMap.put((String) association.getKey(), unwrapType((DatabaseTypeWrapper)association.getValue()));
+                     fieldMap.put(association.getKey(), unwrapType(association.getValue()));
                  }
                  objectType.setFields(fieldMap);
              }
@@ -1746,7 +1741,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
       * the value is a DatabaseType.  The value must be wrapped/unwrapped
       * using the wrap/unwrap type methods on the outer class.
       */
-     public class ObjectTypeFieldAssociation implements Map.Entry {
+     public static class ObjectTypeFieldAssociation implements Map.Entry<String, DatabaseTypeWrapper> {
          String key;
          DatabaseTypeWrapper value;
 
@@ -1760,19 +1755,19 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          }
 
         @Override
-        public Object getKey() {
+        public String getKey() {
             return key;
         }
 
         @Override
-        public Object getValue() {
+        public DatabaseTypeWrapper getValue() {
             return value;
         }
 
         @Override
-        public Object setValue(Object arg0) {
-            Object oldValue = this.value;
-            this.value = (DatabaseTypeWrapper) arg0;
+        public DatabaseTypeWrapper setValue(DatabaseTypeWrapper arg0) {
+            DatabaseTypeWrapper oldValue = this.value;
+            this.value = arg0;
             return oldValue;
         }
      }
@@ -1782,7 +1777,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
      protected ClassDescriptor buildObjectTypeFieldAssociationDescriptor() {
          XMLDescriptor descriptor = new XMLDescriptor();
          descriptor.setJavaClass(ObjectTypeFieldAssociation.class);
-         descriptor.setInstantiationPolicy(new ObjectTypeFieldAssociationInstantiationPolicy(this));
+         descriptor.setInstantiationPolicy(new ObjectTypeFieldAssociationInstantiationPolicy());
 
          XMLDirectMapping keyMapping = new XMLDirectMapping();
          keyMapping.setAttributeName("key");
@@ -1804,14 +1799,11 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
       * enables the default constructor of the inner class to be accessed.
       */
      static class ObjectTypeFieldAssociationInstantiationPolicy extends InstantiationPolicy {
-         ObjectPersistenceRuntimeXMLProject_11_1_1 outer;
-         ObjectTypeFieldAssociationInstantiationPolicy(
-             ObjectPersistenceRuntimeXMLProject_11_1_1 outer) {
-             this.outer = outer;
+         ObjectTypeFieldAssociationInstantiationPolicy() {
          }
          @Override
          public Object buildNewInstance() throws DescriptorException {
-             return outer.new ObjectTypeFieldAssociation();
+             return new ObjectTypeFieldAssociation();
          }
      }
      protected ClassDescriptor buildPLSQLrecordDescriptor() {

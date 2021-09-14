@@ -16,6 +16,7 @@ package org.eclipse.persistence.internal.sessions.factories.model.transport.nami
 
 import java.util.Vector;
 import org.eclipse.persistence.internal.security.SecurableObjectHolder;
+import org.eclipse.persistence.internal.sessions.factories.model.property.PropertyConfig;
 
 /**
  * INTERNAL:
@@ -26,7 +27,7 @@ public class JNDINamingServiceConfig {
     private char[] m_encryptedPassword;
     private SecurableObjectHolder m_securableObjectHolder;
     private String m_initialContextFactoryName;
-    private Vector m_propertyConfigs;
+    private Vector<PropertyConfig> m_propertyConfigs;
 
     public JNDINamingServiceConfig() {
         // Without setting the encryption class name the object holder will
@@ -127,11 +128,11 @@ public class JNDINamingServiceConfig {
         return m_initialContextFactoryName;
     }
 
-    public void setPropertyConfigs(Vector propertyConfigs) {
+    public void setPropertyConfigs(Vector<PropertyConfig> propertyConfigs) {
         m_propertyConfigs = propertyConfigs;
     }
 
-    public Vector getPropertyConfigs() {
+    public Vector<PropertyConfig> getPropertyConfigs() {
         return m_propertyConfigs;
     }
 }

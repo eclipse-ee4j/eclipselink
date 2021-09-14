@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,13 +24,13 @@ package org.eclipse.persistence.internal.codegen;
  * @author Paul Fullbright
  */
 public class ReflectiveAttributeDefinition extends AttributeDefinition {
-    protected Class type;
+    protected Class<?> type;
 
     public ReflectiveAttributeDefinition() {
         this.type = null;
     }
 
-    public Class getType() {
+    public Class<?> getType() {
         return type;
     }
 
@@ -45,7 +45,7 @@ public class ReflectiveAttributeDefinition extends AttributeDefinition {
         }
     }
 
-    public void setType(Class type) {
+    public void setType(Class<?> type) {
         this.type = type;
     }
 }

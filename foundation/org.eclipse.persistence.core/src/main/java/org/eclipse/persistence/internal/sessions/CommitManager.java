@@ -479,16 +479,16 @@ public class CommitManager {
      * stack size, and acts as a deadlock avoidance mechanism.
      */
     public void initializeCommitOrder() {
-        Vector descriptors = Helper.buildVectorFromMapElements(getSession().getDescriptors());
+        Vector<ClassDescriptor> descriptors = Helper.buildVectorFromMapElements(getSession().getDescriptors());
 
         // Must ensure uniqueness, some descriptor my be register twice for interfaces.
-        descriptors = Helper.addAllUniqueToVector(new Vector(descriptors.size()), descriptors);
-        Object[] descriptorsArray = new Object[descriptors.size()];
+        descriptors = Helper.addAllUniqueToVector(new Vector<>(descriptors.size()), descriptors);
+        ClassDescriptor[] descriptorsArray = new ClassDescriptor[descriptors.size()];
         for (int index = 0; index < descriptors.size(); index++) {
             descriptorsArray[index] = descriptors.elementAt(index);
         }
         Arrays.sort(descriptorsArray, new DescriptorCompare());
-        descriptors = new Vector(descriptors.size());
+        descriptors = new Vector<>(descriptors.size());
         for (int index = 0; index < descriptorsArray.length; index++) {
             descriptors.addElement(descriptorsArray[index]);
         }
