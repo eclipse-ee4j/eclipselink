@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -171,9 +171,10 @@ public class DefaultSequence extends Sequence {
      * @param writeSession Session is a Session used for writing (either ClientSession or DatabaseSession);
      * @param seqName String is sequencing number field name
      * @param size int number of values to preallocate (output Vector size).
+     * @return
      */
     @Override
-    public Vector getGeneratedVector(Accessor accessor, AbstractSession writeSession, String seqName, int size) {
+    public Vector<?> getGeneratedVector(Accessor accessor, AbstractSession writeSession, String seqName, int size) {
         return getDefaultSequence().getGeneratedVector(accessor, writeSession, seqName, size);
     }
 

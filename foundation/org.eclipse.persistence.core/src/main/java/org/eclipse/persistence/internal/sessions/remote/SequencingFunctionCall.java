@@ -39,11 +39,11 @@ public class SequencingFunctionCall {
     }
 
     public static class GetNextValue extends SimpleFunctionCall {
-        public GetNextValue(Class cls) {
+        public GetNextValue(Class<?> cls) {
             this.cls = cls;
         }
 
-        protected Class cls;
+        protected Class<?> cls;
 
         @Override
         protected Object execute(AbstractSession session) {

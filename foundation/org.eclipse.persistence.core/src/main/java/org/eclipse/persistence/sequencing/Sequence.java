@@ -17,7 +17,6 @@ package org.eclipse.persistence.sequencing;
 import java.util.Vector;
 import java.io.Serializable;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
-import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -251,7 +250,7 @@ public abstract class Sequence implements Serializable, Cloneable {
      * @param seqName String is sequencing number field name
      * @param size int number of values to preallocate (output Vector size).
      */
-    public abstract Vector getGeneratedVector(Accessor accessor, AbstractSession writeSession, String seqName, int size);
+    public abstract Vector<?> getGeneratedVector(Accessor accessor, AbstractSession writeSession, String seqName, int size);
 
     /**
      * INTERNAL:
@@ -265,7 +264,7 @@ public abstract class Sequence implements Serializable, Cloneable {
      * @param accessor Accessor is a separate sequencing accessor (may be null);
      * @param writeSession Session is a Session used for writing (either ClientSession or DatabaseSession);
      */
-    public Vector getGeneratedVector(Accessor accessor, AbstractSession writeSession) {
+    public Vector<?> getGeneratedVector(Accessor accessor, AbstractSession writeSession) {
         return getGeneratedVector(accessor, writeSession, getName(), getPreallocationSize());
     }
 

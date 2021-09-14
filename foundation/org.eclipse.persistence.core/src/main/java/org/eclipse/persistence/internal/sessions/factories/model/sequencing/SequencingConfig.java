@@ -21,7 +21,7 @@ import java.util.Vector;
  */
 public class SequencingConfig {
     private SequenceConfig m_defaultSequenceConfig;
-    private Vector m_sequenceConfigs;
+    private Vector<SequenceConfig> m_sequenceConfigs;
 
     public SequencingConfig() {
         super();
@@ -35,11 +35,11 @@ public class SequencingConfig {
         return m_defaultSequenceConfig;
     }
 
-    public void setSequenceConfigs(Vector sequenceConfigs) {
+    public void setSequenceConfigs(Vector<SequenceConfig> sequenceConfigs) {
         m_sequenceConfigs = sequenceConfigs;
     }
 
-    public Vector getSequenceConfigs() {
+    public Vector<SequenceConfig> getSequenceConfigs() {
         return m_sequenceConfigs;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.sequencing;
 
-import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.sessions.server.ClientSession;
 
 /**
@@ -68,9 +67,10 @@ class ClientSessionSequencing implements Sequencing {
     * SequencingServer.getNextValue takes two arguments
     * the first argument being a session which owns write connection
     * (either DatabaseSession or ClientSession).
-    */
+     * @param cls
+     */
     @Override
-    public Object getNextValue(Class cls) {
+    public Object getNextValue(Class<?> cls) {
         return sequencingServer.getNextValue(clientSession, cls);
     }
 }
