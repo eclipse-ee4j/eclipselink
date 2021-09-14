@@ -106,7 +106,7 @@ public interface Descriptor <
     /**
      * Return the java class.
      */
-    Class getJavaClass();
+    Class<?> getJavaClass();
 
     /**
      * Return the class name, used by the MW.
@@ -224,7 +224,7 @@ public interface Descriptor <
       * Set the Java class that this descriptor maps.
       * Every descriptor maps one and only one class.
       */
-      void setJavaClass(Class theJavaClass);
+      void setJavaClass(Class<?> theJavaClass);
 
       /**
        * INTERNAL:

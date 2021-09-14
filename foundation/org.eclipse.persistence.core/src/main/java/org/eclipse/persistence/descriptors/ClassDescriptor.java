@@ -154,7 +154,7 @@ import org.eclipse.persistence.sessions.remote.DistributedSession;
  * @see org.eclipse.persistence.oxm.XMLDescriptor
  */
 public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEventManager, DatabaseField, InheritancePolicy, InstantiationPolicy, Vector, ObjectBuilder> implements Cloneable, Serializable {
-    protected Class javaClass;
+    protected Class<?> javaClass;
     protected String javaClassName;
     protected Vector<DatabaseTable> tables;
     protected transient DatabaseTable defaultTable;
@@ -1483,7 +1483,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         Class redirectorClass = null;
 
         if (getJavaClassName() != null){
-            Class descriptorClass = null;
+            Class<?> descriptorClass = null;
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
@@ -5035,7 +5035,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     * Every descriptor maps one and only one class.
     */
     @Override
-    public void setJavaClass(Class theJavaClass) {
+    public void setJavaClass(Class<?> theJavaClass) {
         javaClass = theJavaClass;
     }
 

@@ -109,11 +109,11 @@ public class PrivilegedAccessHelper {
      * find the field.  This method is called by the public getDeclaredField() method and does a recursive
      * search for the named field in the given classes or it's superclasses.
      */
-    private static Field findDeclaredField(Class javaClass, String fieldName) throws NoSuchFieldException {
+    private static Field findDeclaredField(Class<?> javaClass, String fieldName) throws NoSuchFieldException {
         try {
             return javaClass.getDeclaredField(fieldName);
         } catch (NoSuchFieldException ex) {
-            Class superclass = javaClass.getSuperclass();
+            Class<?> superclass = javaClass.getSuperclass();
             if (superclass == null) {
                 throw ex;
             } else {
@@ -141,13 +141,13 @@ public class PrivilegedAccessHelper {
      * find the method.  This method is called by the public getDeclaredMethod() method and does a recursive
      * search for the named method in the given classes or it's superclasses.
      */
-    private static Method findMethod(Class javaClass, String methodName, Class[] methodParameterTypes) throws NoSuchMethodException {
+    private static Method findMethod(Class<?> javaClass, String methodName, Class[] methodParameterTypes) throws NoSuchMethodException {
         try {
             // use a combination of getDeclaredMethod() and recursion to ensure we get the non-public methods
             // getMethod will not help because it returns only public methods
             return javaClass.getDeclaredMethod(methodName, methodParameterTypes);
         } catch (NoSuchMethodException ex) {
-            Class superclass = javaClass.getSuperclass();
+            Class<?> superclass = javaClass.getSuperclass();
             if (superclass == null) {
                 throw ex;
             } else {
@@ -163,31 +163,31 @@ public class PrivilegedAccessHelper {
     /**
      * Execute a java Class.forName().  Wrap the call in a doPrivileged block if necessary.
      */
-    public static Class getClassForName(final String className) throws ClassNotFoundException {
+    public static <T> Class<T> getClassForName(final String className) throws ClassNotFoundException {
         // Check for primitive types.
-        Class primitive = primitiveClasses.get(className);
+        Class<T> primitive = primitiveClasses.get(className);
         if (primitive != null) {
             return primitive;
         }
-        return Class.forName(className);
+        return (Class<T>) Class.forName(className);
     }
 
     /**
      * Execute a java Class.forName() wrap the call in a doPrivileged block if necessary.
      */
-    public static Class getClassForName(final String className, final boolean initialize, final ClassLoader loader) throws ClassNotFoundException {
+    public static <T> Class<T> getClassForName(final String className, final boolean initialize, final ClassLoader loader) throws ClassNotFoundException {
         // Check for primitive types.
-        Class primitive = primitiveClasses.get(className);
+        Class<T> primitive = primitiveClasses.get(className);
         if (primitive != null) {
             return primitive;
         }
-        return Class.forName(className, initialize, loader);
+        return (Class<T>) Class.forName(className, initialize, loader);
     }
 
     /**
      * Gets the class loader for a given class. Wraps the call in a privileged block if necessary
      */
-    public static ClassLoader getClassLoaderForClass(final Class clazz) {
+    public static ClassLoader getClassLoaderForClass(final Class<?> clazz) {
         return clazz.getClassLoader();
     }
 
@@ -199,7 +199,7 @@ public class PrivilegedAccessHelper {
      * @param args An array of classes representing the argument types of the constructor
      * @param shouldSetAccessible whether or not to call the setAccessible API
      */
-    public static Constructor getConstructorFor(final Class javaClass, final Class[] args, final boolean shouldSetAccessible) throws NoSuchMethodException {
+    public static Constructor getConstructorFor(final Class<?> javaClass, final Class[] args, final boolean shouldSetAccessible) throws NoSuchMethodException {
         Constructor result = null;
         try {
             result = javaClass.getConstructor(args);
@@ -252,7 +252,7 @@ public class PrivilegedAccessHelper {
      * @param args An array of classes representing the argument types of the constructor
      * @param shouldSetAccessible whether or not to call the setAccessible API
      */
-    public static Constructor getDeclaredConstructorFor(final Class javaClass, final Class[] args, final boolean shouldSetAccessible) throws NoSuchMethodException {
+    public static Constructor getDeclaredConstructorFor(final Class<?> javaClass, final Class[] args, final boolean shouldSetAccessible) throws NoSuchMethodException {
         Constructor result = javaClass.getDeclaredConstructor(args);
         if (shouldSetAccessible) {
             if (!result.trySetAccessible()) {
@@ -271,7 +271,7 @@ public class PrivilegedAccessHelper {
      * @param fieldName The name of the field
      * @param shouldSetAccessible whether or not to call the setAccessible API
      */
-    public static Field getField(final Class javaClass, final String fieldName, final boolean shouldSetAccessible) throws NoSuchFieldException {
+    public static Field getField(final Class<?> javaClass, final String fieldName, final boolean shouldSetAccessible) throws NoSuchFieldException {
         Field field = findDeclaredField(javaClass, fieldName);
         if (shouldSetAccessible) {
             if (!field.trySetAccessible()) {
@@ -290,7 +290,7 @@ public class PrivilegedAccessHelper {
      * @param fieldName The name of the field
      * @param shouldSetAccessible whether or not to call the setAccessible API
      */
-    public static Field getDeclaredField(final Class javaClass, final String fieldName, final boolean shouldSetAccessible) throws NoSuchFieldException {
+    public static Field getDeclaredField(final Class<?> javaClass, final String fieldName, final boolean shouldSetAccessible) throws NoSuchFieldException {
         Field field = javaClass.getDeclaredField(fieldName);
         if (shouldSetAccessible) {
             if (!field.trySetAccessible()) {
@@ -306,7 +306,7 @@ public class PrivilegedAccessHelper {
      * Excludes inherited fields.
      * @param clazz the class to get the fields from.
      */
-    public static Field[] getDeclaredFields(final Class clazz) {
+    public static Field[] getDeclaredFields(final Class<?> clazz) {
         return clazz.getDeclaredFields();
     }
 
@@ -314,7 +314,7 @@ public class PrivilegedAccessHelper {
      * Get the list of public fields in a class.  Wrap the call in doPrivileged if necessary
      * @param clazz the class to get the fields from.
      */
-    public static Field[] getFields(final Class clazz) {
+    public static Field[] getFields(final Class<?> clazz) {
         return clazz.getFields();
     }
 
@@ -327,7 +327,7 @@ public class PrivilegedAccessHelper {
      * @param methodParameterTypes a list of classes representing the classes of the
      *  parameters of the method.
      */
-    public static Method getDeclaredMethod(final Class clazz, final String methodName, final Class[] methodParameterTypes) throws NoSuchMethodException {
+    public static Method getDeclaredMethod(final Class<?> clazz, final String methodName, final Class[] methodParameterTypes) throws NoSuchMethodException {
          return clazz.getDeclaredMethod(methodName, methodParameterTypes);
     }
 
@@ -342,7 +342,7 @@ public class PrivilegedAccessHelper {
      * @param methodParameterTypes A list of classes representing the classes of the parameters of the mthod
      * @param shouldSetAccessible whether or not to call the setAccessible API
      */
-    public static Method getMethod(final Class javaClass, final String methodName, final Class[] methodParameterTypes, final boolean shouldSetAccessible) throws NoSuchMethodException {
+    public static Method getMethod(final Class<?> javaClass, final String methodName, final Class[] methodParameterTypes, final boolean shouldSetAccessible) throws NoSuchMethodException {
         Method method = findMethod(javaClass, methodName, methodParameterTypes);
         if (shouldSetAccessible) {
             if (!method.trySetAccessible()) {
@@ -364,7 +364,7 @@ public class PrivilegedAccessHelper {
      * @param methodParameterTypes A list of classes representing the classes of the parameters of the method
      * @param shouldSetAccessible whether or not to call the setAccessible API
      */
-    public static Method getPublicMethod(final Class javaClass, final String methodName, final Class[] methodParameterTypes, final boolean shouldSetAccessible) throws NoSuchMethodException {
+    public static Method getPublicMethod(final Class<?> javaClass, final String methodName, final Class[] methodParameterTypes, final boolean shouldSetAccessible) throws NoSuchMethodException {
         // Return the (public) method - will traverse superclass(es) if necessary
         Method method = javaClass.getMethod(methodName, methodParameterTypes);
         if (shouldSetAccessible) {
@@ -381,14 +381,14 @@ public class PrivilegedAccessHelper {
      * necessary. Excludes inherited methods.
      * @param clazz the class to get the methods from.
      */
-    public static Method[] getDeclaredMethods(final Class clazz) {
+    public static Method[] getDeclaredMethods(final Class<?> clazz) {
         return clazz.getDeclaredMethods();
     }
 
     /**
      * Get the return type for a given method. Wrap the call in doPrivileged if necessary.
      */
-    public static Class getFieldType(final Field field) {
+    public static Class<?> getFieldType(final Field field) {
         return field.getType();
     }
 
@@ -502,7 +502,7 @@ public class PrivilegedAccessHelper {
      * necessary. This call will traverse the superclasses.
      * @param clazz the class to get the methods from.
      */
-    public static Method[] getMethods(final Class clazz) {
+    public static Method[] getMethods(final Class<?> clazz) {
         return clazz.getMethods();
     }
 
