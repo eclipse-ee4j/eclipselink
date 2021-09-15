@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,13 +29,13 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 public class EISCollectionChangeRecord extends CollectionChangeRecord implements org.eclipse.persistence.sessions.changesets.EISCollectionChangeRecord {
 
     /** The added stuff. */
-    private List adds;
+    private List adds; //either ObjectChangeSet or String (simple type)
 
     /** The removed stuff. */
-    private List removes;
+    private List removes; //either ObjectChangeSet or String (simple type)
 
     /** The stuff whose Map keys have changed. */
-    private List changedMapKeys;
+    private List changedMapKeys; //either ObjectChangeSet or String (simple type)
 
     /**
      * Construct a ChangeRecord that can be used to represent the changes to
@@ -78,7 +78,7 @@ public class EISCollectionChangeRecord extends CollectionChangeRecord implements
     @Override
     public List getAdds() {
         if (adds == null) {
-            adds = new ArrayList(2);// keep it as small as possible
+            adds = new ArrayList<>(2);// keep it as small as possible
         }
         return adds;
     }
@@ -92,7 +92,7 @@ public class EISCollectionChangeRecord extends CollectionChangeRecord implements
     @Override
     public List getChangedMapKeys() {
         if (changedMapKeys == null) {
-            changedMapKeys = new ArrayList(2);// keep it as small as possible
+            changedMapKeys = new ArrayList<>(2);// keep it as small as possible
         }
         return changedMapKeys;
     }
@@ -106,7 +106,7 @@ public class EISCollectionChangeRecord extends CollectionChangeRecord implements
     @Override
     public List getRemoves() {
         if (removes == null) {
-            removes = new ArrayList(2);// keep it as small as possible
+            removes = new ArrayList<>(2);// keep it as small as possible
         }
         return removes;
     }

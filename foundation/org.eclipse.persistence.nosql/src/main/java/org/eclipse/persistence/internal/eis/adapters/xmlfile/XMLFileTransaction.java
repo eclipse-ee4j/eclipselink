@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,7 +37,7 @@ import org.eclipse.persistence.eis.EISDOMRecord;
  */
 public class XMLFileTransaction implements LocalTransaction {
     protected boolean isInTransaction;
-    protected Map domFiles;
+    protected Map<String, EISDOMRecord> domFiles;
     protected XMLFileConnection connection;
 
     /**
@@ -54,7 +54,7 @@ public class XMLFileTransaction implements LocalTransaction {
     @Override
     public void begin() {
         this.isInTransaction = true;
-        this.domFiles = new HashMap(10);
+        this.domFiles = new HashMap<>(10);
     }
 
     /**
@@ -71,10 +71,10 @@ public class XMLFileTransaction implements LocalTransaction {
     public void commit() throws ResourceException {
         try {
             // store any dom to their files
-            for (Iterator doms = domFiles.entrySet().iterator(); doms.hasNext();) {
-                Map.Entry entry = (Map.Entry)doms.next();
-                String fileName = (String)entry.getKey();
-                EISDOMRecord record = (EISDOMRecord)entry.getValue();
+            for (Iterator<Map.Entry<String, EISDOMRecord>> doms = domFiles.entrySet().iterator(); doms.hasNext();) {
+                Map.Entry<String, EISDOMRecord> entry = doms.next();
+                String fileName = entry.getKey();
+                EISDOMRecord record = entry.getValue();
 
                 try (Writer fileWriter = new FileWriter(fileName)) {
                     record.transformToWriter(fileWriter);
@@ -84,7 +84,7 @@ public class XMLFileTransaction implements LocalTransaction {
         } catch (Exception exception) {
             throw new ResourceException(exception.toString());
         }
-        this.domFiles = new HashMap(10);
+        this.domFiles = new HashMap<>(10);
         this.isInTransaction = false;
     }
 
@@ -94,7 +94,7 @@ public class XMLFileTransaction implements LocalTransaction {
     @Override
     public void rollback() {
         // throw away doms
-        this.domFiles = new HashMap(10);
+        this.domFiles = new HashMap<>(10);
         this.isInTransaction = false;
     }
 
@@ -104,7 +104,7 @@ public class XMLFileTransaction implements LocalTransaction {
      */
     public EISDOMRecord retrieveDOMRecord(File file) throws Exception {
         // Check for transactional copy.
-        EISDOMRecord fileRecord = (EISDOMRecord)this.domFiles.get(file.getPath());
+        EISDOMRecord fileRecord = this.domFiles.get(file.getPath());
         if (fileRecord == null) {
             // If the file exists parse it, otherwise create a new record.
             if (file.exists()) {

@@ -378,7 +378,7 @@ public class MongoPlatform extends EISPlatform {
             DatabaseRecord second = new DatabaseRecord();
             appendExpressionToQueryRow(logic.getFirstChild(), first, query);
             appendExpressionToQueryRow(logic.getSecondChild(), second, query);
-            List nested = new Vector();
+            List<DatabaseRecord> nested = new Vector<>();
             nested.add(first);
             nested.add(second);
             if (logic.getOperator().getSelector() == ExpressionOperator.And) {
@@ -495,7 +495,8 @@ public class MongoPlatform extends EISPlatform {
             throw new EISException("Query too complex for Mongo translation, comparison of [" + expression + "] not supported in query: " + query);
         }
         if (value instanceof List) {
-            List values = (List)value;
+            @SuppressWarnings({"unchecked"})
+            List<Object> values = (List<Object>)value;
             for (int index = 0; index < values.size(); index++) {
                 Object element = values.get(index);
                 if (element instanceof Expression) {

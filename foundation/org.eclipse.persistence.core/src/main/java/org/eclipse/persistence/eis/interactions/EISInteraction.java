@@ -44,7 +44,7 @@ public abstract class EISInteraction extends DatasourceCall {
     protected String inputRecordName;
 
     /** Adapter specific properties may be added. */
-    protected Map properties;
+    protected Map<String, Object> properties;
 
     /** Holds database row of input values. */
     protected AbstractRecord inputRow;
@@ -56,10 +56,10 @@ public abstract class EISInteraction extends DatasourceCall {
      * Defines the output argument names as defined in the output record for the interaction.
      * This is shared as indexed interaction may still have mapped results.
      */
-    protected Vector outputArgumentNames;
+    protected Vector<String> outputArgumentNames;
 
     /** Defines the field values the output arguments of the interaction map to.  These are order dependent with the names. */
-    protected Vector outputArguments;
+    protected Vector<DatabaseField> outputArguments;
 
     /** Path to the desired output record if nested. */
     protected String outputResultPath;
@@ -154,10 +154,10 @@ public abstract class EISInteraction extends DatasourceCall {
     /**
      * The argument names for the output record.
      */
-    public Vector getOutputArgumentNames() {
+    public Vector<String> getOutputArgumentNames() {
         // This is lazy initialized to conserv space on calls that have no parameters.
         if (outputArgumentNames == null) {
-            outputArgumentNames = new Vector();
+            outputArgumentNames = new Vector<>();
         }
         return outputArgumentNames;
     }
@@ -165,10 +165,10 @@ public abstract class EISInteraction extends DatasourceCall {
     /**
      * The argument fields to the interaction that map into the output record.
      */
-    public Vector getOutputArguments() {
+    public Vector<DatabaseField> getOutputArguments() {
         // This is lazy initialized to conserv space on calls that have no parameters.
         if (outputArguments == null) {
-            outputArguments = new Vector();
+            outputArguments = new Vector<>();
         }
         return outputArguments;
     }
@@ -176,14 +176,14 @@ public abstract class EISInteraction extends DatasourceCall {
     /**
      * The output arguments.
      */
-    public void setOutputArguments(Vector outputArguments) {
+    public void setOutputArguments(Vector<DatabaseField> outputArguments) {
         this.outputArguments = outputArguments;
     }
 
     /**
      * Set the output argument names.
      */
-    public void setOutputArgumentNames(Vector outputArgumentNames) {
+    public void setOutputArgumentNames(Vector<String> outputArgumentNames) {
         this.outputArgumentNames = outputArgumentNames;
     }
 
@@ -223,8 +223,9 @@ public abstract class EISInteraction extends DatasourceCall {
             // Handle nested collections.
             if (element instanceof List) {
                 // Convert each element in the list.
-                List values = (List)element;
-                List elements = new Vector(values.size());
+                @SuppressWarnings({"unchecked"})
+                List<Object> values = (List<Object>)element;
+                List<Object> elements = new Vector<>(values.size());
                 for (int index = 0; index < values.size(); index++) {
                     elements.add(createRecordElement(elementName, values.get(index), accessor));
                 }
@@ -292,7 +293,7 @@ public abstract class EISInteraction extends DatasourceCall {
         writer.write(Helper.cr());
         writer.write("\tinput => [");
         if (!getParameters().isEmpty()) {
-            for (Iterator iterator = getParameters().iterator(); iterator.hasNext();) {
+            for (Iterator<?> iterator = getParameters().iterator(); iterator.hasNext();) {
                 Object parameter = iterator.next();
                 writer.write(String.valueOf(parameter));
                 if (iterator.hasNext()) {
@@ -320,12 +321,12 @@ public abstract class EISInteraction extends DatasourceCall {
             setInputRow(modifyRow);
         }
         if (hasArguments()) {
-            List parametersValues = new ArrayList(getArguments().size());
+            List<Object> parametersValues = new ArrayList<>(getArguments().size());
             for (int index = 0; index < getArguments().size(); index++) {
                 Object argument = getArguments().elementAt(index);
 
                 // The argument is either a value or a databasefield that needs to be translated.
-                if ((argument != null) && (argument instanceof DatabaseField)) {
+                if (argument instanceof DatabaseField) {
                     DatabaseField field = (DatabaseField)argument;
                     Object value = translationRow.get(field);
 
@@ -359,11 +360,11 @@ public abstract class EISInteraction extends DatasourceCall {
      * This handles IndexedRecords used as sets of result records,
      * and a single MappedRecord with a list of result records.
      */
-    public Vector buildRows(jakarta.resource.cci.Record record, EISAccessor accessor) {
-        Vector rows = null;
+    public Vector<AbstractRecord> buildRows(jakarta.resource.cci.Record record, EISAccessor accessor) {
+        Vector<AbstractRecord> rows = null;
         if (record instanceof IndexedRecord) {
             IndexedRecord indexedRecord = (IndexedRecord)record;
-            rows = new Vector(indexedRecord.size());
+            rows = new Vector<>(indexedRecord.size());
             for (int index = 0; index < indexedRecord.size(); index++) {
                 Object element = indexedRecord.get(index);
                 if (element instanceof jakarta.resource.cci.Record) {
@@ -387,24 +388,24 @@ public abstract class EISInteraction extends DatasourceCall {
                 } else if (element instanceof MappedRecord) {
                     mappedRecord = (MappedRecord)element;
                 } else if (element instanceof List) {
-                    List elements = (List)element;
-                    rows = new Vector(elements.size());
+                    List<?> elements = (List<?>)element;
+                    rows = new Vector<>(elements.size());
                     for (int index = 0; index < elements.size(); index++) {
                         Object elementValue = elements.get(index);
                         if (elementValue instanceof jakarta.resource.cci.Record) {
                             rows.addElement(buildRow((jakarta.resource.cci.Record)elementValue, accessor));
                         } else {
-                            rows.add(elementValue);
+                            rows.add((AbstractRecord) elementValue);
                         }
                     }
                     return rows;
                 }
             }
-            rows = new Vector(1);
+            rows = new Vector<>(1);
             AbstractRecord row = new EISMappedRecord(mappedRecord, accessor);
             rows.add(row);
         } else {
-            rows = new Vector(1);
+            rows = new Vector<>(1);
         }
         return rows;
     }
@@ -452,9 +453,9 @@ public abstract class EISInteraction extends DatasourceCall {
     /**
      * Returns the adapter specific properties.
      */
-    public Map getProperties() {
+    public Map<String, Object> getProperties() {
         if (properties == null) {
-            properties = new HashMap(5);
+            properties = new HashMap<>(5);
         }
         return properties;
     }
@@ -478,7 +479,7 @@ public abstract class EISInteraction extends DatasourceCall {
     /**
      * Set the adapter specific properties.
      */
-    public void setProperties(Map properties) {
+    public void setProperties(Map<String, Object> properties) {
         this.properties = properties;
     }
 

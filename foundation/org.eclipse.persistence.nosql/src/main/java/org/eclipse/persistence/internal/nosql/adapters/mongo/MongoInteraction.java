@@ -91,9 +91,7 @@ public class MongoInteraction implements Interaction {
                 throw new ResourceException("Invalid operation: " + operation);
             }
         } catch (Exception exception) {
-            ResourceException resourceException = new ResourceException(exception.toString());
-            resourceException.initCause(exception);
-            throw resourceException;
+            throw new ResourceException(exception.toString(), exception);
         }
     }
 
@@ -114,16 +112,14 @@ public class MongoInteraction implements Interaction {
         MongoOperation operation = mongoSpec.getOperation();
         String collectionName = mongoSpec.getCollection();
         if (operation == null) {
-            ResourceException resourceException = new ResourceException("Mongo operation must be set");
-            throw resourceException;
+            throw new ResourceException("Mongo operation must be set");
         }
         if (operation == MongoOperation.EVAL) {
             Object result = this.connection.getDB().eval(mongoSpec.getCode());
             return buildRecordFromDBObject((DBObject)result);
         }
         if (collectionName == null) {
-            ResourceException resourceException = new ResourceException("DB Collection name must be set");
-            throw resourceException;
+            throw new ResourceException("DB Collection name must be set");
         }
         try {
             DBCollection collection = this.connection.getDB().getCollection(collectionName);
@@ -185,9 +181,7 @@ public class MongoInteraction implements Interaction {
                 throw new ResourceException("Invalid operation: " + operation);
             }
         } catch (Exception exception) {
-            ResourceException resourceException = new ResourceException(exception.toString());
-            resourceException.initCause(exception);
-            throw resourceException;
+            throw new ResourceException(exception);
         }
         return null;
     }
@@ -197,12 +191,12 @@ public class MongoInteraction implements Interaction {
      */
     public DBObject buildDBObject(MongoRecord record) {
         DBObject object = new BasicDBObject();
-        for (Iterator iterator = record.entrySet().iterator(); iterator.hasNext(); ) {
-            Map.Entry entry = (Map.Entry)iterator.next();
+        for (Iterator<Map.Entry<String, ?>> iterator = record.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry<String, ?> entry = iterator.next();
             if (entry.getValue() instanceof MongoRecord) {
-                object.put((String)entry.getKey(), buildDBObject((MongoRecord)entry.getValue()));
+                object.put(entry.getKey(), buildDBObject((MongoRecord)entry.getValue()));
             } else {
-                object.put((String)entry.getKey(), entry.getValue());
+                object.put(entry.getKey(), entry.getValue());
             }
         }
         return object;
@@ -211,12 +205,13 @@ public class MongoInteraction implements Interaction {
     /**
      * Build the Map record from the Mongo DBObject.
      */
+    @SuppressWarnings({"rawtypes"})
     public MongoRecord buildRecordFromDBObject(DBObject object) {
         MongoRecord record = new MongoRecord();
         for (Iterator iterator = object.toMap().entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry entry = (Map.Entry)iterator.next();
             if (entry.getValue() instanceof BasicDBList) {
-                List values = new ArrayList();
+                List<Object> values = new ArrayList<>();
                 for (Iterator<Object> valuesIterator = ((BasicDBList)entry.getValue()).iterator(); valuesIterator.hasNext(); ) {
                     Object value = valuesIterator.next();
                     if (value instanceof DBObject) {

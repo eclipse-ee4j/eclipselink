@@ -108,7 +108,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     public enum WriteType { INSERT, UPDATE, UNDEFINED }
 
     /** Used to reduce memory for mappings with no fields. */
-    protected static final Vector NO_FIELDS = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(0);
+    protected static final Vector<DatabaseField> NO_FIELDS = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(0);
 
     /** Used to share integer instance to reduce memory. */
     protected static final Integer NO_WEIGHT = Integer.MAX_VALUE;

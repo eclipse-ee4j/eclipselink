@@ -79,7 +79,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
 
     /** Maps the source foreign/primary key fields to the target primary/foreign key fields. */
 
-    protected Map sourceToTargetKeyFields;
+    protected Map<DatabaseField, DatabaseField> sourceToTargetKeyFields;
 
     /** Maps the target primary/foreign key fields to the source foreign/primary key fields. */
     protected Map<DatabaseField, DatabaseField> targetToSourceKeyFields;
@@ -93,8 +93,8 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
 
         this.foreignKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
 
-        this.sourceToTargetKeyFields = new HashMap(2);
-        this.targetToSourceKeyFields = new HashMap(2);
+        this.sourceToTargetKeyFields = new HashMap<>(2);
+        this.targetToSourceKeyFields = new HashMap<>(2);
     }
 
     /**
@@ -149,9 +149,9 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
     public Object clone() {
         EISOneToOneMapping clone = (EISOneToOneMapping)super.clone();
         clone.setForeignKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getForeignKeyFields().size()));
-        clone.setSourceToTargetKeyFields(new HashMap(getSourceToTargetKeyFields().size()));
-        clone.setTargetToSourceKeyFields(new HashMap(getTargetToSourceKeyFields().size()));
-        Map setOfFields = new HashMap(getTargetToSourceKeyFields().size());
+        clone.setSourceToTargetKeyFields(new HashMap<>(getSourceToTargetKeyFields().size()));
+        clone.setTargetToSourceKeyFields(new HashMap<>(getTargetToSourceKeyFields().size()));
+        Map<DatabaseField, DatabaseField> setOfFields = new HashMap<>(getTargetToSourceKeyFields().size());
 
         for (Enumeration<DatabaseField> enumtr = getForeignKeyFields().elements(); enumtr.hasMoreElements();) {
             DatabaseField field = enumtr.nextElement();
@@ -167,7 +167,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
             DatabaseField sourceField = sourceKeyIterator.next();
             DatabaseField targetField = getSourceToTargetKeyFields().get(sourceField);
 
-            DatabaseField targetClone = (DatabaseField)setOfFields.get(targetField);
+            DatabaseField targetClone = setOfFields.get(targetField);
             if (targetClone == null) {
                 targetClone = targetField.clone();
                 setOfFields.put(targetField, targetClone);
@@ -187,13 +187,13 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
             DatabaseField targetField = targetKeyIterator.next();
             DatabaseField sourceField = getTargetToSourceKeyFields().get(targetField);
 
-            DatabaseField targetClone = (DatabaseField)setOfFields.get(targetField);
+            DatabaseField targetClone = setOfFields.get(targetField);
             if (targetClone == null) {
                 targetClone = targetField.clone();
                 setOfFields.put(targetField, targetClone);
             }
 
-            DatabaseField sourceClone = (DatabaseField)setOfFields.get(sourceField);
+            DatabaseField sourceClone = setOfFields.get(sourceField);
             if (sourceClone == null) {
                 sourceClone = sourceField.clone();
                 setOfFields.put(sourceField, sourceClone);
@@ -260,8 +260,8 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
      * The foreign keys primary keys are stored as database fields in the hashtable.
      */
     protected void initializeForeignKeys(AbstractSession session) {
-        HashMap newSourceToTargetKeyFields = new HashMap(getSourceToTargetKeyFields().size());
-        HashMap newTargetToSourceKeyFields = new HashMap(getTargetToSourceKeyFields().size());
+        Map<DatabaseField, DatabaseField> newSourceToTargetKeyFields = new HashMap<>(getSourceToTargetKeyFields().size());
+        Map<DatabaseField, DatabaseField> newTargetToSourceKeyFields = new HashMap<>(getTargetToSourceKeyFields().size());
         Iterator<Map.Entry<DatabaseField, DatabaseField>> iterator = getSourceToTargetKeyFields().entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<DatabaseField, DatabaseField> entry = iterator.next();
@@ -370,7 +370,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
                 }
                 return result;
             } else if (!this.isCacheable && !isTargetProtected && cacheKey != null) {
-                return this.indirectionPolicy.buildIndirectObject(new ValueHolder(null));
+                return this.indirectionPolicy.buildIndirectObject(new ValueHolder<>(null));
             }
         }
         // If any field in the foreign key is null then it means there are no referenced objects
@@ -529,7 +529,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
      * @param sourceToTargetKeyFields
      *            The mapping from source keys to target keys
      */
-    public void setSourceToTargetKeyFields(Map sourceToTargetKeyFields) {
+    public void setSourceToTargetKeyFields(Map<DatabaseField, DatabaseField> sourceToTargetKeyFields) {
         this.sourceToTargetKeyFields = sourceToTargetKeyFields;
     }
 
@@ -539,7 +539,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
      * @param targetToSourceKeyFields
      *            The mapping from target keys to source keys
      */
-    public void setTargetToSourceKeyFields(Map targetToSourceKeyFields) {
+    public void setTargetToSourceKeyFields(Map<DatabaseField, DatabaseField> targetToSourceKeyFields) {
         this.targetToSourceKeyFields = targetToSourceKeyFields;
     }
 

@@ -991,7 +991,7 @@ public class ProjectClassGenerator {
         }
         for (int index = interaction.getArgumentNames().size();
                  index < interaction.getArgumentNames().size(); index++) {
-            String argumentName = (String)interaction.getArgumentNames().get(index);
+            String argumentName = interaction.getArgumentNames().get(index);
             String argument = (String)interaction.getArguments().get(index);
             method.addLine(variableName + ".addArgument(\"" + argumentName + "\", \"" + argument + "\");");
         }

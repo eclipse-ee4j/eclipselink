@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ import java.util.*;
 public class RecordMetaData implements CompositeObject {
 
     /** a collection of fields that the record contains */
-    private Vector myFields;
+    private Vector<FieldMetaData> myFields;
 
     /** the name of the record */
     private String myName;
@@ -36,20 +36,20 @@ public class RecordMetaData implements CompositeObject {
         initialize(name);
     }
 
-    public RecordMetaData(String name, Vector fields) {
+    public RecordMetaData(String name, Vector<FieldMetaData> fields) {
         initialize(name, fields);
     }
 
     private void initialize() {
-        myFields = new Vector();
+        myFields = new Vector<>();
     }
 
     private void initialize(String name) {
         myName = name;
-        myFields = new Vector();
+        myFields = new Vector<>();
     }
 
-    private void initialize(String name, Vector fields) {
+    private void initialize(String name, Vector<FieldMetaData> fields) {
         myName = name;
         myFields = fields;
     }
@@ -67,13 +67,13 @@ public class RecordMetaData implements CompositeObject {
 
     /** getter for myFields */
     @Override
-    public Vector getFields() {
+    public Vector<FieldMetaData> getFields() {
         return myFields;
     }
 
     /** setter for myFields */
     @Override
-    public void setFields(Vector newFields) {
+    public void setFields(Vector<FieldMetaData> newFields) {
         myFields = newFields;
     }
 
@@ -91,9 +91,9 @@ public class RecordMetaData implements CompositeObject {
     /** retrieves the <code>FieldMetaData</code> with the corresponding name if it exists */
     @Override
     public FieldMetaData getFieldNamed(String fieldName) {
-        Enumeration fieldsEnum = getFields().elements();
+        Enumeration<FieldMetaData> fieldsEnum = getFields().elements();
         while (fieldsEnum.hasMoreElements()) {
-            FieldMetaData field = (FieldMetaData)fieldsEnum.nextElement();
+            FieldMetaData field = fieldsEnum.nextElement();
             if (field.getName().equals(fieldName)) {
                 return field;
             }

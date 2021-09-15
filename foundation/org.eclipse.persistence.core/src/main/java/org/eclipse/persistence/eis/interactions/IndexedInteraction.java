@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -81,7 +81,7 @@ public class IndexedInteraction extends EISInteraction {
      * The output arguments in order of occurance in the record.
      */
     @Override
-    public Vector getOutputArguments() {
+    public Vector<DatabaseField> getOutputArguments() {
         return super.getOutputArguments();
     }
 
@@ -97,7 +97,7 @@ public class IndexedInteraction extends EISInteraction {
      * The output arguments in order of occurance in the record.
      */
     @Override
-    public void setOutputArguments(Vector outputArguments) {
+    public void setOutputArguments(Vector<DatabaseField> outputArguments) {
         super.setOutputArguments(outputArguments);
     }
 
@@ -132,7 +132,7 @@ public class IndexedInteraction extends EISInteraction {
             IndexedRecord indexedRecord = (IndexedRecord)record;
             row = new DatabaseRecord(indexedRecord.size());
             for (int index = 0; index < indexedRecord.size(); index++) {
-                DatabaseField field = (DatabaseField)getOutputArguments().get(index);
+                DatabaseField field = getOutputArguments().get(index);
                 row.put(field, indexedRecord.get(index));
             }
         } else if (record instanceof MappedRecord) {
@@ -145,7 +145,7 @@ public class IndexedInteraction extends EISInteraction {
             } else if (getOutputArgumentNames().size() > 1) {
                 row = new DatabaseRecord(getOutputArgumentNames().size());
                 for (int index = 0; index < getOutputArgumentNames().size(); index++) {
-                    DatabaseField field = (DatabaseField)getOutputArguments().get(index);
+                    DatabaseField field = getOutputArguments().get(index);
                     row.put(field, mappedRecord.get(getOutputArgumentNames().get(index)));
                 }
                 return row;

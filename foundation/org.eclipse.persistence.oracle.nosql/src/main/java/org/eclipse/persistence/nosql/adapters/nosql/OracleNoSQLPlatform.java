@@ -208,22 +208,22 @@ public class OracleNoSQLPlatform extends EISPlatform {
      * Allow the platform to handle record to row conversion.
      */
     @Override
-    public Vector buildRows(jakarta.resource.cci.Record record, EISInteraction interaction, EISAccessor accessor) {
+    public Vector<AbstractRecord> buildRows(jakarta.resource.cci.Record record, EISInteraction interaction, EISAccessor accessor) {
         if (record == null) {
-            return new Vector(0);
+            return new Vector<>(0);
         }
         OracleNoSQLRecord output = (OracleNoSQLRecord)record;
         if ((output.size() == 1) && (interaction.getQuery().getDescriptor() != null)) {
             // Check for a nested mapped record.
             Object value = output.values().iterator().next();
             if (value instanceof OracleNoSQLRecord) {
-                Vector rows = new Vector(1);
+                Vector<AbstractRecord> rows = new Vector<>(1);
                 convertRecordBytesToString((OracleNoSQLRecord)value);
                 rows.add(interaction.buildRow((OracleNoSQLRecord)value, accessor));
                 return rows;
             } else if (value instanceof Collection) {
-                Vector rows = new Vector(((Collection)value).size());
-                for (Object nestedValue : (Collection)value) {
+                Vector<AbstractRecord> rows = new Vector<>(((Collection<?>)value).size());
+                for (Object nestedValue : (Collection<?>)value) {
                     if (nestedValue instanceof OracleNoSQLRecord) {
                         rows.add(interaction.buildRow((OracleNoSQLRecord)nestedValue, accessor));
                     }
@@ -233,7 +233,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
         }
         if (interaction.getQuery().getDescriptor() != null) {
             // Check for a map of values.
-            Vector rows = new Vector();
+            Vector<AbstractRecord> rows = new Vector<>();
             for (Object value : output.values()) {
                 if (value instanceof OracleNoSQLRecord) {
                     convertRecordBytesToString((OracleNoSQLRecord)value);
@@ -255,8 +255,8 @@ public class OracleNoSQLPlatform extends EISPlatform {
      */
     protected void convertRecordBytesToString(OracleNoSQLRecord record) {
         // Convert byte[] to String.
-        for (Iterator<Map.Entry> iterator = record.entrySet().iterator(); iterator.hasNext(); ) {
-            Map.Entry entry = iterator.next();
+        for (Iterator<Map.Entry<?, Object>> iterator = record.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry<?, Object> entry = iterator.next();
             if (entry.getValue() instanceof byte[]) {
                 entry.setValue(new String((byte[])entry.getValue()));
             } else if (entry.getValue() instanceof OracleNoSQLRecord) {
@@ -321,7 +321,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
      */
     protected Object createMajorKey(ClassDescriptor descriptor, AbstractRecord record, EISInteraction interaction, EISAccessor accessor) {
         Object id = descriptor.getObjectBuilder().extractPrimaryKeyFromRow(record, interaction.getQuery().getSession());
-        List key = new ArrayList(descriptor.getPrimaryKeyFields().size() + 1);
+        List<String> key = new ArrayList<>(descriptor.getPrimaryKeyFields().size() + 1);
         if (((EISDescriptor)descriptor).getDataTypeName().length() > 0) {
             key.add(((EISDescriptor)descriptor).getDataTypeName());
         }
@@ -367,7 +367,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
             }
         } else {
             domRecord = new EISDOMRecord();
-            for (Map.Entry entry : (Set<Map.Entry>)noSqlRecord.entrySet()) {
+            for (Map.Entry<?, ?> entry : (Set<Map.Entry<?, ?>>)noSqlRecord.entrySet()) {
                 Object value = entry.getValue();
                 String xml = null;
                 if (value instanceof byte[]) {

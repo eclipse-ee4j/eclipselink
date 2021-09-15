@@ -363,7 +363,7 @@ public class ElementaryFieldMetaData implements FieldMetaData {
         Object value;
         if (this.isArray()) {
             int offset = this.getOffset();
-            ArrayList fieldValue = new ArrayList(this.getArraySize());
+            List<String> fieldValue = new ArrayList<>(this.getArraySize());
             for (int i = this.getArraySize(); i > 0; i--) {
                 FieldMetaData fieldCopy = this.deepCopy();
                 fieldCopy.setOffset(offset);
@@ -425,12 +425,13 @@ public class ElementaryFieldMetaData implements FieldMetaData {
                 adjustArraySize(row);
             }
             int offset = this.getOffset();
-            Iterator elements = ((List)value).iterator();
+            @SuppressWarnings({"unchecked"})
+            Iterator<String> elements = ((List<String>)value).iterator();
             for (int i = this.getArraySize(); i > 0; i--) {
                 FieldMetaData fieldCopy = this.deepCopy();
                 fieldCopy.setOffset(offset);
                 converter = new ByteConverter(fieldCopy, recordData);
-                String elementValue = (String)elements.next();
+                String elementValue = elements.next();
                 converter.setBytesToValue(elementValue);
                 offset += mySize;
             }

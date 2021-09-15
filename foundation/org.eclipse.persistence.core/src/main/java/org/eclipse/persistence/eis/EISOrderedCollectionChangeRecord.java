@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,19 +29,19 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 public class EISOrderedCollectionChangeRecord extends CollectionChangeRecord implements org.eclipse.persistence.sessions.changesets.EISOrderedCollectionChangeRecord {
 
     /** The added stuff. */
-    private List adds;
+    private List adds; // either ObjectChangeSet or String (simple type)
 
     /** The indexes into the new collection of the elements that were added. */
     private int[] addIndexes;
 
     /** The moved stuff. */
-    private List moves;
+    private List moves; // either ObjectChangeSet or String (simple type)
 
     /** The index pairs of the elements that were moved (before and after indexes). */
     private int[][] moveIndexPairs;
 
     /** The removed stuff. */
-    private List removes;
+    private List removes; // either ObjectChangeSet or String (simple type)
 
     /** The indexes into the old collection of the elements that were removed. */
     private int[] removeIndexes;
@@ -137,7 +137,7 @@ public class EISOrderedCollectionChangeRecord extends CollectionChangeRecord imp
     @Override
     public List getAdds() {
         if (adds == null) {
-            adds = new ArrayList(2);// keep it as small as possible
+            adds = new ArrayList<>(2);// keep it as small as possible
         }
         return adds;
     }
@@ -207,7 +207,7 @@ public class EISOrderedCollectionChangeRecord extends CollectionChangeRecord imp
     @Override
     public List getMoves() {
         if (moves == null) {
-            moves = new ArrayList(2);// keep it as small as possible
+            moves = new ArrayList<>(2);// keep it as small as possible
         }
         return moves;
     }
@@ -310,7 +310,7 @@ public class EISOrderedCollectionChangeRecord extends CollectionChangeRecord imp
     @Override
     public List getRemoves() {
         if (removes == null) {
-            removes = new ArrayList(2);// keep it as small as possible
+            removes = new ArrayList<>(2);// keep it as small as possible
         }
         return removes;
     }
