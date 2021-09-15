@@ -55,9 +55,9 @@ public class CopyBookParser {
     * as an argument then parses this stream looking for "01" level record entries.  It returns
     * a <code>Vector</code> containing <code>RecordMetaData</code> for each "01" record defintion
     * encountered in the stream.
-    */
-    public Vector parse(InputStream stream) throws Exception {
-        Vector records;
+     */
+    public Vector<RecordMetaData> parse(InputStream stream) throws Exception {
+        Vector<RecordMetaData> records;
         currentLineNumber = 0;
         //read file and prepare for parsing
         try {
@@ -71,7 +71,7 @@ public class CopyBookParser {
 
             //calculate the field offsets from the records
             for (int i = 0; i < records.size(); i++) {
-                setOffsetsForComposite((CompositeObject)records.elementAt(i), 0);
+                setOffsetsForComposite(records.elementAt(i), 0);
             }
         } catch (IOException exception) {
             throw CopyBookParseException.ioException(exception);
@@ -84,12 +84,12 @@ public class CopyBookParser {
     * each line looking for a "01" level record definition, when it is encountered, it builds the
     * hierarchical structure for the <code>RecordMetaData</code>
     */
-    private Vector buildStructure(String fileString) throws Exception {
-        Vector records = new Vector();
+    private Vector<RecordMetaData> buildStructure(String fileString) throws Exception {
+        Vector<RecordMetaData> records = new Vector<>();
         StringTokenizer lineTokenizer = new StringTokenizer(fileString, System.getProperty("line.separator"), false);
         RecordMetaData record = new RecordMetaData();
-        Vector recordLines = new Vector();
-        Vector lineNums = new Vector();
+        Vector<String> recordLines = new Vector<>();
+        Vector<Integer> lineNums = new Vector<>();
 
         //first pass removes all non-record data and brings all lines together
         while (lineTokenizer.hasMoreTokens() && !"procedure division.".equalsIgnoreCase(currentLine)) {
@@ -117,13 +117,13 @@ public class CopyBookParser {
 
         //second pass will build the structure
         int nestingLevel = maximumNestingLevels;
-        Stack parents = new Stack();
-        Hashtable parentsToLevels = new Hashtable();
-        Enumeration recordsEnum = recordLines.elements();
-        Enumeration recordLineNums = lineNums.elements();
+        Stack<CompositeObject> parents = new Stack<>();
+        Hashtable<Object, Integer> parentsToLevels = new Hashtable<>();
+        Enumeration<String> recordsEnum = recordLines.elements();
+        Enumeration<Integer> recordLineNums = lineNums.elements();
         while (recordsEnum.hasMoreElements()) {
-            currentLine = (String)recordsEnum.nextElement();
-            currentLineNumber = (Integer) recordLineNums.nextElement();
+            currentLine = recordsEnum.nextElement();
+            currentLineNumber = recordLineNums.nextElement();
             StringTokenizer lineTokens = new StringTokenizer(currentLine);
             if (lineTokens.hasMoreTokens()) {
                 String firstToken = lineTokens.nextToken();
@@ -133,31 +133,31 @@ public class CopyBookParser {
                 //process record
                 if (levelNumber == 1) {
                     nestingLevel = maximumNestingLevels;
-                    parents = new Stack();
-                    parentsToLevels = new Hashtable();
+                    parents = new Stack<>();
+                    parentsToLevels = new Hashtable<>();
                     component = buildRecord(lineTokens);
                     record = (RecordMetaData)component;
-                    records.addElement(component);
+                    records.addElement(record);
                 }
                 //process subordinate field
                 else if (levelNumber >= nestingLevel) {
                     component = buildField(lineTokens);
-                    ((CompositeObject)parents.peek()).addField((FieldMetaData)component);
+                    parents.peek().addField((FieldMetaData)component);
                 }
                 //field is no longer subordinate skip back to original level
                 else {
-                    while ((Integer) parentsToLevels.get(parents.peek()) >= levelNumber) {
+                    while (parentsToLevels.get(parents.peek()) >= levelNumber) {
                         parents.pop();
                     }
                     component = buildField(lineTokens);
-                    ((CompositeObject)parents.peek()).addField((FieldMetaData)component);
+                    parents.peek().addField((FieldMetaData)component);
                 }
                 nestingLevel = levelNumber;
                 if (component instanceof FieldMetaData) {
                     ((FieldMetaData)component).setRecord(record);
                 }
                 if (component instanceof CompositeObject) {
-                    parents.push(component);
+                    parents.push((CompositeObject) component);
                     parentsToLevels.put(component, levelNumber);
                 }
             }
@@ -173,13 +173,13 @@ public class CopyBookParser {
     private void setOffsetsForComposite(CompositeObject object, int offset) {
         int currentOffset = offset;
         int previousFieldSize = 0;
-        Vector fields = object.getFields();
-        Enumeration fieldEnum = fields.elements();
+        Vector<FieldMetaData> fields = object.getFields();
+        Enumeration<FieldMetaData> fieldEnum = fields.elements();
         FieldMetaData previousField = null;
 
         //loop through fields setting their offsets and redefines if it applies
         while (fieldEnum.hasMoreElements()) {
-            FieldMetaData field = (FieldMetaData)fieldEnum.nextElement();
+            FieldMetaData field = fieldEnum.nextElement();
 
             //if its a redefine, must first see if it larger and reset offset accordingly
             if (field.isFieldRedefine()) {
@@ -208,7 +208,7 @@ public class CopyBookParser {
     * This method processes "01" level lines building a <code>RecordMetaData</code> and
     * returning it.
     */
-    private RecordMetaData buildRecord(StringTokenizer lineTokens) throws Exception {
+    private RecordMetaData buildRecord(StringTokenizer lineTokens) {
         RecordMetaData record;
         if (lineTokens.hasMoreTokens()) {
             String recordName = lineTokens.nextToken();
@@ -290,11 +290,11 @@ public class CopyBookParser {
     * This method handles the "depending" statement returning the name of the field that
     * this field depends on.
     */
-    private String handleDependeningStatement(String[] tokens, int index) throws Exception {
+    private String handleDependeningStatement(String[] tokens, int index) {
         String fieldName = null;
         try {
-            fieldName = tokens[index];
             if (index < tokens.length) {
+                fieldName = tokens[index];
                 if (fieldName.equalsIgnoreCase("on")) {
                     fieldName = tokens[++index];
                 }
@@ -313,10 +313,11 @@ public class CopyBookParser {
     */
     private int handleOccursStatement(String[] tokens, int index) throws Exception {
         try {
-            Integer size = Helper.integerFromString(tokens[index]);
+            int size = 0;
             if (index < tokens.length) {
+                size = Helper.integerFromString(tokens[index]);
                 if (tokens[++index].equalsIgnoreCase("to")) {
-                    Integer newSize = Helper.integerFromString(tokens[++index]);
+                    int newSize = Helper.integerFromString(tokens[++index]);
                     if (size > 0) {
                         newSize = newSize - size;
                     }
@@ -395,7 +396,7 @@ public class CopyBookParser {
                     currentChar = picChars[index];
                 }
                 try {
-                    Integer value = Integer.valueOf(number.toString());
+                    int value = Integer.parseInt(number.toString());
                     size += value;
                 } catch (NumberFormatException exception) {
                     throw invalidCopyBookException("In pic statement a valid integer must be enclosed by the parenthesis.", exception);

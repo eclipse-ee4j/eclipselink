@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -234,7 +234,7 @@ public class EISPlatform extends DatasourcePlatform {
     /**
      * Allow the platform to handle record to row conversion.
      */
-    public Vector buildRows(jakarta.resource.cci.Record record, EISInteraction interaction, EISAccessor accessor) {
+    public Vector<AbstractRecord> buildRows(jakarta.resource.cci.Record record, EISInteraction interaction, EISAccessor accessor) {
         jakarta.resource.cci.Record output = record;
         if (getRecordConverter() != null) {
             output = getRecordConverter().converterFromAdapterRecord(output);
@@ -277,7 +277,8 @@ public class EISPlatform extends DatasourcePlatform {
      */
     public void setDOMInRecord(Element dom, jakarta.resource.cci.Record record, EISInteraction call, EISAccessor accessor) {
         if (domMethod == null) {
-            Class[] argumentTypes = new Class[1];
+            @SuppressWarnings({"unchecked", "rawtypes"})
+            Class<?>[] argumentTypes = (Class<?>[]) new Class[1];
             argumentTypes[0] = Element.class;
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
@@ -302,7 +303,7 @@ public class EISPlatform extends DatasourcePlatform {
             arguments[0] = dom;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try{
-                    AccessController.doPrivileged(new PrivilegedMethodInvoker(domMethod, record, arguments));
+                    AccessController.doPrivileged(new PrivilegedMethodInvoker<>(domMethod, record, arguments));
                 }catch (PrivilegedActionException ex){
                     throw (Exception)ex.getCause();
                 }
@@ -334,7 +335,7 @@ public class EISPlatform extends DatasourcePlatform {
     @Override
     public void appendParameter(Call call, Writer writer, Object parameter) {
         if (parameter instanceof Vector) {
-            Vector records = (Vector)parameter;
+            Vector<?> records = (Vector<?>)parameter;
 
             // May be a collection of record.
             for (int index = 0; index < records.size(); index++) {
@@ -345,7 +346,7 @@ public class EISPlatform extends DatasourcePlatform {
 
             // For some reason the transform always prints the XML header, so trim it off.
             int start = xml.indexOf('>');
-            xml = xml.substring(start + 1, xml.length());
+            xml = xml.substring(start + 1);
             try {
                 writer.write(xml);
             } catch (IOException exception) {

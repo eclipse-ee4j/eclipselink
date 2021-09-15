@@ -120,7 +120,7 @@ public class EISDOMRecord extends org.eclipse.persistence.oxm.record.DOMRecord i
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try{
-                    setDOM((Element)AccessController.doPrivileged(new PrivilegedMethodInvoker(domMethod, record, null)));
+                    setDOM(AccessController.doPrivileged(new PrivilegedMethodInvoker<>(domMethod, record, null)));
                 }catch (PrivilegedActionException ex){
                     throw (Exception)ex.getCause();
                 }

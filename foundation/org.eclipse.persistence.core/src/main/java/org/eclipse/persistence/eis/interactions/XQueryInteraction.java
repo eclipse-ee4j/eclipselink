@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -115,7 +115,7 @@ public class XQueryInteraction extends XMLInteraction implements QueryStringCall
         }
         XMLRecord parameterRow = createXMLRecord(getInputRootElementName());
         for (int index = 0; index < getArgumentNames().size(); index++) {
-            String parameterName = (String)getArgumentNames().get(index);
+            String parameterName = getArgumentNames().get(index);
             Object parameter = getInputRow().get(parameterName);
             parameterRow.put(parameterName, parameter);
         }
@@ -153,7 +153,7 @@ public class XQueryInteraction extends XMLInteraction implements QueryStringCall
         writer.write(Helper.cr());
         writer.write("\tinput => [");
         if (hasParameters()) {
-            for (Iterator iterator = getParameters().iterator(); iterator.hasNext();) {
+            for (Iterator<?> iterator = getParameters().iterator(); iterator.hasNext();) {
                 Object parameter = iterator.next();
                 writer.write(String.valueOf(parameter));
                 if (iterator.hasNext()) {

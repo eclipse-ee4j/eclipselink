@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,7 @@ import org.eclipse.persistence.eis.*;
  */
 public class MappedInteraction extends EISInteraction {
     protected String inputResultPath;
-    protected Vector argumentNames;
+    protected Vector<String> argumentNames;
 
     /**
      * Default constructor.
@@ -104,10 +104,10 @@ public class MappedInteraction extends EISInteraction {
     /**
      * The argument names for the input record.
      */
-    public Vector getArgumentNames() {
+    public Vector<String> getArgumentNames() {
         // This is lazy initialized to conserv space on calls that have no parameters.
         if (argumentNames == null) {
-            argumentNames = new Vector();
+            argumentNames = new Vector<>();
         }
         return argumentNames;
     }
@@ -116,7 +116,7 @@ public class MappedInteraction extends EISInteraction {
      * INTERNAL:
      * The argument names for the input record.
      */
-    public void setArgumentNames(Vector argumentNames) {
+    public void setArgumentNames(Vector<String> argumentNames) {
         this.argumentNames = argumentNames;
     }
 
@@ -142,7 +142,7 @@ public class MappedInteraction extends EISInteraction {
             } else {
                 record = accessor.getRecordFactory().createMappedRecord(getInputRecordName());
                 for (int index = 0; index < getArgumentNames().size(); index++) {
-                    String parameterName = (String)getArgumentNames().get(index);
+                    String parameterName = getArgumentNames().get(index);
                     Object parameter = getParameters().get(index);
 
                     // If no arguments were passed to the call execution find the parameter from the row.
@@ -202,7 +202,7 @@ public class MappedInteraction extends EISInteraction {
         if (hasOutputArguments()) {
             row = new DatabaseRecord(getOutputArgumentNames().size());
             for (int index = 0; index < getOutputArgumentNames().size(); index++) {
-                DatabaseField field = (DatabaseField)getOutputArguments().get(index);
+                DatabaseField field = getOutputArguments().get(index);
                 row.put(field, mappedRecord.get(getOutputArgumentNames().get(index)));
             }
             return row;

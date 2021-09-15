@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -264,7 +264,7 @@ public class EISDescriptor extends ClassDescriptor {
         if (!(fieldValue instanceof List)) {
             return getObjectBuilder().createRecord(0, null);
         }
-        List nestedRows = (List)fieldValue;
+        List<?> nestedRows = (List<?>)fieldValue;
         if (nestedRows.isEmpty()) {
             return getObjectBuilder().createRecord(0, null);
         } else {
@@ -284,14 +284,14 @@ public class EISDescriptor extends ClassDescriptor {
     public Vector buildNestedRowsFromFieldValue(Object fieldValue, AbstractSession session) {
         if (!isXMLFormat()) {
             if (!(fieldValue instanceof List)) {
-                return new Vector();
+                return new Vector<>();
             }
-            return new Vector((List)fieldValue);
+            return new Vector<>((List<?>)fieldValue);
         }
 
         // BUG#2667762 if the tag was empty this could be a string of whitespace.
         if (!(fieldValue instanceof Vector)) {
-            return new Vector(0);
+            return new Vector<>(0);
         }
         return (Vector)fieldValue;
     }
@@ -305,7 +305,7 @@ public class EISDescriptor extends ClassDescriptor {
     @Override
     public Vector buildDirectValuesFromFieldValue(Object fieldValue) {
         if (!(fieldValue instanceof Vector)) {
-            Vector fieldValues = new Vector(1);
+            Vector<Object> fieldValues = new Vector<>(1);
             fieldValues.add(fieldValue);
             return fieldValues;
         }
@@ -329,7 +329,7 @@ public class EISDescriptor extends ClassDescriptor {
      */
     @Override
     public Object buildFieldValueFromNestedRow(AbstractRecord nestedRow, AbstractSession session) throws DatabaseException {
-        Vector nestedRows = new Vector(1);
+        Vector<AbstractRecord> nestedRows = new Vector<>(1);
         nestedRows.add(nestedRow);
         return this.buildFieldValueFromNestedRows(nestedRows, "", session);
     }
