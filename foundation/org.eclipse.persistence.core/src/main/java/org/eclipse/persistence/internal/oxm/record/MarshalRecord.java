@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -151,7 +151,7 @@ public interface MarshalRecord<
     /**
      * A Stack-like List, used to detect object cycles during marshal operations.
      */
-    public static class CycleDetectionStack<E> extends AbstractList<Object> {
+    class CycleDetectionStack<E> extends AbstractList<Object> {
 
         private Object[] data = new Object[8];
 

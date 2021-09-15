@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,11 +20,11 @@ import java.util.Set;
 
 public interface PersistenceContextFactory {
 
-    public void close();
+    void close();
 
-    public void closePersistenceContext(String persistenceUnit);
+    void closePersistenceContext(String persistenceUnit);
 
-    public PersistenceContext get(String persistenceUnit, URI defaultURI, String version, Map<String, Object> initializationProperties);
+    PersistenceContext get(String persistenceUnit, URI defaultURI, String version, Map<String, Object> initializationProperties);
 
-    public Set<String> getPersistenceContextNames();
+    Set<String> getPersistenceContextNames();
 }

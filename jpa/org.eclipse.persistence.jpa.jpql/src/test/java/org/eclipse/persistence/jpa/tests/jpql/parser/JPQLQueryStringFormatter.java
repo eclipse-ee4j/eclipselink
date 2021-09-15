@@ -30,7 +30,7 @@ public interface JPQLQueryStringFormatter {
      * The default implementation of {@link JPQLQueryStringFormatter}, which returns the JPQL query
      * without formatting it.
      */
-    public static JPQLQueryStringFormatter DEFAULT = new JPQLQueryStringFormatter() {
+    JPQLQueryStringFormatter DEFAULT = new JPQLQueryStringFormatter() {
 
         @Override
         public String format(String query) {

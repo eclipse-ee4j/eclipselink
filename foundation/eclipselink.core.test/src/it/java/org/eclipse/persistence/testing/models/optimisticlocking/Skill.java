@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,10 +16,10 @@ package org.eclipse.persistence.testing.models.optimisticlocking;
 
 public interface Skill {
 
-    public int getId();
-    public void setId(int id);
-    public String getName();
-    public void setName(String name);
-    public boolean isCool();
+    int getId();
+    void setId(int id);
+    String getName();
+    void setName(String name);
+    boolean isCool();
 
 }

@@ -186,7 +186,7 @@ public final class IndirectCollectionsFactory {
     /**
      * Define API providers of {@link IndirectCollection} implementations must conform to.
      */
-    public static interface IndirectCollectionsProvider {
+    public interface IndirectCollectionsProvider {
 
         /**
          * Class implementing {@link IndirectList}.

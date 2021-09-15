@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,8 +31,8 @@ import java.util.Collection;
  * @see org.eclipse.persistence.jaxb.javamodel.JavaAnnotation
  */
 public interface JavaHasAnnotations {
-    public JavaAnnotation getAnnotation(JavaClass arg0);
-    public Collection getAnnotations();
-    public JavaAnnotation getDeclaredAnnotation(JavaClass arg0);
-    public Collection getDeclaredAnnotations();
+    JavaAnnotation getAnnotation(JavaClass arg0);
+    Collection getAnnotations();
+    JavaAnnotation getDeclaredAnnotation(JavaClass arg0);
+    Collection getDeclaredAnnotations();
 }

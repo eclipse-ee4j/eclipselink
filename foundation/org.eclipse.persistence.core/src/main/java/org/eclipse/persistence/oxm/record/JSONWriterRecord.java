@@ -989,7 +989,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
         }
     }
 
-    protected static interface Output {
+    protected interface Output {
 
         void flush() throws IOException;
 

@@ -27,7 +27,7 @@ import java.io.Serializable;
  *    @see LargeProject
  *    @see SmallProject
  */
-public abstract interface Project extends Serializable {
+public interface Project extends Serializable {
     String getDescription();
 
     BigDecimal getId();

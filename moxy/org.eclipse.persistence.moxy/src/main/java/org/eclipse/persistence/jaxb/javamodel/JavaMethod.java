@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,17 +28,17 @@ package org.eclipse.persistence.jaxb.javamodel;
  * @see java.lang.reflect.Method
  */
 public interface JavaMethod extends JavaHasAnnotations {
-    public int getModifiers();
-    public String getName();
-    public JavaClass getOwningClass();
-    public JavaClass[] getParameterTypes();
-    public JavaClass getReturnType();
-    public boolean isAbstract();
-    public boolean isFinal();
-    public boolean isPrivate();
-    public boolean isProtected();
-    public boolean isPublic();
-    public boolean isStatic();
-    public boolean isSynthetic();
+    int getModifiers();
+    String getName();
+    JavaClass getOwningClass();
+    JavaClass[] getParameterTypes();
+    JavaClass getReturnType();
+    boolean isAbstract();
+    boolean isFinal();
+    boolean isPrivate();
+    boolean isProtected();
+    boolean isPublic();
+    boolean isStatic();
+    boolean isSynthetic();
     boolean isBridge();
 }

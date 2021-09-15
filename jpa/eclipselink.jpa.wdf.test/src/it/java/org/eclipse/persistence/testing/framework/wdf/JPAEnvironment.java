@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -28,26 +28,26 @@ import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Employee;
 public interface JPAEnvironment {
 
 
-    public EntityManagerFactory createNewEntityManagerFactory(Map<String, Object> properties) throws NamingException;
+    EntityManagerFactory createNewEntityManagerFactory(Map<String, Object> properties) throws NamingException;
 
 
-    public EntityManagerFactory getEntityManagerFactory();
+    EntityManagerFactory getEntityManagerFactory();
 
-    public EntityManagerFactory createNewEntityManagerFactory() throws NamingException;
+    EntityManagerFactory createNewEntityManagerFactory() throws NamingException;
 
-    public EntityManager getEntityManager();
+    EntityManager getEntityManager();
 
-    public void beginTransaction(EntityManager em);
+    void beginTransaction(EntityManager em);
 
-    public void commitTransaction(EntityManager em);
+    void commitTransaction(EntityManager em);
 
-    public void rollbackTransaction(EntityManager em);
+    void rollbackTransaction(EntityManager em);
 
-    public void markTransactionForRollback(EntityManager em);
+    void markTransactionForRollback(EntityManager em);
 
-    public void commitTransactionAndClear(EntityManager em);
+    void commitTransactionAndClear(EntityManager em);
 
-    public void rollbackTransactionAndClear(EntityManager em);
+    void rollbackTransactionAndClear(EntityManager em);
 
     /**
      * Returns <code>true</code> if the transaction is active and not marked for rollback.
@@ -56,7 +56,7 @@ public interface JPAEnvironment {
      *            The entity manager
      * @return <code>true</code> if the transaction is active and not marked for rollback
      */
-    public boolean isTransactionActive(EntityManager em);
+    boolean isTransactionActive(EntityManager em);
 
     /**
      * Returns <code>true</code> if the transaction marked for rollback but not rolled back yet.
@@ -65,15 +65,15 @@ public interface JPAEnvironment {
      *            The entity manager
      * @return <code>true</code> if the transaction marked for rollback but not rolled back yet
      */
-    public boolean isTransactionMarkedForRollback(EntityManager em);
+    boolean isTransactionMarkedForRollback(EntityManager em);
 
-    public boolean usesExtendedPC();
+    boolean usesExtendedPC();
 
-    public DataSource getDataSource();
+    DataSource getDataSource();
 
-    public Object getPropertyValue(EntityManager em, String key);
+    Object getPropertyValue(EntityManager em, String key);
 
-    public void evict(EntityManager em, Class<?> clazz);
+    void evict(EntityManager em, Class<?> clazz);
 
-    public void evictAll(EntityManager em);
+    void evictAll(EntityManager em);
 }

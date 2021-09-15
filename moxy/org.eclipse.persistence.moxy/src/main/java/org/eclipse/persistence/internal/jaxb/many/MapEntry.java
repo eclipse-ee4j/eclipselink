@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,10 +15,10 @@
 package org.eclipse.persistence.internal.jaxb.many;
 
 public interface MapEntry <K, V>{
-    public K getKey();
-    public V getValue();
+    K getKey();
+    V getValue();
 
-    public void setKey(K key);
-    public void setValue(V value);
+    void setKey(K key);
+    void setValue(V value);
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,185 +16,185 @@ package org.eclipse.persistence.testing.sdo.helper.classgen.dynamicimpl;
 
 public interface DataTypes {
 
-   public java.lang.Object getAnySimpleTypeProperty();
+   java.lang.Object getAnySimpleTypeProperty();
 
-   public void setAnySimpleTypeProperty(java.lang.Object value);
+   void setAnySimpleTypeProperty(java.lang.Object value);
 
-   public commonj.sdo.DataObject getAnyTypeProperty();
+   commonj.sdo.DataObject getAnyTypeProperty();
 
-   public void setAnyTypeProperty(commonj.sdo.DataObject value);
+   void setAnyTypeProperty(commonj.sdo.DataObject value);
 
-   public java.lang.String getAnyURIProperty();
+   java.lang.String getAnyURIProperty();
 
-   public void setAnyURIProperty(java.lang.String value);
+   void setAnyURIProperty(java.lang.String value);
 
-   public byte[] getBase64BinaryProperty();
+   byte[] getBase64BinaryProperty();
 
-   public void setBase64BinaryProperty(byte[] value);
+   void setBase64BinaryProperty(byte[] value);
 
-   public boolean isBooleanProperty();
+   boolean isBooleanProperty();
 
-   public void setBooleanProperty(boolean value);
+   void setBooleanProperty(boolean value);
 
-   public byte getByteProperty();
+   byte getByteProperty();
 
-   public void setByteProperty(byte value);
+   void setByteProperty(byte value);
 
-   public java.lang.String getDateProperty();
+   java.lang.String getDateProperty();
 
-   public void setDateProperty(java.lang.String value);
+   void setDateProperty(java.lang.String value);
 
-   public java.lang.String getDateTimeProperty();
+   java.lang.String getDateTimeProperty();
 
-   public void setDateTimeProperty(java.lang.String value);
+   void setDateTimeProperty(java.lang.String value);
 
-   public java.math.BigDecimal getDecimalProperty();
+   java.math.BigDecimal getDecimalProperty();
 
-   public void setDecimalProperty(java.math.BigDecimal value);
+   void setDecimalProperty(java.math.BigDecimal value);
 
-   public double getDoubleProperty();
+   double getDoubleProperty();
 
-   public void setDoubleProperty(double value);
+   void setDoubleProperty(double value);
 
-   public java.lang.String getDurationProperty();
+   java.lang.String getDurationProperty();
 
-   public void setDurationProperty(java.lang.String value);
+   void setDurationProperty(java.lang.String value);
 
-   public java.util.List getENTITIESProperty();
+   java.util.List getENTITIESProperty();
 
-   public void setENTITIESProperty(java.util.List value);
+   void setENTITIESProperty(java.util.List value);
 
-   public java.lang.String getENTITYProperty();
+   java.lang.String getENTITYProperty();
 
-   public void setENTITYProperty(java.lang.String value);
+   void setENTITYProperty(java.lang.String value);
 
-   public float getFloatProperty();
+   float getFloatProperty();
 
-   public void setFloatProperty(float value);
+   void setFloatProperty(float value);
 
-   public java.lang.String getGDayProperty();
+   java.lang.String getGDayProperty();
 
-   public void setGDayProperty(java.lang.String value);
+   void setGDayProperty(java.lang.String value);
 
-   public java.lang.String getGMonthProperty();
+   java.lang.String getGMonthProperty();
 
-   public void setGMonthProperty(java.lang.String value);
+   void setGMonthProperty(java.lang.String value);
 
-   public java.lang.String getGMonthDayProperty();
+   java.lang.String getGMonthDayProperty();
 
-   public void setGMonthDayProperty(java.lang.String value);
+   void setGMonthDayProperty(java.lang.String value);
 
-   public java.lang.String getGYearProperty();
+   java.lang.String getGYearProperty();
 
-   public void setGYearProperty(java.lang.String value);
+   void setGYearProperty(java.lang.String value);
 
-   public java.lang.String getGYearMonthProperty();
+   java.lang.String getGYearMonthProperty();
 
-   public void setGYearMonthProperty(java.lang.String value);
+   void setGYearMonthProperty(java.lang.String value);
 
-   public byte[] getHexBinaryProperty();
+   byte[] getHexBinaryProperty();
 
-   public void setHexBinaryProperty(byte[] value);
+   void setHexBinaryProperty(byte[] value);
 
-   public java.lang.String getIDProperty();
+   java.lang.String getIDProperty();
 
-   public void setIDProperty(java.lang.String value);
+   void setIDProperty(java.lang.String value);
 
-   public java.lang.String getIDREFProperty();
+   java.lang.String getIDREFProperty();
 
-   public void setIDREFProperty(java.lang.String value);
+   void setIDREFProperty(java.lang.String value);
 
-   public int getIntProperty();
+   int getIntProperty();
 
-   public void setIntProperty(int value);
+   void setIntProperty(int value);
 
-   public java.math.BigInteger getIntegerProperty();
+   java.math.BigInteger getIntegerProperty();
 
-   public void setIntegerProperty(java.math.BigInteger value);
+   void setIntegerProperty(java.math.BigInteger value);
 
-   public java.lang.String getLanguageProperty();
+   java.lang.String getLanguageProperty();
 
-   public void setLanguageProperty(java.lang.String value);
+   void setLanguageProperty(java.lang.String value);
 
-   public long getLongProperty();
+   long getLongProperty();
 
-   public void setLongProperty(long value);
+   void setLongProperty(long value);
 
-   public java.lang.String getNameProperty();
+   java.lang.String getNameProperty();
 
-   public void setNameProperty(java.lang.String value);
+   void setNameProperty(java.lang.String value);
 
-   public java.lang.String getNCNameProperty();
+   java.lang.String getNCNameProperty();
 
-   public void setNCNameProperty(java.lang.String value);
+   void setNCNameProperty(java.lang.String value);
 
-   public java.math.BigInteger getNegativeIntegerProperty();
+   java.math.BigInteger getNegativeIntegerProperty();
 
-   public void setNegativeIntegerProperty(java.math.BigInteger value);
+   void setNegativeIntegerProperty(java.math.BigInteger value);
 
-   public java.lang.String getNMTOKENProperty();
+   java.lang.String getNMTOKENProperty();
 
-   public void setNMTOKENProperty(java.lang.String value);
+   void setNMTOKENProperty(java.lang.String value);
 
-   public java.util.List getNMTOKENSProperty();
+   java.util.List getNMTOKENSProperty();
 
-   public void setNMTOKENSProperty(java.util.List value);
+   void setNMTOKENSProperty(java.util.List value);
 
-   public java.math.BigInteger getNonNegativeIntegerProperty();
+   java.math.BigInteger getNonNegativeIntegerProperty();
 
-   public void setNonNegativeIntegerProperty(java.math.BigInteger value);
+   void setNonNegativeIntegerProperty(java.math.BigInteger value);
 
-   public java.math.BigInteger getNonPositiveIntegerProperty();
+   java.math.BigInteger getNonPositiveIntegerProperty();
 
-   public void setNonPositiveIntegerProperty(java.math.BigInteger value);
+   void setNonPositiveIntegerProperty(java.math.BigInteger value);
 
-   public java.lang.String getNormalizedStringProperty();
+   java.lang.String getNormalizedStringProperty();
 
-   public void setNormalizedStringProperty(java.lang.String value);
+   void setNormalizedStringProperty(java.lang.String value);
 
-   public java.lang.String getNOTATION();
+   java.lang.String getNOTATION();
 
-   public void setNOTATION(java.lang.String value);
+   void setNOTATION(java.lang.String value);
 
-   public java.math.BigInteger getPositiveIntegerProperty();
+   java.math.BigInteger getPositiveIntegerProperty();
 
-   public void setPositiveIntegerProperty(java.math.BigInteger value);
+   void setPositiveIntegerProperty(java.math.BigInteger value);
 
-   public java.lang.String getQName();
+   java.lang.String getQName();
 
-   public void setQName(java.lang.String value);
+   void setQName(java.lang.String value);
 
-   public short getShort();
+   short getShort();
 
-   public void setShort(short value);
+   void setShort(short value);
 
-   public java.lang.String getString();
+   java.lang.String getString();
 
-   public void setString(java.lang.String value);
+   void setString(java.lang.String value);
 
-   public java.lang.String getTime();
+   java.lang.String getTime();
 
-   public void setTime(java.lang.String value);
+   void setTime(java.lang.String value);
 
-   public java.lang.String getToken();
+   java.lang.String getToken();
 
-   public void setToken(java.lang.String value);
+   void setToken(java.lang.String value);
 
-   public short getUnsignedByte();
+   short getUnsignedByte();
 
-   public void setUnsignedByte(short value);
+   void setUnsignedByte(short value);
 
-   public long getUnsignedInt();
+   long getUnsignedInt();
 
-   public void setUnsignedInt(long value);
+   void setUnsignedInt(long value);
 
-   public java.math.BigInteger getUnsignedLong();
+   java.math.BigInteger getUnsignedLong();
 
-   public void setUnsignedLong(java.math.BigInteger value);
+   void setUnsignedLong(java.math.BigInteger value);
 
-   public int getUnsignedShort();
+   int getUnsignedShort();
 
-   public void setUnsignedShort(int value);
+   void setUnsignedShort(int value);
 
 
 }

@@ -4963,7 +4963,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
      * of the query. This interface also adds helper method for easily creating a parsed tree
      * representation of the actual query parsed tree.
      */
-    protected static interface StateObjectTester {
+    protected interface StateObjectTester {
 
         AdditionExpressionStateObjectTester add(StateObjectTester expression);
         AndExpressionStateObjectTester and(StateObjectTester expression);

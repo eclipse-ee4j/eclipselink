@@ -472,7 +472,7 @@ public class BeanValidationBindingsTestCase extends junit.framework.TestCase {
     public abstract class Ancestors{}
     @Target({ ElementType.FIELD})
     @Retention(RetentionPolicy.RUNTIME)
-    public static @interface CustomAnnotation {
+    public @interface CustomAnnotation {
         String value();
     }
 

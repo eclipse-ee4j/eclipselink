@@ -438,7 +438,7 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
     /**
      * This interface is used to create the description of a unit-tests.
      */
-    private static interface DescriptionBuilder {
+    private interface DescriptionBuilder {
 
         /**
          * Creates a string representation of the given object.

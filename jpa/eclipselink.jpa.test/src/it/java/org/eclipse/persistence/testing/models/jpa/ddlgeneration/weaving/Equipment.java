@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,14 +21,14 @@ import java.util.List;
 
 public interface Equipment {
 
-    public long getEntityId();
+    long getEntityId();
 
-    public String getId();
-    public void setId( String id );
+    String getId();
+    void setId(String id);
 
-    public List<Port> getPorts();
-    public void setPorts( ArrayList<org.eclipse.persistence.testing.models.jpa.ddlgeneration.weaving.Port> ports );
+    List<Port> getPorts();
+    void setPorts(ArrayList<org.eclipse.persistence.testing.models.jpa.ddlgeneration.weaving.Port> ports);
 
-    public Port removePort(int i);
-    public void addPort(Port p3);
+    Port removePort(int i);
+    void addPort(Port p3);
 }

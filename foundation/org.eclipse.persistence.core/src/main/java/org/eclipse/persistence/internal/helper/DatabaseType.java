@@ -84,7 +84,7 @@ public interface DatabaseType {
     void logParameter(StringBuilder sb, Integer direction, PLSQLargument arg,
         AbstractRecord translationRow, DatabasePlatform platform);
 
-    public enum DatabaseTypeHelper {
+    enum DatabaseTypeHelper {
         databaseTypeHelper;
 
         static String getTruncatedSHA1Hash(String s) {

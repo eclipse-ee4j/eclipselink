@@ -613,7 +613,7 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
      * INTERNAL:
      * This is the interface used to encapsulate the the type of key class element
      */
-    protected static interface KeyElementAccessor {
+    protected interface KeyElementAccessor {
         String getAttributeName();
         DatabaseField getDatabaseField();
         DatabaseMapping getMapping();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,8 +29,8 @@ package org.eclipse.persistence.jaxb.javamodel;
  * @since Oracle TopLink 11.1.1.0.0
  */
 public interface JavaModel {
-    public JavaClass getClass(Class<?> jClass);
-    public JavaClass getClass(String classname);
-    public ClassLoader getClassLoader();
-    public java.lang.annotation.Annotation getAnnotation(JavaAnnotation janno, Class<?> jClass);
+    JavaClass getClass(Class<?> jClass);
+    JavaClass getClass(String classname);
+    ClassLoader getClassLoader();
+    java.lang.annotation.Annotation getAnnotation(JavaAnnotation janno, Class<?> jClass);
 }

@@ -277,7 +277,7 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      * @author Gordon Yorke
      * @since EclipseLink 2.0
      */
-    public enum LockOnChange{
+    enum LockOnChange{
         OWNING, // update version when an owning mapping changes
         NONE,
         ALL

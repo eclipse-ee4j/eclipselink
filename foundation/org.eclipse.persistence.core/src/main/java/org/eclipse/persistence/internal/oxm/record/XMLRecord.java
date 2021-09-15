@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ public interface XMLRecord<ABSTRACT_SESSION extends CoreAbstractSession> {
     /**
      * Nil: This is used to indicate that this field represents xsi:nil="true"
      */
-    public static class Nil {
+    class Nil {
         private Nil() {
         }
     }

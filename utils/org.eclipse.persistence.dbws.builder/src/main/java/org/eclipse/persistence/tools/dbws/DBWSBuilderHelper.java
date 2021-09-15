@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,42 +25,42 @@ import org.eclipse.persistence.tools.oracleddl.metadata.CompositeDatabaseType;
 
 public interface DBWSBuilderHelper {
 
-    public void buildDbArtifacts();
+    void buildDbArtifacts();
 
-    public void buildOROXProjects(NamingConventionTransformer nct);
-    public void buildOROXProjects(NamingConventionTransformer nct, List<CompositeDatabaseType> types);
+    void buildOROXProjects(NamingConventionTransformer nct);
+    void buildOROXProjects(NamingConventionTransformer nct, List<CompositeDatabaseType> types);
 
     /**
      * Builds a list of type instances based on procedure/function arguments.
      */
-    public List<CompositeDatabaseType> buildTypesList(List<OperationModel> operations);
+    List<CompositeDatabaseType> buildTypesList(List<OperationModel> operations);
 
-    public void buildSchema(NamingConventionTransformer nct);
+    void buildSchema(NamingConventionTransformer nct);
 
-    public void buildSessionsXML(OutputStream dbwsSessionsStream);
+    void buildSessionsXML(OutputStream dbwsSessionsStream);
 
-    public void buildDBWSModel(NamingConventionTransformer nct, OutputStream dbwsServiceStream);
+    void buildDBWSModel(NamingConventionTransformer nct, OutputStream dbwsServiceStream);
 
-    public void buildProcedureOperation(ProcedureOperationModel procedureOperationModel);
+    void buildProcedureOperation(ProcedureOperationModel procedureOperationModel);
 
-    public void writeAttachmentSchema(OutputStream swarefStream);
+    void writeAttachmentSchema(OutputStream swarefStream);
 
-    public void buildWSDL(OutputStream wsdlStream, NamingConventionTransformer nct) throws WSDLException;
+    void buildWSDL(OutputStream wsdlStream, NamingConventionTransformer nct) throws WSDLException;
 
-    public void writeWebXML(OutputStream webXmlStream);
+    void writeWebXML(OutputStream webXmlStream);
 
     /**
      * Write the (optional) deployment descriptor to the given OutputStream.
      */
-    public void writeDeploymentDescriptor(OutputStream deploymentDescriptorStream);
+    void writeDeploymentDescriptor(OutputStream deploymentDescriptorStream);
 
-    public void generateDBWSProvider(OutputStream sourceProviderStream,
-        OutputStream classProviderStream, OutputStream sourceProviderListenerStream,
-        OutputStream classProviderListenerStream);
+    void generateDBWSProvider(OutputStream sourceProviderStream,
+                              OutputStream classProviderStream, OutputStream sourceProviderListenerStream,
+                              OutputStream classProviderListenerStream);
 
-    public void writeSchema(OutputStream dbwsSchemaStream);
+    void writeSchema(OutputStream dbwsSchemaStream);
 
-    public void writeOROXProjects(OutputStream dbwsOrStream, OutputStream dbwsOxStream);
+    void writeOROXProjects(OutputStream dbwsOrStream, OutputStream dbwsOxStream);
 
-    public boolean hasTables();
+    boolean hasTables();
 }

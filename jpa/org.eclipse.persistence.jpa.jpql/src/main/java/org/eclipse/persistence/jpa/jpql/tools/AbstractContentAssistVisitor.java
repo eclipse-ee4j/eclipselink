@@ -6223,7 +6223,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
      * This helper is used to determine how to add proposals within a collection of expressions. Each
      * expression is usually separated by either a whitespace or by a comma.
      */
-    protected static interface CollectionExpressionHelper<T extends Expression> {
+    protected interface CollectionExpressionHelper<T extends Expression> {
 
         /**
          * Adds the proposals because the cursor is at the end of the child at the given position.
@@ -9563,7 +9563,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
      * A collector is responsible to retrieve the possible proposals by using the mappings that can
      * complete a path expression.
      */
-    protected static interface MappingCollector {
+    protected interface MappingCollector {
 
         /**
          * Retrieves the possible proposals that can be used to complete a path expression based on
@@ -10176,7 +10176,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
      * This helper helps to add JPQL identifiers for the clauses that make up a query statement and
      * also chains the clauses within the query.
      */
-    protected static interface StatementHelper<T extends Expression> {
+    protected interface StatementHelper<T extends Expression> {
 
         /**
          * Adds the JPQL identifier of the clause being scanned by this helper.

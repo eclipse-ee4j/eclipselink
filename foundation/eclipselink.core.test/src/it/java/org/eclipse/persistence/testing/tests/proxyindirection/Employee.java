@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,53 +25,53 @@ import java.util.Collection;
  * @since        08/15/2000 15:51:05
  */
 public interface Employee {
-    public void addManagedEmployee(Employee value);
+    void addManagedEmployee(Employee value);
 
-    public Address getAddress();
+    Address getAddress();
 
-    public int getAge();
+    int getAge();
 
-    public Contact getContact();
+    Contact getContact();
 
-    public int getCubicleID();
+    int getCubicleID();
 
-    public String getFirstName();
+    String getFirstName();
 
-    public String getGender();
+    String getGender();
 
-    public int getID();
+    int getID();
 
-    public String getLastName();
+    String getLastName();
 
-    public Collection getManagedEmployees();
+    Collection getManagedEmployees();
 
-    public Employee getManager();
+    Employee getManager();
 
-    public Project getProject();
+    Project getProject();
 
-    public LargeProject getLargeProject();
+    LargeProject getLargeProject();
 
-    public void setAddress(Address value);
+    void setAddress(Address value);
 
-    public void setAge(int value);
+    void setAge(int value);
 
-    public void setContact(Contact value);
+    void setContact(Contact value);
 
-    public void setCubicleID(int value);
+    void setCubicleID(int value);
 
-    public void setFirstName(String value);
+    void setFirstName(String value);
 
-    public void setGender(String value);
+    void setGender(String value);
 
-    public void setID(int value);
+    void setID(int value);
 
-    public void setLastName(String value);
+    void setLastName(String value);
 
-    public void setManagedEmployees(Collection value);
+    void setManagedEmployees(Collection value);
 
-    public void setManager(Employee value);
+    void setManager(Employee value);
 
-    public void setProject(Project value);
+    void setProject(Project value);
 
-    public void setLargeProject(LargeProject value);
+    void setLargeProject(LargeProject value);
 }

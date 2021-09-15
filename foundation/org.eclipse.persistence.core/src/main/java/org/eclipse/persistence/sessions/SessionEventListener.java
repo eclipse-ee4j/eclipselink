@@ -137,7 +137,7 @@ public interface SessionEventListener extends CoreSessionEventListener {
      * The event contains the call and call result.
      * This differs from query execution in that the call has been translated.
      */
-    public void postExecuteCall(SessionEvent event);
+    void postExecuteCall(SessionEvent event);
 
     /**
      * PUBLIC:
@@ -213,7 +213,7 @@ public interface SessionEventListener extends CoreSessionEventListener {
      * The event contains the call to be executed.
      * This differs from query execution in that the call has been translated.
      */
-    public void preExecuteCall(SessionEvent event);
+    void preExecuteCall(SessionEvent event);
 
     /**
      * PUBLIC:

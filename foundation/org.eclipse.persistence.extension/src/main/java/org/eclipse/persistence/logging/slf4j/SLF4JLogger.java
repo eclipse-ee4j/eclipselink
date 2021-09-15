@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 public class SLF4JLogger extends AbstractSessionLog {
 
     /** Logger callback interface. */
-    private static interface LoggerCall {
+    private interface LoggerCall {
         void log(final Logger logger, final String msg, final Throwable t);
         void log(final Logger logger, final String message);
     }
