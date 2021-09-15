@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,84 +21,84 @@ import org.eclipse.persistence.sessions.Session;
  * This Interface is used by Test Framework.
  */
 public interface TestEntity extends junit.framework.Test, java.io.Serializable {
-    public static final int INITIAL_VALUE = -1;
+    int INITIAL_VALUE = -1;
 
     /**
      * Append test summaries of the collection of tests.
      */
-    public void appendTestResult(TestResultsSummary summary);
+    void appendTestResult(TestResultsSummary summary);
 
     /**
      * Computes the level for indentation.
      */
-    public void computeNestedLevel();
+    void computeNestedLevel();
 
     /**
      * The session is initialized to the default login from the Persistent System
      * if no explicit login is done for testing. This method must be overridden in
      * the subclasses if different login is required.
      */
-    public Session defaultLogin();
+    Session defaultLogin();
 
     /**
      * Executes the test entity in the collection.
      */
-    public void execute(TestExecutor executor) throws Throwable;
+    void execute(TestExecutor executor) throws Throwable;
 
     /**
      * Return the test collection which contains this test
      */
-    public TestEntity getContainer();
+    TestEntity getContainer();
 
     /**
      * Return the name of the test
      */
-    public String getName();
+    String getName();
 
-    public int getNestedCounter();
+    int getNestedCounter();
 
     /**
      * Return the test result.
      */
-    public ResultInterface getReport();
+    ResultInterface getReport();
 
 
     /**
      * Set the test result.
      */
-    public void setReport(ResultInterface testResult);
+    void setReport(ResultInterface testResult);
 
     /**
      * Increment the nested counter
      */
-    public void incrementNestedCounter();
+    void incrementNestedCounter();
 
     /**
      * Logs the test results to the print stream.
      * This mothed is added to migrate tests to Ora*Tst
      */
-    public void logRegressionResult(Writer log);
+    void logRegressionResult(Writer log);
 
     /**
      * Logs the test results to the print stream.
      */
-    public void logResult(Writer log);
+    void logResult(Writer log);
 
     /**
      * Logs the test results to the print stream.
      */
-    public void logResult(Writer log, boolean shouldLogOnlyErrors);
+    void logResult(Writer log, boolean shouldLogOnlyErrors);
 
-    public boolean requiresDatabase();
+    boolean requiresDatabase();
 
-    public void resetEntity();
+    void resetEntity();
 
-    public void resetNestedCounter();
+    void resetNestedCounter();
 
     /**
      * Set the test collection which contains this test
      */
-    public void setContainer(TestEntity testEntity);
+    void setContainer(TestEntity testEntity);
 
-    public void setNestedCounter(int level);
+    void setNestedCounter(int level);
 }

@@ -808,7 +808,7 @@ public abstract class RefactoringTool extends AbstractRefactoringTool {
     /**
      * This interface is used to transparently push the new value into the {@link StateObject}.
      */
-    protected static interface StateObjectUpdater<T extends StateObject> {
+    protected interface StateObjectUpdater<T extends StateObject> {
 
         /**
          * Updates the given {@link StateObject} by updating its state with the given new value.

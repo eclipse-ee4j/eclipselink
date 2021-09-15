@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -200,7 +200,7 @@ public interface ContentAssistProposals {
     /**
      * This enumeration determines the type of classes returned by {@link ContentAssistProposals#classNames()}.
      */
-    public enum ClassType {
+    enum ClassType {
 
         /**
          * Indicates the only class type allowed is an enum type.
@@ -219,7 +219,7 @@ public interface ContentAssistProposals {
      *
      * @version 2.5
      */
-    public interface EnumProposals {
+    interface EnumProposals {
 
         /**
          * Returns the list of enum constants that have been filtered.

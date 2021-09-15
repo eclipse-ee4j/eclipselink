@@ -4524,7 +4524,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
      * @see AbstractSingleEncapsulatedExpressionHelper
      * @see AbstractTripleEncapsulatedExpressionHelper
      */
-    protected static interface AbstractEncapsulatedExpressionHelper<T extends AbstractEncapsulatedExpression> {
+    protected interface AbstractEncapsulatedExpressionHelper<T extends AbstractEncapsulatedExpression> {
 
         /**
          * Returns the arguments that can help to format the localized problem.

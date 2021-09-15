@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,41 +24,41 @@ public interface SDOClassGeneratorListener {
     * This event will be triggered before the package declaration on the interface
     * @param buffer The current StringBuffer that can have content appended to it
     */
-    public void preInterfacePackage(StringBuffer buffer);
+    void preInterfacePackage(StringBuffer buffer);
 
     /**
      * This event will be triggered before the package declaration on the implementation class
      * @param buffer The current StringBuffer that can have content appended to it
      */
-    public void preImplPackage(StringBuffer buffer);
+    void preImplPackage(StringBuffer buffer);
 
     /**
      * This event will be triggered before the import declarations on the interface
      * @param buffer The current StringBuffer that can have content appended to it
      */
-    public void preInterfaceImports(StringBuffer buffer);
+    void preInterfaceImports(StringBuffer buffer);
 
     /**
      * This event will be triggered before the import declarations on the implementation class
      * @param buffer The current StringBuffer that can have content appended to it
      */
-    public void preImplImports(StringBuffer buffer);
+    void preImplImports(StringBuffer buffer);
 
     /**
      * This event will be triggered before the interface declaration on the interface
      * @param buffer The current StringBuffer that can have content appended to it
      */
-    public void preInterfaceClass(StringBuffer buffer);
+    void preInterfaceClass(StringBuffer buffer);
 
     /**
      * This event will be triggered before the class declaration on the implementation class
      * @param buffer The current StringBuffer that can have content appended to it
      */
-    public void preImplClass(StringBuffer buffer);
+    void preImplClass(StringBuffer buffer);
 
     /**
      * This event will be triggered before the attribute declarations on the implementation class
      * @param buffer The current StringBuffer that can have content appended to it
      */
-    public void preImplAttributes(StringBuffer buffer);
+    void preImplAttributes(StringBuffer buffer);
 }

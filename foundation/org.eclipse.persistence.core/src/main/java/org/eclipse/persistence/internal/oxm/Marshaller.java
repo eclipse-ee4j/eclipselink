@@ -246,7 +246,7 @@ public abstract class Marshaller<
      * <p>An implementation of Marshaller.Listener can be set on an Marshaller
      * to provide additional behaviour during marshal operations.</p>
      */
-    public static interface Listener {
+    public interface Listener {
 
         /**
          * This event  will be called after an object is marshalled.

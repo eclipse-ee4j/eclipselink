@@ -32,9 +32,9 @@ public interface DescriptorBasedDatabaseEventListener extends DatabaseEventListe
     /**
      * Register for change notifications on a particular descriptor
      */
-    public void register(Session session, String queryName);
+    void register(Session session, String queryName);
 
-    public void addChangeListener(ChangeListener listener);
+    void addChangeListener(ChangeListener listener);
 
-    public void removeChangeListener(ChangeListener listener);
+    void removeChangeListener(ChangeListener listener);
 }

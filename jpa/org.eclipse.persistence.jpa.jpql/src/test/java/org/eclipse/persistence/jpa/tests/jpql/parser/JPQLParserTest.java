@@ -2488,7 +2488,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
      * of the query. This interface also adds helper method for easily creating a parsed tree
      * representation of the actual query parsed tree.
      */
-    public static interface ExpressionTester {
+    public interface ExpressionTester {
 
         AdditionExpressionTester add(ExpressionTester expression);
         AndExpressionTester and(ExpressionTester expression);

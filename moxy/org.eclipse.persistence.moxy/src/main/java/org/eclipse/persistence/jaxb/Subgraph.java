@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,7 @@ public interface Subgraph extends AttributeNode {
      * @throws IllegalStateException
      *             if this EntityGraph has been statically defined
      */
-    public void  addAttributeNodes(String ... attributeName);
+    void  addAttributeNodes(String... attributeName);
 
     /**
      * Used to add a node of the graph that corresponds to a managed type. This
@@ -46,7 +46,7 @@ public interface Subgraph extends AttributeNode {
      * @throws IllegalStateException
      *             if this EntityGraph has been statically defined
      */
-    public Subgraph addSubgraph(String attribute);
+    Subgraph addSubgraph(String attribute);
 
     /**
      * Used to add a node of the graph that corresponds to a managed type with
@@ -61,7 +61,7 @@ public interface Subgraph extends AttributeNode {
      * @throws IllegalStateException
      *             if this EntityGraph has been statically defined
      */
-    public Subgraph addSubgraph(String attribute, Class type);
+    Subgraph addSubgraph(String attribute, Class type);
 
 
 
@@ -69,11 +69,11 @@ public interface Subgraph extends AttributeNode {
      * returns the attributes of this managed type that are included in the
      * sub-graph
      */
-    public List<AttributeNode> getAttributeNodes();
+    List<AttributeNode> getAttributeNodes();
 
     /**
      * returns the type of this sub-graph if it was used to extend a superclass
      * sub-graph definition.
      */
-    public Class getClassType();
+    Class getClassType();
 }

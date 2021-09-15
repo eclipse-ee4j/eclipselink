@@ -200,12 +200,12 @@ public interface Field<
      *
      * @param nestedArray flag.
      */
-    public void setNestedArray(boolean nestedArray);
+    void setNestedArray(boolean nestedArray);
 
     /**
      * INTERNAL:
      *
      * @return True if content is nested array.
      */
-    public boolean isNestedArray();
+    boolean isNestedArray();
 }

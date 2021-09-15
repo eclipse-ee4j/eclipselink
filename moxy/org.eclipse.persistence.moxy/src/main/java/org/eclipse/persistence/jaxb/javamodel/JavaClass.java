@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,42 +31,42 @@ import java.util.Collection;
  * @see java.lang.Class
  */
 public interface JavaClass extends JavaHasAnnotations {
-    public Collection getActualTypeArguments();
-    public JavaClass getComponentType();
-    public String getQualifiedName();
-    public String getRawName();
-    public boolean hasActualTypeArguments();
-    public Collection getDeclaredClasses();
-    public JavaField getDeclaredField(String arg0);
-    public Collection getDeclaredFields();
-    public JavaMethod getDeclaredMethod(String arg0, JavaClass[] arg1);
-    public Collection getDeclaredMethods();
-    public JavaMethod getMethod(String arg0, JavaClass[] arg1);
-    public Collection getMethods();
-    public JavaConstructor getConstructor(JavaClass[] parameterTypes);
-    public Collection getConstructors();
-    public JavaConstructor getDeclaredConstructor(JavaClass[] parameterTypes);
-    public Collection getDeclaredConstructors();
-    public int getModifiers();
-    public String getName();
-    public JavaPackage getPackage();
-    public String getPackageName();
-    public JavaClass getSuperclass();
-    public Type[] getGenericInterfaces();
-    public Type getGenericSuperclass();
-    public boolean isAbstract();
-    public boolean isAnnotation();
-    public boolean isArray();
-    public boolean isAssignableFrom(JavaClass arg0);
-    public boolean isEnum();
-    public boolean isFinal();
-    public boolean isInterface();
-    public boolean isMemberClass();
-    public boolean isPrimitive();
-    public boolean isPrivate();
-    public boolean isProtected();
-    public boolean isPublic();
-    public boolean isStatic();
-    public boolean isSynthetic();
-    public JavaClassInstanceOf instanceOf();
+    Collection getActualTypeArguments();
+    JavaClass getComponentType();
+    String getQualifiedName();
+    String getRawName();
+    boolean hasActualTypeArguments();
+    Collection getDeclaredClasses();
+    JavaField getDeclaredField(String arg0);
+    Collection getDeclaredFields();
+    JavaMethod getDeclaredMethod(String arg0, JavaClass[] arg1);
+    Collection getDeclaredMethods();
+    JavaMethod getMethod(String arg0, JavaClass[] arg1);
+    Collection getMethods();
+    JavaConstructor getConstructor(JavaClass[] parameterTypes);
+    Collection getConstructors();
+    JavaConstructor getDeclaredConstructor(JavaClass[] parameterTypes);
+    Collection getDeclaredConstructors();
+    int getModifiers();
+    String getName();
+    JavaPackage getPackage();
+    String getPackageName();
+    JavaClass getSuperclass();
+    Type[] getGenericInterfaces();
+    Type getGenericSuperclass();
+    boolean isAbstract();
+    boolean isAnnotation();
+    boolean isArray();
+    boolean isAssignableFrom(JavaClass arg0);
+    boolean isEnum();
+    boolean isFinal();
+    boolean isInterface();
+    boolean isMemberClass();
+    boolean isPrimitive();
+    boolean isPrivate();
+    boolean isProtected();
+    boolean isPublic();
+    boolean isStatic();
+    boolean isSynthetic();
+    JavaClassInstanceOf instanceOf();
 }

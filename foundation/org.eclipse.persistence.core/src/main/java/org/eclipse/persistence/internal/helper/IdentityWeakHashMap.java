@@ -689,7 +689,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
         }
     }
 
-    static interface EntryReference<T> {
+    interface EntryReference<T> {
         T get();
     }
 

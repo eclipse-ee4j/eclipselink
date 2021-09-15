@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,7 @@ public interface ObjectGraph {
      * Returns the name of the static EntityGraph.  Will return null if the
      * EntityGraph is not a named EntityGraph.
      */
-    public String getName();
+    String getName();
 
     /*
      * Add an AttributeNode attribute to the entity graph.
@@ -41,7 +41,7 @@ public interface ObjectGraph {
      * @throws IllegalStateException if this EntityGraph has been statically
      * defined
      */
-    public void addAttributeNodes(String ... attributeName);
+    void addAttributeNodes(String... attributeName);
 
 
     /*
@@ -57,7 +57,7 @@ public interface ObjectGraph {
      * @throws IllegalStateException if this EntityGraph has been statically
      * defined
      */
-    public Subgraph addSubgraph(String attribute);
+    Subgraph addSubgraph(String attribute);
 
     /**
      * Used to add a node of the graph that corresponds to a managed type with
@@ -72,13 +72,13 @@ public interface ObjectGraph {
      * @throws IllegalStateException
      *             if this EntityGraph has been statically defined
      */
-    public Subgraph addSubgraph(String attribute, Class type);
+    Subgraph addSubgraph(String attribute, Class type);
 
     /*
      * returns the attributes of this entity that are included in the entity
      * graph
      */
-    public List<AttributeNode> getAttributeNodes();
+    List<AttributeNode> getAttributeNodes();
 
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,19 +18,19 @@ import java.util.List;
 
 public interface ParentInterface {
 
-    public void addChild(Child cs);
+    void addChild(Child cs);
 
-    public List<Child> getChildren();
+    List<Child> getChildren();
 
-    public Integer getId();
+    Integer getId();
 
-    public String getSerialNumber();
+    String getSerialNumber();
 
-    public int getVersion();
+    int getVersion();
 
-    public void setChildren(List<Child> children);
+    void setChildren(List<Child> children);
 
-    public void setId(Integer id);
+    void setId(Integer id);
 
-    public void setSerialNumber(String serialNumber);
+    void setSerialNumber(String serialNumber);
 }

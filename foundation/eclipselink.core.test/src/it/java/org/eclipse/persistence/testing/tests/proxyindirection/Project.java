@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,15 +24,15 @@ package org.eclipse.persistence.testing.tests.proxyindirection;
  * @since        08/23/2000 15:51:34
  */
 public interface Project {
-    public String getDescription();
+    String getDescription();
 
-    public int getID();
+    int getID();
 
-    public String getName();
+    String getName();
 
-    public void setDescription(String value);
+    void setDescription(String value);
 
-    public void setID(int value);
+    void setID(int value);
 
-    public void setName(String value);
+    void setName(String value);
 }

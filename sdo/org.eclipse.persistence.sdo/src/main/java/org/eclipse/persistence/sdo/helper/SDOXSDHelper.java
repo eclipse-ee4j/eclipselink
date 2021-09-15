@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,7 +39,7 @@ public interface SDOXSDHelper extends XSDHelper {
      * @param isElement
      * @return
      */
-    public Property getGlobalProperty(QName qname, boolean isElement);
+    Property getGlobalProperty(QName qname, boolean isElement);
 
     /**
      * INTERNAL:
@@ -48,7 +48,7 @@ public interface SDOXSDHelper extends XSDHelper {
      * @param schemaResolver
      * @return
      */
-    public List define(Source xsdSource, SchemaResolver schemaResolver);
+    List define(Source xsdSource, SchemaResolver schemaResolver);
 
     /**
      * INTERNAL:
@@ -57,7 +57,7 @@ public interface SDOXSDHelper extends XSDHelper {
      * @param schemaLocationResolver
      * @return
      */
-    public String generate(List types, SchemaLocationResolver schemaLocationResolver);
+    String generate(List types, SchemaLocationResolver schemaLocationResolver);
 
     /**
      * INTERNAL:
@@ -65,7 +65,7 @@ public interface SDOXSDHelper extends XSDHelper {
      * @param appInfoElements
      * @return
      */
-    public Map buildAppInfoMap(List appInfoElements);
+    Map buildAppInfoMap(List appInfoElements);
 
     /**
      * INTERNAL:
@@ -73,7 +73,7 @@ public interface SDOXSDHelper extends XSDHelper {
      *
      * @return
      */
-    public HelperContext getHelperContext();
+    HelperContext getHelperContext();
 
     /**
      * INTERNAL:
@@ -81,13 +81,13 @@ public interface SDOXSDHelper extends XSDHelper {
      *
      * @param helperContext
      */
-    public void setHelperContext(HelperContext helperContext);
+    void setHelperContext(HelperContext helperContext);
 
     /**
      * INTERNAL:
      *
      */
-    public void reset();
+    void reset();
 
     /**
      * INTERNAL:
@@ -97,5 +97,5 @@ public interface SDOXSDHelper extends XSDHelper {
      * @param isElement
      * Register the given property with the given qname.
      */
-    public void addGlobalProperty(QName qname, Property prop, boolean isElement);
+    void addGlobalProperty(QName qname, Property prop, boolean isElement);
 }

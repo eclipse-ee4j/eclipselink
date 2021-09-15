@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,29 +16,29 @@ package dbws.testing.shadowddlgeneration.oldjpub;
 
 public interface ViewRow  {
 
-    public boolean equals(String key, Object value);
+    boolean equals(String key, Object value);
 
-    public boolean isAllCollTypes();
+    boolean isAllCollTypes();
 
-    public boolean isAllMethodParams();
+    boolean isAllMethodParams();
 
-    public boolean isAllMethodResults();
+    boolean isAllMethodResults();
 
-    public boolean isAllObjects();
+    boolean isAllObjects();
 
-    public boolean isAllQueueTables();
+    boolean isAllQueueTables();
 
-    public boolean isAllSynonyms();
+    boolean isAllSynonyms();
 
-    public boolean isAllTypeAttrs();
+    boolean isAllTypeAttrs();
 
-    public boolean isAllTypeMethods();
+    boolean isAllTypeMethods();
 
-    public boolean isAllTypes();
+    boolean isAllTypes();
 
-    public boolean isUserArguments();
+    boolean isUserArguments();
 
-    public boolean isAllArguments();
+    boolean isAllArguments();
 
-    public boolean isSingleColumnViewRow();
+    boolean isSingleColumnViewRow();
 }

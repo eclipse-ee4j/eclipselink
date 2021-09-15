@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -75,34 +75,34 @@ public @interface Convert {
      * Constant name for the reserved Java serialization converter.
      * This will serialize the
      */
-    public static final String SERIALIZED = "serialized";
+    String SERIALIZED = "serialized";
 
     /**
      * Constant name for the reserved class instance converter.
      * This will store the object's class name, and create a new instance of the class on read.
      */
-    public static final String CLASS_INSTANCE = "class-instance";
+    String CLASS_INSTANCE = "class-instance";
 
     /**
      * Constant name for the reserved XML converter.
      * This will use JAXB to convert the object to and from XML.
      */
-    public static final String XML = "xml";
+    String XML = "xml";
 
     /**
      * Constant name for the reserved JSON converter.
      * This will use EclipseLink Moxy JAXB to convert the object to and from JSON.
      */
-    public static final String JSON = "json";
+    String JSON = "json";
 
     /**
      * Constant name for the reserved Kryo converter.
      * This will use Kryo to convert the object to and from an optimized binary format.
      */
-    public static final String KRYO = "kryo";
+    String KRYO = "kryo";
 
     /**
      * Constant name for no converter.
      */
-    public static final String NONE = "none";
+    String NONE = "none";
 }

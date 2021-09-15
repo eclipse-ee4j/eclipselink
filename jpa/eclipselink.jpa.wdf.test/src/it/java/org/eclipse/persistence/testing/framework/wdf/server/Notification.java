@@ -27,6 +27,6 @@ public interface Notification extends Serializable {
     /**
      * Notify a run notifier of this notification.
      */
-    public void notify(RunNotifier notifier);
+    void notify(RunNotifier notifier);
 
 }

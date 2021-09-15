@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,74 +22,74 @@ import java.util.*;
  */
 public interface PerformanceComparisonTest extends TestEntity {
     /** Number of times to repeat the test run (to compute average/stddv) */
-    public static int REPEATS = 5;
+    int REPEATS = 5;
 
     /** Default total time to run each test run (default is 2s). */
-    public static int DEFAULT_TEST_TIME = 10000;
+    int DEFAULT_TEST_TIME = 10000;
 
     /** Default for allowable % difference between tests and baseline test. */
-    public static double DEFAULT_ALLOWABLE_DECREASE = -5;
+    double DEFAULT_ALLOWABLE_DECREASE = -5;
 
     /**
      * Return the count of the iterations.
      * This is maintained by the test to allow concurrent tests to manage the count.
      */
-    public int getIterations();
+    int getIterations();
 
     /**
      * Increment the iteration count.
      * This is maintained by the test to allow concurrent tests to manage the count.
      */
-    public void incrementIterations();
+    void incrementIterations();
 
     /**
      * Reset the iteration count.
      * This is maintained by the test to allow concurrent tests to manage the count.
      */
-    public void resetIterations();
+    void resetIterations();
 
     /**
      * Allows any test specific setup before starting the test run.
      */
-    public void startTest();
+    void startTest();
 
     /**
      * Allows any test specific setup before starting the test run.
      */
-    public void endTest();
+    void endTest();
 
     /**
      * Return the total time (ms) to run each of the test runs.
      * This is used to compute the number of test iterations to use,
      * the tests are then still timed based on that number of iterations.
      */
-    public long getTestRunTime();
+    long getTestRunTime();
 
     /**
      * Set the total time (ms) to run each of the test runs.
      * This is used to compute the number of test iterations to use,
      * the tests are then still timed based on that number of iterations.
      */
-    public void setTestRunTime(long testRunTime);
+    void setTestRunTime(long testRunTime);
 
     /**
      * Return the allowable percentage difference for test compared to the baseline.
      */
-    public double getAllowableDecrease();
+    double getAllowableDecrease();
 
     /**
      * Set the allowable percentage difference for test compared to the baseline.
      */
-    public void setAllowableDecrease(double allowableDecrease);
+    void setAllowableDecrease(double allowableDecrease);
 
     /**
      * Return the performance tests to compare the base-line with.
      */
-    public List getTests();
+    List getTests();
 
     /**
      * Add a performance tests to compare the base-line with.
      */
-    public void addTest(TestCase test);
+    void addTest(TestCase test);
 
 }
