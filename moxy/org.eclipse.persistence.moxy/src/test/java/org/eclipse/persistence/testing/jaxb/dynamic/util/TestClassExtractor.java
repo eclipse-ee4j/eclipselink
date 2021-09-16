@@ -15,13 +15,13 @@
 package org.eclipse.persistence.testing.jaxb.dynamic.util;
 
 import org.eclipse.persistence.descriptors.ClassExtractor;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 
 public class TestClassExtractor extends ClassExtractor {
 
     @Override
-    public Class extractClassFromRow(Record databaseRow, Session session) {
+    public Class extractClassFromRow(DataRecord databaseRow, Session session) {
         Class empClass = session.getProject().getDescriptorForAlias("Employee").getJavaClass();
         return empClass;
     }

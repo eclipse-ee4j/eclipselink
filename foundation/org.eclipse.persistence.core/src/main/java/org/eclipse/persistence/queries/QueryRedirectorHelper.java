@@ -16,7 +16,7 @@ package org.eclipse.persistence.queries;
 
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 
 /**
@@ -40,8 +40,8 @@ public class QueryRedirectorHelper {
      * in this case the cache check has also been redirected.  Through this method the redirector can have
      * EclipseLink check the cache in the normal manner.
      */
-    public static Object checkEclipseLinkCache(DatabaseQuery query, Record record, Session session){
-        return query.checkEarlyReturn((AbstractSession)session, (AbstractRecord)record);
+    public static Object checkEclipseLinkCache(DatabaseQuery query, DataRecord dataRecord, Session session){
+        return query.checkEarlyReturn((AbstractSession)session, (AbstractRecord) dataRecord);
     }
 
 }

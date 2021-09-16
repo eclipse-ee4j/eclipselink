@@ -95,7 +95,7 @@ import org.eclipse.persistence.annotations.WriteTransformers;
 import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.oxm.annotations.XmlPath;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 
 /**
@@ -391,7 +391,7 @@ public class Employee implements Serializable, Cloneable {
      * IMPORTANT: This method builds the value but does not set it.
      * The mapping will set it using method or direct access as defined in the descriptor.
      */
-    public Time[] buildNormalHours(Record row, Session session) {
+    public Time[] buildNormalHours(DataRecord row, Session session) {
         Time[] hours = new Time[2];
 
         /** This conversion allows for the database type not to match, i.e. may be a Timestamp or String. */

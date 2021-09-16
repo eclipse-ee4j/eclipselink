@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,6 +13,8 @@
 // Contributors:
 //     James Sutherland - initial impl
 package org.eclipse.persistence.config;
+
+import org.eclipse.persistence.sessions.DataRecord;
 
 /**
  * Result type hint values.
@@ -35,7 +37,7 @@ package org.eclipse.persistence.config;
  * "" could be used instead of default value ResultType.Array.
  *
  * @see QueryHints#RESULT_TYPE
- * @see org.eclipse.persistence.sessions.Record
+ * @see DataRecord
  * @see org.eclipse.persistence.sessions.DatabaseRecord
  * @see org.eclipse.persistence.queries.ReportQueryResult
  * @see org.eclipse.persistence.queries.ReportQuery#setReturnType(int)

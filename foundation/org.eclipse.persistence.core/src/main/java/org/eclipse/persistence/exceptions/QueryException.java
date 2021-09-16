@@ -36,7 +36,7 @@ import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.querykeys.ManyToManyQueryKey;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 
 /**
  * <p><b>Purpose</b>: This exception is used for any problem that is detected with a query.
@@ -562,7 +562,7 @@ public class QueryException extends ValidationException {
      * PUBLIC:
      * Return the query argements used in the original query when exception is thrown
      */
-    public Record getQueryArgumentsRecord() {
+    public DataRecord getQueryArgumentsRecord() {
         return queryArguments;
     }
 

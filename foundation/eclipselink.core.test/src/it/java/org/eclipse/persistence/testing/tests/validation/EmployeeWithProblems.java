@@ -14,6 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.validation;
 
+import org.eclipse.persistence.sessions.DataRecord;
+
 import java.sql.Time;
 
 import java.util.Vector;
@@ -76,7 +78,7 @@ public class EmployeeWithProblems extends org.eclipse.persistence.testing.models
     }
     //this method returns void (instead of Time[]) to produce the error (TL-ERROR 81)
 
-    public void buildNormalHours2(org.eclipse.persistence.sessions.Record row, org.eclipse.persistence.sessions.Session session) { //used in test class org.eclipse.persistence.testing.tests.validation.ReturnTypeInGetAttributeAccessorTest
+    public void buildNormalHours2(DataRecord row, org.eclipse.persistence.sessions.Session session) { //used in test class org.eclipse.persistence.testing.tests.validation.ReturnTypeInGetAttributeAccessorTest
         Time[] hours = new Time[2];
 
         /** This conversion allows for the database type not to match, i.e. may be a Timestamp or String. */

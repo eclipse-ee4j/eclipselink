@@ -15,16 +15,16 @@
 package org.eclipse.persistence.testing.jaxb.dynamic.util;
 
 import org.eclipse.persistence.mappings.transformers.AttributeTransformerAdapter;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 
 public class AttributeTransformer extends AttributeTransformerAdapter {
 
     @Override
-    public Object buildAttributeValue(Record record, Object instance, Session session) {
+    public Object buildAttributeValue(DataRecord dataRecord, Object instance, Session session) {
         String[] objectValue = new String[2];
-        objectValue[0] = (String) record.get("transform/first-val/text()");
-        objectValue[1] = (String) record.get("transform/second-val/text()");
+        objectValue[0] = (String) dataRecord.get("transform/first-val/text()");
+        objectValue[1] = (String) dataRecord.get("transform/second-val/text()");
         return objectValue;
     }
 

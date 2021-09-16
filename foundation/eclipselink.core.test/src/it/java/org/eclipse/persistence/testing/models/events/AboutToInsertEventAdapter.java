@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.models.events;
 
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 
 /**
@@ -45,7 +45,7 @@ public class AboutToInsertEventAdapter extends DescriptorEventAdapter {
  */
     @Override
     public void aboutToInsert(DescriptorEvent event) {
-        Record row = event.getRecord();
+        DataRecord row = event.getRecord();
         Object value = row.get(newColumn);
         row.put(tableToAddTo + "." + columnToAdd, value);
         // Test that descriptor was set.

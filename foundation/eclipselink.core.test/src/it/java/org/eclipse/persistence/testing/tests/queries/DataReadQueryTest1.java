@@ -72,7 +72,7 @@ public class DataReadQueryTest1 extends AutoVerifyTestCase {
 
         stack = (Stack)getSession().executeQuery(query);
         // if we get here, we must not have generated a ClassCastException
-        org.eclipse.persistence.sessions.Record row = (org.eclipse.persistence.sessions.Record)stack.peek();
+        DataRecord row = (DataRecord)stack.peek();
         if (row.get("F_NAME") == null) {
             throw new TestErrorException("missing data");
         }

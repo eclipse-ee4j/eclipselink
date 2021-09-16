@@ -45,7 +45,7 @@ public class OrderingWithAnyOfTest extends OrderingTest {
     @Override
     protected void verify() {
         for (int i = 0; i < orderedQueryObjects.size(); i++) {
-            org.eclipse.persistence.sessions.Record row = (org.eclipse.persistence.sessions.Record)customSQLRows.elementAt(i);
+            DataRecord row = (DataRecord)customSQLRows.elementAt(i);
             Employee employee = (Employee)orderedQueryObjects.elementAt(i);
             String city = (String)row.get("CITY");
             String name = (String)row.get("F_NAME");

@@ -21,8 +21,8 @@ import java.security.PrivilegedActionException;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.internal.security.*;
 
 /**
@@ -124,7 +124,7 @@ public class MethodClassExtractor extends ClassExtractor {
      */
     @Override
     @SuppressWarnings({"unchecked"})
-    public <T> Class<T> extractClassFromRow(Record row, org.eclipse.persistence.sessions.Session session) {
+    public <T> Class<T> extractClassFromRow(DataRecord row, org.eclipse.persistence.sessions.Session session) {
         Class<?> classForRow;
         try {
             Object[] arguments = new Object[1];

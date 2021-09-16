@@ -56,9 +56,9 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.sessions.DatabaseRecord;
-import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.sessions.SessionProfiler;
 
 /**
@@ -1073,7 +1073,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * ADVANCED: Return the call for this query. This call contains the SQL and
      * argument list.
      *
-     * @see #prepareCall(org.eclipse.persistence.sessions.Session, org.eclipse.persistence.sessions.Record) prepareCall(Session, Record)
+     * @see #prepareCall(org.eclipse.persistence.sessions.Session, DataRecord) prepareCall(Session, Record)
      */
     public Call getDatasourceCall() {
         Call call = null;
@@ -1095,7 +1095,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * ADVANCED: Return the calls for this query. This method can be called for
      * queries with multiple calls This call contains the SQL and argument list.
      *
-     * @see #prepareCall(org.eclipse.persistence.sessions.Session, org.eclipse.persistence.sessions.Record) prepareCall(Session, Record)
+     * @see #prepareCall(org.eclipse.persistence.sessions.Session, DataRecord) prepareCall(Session, Record)
      */
     public List getDatasourceCalls() {
         List calls = new Vector();
@@ -1433,7 +1433,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * queries. This can also be used for normal queries if they have been
      * prepared, (i.e. query.prepareCall()).
      *
-     * @see #prepareCall(org.eclipse.persistence.sessions.Session, org.eclipse.persistence.sessions.Record) prepareCall(Session, Record)
+     * @see #prepareCall(org.eclipse.persistence.sessions.Session, DataRecord) prepareCall(Session, Record)
      */
     public String getSQLString() {
         Call call = getDatasourceCall();
@@ -1453,7 +1453,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * for normal queries if they have been prepared, (i.e.
      * query.prepareCall()).
      *
-     * @see #prepareCall(org.eclipse.persistence.sessions.Session, org.eclipse.persistence.sessions.Record) prepareCall(Session, Record)
+     * @see #prepareCall(org.eclipse.persistence.sessions.Session, DataRecord) prepareCall(Session, Record)
      */
     public List getSQLStrings() {
         List calls = getDatasourceCalls();
@@ -1492,9 +1492,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * have been prepared, (i.e. query.prepareCall()). The Record argument is
      * one of (Record, XMLRecord) that contains the query arguments.
      *
-     * @see #prepareCall(org.eclipse.persistence.sessions.Session, Record)
+     * @see #prepareCall(org.eclipse.persistence.sessions.Session, DataRecord)
      */
-    public String getTranslatedSQLString(org.eclipse.persistence.sessions.Session session, Record translationRow) {
+    public String getTranslatedSQLString(org.eclipse.persistence.sessions.Session session, DataRecord translationRow) {
         prepareCall(session, translationRow);
         // CR#2859559 fix to use Session and Record interfaces not impl classes.
         CallQueryMechanism queryMechanism = (CallQueryMechanism) getQueryMechanism();
@@ -1512,9 +1512,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * have been prepared, (i.e. query.prepareCall()). This method can be used
      * for queries with multiple calls.
      *
-     * @see #prepareCall(org.eclipse.persistence.sessions.Session, org.eclipse.persistence.sessions.Record) prepareCall(Session, Record)
+     * @see #prepareCall(org.eclipse.persistence.sessions.Session, DataRecord) prepareCall(Session, Record)
      */
-    public List getTranslatedSQLStrings(org.eclipse.persistence.sessions.Session session, Record translationRow) {
+    public List getTranslatedSQLStrings(org.eclipse.persistence.sessions.Session session, DataRecord translationRow) {
         prepareCall(session, translationRow);
         CallQueryMechanism queryMechanism = (CallQueryMechanism) getQueryMechanism();
         if ((queryMechanism.getCalls() == null) || queryMechanism.getCalls().isEmpty()) {
@@ -1922,9 +1922,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * @see #getCall()
      * @see #getSQLString()
      * @see #getTranslatedSQLString(org.eclipse.persistence.sessions.Session,
-     *      Record)
+     *      DataRecord)
      */
-    public void prepareCall(org.eclipse.persistence.sessions.Session session, Record translationRow) throws QueryException {
+    public void prepareCall(org.eclipse.persistence.sessions.Session session, DataRecord translationRow) throws QueryException {
         // CR#2859559 fix to use Session and Record interfaces not impl classes.
         checkPrepare((AbstractSession) session, (AbstractRecord) translationRow, true);
     }

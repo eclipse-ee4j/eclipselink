@@ -20,7 +20,7 @@ import org.eclipse.persistence.mappings.transformers.FieldTransformer;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.record.XMLRecord;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 
 public class ElementNSTransformer implements AttributeTransformer, FieldTransformer {
@@ -49,11 +49,11 @@ public class ElementNSTransformer implements AttributeTransformer, FieldTransfor
     }
 
     @Override
-    public Object buildAttributeValue(Record record, Object object, Session session) {
-        if(null == record) {
+    public Object buildAttributeValue(DataRecord dataRecord, Object object, Session session) {
+        if(null == dataRecord) {
             return null;
         }
-        XMLRecord xmlRecord = (XMLRecord) record;
+        XMLRecord xmlRecord = (XMLRecord) dataRecord;
 
         if(xmlRecord.getIndicatingNoEntry(startField) != null) {
             return XML_START;

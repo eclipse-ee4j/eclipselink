@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.models.employee.eis.xmlfile;
 
 import java.sql.Time;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.mappings.transformers.FieldTransformer;
 import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
@@ -42,7 +42,7 @@ public class NormalHoursTransformer implements FieldTransformer, AttributeTransf
     }
 
     @Override
-    public Object buildAttributeValue(Record row, Object object, Session session) {
+    public Object buildAttributeValue(DataRecord row, Object object, Session session) {
         Time[] hours = new Time[2];
 
         /**

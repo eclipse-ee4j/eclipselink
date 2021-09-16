@@ -57,6 +57,7 @@ import org.eclipse.persistence.queries.CursoredStream;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.queries.ScrollableCursor;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.DirectConnector;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.server.ServerSession;
@@ -114,7 +115,7 @@ public final class ClassConstants extends CoreClassConstants {
     public static final Class<AbstractSession> PublicInterfaceSession_Class = AbstractSession.class;
     public static final Class<QueryKey> QueryKey_Class = QueryKey.class;
     public static final Class<RelationExpression> RelationExpression_Class = RelationExpression.class;
-    public static final Class<org.eclipse.persistence.sessions.Record> Record_Class = org.eclipse.persistence.sessions.Record.class;
+    public static final Class<DataRecord> Record_Class = DataRecord.class;
     public static final Class<ServerSession> ServerSession_Class = ServerSession.class;
     public static final Class<Session> SessionsSession_Class = Session.class;
     public static final Class<ScrollableCursor> ScrollableCursor_Class = ScrollableCursor.class;

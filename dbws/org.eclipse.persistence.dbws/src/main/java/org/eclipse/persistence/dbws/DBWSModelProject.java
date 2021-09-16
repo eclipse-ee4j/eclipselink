@@ -62,8 +62,8 @@ import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLTransformationMapping;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.sessions.Session;
 import org.xml.sax.Attributes;
 
@@ -308,9 +308,9 @@ public class DBWSModelProject extends Project {
         descriptor.getInheritancePolicy().setClassIndicatorField(isColl);
         descriptor.getInheritancePolicy().setClassExtractor(new ClassExtractor() {
             @Override
-            public Class<?> extractClassFromRow(Record record, Session session) {
+            public Class<?> extractClassFromRow(DataRecord dataRecord, Session session) {
                 Class<?> clz = Result.class;
-                UnmarshalRecord uRecord = (UnmarshalRecord)record;
+                UnmarshalRecord uRecord = (UnmarshalRecord) dataRecord;
                 Attributes attrs = uRecord.getAttributes();
                 if (attrs != null) {
                     for (int i = 0, l = attrs.getLength(); i < l; i++) {

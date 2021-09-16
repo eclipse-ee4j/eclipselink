@@ -75,7 +75,7 @@ public class Job {
      * @return java.sql.Time[]
      * @param row org.eclipse.persistence.sessions.DatabaseRecord
      */
-    public Time[] getNormalHoursFromRow(org.eclipse.persistence.sessions.Record row) {
+    public Time[] getNormalHoursFromRow(DataRecord row) {
         Time[] hours = new Time[2];
         hours[0] = (Time)row.get("START_TIME");
         hours[1] = (Time)row.get("END_TIME");

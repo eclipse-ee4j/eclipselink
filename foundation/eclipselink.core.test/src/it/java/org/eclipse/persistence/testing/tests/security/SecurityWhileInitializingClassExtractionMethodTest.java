@@ -20,7 +20,7 @@ import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 
 //Created by Ian Reid
 //Date: April 25, 2k3
@@ -61,7 +61,7 @@ public class SecurityWhileInitializingClassExtractionMethodTest extends Exceptio
     }
 
     static class ExtractionRecord {
-        public static void dummy_Method(Record record) {
+        public static void dummy_Method(DataRecord dataRecord) {
         }
     }
 }

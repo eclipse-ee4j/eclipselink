@@ -25,7 +25,7 @@ import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
 import org.eclipse.persistence.mappings.transformers.FieldTransformer;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 
 public class NormalHoursNSTransformer implements FieldTransformer, AttributeTransformer {
@@ -57,7 +57,7 @@ public class NormalHoursNSTransformer implements FieldTransformer, AttributeTran
     }
 
     @Override
-    public Object buildAttributeValue(Record row, Object object, Session session) {
+    public Object buildAttributeValue(DataRecord row, Object object, Session session) {
         Time[] hours = new Time[2];
 
         /**

@@ -163,27 +163,27 @@ public class RedirectorOnDescriptorTest extends TestCase {
      */
     public static
 
-    Object deleteObject(DatabaseQuery query, org.eclipse.persistence.sessions.Record row, org.eclipse.persistence.sessions.Session session) {
+    Object deleteObject(DatabaseQuery query, DataRecord row, org.eclipse.persistence.sessions.Session session) {
         redirectedDeleteObject = true;
         return null;
     }
 
-    public static Object insertObject(DatabaseQuery query, org.eclipse.persistence.sessions.Record row, org.eclipse.persistence.sessions.Session session) {
+    public static Object insertObject(DatabaseQuery query, DataRecord row, org.eclipse.persistence.sessions.Session session) {
         redirectedInsert = true;
         return null;
     }
 
-    public static Object readAll(DatabaseQuery query, org.eclipse.persistence.sessions.Record row, org.eclipse.persistence.sessions.Session session) {
+    public static Object readAll(DatabaseQuery query, DataRecord row, org.eclipse.persistence.sessions.Session session) {
         redirectedReadAll = true;
         return null;
     }
 
-    public static Object readObject(DatabaseQuery query, org.eclipse.persistence.sessions.Record row, org.eclipse.persistence.sessions.Session session) {
+    public static Object readObject(DatabaseQuery query, DataRecord row, org.eclipse.persistence.sessions.Session session) {
         redirectedReadObject = true;
         return null;
     }
 
-    public static Object updateObject(DatabaseQuery query, org.eclipse.persistence.sessions.Record row, org.eclipse.persistence.sessions.Session session) {
+    public static Object updateObject(DatabaseQuery query, DataRecord row, org.eclipse.persistence.sessions.Session session) {
         redirectedUpdate = true;
         return null;
     }

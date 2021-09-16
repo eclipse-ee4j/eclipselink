@@ -78,7 +78,7 @@ import org.eclipse.persistence.mappings.transformers.FieldTransformer;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.record.XMLRecord;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 
 public class QNameTransformer implements AttributeTransformer, FieldTransformer {
@@ -131,11 +131,11 @@ public class QNameTransformer implements AttributeTransformer, FieldTransformer 
   }
 
   @Override
-  public Object buildAttributeValue(Record record, Object object, Session session) {
-      if (null == record) {
+  public Object buildAttributeValue(DataRecord dataRecord, Object object, Session session) {
+      if (null == dataRecord) {
           return null;
       }
-      String value = (String)record.get(xPath);
+      String value = (String) dataRecord.get(xPath);
       if (null == value) {
           return null;
       }
@@ -144,7 +144,7 @@ public class QNameTransformer implements AttributeTransformer, FieldTransformer 
       if (index > -1) {
           String prefix = value.substring(0, index);
           String localName = value.substring(index + 1);
-          String namespaceURI = ((XMLRecord)record).resolveNamespacePrefix(prefix);
+          String namespaceURI = ((XMLRecord) dataRecord).resolveNamespacePrefix(prefix);
           // check for W3C_XML_SCHEMA_NS_URI - return TL_OX pre-built QName's
           if (W3C_XML_SCHEMA_NS_URI.equals(namespaceURI)) {
               qName = SCHEMA_QNAMES.get(localName);
@@ -160,7 +160,7 @@ public class QNameTransformer implements AttributeTransformer, FieldTransformer 
           return qName;
       }
       else {
-          String namespaceURI = ((XMLRecord)record)
+          String namespaceURI = ((XMLRecord) dataRecord)
               .resolveNamespacePrefix(DEFAULT_NAMESPACE_PREFIX);
           qName = new QName(namespaceURI, value);
       }

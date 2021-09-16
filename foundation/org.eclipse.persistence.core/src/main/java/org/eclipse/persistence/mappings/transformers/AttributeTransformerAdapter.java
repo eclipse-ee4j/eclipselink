@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.mappings.transformers;
 
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 
@@ -40,7 +40,7 @@ public class AttributeTransformerAdapter implements AttributeTransformer {
     }
 
     @Override
-    public Object buildAttributeValue(Record record, Object object, Session session) {
+    public Object buildAttributeValue(DataRecord dataRecord, Object object, Session session) {
         return null;
     }
 }

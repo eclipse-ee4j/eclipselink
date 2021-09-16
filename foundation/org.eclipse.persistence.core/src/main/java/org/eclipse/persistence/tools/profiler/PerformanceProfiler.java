@@ -29,7 +29,7 @@ import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.DatabaseQuery;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.SessionProfilerAdapter;
 
 /**
@@ -384,7 +384,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
      */
     @Override
     @SuppressWarnings({"unchecked"})
-    public Object profileExecutionOfQuery(DatabaseQuery query, Record row, AbstractSession session) {
+    public Object profileExecutionOfQuery(DatabaseQuery query, DataRecord row, AbstractSession session) {
         long profileStartTime = System.nanoTime();
         long nestedProfileStartTime = getProfileTime();
         Profile profile = new Profile();

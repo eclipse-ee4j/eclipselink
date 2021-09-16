@@ -18,6 +18,7 @@ import java.util.Vector;
 
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.sessions.Session;
 
@@ -66,7 +67,7 @@ ConformResultsRedirectorTest extends TestCase implements QueryRedirector {
     }
 
     @Override
-    public Object invokeQuery(DatabaseQuery query, org.eclipse.persistence.sessions.Record arguments, Session session) {
+    public Object invokeQuery(DatabaseQuery query, DataRecord arguments, Session session) {
         ReadAllQuery conformingQuery = new ReadAllQuery(Address.class);
         conformingQuery.conformResultsInUnitOfWork();
 

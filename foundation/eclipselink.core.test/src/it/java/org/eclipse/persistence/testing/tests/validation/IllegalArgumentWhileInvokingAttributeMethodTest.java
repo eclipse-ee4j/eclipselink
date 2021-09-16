@@ -21,7 +21,7 @@ import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.TransformationMapping;
 import org.eclipse.persistence.sessions.DatabaseRecord;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 
 
 //Created by Ian Reid
@@ -61,7 +61,7 @@ public class IllegalArgumentWhileInvokingAttributeMethodTest extends ExceptionTe
         }
     }
 
-    public String invalidMethod(Record row) {
+    public String invalidMethod(DataRecord row) {
         return "";
     }
 

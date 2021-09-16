@@ -39,8 +39,8 @@ import org.eclipse.persistence.internal.identitymaps.IdentityMapManager;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
 import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.DatabaseRecord;
-import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.sessions.coordination.CommandManager;
 import org.eclipse.persistence.sessions.coordination.MergeChangeSetCommand;
 
@@ -228,7 +228,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Return if their is an object for the row containing primary key and the class.
      */
     @Override
-    public boolean containsObjectInIdentityMap(Record rowContainingPrimaryKey, Class theClass) {
+    public boolean containsObjectInIdentityMap(DataRecord rowContainingPrimaryKey, Class theClass) {
         return containsObjectInIdentityMap(extractPrimaryKeyFromRow(rowContainingPrimaryKey, theClass), theClass);
     }
 
@@ -236,7 +236,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * INTERNAL:
      * Extract primary key from a row.
      */
-    protected Object extractPrimaryKeyFromRow(Record rowContainingPrimaryKey, Class theClass) {
+    protected Object extractPrimaryKeyFromRow(DataRecord rowContainingPrimaryKey, Class theClass) {
         return this.session.getDescriptor(theClass).getObjectBuilder().extractPrimaryKeyFromRow((AbstractRecord)rowContainingPrimaryKey, this.session);
     }
 
@@ -262,7 +262,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Query the cache in-memory.
      * If the expression is too complex an exception will be thrown.
      */
-    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow) throws QueryException {
+    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, DataRecord translationRow) throws QueryException {
         return getAllFromIdentityMap(selectionCriteria, theClass, translationRow, InMemoryQueryIndirectionPolicy.SHOULD_THROW_INDIRECTION_EXCEPTION, true);
     }
 
@@ -272,7 +272,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * If the expression is too complex an exception will be thrown.
      */
     @Override
-    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, InMemoryQueryIndirectionPolicy valueHolderPolicy) throws QueryException {
+    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, DataRecord translationRow, InMemoryQueryIndirectionPolicy valueHolderPolicy) throws QueryException {
         return getAllFromIdentityMap(selectionCriteria, theClass, translationRow, valueHolderPolicy, true);
     }
 
@@ -282,7 +282,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * If the expression is too complex an exception will be thrown.
      */
     @Override
-    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy) throws QueryException {
+    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, DataRecord translationRow, int valueHolderPolicy) throws QueryException {
         return getAllFromIdentityMap(selectionCriteria, theClass, translationRow, valueHolderPolicy, true);
     }
 
@@ -293,7 +293,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Only return objects that are invalid in the cache if specified.
      */
     @Override
-    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, InMemoryQueryIndirectionPolicy valueHolderPolicy, boolean shouldReturnInvalidatedObjects) throws QueryException {
+    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, DataRecord translationRow, InMemoryQueryIndirectionPolicy valueHolderPolicy, boolean shouldReturnInvalidatedObjects) throws QueryException {
         int policy = 0;
         if (valueHolderPolicy != null) {
             policy = valueHolderPolicy.getPolicy();
@@ -308,7 +308,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Only return objects that are invalid in the cache if specified.
      */
     @Override
-    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy, boolean shouldReturnInvalidatedObjects) throws QueryException {
+    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, DataRecord translationRow, int valueHolderPolicy, boolean shouldReturnInvalidatedObjects) throws QueryException {
         return getIdentityMapManager().getAllFromIdentityMap(selectionCriteria, theClass, translationRow, valueHolderPolicy, shouldReturnInvalidatedObjects);
     }
 
@@ -433,7 +433,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Return the object from the identity with the primary and class.
      */
     @Override
-    public Object getFromIdentityMap(Record rowContainingPrimaryKey, Class theClass) {
+    public Object getFromIdentityMap(DataRecord rowContainingPrimaryKey, Class theClass) {
         return getFromIdentityMap(extractPrimaryKeyFromRow(rowContainingPrimaryKey, theClass), theClass);
     }
 
@@ -443,7 +443,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Only return invalidated objects if requested.
      */
     @Override
-    public Object getFromIdentityMap(Record rowContainingPrimaryKey, Class theClass, boolean shouldReturnInvalidatedObjects) {
+    public Object getFromIdentityMap(DataRecord rowContainingPrimaryKey, Class theClass, boolean shouldReturnInvalidatedObjects) {
         return getFromIdentityMap(extractPrimaryKeyFromRow(rowContainingPrimaryKey, theClass), theClass, shouldReturnInvalidatedObjects);
     }
 
@@ -454,7 +454,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * If the expression is too complex an exception will be thrown.
      */
     @Override
-    public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow) throws QueryException {
+    public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, DataRecord translationRow) throws QueryException {
         return getFromIdentityMap(selectionCriteria, theClass, translationRow, InMemoryQueryIndirectionPolicy.SHOULD_THROW_INDIRECTION_EXCEPTION);
     }
 
@@ -465,7 +465,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * If the expression is too complex an exception will be thrown.
      */
     @Override
-    public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, InMemoryQueryIndirectionPolicy valueHolderPolicy) throws QueryException {
+    public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, DataRecord translationRow, InMemoryQueryIndirectionPolicy valueHolderPolicy) throws QueryException {
         int policy = 0;
         if (valueHolderPolicy != null) {
             policy = valueHolderPolicy.getPolicy();
@@ -480,7 +480,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * If the expression is too complex an exception will be thrown.
      */
     @Override
-    public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy) throws QueryException {
+    public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, DataRecord translationRow, int valueHolderPolicy) throws QueryException {
         return getFromIdentityMap(selectionCriteria, theClass, translationRow, valueHolderPolicy, false);
     }
 
@@ -490,7 +490,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * If the object is not found null is returned.
      * If the expression is too complex an exception will be thrown.
      */
-    public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy, boolean conforming) {
+    public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, DataRecord translationRow, int valueHolderPolicy, boolean conforming) {
         return getFromIdentityMap(selectionCriteria, theClass, translationRow, valueHolderPolicy, conforming, true, getSession().getDescriptor(theClass));
     }
 
@@ -500,7 +500,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * If the object is not found null is returned.
      * If the expression is too complex an exception will be thrown.
      */
-    public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy, boolean conforming, boolean shouldReturnInvalidatedObjects) {
+    public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, DataRecord translationRow, int valueHolderPolicy, boolean conforming, boolean shouldReturnInvalidatedObjects) {
         return getFromIdentityMap(selectionCriteria, theClass, translationRow, valueHolderPolicy, conforming, shouldReturnInvalidatedObjects, getSession().getDescriptor(theClass));
     }
 
@@ -510,7 +510,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * If the object is not found null is returned.
      * If the expression is too complex an exception will be thrown.
      */
-    public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy, boolean conforming, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
+    public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, DataRecord translationRow, int valueHolderPolicy, boolean conforming, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         return getIdentityMapManager().getFromIdentityMap(selectionCriteria, theClass, translationRow, valueHolderPolicy, conforming, shouldReturnInvalidatedObjects, descriptor);
     }
 
@@ -767,7 +767,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * without any action.
      */
     @Override
-    public void invalidateObject(Record rowContainingPrimaryKey, Class theClass) {
+    public void invalidateObject(DataRecord rowContainingPrimaryKey, Class theClass) {
         invalidateObject(rowContainingPrimaryKey, theClass, false);
     }
 
@@ -777,7 +777,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * @param invalidateCluster if true the invalidation will be broadcast to each server in the cluster.
      */
     @Override
-    public void invalidateObject(Record rowContainingPrimaryKey, Class theClass, boolean invalidateCluster) {
+    public void invalidateObject(DataRecord rowContainingPrimaryKey, Class theClass, boolean invalidateCluster) {
         invalidateObject(extractPrimaryKeyFromRow(rowContainingPrimaryKey, theClass), theClass, invalidateCluster);
     }
 
@@ -800,7 +800,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * @param shouldInvalidateOnException boolean indicates weather to invalidate the object if conform threw exception.
      */
     @Override
-    public void invalidateObjects(Expression selectionCriteria, Class theClass, Record translationRow, boolean shouldInvalidateOnException) {
+    public void invalidateObjects(Expression selectionCriteria, Class theClass, DataRecord translationRow, boolean shouldInvalidateOnException) {
         getIdentityMapManager().invalidateObjects(selectionCriteria, theClass, translationRow, shouldInvalidateOnException);
     }
 
@@ -921,7 +921,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Return if this object is valid in the cache.
      */
     @Override
-    public boolean isValid(Record rowContainingPrimaryKey, Class theClass) {
+    public boolean isValid(DataRecord rowContainingPrimaryKey, Class theClass) {
         return isValid(extractPrimaryKeyFromRow(rowContainingPrimaryKey, theClass), theClass);
     }
 

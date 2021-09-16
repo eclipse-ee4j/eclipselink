@@ -127,7 +127,7 @@ public class NLSEmployee implements org.eclipse.persistence.testing.models.emplo
      * IMPORTANT: This method builds the value but does not set it.
      * The mapping will set it using method or direct access as defined in the descriptor.
      */
-    public Time[] buildNormalHours(org.eclipse.persistence.sessions.Record row, Session session) {
+    public Time[] buildNormalHours(DataRecord row, Session session) {
         Time[] hours = new Time[2];
 
         /** This conversion allows for the database type not to match, i.e. may be a Timestamp or String. */

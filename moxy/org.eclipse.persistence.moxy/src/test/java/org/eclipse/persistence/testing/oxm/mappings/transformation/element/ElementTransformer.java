@@ -18,7 +18,7 @@ import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping
 import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
 import org.eclipse.persistence.mappings.transformers.FieldTransformer;
 import org.eclipse.persistence.oxm.record.XMLRecord;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 
 public class ElementTransformer implements AttributeTransformer, FieldTransformer {
@@ -32,11 +32,11 @@ public class ElementTransformer implements AttributeTransformer, FieldTransforme
     }
 
     @Override
-    public Object buildAttributeValue(Record record, Object object, Session session) {
-        if(null == record) {
+    public Object buildAttributeValue(DataRecord dataRecord, Object object, Session session) {
+        if(null == dataRecord) {
             return null;
         }
-        XMLRecord xmlRecord = (XMLRecord) record;
+        XMLRecord xmlRecord = (XMLRecord) dataRecord;
         if(xmlRecord.getIndicatingNoEntry(XML_START) != null) {
             return XML_START;
         } else if (xmlRecord.getIndicatingNoEntry(XML_INTERMEDIATE) != null) {

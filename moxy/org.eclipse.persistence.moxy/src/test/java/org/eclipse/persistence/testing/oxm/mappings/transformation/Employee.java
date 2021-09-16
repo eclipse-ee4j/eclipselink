@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings.transformation;
 
-import java.util.Calendar;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 /**
  *  @version $Header: Employee.java 12-apr-2007.15:52:55 mmacivor Exp $
  *  @author  mmacivor
@@ -65,7 +64,7 @@ public class Employee
         name = newName;
     }
 
-    public Object buildNameAttribute(Record row)
+    public Object buildNameAttribute(DataRecord row)
     {
         return row.get("name/text()");
     }

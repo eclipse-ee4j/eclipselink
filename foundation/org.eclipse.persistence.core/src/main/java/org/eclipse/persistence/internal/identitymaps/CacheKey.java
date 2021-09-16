@@ -18,8 +18,8 @@ import org.eclipse.persistence.exceptions.ConcurrencyException;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.DatabaseRecord;
-import org.eclipse.persistence.sessions.Record;
 
 /**
  * <p><b>Purpose</b>: Container class for storing objects in an IdentityMap.
@@ -53,7 +53,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     protected Object wrapper;
 
     /** This is used for Document Preservation to cache the record that this object was built from */
-    protected Record record;
+    protected DataRecord dataRecord;
 
     /** This attribute is the system time in milli seconds that the object was last refreshed on */
 
@@ -395,8 +395,8 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
         return readTime;
     }
 
-    public Record getRecord() {
-        return record;
+    public DataRecord getRecord() {
+        return dataRecord;
     }
 
     public Object getWrapper() {
@@ -558,8 +558,8 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
         invalidationState = CHECK_INVALIDATION_POLICY;
     }
 
-    public void setRecord(Record newRecord) {
-        this.record = newRecord;
+    public void setRecord(DataRecord newDataRecord) {
+        this.dataRecord = newDataRecord;
     }
 
     public void setWrapper(Object wrapper) {
