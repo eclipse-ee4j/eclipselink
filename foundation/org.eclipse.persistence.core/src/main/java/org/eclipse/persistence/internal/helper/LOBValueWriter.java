@@ -55,7 +55,7 @@ import org.eclipse.persistence.queries.WriteObjectQuery;
  */
 public class LOBValueWriter {
     //DatabaseCalls still to be processed
-    private Collection calls = null;
+    private Collection<DatabaseCall> calls = null;
     private Accessor accessor;
     private boolean isNativeConnectionRequired;
 
@@ -93,7 +93,7 @@ public class LOBValueWriter {
     */
     public void fetchLocatorAndWriteValue(DatabaseCall dbCall, Object resultSet) throws SQLException {
         Enumeration<DatabaseField> enumFields = dbCall.getContexts().getFields().elements();
-        Enumeration enumValues = dbCall.getContexts().getValues().elements();
+        Enumeration<?> enumValues = dbCall.getContexts().getValues().elements();
         AbstractSession executionSession = dbCall.getQuery().getSession().getExecutionSession(dbCall.getQuery());
         while (enumFields.hasMoreElements()) {
             DatabaseField field = enumFields.nextElement();
@@ -171,9 +171,9 @@ public class LOBValueWriter {
     public void addCall(Call call) {
         if (calls == null) {
             //use lazy initialization
-            calls = new ArrayList(2);
+            calls = new ArrayList<>(2);
         }
-        calls.add(call);
+        calls.add((DatabaseCall) call);
     }
 
     // Bug 3110860: RETURNINGPOLICY-OBTAINED PK CAUSES LOB TO BE INSERTED INCORRECTLY
@@ -194,8 +194,8 @@ public class LOBValueWriter {
 
         //all INSERTs have been executed, time to execute the SELECTs
         try {
-            for (Iterator callIt = calls.iterator(); callIt.hasNext();) {
-                DatabaseCall dbCall = (DatabaseCall)callIt.next();
+            for (Iterator<DatabaseCall> callIt = calls.iterator(); callIt.hasNext();) {
+                DatabaseCall dbCall = callIt.next();
                 buildAndExecuteCall(dbCall, session);
             }
         } finally {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,9 +26,9 @@ public class Descriptor {
 
     protected String name = null;
     protected String type = null;
-    protected List<LinkTemplate> linkTemplates = new ArrayList<LinkTemplate>();
-    protected List<Attribute> attributes = new ArrayList<Attribute>();
-    protected List<Query> queries = new ArrayList<Query>();
+    protected List<LinkTemplate> linkTemplates = new ArrayList<>();
+    protected List<Attribute> attributes = new ArrayList<>();
+    protected List<Query> queries = new ArrayList<>();
 
     public String getName() {
         return name;

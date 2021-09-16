@@ -183,7 +183,7 @@ public class ProviderHelper extends XRServiceFactory {
     }
 
     protected InputStream initXRSchemaStream(ClassLoader parentClassLoader, ServletContext sc) {
-        InputStream xrSchemaStream = null;
+        InputStream xrSchemaStream;
         String path = WSDL_DIR + DBWS_SCHEMA_XML;
         if (sc != null) {
             path = "/" + WEB_INF_DIR + path;
@@ -200,7 +200,7 @@ public class ProviderHelper extends XRServiceFactory {
     }
 
     protected InputStream initWSDLInputStream(ClassLoader parentClassLoader, ServletContext sc) {
-        InputStream wsdlInputStream = null;
+        InputStream wsdlInputStream;
         String path = WSDL_DIR + DBWS_WSDL;
         if (sc != null) {
             path = "/" + WEB_INF_DIR + path;
@@ -430,11 +430,11 @@ public class ProviderHelper extends XRServiceFactory {
         if (mtomEnabled) {
             attachments = (Map<String, DataHandler>)mc.get(INBOUND_MESSAGE_ATTACHMENTS);
         }
-        SOAPMessage response = null;
-        boolean usesSOAP12 = false;
+        SOAPMessage response;
+        boolean usesSOAP12;
         DBWSAdapter dbwsAdapter = (DBWSAdapter)xrService;
 
-        SOAPEnvelope envelope = null;
+        SOAPEnvelope envelope;
         try {
             envelope = request.getSOAPPart().getEnvelope();
         }
@@ -454,15 +454,15 @@ public class ProviderHelper extends XRServiceFactory {
         }
 
         if (body == null) {
-            SOAPFault soapFault = null;
+            SOAPFault soapFault;
             try {
-                SOAPFactory soapFactory = null;
+                SOAPFactory soapFactory;
                 if (usesSOAP12) {
                     soapFactory = SOAPFactory.newInstance(SOAP_1_2_PROTOCOL);
                 } else {
                     soapFactory = SOAPFactory.newInstance();
                 }
-                QName faultCodeQName = null;
+                QName faultCodeQName;
                 if (usesSOAP12) {
                     faultCodeQName = SENDER_QNAME;
                 } else {
@@ -475,7 +475,7 @@ public class ProviderHelper extends XRServiceFactory {
             throw new SOAPFaultException(soapFault);
         }
 
-        XMLRoot xmlRoot = null;
+        XMLRoot xmlRoot;
         try {
             XMLContext xmlContext = dbwsAdapter.getXMLContext();
             XMLUnmarshaller unmarshaller = xmlContext.createUnmarshaller();
@@ -529,15 +529,15 @@ public class ProviderHelper extends XRServiceFactory {
             xmlRoot = (XMLRoot)unmarshaller.unmarshal(body, Invocation.class);
         }
         catch (Exception e) {
-            SOAPFault soapFault = null;
+            SOAPFault soapFault;
             try {
-                SOAPFactory soapFactory = null;
+                SOAPFactory soapFactory;
                 if (usesSOAP12) {
                     soapFactory = SOAPFactory.newInstance(SOAP_1_2_PROTOCOL);
                 } else {
                     soapFactory = SOAPFactory.newInstance();
                 }
-                QName faultCodeQName = null;
+                QName faultCodeQName;
                 if (usesSOAP12) {
                     faultCodeQName = SENDER_QNAME;
                 } else {
@@ -606,7 +606,7 @@ public class ProviderHelper extends XRServiceFactory {
               // incoming attachments ?
             }
         }
-        Object result = null;
+        Object result;
         try {
             result = op.invoke(dbwsAdapter, invocation);
             if (result instanceof ValueObject) {
@@ -622,15 +622,15 @@ public class ProviderHelper extends XRServiceFactory {
                 response = responseWriter.generateResponse(op, usesSOAP12, e);
             }
             catch (SOAPException soape1) {
-                SOAPFault soapFault = null;
+                SOAPFault soapFault;
                 try {
-                    SOAPFactory soapFactory = null;
+                    SOAPFactory soapFactory;
                     if (usesSOAP12) {
                         soapFactory = SOAPFactory.newInstance(SOAP_1_2_PROTOCOL);
                     } else {
                         soapFactory = SOAPFactory.newInstance();
                     }
-                    QName faultCodeQName = null;
+                    QName faultCodeQName;
                     if (usesSOAP12) {
                         faultCodeQName = RECEIVER_QNAME;
                     } else {

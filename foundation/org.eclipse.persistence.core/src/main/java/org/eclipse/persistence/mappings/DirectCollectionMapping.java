@@ -1212,7 +1212,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      */
     @Override
     public Vector getSelectFields() {
-        Vector fields = new NonSynchronizedVector(2);
+        Vector<DatabaseField> fields = new NonSynchronizedVector<>(2);
         fields.add(getDirectField());
         return fields;
     }
@@ -1224,7 +1224,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      */
     @Override
     public Vector getSelectTables() {
-        Vector tables = new NonSynchronizedVector(0);
+        Vector<DatabaseTable> tables = new NonSynchronizedVector<>(0);
         tables.add(getReferenceTable());
         return tables;
     }

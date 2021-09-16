@@ -370,12 +370,12 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         // Properties
         this.tables = NonSynchronizedVector.newInstance(3);
         this.mappings = NonSynchronizedVector.newInstance();
-        this.primaryKeyFields = new ArrayList(2);
+        this.primaryKeyFields = new ArrayList<>(2);
         this.fields = NonSynchronizedVector.newInstance();
         this.allFields = NonSynchronizedVector.newInstance();
         this.constraintDependencies = NonSynchronizedVector.newInstance(2);
-        this.multipleTableForeignKeys = new HashMap(5);
-        this.queryKeys = new HashMap(5);
+        this.multipleTableForeignKeys = new HashMap<>(5);
+        this.queryKeys = new HashMap<>(5);
         this.initializationStage = UNINITIALIZED;
         this.interfaceInitializationStage = UNINITIALIZED;
         this.descriptorType = NORMAL;
@@ -384,7 +384,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         this.shouldAlwaysConformResultsInUnitOfWork = false;
         this.shouldAcquireCascadedLocks = false;
         this.hasSimplePrimaryKey = false;
-        this.derivesIdMappings = new HashMap(5);
+        this.derivesIdMappings = new HashMap<>(5);
 
         this.referencingClasses = new HashSet<>();
 
@@ -392,7 +392,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         this.objectBuilder = new ObjectBuilder(this);
         this.cachePolicy = new CachePolicy();
 
-        this.additionalWritableMapKeyFields = new ArrayList(2);
+        this.additionalWritableMapKeyFields = new ArrayList<>(2);
         this.foreignKeyValuesForCaching = new HashSet<>();
     }
 
@@ -4082,11 +4082,11 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     }
 
     private void prepareReturnFields(List<ReturningPolicy> returningPolicies) {
-        Vector<DatabaseField> returnFieldsInsert = new NonSynchronizedVector();
-        Vector<DatabaseField> returnFieldsUpdate = new NonSynchronizedVector();
+        Vector<DatabaseField> returnFieldsInsert = new NonSynchronizedVector<>();
+        Vector<DatabaseField> returnFieldsUpdate = new NonSynchronizedVector<>();
         List<DatabaseField> returnFieldsToMergeInsert = new ArrayList<>();
         List<DatabaseField> returnFieldsToMergeUpdate = new ArrayList<>();
-        Collection tmpFields;
+        Collection<DatabaseField> tmpFields;
         for (ReturningPolicy returningPolicy: returningPolicies) {
             tmpFields = returningPolicy.getFieldsToGenerateInsert(this.defaultTable);
             if (tmpFields != null) {

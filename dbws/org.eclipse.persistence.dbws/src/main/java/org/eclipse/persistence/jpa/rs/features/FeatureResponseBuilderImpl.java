@@ -125,7 +125,7 @@ public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
 
     private SimpleHomogeneousList populateSimpleHomogeneousList(Collection collection, String attributeName) {
         SimpleHomogeneousList simpleList = new SimpleHomogeneousList();
-        List<JAXBElement> items = new ArrayList<JAXBElement>();
+        List<JAXBElement> items = new ArrayList<>();
 
         for (Iterator iterator = collection.iterator(); iterator.hasNext();) {
             Object collectionItem = iterator.next();

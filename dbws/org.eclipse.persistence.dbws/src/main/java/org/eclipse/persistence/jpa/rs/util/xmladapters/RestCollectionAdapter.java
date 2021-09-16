@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,7 +63,7 @@ public class RestCollectionAdapter<T extends PersistenceWeavedRest> extends XmlA
             return null;
         }
 
-        final Collection<T> result = new ArrayList<T>();
+        final Collection<T> result = new ArrayList<>();
 
         // Check if links exist and items from there if it does
         if (v.getLinks() != null && !v.getLinks().isEmpty()) {
@@ -76,7 +76,7 @@ public class RestCollectionAdapter<T extends PersistenceWeavedRest> extends XmlA
 
         if (v.getItems() != null) {
             // Process each item (load from href, etc.)
-            final ReferenceAdapterV2<T> referenceAdapter = new ReferenceAdapterV2<T>(context);
+            final ReferenceAdapterV2<T> referenceAdapter = new ReferenceAdapterV2<>(context);
             for (T item : v.getItems()) {
                 if (context != null) {
                     result.add(referenceAdapter.unmarshal(item));
@@ -94,7 +94,7 @@ public class RestCollectionAdapter<T extends PersistenceWeavedRest> extends XmlA
             return null;
         }
 
-        final CollectionWrapper<T> result = new CollectionWrapper<T>();
+        final CollectionWrapper<T> result = new CollectionWrapper<>();
 
         // Currently it returns only links. It will return items when 'expand'
         // feature will be implemented.

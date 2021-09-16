@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,13 +36,13 @@ public class JavaPlatform {
      * PERF: The like expression compiled Pattern objects are cached
      * to avoid re-compilation on every usage.
      */
-    private static final ConcurrentHashMap patternCache = new ConcurrentHashMap();
+    private static final ConcurrentHashMap<Object, Pattern> patternCache = new ConcurrentHashMap<>();
 
     /**
      * PERF: The regular expression compiled Pattern objects are cached
      * to avoid re-compilation on every usage.
      */
-    private static final ConcurrentHashMap regexpPatternCache = new ConcurrentHashMap();
+    private static final ConcurrentHashMap<Object, Pattern> regexpPatternCache = new ConcurrentHashMap<>();
 
     /**
      * INTERNAL:
@@ -59,7 +59,7 @@ public class JavaPlatform {
         right = String.valueOf(right);
         // PERF: First check the pattern cache for the pattern.
         // Note that the original string is the key, to avoid having to translate it first.
-        Pattern pattern = (Pattern)patternCache.get(right);
+        Pattern pattern = patternCache.get(right);
         if (pattern == null) {
             // Bug 3936427 - Replace regular expression reserved characters with escaped version of those characters
             // For instance replace ? with \?
@@ -90,7 +90,7 @@ public class JavaPlatform {
         right = String.valueOf(right);
         // PERF: First check the pattern cache for the pattern.
         // Note that the original string is the key, to avoid having to translate it first.
-        Pattern pattern = (Pattern)regexpPatternCache.get(right);
+        Pattern pattern = regexpPatternCache.get(right);
         if (pattern == null) {
             pattern = Pattern.compile((String)right);
             // Ensure cache does not grow beyond 100.

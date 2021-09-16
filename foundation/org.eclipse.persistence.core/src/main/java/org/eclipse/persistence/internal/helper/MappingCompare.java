@@ -26,21 +26,21 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * Avoid using this class as sun.misc is not part of many VM's like Netscapes.
  *
  */
-public class MappingCompare implements Comparator, Serializable {
+public class MappingCompare implements Comparator<DatabaseMapping>, Serializable {
 
     private static final long serialVersionUID = -2749222441763925989L;
 
     @Override
-    public int compare(Object arg1, Object arg2) {
-        int arg1Value = ((DatabaseMapping) arg1).getWeight();
-        int arg2Value = ((DatabaseMapping) arg2).getWeight();
+    public int compare(DatabaseMapping arg1, DatabaseMapping arg2) {
+        int arg1Value = arg1.getWeight();
+        int arg2Value = arg2.getWeight();
         if (arg1Value == arg2Value) {
-            int result = ((DatabaseMapping)arg1).getClass().getName().compareTo(((DatabaseMapping)arg2).getClass().getName());
+            int result = arg1.getClass().getName().compareTo(arg2.getClass().getName());
             // For same classes, compare attribute names.
             if (result == 0) {
                 // Can be null for TransformationMapping.
-                if (((DatabaseMapping)arg1).getAttributeName() != null && ((DatabaseMapping)arg2).getAttributeName() != null) {
-                    result = ((DatabaseMapping)arg1).getAttributeName().compareTo(((DatabaseMapping)arg2).getAttributeName());
+                if (arg1.getAttributeName() != null && arg2.getAttributeName() != null) {
+                    result = arg1.getAttributeName().compareTo(arg2.getAttributeName());
                 }
             }
             return result;

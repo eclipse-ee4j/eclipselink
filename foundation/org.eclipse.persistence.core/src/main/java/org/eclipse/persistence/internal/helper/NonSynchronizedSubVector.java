@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,12 +19,12 @@ import java.util.*;
 /**
  * SubList that implements Vector.
  */
-public class NonSynchronizedSubVector extends NonSynchronizedVector {
-    private Vector l;
+public class NonSynchronizedSubVector<E> extends NonSynchronizedVector<E> {
+    private Vector<E> l;
     private int offset;
     private int size;
 
-    public NonSynchronizedSubVector(Vector list, int fromIndex, int toIndex) {
+    public NonSynchronizedSubVector(Vector<E> list, int fromIndex, int toIndex) {
         super(0);
         if (fromIndex < 0)
             throw new IndexOutOfBoundsException("fromIndex = " + fromIndex);
@@ -39,27 +39,27 @@ public class NonSynchronizedSubVector extends NonSynchronizedVector {
     }
 
     @Override
-    public Object set(int index, Object element) {
+    public E set(int index, E element) {
         return l.set(index+offset, element);
     }
 
     @Override
-    public void setElementAt(Object obj, int index) {
+    public void setElementAt(E obj, int index) {
         set(index, obj);
     }
 
     @Override
-    public Object elementAt(int index) {
+    public E elementAt(int index) {
         return get(index);
     }
 
     @Override
-    public Object firstElement() {
+    public E firstElement() {
         return get(0);
     }
 
     @Override
-    public Object lastElement() {
+    public E lastElement() {
         return get(size() - 1);
     }
 
@@ -96,7 +96,7 @@ public class NonSynchronizedSubVector extends NonSynchronizedVector {
     }
 
     @Override
-    public Object get(int index) {
+    public E get(int index) {
         return l.get(index+offset);
     }
 
@@ -106,7 +106,7 @@ public class NonSynchronizedSubVector extends NonSynchronizedVector {
     }
 
     @Override
-    public void add(int index, Object element) {
+    public void add(int index, E element) {
         if (index<0 || index>size)
             throw new IndexOutOfBoundsException();
         l.add(index+offset, element);
@@ -115,8 +115,8 @@ public class NonSynchronizedSubVector extends NonSynchronizedVector {
     }
 
     @Override
-    public Object remove(int index) {
-        Object result = l.remove(index+offset);
+    public E remove(int index) {
+        E result = l.remove(index+offset);
         size--;
         modCount++;
         return result;
@@ -129,12 +129,12 @@ public class NonSynchronizedSubVector extends NonSynchronizedVector {
     }*/
 
     @Override
-    public boolean addAll(Collection c) {
+    public boolean addAll(Collection<? extends E> c) {
         return addAll(size, c);
     }
 
     @Override
-    public boolean addAll(int index, Collection c) {
+    public boolean addAll(int index, Collection<? extends E> c) {
         if (index<0 || index>size)
             throw new IndexOutOfBoundsException(
                 "Index: "+index+", Size: "+size);
@@ -148,8 +148,8 @@ public class NonSynchronizedSubVector extends NonSynchronizedVector {
     }
 
     @Override
-    public Enumeration elements() {
-        return new Enumeration() {
+    public Enumeration<E> elements() {
+        return new Enumeration<E>() {
             int count = 0;
 
             @Override
@@ -158,7 +158,7 @@ public class NonSynchronizedSubVector extends NonSynchronizedVector {
             }
 
             @Override
-            public Object nextElement() {
+            public E nextElement() {
                 if (count < elementCount) {
                     return get(count++);
                 }
@@ -175,10 +175,10 @@ public class NonSynchronizedSubVector extends NonSynchronizedVector {
     }
 
     @Override
-    public Object[] toArray(Object a[]) {
+    @SuppressWarnings({"unchecked"})
+    public <T> T[] toArray(T[] a) {
         if (a.length < size)
-            a = (Object[])java.lang.reflect.Array.newInstance(
-                                a.getClass().getComponentType(), size);
+            return (T[]) Arrays.copyOfRange(elementData, offset, size, a.getClass());
 
         System.arraycopy(l.toArray(), offset, a, 0, size);
 
@@ -189,18 +189,18 @@ public class NonSynchronizedSubVector extends NonSynchronizedVector {
     }
 
     @Override
-    public Iterator iterator() {
+    public Iterator<E> iterator() {
         return listIterator();
     }
 
     @Override
-    public ListIterator listIterator(final int index) {
+    public ListIterator<E> listIterator(final int index) {
         if (index<0 || index>size)
             throw new IndexOutOfBoundsException(
                 "Index: "+index+", Size: "+size);
 
-        return new ListIterator() {
-            private ListIterator i = l.listIterator(index+offset);
+        return new ListIterator<E>() {
+            private ListIterator<E> i = l.listIterator(index+offset);
 
             @Override
             public boolean hasNext() {
@@ -208,7 +208,7 @@ public class NonSynchronizedSubVector extends NonSynchronizedVector {
             }
 
             @Override
-            public Object next() {
+            public E next() {
                 if (hasNext())
                     return i.next();
                 else
@@ -221,7 +221,7 @@ public class NonSynchronizedSubVector extends NonSynchronizedVector {
             }
 
             @Override
-            public Object previous() {
+            public E previous() {
                 if (hasPrevious())
                     return i.previous();
                 else
@@ -246,12 +246,12 @@ public class NonSynchronizedSubVector extends NonSynchronizedVector {
             }
 
             @Override
-            public void set(Object o) {
+            public void set(E o) {
                 i.set(o);
             }
 
             @Override
-            public void add(Object o) {
+            public void add(E o) {
                 i.add(o);
                 size++;
                 modCount++;

@@ -69,7 +69,7 @@ public class ProjectHelper {
                     e.printStackTrace();
                 }
             }
-            Set<String> propertiesNameSet = new HashSet<String>();
+            Set<String> propertiesNameSet = new HashSet<>();
             for (Iterator j = desc.getMappings().iterator(); j.hasNext();) {
                 DatabaseMapping dm = (DatabaseMapping)j.next();
                 String attributeName = dm.getAttributeName();

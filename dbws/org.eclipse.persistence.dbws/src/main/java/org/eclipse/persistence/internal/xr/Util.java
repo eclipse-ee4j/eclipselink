@@ -444,36 +444,36 @@ public class Util {
     public static final Map<QName, Class<?>> SCHEMA_2_CLASS;
     static {
       SCHEMA_2_CLASS = Collections.unmodifiableMap(new HashMap<QName, Class<?>>() {{
-            put(ANY_SIMPLE_TYPE_QNAME,CoreClassConstants.OBJECT);
-            put(BASE_64_BINARY_QNAME, APBYTE);
-            put(BOOLEAN_QNAME, BOOLEAN);
-            put(BYTE_QNAME, BYTE);
-            //put(DATE_QNAME, SQLDATE);
-            put(DATE_QNAME, CALENDAR);
-            //put(DATE_TIME_QNAME, TIMESTAMP);
-            put(DATE_TIME_QNAME, CALENDAR);
-            put(DECIMAL_QNAME, BIGDECIMAL);
-            put(DOUBLE_QNAME, DOUBLE);
-            put(DURATION_QNAME, STRING);
-            put(FLOAT_QNAME, FLOAT);
-            put(G_YEAR_MONTH_QNAME, STRING);
-            put(G_YEAR_QNAME, STRING);
-            put(G_MONTH_QNAME, STRING);
-            put(G_MONTH_DAY_QNAME, STRING);
-            put(G_DAY_QNAME, STRING);
-            put(HEX_BINARY_QNAME, APBYTE);
-            put(INT_QNAME, INTEGER);
-            put(INTEGER_QNAME, BIGINTEGER);
-            put(LONG_QNAME, LONG);
-            put(QNAME_QNAME, QName.class);
-            put(SHORT_QNAME, SHORT);
-            put(STRING_QNAME, STRING);
-            //put(TIME_QNAME, TIME);
-            put(TIME_QNAME, CALENDAR);
-            put(UNSIGNED_BYTE_QNAME, SHORT);
-            put(UNSIGNED_INT_QNAME, LONG);
-            put(UNSIGNED_SHORT_QNAME, INTEGER);
-        }});
+          put(ANY_SIMPLE_TYPE_QNAME, CoreClassConstants.OBJECT);
+          put(BASE_64_BINARY_QNAME, APBYTE);
+          put(BOOLEAN_QNAME, BOOLEAN);
+          put(BYTE_QNAME, BYTE);
+          //put(DATE_QNAME, SQLDATE);
+          put(DATE_QNAME, CALENDAR);
+          //put(DATE_TIME_QNAME, TIMESTAMP);
+          put(DATE_TIME_QNAME, CALENDAR);
+          put(DECIMAL_QNAME, BIGDECIMAL);
+          put(DOUBLE_QNAME, DOUBLE);
+          put(DURATION_QNAME, STRING);
+          put(FLOAT_QNAME, FLOAT);
+          put(G_YEAR_MONTH_QNAME, STRING);
+          put(G_YEAR_QNAME, STRING);
+          put(G_MONTH_QNAME, STRING);
+          put(G_MONTH_DAY_QNAME, STRING);
+          put(G_DAY_QNAME, STRING);
+          put(HEX_BINARY_QNAME, APBYTE);
+          put(INT_QNAME, INTEGER);
+          put(INTEGER_QNAME, BIGINTEGER);
+          put(LONG_QNAME, LONG);
+          put(QNAME_QNAME, QName.class);
+          put(SHORT_QNAME, SHORT);
+          put(STRING_QNAME, STRING);
+          //put(TIME_QNAME, TIME);
+          put(TIME_QNAME, CALENDAR);
+          put(UNSIGNED_BYTE_QNAME, SHORT);
+          put(UNSIGNED_INT_QNAME, LONG);
+          put(UNSIGNED_SHORT_QNAME, INTEGER);
+      }});
     }
 
     /**

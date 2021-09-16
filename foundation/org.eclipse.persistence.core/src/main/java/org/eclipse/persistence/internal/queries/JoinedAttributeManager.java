@@ -32,6 +32,7 @@ import org.eclipse.persistence.internal.expressions.BaseExpression;
 import org.eclipse.persistence.internal.expressions.ForUpdateOfClause;
 import org.eclipse.persistence.internal.expressions.ObjectExpression;
 import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.NonSynchronizedSubVector;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -990,14 +991,14 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         List<AbstractRecord> childRows = null;
         ObjectBuilder builder = getDescriptor().getObjectBuilder();
         int parentIndex = getParentResultIndex();
-        Vector trimedFields = null;
+        Vector<DatabaseField> trimedFields = null;
         for (int dataResultsIndex = 0; dataResultsIndex < size; dataResultsIndex++) {
             AbstractRecord row = this.dataResults.get(dataResultsIndex);
             AbstractRecord parentRow = row;
             // Must adjust for the parent index to ensure the correct pk is extracted.
             if (parentIndex > 0) {
                 if (trimedFields == null) { // The fields are always the same, so only build once.
-                    trimedFields = new NonSynchronizedSubVector(row.getFields(), parentIndex, row.size());
+                    trimedFields = new NonSynchronizedSubVector<>(row.getFields(), parentIndex, row.size());
                 }
                 Vector trimedValues = new NonSynchronizedSubVector(row.getValues(), parentIndex, row.size());
                 parentRow = new DatabaseRecord(trimedFields, trimedValues);
@@ -1057,14 +1058,14 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
      */
     public AbstractRecord processDataResults(AbstractRecord row, Cursor cursor, boolean forward) {
         if (this.dataResultsByPrimaryKey == null) {
-            this.dataResultsByPrimaryKey = new HashMap();
+            this.dataResultsByPrimaryKey = new HashMap<>();
         }
         AbstractRecord parentRow = row;
         List<AbstractRecord> childRows = new ArrayList<>();
         childRows.add(row);
         int parentIndex = getParentResultIndex();
         // Must adjust for the parent index to ensure the correct pk is extracted.
-        Vector trimedFields = new NonSynchronizedSubVector(row.getFields(), parentIndex, row.size());
+        Vector<DatabaseField> trimedFields = new NonSynchronizedSubVector<>(row.getFields(), parentIndex, row.size());
         if (parentIndex > 0) {
             Vector trimedValues = new NonSynchronizedSubVector(row.getValues(), parentIndex, row.size());
             parentRow = new DatabaseRecord(trimedFields, trimedValues);

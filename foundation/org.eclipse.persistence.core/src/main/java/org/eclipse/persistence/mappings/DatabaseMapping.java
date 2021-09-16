@@ -926,7 +926,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * @return TODO
      */
     public Vector getSelectTables() {
-        return new NonSynchronizedVector(0);
+        return new NonSynchronizedVector<>(0);
     }
 
     /**

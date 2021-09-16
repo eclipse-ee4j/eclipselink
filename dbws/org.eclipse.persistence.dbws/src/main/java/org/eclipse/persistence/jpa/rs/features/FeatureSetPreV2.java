@@ -69,7 +69,7 @@ public class FeatureSetPreV2 implements FeatureSet {
 
     @Override
     public List<MetadataSource> getMetadataSources() {
-        final List<MetadataSource> metadataSources = new ArrayList<MetadataSource>();
+        final List<MetadataSource> metadataSources = new ArrayList<>();
 
         metadataSources.add(new LinkMetadataSource());
         metadataSources.add(new ReportQueryResultListMetadataSource());

@@ -50,7 +50,7 @@ public class XRDynamicEntityTestSuite {
     @BeforeClass
     public static void setUp() throws NoSuchFieldException, IllegalArgumentException,
         IllegalAccessException {
-        Set<String> propertyNames = new HashSet<String>();
+        Set<String> propertyNames = new HashSet<>();
         propertyNames.add(FIELD_1);
         propertyNames.add(FIELD_2);
         XRCustomer.DPM.setPropertyNames(propertyNames);
@@ -95,7 +95,7 @@ public class XRDynamicEntityTestSuite {
             (Class<XRDynamicEntity>)xrdcl.createDynamicClass(TEST_CLASSNAME);
         XRDynamicEntity newInstance = testClass.getConstructor().newInstance();
         XRDynamicPropertiesManager xrDPM = newInstance.fetchPropertiesManager();
-        Set<String> propertyNames = new HashSet<String>();
+        Set<String> propertyNames = new HashSet<>();
         propertyNames.add(FIELD_1);
         propertyNames.add(FIELD_2);
         xrDPM.setPropertyNames(propertyNames);

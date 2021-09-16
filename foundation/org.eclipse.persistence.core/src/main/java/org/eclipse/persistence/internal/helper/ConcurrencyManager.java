@@ -391,8 +391,8 @@ public class ConcurrencyManager implements Serializable {
     /**
      * Init the deferred lock managers (thread - DeferredLockManager).
      */
-    protected static Map initializeDeferredLockManagers() {
-        return new ConcurrentHashMap();
+    protected static Map<Thread, DeferredLockManager> initializeDeferredLockManagers() {
+        return new ConcurrentHashMap<>();
     }
 
     /**
@@ -449,7 +449,7 @@ public class ConcurrencyManager implements Serializable {
      *            contain the thread we will explore next.
      * @return true if object is complete
      */
-    public static boolean isBuildObjectOnThreadComplete(Thread thread, Map recursiveSet, List<Thread> parentChainOfThreads, boolean deadLockDiagnostic) {
+    public static boolean isBuildObjectOnThreadComplete(Thread thread, Map<Thread, Thread> recursiveSet, List<Thread> parentChainOfThreads, boolean deadLockDiagnostic) {
         if (recursiveSet.containsKey(thread)) {
             return true;
         }
@@ -460,10 +460,10 @@ public class ConcurrencyManager implements Serializable {
             return true;
         }
 
-        Vector deferredLocks = lockManager.getDeferredLocks();
-        for (Enumeration deferredLocksEnum = deferredLocks.elements();
+        Vector<ConcurrencyManager> deferredLocks = lockManager.getDeferredLocks();
+        for (Enumeration<ConcurrencyManager> deferredLocksEnum = deferredLocks.elements();
              deferredLocksEnum.hasMoreElements();) {
-            ConcurrencyManager deferedLock = (ConcurrencyManager)deferredLocksEnum.nextElement();
+            ConcurrencyManager deferedLock = deferredLocksEnum.nextElement();
             Thread activeThread = null;
             if (deferedLock.isAcquired()) {
                 activeThread = deferedLock.getActiveThread();
@@ -636,7 +636,7 @@ public class ConcurrencyManager implements Serializable {
             boolean isBuildObjectCompleteSlow = ConcurrencyUtil.SINGLETON.tooMuchTimeHasElapsed(whileStartTimeMillis, ConcurrencyUtil.SINGLETON.getBuildObjectCompleteWaitTime());
             try{
                 // 2612538 - the default size of Map (32) is appropriate
-                Map recursiveSet = new IdentityHashMap();
+                Map<Thread, Thread> recursiveSet = new IdentityHashMap<>();
                 if (isBuildObjectOnThreadComplete(currentThread, recursiveSet, Arrays.asList(currentThread), isBuildObjectCompleteSlow)) {// Thread job done.
                     // Remove from debug metadata the fact that the current thread needed to wait
                     // for one or more build objects to be completed by other threads.

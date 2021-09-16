@@ -73,7 +73,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
      *  converts JDBC results to collections of rows.
      */
     protected AbstractRecord() {
-        this.fields = new NonSynchronizedVector();
+        this.fields = new NonSynchronizedVector<>();
         this.values = new NonSynchronizedVector();
         this.size = 0;
         this.nullValueInFields = false;
@@ -84,7 +84,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
      *  converts JDBC results to collections of rows.
      */
     protected AbstractRecord(int initialCapacity) {
-        this.fields = new NonSynchronizedVector(initialCapacity);
+        this.fields = new NonSynchronizedVector<>(initialCapacity);
         this.values = new NonSynchronizedVector(initialCapacity);
         this.size = 0;
         this.nullValueInFields = false;

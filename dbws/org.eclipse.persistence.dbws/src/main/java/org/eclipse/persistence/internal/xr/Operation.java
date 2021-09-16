@@ -35,7 +35,7 @@ import java.util.List;
 public abstract class Operation {
 
     protected String name;
-    protected List<Parameter> parameters = new ArrayList<Parameter>();
+    protected List<Parameter> parameters = new ArrayList<>();
 
     /**
      * <p><b>INTERNAL</b>:

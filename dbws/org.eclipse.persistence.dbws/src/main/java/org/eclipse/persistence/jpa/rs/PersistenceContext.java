@@ -218,11 +218,8 @@ public class PersistenceContext {
 
         try {
             this.jaxbContext = createDynamicJAXBContext(emf.getDatabaseSession());
-        } catch (JAXBException jaxbe) {
+        } catch (JAXBException | IOException jaxbe) {
             JPARSLogger.exception(getSessionLog(), "exception_creating_jaxb_context", new Object[] { emfName, jaxbe.toString() }, jaxbe);
-            emf.close();
-        } catch (IOException e) {
-            JPARSLogger.exception(getSessionLog(), "exception_creating_jaxb_context", new Object[] { emfName, e.toString() }, e);
             emf.close();
         }
     }
@@ -265,7 +262,7 @@ public class PersistenceContext {
      * that is used for JSON and XML translation.
      */
     protected void addDynamicXMLMetadataSources(List<Object> metadataSources, AbstractSession session) {
-        Set<String> packages = new HashSet<String>();
+        Set<String> packages = new HashSet<>();
         for (Class<?> descriptorClass : session.getDescriptors().keySet()) {
             String packageName = "";
             int lastDotIndex = descriptorClass.getName().lastIndexOf('.');
@@ -344,10 +341,10 @@ public class PersistenceContext {
      * Build the set of properties used to create the JAXBContext based on the EntityManagerFactory that
      * this PersistenceContext wraps
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"rawtypes" })
     protected Map<String, Object> createJAXBProperties(AbstractSession session) throws IOException {
-        Map<String, Object> properties = new HashMap<String, Object>(1);
-        List<Object> metadataLocations = new ArrayList<Object>();
+        Map<String, Object> properties = new HashMap<>(1);
+        List<Object> metadataLocations = new ArrayList<>();
 
         addDynamicXMLMetadataSources(metadataLocations, session);
 
@@ -596,7 +593,6 @@ public class PersistenceContext {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private Object getAttribute(Object entity, String propertyName) {
         try {
             BeanInfo info = Introspector.getBeanInfo(entity.getClass(), Object.class);
@@ -607,7 +603,7 @@ public class PersistenceContext {
                     Method getter = pd.getReadMethod();
                     Object value;
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                        value = AccessController.doPrivileged(new PrivilegedMethodInvoker(getter, entity));
+                        value = AccessController.doPrivileged(new PrivilegedMethodInvoker<>(getter, entity));
                     } else {
                         value = PrivilegedAccessHelper.invokeMethod(getter, entity);
                     }
@@ -778,7 +774,7 @@ public class PersistenceContext {
         try {
             transaction.beginTransaction(em);
             if (entity instanceof List) {
-                List<Object> mergeList = new ArrayList<Object>();
+                List<Object> mergeList = new ArrayList<>();
                 for (Object o : (List) entity) {
                     mergeList.add(em.merge(o));
                 }
@@ -912,7 +908,6 @@ public class PersistenceContext {
      * @param hints the hints
      * @return the query
      */
-    @SuppressWarnings("rawtypes")
     public Query buildQuery(Map<String, String> tenantId, String name, Map<?, ?> parameters, Map<String, ?> hints) {
         EntityManager em = getEmf().createEntityManager(tenantId);
         Query query = em.createNamedQuery(name);
@@ -922,7 +917,7 @@ public class PersistenceContext {
             while (i.hasNext()) {
                 Map.Entry<?, ?> entry = (Map.Entry<?, ?>) i.next();
                 String key = (String) entry.getKey();
-                Class parameterClass = null;
+                Class<?> parameterClass = null;
                 int index = dbQuery.getArguments().indexOf(key);
                 if (index >= 0) {
                     parameterClass = dbQuery.getArgumentTypes().get(index);
@@ -1149,6 +1144,7 @@ public class PersistenceContext {
      *                          the actual objects in the relationships.
      * @param fieldsFilter      Specifies fields to include/exclude from the response.
      */
+    @SuppressWarnings({"unchecked"})
     public void marshall(final Object object, final MediaType mediaType, final OutputStream output, boolean sendRelationships, final FieldsFilter fieldsFilter) throws JAXBException {
         if (version.compareTo(ServiceVersion.VERSION_2_0) < 0 && sendRelationships) {
             preMarshallEntity(object);
@@ -1274,7 +1270,7 @@ public class PersistenceContext {
         if ((entity != null) && (entity instanceof PersistenceWeavedRest)) {
             ClassDescriptor descriptor = getServerSession().getClassDescriptor(entity.getClass());
             if (descriptor != null) {
-                ((PersistenceWeavedRest) entity)._persistence_setRelationships(new ArrayList<RelationshipInfo>());
+                ((PersistenceWeavedRest) entity)._persistence_setRelationships(new ArrayList<>());
                 for (DatabaseMapping mapping : descriptor.getMappings()) {
                     if (mapping.isForeignReferenceMapping()) {
                         ForeignReferenceMapping frMapping = (ForeignReferenceMapping) mapping;
@@ -1305,11 +1301,11 @@ public class PersistenceContext {
         if (object instanceof List) {
             for (Object entity : ((List) object)) {
                 if (entity instanceof PersistenceWeavedRest) {
-                    ((PersistenceWeavedRest) entity)._persistence_setRelationships(new ArrayList<RelationshipInfo>());
+                    ((PersistenceWeavedRest) entity)._persistence_setRelationships(new ArrayList<>());
                 }
             }
         } else if (object instanceof PersistenceWeavedRest) {
-            ((PersistenceWeavedRest) object)._persistence_setRelationships(new ArrayList<RelationshipInfo>());
+            ((PersistenceWeavedRest) object)._persistence_setRelationships(new ArrayList<>());
         }
     }
 
@@ -1318,7 +1314,7 @@ public class PersistenceContext {
         if (adapters != null) {
             return adapters;
         }
-        adapters = new ArrayList<XmlAdapter<?, ?>>();
+        adapters = new ArrayList<>();
         try {
             final ClassLoader cl = getServerSession().getDatasourcePlatform().getConversionManager().getLoader();
 
@@ -1459,7 +1455,7 @@ public class PersistenceContext {
      * Initializes pageableQueries map by reading RestPageableQueries entity annotations.
      */
     private void initPageableQueries() {
-        pageableQueries = new HashMap<String, RestPageableQuery>();
+        pageableQueries = new HashMap<>();
 
         // Iterate on all entity classes
         for (Class<?> clazz : getServerSession().getProject().getDescriptors().keySet()) {

@@ -28,6 +28,12 @@ public class DescriptorCompare implements Comparator<ClassDescriptor>, Serializa
 
     private static final long serialVersionUID = -2792350655245140468L;
 
+    /**
+     * Default constructor.
+     */
+    public DescriptorCompare() {
+    }
+
     @Override
     public int compare(ClassDescriptor arg1, ClassDescriptor arg2) {
         return arg1.getJavaClassName().compareTo(arg2.getJavaClassName());

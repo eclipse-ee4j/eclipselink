@@ -39,6 +39,7 @@ import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.MapEntryExpression;
 import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.NonSynchronizedSubVector;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.queries.ReportItem;
@@ -250,7 +251,7 @@ public class ReportQueryResult implements Serializable, Map {
                 AbstractRecord subRow = row;
                 // Check if at the start of the row, then avoid building a subRow.
                 if (itemIndex > 0) {
-                    Vector trimedFields = new NonSynchronizedSubVector(row.getFields(), itemIndex, rowSize);
+                    Vector<DatabaseField> trimedFields = new NonSynchronizedSubVector<>(row.getFields(), itemIndex, rowSize);
                     Vector trimedValues = new NonSynchronizedSubVector(row.getValues(), itemIndex, rowSize);
                     subRow = new DatabaseRecord(trimedFields, trimedValues);
                 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,14 +28,14 @@ public class XRDynamicEntity_CollectionWrapper extends XRDynamicEntity implement
     static final String ITEMS_PROPERTY = "items";
     public static final XRDynamicPropertiesManager DPM = new XRDynamicPropertiesManager();
     static {
-        Set<String> propertiesNameSet = new HashSet<String>();
+        Set<String> propertiesNameSet = new HashSet<>();
         propertiesNameSet.add(ITEMS_PROPERTY);
         DPM.setPropertyNames(propertiesNameSet);
     }
 
     public XRDynamicEntity_CollectionWrapper() {
         super();
-        super.set(ITEMS_PROPERTY, new ArrayList<Object>());
+        super.set(ITEMS_PROPERTY, new ArrayList<>());
     }
 
     @Override

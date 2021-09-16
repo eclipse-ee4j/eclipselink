@@ -774,7 +774,7 @@ public class ExplainDeadLockUtil {
         // is not able to make progress.
         // To understand why we do this one would need to have a good look at the concurrenyc manager implementation
         // at the logic that of the logic of the releaseDeferredLock method
-        IsBuildObjectCompleteOutcome result = isBuildObjectOnThreadComplete(concurrencyManagerStateDto, currentCandidateThreadPartOfTheDeadLock,  new IdentityHashMap());
+        IsBuildObjectCompleteOutcome result = isBuildObjectOnThreadComplete(concurrencyManagerStateDto, currentCandidateThreadPartOfTheDeadLock,  new IdentityHashMap<>());
 
         // (b) Our expectation is that the result of the step above is always different than null
         // after all if this candidate thread is stuck trying to release deferred locks there must be an explanation for it not making progress
@@ -885,7 +885,7 @@ public class ExplainDeadLockUtil {
      */
     public static IsBuildObjectCompleteOutcome isBuildObjectOnThreadComplete(
             final ConcurrencyManagerState concurrencyManagerStateDto, Thread thread,
-            Map recursiveSet) {
+            Map<Thread, Thread> recursiveSet) {
         if (recursiveSet.containsKey(thread)) {
             // if the thread we are consider as we go deeper in the recursion is thread in an upper stack of the
             // recursion
@@ -904,9 +904,9 @@ public class ExplainDeadLockUtil {
             return IsBuildObjectCompleteOutcome.BUILD_OBJECT_IS_COMPLETE_TRUE;
         }
 
-        Vector deferredLocks = lockManager.getDeferredLocks();
-        for (Enumeration deferredLocksEnum = deferredLocks.elements(); deferredLocksEnum.hasMoreElements();) {
-            ConcurrencyManager deferedLock = (ConcurrencyManager) deferredLocksEnum.nextElement();
+        Vector<ConcurrencyManager> deferredLocks = lockManager.getDeferredLocks();
+        for (Enumeration<ConcurrencyManager> deferredLocksEnum = deferredLocks.elements(); deferredLocksEnum.hasMoreElements();) {
+            ConcurrencyManager deferedLock = deferredLocksEnum.nextElement();
             Thread activeThread = null;
             if (deferedLock.isAcquired()) {
                 activeThread = deferedLock.getActiveThread();

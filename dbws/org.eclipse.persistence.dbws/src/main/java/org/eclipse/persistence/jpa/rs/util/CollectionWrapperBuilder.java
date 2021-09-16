@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -74,7 +74,7 @@ public class CollectionWrapperBuilder {
                 final String id = IdHelper.stringifyId(entity, entity.getClass().getSimpleName(), context);
 
                 // Generate links
-                final List<LinkV2> links = new ArrayList<LinkV2>(2);
+                final List<LinkV2> links = new ArrayList<>(2);
                 final String href = HrefHelper.buildEntityFieldHref(context, entity.getClass().getSimpleName(), id, field.getName());
                 links.add(new LinkV2(ReservedWords.JPARS_REL_SELF, href));
                 links.add(new LinkV2(ReservedWords.JPARS_REL_CANONICAL, href));

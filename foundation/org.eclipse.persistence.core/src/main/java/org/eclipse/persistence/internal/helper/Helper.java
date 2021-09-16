@@ -173,8 +173,8 @@ public class Helper extends CoreHelper implements Serializable {
      * PERF:
      * Init the calendar cache use to avoid calendar creation for processing java.sql/util.Date/Time/Timestamp objects.
      */
-    public static Queue initCalendarCache() {
-        Queue calendarCache = new ConcurrentLinkedQueue();
+    public static Queue<Calendar> initCalendarCache() {
+        Queue<Calendar> calendarCache = new ConcurrentLinkedQueue<>();
         for (int index = 0; index < 10; index++) {
             calendarCache.add(Calendar.getInstance());
         }

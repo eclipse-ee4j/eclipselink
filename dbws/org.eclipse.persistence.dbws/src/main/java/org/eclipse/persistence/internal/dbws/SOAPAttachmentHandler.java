@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,7 +37,7 @@ import org.eclipse.persistence.oxm.attachment.XMLAttachmentMarshaller;
 public class SOAPAttachmentHandler implements XMLAttachmentMarshaller {
 
     private int count = 0;
-    private HashMap<String, DataHandler> attachments = new HashMap<String,DataHandler>();
+    private HashMap<String, DataHandler> attachments = new HashMap<>();
 
     public boolean hasAttachments() {
         return attachments.size() > 0;
