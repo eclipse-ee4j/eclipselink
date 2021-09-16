@@ -70,7 +70,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 @Path("/{version : " + SERVICE_VERSION_FORMAT + "}/{context}/metadata-catalog/")
 public class MetadataResource extends AbstractResource {
     private static final String CLASS_NAME = MetadataResource.class.getName();
-    private static final Map<Class<?>, String> PRIMITIVE_TO_JSON = new HashMap<Class<?>, String>();
+    private static final Map<Class<?>, String> PRIMITIVE_TO_JSON = new HashMap<>();
 
     static {
         PRIMITIVE_TO_JSON.put(boolean.class, "boolean");

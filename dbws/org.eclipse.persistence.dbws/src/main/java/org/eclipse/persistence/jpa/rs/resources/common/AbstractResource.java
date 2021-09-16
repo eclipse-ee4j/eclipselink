@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -132,7 +132,7 @@ public abstract class AbstractResource {
      * @return the matrix parameters
      */
     protected static Map<String, String> getMatrixParameters(UriInfo info, String segment) {
-        Map<String, String> matrixParameters = new HashMap<String, String>();
+        Map<String, String> matrixParameters = new HashMap<>();
         for (PathSegment pathSegment : info.getPathSegments()) {
             if (pathSegment.getPath() != null && pathSegment.getPath().equals(segment)) {
                 for (Entry<String, List<String>> entry : pathSegment.getMatrixParameters().entrySet()) {
@@ -155,7 +155,7 @@ public abstract class AbstractResource {
      * @return the query parameters
      */
     public static Map<String, Object> getQueryParameters(UriInfo info) {
-        Map<String, Object> queryParameters = new HashMap<String, Object>();
+        Map<String, Object> queryParameters = new HashMap<>();
         for (String key : info.getQueryParameters().keySet()) {
             queryParameters.put(key, info.getQueryParameters().getFirst(key));
         }

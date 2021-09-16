@@ -86,7 +86,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
 
         try {
             PersistenceContext context = getPersistenceContext(persistenceUnit, null, uriInfo.getBaseUri(), version, null);
-            List<Query> queries = new ArrayList<Query>();
+            List<Query> queries = new ArrayList<>();
             addQueries(queries, context, null);
             String mediaType = StreamingOutputMarshaller.mediaType(headers.getAcceptableMediaTypes()).toString();
             QueryList queryList = new QueryList();
@@ -107,7 +107,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
         JPARSLogger.entering(CLASS_NAME, "getQueryMetadataInternal", new Object[] { "GET", version, persistenceUnit, queryName, uriInfo.getRequestUri().toASCIIString() });
         try {
             PersistenceContext context = getPersistenceContext(persistenceUnit, null, uriInfo.getBaseUri(), version, null);
-            List<Query> returnQueries = new ArrayList<Query>();
+            List<Query> returnQueries = new ArrayList<>();
             Map<String, List<DatabaseQuery>> queries = context.getServerSession().getQueries();
             if (queries.get(queryName) != null) {
                 for (DatabaseQuery query : queries.get(queryName)) {
@@ -130,7 +130,6 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
         }
     }
 
-    @SuppressWarnings("rawtypes")
     protected Response getTypesInternal(String version, String persistenceUnit, HttpHeaders headers, UriInfo uriInfo) {
         JPARSLogger.entering(CLASS_NAME, "getTypesInternal", new Object[] { "GET", version, persistenceUnit, uriInfo.getRequestUri().toASCIIString() });
         try {
@@ -218,7 +217,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
 
     private void addQueries(List<Query> queryList, PersistenceContext context, String javaClassName) {
         Map<String, List<DatabaseQuery>> queries = context.getServerSession().getQueries();
-        List<DatabaseQuery> returnQueries = new ArrayList<DatabaseQuery>();
+        List<DatabaseQuery> returnQueries = new ArrayList<>();
         for (List<DatabaseQuery> keyQueries : queries.values()) {
             Iterator<DatabaseQuery> queryIterator = keyQueries.iterator();
             while (queryIterator.hasNext()) {
@@ -315,9 +314,9 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
         if (clazz == null) {
             return null;
         }
-        LinkedHashSet<Class<?>> all = new LinkedHashSet<Class<?>>();
+        LinkedHashSet<Class<?>> all = new LinkedHashSet<>();
         getInterfaces(clazz, all);
-        ArrayList<Class<?>> list = new ArrayList<Class<?>>(all);
+        ArrayList<Class<?>> list = new ArrayList<>(all);
         for (int i = 0; i < all.size(); i++) {
             Class<?> clas = list.get(i);
             if (clas.getName().equals(List.class.getName())) {

@@ -731,7 +731,6 @@ public class KeyMappingsTestSuite {
             comparer.isNodeEqual(controlDoc, doc));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void buildEmployees() {
         XMLUnmarshaller unMarshaller = xrService.getXMLContext().createUnmarshaller();

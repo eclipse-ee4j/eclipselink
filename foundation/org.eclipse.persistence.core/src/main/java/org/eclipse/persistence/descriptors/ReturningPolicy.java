@@ -123,14 +123,14 @@ public class ReturningPolicy implements Serializable, Cloneable {
     /**
      * INTERNAL:
      */
-    public List<? extends DatabaseField> getFieldsToGenerateInsert(DatabaseTable table) {
+    public List<DatabaseField> getFieldsToGenerateInsert(DatabaseTable table) {
         return getVectorOfFieldsToGenerate(INSERT, table);
     }
 
     /**
      * INTERNAL:
      */
-    public List<? extends DatabaseField> getFieldsToGenerateUpdate(DatabaseTable table) {
+    public List<DatabaseField> getFieldsToGenerateUpdate(DatabaseTable table) {
         return getVectorOfFieldsToGenerate(UPDATE, table);
     }
 

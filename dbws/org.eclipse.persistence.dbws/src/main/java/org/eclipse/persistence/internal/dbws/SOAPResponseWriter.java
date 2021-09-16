@@ -58,7 +58,7 @@ import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 public class SOAPResponseWriter {
 
     protected DBWSAdapter dbwsAdapter;
-    protected Map<String, XMLDescriptor> resultDescriptors = new HashMap<String, XMLDescriptor>();
+    protected Map<String, XMLDescriptor> resultDescriptors = new HashMap<>();
     public static final QName RECEIVER_QNAME = new QName(URI_NS_SOAP_1_2_ENVELOPE, "Receiver");
     public static final QName SERVER_QNAME = new QName(URI_NS_SOAP_1_1_ENVELOPE, "Server");
 

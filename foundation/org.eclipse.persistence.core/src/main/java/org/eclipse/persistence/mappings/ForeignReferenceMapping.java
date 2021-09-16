@@ -2398,7 +2398,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             }
             fieldStartIndex = (Integer) map.get(cls);
         }
-        Vector trimedFields = new NonSynchronizedSubVector(row.getFields(), fieldStartIndex, row.size());
+        Vector<DatabaseField> trimedFields = new NonSynchronizedSubVector<>(row.getFields(), fieldStartIndex, row.size());
         Vector trimedValues = new NonSynchronizedSubVector(row.getValues(), fieldStartIndex, row.size());
         return new DatabaseRecord(trimedFields, trimedValues);
     }

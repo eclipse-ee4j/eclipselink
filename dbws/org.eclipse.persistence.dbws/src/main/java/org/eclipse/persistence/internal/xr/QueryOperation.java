@@ -203,7 +203,7 @@ public class QueryOperation extends Operation {
 
     // Made static final for performance reasons.
     private static final class DataHandlerInstantiationPolicy extends InstantiationPolicy {
-        protected String mimeType;
+        private String mimeType;
         public DataHandlerInstantiationPolicy(String mimeType) {
             super();
             this.mimeType = mimeType;
@@ -418,7 +418,7 @@ public class QueryOperation extends Operation {
                 if (returnedList.size() > 0 && returnedList.get(0) instanceof Object[]) {
                     Object[] objs = (Object[]) returnedList.get(0);
                     if (isCollection()) {
-                        value = new ArrayList<Object>();
+                        value = new ArrayList<>();
                         for (Object obj : objs) {
                             ((ArrayList<Object>) value).add(obj);
                         }
@@ -547,7 +547,7 @@ public class QueryOperation extends Operation {
             // assumes JPAQuery
             JPAQuery jpaQuery = (JPAQuery) queryHandler.getDatabaseQuery();
             // to match field names with results, we need to gather the database fields from each of the Output parameters
-            List<DatabaseField> paramFlds = new ArrayList<DatabaseField>();
+            List<DatabaseField> paramFlds = new ArrayList<>();
             DatasourceCall dsCall = (DatasourceCall) jpaQuery.getDatabaseQuery().getDatasourceCall();
             for (Object obj : dsCall.getParameters()) {
                 if (obj instanceof OutputParameterForCallableStatement) {
@@ -571,20 +571,20 @@ public class QueryOperation extends Operation {
             } else {
                 dr.add(new DatabaseField(RESULT_STR), ((ArrayList<?>) value).get(0));
             }
-            records = new Vector<DatabaseRecord>();
+            records = new Vector<>();
             records.add(dr);
         } else if (value instanceof Vector) {
             Class<?> vectorContent = ((Vector<?>)value).firstElement().getClass();
             if (DatabaseRecord.class.isAssignableFrom(vectorContent)) {
                 records = (Vector<DatabaseRecord>)value;
             } else {
-                records = new Vector<DatabaseRecord>();
+                records = new Vector<>();
                 DatabaseRecord dr = new DatabaseRecord();
                 dr.add(new DatabaseField(RESULT_STR), ((Vector<?>)value).firstElement());
                 records.add(dr);
             }
         } else {
-            records = new Vector<DatabaseRecord>();
+            records = new Vector<>();
             DatabaseRecord dr = new DatabaseRecord();
             dr.add(new DatabaseField(RESULT_STR), value);
             records.add(dr);
@@ -655,8 +655,6 @@ public class QueryOperation extends Operation {
                                 getStringMethod = PrivilegedAccessHelper.getDeclaredMethod(xmlTypeFactoryClass, GETSTRING_METHOD, new Class[] {oracleOPAQUE});
                                 fieldValue = PrivilegedAccessHelper.invokeMethod(getStringMethod, xmlTypeFactory, new Object[] {fieldValue});
                             }
-                        } catch (RuntimeException x) {
-                            throw x;
                         } catch (ReflectiveOperationException | PrivilegedActionException e) {
                             // if the required resources are not available there's nothing we can do...
                             log.logThrowable(SessionLog.FINE, SessionLog.DBWS, e);

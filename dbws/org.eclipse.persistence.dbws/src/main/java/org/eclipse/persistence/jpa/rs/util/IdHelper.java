@@ -196,7 +196,7 @@ public class IdHelper {
                 // If there are more that one PK, we assume an array as produced
                 // by buildId() above with the keys
                 // based on a sorted order of PK fields
-                List<SortableKey> pkIndices = new ArrayList<SortableKey>();
+                List<SortableKey> pkIndices = new ArrayList<>();
                 int index = 0;
                 for (DatabaseMapping mapping : pkMappings) {
                     pkIndices.add(new SortableKey(mapping, index));
@@ -226,7 +226,7 @@ public class IdHelper {
     public static List<SortableKey> getPrimaryKey(PersistenceContext context, String entityName) {
         ClassDescriptor descriptor = context.getDescriptor(entityName);
         List<DatabaseMapping> pkMappings = descriptor.getObjectBuilder().getPrimaryKeyMappings();
-        List<SortableKey> pkIndices = new ArrayList<SortableKey>();
+        List<SortableKey> pkIndices = new ArrayList<>();
         int index = 0;
         for (DatabaseMapping mapping : pkMappings) {
             if (!mapping.isMultitenantPrimaryKeyMapping()) {

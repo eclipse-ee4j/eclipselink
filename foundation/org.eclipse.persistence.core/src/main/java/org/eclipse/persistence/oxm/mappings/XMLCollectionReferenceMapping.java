@@ -84,8 +84,8 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      * and sourceToTargetKeys data structures.
      */
     public XMLCollectionReferenceMapping() {
-        sourceToTargetKeyFieldAssociations = new HashMap();
-        sourceToTargetKeys = new NonSynchronizedVector();
+        sourceToTargetKeyFieldAssociations = new HashMap<>();
+        sourceToTargetKeys = new NonSynchronizedVector<>();
         this.containerPolicy = ContainerPolicy.buildDefaultPolicy();
         this.usesSingleNode = false;
     }

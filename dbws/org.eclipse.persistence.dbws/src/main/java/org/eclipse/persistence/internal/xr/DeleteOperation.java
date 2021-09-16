@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,6 @@ import org.eclipse.persistence.sessions.UnitOfWork;
  * @author Mike Norman - michael.norman@oracle.com
  * @since EclipseLink 1.x
  */
-@SuppressWarnings({"unchecked"})
 public class DeleteOperation extends Operation {
     protected String descriptorName;
     protected ClassDescriptor classDescriptor;
@@ -127,11 +126,11 @@ public class DeleteOperation extends Operation {
             // set query args or execute args for the non-JPAQuery case,
             // i.e. stored proc/funcs get populated from ORM metadata
             // whereas named queries (SQL strings) do not...
-            List queryArguments = query.getArguments();
+            List<String> queryArguments = query.getArguments();
             int queryArgumentsSize = queryArguments.size();
-            Vector executeArguments = new NonSynchronizedVector();
+            Vector<Object> executeArguments = new NonSynchronizedVector<>();
             for (int i = 0; i < queryArgumentsSize; i++) {
-                String argName = (String)queryArguments.get(i);
+                String argName = queryArguments.get(i);
                 executeArguments.add(invocation.getParameter(argName));
             }
             toBeDeleted = uow.executeQuery(query, executeArguments);

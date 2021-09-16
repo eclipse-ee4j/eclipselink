@@ -818,7 +818,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * This code is not currently publicly supported.
      */
     protected Vector buildThreadCursoredResult(final DatabaseCall dbCall, final ResultSet resultSet, final Statement statement, final ResultSetMetaData metaData, final AbstractSession session) {
-        final ThreadCursoredList results = new ThreadCursoredList(20);
+        final ThreadCursoredList<AbstractRecord> results = new ThreadCursoredList<>(20);
         Runnable runnable = new Runnable() {
             @Override
             public void run() {

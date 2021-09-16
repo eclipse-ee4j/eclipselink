@@ -574,7 +574,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         insertStatement.setModifyRow(getModifyRow());
         if (getDescriptor().hasReturningPolicies() && getDescriptor().getReturnFieldsToGenerateInsert() != null) {
             // In case of RelationalDescriptor only return fields for current table must be used.
-            Vector<DatabaseField> returnFieldsForTable = new NonSynchronizedVector();
+            Vector<DatabaseField> returnFieldsForTable = new NonSynchronizedVector<>();
             for (DatabaseField item: getDescriptor().getReturnFieldsToGenerateInsert()) {
                 if (table.equals(item.getTable())) {
                     returnFieldsForTable.add(item);

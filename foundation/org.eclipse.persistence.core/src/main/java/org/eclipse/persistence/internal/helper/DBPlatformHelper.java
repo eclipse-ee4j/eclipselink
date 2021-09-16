@@ -175,10 +175,10 @@ public class DBPlatformHelper {
      * Open resourceName as input stream inside doPriviledged block
      */
     private static InputStream openResourceInputStream(final String resourceName, final ClassLoader classLoader) {
-        return (InputStream) AccessController.doPrivileged(
-            new PrivilegedAction() {
+        return AccessController.doPrivileged(
+            new PrivilegedAction<InputStream>() {
                 @Override
-                public Object run() {
+                public InputStream run() {
                     if (classLoader != null) {
                         return classLoader.getResourceAsStream(resourceName);
                     } else {

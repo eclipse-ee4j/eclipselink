@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ import java.util.List;
  * @since EclipseLink 2.6.0
  */
 public final class ItemLinksBuilder {
-    private final List<LinkV2> links = new ArrayList<LinkV2>();
+    private final List<LinkV2> links = new ArrayList<>();
 
     /**
      * Adds a 'self' link.

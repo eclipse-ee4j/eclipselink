@@ -1420,11 +1420,12 @@ public class ConcurrencyUtil {
      *         references. But the objects it refers to (e.g. cache keys) can be mutating all the time if new readers or
      *         active threads arrive.
      */
-    @SuppressWarnings("rawtypes")
     public DeferredLockManager cloneDeferredLockManager(DeferredLockManager deferredLockManagerOriginal) {
         // (a) Start by cloning from the original the two vectors of cache keys is administers
-        Vector cloneOfActiveLocks = (Vector) deferredLockManagerOriginal.getActiveLocks().clone();
-        Vector cloneOfDeferredLocks = (Vector) deferredLockManagerOriginal.getDeferredLocks().clone();
+        @SuppressWarnings("unchecked")
+        Vector<ConcurrencyManager> cloneOfActiveLocks = (Vector<ConcurrencyManager>) deferredLockManagerOriginal.getActiveLocks().clone();
+        @SuppressWarnings("unchecked")
+        Vector<ConcurrencyManager> cloneOfDeferredLocks = (Vector<ConcurrencyManager>) deferredLockManagerOriginal.getDeferredLocks().clone();
 
         // (b) Build our clone object
         DeferredLockManager deferredLockManagerClone = new DeferredLockManager();

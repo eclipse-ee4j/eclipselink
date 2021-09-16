@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,8 +30,8 @@ import java.util.*;
  * </ul>
  */
 public class DeferredLockManager {
-    protected Vector deferredLocks;
-    protected Vector activeLocks;
+    protected Vector<ConcurrencyManager> deferredLocks;
+    protected Vector<ConcurrencyManager> activeLocks;
     protected int threadDepth;
     protected boolean isThreadComplete;
 
@@ -42,8 +42,8 @@ public class DeferredLockManager {
      */
     public DeferredLockManager() {
         super();
-        this.deferredLocks = new Vector(1);
-        this.activeLocks = new Vector(1);
+        this.deferredLocks = new Vector<>(1);
+        this.activeLocks = new Vector<>(1);
         this.threadDepth = 0;
         this.isThreadComplete = false;
     }
@@ -52,14 +52,14 @@ public class DeferredLockManager {
      * add a concurrency manager as active locks to the DLM
      */
     public void addActiveLock(Object manager) {
-        getActiveLocks().addElement(manager);
+        getActiveLocks().addElement((ConcurrencyManager) manager);
     }
 
     /**
      * add a concurrency manager as deferred locks to the DLM
      */
     public void addDeferredLock(Object manager) {
-        getDeferredLocks().addElement(manager);
+        getDeferredLocks().addElement((ConcurrencyManager) manager);
     }
 
     /**
@@ -72,14 +72,14 @@ public class DeferredLockManager {
     /**
      * Return a set of the active locks from the DLM
      */
-    public Vector getActiveLocks() {
+    public Vector<ConcurrencyManager> getActiveLocks() {
         return activeLocks;
     }
 
     /**
      * Return a set of the deferred locks
      */
-    public Vector getDeferredLocks() {
+    public Vector<ConcurrencyManager> getDeferredLocks() {
         return deferredLocks;
     }
 
@@ -115,11 +115,11 @@ public class DeferredLockManager {
      * Release the active lock on the DLM
      */
     public void releaseActiveLocksOnThread() {
-        Vector activeLocks = getActiveLocks();
+        Vector<ConcurrencyManager> activeLocks = getActiveLocks();
         if (!activeLocks.isEmpty()) {
-            for (Enumeration activeLocksEnum = activeLocks.elements();
+            for (Enumeration<ConcurrencyManager> activeLocksEnum = activeLocks.elements();
                      activeLocksEnum.hasMoreElements();) {
-                ConcurrencyManager manager = (ConcurrencyManager)activeLocksEnum.nextElement();
+                ConcurrencyManager manager = activeLocksEnum.nextElement();
                 manager.release();
             }
         }
@@ -129,14 +129,14 @@ public class DeferredLockManager {
     /**
      * set a set of the active locks to the DLM
      */
-    public void setActiveLocks(Vector activeLocks) {
+    public void setActiveLocks(Vector<ConcurrencyManager> activeLocks) {
         this.activeLocks = activeLocks;
     }
 
     /**
      * set a set of the deferred locks to the DLM
      */
-    public void setDeferredLocks(Vector deferredLocks) {
+    public void setDeferredLocks(Vector<ConcurrencyManager> deferredLocks) {
         this.deferredLocks = deferredLocks;
     }
 

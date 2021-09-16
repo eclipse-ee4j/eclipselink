@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -108,23 +108,23 @@ public class ResourceSchema {
 
     public void addProperty(String name, Property property) {
         if (properties == null) {
-            properties = new ArrayList<JAXBElement>();
+            properties = new ArrayList<>();
         }
-        properties.add(new JAXBElement<Property>(new QName(name), Property.class, property));
+        properties.add(new JAXBElement<>(new QName(name), Property.class, property));
     }
 
     public void addDefinition(String name, ResourceSchema definition) {
         // Lazy initialization
         if (definitions == null) {
-            definitions = new ArrayList<JAXBElement>(1);
+            definitions = new ArrayList<>(1);
         }
-        definitions.add(new JAXBElement<ResourceSchema>(new QName(name), ResourceSchema.class, definition));
+        definitions.add(new JAXBElement<>(new QName(name), ResourceSchema.class, definition));
     }
 
     public void addAllOf(Reference reference) {
         // Lazy initialization
         if (allOf == null) {
-            allOf = new ArrayList<Reference>(1);
+            allOf = new ArrayList<>(1);
         }
         allOf.add(reference);
     }

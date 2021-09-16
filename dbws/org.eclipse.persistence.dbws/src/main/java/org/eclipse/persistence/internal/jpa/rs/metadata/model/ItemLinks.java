@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,7 +43,7 @@ public class ItemLinks {
      */
     public void setLinks(List<LinkV2> links) {
         if (this.links == null) {
-            this.links = new ArrayList<LinkV2>();
+            this.links = new ArrayList<>();
         }
 
         this.links = links;
@@ -56,7 +56,7 @@ public class ItemLinks {
      */
     public void addLink(LinkV2 link) {
         if (this.links == null) {
-            this.links = new ArrayList<LinkV2>();
+            this.links = new ArrayList<>();
         }
 
         this.links.add(link);
