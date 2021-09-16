@@ -19,7 +19,6 @@ path_classifiers:
 #########################################################################################
 
 queries:
-  - include: "*"
   # "by design" - synch is being removed intentionally
   - exclude: java/non-sync-override
 
