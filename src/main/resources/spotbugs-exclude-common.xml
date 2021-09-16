@@ -11,4 +11,83 @@
 -->
 
 <FindBugsFilter>
+
+    <!-- Cloneable warnings -->
+    <Match>
+        <Or>
+            <!-- clones by constructor -->
+            <Class name="org.eclipse.persistence.descriptors.PessimisticLockingPolicy"/>
+            <Class name="org.eclipse.persistence.internal.helper.NonSynchronizedProperties"/>
+            <Class name="org.eclipse.persistence.internal.helper.NonSynchronizedVector"/>
+            <Class name="org.eclipse.persistence.internal.jpa.CMP3Policy"/>
+            <Class name="org.eclipse.persistence.internal.oxm.XMLUnmarshaller"/>
+            <Class name="org.eclipse.persistence.internal.sessions.EmptyRecord"/>
+            <Class name="org.eclipse.persistence.oxm.XMLMarshaller"/>
+            <Class name="org.eclipse.persistence.oxm.XMLUnmarshaller"/>
+            <Class name="org.eclipse.persistence.sdo.helper.ListWrapper"/>
+            <Class name="org.eclipse.persistence.sessions.interceptors.CacheKeyInterceptor"/>
+            <!-- optimized cloning -->
+            <Class name="org.eclipse.persistence.core.queries.CoreAttributeGroup"/>
+        </Or>
+        <Bug pattern="CN_IDIOM_NO_SUPER_CALL"/>
+    </Match>
+
+    <Match>
+        <Or>
+            <!-- clones by constructor -->
+            <Class name="org.eclipse.persistence.internal.jpa.metadata.mappings.AccessMethodsMetadata"/>
+        </Or>
+        <Bug pattern="CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE"/>
+    </Match>
+    <!-- End of Cloneable warnings -->
+
+
+    <!--
+        JPQL (Hermes) Parser "by design" warnings
+    -->
+    <Match>
+        <Package name="~org.eclipse.persistence.jpa.jpql.*" />
+        <Bug pattern="ES_COMPARING_STRINGS_WITH_EQ"/>
+    </Match>
+
+    <Match>
+        <!-- defined in javadoc -->
+        <Class name="org.eclipse.persistence.jpa.jpql.WordParser"/>
+        <Method name="startsWithDigit"/>
+        <Bug pattern="NP_BOOLEAN_RETURN_NULL"/>
+    </Match>
+
+    <Match>
+        <!-- works with WordParser.startsWithDigit -->
+        <Class name="org.eclipse.persistence.jpa.jpql.parser.ArithmeticExpressionFactory"/>
+        <Method name="buildExpression"/>
+        <Bug pattern="RC_REF_COMPARISON_BAD_PRACTICE_BOOLEAN"/>
+    </Match>
+
+    <Match>
+        <!-- defined in javadoc -->
+        <Class name="org.eclipse.persistence.jpa.jpql.AbstractSemanticValidator"/>
+        <Method name="validateThirdPartyStateFieldPathExpression"/>
+        <Bug pattern="NP_BOOLEAN_RETURN_NULL"/>
+    </Match>
+
+    <Match>
+        <Class name="org.eclipse.persistence.jpa.jpql.tools.AbstractContentAssistVisitor"/>
+        <Method name="isCompoundFunction"/>
+        <Bug pattern="ES_COMPARING_PARAMETER_STRING_WITH_EQ"/>
+    </Match>
+
+    <Match>
+        <Class name="org.eclipse.persistence.jpa.jpql.tools.resolver.DeclarationResolver"/>
+        <Method name="isCollectionIdentificationVariableImp"/>
+        <Or>
+            <!-- false positive: case statement does not contain 'break;' -->
+            <Bug pattern="SF_SWITCH_NO_DEFAULT"/>
+            <!-- check for return value from the method
+                 which can be overwridden in a subclass   -->
+            <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE"/>
+        </Or>
+    </Match>
+    <!-- End of JPQL (Hermes) Parser warnings -->
+
 </FindBugsFilter>
