@@ -41,7 +41,7 @@ import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoOperation;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
 import org.eclipse.persistence.nosql.adapters.mongo.MongoPlatform;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.testing.models.jpa.mongo.Address;
@@ -886,8 +886,8 @@ public class MongoTestSuite extends JUnitTestCase {
         Query query = em.unwrap(JpaEntityManager.class).createQuery(interaction);
         List result = query.getResultList();
         if ((result.size() != 1)
-                || (!(result.get(0) instanceof Record))
-                || !(((Record)result.get(0)).get("_id").equals(existingOrder.id))) {
+                || (!(result.get(0) instanceof DataRecord))
+                || !(((DataRecord)result.get(0)).get("_id").equals(existingOrder.id))) {
             fail("Incorrect result: " + result);
         }
 

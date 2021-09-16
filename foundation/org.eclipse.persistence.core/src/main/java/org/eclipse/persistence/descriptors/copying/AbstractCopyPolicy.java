@@ -17,7 +17,7 @@ package org.eclipse.persistence.descriptors.copying;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
 
@@ -49,7 +49,7 @@ public abstract class AbstractCopyPolicy implements CopyPolicy {
      * By default create a new instance.
      */
     @Override
-    public Object buildWorkingCopyCloneFromRow(Record row, ObjectBuildingQuery query, Object primaryKey, UnitOfWork uow) throws DescriptorException {
+    public Object buildWorkingCopyCloneFromRow(DataRecord row, ObjectBuildingQuery query, Object primaryKey, UnitOfWork uow) throws DescriptorException {
         return this.descriptor.getObjectBuilder().buildNewInstance();
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,7 +24,7 @@ import java.util.Vector;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.indirection.ValueHolder;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 
 
@@ -90,14 +90,14 @@ public class PersonWithValueHolder {
         return phoneNumbers;
     }
 
-    public Time[] buildNormalHours(Record row) {
+    public Time[] buildNormalHours(DataRecord row) {
         Time[] hours = new Time[2];
         // hours[0] = (Time) session.getPlatform().convertObject(row.get("START_TIME"), java.sql.Time.class);
         //hours[1] = (Time) session.getPlatform().convertObject(row.get("END_TIME"), java.sql.Time.class);
         return hours;
     }
 
-    public Time[] buildNormalHoursAgain(Record row, Session session) throws DescriptorException {
+    public Time[] buildNormalHoursAgain(DataRecord row, Session session) throws DescriptorException {
         Time[] hours = new Time[2];
         // hours[0] = (Time) session.getPlatform().convertObject(row.get("START_TIME"), java.sql.Time.class);
         // hours[1] = (Time) session.getPlatform().convertObject(row.get("END_TIME"), java.sql.Time.class);

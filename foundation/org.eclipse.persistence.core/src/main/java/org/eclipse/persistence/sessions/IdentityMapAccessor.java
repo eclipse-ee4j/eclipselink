@@ -90,7 +90,7 @@ public interface IdentityMapAccessor {
      * Returns true if the identity map contains an Object with the same primary key
      * of the specified row (i.e. the database record) and Class type.
      */
-    boolean containsObjectInIdentityMap(Record rowContainingPrimaryKey, Class theClass);
+    boolean containsObjectInIdentityMap(DataRecord rowContainingPrimaryKey, Class theClass);
 
     /**
      * ADVANCED:
@@ -106,7 +106,7 @@ public interface IdentityMapAccessor {
      * @param shouldReturnInvalidatedObjects boolean - true if only invalid Objects should be returned
      * @return Vector of Objects
      */
-    Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, InMemoryQueryIndirectionPolicy valueHolderPolicy, boolean shouldReturnInvalidatedObjects) throws QueryException;
+    Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, DataRecord translationRow, InMemoryQueryIndirectionPolicy valueHolderPolicy, boolean shouldReturnInvalidatedObjects) throws QueryException;
 
     /**
      * ADVANCED:
@@ -122,7 +122,7 @@ public interface IdentityMapAccessor {
      * @param shouldReturnInvalidatedObjects boolean - true if only invalid Objects should be returned
      * @return Vector of Objects
      */
-    Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy, boolean shouldReturnInvalidatedObjects) throws QueryException;
+    Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, DataRecord translationRow, int valueHolderPolicy, boolean shouldReturnInvalidatedObjects) throws QueryException;
 
     /**
      * ADVANCED:
@@ -135,7 +135,7 @@ public interface IdentityMapAccessor {
      * {@link org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy InMemoryQueryIndirectionPolicy}
      * @return Vector of Objects with type theClass and matching the selectionCriteria
      */
-    Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, InMemoryQueryIndirectionPolicy valueHolderPolicy) throws QueryException;
+    Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, DataRecord translationRow, InMemoryQueryIndirectionPolicy valueHolderPolicy) throws QueryException;
 
     /**
      * ADVANCED:
@@ -148,7 +148,7 @@ public interface IdentityMapAccessor {
      * {@link org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy InMemoryQueryIndirectionPolicy}
      * @return Vector of Objects with type theClass and matching the selectionCriteria
      */
-    Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy) throws QueryException;
+    Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, DataRecord translationRow, int valueHolderPolicy) throws QueryException;
 
     /**
      * ADVANCED:
@@ -176,7 +176,7 @@ public interface IdentityMapAccessor {
      * @param theClass Class
      * @return Object from identity map, may be null.
      */
-    Object getFromIdentityMap(Record rowContainingPrimaryKey, Class theClass);
+    Object getFromIdentityMap(DataRecord rowContainingPrimaryKey, Class theClass);
 
     /**
      * ADVANCED:
@@ -197,7 +197,7 @@ public interface IdentityMapAccessor {
      * @param shouldReturnInvalidatedObjects boolean
      * @return Object from identity map, may be null.
      */
-    Object getFromIdentityMap(Record rowContainingPrimaryKey, Class theClass, boolean shouldReturnInvalidatedObjects);
+    Object getFromIdentityMap(DataRecord rowContainingPrimaryKey, Class theClass, boolean shouldReturnInvalidatedObjects);
 
     /**
      * ADVANCED:
@@ -209,7 +209,7 @@ public interface IdentityMapAccessor {
      * @param translationRow Record
      * @return Object from identity map, may be null
      */
-    Object getFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow) throws QueryException;
+    Object getFromIdentityMap(Expression selectionCriteria, Class theClass, DataRecord translationRow) throws QueryException;
 
     /**
      * ADVANCED:
@@ -224,7 +224,7 @@ public interface IdentityMapAccessor {
      * see {@link org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy InMemoryQueryIndirectionPolicy}
      * @return Object from identity map, may be null
      */
-    Object getFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, InMemoryQueryIndirectionPolicy valueHolderPolicy) throws QueryException;
+    Object getFromIdentityMap(Expression selectionCriteria, Class theClass, DataRecord translationRow, InMemoryQueryIndirectionPolicy valueHolderPolicy) throws QueryException;
 
     /**
      * ADVANCED:
@@ -239,7 +239,7 @@ public interface IdentityMapAccessor {
      * see {@link org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy InMemoryQueryIndirectionPolicy}
      * @return Object from identity map, may be null
      */
-    Object getFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy) throws QueryException;
+    Object getFromIdentityMap(Expression selectionCriteria, Class theClass, DataRecord translationRow, int valueHolderPolicy) throws QueryException;
 
     /**
      * ADVANCED:
@@ -335,14 +335,14 @@ public interface IdentityMapAccessor {
      * be invalid in the cache. If the Object does not exist in the cache,
      * this method will return without any action.
      */
-    void invalidateObject(Record rowContainingPrimaryKey, Class theClass);
+    void invalidateObject(DataRecord rowContainingPrimaryKey, Class theClass);
 
     /**
      * ADVANCED:
      * Set an object to be invalid in the cache.
      * @param invalidateCluster if true the invalidation will be broadcast to each server in the cluster.
      */
-    void invalidateObject(Record rowContainingPrimaryKey, Class theClass, boolean invalidateCluster);
+    void invalidateObject(DataRecord rowContainingPrimaryKey, Class theClass, boolean invalidateCluster);
 
     /**
      * ADVANCED:
@@ -383,7 +383,7 @@ public interface IdentityMapAccessor {
      * @param translationRow Record
      * @param shouldInvalidateOnException boolean indicates weather to invalidate the object if conform threw exception.
      */
-    void invalidateObjects(Expression selectionCriteria, Class theClass, Record translationRow, boolean shouldInvalidateOnException);
+    void invalidateObjects(Expression selectionCriteria, Class theClass, DataRecord translationRow, boolean shouldInvalidateOnException);
 
     /**
      * ADVANCED:
@@ -428,7 +428,7 @@ public interface IdentityMapAccessor {
      * Returns true if this Object with the given primary key of the Row and Class type
      * given is valid in the cache.
      */
-    boolean isValid(Record rowContainingPrimaryKey, Class theClass);
+    boolean isValid(DataRecord rowContainingPrimaryKey, Class theClass);
 
     /**
      * PUBLIC:

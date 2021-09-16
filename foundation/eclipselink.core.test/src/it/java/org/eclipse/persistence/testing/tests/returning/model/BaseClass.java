@@ -78,7 +78,7 @@ public abstract class BaseClass implements Cloneable {
         }
     }
 
-    public BigDecimal[] build_a_plus_minus_b_BigDecimal(org.eclipse.persistence.sessions.Record row, Session session) {
+    public BigDecimal[] build_a_plus_minus_b_BigDecimal(DataRecord row, Session session) {
         BigDecimal[] a_plus_minus_b_BigDecimal = new BigDecimal[2];
         BigDecimal a = session.getDatasourcePlatform().convertObject(row.get(getFieldAName()), BigDecimal.class);
         BigDecimal b = session.getDatasourcePlatform().convertObject(row.get(getFieldBName()), BigDecimal.class);

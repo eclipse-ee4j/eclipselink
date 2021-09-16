@@ -32,7 +32,7 @@ public abstract class ClassExtractor {
      * Map is used as the public interface to database row, the key is the field name,
      * the value is the database value.
      */
-    public abstract <T> Class<T> extractClassFromRow(org.eclipse.persistence.sessions.Record databaseRow, Session session);
+    public abstract <T> Class<T> extractClassFromRow(DataRecord databaseRow, Session session);
 
     /**
      * Allow for any initialization.

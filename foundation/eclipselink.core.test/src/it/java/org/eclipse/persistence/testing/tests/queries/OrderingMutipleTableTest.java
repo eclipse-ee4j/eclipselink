@@ -44,12 +44,12 @@ public class OrderingMutipleTableTest extends OrderingTest {
 
     @Override
     protected void verify() {
-        org.eclipse.persistence.sessions.Record row;
+        DataRecord row;
         org.eclipse.persistence.testing.models.employee.domain.Project project;
         String name;
 
         for (int i = 0; i < orderedQueryObjects.size(); i++) {
-            row = (org.eclipse.persistence.sessions.Record)customSQLRows.elementAt(i);
+            row = (DataRecord)customSQLRows.elementAt(i);
             project = (org.eclipse.persistence.testing.models.employee.domain.Project)orderedQueryObjects.elementAt(i);
             name = (String)row.get("PROJ_NAME");
 

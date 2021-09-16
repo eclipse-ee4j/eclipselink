@@ -491,7 +491,7 @@ public class Employee implements Serializable {
         return rank;
     }
 
-    public String getRankFromRow(org.eclipse.persistence.sessions.Record row, Session aSession) {
+    public String getRankFromRow(DataRecord row, Session aSession) {
         if (row.get("ERANK") == null) {
             return null;
         }
@@ -557,7 +557,7 @@ public class Employee implements Serializable {
         this.computer = computer;
     }
 
-    public java.util.Date setDateAndTime(org.eclipse.persistence.sessions.Record row, org.eclipse.persistence.sessions.Session session) {
+    public java.util.Date setDateAndTime(DataRecord row, org.eclipse.persistence.sessions.Session session) {
         java.sql.Date sqlDateOfBirth = ConversionManager.getDefaultManager().convertObject(row.get("BDAY"), java.sql.Date.class);
         java.sql.Time timeOfBirth = session.getLogin().getPlatform().convertObject(row.get("BTIME"), java.sql.Time.class);
         if ((timeOfBirth == null) || (sqlDateOfBirth == null)) {

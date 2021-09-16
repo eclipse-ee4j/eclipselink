@@ -26,7 +26,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.DatabaseQuery;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.server.ServerSession;
@@ -753,7 +753,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
     }
 
     @Override
-    public Object profileExecutionOfQuery(DatabaseQuery query, Record row, AbstractSession session) {
+    public Object profileExecutionOfQuery(DatabaseQuery query, DataRecord row, AbstractSession session) {
         //This is to profile the query execution and no operation name is given
         startOperationProfile(null, query, DMSConsole.HEAVY);
         Object result = null;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,7 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.record.XMLRecord;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 
 public class QNameTransformer implements AttributeTransformer, FieldTransformer {
@@ -49,12 +49,12 @@ public class QNameTransformer implements AttributeTransformer, FieldTransformer 
     }
 
     @Override
-    public Object buildAttributeValue(Record record, Object object, Session session) {
-        if (null == record) {
+    public Object buildAttributeValue(DataRecord dataRecord, Object object, Session session) {
+        if (null == dataRecord) {
             return null;
         }
 
-        String value = (String) record.get(xPath);
+        String value = (String) dataRecord.get(xPath);
         if (null == value) {
             return null;
         }
@@ -63,14 +63,14 @@ public class QNameTransformer implements AttributeTransformer, FieldTransformer 
         if (index > -1) {
             String prefix = value.substring(0, index);
             String localName = value.substring(index + 1);
-            String namespaceURI = ((XMLRecord) record).resolveNamespacePrefix(prefix);
+            String namespaceURI = ((XMLRecord) dataRecord).resolveNamespacePrefix(prefix);
             if (namespaceURI != null) {
                 return namespaceURI + HASH + localName;
             } else {
                 return localName;
             }
         } else {
-            String namespaceURI = ((XMLRecord) record).resolveNamespacePrefix(DEFAULT_NAMESPACE_PREFIX);
+            String namespaceURI = ((XMLRecord) dataRecord).resolveNamespacePrefix(DEFAULT_NAMESPACE_PREFIX);
             if (namespaceURI != null) {
                 return namespaceURI + HASH + value;
             } else {

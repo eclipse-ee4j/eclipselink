@@ -18,12 +18,12 @@ import java.util.List;
 
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.QueryRedirector;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 
 public class ArrayQueryRedirector implements QueryRedirector {
     @Override
-    public Object invokeQuery(DatabaseQuery query, Record record, Session session) {
+    public Object invokeQuery(DatabaseQuery query, DataRecord dataRecord, Session session) {
         List result = (List)session.executeQuery(query);
         return result.toArray(new Object[result.size()]);
     }

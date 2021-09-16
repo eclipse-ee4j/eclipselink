@@ -18,6 +18,7 @@ import java.io.*;
 import java.util.Enumeration;
 import org.eclipse.persistence.descriptors.*;
 import org.eclipse.persistence.mappings.*;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.tools.schemaframework.*;
 
 public class Computer implements Serializable {
@@ -114,7 +115,7 @@ public class Computer implements Serializable {
         return mainframe;
     }
 
-    public static Class getClassFromRow(org.eclipse.persistence.sessions.Record row) {
+    public static Class getClassFromRow(DataRecord row) {
         if (row.get("CTYPE").equals("PC")) {
             if (row.get("PCTYPE").equals("IBM")) {
                 return org.eclipse.persistence.testing.models.inheritance.IBMPC.class;

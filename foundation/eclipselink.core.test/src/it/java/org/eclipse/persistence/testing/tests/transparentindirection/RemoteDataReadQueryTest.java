@@ -65,7 +65,7 @@ public class RemoteDataReadQueryTest extends AutoVerifyTestCase {
         int count = 0;
         while (stream.hasMoreElements()) {
             count++;
-            org.eclipse.persistence.sessions.Record row = (org.eclipse.persistence.sessions.Record)stream.nextElement();
+            DataRecord row = (DataRecord)stream.nextElement();
             if (row.get("CUSTNAME") == null) {
                 throw new TestErrorException("missing data");
             }
@@ -81,7 +81,7 @@ public class RemoteDataReadQueryTest extends AutoVerifyTestCase {
 
         stack = (Stack)getSession().executeQuery(query);
         // if we get here, we must not have generated a ClassCastException
-        org.eclipse.persistence.sessions.Record row = (org.eclipse.persistence.sessions.Record)stack.peek();
+        DataRecord row = (DataRecord)stack.peek();
         if (row.get("CUSTNAME") == null) {
             throw new TestErrorException("missing data");
         }

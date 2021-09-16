@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,7 +30,7 @@ import org.eclipse.persistence.eis.interactions.MappedInteraction;
 import org.eclipse.persistence.internal.nosql.adapters.nosql.OracleNoSQLOperation;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.nosql.adapters.nosql.OracleNoSQLPlatform;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.testing.framework.junit.LogTestExecution;
 import org.eclipse.persistence.testing.models.jpa.nosql.mapped.Address;
 import org.eclipse.persistence.testing.models.jpa.nosql.mapped.Customer;
@@ -329,9 +329,9 @@ public class NoSQLJPAMappedTest {
         final List<Object> result1 = query1.getResultList();
         assertEquals(String.format("Expected result of size 1, got %d", result1.size()), 1, result1.size());
         assertTrue(String.format("Result is not instance of Record but %s", result1.get(0).getClass().getSimpleName()),
-                (result1.get(0) instanceof Record));
+                (result1.get(0) instanceof DataRecord));
         assertTrue(String.format("Incorrect result: %s", result1),
-                (((Record)result1.get(0)).containsKey("[Order-mapped," + existingOrder.id + "]")));
+                (((DataRecord)result1.get(0)).containsKey("[Order-mapped," + existingOrder.id + "]")));
 
         interaction = new MappedInteraction();
         interaction.setProperty(OracleNoSQLPlatform.OPERATION, OracleNoSQLOperation.GET.name());

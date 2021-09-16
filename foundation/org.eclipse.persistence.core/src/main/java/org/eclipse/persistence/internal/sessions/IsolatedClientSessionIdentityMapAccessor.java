@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,10 +20,9 @@ import org.eclipse.persistence.internal.identitymaps.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.descriptors.CacheIndex;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
@@ -185,7 +184,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * Only return objects that are invalid in the cache if specified.
      */
     @Override
-    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy, boolean shouldReturnInvalidatedObjects) throws QueryException {
+    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, DataRecord translationRow, int valueHolderPolicy, boolean shouldReturnInvalidatedObjects) throws QueryException {
         if (!session.getDescriptor(theClass).getCachePolicy().isSharedIsolation()) {
             return getIdentityMapManager().getAllFromIdentityMap(selectionCriteria, theClass, translationRow, valueHolderPolicy, shouldReturnInvalidatedObjects);
         } else {
@@ -380,7 +379,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * If the expression is too complex an exception will be thrown.
      */
     @Override
-    public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy, boolean conforming, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
+    public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, DataRecord translationRow, int valueHolderPolicy, boolean conforming, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         if (!descriptor.getCachePolicy().isSharedIsolation()) {
             return getIdentityMapManager().getFromIdentityMap(selectionCriteria, theClass, translationRow, valueHolderPolicy, conforming, shouldReturnInvalidatedObjects, descriptor);
         } else {
@@ -662,7 +661,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * @param shouldInvalidateOnException boolean indicates weather to invalidate the object if conform threw exception.
      */
     @Override
-    public void invalidateObjects(Expression selectionCriteria, Class theClass, Record translationRow, boolean shouldInvalidateOnException) {
+    public void invalidateObjects(Expression selectionCriteria, Class theClass, DataRecord translationRow, boolean shouldInvalidateOnException) {
         if (!session.getDescriptor(theClass).getCachePolicy().isSharedIsolation()) {
             getIdentityMapManager().invalidateObjects(selectionCriteria, theClass, translationRow, shouldInvalidateOnException);
         } else {

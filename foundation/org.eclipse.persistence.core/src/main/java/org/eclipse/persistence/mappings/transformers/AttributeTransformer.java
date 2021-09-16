@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,7 @@ package org.eclipse.persistence.mappings.transformers;
 
 import java.io.*;
 import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 
 /**
@@ -36,10 +36,10 @@ public interface AttributeTransformer extends Serializable {
     void initialize(AbstractTransformationMapping mapping);
 
     /**
-     * @param record - The metadata being used to build the object.
+     * @param dataRecord - The metadata being used to build the object.
      * @param session - the current session
      * @param object - The current object that the attribute is being built for.
      * @return - The attribute value to be built into the object containing this mapping.
      */
-    Object buildAttributeValue(Record record, Object object, Session session);
+    Object buildAttributeValue(DataRecord dataRecord, Object object, Session session);
 }

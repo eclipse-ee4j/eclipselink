@@ -18,7 +18,8 @@ package org.eclipse.persistence.sequencing;
 
 import java.util.Vector;
 import java.math.BigDecimal;
-import org.eclipse.persistence.sessions.Record;
+
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -287,8 +288,8 @@ public class QuerySequence extends StandardSequence {
                     currentValue = BigDecimal.valueOf(((Number)result).longValue());
                 } else if (result instanceof String) {
                     currentValue = new BigDecimal((String)result);
-                } else if (result instanceof Record) {
-                    Object val = ((Record)result).get("text()");
+                } else if (result instanceof DataRecord) {
+                    Object val = ((DataRecord)result).get("text()");
                     currentValue = new BigDecimal((String)val);
                 } else {
                     // DatabaseException.errorPreallocatingSequenceNumbers() is thrown by the superclass

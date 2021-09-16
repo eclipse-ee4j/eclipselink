@@ -211,8 +211,8 @@ public class AdapterForReturningProject extends AdapterWithReturnObjectControl {
     }
 
     @Override
-    protected org.eclipse.persistence.sessions.Record getRowForInsert(org.eclipse.persistence.sessions.Record rowToInsert) {
-        org.eclipse.persistence.sessions.Record row = new DatabaseRecord();
+    protected DataRecord getRowForInsert(DataRecord rowToInsert) {
+        DataRecord row = new DatabaseRecord();
         Enumeration insertFields = insertInfos.keys();
         while (insertFields.hasMoreElements()) {
             DatabaseField field = (DatabaseField)insertFields.nextElement();
@@ -226,8 +226,8 @@ public class AdapterForReturningProject extends AdapterWithReturnObjectControl {
     }
 
     @Override
-    protected org.eclipse.persistence.sessions.Record getRowForUpdate(org.eclipse.persistence.sessions.Record rowChange) {
-        org.eclipse.persistence.sessions.Record row = new DatabaseRecord();
+    protected DataRecord getRowForUpdate(DataRecord rowChange) {
+        DataRecord row = new DatabaseRecord();
         Enumeration updateFields = updateInfos.keys();
         while (updateFields.hasMoreElements()) {
             DatabaseField field = (DatabaseField)updateFields.nextElement();

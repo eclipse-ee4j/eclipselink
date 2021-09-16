@@ -65,7 +65,7 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadQuery;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.interceptors.CacheInterceptor;
 
@@ -529,7 +529,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
     /**
      * Query the cache in-memory.
      */
-    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy, boolean shouldReturnInvalidatedObjects) {
+    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, DataRecord translationRow, int valueHolderPolicy, boolean shouldReturnInvalidatedObjects) {
         ClassDescriptor descriptor = this.session.getDescriptor(theClass);
         this.session.startOperationProfile(SessionProfiler.Caching);
         Vector objects = null;
@@ -623,7 +623,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
     /**
      * Invalidate objects meeting selectionCriteria.
      */
-    public void invalidateObjects(Expression selectionCriteria, Class theClass, Record translationRow, boolean shouldInvalidateOnException) {
+    public void invalidateObjects(Expression selectionCriteria, Class theClass, DataRecord translationRow, boolean shouldInvalidateOnException) {
         ClassDescriptor descriptor = this.session.getDescriptor(theClass);
         this.session.startOperationProfile(SessionProfiler.Caching);
         try {
@@ -846,7 +846,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
         return domainObject;
     }
 
-    public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy, boolean conforming, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
+    public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, DataRecord translationRow, int valueHolderPolicy, boolean conforming, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         UnitOfWorkImpl unitOfWork = (conforming) ? (UnitOfWorkImpl)this.session : null;
         this.session.startOperationProfile(SessionProfiler.Caching);
         try {

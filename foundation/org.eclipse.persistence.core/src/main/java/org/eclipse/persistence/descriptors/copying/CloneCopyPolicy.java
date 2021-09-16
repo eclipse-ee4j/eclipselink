@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -122,7 +122,7 @@ public class CloneCopyPolicy extends AbstractCopyPolicy {
      * Create a new instance, unless a workingCopyClone method is specified, then build a new instance and clone it.
      */
     @Override
-    public Object buildWorkingCopyCloneFromRow(org.eclipse.persistence.sessions.Record row, ObjectBuildingQuery query, Object primaryKey, UnitOfWork uow) throws DescriptorException {
+    public Object buildWorkingCopyCloneFromRow(DataRecord row, ObjectBuildingQuery query, Object primaryKey, UnitOfWork uow) throws DescriptorException {
         // For now must preserve CMP code which builds heavy clones with a context.
         // Also preserve for clients who use the copy policy.
         ObjectBuilder builder = getDescriptor().getObjectBuilder();

@@ -144,7 +144,7 @@ public class SequenceFieldRemovalForAcquireValueAfterInsertTest extends TestCase
 
         @Override
         public void aboutToInsert(DescriptorEvent event) {
-            org.eclipse.persistence.sessions.Record modifyRow = event.getRecord();
+            DataRecord modifyRow = event.getRecord();
             Object[] keys = modifyRow.keySet().toArray();
             for (int i = 0; i < keys.length; i++) {
                 Object key = keys[i];

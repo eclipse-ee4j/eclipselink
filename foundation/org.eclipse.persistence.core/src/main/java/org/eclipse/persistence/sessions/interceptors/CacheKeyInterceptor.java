@@ -17,7 +17,7 @@ package org.eclipse.persistence.sessions.interceptors;
 import org.eclipse.persistence.internal.identitymaps.AbstractIdentityMap;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.identitymaps.IdentityMap;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 
 /**
  * The CacheKeyInterceptor allows a Cache Interceptor implementation to wrap the EclipseLink CacheKey.
@@ -167,7 +167,7 @@ public class CacheKeyInterceptor extends CacheKey{
         }
 
         @Override
-        public Record getRecord() {
+        public DataRecord getRecord() {
             return wrappedKey.getRecord();
         }
 
@@ -269,8 +269,8 @@ public class CacheKeyInterceptor extends CacheKey{
         }
 
         @Override
-        public void setRecord(Record newRecord) {
-            wrappedKey.setRecord(newRecord);
+        public void setRecord(DataRecord newDataRecord) {
+            wrappedKey.setRecord(newDataRecord);
         }
 
         @Override

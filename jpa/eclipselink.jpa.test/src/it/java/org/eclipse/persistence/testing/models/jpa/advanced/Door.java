@@ -32,7 +32,7 @@ import org.eclipse.persistence.annotations.Mutable;
 import org.eclipse.persistence.annotations.ReadTransformer;
 import org.eclipse.persistence.annotations.WriteTransformer;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 
 @Entity
@@ -114,7 +114,7 @@ public class Door implements Serializable, Cloneable {
         this.WarrantyDate = date;
     }
 
-    public Date calcWarrantyDate(Record row, Session session) {
+    public Date calcWarrantyDate(DataRecord row, Session session) {
         Date date = session.getDatasourcePlatform().convertObject(row.get("SALE_DATE"), Date.class );
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);

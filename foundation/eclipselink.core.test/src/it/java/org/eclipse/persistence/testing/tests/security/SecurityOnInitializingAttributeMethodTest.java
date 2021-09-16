@@ -20,7 +20,7 @@ import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.TransformationMapping;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 
 //Created by Ian Reid
@@ -68,21 +68,21 @@ public class SecurityOnInitializingAttributeMethodTest extends ExceptionTestSave
     }
 
     static class AttributeMethodOneArg extends AttributeMethod {
-        public Date buildNormalHours(Record record) {
+        public Date buildNormalHours(DataRecord dataRecord) {
             //do nothing security manager will cause error to occur
             return null;
         }
     }
 
     static class AttributeMethodAbstractSession extends AttributeMethod {
-        public Date buildNormalHours(Record record, AbstractSession session) {
+        public Date buildNormalHours(DataRecord dataRecord, AbstractSession session) {
             //do nothing security manager will cause error to occur
             return null;
         }
     }
 
     static class AttributeMethodSession extends AttributeMethod {
-        public Date buildNormalHours(Record record, Session s) {
+        public Date buildNormalHours(DataRecord dataRecord, Session s) {
             //do nothing security manager will cause error to occur
             return null;
         }

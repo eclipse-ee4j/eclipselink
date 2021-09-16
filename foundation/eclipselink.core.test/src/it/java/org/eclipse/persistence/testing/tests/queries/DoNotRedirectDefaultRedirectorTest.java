@@ -63,7 +63,7 @@ public class DoNotRedirectDefaultRedirectorTest extends TestCase {
      * Below are the methods called by the redirectors for various toplink queries
      */
 
-    public static Object readObject(DatabaseQuery query, org.eclipse.persistence.sessions.Record row, org.eclipse.persistence.sessions.Session session) {
+    public static Object readObject(DatabaseQuery query, DataRecord row, org.eclipse.persistence.sessions.Session session) {
         throw new TestErrorException("Query setting doNotRedirect was ignored");
     }
 

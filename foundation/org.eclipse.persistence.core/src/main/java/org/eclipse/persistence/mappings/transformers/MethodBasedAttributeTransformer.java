@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetMethodParameterTypes;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 
 /**
@@ -114,7 +114,7 @@ public class MethodBasedAttributeTransformer implements AttributeTransformer {
      * Build the attribute value by invoking the user's transformation method.
      */
     @Override
-    public Object buildAttributeValue(Record record, Object object, Session session) {
+    public Object buildAttributeValue(DataRecord dataRecord, Object object, Session session) {
         Class[] parameterTypes = null;
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try{
@@ -126,7 +126,7 @@ public class MethodBasedAttributeTransformer implements AttributeTransformer {
             parameterTypes = PrivilegedAccessHelper.getMethodParameterTypes(attributeTransformationMethod);
         }
         Object[] parameters = new Object[parameterTypes.length];
-        parameters[0] = record;
+        parameters[0] = dataRecord;
         if (parameters.length == 2) {
             parameters[1] = session;
         }

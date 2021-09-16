@@ -14,8 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.sessions;
 
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.DatabaseRecord;
-import org.eclipse.persistence.sessions.Record;
 
 /**
  * <p>
@@ -47,7 +47,7 @@ public class TransformationMappingChangeRecord extends ChangeRecord implements o
      * This method is used to access the changes of the fields in a transformation mapping.
      */
     @Override
-    public Record getRecord() {
+    public DataRecord getRecord() {
         if (rowCollection == null) {
             this.rowCollection = new DatabaseRecord();
         }

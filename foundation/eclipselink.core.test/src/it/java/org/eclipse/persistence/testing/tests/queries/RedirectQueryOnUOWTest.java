@@ -17,6 +17,7 @@ package org.eclipse.persistence.testing.tests.queries;
 import java.util.Vector;
 
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
@@ -89,7 +90,7 @@ RedirectQueryOnUOWTest extends TestCase {
 
 class StupidRedirector implements QueryRedirector {
     @Override
-    public Object invokeQuery(DatabaseQuery arg0, org.eclipse.persistence.sessions.Record arg1, Session arg2) {
+    public Object invokeQuery(DatabaseQuery arg0, DataRecord arg1, Session arg2) {
         // change code to do the correct class cast.
         // Also for this test case to be relevant a completely different query
         // must be executed.

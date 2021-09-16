@@ -197,7 +197,7 @@ public class MethodBaseQueryRedirector implements QueryRedirector {
      * Call the static method to execute the query.
      */
     @Override
-    public Object invokeQuery(DatabaseQuery query, org.eclipse.persistence.sessions.Record arguments, Session session) {
+    public Object invokeQuery(DatabaseQuery query, DataRecord arguments, Session session) {
         if (getMethod() == null) {
             initializeMethod(query);
         }

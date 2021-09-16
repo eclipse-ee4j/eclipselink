@@ -15,12 +15,12 @@
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlclassextractor;
 
 import org.eclipse.persistence.descriptors.ClassExtractor;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 
 public class MyOtherClassExtractor extends ClassExtractor {
     @Override
-    public Class extractClassFromRow(Record databaseRow, Session session) {
+    public Class extractClassFromRow(DataRecord databaseRow, Session session) {
         return Vehicle.class;
     }
 }

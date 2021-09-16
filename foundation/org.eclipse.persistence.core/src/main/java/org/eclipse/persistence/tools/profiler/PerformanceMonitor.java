@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.io.*;
 
 import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -192,7 +192,7 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
      * Monitoring is done on the endOperation only.
      */
     @Override
-    public Object profileExecutionOfQuery(DatabaseQuery query, Record row, AbstractSession session) {
+    public Object profileExecutionOfQuery(DatabaseQuery query, DataRecord row, AbstractSession session) {
         if (this.profileWeight < SessionProfiler.HEAVY) {
             return session.internalExecuteQuery(query, (AbstractRecord)row);
         }

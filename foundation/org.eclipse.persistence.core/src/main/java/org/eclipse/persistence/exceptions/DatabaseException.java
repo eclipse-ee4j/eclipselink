@@ -21,7 +21,7 @@ import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 
 /**
  * <P><B>Purpose</B>:
@@ -264,7 +264,7 @@ public class DatabaseException extends EclipseLinkException {
      * PUBLIC:
      * Return the query arguments used in the original query when exception is thrown
      */
-    public Record getQueryArgumentsRecord() {
+    public DataRecord getQueryArgumentsRecord() {
         return queryArguments;
     }
 

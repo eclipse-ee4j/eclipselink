@@ -22,7 +22,7 @@ import org.eclipse.persistence.testing.models.employee.domain.Project;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.tests.clientserver.*;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
@@ -438,9 +438,9 @@ public class QueryFrameworkTestSuite extends TestSuite {
                 ExpressionBuilder builder = query.getExpressionBuilder();
                 query.setSelectionCriteria(builder.get("firstName").equal(builder.getParameter("name")));
                 query.addArgument("name");
-                Record record = new DatabaseRecord();
-                record.put("name", "Bob");
-                String sql = query.getTranslatedSQLString(getSession(), record);
+                DataRecord dataRecord = new DatabaseRecord();
+                dataRecord.put("name", "Bob");
+                String sql = query.getTranslatedSQLString(getSession(), dataRecord);
                 if (sql.indexOf("?") != -1) {
                     throwError("SQL was not translated.");
                 }
@@ -663,7 +663,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
         query.addArgument("employee");
         query.setRedirector(new QueryRedirector() {
                 @Override
-                public Object invokeQuery(DatabaseQuery query, org.eclipse.persistence.sessions.Record arguments, org.eclipse.persistence.sessions.Session session) {
+                public Object invokeQuery(DatabaseQuery query, DataRecord arguments, org.eclipse.persistence.sessions.Session session) {
                     return arguments.get("employee");
                 }
             });

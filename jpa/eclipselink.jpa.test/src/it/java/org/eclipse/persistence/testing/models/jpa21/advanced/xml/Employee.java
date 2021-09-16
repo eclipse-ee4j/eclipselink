@@ -17,17 +17,11 @@ package org.eclipse.persistence.testing.models.jpa21.advanced.xml;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.ConversionValue;
 import org.eclipse.persistence.annotations.ObjectTypeConverter;
-import org.eclipse.persistence.annotations.TypeConverter;
-
-import org.eclipse.persistence.config.QueryHints;
-import org.eclipse.persistence.sessions.Record;
-import org.eclipse.persistence.sessions.Session;
 
 @ObjectTypeConverter(
         name="sex",

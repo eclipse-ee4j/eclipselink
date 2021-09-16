@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,7 +33,7 @@ import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 //import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 import static org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.plsqlcallmodel.PLSQLargument.IN;
 import static org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.plsqlcallmodel.PLSQLargument.INOUT;
@@ -147,7 +147,7 @@ public class PLSQLCallModelTestProject extends Project {
         descriptor.setJavaClass(DatabaseTypeWrapper.class);
         descriptor.getInheritancePolicy().setClassExtractor(new ClassExtractor() {
             @Override
-            public Class<?> extractClassFromRow(Record databaseRow, Session session) {
+            public Class<?> extractClassFromRow(DataRecord databaseRow, Session session) {
                 if (databaseRow instanceof UnmarshalRecord) {
                     UnmarshalRecord unmarshalRecord = (UnmarshalRecord)databaseRow;
                     Attributes attributes = unmarshalRecord.getAttributes();

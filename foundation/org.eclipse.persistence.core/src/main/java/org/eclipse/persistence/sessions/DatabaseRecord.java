@@ -30,7 +30,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
  *        <li> Allow get and put on the field or field name.
  * </ul>
  * @see DatabaseField
- * @see Record
+ * @see DataRecord
  * @see java.util.Map
  */
 public class DatabaseRecord extends AbstractRecord {

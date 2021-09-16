@@ -49,13 +49,13 @@ public class OrderingTest extends TestCase {
 
     @Override
     protected void verify() {
-        org.eclipse.persistence.sessions.Record row;
+        DataRecord row;
         Employee employee;
         String firstName;
         String lastName;
 
         for (int i = 0; i < orderedQueryObjects.size(); i++) {
-            row = (org.eclipse.persistence.sessions.Record)customSQLRows.elementAt(i);
+            row = (DataRecord)customSQLRows.elementAt(i);
             employee = (Employee)orderedQueryObjects.elementAt(i);
             firstName = (String)row.get("F_NAME");
             lastName = (String)row.get("L_NAME");

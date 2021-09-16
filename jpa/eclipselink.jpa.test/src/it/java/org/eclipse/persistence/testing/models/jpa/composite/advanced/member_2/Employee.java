@@ -28,8 +28,6 @@ import org.eclipse.persistence.annotations.ConversionValue;
 import org.eclipse.persistence.annotations.Customizer;
 import org.eclipse.persistence.annotations.ExistenceChecking;
 import org.eclipse.persistence.annotations.IdValidation;
-import org.eclipse.persistence.annotations.JoinFetch;
-import org.eclipse.persistence.annotations.JoinFetchType;
 import org.eclipse.persistence.annotations.Mutable;
 import org.eclipse.persistence.annotations.ObjectTypeConverter;
 import org.eclipse.persistence.annotations.OptimisticLocking;
@@ -43,7 +41,7 @@ import org.eclipse.persistence.annotations.WriteTransformer;
 import org.eclipse.persistence.annotations.WriteTransformers;
 import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.config.QueryHints;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.testing.models.jpa.composite.advanced.member_1.Address;
 import org.eclipse.persistence.testing.models.jpa.composite.advanced.member_1.Department;
@@ -313,7 +311,7 @@ public class Employee implements Serializable, Cloneable {
      * IMPORTANT: This method builds the value but does not set it.
      * The mapping will set it using method or direct access as defined in the descriptor.
      */
-    public Time[] buildNormalHours(Record row, Session session) {
+    public Time[] buildNormalHours(DataRecord row, Session session) {
         Time[] hours = new Time[2];
 
         /** This conversion allows for the database type not to match, i.e. may be a Timestamp or String. */

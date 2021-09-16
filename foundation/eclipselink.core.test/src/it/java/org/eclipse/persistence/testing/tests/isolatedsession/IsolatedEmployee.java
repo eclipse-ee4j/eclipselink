@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.sql.Time;
 
 import org.eclipse.persistence.indirection.*;
+import org.eclipse.persistence.sessions.DataRecord;
 
 /**
  * <p><b>Purpose</b>: Represent a employee of an organization.
@@ -174,7 +175,7 @@ public class IsolatedEmployee implements Serializable {
      *                        The mapping will set it using method or direct access
      *                        as defined in the descriptor.
      */
-    public Time[] buildNormalHours(org.eclipse.persistence.sessions.Record row, org.eclipse.persistence.sessions.Session session) {
+    public Time[] buildNormalHours(DataRecord row, org.eclipse.persistence.sessions.Session session) {
         Time[] hours = new Time[2];
 
         /** This conversion allows for the database type not to match, i.e. may be a Timestamp or String. */

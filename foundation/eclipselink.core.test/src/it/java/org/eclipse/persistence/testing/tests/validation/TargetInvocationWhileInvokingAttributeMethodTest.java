@@ -19,8 +19,8 @@ import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.TransformationMapping;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.DatabaseRecord;
-import org.eclipse.persistence.sessions.Record;
 
 
 //Created by Ian Reid
@@ -58,7 +58,7 @@ public class TargetInvocationWhileInvokingAttributeMethodTest extends ExceptionT
         }
     }
 
-    public String invalidMethod(Record row) throws java.lang.IllegalAccessException {
+    public String invalidMethod(DataRecord row) throws java.lang.IllegalAccessException {
         throw new IllegalAccessException();
     }
 

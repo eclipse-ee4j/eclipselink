@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,7 @@ import org.eclipse.persistence.nosql.adapters.nosql.OracleNoSQLPlatform;
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.testing.framework.ReflectionHelper;
 import org.eclipse.persistence.testing.framework.junit.LogTestExecution;
 import org.eclipse.persistence.testing.tests.nosql.NoSQLURI;
@@ -138,7 +138,7 @@ public class NoSQLSimpleTest {
         readCall.addArgumentValue("Order/1234", "");
         final DataReadQuery read = new DataReadQuery(readCall);
         @SuppressWarnings("unchecked")
-        final List<Record> result = (List<Record>)session.executeQuery(read);
+        final List<DataRecord> result = (List<DataRecord>)session.executeQuery(read);
         final String value = new String((byte[])result.get(0).get("Order/1234"));
         assertEquals("foo expected: " + value, "foo", value);
     }

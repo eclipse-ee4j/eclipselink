@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,7 @@ import org.eclipse.persistence.core.descriptors.CoreDescriptorEvent;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.internal.sessions.*;
 
 /**
@@ -48,7 +48,7 @@ public class DescriptorEvent extends EventObject implements CoreDescriptorEvent 
     protected DatabaseQuery query;
 
     /** Optionally a database row may be provided on some events, (such as aboutToUpdate). */
-    protected Record record;
+    protected DataRecord dataRecord;
     protected ClassDescriptor descriptor;
 
     /**
@@ -195,8 +195,8 @@ public class DescriptorEvent extends EventObject implements CoreDescriptorEvent 
      * Return the record that is associated with some events,
      * such as postBuild, and aboutToUpdate.
      */
-    public Record getRecord() {
-        return record;
+    public DataRecord getRecord() {
+        return dataRecord;
     }
 
     /**
@@ -253,8 +253,8 @@ public class DescriptorEvent extends EventObject implements CoreDescriptorEvent 
      * INTERNAL:
      * Optionally a database row may be provided on some events, (such as aboutToUpdate).
      */
-    public void setRecord(Record record) {
-        this.record = record;
+    public void setRecord(DataRecord dataRecord) {
+        this.dataRecord = dataRecord;
     }
 
     /**

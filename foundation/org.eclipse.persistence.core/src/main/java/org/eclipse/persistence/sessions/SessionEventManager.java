@@ -23,7 +23,6 @@ import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.sessions.broker.SessionBroker;
 import org.eclipse.persistence.sessions.server.ClientSession;
-import org.eclipse.persistence.sessions.SessionProfiler;
 
 /**
  * <p><b>Purpose</b>: Used to support session events.
@@ -206,7 +205,7 @@ public class SessionEventManager extends CoreSessionEventManager<SessionEventLis
      * INTERNAL:
      * Raised for stored proc output parameters.
      */
-    public void outputParametersDetected(Record outputRow, DatasourceCall call) {
+    public void outputParametersDetected(DataRecord outputRow, DatasourceCall call) {
         if (!hasListeners()) {
             return;
         }
