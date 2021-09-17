@@ -79,6 +79,12 @@ public class DynamicJAXBContextFactory {
     public static final String SCHEMAMETADATA_CLASS_NAME = "org.eclipse.persistence.jaxb.dynamic.metadata.SchemaMetadata";
 
     /**
+     * Creates an instance of {@code DynamicJAXBContextFactory}.
+     */
+    public DynamicJAXBContextFactory() {
+    }
+
+    /**
      * Create a <code>DynamicJAXBContext</code>, using either an XML Schema, EclipseLink OXM file,
      * or EclipseLink <code>sessions.xml</code> as the metadata source.  This creation method will be
      * called if the user calls the <code>newInstance()</code> method on <code>jakarta.xml.bind.JAXBContext</code>,
