@@ -152,18 +152,11 @@ public class MetadataClass extends MetadataAnnotatedElement {
     /**
      * Allow comparison to Java classes and Metadata classes.
      */
-    @Override
-    public boolean equals(Object object) {
-        if (object instanceof Class) {
-            if (getName() == null) {
-                // Void's name is null.
-                return ((Class)object).getName() == null;
-            }
-
-            return getName().equals(((Class)object).getName());
+    public boolean isClass(Class<?> clazz) {
+        if (getName() == null) {
+            return false;
         }
-
-        return super.equals(object);
+        return getName().equals(clazz.getName());
     }
 
     /**

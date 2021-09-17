@@ -603,7 +603,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * reference an id class type.
      */
     protected void initIdClass() {
-        if (m_idClass == null || m_idClass.equals(void.class)) {
+        if (m_idClass == null || m_idClass.isClass(void.class)) {
             // Check for an IdClass annotation.
             if (isAnnotationPresent(JPA_ID_CLASS)) {
                 m_idClass = getMetadataClass(getAnnotation(JPA_ID_CLASS).getAttributeString("value"));
@@ -616,7 +616,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         }
 
         // Add the id class to the known list of id classes for this project.
-        if (m_idClass != null && ! m_idClass.equals(void.class)) {
+        if (m_idClass != null && ! m_idClass.isClass(void.class)) {
             getProject().addIdClass(m_idClass.getName());
             // 266912: We store the IdClass (not an EmbeddableId) for use by the Metamodel API
             getProject().getProject().addMetamodelIdClassMapEntry(getAccessibleObject().getName(), m_idClass.getName().replace('$', '.'));
@@ -1190,7 +1190,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * type of the entity for which it is the primary key.
      */
     protected void processIdClass() {
-        if (m_idClass != null && !m_idClass.equals(void.class)) {
+        if (m_idClass != null && !m_idClass.isClass(void.class)) {
             getDescriptor().setPKClass(m_idClass);
 
             if (getDescriptor().usesDefaultPropertyAccess()) {
