@@ -3187,9 +3187,9 @@ public final class AnnotationsProcessor {
 
         // Not sure who should win if a property exists for both or the correct
         // order
-        if (publicFieldProperties.size() >= 0 && publicMethodProperties.size() == 0) {
+        if (!publicFieldProperties.isEmpty() && publicMethodProperties.size() == 0) {
             return publicFieldProperties;
-        } else if (publicMethodProperties.size() > 0 && publicFieldProperties.size() == 0) {
+        } else if (!publicMethodProperties.isEmpty() && publicFieldProperties.size() == 0) {
             return publicMethodProperties;
         } else {
             // add any non-duplicate method properties to the collection.

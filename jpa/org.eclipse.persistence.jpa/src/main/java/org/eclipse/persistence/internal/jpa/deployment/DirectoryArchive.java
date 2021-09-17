@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -69,7 +69,7 @@ public class DirectoryArchive extends ArchiveBase implements Archive {
         if (!directory.isDirectory()) {
             // should never reach here, hence the msg is not internationalized.
             throw new IllegalArgumentException(directory +
-                    " is not a directory." + // NOI18N
+                    " is not a directory. " + // NOI18N
                     "If it is a jar file, then use JarFileArchive."); // NOI18N
         }
         this.directory = directory;

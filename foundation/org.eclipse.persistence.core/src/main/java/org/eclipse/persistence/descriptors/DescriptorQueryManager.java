@@ -140,7 +140,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * Initialize the state of the descriptor query manager
      */
     public DescriptorQueryManager() {
-        this.queries = new LinkedHashMap(5);
+        this.queries = new LinkedHashMap<>(5);
         setDoesExistQuery(new DoesExistQuery());// Always has a does exist.
         this.setQueryTimeout(DefaultTimeout);
         this.setQueryTimeoutUnit(DefaultTimeoutUnit);
@@ -199,7 +199,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
 
         // Add query has been synchronized for bug 3355199.
         // Additionally code has been added to ensure that the same query is not added twice.
-        Vector queriesByName = (Vector)getQueries().get(query.getName());
+        List<DatabaseQuery> queriesByName = getQueries().get(query.getName());
         if (queriesByName == null) {
             // lazily create Vector in Hashtable.
             queriesByName = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
@@ -209,14 +209,14 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
             if (query.getArguments() != null) {
                 argumentTypesSize = query.getArguments().size();
             }
-            List<String> argumentTypes = new ArrayList(argumentTypesSize);
+            List<String> argumentTypes = new ArrayList<>(argumentTypesSize);
             for (int i = 0; i < argumentTypesSize; i++) {
                 argumentTypes.add(query.getArgumentTypeNames().get(i));
             }
 
             // Search for a query with the same parameters and replace it if one is found
             for (int i = 0; i < queriesByName.size(); i++) {
-                DatabaseQuery currentQuery = (DatabaseQuery)queriesByName.get(i);
+                DatabaseQuery currentQuery = queriesByName.get(i);
 
                 // Here we are checking equality instead of assignability.  If you look at getQuery()
                 // it is the other way around.
@@ -281,12 +281,12 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
         }
 
         // Bug 3037701 - clone the queries
-        manager.setQueries(new LinkedHashMap(getQueries().size()));//bug5677655
+        manager.setQueries(new LinkedHashMap<>(getQueries().size()));//bug5677655
         Iterator<List<DatabaseQuery>> iterator = queries.values().iterator();
         while (iterator.hasNext()) {
-            Iterator queriesForKey = ((Vector)iterator.next()).iterator();
+            Iterator<DatabaseQuery> queriesForKey = iterator.next().iterator();
             while (queriesForKey.hasNext()) {
-                DatabaseQuery initialQuery = (DatabaseQuery)queriesForKey.next();
+                DatabaseQuery initialQuery = queriesForKey.next();
                 DatabaseQuery clonedQuery = (DatabaseQuery)initialQuery.clone();
                 clonedQuery.setDescriptor(manager.getDescriptor());
                 manager.addQuery(clonedQuery);
@@ -329,9 +329,9 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     public void convertClassNamesToClasses(ClassLoader classLoader){
         Iterator<List<DatabaseQuery>> queryVectors = getQueries().values().iterator();
         while (queryVectors.hasNext()){
-            Iterator queries = ((Vector)queryVectors.next()).iterator();
+            Iterator<DatabaseQuery> queries = queryVectors.next().iterator();
             while (queries.hasNext()){
-                ((DatabaseQuery)queries.next()).convertClassNamesToClasses(classLoader);
+                queries.next().convertClassNamesToClasses(classLoader);
             }
         }
         if (getReadObjectQuery() != null) {
@@ -497,7 +497,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * @see #getQueries()
      */
     public Vector getAllQueries() {
-        Vector allQueries = new Vector();
+        Vector<DatabaseQuery> allQueries = new Vector<>();
         for (Iterator<List<DatabaseQuery>> vectors = getQueries().values().iterator(); vectors.hasNext();) {
             allQueries.addAll(vectors.next());
         }
@@ -575,7 +575,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * @see #getQuery(String)
      */
     public DatabaseQuery getLocalQuery(String name, Vector arguments) {
-        Vector queries = (Vector)getQueries().get(name);
+        List<DatabaseQuery> queries = getQueries().get(name);
 
         if (queries == null) {
             return null;
@@ -583,7 +583,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
 
         // Short circuit the simple, most common case of only one query.
         if (queries.size() == 1) {
-            return (DatabaseQuery)queries.firstElement();
+            return queries.get(0);
         }
 
         // CR#3754; Predrag; mar 19/2002;
@@ -1156,14 +1156,12 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * @see #removeQuery(String)
      */
     public void removeQuery(String queryName, Vector argumentTypes) {
-        Vector queries = (Vector)getQueries().get(queryName);
-        if (queries == null) {
-            return;
-        } else {
+        List<DatabaseQuery> queries = getQueries().get(queryName);
+        if (queries != null) {
             DatabaseQuery query = null;
-            for (Enumeration enumtr = queries.elements(); enumtr.hasMoreElements();) {
-                query = (DatabaseQuery)enumtr.nextElement();
-                if (Helper.areTypesAssignable(argumentTypes, query.getArgumentTypes())) {
+            for (DatabaseQuery q : queries) {
+                if (Helper.areTypesAssignable(argumentTypes, q.getArgumentTypes())) {
+                    query = q;
                     break;
                 }
             }

@@ -23,13 +23,11 @@ public class Helper {
 
     /** takes a string as an argument and returns the <code>Integer</code> value */
     public static Integer integerFromString(String string) {
-        Integer intValue;
         try {
-            intValue = Integer.valueOf(string);
+            return Integer.valueOf(string);
         } catch (NumberFormatException exception) {
             return null;
         }
-        return intValue;
     }
 
     /** takes a hex string representation and returns the Integer value */
@@ -59,8 +57,7 @@ public class Helper {
 
     /** takes a byte value and returns int value */
     public static int intFromByte(byte byteValue) {
-        Byte bigByte = byteValue;
-        return bigByte.intValue();
+        return byteValue;
     }
 
     /** takes a int an returns a byte */

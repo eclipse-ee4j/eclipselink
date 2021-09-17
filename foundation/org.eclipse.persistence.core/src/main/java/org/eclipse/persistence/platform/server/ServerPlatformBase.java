@@ -469,7 +469,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      *
      * Default behavior is to use Thread(runnable).start()
      *
-     * @param runnable: the instance of runnable to be "started"
+     * @param runnable the instance of runnable to be "started"
      */
     @Override
     public void launchContainerRunnable(Runnable runnable) {

@@ -646,7 +646,7 @@ public class RelationExpression extends CompoundExpression {
                 for (DatabaseField field : sourceFields) {
                     fieldExpressions.add(left.getField(field));
                 }
-                newLeft = getBuilder().value(sourceFields);
+                newLeft = getBuilder().value(fieldExpressions);
             } else {
                newLeft = left.getField(sourceField);
             }

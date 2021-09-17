@@ -55,8 +55,8 @@ public interface DynamicEntity {
      * @param <T>
      *      generic type of the property (if not provided, assume Object).
      *      If the property cannot be cast to the specific type, a {@link DynamicException}will be thrown.
-     * @param
-     *      propertyName the name of a mapped property
+     * @param propertyName
+     *      the name of a mapped property
      *      If the property cannot be found, a {@link DynamicException} will be thrown.
      * @return
      *      persistent value or relationship container of the specified type
@@ -66,11 +66,11 @@ public interface DynamicEntity {
     /**
      * Set the persistence value for the given property to the specified value
      *
-     * @param
-     *      propertyName the name of a mapped property
+     * @param propertyName
+     *      the name of a mapped property
      *      If the property cannot be found, a {@link DynamicException} will be thrown.
-     * @param
-     *      value the specified object
+     * @param value
+     *      the specified object
      * @return
      *      the same DynamicEntity instance
      */
@@ -79,8 +79,8 @@ public interface DynamicEntity {
     /**
      * Discover if a property has a persistent value
      *
-     * @param
-     *      propertyName the name of a mapped property
+     * @param propertyName
+     *      the name of a mapped property
      *      If the property cannot be found, a {@link DynamicException} will be thrown.
      * @return
      *      true if the property has been set
