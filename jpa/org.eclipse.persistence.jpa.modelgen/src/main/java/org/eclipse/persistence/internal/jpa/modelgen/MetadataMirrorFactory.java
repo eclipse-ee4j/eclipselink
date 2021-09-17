@@ -334,7 +334,7 @@ public class MetadataMirrorFactory extends MetadataFactory {
                 List<? extends AnnotationMirror> annotationMirrors = element.getAnnotationMirrors();
                 for (AnnotationMirror am : annotationMirrors) {
                     Name qn = ((TypeElement) am.getAnnotationType().asElement()).getQualifiedName();
-                    if ("jakarta.annotation.Generated".equals(qn) || "jakarta.annotation.processing.Generated".equals(qn)) {
+                    if ("jakarta.annotation.Generated".equals(qn.toString()) || "jakarta.annotation.processing.Generated".equals(qn.toString())) {
                         isGenerated = true;
                         break;
                     }

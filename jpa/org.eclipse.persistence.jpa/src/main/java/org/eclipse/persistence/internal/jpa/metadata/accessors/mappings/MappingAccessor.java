@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -1357,9 +1357,9 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     protected boolean isPrimitiveWrapperClass(MetadataClass cls) {
         return cls.extendsClass(Number.class) ||
-            cls.equals(Boolean.class) ||
-            cls.equals(Character.class) ||
-            cls.equals(String.class) ||
+            cls.isClass(Boolean.class) ||
+            cls.isClass(Character.class) ||
+            cls.isClass(String.class) ||
             cls.extendsClass(java.math.BigInteger.class) ||
             cls.extendsClass(java.math.BigDecimal.class) ||
             cls.extendsClass(java.util.Date.class) ||
@@ -2119,17 +2119,17 @@ public abstract class MappingAccessor extends MetadataAccessor {
         if (usesIndirection && (mapping instanceof ForeignReferenceMapping)) {
             containerPolicySet = true;
             CollectionMapping collectionMapping = (CollectionMapping)mapping;
-            if (rawClass.equals(Map.class)) {
+            if (rawClass.isClass(Map.class)) {
                 if (collectionMapping.isDirectMapMapping()) {
                     ((DirectMapMapping) mapping).useTransparentMap();
                 } else {
                     collectionMapping.useTransparentMap(mapKey);
                 }
-            } else if (rawClass.equals(List.class)) {
+            } else if (rawClass.isClass(List.class)) {
                 collectionMapping.useTransparentList();
-            } else if (rawClass.equals(Collection.class)) {
+            } else if (rawClass.isClass(Collection.class)) {
                 collectionMapping.useTransparentCollection();
-            } else if (rawClass.equals(Set.class)) {
+            } else if (rawClass.isClass(Set.class)) {
                 collectionMapping.useTransparentSet();
             } else {
                 getLogger().logWarningMessage(MetadataLogger.WARNING_INVALID_COLLECTION_USED_ON_LAZY_RELATION, getJavaClass(), getAnnotatedElement(), rawClass);
@@ -2142,20 +2142,20 @@ public abstract class MappingAccessor extends MetadataAccessor {
             }
         }
         if (!containerPolicySet) {
-            if (rawClass.equals(Map.class)) {
+            if (rawClass.isClass(Map.class)) {
                 if (mapping instanceof DirectMapMapping) {
                     ((DirectMapMapping) mapping).useMapClass(java.util.Hashtable.class);
                 } else {
                     mapping.useMapClass(java.util.Hashtable.class, mapKey);
                 }
-            } else if (rawClass.equals(Set.class)) {
+            } else if (rawClass.isClass(Set.class)) {
                 // This will cause it to use a CollectionContainerPolicy type
                 mapping.useCollectionClass(java.util.HashSet.class);
-            } else if (rawClass.equals(List.class)) {
+            } else if (rawClass.isClass(List.class)) {
                 // This will cause a ListContainerPolicy type to be used or
                 // OrderedListContainerPolicy if ordering is specified.
                 mapping.useCollectionClass(java.util.Vector.class);
-            } else if (rawClass.equals(Collection.class)) {
+            } else if (rawClass.isClass(Collection.class)) {
                 // Force CollectionContainerPolicy type to be used with a
                 // collection implementation.
                 mapping.setContainerPolicy(new CollectionContainerPolicy(java.util.Vector.class));

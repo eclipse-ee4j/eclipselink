@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -307,7 +307,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
 
                 // If the map key class is not specified, we need to look it
                 // up from the accessor type.
-                if (mapKeyClass == null || mapKeyClass.equals(void.class)) {
+                if (mapKeyClass == null || mapKeyClass.isClass(void.class)) {
                     // Try to extract the map key class from a generic
                     // specification. This will throw an exception if it can't.
                     mapKeyClass = accessor.getMapKeyReferenceClass();
@@ -1043,7 +1043,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * INTERNAL:
      */
     protected boolean hasParentClass() {
-        return m_parentClass != null && ! m_parentClass.equals(void.class);
+        return m_parentClass != null && ! m_parentClass.isClass(void.class);
     }
 
     /**
@@ -1571,7 +1571,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
     protected void processCustomizer() {
         MetadataAnnotation customizer = getAnnotation(Customizer.class);
 
-        if ((m_customizerClass != null && ! m_customizerClass.equals(void.class)) || customizer != null) {
+        if ((m_customizerClass != null && ! m_customizerClass.isClass(void.class)) || customizer != null) {
             if (getDescriptor().hasCustomizer()) {
                 // We must be processing a mapped superclass and its subclass
                 // override the customizer class, that is, defined its own. Log
@@ -1579,7 +1579,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
                 // mapped superclass for the descriptor's java class.
                 getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_CUSTOMIZER, getDescriptor().getJavaClass(), getJavaClass());
             } else {
-                if (m_customizerClass == null || m_customizerClass.equals(void.class)) {
+                if (m_customizerClass == null || m_customizerClass.isClass(void.class)) {
                     // Use the annotation value.
                     m_customizerClass = getMetadataClass(customizer.getAttributeString("value"));
                 } else {

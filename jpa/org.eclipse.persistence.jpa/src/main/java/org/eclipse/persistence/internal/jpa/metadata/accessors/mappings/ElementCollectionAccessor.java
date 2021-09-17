@@ -796,7 +796,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      */
     @Override
     protected boolean hasMapKeyClass() {
-        return m_mapKeyClass != null && ! m_mapKeyClass.equals(void.class);
+        return m_mapKeyClass != null && ! m_mapKeyClass.isClass(void.class);
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -86,9 +86,9 @@ public class LobMetadata extends MetadataConverter {
      * Returns true if the given class is a valid blob type.
      */
     public static boolean isValidBlobType(MetadataClass cls) {
-        return cls.equals(byte[].class) ||
-               cls.equals(Byte[].class) ||
-               cls.equals(java.sql.Blob.class);
+        return cls.isClass(byte[].class) ||
+               cls.isClass(Byte[].class) ||
+               cls.isClass(java.sql.Blob.class);
     }
 
     /**
@@ -96,10 +96,10 @@ public class LobMetadata extends MetadataConverter {
      * Returns true if the given class is a valid clob type.
      */
     public static boolean isValidClobType(MetadataClass cls) {
-        return cls.equals(char[].class) ||
-               cls.equals(String.class) ||
-               cls.equals(Character[].class) ||
-               cls.equals(java.sql.Clob.class);
+        return cls.isClass(char[].class) ||
+               cls.isClass(String.class) ||
+               cls.isClass(Character[].class) ||
+               cls.isClass(java.sql.Clob.class);
     }
 
     /**
