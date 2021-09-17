@@ -48,9 +48,9 @@ public class JavaSECMPInitializerAgent {
 
     public static void initializeFromAgent(Instrumentation instr) throws Throwable {
             Class<?> cls = Class.forName("org.eclipse.persistence.internal.jpa.deployment.JavaSECMPInitializer");
-            Method method = cls.getDeclaredMethod("initializeFromAgent", new Class[] { Instrumentation.class });
+            Method method = cls.getDeclaredMethod("initializeFromAgent", Instrumentation.class);
             try {
-                method.invoke(null, new Object[] { instr });
+                method.invoke(null, instr);
             } catch (InvocationTargetException exception) {
                 throw exception.getCause();
             }

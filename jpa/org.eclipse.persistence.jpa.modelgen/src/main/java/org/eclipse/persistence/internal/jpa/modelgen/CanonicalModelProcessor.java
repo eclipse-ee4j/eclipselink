@@ -143,7 +143,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
         // Log processing environment options
         for (Map.Entry<String, String> option : options.entrySet()) {
             log(SessionLog.CONFIG, "Found Option: {0}, with value: {1}",
-                    new Object[]{option.getKey(), option.getValue()});
+                    option.getKey(), option.getValue());
         }
 
         useStaticFactory = Boolean.parseBoolean(CanonicalModelProperties.getOption(

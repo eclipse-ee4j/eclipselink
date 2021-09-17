@@ -200,7 +200,7 @@ public abstract class QueryTest extends JPA1Base {
     }
 
     protected void assertValidQueryExecution(String queryString) {
-        assertValidQueryExecutionWithArgs(queryString, new Object[0]);
+        assertValidQueryExecutionWithArgs(queryString);
     }
 
     private boolean isUtilDateLike(Object arg) {

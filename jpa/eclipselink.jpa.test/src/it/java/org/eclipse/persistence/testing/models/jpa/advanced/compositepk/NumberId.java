@@ -56,7 +56,7 @@ public class NumberId implements Serializable {
     }
 
     public final int hashCode() {
-        return Objects.hash(new Object[] { this.value });
+        return Objects.hash(this.value);
     }
 
     public final String toString() {

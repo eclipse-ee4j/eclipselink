@@ -215,7 +215,7 @@ public class JoinedAttributeTestHelper {
             }
         }
         if(col1.size() != col2.size()) {
-            errorMsg = ": size1==" + Integer.toString(col1.size()) + "!= size2==" + Integer.toString(col2.size()) + ";  ";
+            errorMsg = ": size1==" + col1.size() + "!= size2==" + col2.size() + ";  ";
             return errorMsg;
         }
 
@@ -284,7 +284,7 @@ public class JoinedAttributeTestHelper {
             }
         }
         if(map1.size() != map2.size()) {
-            errorMsg = ": size1==" + Integer.toString(map1.size()) + "!= size2==" + Integer.toString(map2.size()) + ";  ";
+            errorMsg = ": size1==" + map1.size() + "!= size2==" + map2.size() + ";  ";
             return errorMsg;
         }
 

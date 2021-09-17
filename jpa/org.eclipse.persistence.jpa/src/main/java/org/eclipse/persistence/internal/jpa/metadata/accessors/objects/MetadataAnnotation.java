@@ -58,13 +58,13 @@ public class MetadataAnnotation {
      * private method and callers should use one of the more specific
      * getAttribute calls. (and build one if necessary)
      *
-     * @see getAttributeAnnotation
-     * @see getAttributeArray
-     * @see getAttributeInteger
-     * @see getAttributeString
-     * @see getAttributeBoolean
-     * @see getAttributeBooleanDefaultFalse
-     * @see getAttributeBooleanDefaultTrue
+     * @see #getAttributeAnnotation(String)
+     * @see #getAttributeArray(String)
+     * @see #getAttributeInteger(String)
+     * @see #getAttributeString(String)
+     * @see #getAttributeBoolean(String, Boolean)
+     * @see #getAttributeBooleanDefaultFalse(String)
+     * @see #getAttributeBooleanDefaultTrue(String)
      */
     private Object getAttribute(String name) {
         return m_attributes.get(name);
@@ -119,7 +119,7 @@ public class MetadataAnnotation {
      * INTERNAL:
      * Return the Class attribute value, or the default provided.
      */
-    public String getAttributeClass(String name, Class defaultClass) {
+    public String getAttributeClass(String name, Class<?> defaultClass) {
         Object value = getAttribute(name);
         return (value == null) ? defaultClass.getName() : (String) value;
     }

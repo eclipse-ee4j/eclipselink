@@ -3874,12 +3874,12 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             employees.add(emp);
             for(int j=0; j<n; j++) {
                 Dealer dealer = new Dealer();
-                dealer.setFirstName(emp.getFirstName() + "_" + Integer.toString(j+1));
+                dealer.setFirstName(emp.getFirstName() + "_" + (j + 1));
                 dealer.setLastName(lastName);
                 emp.addDealer(dealer);
                 for(int k=0; k<n; k++) {
                     Customer customer = new Customer();
-                    customer.setFirstName(dealer.getFirstName() + "_" + Integer.toString(k+1));
+                    customer.setFirstName(dealer.getFirstName() + "_" + (k + 1));
                     customer.setLastName(lastName);
                     dealer.addCustomer(customer);
                 }

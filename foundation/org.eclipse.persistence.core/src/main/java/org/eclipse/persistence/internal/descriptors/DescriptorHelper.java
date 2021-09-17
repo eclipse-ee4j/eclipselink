@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -66,7 +66,7 @@ public class DescriptorHelper {
                 if (i > 0) {
                     target.append(separator);
                 }
-                target.append(StringHelper.QUESTION_MARK).append(Integer.toString(i+1));
+                target.append(StringHelper.QUESTION_MARK).append(i + 1);
             }
         }
     }
@@ -91,7 +91,7 @@ public class DescriptorHelper {
             DatabaseMapping mapping = i.next();
             DatabaseField field = mapping.getField();
             if (!keys.contains(field)) {
-                target.append(field.getName()).append(binder).append(Integer.toString(++idx));
+                target.append(field.getName()).append(binder).append(++idx);
                 if (i.hasNext()) {
                     target.append(separator);
                 }

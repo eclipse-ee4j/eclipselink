@@ -616,6 +616,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" + String.valueOf(this.databaseQuery) + ")";
+        return getClass().getSimpleName() + "(" + this.databaseQuery + ")";
     }
 }

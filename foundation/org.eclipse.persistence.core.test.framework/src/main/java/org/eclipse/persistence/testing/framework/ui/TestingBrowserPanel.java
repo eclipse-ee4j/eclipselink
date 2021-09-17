@@ -1310,7 +1310,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
         // Look for standard tests.
         try {
             testModelClass = Class.forName("org.eclipse.persistence.testing.tests.TestRunModel");
-            java.lang.reflect.Method buildTestsMethod = testModelClass.getMethod("buildAllModels", new Class[0]);
+            java.lang.reflect.Method buildTestsMethod = testModelClass.getMethod("buildAllModels");
             Vector result = (Vector)buildTestsMethod.invoke(null, new Object[0]);
             Helper.addAllToVector(allModels, result);
         } catch (Exception exception) {

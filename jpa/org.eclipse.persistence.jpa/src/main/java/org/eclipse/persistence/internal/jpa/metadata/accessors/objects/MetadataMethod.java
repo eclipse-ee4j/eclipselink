@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -141,8 +141,8 @@ public class MetadataMethod extends MetadataAnnotatedElement {
      */
     public MetadataMethod getSetMethod(MetadataClass cls) {
         String getMethodName = getName();
-        List<String> params = Arrays.asList(new String[] {getReturnType()});
-        MetadataMethod setMethod = null;
+        List<String> params = Arrays.asList(getReturnType());
+        MetadataMethod setMethod;
 
         if (getMethodName.startsWith(Helper.GET_PROPERTY_METHOD_PREFIX)) {
             // Replace 'get' with 'set'.

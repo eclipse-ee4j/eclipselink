@@ -61,8 +61,8 @@ public class TestRunner4Bean implements TestRunner4 {
         try {
             @SuppressWarnings({"unchecked"})
             Class<? extends TestCase> testClass = (Class<? extends TestCase>) getClass().getClassLoader().loadClass(className);
-            Constructor<? extends TestCase> c = testClass.getConstructor(new Class[] { String.class });
-            testInstance = c.newInstance(new Object[] { test });
+            Constructor<? extends TestCase> c = testClass.getConstructor(String.class);
+            testInstance = c.newInstance(test);
         } catch (ClassNotFoundException e) {
             throw new EJBException(e);
         } catch (NoSuchMethodException e) {

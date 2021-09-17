@@ -100,7 +100,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
      * Create the metadata class based on the class.
      * Mainly used for primitive defaults.
      */
-    public MetadataClass(MetadataFactory factory, Class cls) {
+    public MetadataClass(MetadataFactory factory, Class<?> cls) {
         this(factory, cls.getName(), false);
         m_isPrimitive = cls.isPrimitive();
     }
@@ -163,7 +163,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
      * INTERNAL:
      * Return if this class is or extends, or super class extends the class.
      */
-    public boolean extendsClass(Class javaClass) {
+    public boolean extendsClass(Class<?> javaClass) {
         return extendsClass(javaClass.getName());
     }
 
@@ -195,7 +195,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
      * INTERNAL:
      * Return if this class is or extends, or super class extends the interface.
      */
-    public boolean extendsInterface(Class javaClass) {
+    public boolean extendsInterface(Class<?> javaClass) {
         return extendsInterface(javaClass.getName());
     }
 
@@ -304,7 +304,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
      * INTERNAL:
      * Return the method with the name and argument types.
      */
-    public MetadataMethod getMethod(String name, Class[] arguments) {
+    public MetadataMethod getMethod(String name, Class<?>[] arguments) {
         List<String> argumentNames = new ArrayList<>(arguments.length);
 
         for (int index = 0; index < arguments.length; index++) {

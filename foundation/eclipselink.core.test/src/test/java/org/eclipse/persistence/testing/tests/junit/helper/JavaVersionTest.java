@@ -92,9 +92,9 @@ public class JavaVersionTest {
                 final JavaVersion javaVersion =  ReflectionHelper.<JavaVersion>invokeStaticMethod(
                         "propertyVersionParser", JavaVersion.class, new Class[] {String.class}, JavaVersion.class, versionString);
                 assertNotNull("JavaVersion instance must be returned for valid platform"
-                        +" version number ["+Integer.toString(major)+","+Integer.toString(minor)+"]", javaVersion);
+                        +" version number ["+ major +","+ minor +"]", javaVersion);
                 assertTrue("Returned JavaVersion instance numbers do not match provided"
-                        + " version number ["+Integer.toString(major)+","+Integer.toString(minor)+"]", major == javaVersion.getMajor()
+                        + " version number ["+ major +","+ minor +"]", major == javaVersion.getMajor()
                         && minor == javaVersion.getMinor());
             } catch (ReflectiveOperationException e) {
                 fail("Exception: " + e.getMessage());
@@ -109,9 +109,9 @@ public class JavaVersionTest {
                 final JavaVersion javaVersion =  ReflectionHelper.<JavaVersion>invokeStaticMethod(
                         "propertyVersionParser", JavaVersion.class, new Class[] {String.class}, JavaVersion.class, versionString);
                 assertNotNull("JavaVersion instance must be returned for invalid platform"
-                        +" version number ["+Integer.toString(major)+","+Integer.toString(minor)+"]", javaVersion);
+                        +" version number ["+ major +","+ minor +"]", javaVersion);
                 assertTrue("Returned JavaVersion instance numbers do not match provided"
-                        + " version number ["+Integer.toString(major)+","+Integer.toString(minor)+"]", major == javaVersion.getMajor()
+                        + " version number ["+ major +","+ minor +"]", major == javaVersion.getMajor()
                         && minor == javaVersion.getMinor());
             } catch (ReflectiveOperationException e) {
                 fail("Exception: " + e.getMessage());

@@ -131,7 +131,7 @@ public class CloneAttributeIfMutableTest extends TestCase {
             buffer.append(Helper.cr());
             for (int i = 0; i < errors.size(); i++) {
                 Throwable t = (Throwable)errors.get(i);
-                buffer.append(String.valueOf(t));
+                buffer.append(t);
                 buffer.append(Helper.cr());
             }
             throw new TestErrorException(buffer.toString());

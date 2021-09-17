@@ -1173,7 +1173,7 @@ public class QueryImpl {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" + String.valueOf(this.databaseQuery) + ")";
+        return getClass().getSimpleName() + "(" + this.databaseQuery + ")";
     }
 }
 

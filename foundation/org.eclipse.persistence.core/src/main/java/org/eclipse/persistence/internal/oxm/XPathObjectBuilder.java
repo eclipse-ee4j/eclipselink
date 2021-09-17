@@ -193,7 +193,7 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
                     Object contextProxy = CycleRecoverableContextProxy.getProxy(cycleRecoverableContextClass, jaxbMarshaller);
                     // Invoke onCycleDetected method, passing in proxy, and reset
                     // 'object' to the returned value
-                    Method onCycleDetectedMethod = object.getClass().getMethod(ON_CYCLE_DETECTED, new Class[] { cycleRecoverableContextClass });
+                    Method onCycleDetectedMethod = object.getClass().getMethod(ON_CYCLE_DETECTED, cycleRecoverableContextClass);
                     object = PrivilegedAccessHelper.invokeMethod(onCycleDetectedMethod, object, new Object[] { contextProxy });
                 } catch (Exception e) {
                     throw XMLMarshalException.marshalException(e);

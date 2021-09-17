@@ -131,7 +131,7 @@ public class ZTestCase extends AutoVerifyTestCase {
     protected void invokeTest() throws Throwable {
         Method method = this.methodNamed(this.getZName());
         try {
-            method.invoke(this, new Object[0]);
+            method.invoke(this);
         } catch (IllegalAccessException iae) {
             throw new RuntimeException("The method '" + method + "' (and its class) must be public.");
         } catch (InvocationTargetException ite) {
@@ -145,7 +145,7 @@ public class ZTestCase extends AutoVerifyTestCase {
      */
     private Method methodNamed(String name) {
         try {
-            return this.getClass().getMethod(zName, new Class[0]);
+            return this.getClass().getMethod(zName);
         } catch (NoSuchMethodException ex) {
             throw new RuntimeException("Method named " + name + " not found.");
         }

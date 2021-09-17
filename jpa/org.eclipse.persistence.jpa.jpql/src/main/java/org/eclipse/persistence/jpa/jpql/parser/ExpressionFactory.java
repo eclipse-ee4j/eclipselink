@@ -120,13 +120,9 @@ public abstract class ExpressionFactory implements Comparable<ExpressionFactory>
 
     @Override
     public final boolean equals(Object object) {
-                if (object == null) {
-                    return false;
-                }
-        if (this == object) {
-            return true;
+        if (!(object instanceof ExpressionFactory)) {
+            return false;
         }
-
         ExpressionFactory factory = (ExpressionFactory) object;
         return id.equals(factory.id);
     }

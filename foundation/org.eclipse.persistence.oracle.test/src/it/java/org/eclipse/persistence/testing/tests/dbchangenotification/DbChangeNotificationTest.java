@@ -83,7 +83,7 @@ public class DbChangeNotificationTest extends TestCase {
             ((DatabaseSession)session[i]).addDescriptors(new EmployeeProject());
             session[i].setSessionLog(getSession().getSessionLog());
             session[i].setLogLevel(getSession().getLogLevel());
-            session[i].setName("session[" + Integer.toString(i) + "]");
+            session[i].setName("session[" + i + "]");
             ((DatabaseSession)session[i]).login();
             employees[i] = session[i].readAllObjects(Employee.class);
             smallProjects[i] = session[i].readAllObjects(SmallProject.class);

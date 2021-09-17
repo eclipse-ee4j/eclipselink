@@ -366,7 +366,7 @@ public class ShadowDDLGenerator {
                     long precision = pDataType.getPrecision();
                     long scale = pDataType.getScale();
                     if (precision != defaultPrecision) {
-                        shadowTypeName += LBRACKET + Long.toString(precision);
+                        shadowTypeName += LBRACKET + precision;
                         if (scale != 0) {
                             shadowTypeName += COMMA + SINGLE_SPACE + scale;
                         }

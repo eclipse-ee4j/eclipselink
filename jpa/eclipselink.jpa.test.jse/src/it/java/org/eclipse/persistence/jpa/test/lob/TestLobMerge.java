@@ -58,10 +58,9 @@ public class TestLobMerge {
         EntityManager em = emf.createEntityManager();
         try {
             final Set<CollectedEntity> col1 = new HashSet<CollectedEntity>(
-                    Arrays.asList(new CollectedEntity[] { 
-                            new CollectedEntity("label1", "content1"),
+                    Arrays.asList(new CollectedEntity("label1", "content1"),
                             new CollectedEntity("label2", "content2"),
-                            new CollectedEntity("label3", "content3") }));
+                            new CollectedEntity("label3", "content3")));
 
             final ParentEntity pdo = new ParentEntity(9, Collections.unmodifiableSet(col1));
             em.getTransaction().begin();
@@ -69,9 +68,8 @@ public class TestLobMerge {
             em.getTransaction().commit();
 
             final Set<CollectedEntity> col2 = new HashSet<CollectedEntity>(
-                    Arrays.asList(new CollectedEntity[] { 
-                            new CollectedEntity("label1", "content1"),
-                            new CollectedEntity("label2", "content2") }));
+                    Arrays.asList(new CollectedEntity("label1", "content1"),
+                            new CollectedEntity("label2", "content2")));
             final ParentEntity newEntity = new ParentEntity(pdo.getId(), col2);
 
             em.getTransaction().begin();

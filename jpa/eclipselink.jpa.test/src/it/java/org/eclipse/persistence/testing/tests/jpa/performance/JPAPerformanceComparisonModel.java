@@ -990,21 +990,21 @@ public class JPAPerformanceComparisonModel extends TestModel {
             }
             System.out.println(getName());
             System.out.println("No optimization time:");
-            System.out.println(Long.toString(time0 / 1000000));
+            System.out.println(time0 / 1000000);
             System.out.println("Mean per test:");
-            System.out.println(Double.toString((double)time0 / (n*1000000)));
+            System.out.println((double) time0 / (n * 1000000));
             System.out.println("std dev:");
-            System.out.println(Double.toString(Math.sqrt((double)time0square/n - (double)(time0/n)*(time0/n))/1000000));
+            System.out.println(Math.sqrt((double) time0square / n - (double) (time0 / n) * (time0 / n)) / 1000000);
             System.out.println("zero time tests:");
             System.out.println("ResultSet optimization time:");
-            System.out.println(Long.toString(time1 / 1000000));
+            System.out.println(time1 / 1000000);
             System.out.println("Mean per test:");
-            System.out.println(Double.toString((double)time1 / (n*1000000)));
+            System.out.println((double) time1 / (n * 1000000));
             System.out.println("std dev:");
-            System.out.println(Double.toString(Math.sqrt((double)time1square/n - (double)(time1/n)*(time1/n))/1000000));
+            System.out.println(Math.sqrt((double) time1square / n - (double) (time1 / n) * (time1 / n)) / 1000000);
             System.out.println("zero time tests:");
             System.out.println("No Optimization - Optimization:");
-            System.out.println(Long.toString((time0 - time1)/1000000));
+            System.out.println((time0 - time1) / 1000000);
         }
 
         long test0() {

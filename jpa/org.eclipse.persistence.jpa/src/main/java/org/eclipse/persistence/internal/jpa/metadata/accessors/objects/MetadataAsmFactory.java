@@ -655,11 +655,11 @@ public class MetadataAsmFactory extends MetadataFactory {
                             index ++;
                         }
                     } else if (myNext == ';' && next == 'T') {
-                        arguments.add(new String(new char[] { next }));
+                        arguments.add(String.valueOf(next));
                         arguments.add(desc.substring(start + 1, end));
                         index = end - 1;
                     } else {
-                        arguments.add(new String(new char[] { next }));
+                        arguments.add(String.valueOf(next));
                     }
                 }
             }
@@ -692,7 +692,7 @@ public class MetadataAsmFactory extends MetadataFactory {
         } else if (primitive == 'S') {
             return "short";
         } else {
-            return new String(new char[] { primitive });
+            return String.valueOf(primitive);
         }
     }
 

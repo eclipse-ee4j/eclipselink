@@ -98,8 +98,8 @@ public class MappingTestProject extends Project {
         ContainerPolicy listPolicy;
         try {
             listPolicy = (ContainerPolicy) listContainerPolicyClass.getConstructor().newInstance();
-            Method meth = listContainerPolicyClass.getDeclaredMethod("setContainerClassName", new Class[] { String.class });
-            meth.invoke(listPolicy, new Object[] { "java.util.ArrayList" });
+            Method meth = listContainerPolicyClass.getDeclaredMethod("setContainerClassName", String.class);
+            meth.invoke(listPolicy, "java.util.ArrayList");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -120,8 +120,8 @@ public class MappingTestProject extends Project {
         ContainerPolicy mapPolicy;
         try {
             mapPolicy = (ContainerPolicy) mapContainerPolicyClass.getConstructor().newInstance();
-            Method meth = mapContainerPolicyClass.getDeclaredMethod("setContainerClassName", new Class[] { String.class });
-            meth.invoke(mapPolicy, new Object[] { "java.util.HashMap" });
+            Method meth = mapContainerPolicyClass.getDeclaredMethod("setContainerClassName", String.class);
+            meth.invoke(mapPolicy, "java.util.HashMap");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -200,8 +200,8 @@ public class MappingTestProject extends Project {
         ContainerPolicy listPolicy;
         try {
             listPolicy = (ContainerPolicy) listContainerPolicyClass.getConstructor().newInstance();
-            Method meth = listContainerPolicyClass.getDeclaredMethod("setContainerClassName", new Class[] { String.class });
-            meth.invoke(listPolicy, new Object[] { "java.util.ArrayList" });
+            Method meth = listContainerPolicyClass.getDeclaredMethod("setContainerClassName", String.class);
+            meth.invoke(listPolicy, "java.util.ArrayList");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -216,8 +216,8 @@ public class MappingTestProject extends Project {
         ContainerPolicy listPolicy1;
         try {
             listPolicy1 = (ContainerPolicy) listContainerPolicyClass.getConstructor().newInstance();
-            Method meth = listContainerPolicyClass.getDeclaredMethod("setContainerClassName", new Class[] { String.class });
-            meth.invoke(listPolicy1, new Object[] { "java.util.ArrayList" });
+            Method meth = listContainerPolicyClass.getDeclaredMethod("setContainerClassName", String.class);
+            meth.invoke(listPolicy1, "java.util.ArrayList");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -257,7 +257,7 @@ public class TestRunModel extends TestModel {
                 if(TestModel.class.isAssignableFrom(cls)) {
                     model.addTest((TestModel)cls.getConstructor().newInstance());
                 } else {
-                    Method suite = cls.getDeclaredMethod("suite", new Class[]{});
+                    Method suite = cls.getDeclaredMethod("suite");
                     model.addTest((Test)suite.invoke(null, new Object[]{}));
                 }
             } catch (Throwable exception) {
@@ -286,7 +286,7 @@ public class TestRunModel extends TestModel {
                 if(TestModel.class.isAssignableFrom(cls)) {
                     model.addTest((TestModel)cls.getConstructor().newInstance());
                 } else {
-                    Method suite = cls.getDeclaredMethod("suite", new Class[]{});
+                    Method suite = cls.getDeclaredMethod("suite");
                     model.addTest((Test)suite.invoke(null, new Object[]{}));
                 }
             } catch (Throwable exception) {
@@ -314,7 +314,7 @@ public class TestRunModel extends TestModel {
                 if(TestModel.class.isAssignableFrom(cls)) {
                     model.addTest((TestModel)cls.getConstructor().newInstance());
                 } else {
-                    Method suite = cls.getDeclaredMethod("suite", new Class[]{});
+                    Method suite = cls.getDeclaredMethod("suite");
                     model.addTest((Test)suite.invoke(null, new Object[]{}));
                 }
             } catch (Throwable exception) {

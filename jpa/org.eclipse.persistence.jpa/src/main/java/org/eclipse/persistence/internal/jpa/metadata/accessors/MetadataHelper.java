@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -88,7 +88,7 @@ public class MetadataHelper {
             final int valueIndex, final String binder, final String separator) {
         int idx = valueIndex;
         for (Iterator<? extends MetadataAccessor> i = mappings.iterator(); i.hasNext();) {
-            target.append(i.next().getName().toUpperCase(Locale.ROOT)).append(binder).append(Integer.toString(++idx));
+            target.append(i.next().getName().toUpperCase(Locale.ROOT)).append(binder).append(++idx);
             if (i.hasNext()) {
                 target.append(separator);
             }

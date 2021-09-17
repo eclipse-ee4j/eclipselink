@@ -156,7 +156,7 @@ public class OPStack {
                 tok = new Token(sbuf.toString(), Token.ARG);
                 tokens.add(tok);
                 sbuf = new StringBuffer();
-                sbuf.append(Character.toString(ch));
+                sbuf.append(ch);
                 sbuf.append(exp.charAt(++i));
                 tok = new Token(sbuf.toString().trim(), Token.DI, Token.NEQ_PR);
                 tokens.add(tok);
@@ -165,7 +165,7 @@ public class OPStack {
                 tok = new Token(sbuf.toString(), Token.ARG);
                 tokens.add(tok);
                 sbuf = new StringBuffer();
-                sbuf.append(Character.toString(ch));
+                sbuf.append(ch);
                 if (((i + 1) < exp.length()) && (exp.charAt(i + 1) == '=')) {
                     sbuf.append(exp.charAt(++i));
                     tok = new Token(sbuf.toString().trim(), Token.DI, Token.LEQ_PR);
@@ -178,7 +178,7 @@ public class OPStack {
                 tok = new Token(sbuf.toString(), Token.ARG);
                 tokens.add(tok);
                 sbuf = new StringBuffer();
-                sbuf.append(Character.toString(ch));
+                sbuf.append(ch);
                 if (((i + 1) < exp.length()) && (exp.charAt(i + 1) == '=')) {
                     sbuf.append(exp.charAt(++i));
                     tok = new Token(sbuf.toString().trim(), Token.DI, Token.GEQ_PR);

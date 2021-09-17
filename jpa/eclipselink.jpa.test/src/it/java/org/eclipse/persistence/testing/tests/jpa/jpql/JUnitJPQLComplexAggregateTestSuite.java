@@ -550,8 +550,8 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
 
         // Need to create the expected result manually, because using the
         // TopLink query API would run into the same issue 2497.
-        List<Long> expectedResult = Arrays.asList(new Long[] {1L, 0L,
-                0L, 1L});
+        List<Long> expectedResult = Arrays.asList(1L, 0L,
+                0L, 1L);
         Collections.sort(expectedResult);
 
         String jpql = "SELECT COUNT(o) FROM Customer c LEFT JOIN c.orders o GROUP BY c.name";
@@ -578,7 +578,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
 
         // Need to create the expected result manually, because using the
         // TopLink query API would run into the same issue 2497.
-        List<Long> expectedResult = Arrays.asList(new Long[] {2L, 5L, 3L});
+        List<Long> expectedResult = Arrays.asList(2L, 5L, 3L);
         Collections.sort(expectedResult);
 
         String jpql = "SELECT COUNT(p) FROM Employee e LEFT JOIN e.phoneNumbers p WHERE e.lastName LIKE 'S%' GROUP BY e.lastName";
@@ -619,7 +619,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
 
             // Need to create the expected result manually, because using the
             // TopLink query API would run into the same issue 6155093.
-            List<Long> expectedResult = Arrays.asList(new Long[] {1L});
+            List<Long> expectedResult = Arrays.asList(1L);
             Collections.sort(expectedResult);
 
             // COUNT DISTINCT with inner join
@@ -676,7 +676,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
 
         EntityManager em = createEntityManager();
 
-        List<Long> expectedResult = Arrays.asList(new Long[] { 0L, 1L, 0L, 0L });
+        List<Long> expectedResult = Arrays.asList(0L, 1L, 0L, 0L);
 
         String jpql = "SELECT COUNT(cc) FROM Customer c LEFT JOIN c.CCustomers cc GROUP BY c.name order by c.name";
         Query q = em.createQuery(jpql);

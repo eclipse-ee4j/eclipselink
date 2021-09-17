@@ -68,7 +68,7 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
             Class<?> sopClass = Class.forName("oracle.toplink.exalogic.sop.SerializedObjectPolicy");
             Method setIsRecoverableMethod = null;
             if (isRecoverable) {
-                setIsRecoverableMethod = sopClass.getDeclaredMethod("setIsRecoverable", new Class[] {boolean.class});
+                setIsRecoverableMethod = sopClass.getDeclaredMethod("setIsRecoverable", boolean.class);
             }
 
             Class[] sopEntities = {Employee.class, Address.class, Project.class};
@@ -76,7 +76,7 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
                 ClassDescriptor descriptor = session.getDescriptor(sopEntity);
                 Object sop = sopClass.getConstructor().newInstance();
                 if (isRecoverable) {
-                    setIsRecoverableMethod.invoke(sop, new Object[] {true});
+                    setIsRecoverableMethod.invoke(sop, true);
                 }
                 ((SerializedObjectPolicy)sop).setField(new DatabaseField("SOP"));
                 descriptor.setSerializedObjectPolicy((SerializedObjectPolicy)sop);

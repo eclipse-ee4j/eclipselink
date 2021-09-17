@@ -104,8 +104,8 @@ public class STI_JoinedAttributeTest extends TestCase {
     // executes the method with the same name as the test
     @Override
     protected void test() throws Exception {
-        Method method = this.getClass().getDeclaredMethod(getName(), new Class[]{});
-        method.invoke(this, new Object[] {});
+        Method method = this.getClass().getDeclaredMethod(getName());
+        method.invoke(this);
     }
 
     @Override

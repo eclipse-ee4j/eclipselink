@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -610,7 +610,7 @@ public class TestConditionalExpressions extends QueryTest {
         byte[] byteArr1 = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 };
         byte[] byteArr2 = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 };
         assertValidQueryExecutionWithArgs("SELECT b FROM BasicTypesFieldAccess b WHERE b.primitiveByteArray2Binary IN(?1,?2)",
-                new Object[] { byteArr1, byteArr2 });
+                byteArr1, byteArr2);
 
     }
 
@@ -644,7 +644,7 @@ public class TestConditionalExpressions extends QueryTest {
         byte[] byteArr1 = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8 };
         byte[] byteArr2 = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8 };
         String queryString = "SELECT p FROM PrincipalEntity p WHERE p.taskInstance.taskInstanceId IN (?1,?2)";
-        assertValidQueryExecutionWithArgs(queryString, new Object[] { byteArr1, byteArr2 });
+        assertValidQueryExecutionWithArgs(queryString, byteArr1, byteArr2);
     }
 
     @Test
