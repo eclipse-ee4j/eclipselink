@@ -132,13 +132,13 @@ public class SLF4JLoggerHelper {
             final int defaultLevel = logger.getLevel(category.getName());
             switch(category) {
             case ALL:
-                assertEquals("SLF4J logging level " + Integer.toString(defaultLevel)
-                        + " does not match configured/default level " + Integer.toString(configuredDefaultLevel)
+                assertEquals("SLF4J logging level " + defaultLevel
+                        + " does not match configured/default level " + configuredDefaultLevel
                         + " for category " + category.getName(), configuredDefaultLevel, defaultLevel);
                 break;
             default:
-                assertEquals("SLF4J logging level " + Integer.toString(defaultLevel)
-                        + " does not match configured/default level " + Integer.toString(configuredDefaultLevel)
+                assertEquals("SLF4J logging level " + defaultLevel
+                        + " does not match configured/default level " + configuredDefaultLevel
                         + " for category " + category.getName(), configuredDefaultLevel, defaultLevel);
             }
         }

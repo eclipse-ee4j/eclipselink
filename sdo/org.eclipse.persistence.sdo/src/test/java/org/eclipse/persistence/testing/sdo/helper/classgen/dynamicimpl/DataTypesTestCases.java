@@ -202,9 +202,9 @@ public class DataTypesTestCases extends SDOTestCase {
         Class implClass = theType.getImplClass();
         assertNotNull(implClass);
 
-        Method isMethod = implClass.getMethod("isBooleanProperty", new Class[0]);
+        Method isMethod = implClass.getMethod("isBooleanProperty");
         assertNotNull(isMethod);
-        Method getMethod = implClass.getMethod("getBooleanProperty", new Class[0]);
+        Method getMethod = implClass.getMethod("getBooleanProperty");
         assertNotNull(getMethod);
 
     }

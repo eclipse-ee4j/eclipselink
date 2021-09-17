@@ -66,7 +66,7 @@ public class TableSequenceDefinition extends SequenceDefinition {
             writer.write("(" + getSequenceNameFieldName());
             writer.write(", " + getSequenceCounterFieldName());
             writer.write(") values (");
-            writer.write("'" + getName() + "', "  + Integer.toString(sequence.getInitialValue() - 1) + ")");
+            writer.write("'" + getName() + "', "  + (sequence.getInitialValue() - 1) + ")");
         } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);
         }

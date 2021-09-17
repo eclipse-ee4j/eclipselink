@@ -142,13 +142,13 @@ public class DynamicTestCases extends XMLMappingTestCases {
     }
 
     private void setValue(Object owner, String attributeName, Object value) throws Exception {
-        Method setMethod = owner.getClass().getMethod("set", new Class[] { String.class, Object.class });
-        setMethod.invoke(owner, new Object[] { attributeName, value });
+        Method setMethod = owner.getClass().getMethod("set", String.class, Object.class);
+        setMethod.invoke(owner, attributeName, value);
     }
 
     private Object getValue(Object owner, String attributeName) throws Exception {
-        Method getMethod = owner.getClass().getMethod("get", new Class[] { String.class });
-        Object value = getMethod.invoke(owner, new Object[] { attributeName });
+        Method getMethod = owner.getClass().getMethod("get", String.class);
+        Object value = getMethod.invoke(owner, attributeName);
         return value;
     }
 

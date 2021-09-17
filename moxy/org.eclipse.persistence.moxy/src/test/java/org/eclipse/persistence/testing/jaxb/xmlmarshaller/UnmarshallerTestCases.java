@@ -245,8 +245,8 @@ public class UnmarshallerTestCases extends TestCase  {
 
         // Set up a control object using this ClassLoader
         Object controlObject = Class.forName("org.eclipse.persistence.testing.jaxb.xmlmarshaller.Employee", true, classLoader).getConstructor().newInstance();
-        Method setMethod = controlObject.getClass().getMethod("setName", new Class[] { String.class });
-        setMethod.invoke(controlObject, new Object[] { CONTROL_EMPLOYEE_NAME });
+        Method setMethod = controlObject.getClass().getMethod("setName", String.class);
+        setMethod.invoke(controlObject, CONTROL_EMPLOYEE_NAME);
 
         // Unmarshall the control file, passing JAXB this classLoader
         JAXBContext jaxbContext = JAXBContext.newInstance(contextPath, classLoader);

@@ -1036,7 +1036,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query.setParameter("id1", empWithOutManager.getId());
         query.setParameter("id2", empWithManager.getId());
         List result = query.getResultList();
-        List<Employee> expectedResult = Arrays.asList(new Employee[] {empWithManager.getManager()});
+        List<Employee> expectedResult = Arrays.asList(empWithManager.getManager());
         Assert.assertTrue("Complex Join test failed", comparer.compareObjects(result, expectedResult));
 
         // Select the related manager of empWithOutManager and empWithManager
@@ -1047,7 +1047,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query.setParameter("id1", empWithOutManager.getId());
         query.setParameter("id2", empWithManager.getId());
         result = query.getResultList();
-        expectedResult = Arrays.asList(new Employee[] {empWithManager.getManager(), null});
+        expectedResult = Arrays.asList(empWithManager.getManager(), null);
         Assert.assertTrue("Complex Join test failed", comparer.compareObjects(result, expectedResult));
     }
 
@@ -1084,7 +1084,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query.setParameter("id1", empWithOutManager.getId());
         query.setParameter("id2", empWithManager.getId());
         List result = query.getResultList();
-        List<Employee> expectedResult = Arrays.asList(new Employee[] {empWithManager.getManager()});
+        List<Employee> expectedResult = Arrays.asList(empWithManager.getManager());
         Assert.assertTrue("Complex Join test failed", comparer.compareObjects(result, expectedResult));
 
         // Select the related manager of empWithOutManager and empWithManager
@@ -1096,7 +1096,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query.setParameter("id1", empWithOutManager.getId());
         query.setParameter("id2", empWithManager.getId());
         result = query.getResultList();
-        expectedResult = Arrays.asList(new Employee[] {empWithManager.getManager(), null});
+        expectedResult = Arrays.asList(empWithManager.getManager(), null);
         Assert.assertTrue("Complex Join test failed", comparer.compareObjects(result, expectedResult));
     }
 
@@ -4557,8 +4557,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         EntityManager em = createEntityManager();
         Query query = em.createQuery("Select e from Employee e where (e.firstName, e.lastName) IN :names");
         List names = new ArrayList();
-        names.add(new ArrayList(Arrays.asList(new String[]{"Bob", "Smith"})));
-        names.add(new ArrayList(Arrays.asList(new String[]{"John", "Doe"})));
+        names.add(new ArrayList(Arrays.asList("Bob", "Smith")));
+        names.add(new ArrayList(Arrays.asList("John", "Doe")));
         query.setParameter("names", names);
         query.getResultList();
         query = em.createQuery("Select e from Employee e where (e.firstName, e.lastName) IN (Select e2.lastName, e2.firstName from Employee e2)");

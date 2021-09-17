@@ -717,7 +717,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
     protected MetadataMethod getAccessibleMethod(MappingAccessor accessor) {
         if (accessor.hasAccessMethods()) {
             MetadataMethod getMethod = getJavaClass().getMethod(accessor.getGetMethodName(), new String[]{});
-            MetadataMethod setMethod = getJavaClass().getMethod(accessor.getSetMethodName(), Arrays.asList(new String[]{getMethod.getReturnType()}));
+            MetadataMethod setMethod = getJavaClass().getMethod(accessor.getSetMethodName(), Arrays.asList(getMethod.getReturnType()));
             getMethod.setSetMethod(setMethod);
             return getMethod;
         } else {

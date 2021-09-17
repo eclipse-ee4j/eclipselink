@@ -83,17 +83,17 @@ public class CacheIdTest {
 			newCacheId(new Object[] {"a", "b"}, new Object[] {"b", "c"}),
 			newCacheId(new Object[] {"a", "b"}, new Object[] {"b", "c"}));
 		equal("one primaryKey - equal",
-			newCacheId(new Object[] {"a", "b"}),
-			newCacheId(new Object[] {"a", "b"}));
+			newCacheId("a", "b"),
+			newCacheId("a", "b"));
 
 		smaller("one primaryKey - smaller on first element",
-			newCacheId(new Object[] {"a", "b"}), newCacheId(new Object[] {"b", "c"}));
+			newCacheId("a", "b"), newCacheId("b", "c"));
 		greater("one primaryKey - greater on first element",
-			newCacheId(new Object[] {"b", "c"}), newCacheId(new Object[] {"a", "c"}));
+			newCacheId("b", "c"), newCacheId("a", "c"));
 		smaller("one primaryKey - smaller on last element",
-			newCacheId(new Object[] {"b", "a", "b"}), newCacheId(new Object[] {"b", "a", "c"}));
+			newCacheId("b", "a", "b"), newCacheId("b", "a", "c"));
 		greater("one primaryKey - greater  on last element",
-			newCacheId(new Object[] {"0", "0", "c"}), newCacheId(new Object[] {"0", "0", "b"}));
+			newCacheId("0", "0", "c"), newCacheId("0", "0", "b"));
 
 		smaller("many primaryKey - smaller",
 			newCacheId(new Object[] {"a", "b"}, new Object[] {"b", "b"}), newCacheId(new Object[] {"a", "b"}, new Object[] {"b", "c"}));
@@ -101,9 +101,9 @@ public class CacheIdTest {
 			newCacheId(new Object[] {"b", "c"}, new Object[] {"a", "d"}), newCacheId(new Object[] {"b", "c"}, new Object[] {"a", "c"}));
 
 		greater("one primaryKey - smaller by different size",
-			newCacheId(new Object[] {"a", "b"}), newCacheId(new Object[] {"a"}));
+			newCacheId("a", "b"), newCacheId("a"));
 		smaller("one primaryKey - greater by different size",
-			newCacheId(new Object[] {"b"}), newCacheId(new Object[] {"b", "a"}));
+			newCacheId("b"), newCacheId("b", "a"));
 	}
 
 	@Test

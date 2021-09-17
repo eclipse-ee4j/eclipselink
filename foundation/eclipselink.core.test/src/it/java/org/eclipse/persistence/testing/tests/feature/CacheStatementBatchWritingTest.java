@@ -74,7 +74,7 @@ public class CacheStatementBatchWritingTest extends TransactionalTestCase {
         Map statementCache = null;
         String sql = getSession().getDescriptor(Address.class).getQueryManager().getInsertQuery().getSQLString();
         try {
-            Method method = uow.getParent().getAccessor().getClass().getDeclaredMethod("getStatementCache", new Class[] { });
+            Method method = uow.getParent().getAccessor().getClass().getDeclaredMethod("getStatementCache");
             method.setAccessible(true);
             statementCache = (Map)method.invoke(uow.getParent().getAccessor(), new Object[] { });
             statement =  (PreparedStatement)statementCache.get(sql);

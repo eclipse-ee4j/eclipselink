@@ -47,7 +47,7 @@ public class InheritanceWithTransientTestCases extends TestCase {
     }
 
     public void testSchemaGen() throws Exception {
-        JAXBContext jaxbContext = JAXBContext.newInstance(new Class[]{Z.class, X.class, Y.class, X2.class});
+        JAXBContext jaxbContext = JAXBContext.newInstance(Z.class, X.class, Y.class, X2.class);
         StringOutputResolver sor = new StringOutputResolver();
         jaxbContext.generateSchema(sor);
 

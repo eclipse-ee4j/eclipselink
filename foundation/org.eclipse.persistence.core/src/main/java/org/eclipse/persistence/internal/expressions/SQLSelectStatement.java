@@ -2127,7 +2127,7 @@ public class SQLSelectStatement extends SQLStatement {
     * The alias is automatically truncated
     */
     public String generatedAlias(String fieldName) {
-        return "a" + String.valueOf(getNextFieldCounterValue());
+        return "a" + getNextFieldCounterValue();
      }
 
     /**

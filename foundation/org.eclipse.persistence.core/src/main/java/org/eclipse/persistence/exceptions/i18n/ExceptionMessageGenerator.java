@@ -104,7 +104,7 @@ public final class ExceptionMessageGenerator {
                     }
                 }
             }
-            return MessageFormat.format(errorMessage, new Object[] {message, vec});
+            return MessageFormat.format(errorMessage, message, vec);
         }
     }
 

@@ -143,9 +143,9 @@ public class DynamicClassWriter {
     }
 
     private void addConstructors(ClassWriter cw) {
-        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", Type.getMethodDescriptor(Type.VOID_TYPE, new Type[0]), null, new String[] { Type.getInternalName(Serializable.class) });
+        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", Type.getMethodDescriptor(Type.VOID_TYPE), null, new String[] { Type.getInternalName(Serializable.class) });
         mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getType(parentClass).getInternalName(), "<init>", Type.getMethodDescriptor(Type.VOID_TYPE, new Type[0]), false);
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getType(parentClass).getInternalName(), "<init>", Type.getMethodDescriptor(Type.VOID_TYPE), false);
         mv.visitInsn(Opcodes.RETURN);
         mv.visitMaxs(1, 1);
         mv.visitEnd();
@@ -240,7 +240,7 @@ public class DynamicClassWriter {
     private void addWriteReplace(ClassWriter cw) {
         Method method;
         try {
-            method = parentClass.getDeclaredMethod(WRITE_REPLACE, new Class[0]);
+            method = parentClass.getDeclaredMethod(WRITE_REPLACE);
         } catch (NoSuchMethodException e) {
             return;
         }

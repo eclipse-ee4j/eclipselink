@@ -43,7 +43,7 @@ public class InheritanceWithXMLValueTestCases extends TestCase {
     }
 
     public void testSchemaGen() throws Exception {
-        JAXBContext jaxbContext = JAXBContext.newInstance(new Class[]{ParentEntity.class, ChildEntity.class});
+        JAXBContext jaxbContext = JAXBContext.newInstance(ParentEntity.class, ChildEntity.class);
         StringOutputResolver sor = new StringOutputResolver();
         jaxbContext.generateSchema(sor);
 

@@ -2115,10 +2115,10 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             if (mapHolders.size() == 2) {
                 for (MapHolder mh : mapHolders) {
                     if (mh.getMapHolderEmbedded().getStringMap().size() != mh.getId() + 1) {
-                        errorMsg += "Wrong getMapHolderEmbedded().getStringMap().size() " + mh.getMapHolderEmbedded().getStringMap().size() + "; expected " + Integer.toString(mh.getId() + 1) + "\n";
+                        errorMsg += "Wrong getMapHolderEmbedded().getStringMap().size() " + mh.getMapHolderEmbedded().getStringMap().size() + "; expected " + (mh.getId() + 1) + "\n";
                     }
                     if (mh.getStringMap().size() != mh.getId() + 1) {
-                        errorMsg += "Wrong getStringMap().size() " + mh.getStringMap().size() + "; expected " + Integer.toString(mh.getId() + 1) + "\n";
+                        errorMsg += "Wrong getStringMap().size() " + mh.getStringMap().size() + "; expected " + (mh.getId() + 1) + "\n";
                     }
                 }
             } else {

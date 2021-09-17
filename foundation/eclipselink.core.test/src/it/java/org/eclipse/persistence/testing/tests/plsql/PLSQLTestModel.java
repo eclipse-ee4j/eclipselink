@@ -366,7 +366,7 @@ public class PLSQLTestModel extends TestModel {
         suite.addTest(test);
 
         args = new ArrayList();
-        collection = new ArrayList(Arrays.asList(new String[] { "Ottawa", "Toronto" }));
+        collection = new ArrayList(Arrays.asList("Ottawa", "Toronto"));
         args.add(collection);
         args.add("Nepean");
         result = new DatabaseRecord();
@@ -392,7 +392,7 @@ public class PLSQLTestModel extends TestModel {
         suite.addTest(test);
 
         args = new ArrayList();
-        collection = new ArrayList(Arrays.asList(new Object[] { address, address }));
+        collection = new ArrayList(Arrays.asList(address, address));
         args.add(collection);
         args.add("Nepean");
         result = new DatabaseRecord();
@@ -418,7 +418,7 @@ public class PLSQLTestModel extends TestModel {
         suite.addTest(test);
 
         args = new ArrayList();
-        collection = new ArrayList(Arrays.asList(new Object[] { employee, employee }));
+        collection = new ArrayList(Arrays.asList(employee, employee));
         args.add(collection);
         args.add("Nepean");
         result = new DatabaseRecord();

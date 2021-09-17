@@ -2761,7 +2761,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
 
             if(!msg.equals(localErrorMsg)) {
-                errorMsg = errorMsg + "i="+Integer.toString(i)+": "+ localErrorMsg + " ";
+                errorMsg = errorMsg + "i="+ i +": "+ localErrorMsg + " ";
             }
         }
         if(errorMsg.length() > 0) {
@@ -7909,7 +7909,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     + ", but nextSequenceNumber = "
                     + nextSequenceNumber_Customer
                     + "("
-                    + Integer.toString(assignedSequenceNumber_Customer + 1)
+                    + (assignedSequenceNumber_Customer + 1)
                     + " was expected)\n";
         }
         if (assignedSequenceNumber_Employee + 1 != nextSequenceNumber_Employee) {
@@ -7918,7 +7918,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     + ", but nextSequenceNumber = "
                     + nextSequenceNumber_Employee
                     + "("
-                    + Integer.toString(assignedSequenceNumber_Employee + 1)
+                    + (assignedSequenceNumber_Employee + 1)
                     + " was expected)\n";
         }
         if (assignedSequenceNumber_Dealer + 1 != nextSequenceNumber_Dealer) {
@@ -7927,7 +7927,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     + ", but nextSequenceNumber = "
                     + nextSequenceNumber_Dealer
                     + "("
-                    + Integer.toString(assignedSequenceNumber_Dealer + 1)
+                    + (assignedSequenceNumber_Dealer + 1)
                     + " was expected)\n";
         }
         if (errorMsg.length() > 0) {
@@ -10734,7 +10734,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public void testMustBeCompositeMember() {
         String errorMsg = "";
         for(int i=1; i<=3; i++) {
-            String puName = "composite-advanced-member_" + Integer.toString(i);
+            String puName = "composite-advanced-member_" + i;
             try {
                 EntityManager em = createEntityManager(puName);
                 errorMsg += "createEntityManager(" + puName +") succeeded - should have failed\n";

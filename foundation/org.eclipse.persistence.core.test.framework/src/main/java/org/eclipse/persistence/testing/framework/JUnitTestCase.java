@@ -43,9 +43,9 @@ public class JUnitTestCase extends AutoVerifyTestCase {
     @Override
     public void setup() throws Throwable {
         try {
-            Method setUp = testCase.getClass().getMethod("setUp", new Class[0]);
+            Method setUp = testCase.getClass().getMethod("setUp");
             setUp.setAccessible(true);
-            setUp.invoke(testCase, new Object[0]);
+            setUp.invoke(testCase);
         } catch (InvocationTargetException exception) {
             throw exception.getTargetException();
         } catch (Exception exception) {
@@ -59,9 +59,9 @@ public class JUnitTestCase extends AutoVerifyTestCase {
     @Override
     public void reset() throws Throwable {
         try {
-            Method tearDown = testCase.getClass().getMethod("tearDown", new Class[0]);
+            Method tearDown = testCase.getClass().getMethod("tearDown");
             tearDown.setAccessible(true);
-            tearDown.invoke(testCase, new Object[0]);
+            tearDown.invoke(testCase);
         } catch (InvocationTargetException exception) {
             throw exception.getTargetException();
         } catch (Exception exception) {
@@ -77,12 +77,12 @@ public class JUnitTestCase extends AutoVerifyTestCase {
         try {
             Method runTest = null;
             try {
-                runTest = testCase.getClass().getMethod(testCase.getName(), new Class[0]);
+                runTest = testCase.getClass().getMethod(testCase.getName());
             } catch (NoSuchMethodException exc) {
-                runTest = testCase.getClass().getMethod("runTest", new Class[0]);
+                runTest = testCase.getClass().getMethod("runTest");
             }
             runTest.setAccessible(true);
-            runTest.invoke(testCase, new Object[0]);
+            runTest.invoke(testCase);
         } catch (InvocationTargetException exception) {
             throw exception.getTargetException();
         } catch (Exception exception) {
@@ -111,7 +111,7 @@ public class JUnitTestCase extends AutoVerifyTestCase {
         }
         junit.framework.TestSuite suite;
         try {
-            Method suiteMethod = junitTestCaseClass.getMethod("suite", new Class[0]);
+            Method suiteMethod = junitTestCaseClass.getMethod("suite");
             suiteMethod.setAccessible(true);
             junit.framework.Test test = (junit.framework.Test)suiteMethod.invoke(null, new Object[0]);
             while(test instanceof junit.extensions.TestDecorator) {

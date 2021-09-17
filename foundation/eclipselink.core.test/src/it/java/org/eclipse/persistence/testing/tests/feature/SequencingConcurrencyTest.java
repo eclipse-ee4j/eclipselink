@@ -245,7 +245,7 @@ public class SequencingConcurrencyTest extends TestCase implements Comparator {
         // Verify
         for (int i = 0; i < nThreads; i++) {
             if (tests[i].exception != null) {
-                throw new org.eclipse.persistence.testing.framework.TestErrorException("exception in thread " + i + ", session(" + String.valueOf(System.identityHashCode(session)) + ") ", tests[i].exception);
+                throw new org.eclipse.persistence.testing.framework.TestErrorException("exception in thread " + i + ", session(" + System.identityHashCode(session) + ") ", tests[i].exception);
             }
         }
 

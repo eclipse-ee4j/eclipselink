@@ -341,7 +341,7 @@ public class SOAP12TestSuite extends ProviderHelper implements Provider<SOAPMess
         testService = Service.create(serviceQName);
         testService.addPort(portQName, SOAP12HTTP_BINDING, ENDPOINT_ADDRESS);
         dispatch = testService.createDispatch(portQName, SOAPMessage.class,
-            MESSAGE, new WebServiceFeature[]{new MTOMFeature(100)});
+            MESSAGE, new MTOMFeature(100));
     }
 
     @AfterClass

@@ -271,9 +271,9 @@ public abstract class AbstractBaseTest {
                 Method getCacheMethod = emf.getClass().getMethod("getCache");
                 Object cache =  getCacheMethod.invoke(emf);
 
-                Method evictClassMethod = cache.getClass().getMethod("evictAll", new Class[]{});
+                Method evictClassMethod = cache.getClass().getMethod("evictAll");
 
-                evictClassMethod.invoke(cache, new Object[]{});
+                evictClassMethod.invoke(cache);
             } catch (NoSuchMethodException e) {
                 throw new RuntimeException(e);
             } catch (IllegalArgumentException e) {

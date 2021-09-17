@@ -1051,7 +1051,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         Class cls = findClassForProperty(serverPlatformClassName, PersistenceUnitProperties.TARGET_SERVER, loader);
         boolean isTargetServerTransCtrl = false;
         try {
-            Constructor constructor = cls.getConstructor(new Class[]{org.eclipse.persistence.sessions.DatabaseSession.class});
+            Constructor constructor = cls.getConstructor(org.eclipse.persistence.sessions.DatabaseSession.class);
             serverPlatform = (ServerPlatform)constructor.newInstance(new Object[]{session});
         } catch (Exception ex) {
             if(ExternalTransactionController.class.isAssignableFrom(cls)) {
@@ -1609,7 +1609,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 } else {
                     String key = entry.getKey();
                     poolName = key.substring(0, dotIdx);
-                    attribute = key.substring(dotIdx + 1, key.length());
+                    attribute = key.substring(dotIdx + 1);
                 }
                 ConnectionPool pool = null;
                 if (poolName.equals("write")) {

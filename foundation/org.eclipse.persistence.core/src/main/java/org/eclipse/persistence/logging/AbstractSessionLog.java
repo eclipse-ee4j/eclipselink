@@ -830,9 +830,9 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     protected String getConnectionString(Accessor connection) {
         // Bug 3630182 - if possible, print the actual connection's hashcode instead of just the accessor
         if (connection.getDatasourceConnection() == null){
-            return CONNECTION_STRING + "(" + String.valueOf(System.identityHashCode(connection)) + ")";
+            return CONNECTION_STRING + "(" + System.identityHashCode(connection) + ")";
         } else {
-             return CONNECTION_STRING + "(" + String.valueOf(System.identityHashCode(connection.getDatasourceConnection())) + ")";
+             return CONNECTION_STRING + "(" + System.identityHashCode(connection.getDatasourceConnection()) + ")";
         }
     }
 
@@ -840,7 +840,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * Return the specified thread information.
      */
     protected String getThreadString(Thread thread) {
-        return THREAD_STRING + "(" + String.valueOf(thread) + ")";
+        return THREAD_STRING + "(" + thread + ")";
     }
 
     /**

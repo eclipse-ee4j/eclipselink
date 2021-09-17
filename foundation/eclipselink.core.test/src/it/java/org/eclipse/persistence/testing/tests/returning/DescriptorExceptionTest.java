@@ -32,7 +32,7 @@ public class DescriptorExceptionTest extends AutoVerifyTestCase {
 
     public DescriptorExceptionTest(int errorCode) {
         this.errorCode = errorCode;
-        setName(getName() + " errorCode=" + Integer.toString(errorCode));
+        setName(getName() + " errorCode=" + errorCode);
     }
 
     public DescriptorExceptionTest(int errorCode, String more) {

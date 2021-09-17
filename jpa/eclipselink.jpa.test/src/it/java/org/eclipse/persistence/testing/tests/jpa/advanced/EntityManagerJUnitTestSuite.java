@@ -2730,7 +2730,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
 
             if(!msg.equals(localErrorMsg)) {
-                errorMsg = errorMsg + "i="+Integer.toString(i)+": "+ localErrorMsg + " ";
+                errorMsg = errorMsg + "i="+ i +": "+ localErrorMsg + " ";
             }
         }
         if(errorMsg.length() > 0) {
@@ -9075,7 +9075,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
         // report result
         if(assignedSequenceNumber + 1 != nextSequenceNumber) {
-            fail("Transaction that assigned sequence number committed, assignedSequenceNumber = " + assignedSequenceNumber +", but nextSequenceNumber = "+ nextSequenceNumber +"("+Integer.toString(assignedSequenceNumber+1)+" was expected)");
+            fail("Transaction that assigned sequence number committed, assignedSequenceNumber = " + assignedSequenceNumber +", but nextSequenceNumber = "+ nextSequenceNumber +"("+ (assignedSequenceNumber + 1) +" was expected)");
         }
     }
 

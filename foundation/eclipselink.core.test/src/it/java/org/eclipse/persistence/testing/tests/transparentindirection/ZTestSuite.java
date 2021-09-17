@@ -87,7 +87,7 @@ public class ZTestSuite extends TestSuite {
      */
     private Constructor singleArgumentConstructorFor(Class testCaseClass) {
         try {
-            return testCaseClass.getConstructor(new Class[] { String.class });
+            return testCaseClass.getConstructor(String.class);
         } catch (NoSuchMethodException e) {
             String name = testCaseClass.getName();
             throw new RuntimeException("The class '" + name + "' must implement the constructor '" + name + "(String)'");

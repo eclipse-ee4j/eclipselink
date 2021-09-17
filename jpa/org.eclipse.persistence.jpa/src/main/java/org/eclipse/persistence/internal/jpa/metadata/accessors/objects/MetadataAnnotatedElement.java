@@ -71,6 +71,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.persistence.annotations.Array;
@@ -96,7 +97,6 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAcce
  * @author Guy Pelletier
  * @since EclipseLink 1.0
  */
-@SuppressWarnings("deprecation")
 public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     public static final String DEFAULT_RAW_CLASS = "java.lang.String";
 
@@ -149,7 +149,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     public MetadataAnnotatedElement(MetadataFactory factory) {
         super(factory);
 
-        m_annotations = new HashMap<String, MetadataAnnotation>();
+        m_annotations = new HashMap<>();
         m_metaAnnotations = new HashMap<>();
     }
 
@@ -172,7 +172,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      */
     public void addGenericType(String genericType) {
         if (m_genericType == null) {
-            m_genericType = new ArrayList<String>();
+            m_genericType = new ArrayList<>();
         }
 
         m_genericType.add(genericType);
@@ -183,15 +183,13 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      */
     @Override
     public boolean equals(Object object) {
-        if (object == null) {
+        if (object == null || getClass() != object.getClass()) {
             return false;
         }
-
         if (getName() == null) {
             return ((MetadataAnnotatedElement)object).getName() == null;
         }
-
-        return (object.getClass() == getClass()) && getName().equals(((MetadataAnnotatedElement)object).getName());
+        return getName().equals(((MetadataAnnotatedElement)object).getName());
     }
 
     /**
@@ -199,7 +197,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * Return the annotated element for this accessor. Note: This method does
      * not check against a metadata complete.
      */
-    public MetadataAnnotation getAnnotation(Class annotation) {
+    public MetadataAnnotation getAnnotation(Class<?> annotation) {
         return getAnnotation(annotation.getName());
     }
 
@@ -221,7 +219,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * @param names meta-annotations names cycle detection set, shall not be {@code null}
      */
     protected final MetadataAnnotation getAnnotation(final String annotation, final Set<String> names) {
-        if (m_annotations == null && m_metaAnnotations == null) {
+        if (m_annotations == null) {
             return null;
         }
         MetadataAnnotation metadataAnnotation = m_annotations.get(annotation);
@@ -509,7 +507,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * isAnnotationPresent calls can return a false when true because of the
      * meta-data complete feature.
      */
-    public boolean isAnnotationNotPresent(Class annotation, ClassAccessor accessor) {
+    public boolean isAnnotationNotPresent(Class<?> annotation, ClassAccessor accessor) {
         return isAnnotationNotPresent(annotation.getName(), accessor);
     }
 
@@ -529,7 +527,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * Indicates whether the specified annotation is present on java class
      * for the given descriptor metadata.
      */
-    public boolean isAnnotationPresent(Class annotationClass, ClassAccessor accessor) {
+    public boolean isAnnotationPresent(Class<?> annotationClass, ClassAccessor accessor) {
         return isAnnotationPresent(annotationClass.getName(), accessor);
     }
 
@@ -583,6 +581,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * INTERNAL:
      * Return true if this accessor represents a basic collection mapping.
      */
+    @SuppressWarnings("deprecation")
     public boolean isBasicCollection(ClassAccessor classAccessor) {
         return isAnnotationPresent(BasicCollection.class, classAccessor);
     }
@@ -591,6 +590,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * INTERNAL:
      * Return true if this accessor represents a basic collection mapping.
      */
+    @SuppressWarnings("deprecation")
     public boolean isBasicMap(ClassAccessor classAccessor) {
         return isAnnotationPresent(BasicMap.class, classAccessor);
     }
@@ -894,6 +894,6 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     @Override
     public String toString() {
         String className = getClass().getSimpleName();
-        return className.substring("Metadata".length(), className.length()).toLowerCase() + " " + getName();
+        return className.substring("Metadata".length()).toLowerCase() + " " + getName();
     }
 }

@@ -52,7 +52,7 @@ public class FooBarXsiTypeTestCases extends JAXBWithJSONTestCases {
     }
 
     public void testRi() throws Exception{
-        JAXBContext riContext = JAXBContext.newInstance(new Class[]{Foo.class, Bar.class, ObjectFactory.class});
+        JAXBContext riContext = JAXBContext.newInstance(Foo.class, Bar.class, ObjectFactory.class);
         InputStream is = getClass().getClassLoader().getResourceAsStream(XML_RESOURCE);
         Object unmarshalled = riContext.createUnmarshaller().unmarshal(is);
         System.out.println(unmarshalled.getClass());

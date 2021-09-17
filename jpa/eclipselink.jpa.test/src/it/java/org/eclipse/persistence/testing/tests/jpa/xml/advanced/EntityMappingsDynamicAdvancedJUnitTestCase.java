@@ -931,7 +931,7 @@ public class EntityMappingsDynamicAdvancedJUnitTestCase extends JUnitTestCase {
             String propertyName = propertyName(mapping.getAttributeName());
 
             @SuppressWarnings("unchecked")
-            Method method = mapping.getDescriptor().getJavaClass().getDeclaredMethod("get" + propertyName, new Class[0]);
+            Method method = mapping.getDescriptor().getJavaClass().getDeclaredMethod("get" + propertyName);
 
             Class<?> expectedReturnType = mapping.getAttributeClassification();
             if (mapping.isCollectionMapping()) {

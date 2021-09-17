@@ -1354,7 +1354,7 @@ public abstract class RuntimeServices {
              for (int j = 0; j < names.length; j++) {
                  String name = names[j];
                  Object value = cdata.get(name);
-                 returnRow[j] = name + " : " + String.valueOf(value);
+                 returnRow[j] = name + " : " + value;
              }
              data[i] = returnRow;
          }

@@ -4231,7 +4231,7 @@ public final class AnnotationsProcessor {
                         AnnotationVisitor av = fv.visitAnnotation(L + annotationClassName.replace(DOT_CHR, SLASH_CHR) + SEMI_COLON, true);
                         for (Method next : nextAnnotation.annotationType().getDeclaredMethods()) {
                             try {
-                                Object nextValue = next.invoke(nextAnnotation, new Object[] { });
+                                Object nextValue = next.invoke(nextAnnotation);
                                 if (nextValue instanceof Class) {
                                     Type nextType = Type.getType(L + ((Class) nextValue).getName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON);
                                     nextValue = nextType;
@@ -4640,7 +4640,7 @@ public final class AnnotationsProcessor {
                     av = mv.visitAnnotation(L + annotationType.getName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON, true);
                     for (Method next : annotation.annotationType().getDeclaredMethods()) {
                         try {
-                            Object nextValue = next.invoke(annotation, new Object[] {});
+                            Object nextValue = next.invoke(annotation);
                             if (nextValue instanceof Class) {
                                 nextValue = Type.getType(L + ((Class) nextValue).getName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON);
                             }

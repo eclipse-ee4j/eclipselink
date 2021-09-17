@@ -116,10 +116,10 @@ public class JavaUtilTest {
             String versionString = JavaSEPlatform.versionString(major, minor);
             JavaSEPlatform platform = JavaSEPlatform.toValue(versionString);
             assertNotNull("There should exist platform for valid platform"
-                    +" version number ["+Integer.toString(major)+","+Integer.toString(minor)+"]", platform);
+                    +" version number ["+ major +","+ minor +"]", platform);
             int[] result = resultMapping(version);
             assertTrue("Returned platform version numbers do not match provided"
-                    + " version number ["+Integer.toString(major)+","+Integer.toString(minor)+"]",
+                    + " version number ["+ major +","+ minor +"]",
                     result[0] == platform.getMajor() && result[1] == platform.getMinor());
         }
         // Invalid version number pairs.
@@ -129,7 +129,7 @@ public class JavaUtilTest {
             String versionString = JavaSEPlatform.versionString(major, minor);
             JavaSEPlatform platform = JavaSEPlatform.toValue(major, minor);
             assertTrue("Returned platform shall be JavaSEPlatform.LATEST for invalid version "
-                    + "number ["+Integer.toString(major)+","+Integer.toString(minor)+"]",
+                    + "number ["+ major +","+ minor +"]",
                     LATEST.getMajor() == platform.getMajor() && LATEST.getMinor() == platform.getMinor());
         }
     }
@@ -146,10 +146,10 @@ public class JavaUtilTest {
             int minor = version[1];
             JavaSEPlatform platform = JavaSEPlatform.toValue(major, minor);
             assertNotNull("There should exist platform for valid platform"
-                    +" version number ["+Integer.toString(major)+","+Integer.toString(minor)+"]", platform);
+                    +" version number ["+ major +","+ minor +"]", platform);
             int[] result = resultMapping(version);
             assertTrue("Returned platform version numbers do not match provided"
-                    + " version number ["+Integer.toString(major)+","+Integer.toString(minor)+"]",
+                    + " version number ["+ major +","+ minor +"]",
                     result[0] == platform.getMajor() && result[1] == platform.getMinor());
         }
         // Invalid version number pairs.
@@ -158,7 +158,7 @@ public class JavaUtilTest {
             int minor = version[1];
             JavaSEPlatform platform = JavaSEPlatform.toValue(major, minor);
             assertTrue("Returned platform shall be JavaSEPlatform.LATEST for invalid version "
-                    + "number ["+Integer.toString(major)+","+Integer.toString(minor)+"]",
+                    + "number ["+ major +","+ minor +"]",
                     LATEST.getMajor() == platform.getMajor() && LATEST.getMinor() == platform.getMinor());
         }
     }

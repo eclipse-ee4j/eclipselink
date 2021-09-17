@@ -159,12 +159,12 @@ public class ChangeSummaryVolumetricsTest extends ChangeSummaryTestCases {
 
         // setup object array
         for (int i = 0; i < NUM_B_LEVELS; i++) {
-            DataObject typeB_childreniDO = defineType("D_uri" + String.valueOf(i), "D" + String.valueOf(i));
+            DataObject typeB_childreniDO = defineType("D_uri" + i, "D" + i);
 
-            DataObject propDo = addProperty(typeB_childreniDO, "propertyD" + String.valueOf(i), dataObjectType);
+            DataObject propDo = addProperty(typeB_childreniDO, "propertyD" + i, dataObjectType);
             propDo.set("containment", true);
             typeB_children[i] = (SDOType)typeHelper.define(typeB_childreniDO);
-            propertyB_children[i] = (SDOProperty)typeB_children[i].getDeclaredPropertiesMap().get("propertyD" + String.valueOf(i));
+            propertyB_children[i] = (SDOProperty)typeB_children[i].getDeclaredPropertiesMap().get("propertyD" + i);
         }
 
         dataObjectB_children[0] = dataObjectB.createDataObject(propertyB, typeB_children[0]);

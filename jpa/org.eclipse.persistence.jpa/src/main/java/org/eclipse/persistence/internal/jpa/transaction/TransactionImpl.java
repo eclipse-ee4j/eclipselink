@@ -43,7 +43,7 @@ public class TransactionImpl implements Transaction {
 
     // The transactional connection we use
     Connection connection;
-    static Class<?> proxyClass = Proxy.getProxyClass(Connection.class.getClassLoader(), new Class[] { Connection.class });
+    static Class<?> proxyClass = Proxy.getProxyClass(Connection.class.getClassLoader(), Connection.class);
 
     // The enlisted data source
     DataSourceImpl dataSource;

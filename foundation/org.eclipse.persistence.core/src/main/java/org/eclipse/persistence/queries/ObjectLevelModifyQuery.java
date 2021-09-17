@@ -275,6 +275,6 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
 
     @Override
     public String toString() {
-        return Helper.getShortClassName(getClass()) + "(" + String.valueOf(getObject()) + ")";
+        return Helper.getShortClassName(getClass()) + "(" + getObject() + ")";
     }
 }

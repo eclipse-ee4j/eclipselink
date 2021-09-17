@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2016, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -77,7 +77,7 @@ public class LocalizationResourcesTest {
         final Set<String> keys = new HashSet<>();
         Object[][] bundle;
         try {
-            Object instance = ReflectionHelper.getInstance(c, new Class[] {}, new Object[] {});
+            Object instance = ReflectionHelper.getInstance(c, new Class[] {});
             bundle = (Object[][])ReflectionHelper.invokeMethod("getContents", instance, new Class[] {}, new Object[] {});
         } catch (ReflectiveOperationException | SecurityException e) {
             Assert.fail("Could not access " + bundleName + "#getContents()");

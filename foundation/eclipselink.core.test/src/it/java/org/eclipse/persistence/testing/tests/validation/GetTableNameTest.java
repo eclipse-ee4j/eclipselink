@@ -48,7 +48,7 @@ public class GetTableNameTest extends ExceptionTest {
     @Override
     protected void verify() {
         if (caughtException != expectedException) {
-            throw new TestErrorException("The proper exception was not thrown:\n" + "[CAUGHT] " + caughtException + "\n\n[EXPECTING] " + String.valueOf(expectedException));
+            throw new TestErrorException("The proper exception was not thrown:\n" + "[CAUGHT] " + caughtException + "\n\n[EXPECTING] " + expectedException);
         }
     }
 }
