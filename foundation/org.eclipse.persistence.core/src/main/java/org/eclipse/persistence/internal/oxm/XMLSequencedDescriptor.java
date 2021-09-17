@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -58,7 +58,7 @@ public class XMLSequencedDescriptor extends XMLDescriptor {
      * INTERNAL:
      * Set the name of the method to be invoked to obtain an ordered list of TopLinkSetting
      * objects at runtime. Only used with Sequenced objects.
-     * @param methodName: The name of the method.
+     * @param methodName The name of the method.
      */
     public void setGetSettingsMethodName(String methodName) {
         this.getSettingsMethodName = methodName;

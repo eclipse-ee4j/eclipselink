@@ -139,7 +139,8 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "extra_finder", "There is a finder defined on the [{0}] " + "home interface(s) but the corresponding finder [{1}{2}] " + "entry is not declared in the ejb-jar.xml." },
         { "cmp_and_cmr_field", "The ejb-jar.xml entry for [{0}] contains both a <cmp-field> and <cmr-field> entry for the attribute [{1}].  The <cmp-field> entry will be ignored." },
 
-        { "toplink_cmp_bean_name_xml_deprecated", "Support for toplink-cmp-bean_name.xml is deprecated." + "Please refer to the documentation for the use of toplink-ejb-jar.xml" },
+        { "toplink_cmp_bean_name_xml_deprecated", "Support for toplink-cmp-bean_name.xml is deprecated. " +
+                "Please refer to the documentation for the use of toplink-ejb-jar.xml" },
 
         { "drop_connection_on_error", "Warning: Dropping remote command connection to {0} on error {1}" },
         { "received_corrupt_announcement", "Warning: Discovery manager could not process service announcement due to {0} - ignoring announcement" },

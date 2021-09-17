@@ -213,7 +213,6 @@ public class XJCJavaClassImpl implements JavaClass {
      * @return A <code>Collection</code> containing this <code>JavaClass'</code> <code>JavaConstructors</code>.
      */
     @Override
-    @SuppressWarnings("unchecked")
     public Collection<JavaConstructor> getConstructors() {
         ArrayList<JavaConstructor> constructors = new ArrayList<>();
         Iterator<JMethod> it = xjcClass.constructors();
@@ -518,7 +517,8 @@ public class XJCJavaClassImpl implements JavaClass {
                 if (javaModel != null) {
                     return this.javaModel.getClass(superClass.fullName());
                 }
-                return new XJCJavaClassImpl((JDefinedClass) superClass, jCodeModel, dynamicClassLoader);
+                JDefinedClass c = jCodeModel._getClass(superClass.fullName());
+                return new XJCJavaClassImpl(c, jCodeModel, dynamicClassLoader);
             }
 
         } catch (Exception e) {

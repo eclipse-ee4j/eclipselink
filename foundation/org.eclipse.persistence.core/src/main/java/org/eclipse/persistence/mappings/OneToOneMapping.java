@@ -1457,7 +1457,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         }
 
         Object targetObject = descriptor.getObjectBuilder().buildNewInstance();
-        descriptor.getObjectBuilder().buildAttributesIntoShallowObject(targetObject, databaseRow, query);
+        descriptor.getObjectBuilder().buildAttributesIntoShallowObject(targetObject, targetRow, query);
         targetObject = getIndirectionPolicy().valueFromRow(targetObject);
 
         setAttributeValueInObject(original, targetObject);

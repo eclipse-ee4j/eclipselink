@@ -928,11 +928,11 @@ public class SessionsFactory {
      * INTERNAL:
      */
     protected void buildTransportManager(TransportManagerConfig tmConfig, RemoteCommandManager rcm) {
-        if (tmConfig instanceof RMITransportManagerConfig) {
-            buildRMITransportManagerConfig((RMITransportManagerConfig)tmConfig, rcm);
-        } else if (tmConfig instanceof RMIIIOPTransportManagerConfig) {
+        if (tmConfig instanceof RMIIIOPTransportManagerConfig) {
             buildRMIIIOPTransportManagerConfig((RMIIIOPTransportManagerConfig)tmConfig, rcm);
-        }  else if (tmConfig instanceof JMSTopicTransportManagerConfig) {
+        }  else if (tmConfig instanceof RMITransportManagerConfig) {
+            buildRMITransportManagerConfig((RMITransportManagerConfig)tmConfig, rcm);
+        } else if (tmConfig instanceof JMSTopicTransportManagerConfig) {
             buildJMSTopicTransportManagerConfig((JMSTopicTransportManagerConfig)tmConfig, rcm);
         } else if (tmConfig instanceof JMSPublishingTransportManagerConfig) {
             buildJMSPublishingTransportManagerConfig((JMSPublishingTransportManagerConfig)tmConfig, rcm);

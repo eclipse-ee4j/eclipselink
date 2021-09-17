@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -70,7 +70,7 @@ public interface WrapperPolicy extends Serializable {
      * PUBLIC:
      * Required: Wrap the object to return the implementation that the application requires.
      * The object may already be wrapped in which case the object should be returned.
-     * @param original, the object to be wrapped
+     * @param original the object to be wrapped
      * @param session the session to wrap the object against.
      * @return java.lang.Object the wrapped object
      */

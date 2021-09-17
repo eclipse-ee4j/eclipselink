@@ -1058,9 +1058,6 @@ public class SDOTypesGenerator {
             return;
         }
 
-        java.util.List<Type> baseTypes = new ArrayList<Type>();
-        baseTypes.add(baseType);
-
         if (owningType != null) {
             if (owningType.isDataType()) {
                 owningType.setInstanceClassName(baseType.getInstanceClassName());

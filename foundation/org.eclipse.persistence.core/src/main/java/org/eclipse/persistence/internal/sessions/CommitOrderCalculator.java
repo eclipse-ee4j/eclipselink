@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,14 +34,14 @@ import java.util.*;
  */
 public class CommitOrderCalculator {
     protected int currentTime;
-    protected Vector nodes;
+    protected Vector<CommitOrderDependencyNode> nodes;
     protected Vector orderedDescriptors;
     protected AbstractSession session;
 
     public CommitOrderCalculator(AbstractSession session) {
         super();
         this.currentTime = 0;
-        this.nodes = new Vector(1);
+        this.nodes = new Vector<>(1);
         this.session = session;
     }
 
@@ -61,8 +61,8 @@ public class CommitOrderCalculator {
      * Add to each node the dependent nodes
      */
     public void calculateMappingDependencies() {
-        for (Enumeration e = nodes.elements(); e.hasMoreElements();) {
-            CommitOrderDependencyNode node = (CommitOrderDependencyNode)e.nextElement();
+        for (Enumeration<CommitOrderDependencyNode> e = nodes.elements(); e.hasMoreElements();) {
+            CommitOrderDependencyNode node = e.nextElement();
             node.recordMappingDependencies();
         }
     }
@@ -71,8 +71,8 @@ public class CommitOrderCalculator {
      * Add to each node the dependent nodes
      */
     public void calculateSpecifiedDependencies() {
-        for (Enumeration e = nodes.elements(); e.hasMoreElements();) {
-            CommitOrderDependencyNode node = (CommitOrderDependencyNode)e.nextElement();
+        for (Enumeration<CommitOrderDependencyNode> e = nodes.elements(); e.hasMoreElements();) {
+            CommitOrderDependencyNode node = e.nextElement();
             node.recordSpecifiedDependencies();
         }
     }
@@ -88,16 +88,16 @@ public class CommitOrderCalculator {
          */
 
         //Setup
-        for (Enumeration e = getNodes().elements(); e.hasMoreElements();) {
-            CommitOrderDependencyNode node = (CommitOrderDependencyNode)e.nextElement();
+        for (Enumeration<CommitOrderDependencyNode> e = getNodes().elements(); e.hasMoreElements();) {
+            CommitOrderDependencyNode node = e.nextElement();
             node.markNotVisited();
             node.setPredecessor(null);
         }
         currentTime = 0;
 
         //Execution
-        for (Enumeration e = getNodes().elements(); e.hasMoreElements();) {
-            CommitOrderDependencyNode node = (CommitOrderDependencyNode)e.nextElement();
+        for (Enumeration<CommitOrderDependencyNode> e = getNodes().elements(); e.hasMoreElements();) {
+            CommitOrderDependencyNode node = e.nextElement();
             if (node.hasNotBeenVisited()) {
                 node.visit();
             }
@@ -135,7 +135,7 @@ public class CommitOrderCalculator {
         return result;
     }
 
-    public Vector getNodes() {
+    public Vector<CommitOrderDependencyNode> getNodes() {
         return nodes;
     }
 
@@ -160,8 +160,8 @@ public class CommitOrderCalculator {
     }
 
     public CommitOrderDependencyNode nodeFor(Class c) {
-        for (Enumeration e = nodes.elements(); e.hasMoreElements();) {
-            CommitOrderDependencyNode n = (CommitOrderDependencyNode)e.nextElement();
+        for (Enumeration<CommitOrderDependencyNode> e = nodes.elements(); e.hasMoreElements();) {
+            CommitOrderDependencyNode n = e.nextElement();
             if (n.getDescriptor().getJavaClass() == c) {
                 return n;
             }
@@ -170,8 +170,8 @@ public class CommitOrderCalculator {
     }
 
     public CommitOrderDependencyNode nodeFor(ClassDescriptor d) {
-        for (Enumeration e = nodes.elements(); e.hasMoreElements();) {
-            CommitOrderDependencyNode n = (CommitOrderDependencyNode)e.nextElement();
+        for (Enumeration<CommitOrderDependencyNode> e = nodes.elements(); e.hasMoreElements();) {
+            CommitOrderDependencyNode n = e.nextElement();
             if (n.getDescriptor() == d) {
                 return n;
             }
@@ -189,13 +189,13 @@ public class CommitOrderCalculator {
     public void orderCommits() {
         depthFirstSearch();
 
-        Object[] nodeArray = new Object[nodes.size()];
+        CommitOrderDependencyNode[] nodeArray = new CommitOrderDependencyNode[nodes.size()];
         nodes.copyInto(nodeArray);
 
         quicksort(nodeArray);
         Vector result = new Vector(nodes.size());
         for (int i = 0; i < nodes.size(); i++) {
-            CommitOrderDependencyNode node = (CommitOrderDependencyNode)nodeArray[i];
+            CommitOrderDependencyNode node = nodeArray[i];
             result.addElement(node.getDescriptor());
         }
         this.orderedDescriptors = result;
@@ -211,7 +211,7 @@ public class CommitOrderCalculator {
     /**
      * quicksort the array of objects.
      *
-     * @param arr[] - an array of objects
+     * @param arr - an array of objects
      * @param left - the start index - from where to begin sorting
      * @param right - the last index.
      */

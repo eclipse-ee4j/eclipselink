@@ -1201,7 +1201,7 @@ public abstract class XMLMarshaller<
      * (such as FileWriters and OutputStreamWriters).
      */
     private Writer wrapWriter(Writer writer) {
-        if (writer instanceof OutputStreamWriter || writer instanceof FileWriter) {
+        if (writer instanceof OutputStreamWriter) {
             return new BufferedWriter(writer);
         }
         return writer;

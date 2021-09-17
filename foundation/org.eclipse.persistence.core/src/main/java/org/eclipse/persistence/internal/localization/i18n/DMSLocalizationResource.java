@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -46,7 +46,8 @@ public class DMSLocalizationResource extends ListResourceBundle {
                                         { "disconnect_call", "Total number of disconnect calls made" },
                                         { "cache_hits", "The number of times that the object was found in the cache"},
                                         { "cache_misses", "The number of times that the object was not found in the cache" },
-                                        { "sql_prepare", "Time spent in JDBC preparing the Statement." + "Also includes the time spent in EIS creating an Interaction associated with a connection, and creating input and output Record objects" },
+                                        { "sql_prepare", "Time spent in JDBC preparing the Statement. " +
+                                                "Also includes the time spent in EIS creating an Interaction associated with a connection, and creating input and output Record objects" },
                                          { "query_prepareation", "Time to prepare the query" },
                                          { "sql_generation", "Time spent generating SQL. In the case of TopLink expressions, time spent converting Expression to SQL" },
                                          { "database_execute", "Time spent in calls to the JDBC Statement, includes time spent in calls to: close, executeUpdate, and executeQuery" },

@@ -533,8 +533,6 @@ public class DatabasePlatform extends DatasourcePlatform {
                 java.time.OffsetTime ot = (java.time.OffsetTime) dbValue;
                 java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), ot.toLocalTime()));
                 appendTimestamp(ts, writer);
-            } else if (dbValue instanceof java.time.LocalDate){
-                appendDate(java.sql.Date.valueOf((java.time.LocalDate) dbValue), writer);
             } else if (dbValue instanceof java.sql.Date) {
                 appendDate((java.sql.Date)dbValue, writer);
             } else if (dbValue == null) {

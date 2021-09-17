@@ -216,7 +216,7 @@ public interface ServerPlatform {
      *
      * Default behavior is to use Thread(runnable).start()
      *
-     * @param runnable: the instance of runnable to be "started"
+     * @param runnable the instance of runnable to be "started"
      */
     void launchContainerRunnable(Runnable runnable);
 

@@ -3858,7 +3858,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         } else {
             DatabaseQuery query = null;
             for (DatabaseQuery q: queries) {
-                if (Helper.areTypesAssignable(argumentTypes, query.getArgumentTypes())) {
+                if (Helper.areTypesAssignable(argumentTypes, q.getArgumentTypes())) {
                     query = q;
                     break;
                 }

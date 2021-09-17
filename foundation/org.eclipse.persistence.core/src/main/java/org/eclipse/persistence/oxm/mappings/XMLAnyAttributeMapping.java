@@ -406,13 +406,6 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
 
     /**
      * INTERNAL:
-     * Indicates the Map class to be used.
-     *
-     * @param concreteMapClass
-     */
-
-    /**
-     * INTERNAL:
      * Indicates the name of the Map class to be used.
      *
      */
