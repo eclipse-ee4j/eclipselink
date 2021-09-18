@@ -44,7 +44,7 @@ public class JPARSApplication extends Application {
      * Instantiates a new jPARS application.
      */
     public JPARSApplication() {
-        HashSet<Class<?>> c = new HashSet<Class<?>>();
+        HashSet<Class<?>> c = new HashSet<>();
 
         // Unversioned Resources (resources that do not have version in the url)
         c.add(org.eclipse.persistence.jpa.rs.resources.unversioned.PersistenceResource.class);
