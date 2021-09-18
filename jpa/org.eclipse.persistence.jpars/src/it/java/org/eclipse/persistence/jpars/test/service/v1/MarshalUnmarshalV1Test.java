@@ -14,17 +14,17 @@
 //         Dmitry Kornilov - Initial implementation
 package org.eclipse.persistence.jpars.test.service.v1;
 
-import org.eclipse.persistence.jpars.test.service.noversion.MarshalUnmarshalTest;
+import org.eclipse.persistence.jpars.test.service.MarshalUnmarshalTestBase;
 import org.junit.BeforeClass;
 
 /**
  * MarshalUnmarshalTest adapted for JPARS 1.0.
- * {@link MarshalUnmarshalTest}
+ * {@link MarshalUnmarshalTestBase}
  *
  * @author Dmitry Kornilov
  * @since EclipseLink 2.6.0.
  */
-public class MarshalUnmarshalV1Test extends MarshalUnmarshalTest {
+public class MarshalUnmarshalV1Test extends MarshalUnmarshalTestBase {
 
     @BeforeClass
     public static void setup() throws Exception {

@@ -14,12 +14,13 @@
 //         Dmitry Kornilov - Initial implementation
 package org.eclipse.persistence.jpars.test.service.latest;
 
+import org.eclipse.persistence.jpars.test.service.MarshalUnmarshalTestBase;
 import org.eclipse.persistence.jpars.test.service.v2.MarshalUnmarshalV2Test;
 import org.junit.BeforeClass;
 
 /**
- * MarshalUnmarshalTest adapted for JPARS 2.0.
- * {@link org.eclipse.persistence.jpars.test.service.noversion.MarshalUnmarshalTest}
+ * MarshalUnmarshalTestBase adapted for JPARS 2.0.
+ * {@link MarshalUnmarshalTestBase}
  *
  * @author Dmitry Kornilov
  * @since EclipseLink 2.6.0

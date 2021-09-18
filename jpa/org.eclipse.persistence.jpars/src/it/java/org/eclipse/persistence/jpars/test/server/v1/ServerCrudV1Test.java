@@ -14,18 +14,18 @@
 //      Dmitry Kornilov - Initial implementation, upgrade to Jersey 2.x
 package org.eclipse.persistence.jpars.test.server.v1;
 
-import org.eclipse.persistence.jpars.test.server.noversion.ServerCrudTest;
+import org.eclipse.persistence.jpars.test.server.ServerCrudTestBase;
 import org.eclipse.persistence.jpars.test.util.StaticModelDatabasePopulator;
 import org.junit.BeforeClass;
 
 /**
  * ServerCrudTest modified for JPARS v1.0.
- * {@link ServerCrudTest}
+ * {@link ServerCrudTestBase}
  *
  * @author Dmitry Kornilov
  * @since EclipseLink 2.6.0
  */
-public class ServerCrudV1Test extends ServerCrudTest {
+public class ServerCrudV1Test extends ServerCrudTestBase {
 
     @BeforeClass
     public static void setup() throws Exception {

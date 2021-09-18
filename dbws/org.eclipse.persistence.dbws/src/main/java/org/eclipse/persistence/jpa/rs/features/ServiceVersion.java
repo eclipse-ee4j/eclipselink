@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,13 +24,9 @@ import java.util.Map;
  * @since EclipseLink 2.6.0
  */
 public enum ServiceVersion {
-    /**
-     * Added only for legacy reasons. In early versions version number was not supported.
-     */
-    NO_VERSION(null),
 
     /**
-     * The same as NO_VERSION, but v1.0 is specified in the URL.
+     * Version 1.0. Legacy.
      */
     VERSION_1_0("v1.0"),
 
@@ -92,11 +88,10 @@ public enum ServiceVersion {
      * @return {@link FeatureSet} related to this version.
      */
     public FeatureSet getFeatureSet() {
-        if (this.compareTo(VERSION_2_0) >= 0)
-            return new FeatureSetV2();
-        else {
+        if (this.compareTo(VERSION_2_0) < 0) {
             return new FeatureSetPreV2();
         }
+        return new FeatureSetV2();
     }
 
     /**

@@ -14,17 +14,17 @@
 //      Dmitry Kornilov - Initial implementation
 package org.eclipse.persistence.jpars.test.server.v1;
 
-import org.eclipse.persistence.jpars.test.server.noversion.ServerTravelerTest;
+import org.eclipse.persistence.jpars.test.server.ServerTravelerTestBase;
 import org.junit.BeforeClass;
 
 /**
  * ServerTravelerNoVersionTest adapted for JPARS 1.0.
- * {@link ServerTravelerTest}
+ * {@link ServerTravelerTestBase}
  *
  * @author Dmitry Kornilov
  * @since EclipseLink 2.6.0
  */
-public class ServerTravelerV1Test extends ServerTravelerTest {
+public class ServerTravelerV1Test extends ServerTravelerTestBase {
 
     @BeforeClass
     public static void setup() throws Exception {

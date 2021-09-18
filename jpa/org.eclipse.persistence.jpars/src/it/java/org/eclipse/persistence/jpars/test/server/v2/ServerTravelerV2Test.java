@@ -16,6 +16,7 @@ package org.eclipse.persistence.jpars.test.server.v2;
 
 import org.eclipse.persistence.jpars.test.BaseJparsTest;
 import org.eclipse.persistence.jpars.test.model.traveler.Traveler;
+import org.eclipse.persistence.jpars.test.server.ServerTravelerTestBase;
 import org.eclipse.persistence.jpars.test.util.RestUtils;
 import org.junit.After;
 import org.junit.BeforeClass;
@@ -29,7 +30,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * ServerTravelerNoVersionTest adapted for JPARS 2.0.
- * {@link org.eclipse.persistence.jpars.test.server.noversion.ServerTravelerTest}
+ * {@link ServerTravelerTestBase}
  *
  * @author Dmitry Kornilov
  * @since EclipseLink 2.6.0

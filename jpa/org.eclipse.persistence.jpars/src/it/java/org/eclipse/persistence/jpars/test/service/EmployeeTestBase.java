@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,7 @@
 
 // Contributors:
 //      gonural - Initial implementation
-package org.eclipse.persistence.jpars.test.service.noversion;
+package org.eclipse.persistence.jpars.test.service;
 
 import org.eclipse.persistence.jpars.test.BaseJparsTest;
 import org.eclipse.persistence.jpars.test.model.employee.Employee;
@@ -41,7 +41,7 @@ import static org.junit.Assert.assertTrue;
  *
  * @author gonural
  */
-public class EmployeeTest extends BaseJparsTest {
+public class EmployeeTestBase extends BaseJparsTest {
 
     @BeforeClass
     public static void setup() throws Exception {

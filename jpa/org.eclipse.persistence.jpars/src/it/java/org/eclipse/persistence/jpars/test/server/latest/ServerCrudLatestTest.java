@@ -15,13 +15,14 @@
 //      Dmitry Kornilov - Upgrade to Jersey 2.x
 package org.eclipse.persistence.jpars.test.server.latest;
 
+import org.eclipse.persistence.jpars.test.server.ServerCrudTestBase;
 import org.eclipse.persistence.jpars.test.server.v2.ServerCrudV2Test;
 import org.eclipse.persistence.jpars.test.util.StaticModelDatabasePopulator;
 import org.junit.BeforeClass;
 
 /**
- * ServerCrudTest modified for JPARS v2.0.
- * {@link org.eclipse.persistence.jpars.test.server.noversion.ServerCrudTest}
+ * ServerCrudTestBase modified for JPARS v2.0.
+ * {@link ServerCrudTestBase}
  *
  * @author Dmitry Kornilov
  * @since EclipseLink 2.6.0

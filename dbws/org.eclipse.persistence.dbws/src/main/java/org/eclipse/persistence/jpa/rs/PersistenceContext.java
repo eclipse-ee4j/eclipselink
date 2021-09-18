@@ -158,7 +158,7 @@ public class PersistenceContext {
 
     private Boolean weavingEnabled = null;
 
-    private ServiceVersion version = ServiceVersion.NO_VERSION;
+    private ServiceVersion version = ServiceVersion.VERSION_2_0;
 
     /** Builder for collection proxies used in JPARS 2.0. **/
     private CollectionWrapperBuilder collectionWrapperBuilder;
@@ -182,7 +182,7 @@ public class PersistenceContext {
      */
     public PersistenceContext(String emfName, EntityManagerFactoryImpl emf, URI defaultURI) {
         super();
-        init(emfName, emf, defaultURI, ServiceVersion.NO_VERSION);
+        init(emfName, emf, defaultURI, ServiceVersion.VERSION_2_0);
     }
 
     /**
@@ -207,7 +207,7 @@ public class PersistenceContext {
         if (version != null) {
             this.version = version;
         } else {
-            this.version = ServiceVersion.NO_VERSION;
+            this.version = ServiceVersion.VERSION_2_0;
         }
 
         if (getServerSession().hasExternalTransactionController()) {

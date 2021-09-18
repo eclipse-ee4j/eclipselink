@@ -14,17 +14,19 @@
 //      Dmitry Kornilov - Initial implementation
 package org.eclipse.persistence.jpars.test.server.v1;
 
-import org.eclipse.persistence.jpars.test.server.noversion.ServerEmployeeTest;
+import org.eclipse.persistence.jpars.test.server.ServerEmployeeTestBase;
 import org.junit.BeforeClass;
+
+import java.util.Map;
 
 /**
  * ServerEmployeeTest adapted for JPARS 1.0.
- * {@link ServerEmployeeTest}
+ * {@link ServerEmployeeTestBase}
  *
  * @author Dmitry Kornilov
  * @since EclipseLink 2.6.0
  */
-public class ServerEmployeeV1Test extends ServerEmployeeTest {
+public class ServerEmployeeV1Test extends ServerEmployeeTestBase {
 
     @BeforeClass
     public static void setup() throws Exception {
