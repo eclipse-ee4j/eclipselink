@@ -17,7 +17,6 @@ module org.eclipse.persistence.jpars {
 
     requires jakarta.persistence;
     requires jakarta.xml.bind;
-    requires jakarta.activation;
     requires transitive jakarta.annotation;
     requires transitive jakarta.ws.rs;
 
@@ -29,6 +28,8 @@ module org.eclipse.persistence.jpars {
     requires org.eclipse.persistence.moxy;
 
     exports org.eclipse.persistence.jpa.rs.service;
+
+    uses org.eclipse.persistence.jpa.rs.PersistenceContextFactoryProvider;
 
     provides org.eclipse.persistence.jpa.rs.PersistenceContextFactoryProvider with
             org.eclipse.persistence.jpa.rs.service.JPARSPersistenceContextFactoryProvider;
