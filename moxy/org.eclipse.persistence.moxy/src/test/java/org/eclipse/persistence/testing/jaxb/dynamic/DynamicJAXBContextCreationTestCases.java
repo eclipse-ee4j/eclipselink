@@ -159,7 +159,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(DynamicJAXBContextFactory.XML_SCHEMA_KEY, xsdSource);
         properties.put(DynamicJAXBContextFactory.EXTERNAL_BINDINGS_KEY, xjbSource);
-        properties.put(JAXBContextProperties.MOXY_FACTORY_TYPE, JAXBContextProperties.FactoryType.DYNAMIC);
+        properties.put(JAXBContextProperties.MOXY_FACTORY, JAXBContextProperties.Factory.DYNAMIC);
 
         // Have to include a path to a jaxb.properties, so just reusing a context path that does contain one.
         DynamicJAXBContext jaxbContext = (DynamicJAXBContext) JAXBContext.newInstance("org.eclipse.persistence.testing.jaxb.dynamic", classLoader, properties);
@@ -311,7 +311,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(DynamicJAXBContextFactory.XML_SCHEMA_KEY, xsdSource);
         properties.put(DynamicJAXBContextFactory.EXTERNAL_BINDINGS_KEY, extBindings);
-        properties.put(JAXBContextProperties.MOXY_FACTORY_TYPE, JAXBContextProperties.FactoryType.DYNAMIC);
+        properties.put(JAXBContextProperties.MOXY_FACTORY, JAXBContextProperties.Factory.DYNAMIC);
 
         // Have to include a path to a jaxb.properties, so just reusing a context path that does contain one.
         DynamicJAXBContext jaxbContext = (DynamicJAXBContext) JAXBContext.newInstance("org.eclipse.persistence.testing.jaxb.dynamic", classLoader, properties);

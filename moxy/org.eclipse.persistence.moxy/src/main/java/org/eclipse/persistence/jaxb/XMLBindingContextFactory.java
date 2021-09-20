@@ -30,42 +30,50 @@ public class XMLBindingContextFactory implements jakarta.xml.bind.JAXBContextFac
         //no-op
     }
 
-    @FunctionalInterface
-    private interface ContextSupplier {
-        JAXBContext get() throws JAXBException;
-    }
-
-    // PERF: null check is much faster than instanceof for missing property
-    @SuppressWarnings({"SwitchStatementWithTooFewBranches", "ConditionCoveredByFurtherCondition"})
-    private static JAXBContext context(final Map<String, ?> map,
-                                       final ContextSupplier defaultValue, final ContextSupplier dynamicValue) throws JAXBException {
-        Object value = map.get(JAXBContextProperties.MOXY_FACTORY_TYPE);
-        if (value == null || !String.class.isInstance(value)) {
-            return defaultValue.get();
-        }
-        // More suppliers may be added here
-        switch ((String) value) {
-            case JAXBContextProperties.FactoryType.DYNAMIC:
-                return dynamicValue.get();
-            default:
-                return defaultValue.get();
-        }
-    }
-
     @Override
     public JAXBContext createContext(Class<?>[] types, Map<String, ?> map) throws JAXBException {
-        return context(map,
-                () -> JAXBContextFactory.createContext(types, map),
-                () -> DynamicJAXBContextFactory.createContext(types, (Map<String, Object>) map)
-        );
+        Object value = map != null ? map.get(JAXBContextProperties.MOXY_FACTORY) : null;
+        // Property vas not set, use default factory
+        if (value == null) {
+            return JAXBContextFactory.createContext(types, map);
+        }
+        // Handle valid String properties
+        if (String.class.isInstance(value)) {
+            switch ((String) value) {
+                case JAXBContextProperties.Factory.DEFAULT:
+                    return JAXBContextFactory.createContext(types, map);
+                case JAXBContextProperties.Factory.DYNAMIC:
+                    return DynamicJAXBContextFactory.createContext(types, (Map<String, Object>) map);
+                default:
+                    throw new JAXBException(String.format("Property eclipselink.moxy.factory value \"%s\" is invalid", value));
+            }
+        // Non String values are invalid
+        } else {
+            throw new JAXBException(String.format("Property eclipselink.moxy.factory value \"%s\" is invalid", value.toString()));
+        }
     }
 
     @Override
     public JAXBContext createContext(String string, ClassLoader cl, Map<String, ?> map) throws JAXBException {
-        return context(map,
-                () -> JAXBContextFactory.createContext(string, cl, map),
-                () -> DynamicJAXBContextFactory.createContext(string, cl, (Map<String, Object>) map)
-        );
+        Object value = map != null ? map.get(JAXBContextProperties.MOXY_FACTORY) : null;
+        // Property vas not set, use default factory
+        if (value == null) {
+            return JAXBContextFactory.createContext(string, cl, map);
+        }
+        // Handle valid String properties
+        if (String.class.isInstance(value)) {
+            switch ((String) value) {
+                case JAXBContextProperties.Factory.DEFAULT:
+                    return JAXBContextFactory.createContext(string, cl, map);
+                case JAXBContextProperties.Factory.DYNAMIC:
+                    return DynamicJAXBContextFactory.createContext(string, cl, (Map<String, Object>) map);
+                default:
+                    throw new JAXBException(String.format("Property eclipselink.moxy.factory value \"%s\" is invalid", value));
+            }
+        // Non String values are invalid
+        } else {
+            throw new JAXBException(String.format("Property eclipselink.moxy.factory value \"%s\" is invalid", value.toString()));
+        }
     }
 
 }

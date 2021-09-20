@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,16 +21,16 @@ import jakarta.xml.bind.ValidationException;
 import junit.framework.TestCase;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBValidator;
+import org.eclipse.persistence.jaxb.XMLBindingContextFactory;
 import org.eclipse.persistence.platform.xml.XMLPlatformException;
 
 public class NoSchemaRefTestCases extends TestCase {
 
     public void testValidateRootNoSchemaReference() {
         try {
-            Class[] classes = {Address.class};
-            JAXBContext jc = (JAXBContext) JAXBContextFactory.createContext(classes, null);
+            Class<?>[] classes = {Address.class};
+            JAXBContext jc = (JAXBContext) new XMLBindingContextFactory().createContext(classes, null);
             JAXBValidator validator = jc.createValidator();
             validator.validateRoot(new Address());
         } catch(ValidationException e) {
@@ -45,8 +45,8 @@ public class NoSchemaRefTestCases extends TestCase {
 
     public void testValidateNoSchemaReference() throws JAXBException {
         try {
-            Class[] classes = {Address.class};
-            JAXBContext jc = (JAXBContext) JAXBContextFactory.createContext(classes, null);
+            Class<?>[] classes = {Address.class};
+            JAXBContext jc = (JAXBContext) new XMLBindingContextFactory().createContext(classes, null);
             JAXBValidator validator = jc.createValidator();
             validator.validate(new Address());
         } catch (ValidationException e) {

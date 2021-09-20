@@ -3809,7 +3809,7 @@ public final class AnnotationsProcessor {
             String url;
             String localName;
             String defaultValue = null;
-            Class<XmlElementDecl.GLOBAL> scopeClass = jakarta.xml.bind.annotation.XmlElementDecl.GLOBAL.class;
+            Class<?> scopeClass = jakarta.xml.bind.annotation.XmlElementDecl.GLOBAL.class;
 
             if (xmlEltDecl != null) {
                 url = xmlEltDecl.getNamespace();
@@ -3841,7 +3841,7 @@ public final class AnnotationsProcessor {
                 XmlElementDecl elementDecl = (XmlElementDecl) helper.getAnnotation(next, XmlElementDecl.class);
                 url = elementDecl.namespace();
                 localName = elementDecl.name();
-                scopeClass = (Class<XmlElementDecl.GLOBAL>) elementDecl.scope();
+                scopeClass = elementDecl.scope();
                 if (!elementDecl.substitutionHeadName().equals(EMPTY_STRING)) {
                     String subHeadLocal = elementDecl.substitutionHeadName();
                     String subHeadNamespace = elementDecl.substitutionHeadNamespace();

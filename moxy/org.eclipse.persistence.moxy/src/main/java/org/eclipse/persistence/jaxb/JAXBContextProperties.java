@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,12 +35,12 @@ public class JAXBContextProperties {
      * Default {@code JAXBContextFactory} will be used when this property
      * is not set.
      */
-    public static final String MOXY_FACTORY_TYPE = "eclipselink.moxy.factory.type";
+    public static final String MOXY_FACTORY = "eclipselink.moxy.factory";
 
     /**
-     * Supported values of {@code eclipselink.moxy.factory.type} property.
+     * Supported values of {@code eclipselink.moxy.factory} property.
      */
-    public static final class FactoryType {
+    public static final class Factory {
         /** Use default {@code JAXBContextFactory} for context creation. */
         public static final String DEFAULT = "default";
         /** Use {@code DynamicJAXBContextFactory} for context creation. */

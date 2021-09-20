@@ -15,7 +15,6 @@ module org.eclipse.persistence.moxy {
     requires java.desktop;
     requires java.naming;
     requires java.xml;
-    requires java.logging;
 
     requires transitive jakarta.xml.bind;
     requires jakarta.activation;

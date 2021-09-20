@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,8 +19,6 @@ import java.io.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.logging.SessionLog;
 
 /**
  *    <p><b>Purpose</b>: IntegrityChecker is used for catching all the descriptor exceptions,
@@ -150,7 +148,6 @@ public class IntegrityChecker implements Serializable {
      * This method will throw the exception or add the exceptions into a vector depending on the value of shouldCatchExceptions.
      */
     public void handleError(RuntimeException runtimeException) {
-        SessionLog log = AbstractSessionLog.getLog();
         if (!shouldCatchExceptions()) {
             throw runtimeException;
         }
