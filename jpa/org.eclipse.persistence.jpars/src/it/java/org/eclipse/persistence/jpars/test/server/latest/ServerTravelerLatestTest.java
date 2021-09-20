@@ -14,12 +14,13 @@
 //      Dmitry Kornilov - Initial implementation
 package org.eclipse.persistence.jpars.test.server.latest;
 
+import org.eclipse.persistence.jpars.test.server.ServerTravelerTestBase;
 import org.eclipse.persistence.jpars.test.server.v2.ServerTravelerV2Test;
 import org.junit.BeforeClass;
 
 /**
- * ServerTravelerTest adapted for 'latest' version.
- * {@link org.eclipse.persistence.jpars.test.server.noversion.ServerTravelerTest}
+ * ServerTravelerTestBase adapted for 'latest' version.
+ * {@link ServerTravelerTestBase}
  *
  * @author Dmitry Kornilov
  * @since EclipseLink 2.6.0

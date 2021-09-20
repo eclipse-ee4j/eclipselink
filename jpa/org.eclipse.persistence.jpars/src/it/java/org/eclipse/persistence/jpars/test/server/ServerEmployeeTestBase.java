@@ -13,7 +13,7 @@
 // Contributors:
 //      gonural - initial
 //      Dmitry Kornilov - Moved to another package, upgrade to Jersey 2.x
-package org.eclipse.persistence.jpars.test.server.noversion;
+package org.eclipse.persistence.jpars.test.server;
 
 import org.eclipse.persistence.jpars.test.BaseJparsTest;
 import org.eclipse.persistence.jpars.test.model.employee.Certification;
@@ -49,7 +49,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Employee model tests.
  */
-public class ServerEmployeeTest extends BaseJparsTest {
+public class ServerEmployeeTestBase extends BaseJparsTest {
     private static final long THREE_YEARS = 94608000000L;
 
     @BeforeClass

@@ -14,12 +14,13 @@
 //      Dmitry Kornilov - Initial implementation
 package org.eclipse.persistence.jpars.test.service.latest;
 
+import org.eclipse.persistence.jpars.test.service.EmployeeTestBase;
 import org.eclipse.persistence.jpars.test.service.v2.EmployeeV2Test;
 import org.junit.BeforeClass;
 
 /**
- * EmployeeTest adapted for JPARS 2.0.
- * {@link org.eclipse.persistence.jpars.test.service.noversion.EmployeeTest}
+ * EmployeeTestBase adapted for JPARS 2.0.
+ * {@link EmployeeTestBase}
  *
  * @author Dmitry Kornilov
  * @since EclipseLink 2.6.0

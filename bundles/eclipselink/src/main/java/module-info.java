@@ -193,7 +193,6 @@ module eclipselink {
     exports org.eclipse.persistence.jpa.rs.logging;
     exports org.eclipse.persistence.jpa.rs.resources;
     exports org.eclipse.persistence.jpa.rs.resources.common;
-    exports org.eclipse.persistence.jpa.rs.resources.unversioned;
     exports org.eclipse.persistence.jpa.rs.util;
     exports org.eclipse.persistence.jpa.rs.util.list;
     exports org.eclipse.persistence.jpa.rs.util.metadatasources;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,7 @@
 //         gonural - Initial implementation
 //         2014-09-01-2.6.0 Dmitry Kornilov
 //           - Moved to separate package together with other 'no version' tests.
-package org.eclipse.persistence.jpars.test.service.noversion;
+package org.eclipse.persistence.jpars.test.service;
 
 import org.eclipse.persistence.exceptions.JPARSErrorCodes;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
@@ -44,7 +44,7 @@ import static org.junit.Assert.assertTrue;
  *
  * @author gonural
  */
-public class MarshalUnmarshalTest extends BaseJparsTest {
+public class MarshalUnmarshalTestBase extends BaseJparsTest {
 
     @BeforeClass
     public static void setup() throws Exception {

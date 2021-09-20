@@ -14,17 +14,17 @@
 //      Dmitry Kornilov - Initial implementation
 package org.eclipse.persistence.jpars.test.service.v2;
 
-import org.eclipse.persistence.jpars.test.service.noversion.EmployeeTest;
+import org.eclipse.persistence.jpars.test.service.EmployeeTestBase;
 import org.junit.BeforeClass;
 
 /**
- * EmployeeTest adapted for JPARS 2.0.
- * {@link EmployeeTest}
+ * EmployeeTestBase adapted for JPARS 2.0.
+ * {@link EmployeeTestBase}
  *
  * @author Dmitry Kornilov
  * @since EclipseLink 2.6.0
  */
-public class EmployeeV2Test extends EmployeeTest {
+public class EmployeeV2Test extends EmployeeTestBase {
 
     @BeforeClass
     public static void setup() throws Exception {

@@ -21,7 +21,7 @@ import org.eclipse.persistence.jpars.test.model.employee.LargeProject;
 import org.eclipse.persistence.jpars.test.model.employee.Office;
 import org.eclipse.persistence.jpars.test.model.employee.SmallProject;
 import org.eclipse.persistence.jpars.test.server.RestCallFailedException;
-import org.eclipse.persistence.jpars.test.server.noversion.ServerEmployeeTest;
+import org.eclipse.persistence.jpars.test.server.ServerEmployeeTestBase;
 import org.eclipse.persistence.jpars.test.util.RestUtils;
 import org.junit.After;
 import org.junit.BeforeClass;
@@ -39,13 +39,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * ServerEmployeeTest from JPARS 1.0 adapted for version 2.0.
- * {@link ServerEmployeeTest}
+ * ServerEmployeeTestBase from JPARS 1.0 adapted for version 2.0.
+ * {@link ServerEmployeeTestBase}
  *
  * @author Dmitry Kornilov
  * @since EclipseLink 2.6.0
  */
-public class ServerEmployeeV2Test extends ServerEmployeeTest {
+public class ServerEmployeeV2Test extends ServerEmployeeTestBase {
 
     @BeforeClass
     public static void setup() throws Exception {
