@@ -18,7 +18,11 @@ package org.eclipse.persistence.platform.database.oracle;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.sql.*;
+import java.sql.Blob;
+import java.sql.Clob;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Struct;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
