@@ -161,7 +161,7 @@ public class PLSQLTestSuite extends JUnitTestCase {
         session.executeNonSelectingSQL("CREATE OR REPLACE TYPE PLSQL_P_PLSQL_EMP_REC AS OBJECT ("
                 + "EMP_ID NUMBER(10), NAME VARCHAR2(30), ACTIVE NUMBER(1), ADDRESS PLSQL_P_PLSQL_ADDRESS_REC, PHONES PLSQL_P_PLSQL_PHONE_LIST)");
         session.executeNonSelectingSQL("CREATE OR REPLACE TYPE PLSQL_P_PLSQL_INNER_BLOB_REC AS OBJECT ("
-                + "BLOB_ID NUMBER(10), BLOB_CONTENT BLOB)");
+                + "BLOB_ID NUMBER(10), BLOB_CONTENT BLOB, CLOB_CONTENT CLOB)");
         session.executeNonSelectingSQL("CREATE OR REPLACE TYPE PLSQL_P_PLSQL_OUTER_STRUCT_REC AS OBJECT ("
                 + "STRUCT_ID NUMBER(10), STRUCT_CONTENT PLSQL_P_PLSQL_INNER_BLOB_REC)");
         session.executeNonSelectingSQL("CREATE OR REPLACE TYPE PLSQL_P_PLSQL_CITY_LIST AS VARRAY(255) OF VARCHAR2(100)");
@@ -255,11 +255,11 @@ public class PLSQLTestSuite extends JUnitTestCase {
                         + "END PLSQL_ADDRESS_REC_CUR_OUT; \n"
                     + "FUNCTION PLSQL_BLOB_REC_IN(P_BLOB_REC IN PLSQL_P_PLSQL_INNER_BLOB_REC, P_CITY IN VARCHAR2) RETURN VARCHAR2 IS \n"
                         + "BEGIN \n"
-                        + "RETURN P_CITY || TO_CHAR(P_BLOB_REC.BLOB_ID) || TO_CHAR(DBMS_LOB.GETLENGTH(P_BLOB_REC.BLOB_CONTENT)); \n"
+                        + "RETURN P_CITY || TO_CHAR(P_BLOB_REC.BLOB_ID) || TO_CHAR(DBMS_LOB.GETLENGTH(P_BLOB_REC.BLOB_CONTENT)) || TO_CHAR(P_BLOB_REC.CLOB_CONTENT); \n"
                         + "END PLSQL_BLOB_REC_IN; \n"
                     + "FUNCTION PLSQL_STRUCT_INSTRUCT_REC_IN(P_BLOB_REC IN PLSQL_P_PLSQL_INNER_BLOB_REC, P_STRUCT_REC IN PLSQL_P_PLSQL_OUTER_STRUCT_REC, P_CITY IN VARCHAR2) RETURN VARCHAR2 IS \n"
                         + "BEGIN \n"
-                        + "RETURN P_CITY || TO_CHAR(P_BLOB_REC.BLOB_ID) || TO_CHAR(DBMS_LOB.GETLENGTH(P_BLOB_REC.BLOB_CONTENT)) || TO_CHAR(P_STRUCT_REC.STRUCT_ID) || TO_CHAR(DBMS_LOB.GETLENGTH(P_STRUCT_REC.STRUCT_CONTENT.BLOB_CONTENT)); \n"
+                        + "RETURN P_CITY || TO_CHAR(P_BLOB_REC.BLOB_ID) || TO_CHAR(DBMS_LOB.GETLENGTH(P_BLOB_REC.BLOB_CONTENT)) || TO_CHAR(P_STRUCT_REC.STRUCT_ID) || TO_CHAR(DBMS_LOB.GETLENGTH(P_STRUCT_REC.STRUCT_CONTENT.BLOB_CONTENT)) || TO_CHAR(P_BLOB_REC.CLOB_CONTENT); \n"
                         + "END PLSQL_STRUCT_INSTRUCT_REC_IN; \n"
                     + "END PLSQL_P; \n"
         );
@@ -502,11 +502,11 @@ public class PLSQLTestSuite extends JUnitTestCase {
         beginTransaction(em);
         try {
             Query query = em.createNamedQuery("PLSQL_BLOB_REC_IN");
-            InnerObjBlob innerObjBlob = new InnerObjBlob(1, Base64.getDecoder().decode("AQI="));
+            InnerObjBlob innerObjBlob = new InnerObjBlob(1, Base64.getDecoder().decode("AQI="), "abcd");
             query.setParameter("P_CITY", "Prague");
             query.setParameter("P_BLOB_REC", innerObjBlob);
             Object result = query.getSingleResult();
-            if (!"Prague12".equals(result.toString())) {
+            if (!"Prague12abcd".equals(result.toString())) {
                 fail("Incorrect result.");
             }
         } finally {
@@ -526,13 +526,13 @@ public class PLSQLTestSuite extends JUnitTestCase {
         beginTransaction(em);
         try {
             Query query = em.createNamedQuery("PLSQL_STRUCT_INSTRUCT_REC_IN");
-            InnerObjBlob innerObjBlob = new InnerObjBlob(1, Base64.getDecoder().decode("AQI="));
+            InnerObjBlob innerObjBlob = new InnerObjBlob(1, Base64.getDecoder().decode("AQI="), "abcd");
             OuterObjBlob outerObjBlob = new OuterObjBlob(33, innerObjBlob);
             query.setParameter("P_CITY", "Prague");
             query.setParameter("P_BLOB_REC", innerObjBlob);
             query.setParameter("P_STRUCT_REC", outerObjBlob);
             Object result = query.getSingleResult();
-            if (!"Prague1233".equals(result.toString())) {
+            if (!"Prague1233abcd".equals(result.toString())) {
                 fail("Incorrect result.");
             }
         } finally {

@@ -17,7 +17,6 @@
 package org.eclipse.persistence.mappings.structures;
 
 import java.sql.Array;
-import java.sql.Blob;
 import java.sql.Ref;
 import java.sql.Struct;
 import java.sql.Types;
@@ -337,16 +336,10 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
             Object[] fields = new Object[getOrderedFields().size()];
             for (int index = 0; index < getOrderedFields().size(); index++) {
                 DatabaseField field = (DatabaseField)getOrderedFields().elementAt(index);
-                if (row.getField(field) != null && "java.sql.Blob".equals(row.getField(field).getTypeName())) {
-                    Blob blob = connection.createBlob();
-                    blob.setBytes(1L, (byte[]) row.get(field));
-                    fields[index] = blob;
-                } else {
-                    fields[index] = row.get(field);
-                }
+                fields[index] = row.get(field);
             }
 
-            structure = session.getPlatform().createStruct(getStructureName(), fields, session, connection);
+            structure = session.getPlatform().createStruct(getStructureName(), fields, row, getOrderedFields(), session, connection);
         } catch (java.sql.SQLException exception) {
             throw DatabaseException.sqlException(exception, session, false);
         } finally {

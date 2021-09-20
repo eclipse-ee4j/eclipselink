@@ -22,15 +22,16 @@ import org.eclipse.persistence.annotations.Struct;
 import java.util.Arrays;
 
 @Embeddable
-@Struct(name="PLSQL_P_PLSQL_INNER_BLOB_REC", fields={"BLOB_ID", "BLOB_CONTENT"})
+@Struct(name="PLSQL_P_PLSQL_INNER_BLOB_REC", fields={"BLOB_ID", "BLOB_CONTENT", "CLOB_CONTENT"})
 public class InnerObjBlob {
 
     public InnerObjBlob() {
     }
 
-    public InnerObjBlob(int blobId, byte[] blobContent) {
+    public InnerObjBlob(int blobId, byte[] blobContent, String clobContent) {
         this.blobId = blobId;
         this.blobContent = blobContent;
+        this.clobContent = clobContent;
     }
 
     @Column(name="BLOB_ID")
@@ -39,6 +40,10 @@ public class InnerObjBlob {
     @Column(name="BLOB_CONTENT")
     @Lob
     private byte[] blobContent;
+
+    @Column(name="CLOB_CONTENT")
+    @Lob
+    private String clobContent;
 
     public int getBlobId() {
         return blobId;
@@ -56,11 +61,20 @@ public class InnerObjBlob {
         this.blobContent = blobContent;
     }
 
+    public String getClobContent() {
+        return clobContent;
+    }
+
+    public void setClobContent(String clobContent) {
+        this.clobContent = clobContent;
+    }
+
     @Override
     public String toString() {
-        return "InnerObjBBlob{" +
+        return "InnerObjBlob{" +
                 "blobId=" + blobId +
                 ", blobContent=" + Arrays.toString(blobContent) +
+                ", clobContent='" + clobContent + '\'' +
                 '}';
     }
 }

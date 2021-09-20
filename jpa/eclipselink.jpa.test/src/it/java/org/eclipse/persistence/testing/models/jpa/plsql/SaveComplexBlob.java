@@ -37,7 +37,8 @@ import org.eclipse.persistence.platform.database.oracle.annotations.*;
         @PLSQLRecord(name = "PLSQL_P_PLSQL_INNER_BLOB_REC", compatibleType = "PLSQL_P_PLSQL_INNER_BLOB_REC", javaType = InnerObjBlob.class,
                 fields = {
                         @PLSQLParameter(name = "BLOB_ID", databaseType = "NUMERIC_TYPE"),
-                        @PLSQLParameter(name = "BLOB_CONTENT", databaseType = "BLOB_TYPE")
+                        @PLSQLParameter(name = "BLOB_CONTENT", databaseType = "BLOB_TYPE"),
+                        @PLSQLParameter(name = "CLOB_CONTENT", databaseType = "CLOB_TYPE")
                 }
         ),
         @PLSQLRecord(name = "PLSQL_P_PLSQL_OUTER_STRUCT_REC", compatibleType = "PLSQL_P_PLSQL_OUTER_STRUCT_REC", javaType = OuterObjBlob.class,
