@@ -308,7 +308,8 @@ public class DBWSModelProject extends Project {
         descriptor.getInheritancePolicy().setClassIndicatorField(isColl);
         descriptor.getInheritancePolicy().setClassExtractor(new ClassExtractor() {
             @Override
-            public Class<?> extractClassFromRow(DataRecord dataRecord, Session session) {
+            @SuppressWarnings({"unchecked"})
+            public <T> Class<T> extractClassFromRow(DataRecord dataRecord, Session session) {
                 Class<?> clz = Result.class;
                 UnmarshalRecord uRecord = (UnmarshalRecord) dataRecord;
                 Attributes attrs = uRecord.getAttributes();
@@ -324,7 +325,7 @@ public class DBWSModelProject extends Project {
                         }
                     }
                 }
-                return clz;
+                return (Class<T>) clz;
             }
         });
 

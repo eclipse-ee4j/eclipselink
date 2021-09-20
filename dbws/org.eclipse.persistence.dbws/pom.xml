@@ -32,7 +32,7 @@
 
     <properties>
         <!-- disable warnings for exports for now -->
-        <comp.xlint>-Xlint:all,-serial,-exports</comp.xlint>
+        <comp.xlint>-Xlint:all</comp.xlint>
         <test-skip-dbws>${skipTests}</test-skip-dbws>
     </properties>
 
@@ -60,12 +60,6 @@
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.ws.rs</groupId>
-            <artifactId>jakarta.ws.rs-api</artifactId>
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>

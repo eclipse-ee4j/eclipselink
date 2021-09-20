@@ -17,13 +17,12 @@ module org.eclipse.persistence.dbws {
 
     requires jakarta.activation;
     requires jakarta.mail;
-    requires jakarta.persistence;
-    requires static jakarta.ws.rs;
+    requires transitive jakarta.persistence;
     requires jakarta.xml.bind;
-    requires static jakarta.xml.soap;
-    requires static jakarta.xml.ws;
+    requires jakarta.xml.soap;
+    requires jakarta.xml.ws;
 
-    requires static jakarta.servlet; //AM
+    requires jakarta.servlet; //AM
 
     requires org.eclipse.persistence.asm;
     requires org.eclipse.persistence.jpa;
@@ -31,32 +30,14 @@ module org.eclipse.persistence.dbws {
     requires transitive org.eclipse.persistence.moxy;
 
     exports org.eclipse.persistence.dbws;
-    exports org.eclipse.persistence.jpa.rs;
-    exports org.eclipse.persistence.jpa.rs.annotations;
-    exports org.eclipse.persistence.jpa.rs.eventlistener;
-    exports org.eclipse.persistence.jpa.rs.exceptions;
-    exports org.eclipse.persistence.jpa.rs.features;
-    exports org.eclipse.persistence.jpa.rs.features.core.selflinks;
-    exports org.eclipse.persistence.jpa.rs.features.fieldsfiltering;
-    exports org.eclipse.persistence.jpa.rs.features.paging;
-    exports org.eclipse.persistence.jpa.rs.logging;
-    exports org.eclipse.persistence.jpa.rs.resources;
-    exports org.eclipse.persistence.jpa.rs.resources.common;
-    exports org.eclipse.persistence.jpa.rs.util;
-    exports org.eclipse.persistence.jpa.rs.util.list;
-    exports org.eclipse.persistence.jpa.rs.util.metadatasources;
-    exports org.eclipse.persistence.jpa.rs.util.xmladapters;
 
     //exported through DBWS PUBLIC API
-    exports org.eclipse.persistence.internal.jpa.rs.metadata.model;
-    exports org.eclipse.persistence.internal.jpa.rs.weaving;
     exports org.eclipse.persistence.internal.xr;
 
-    //exported through DBWS INTERNAL API
+    //exported DEV
     exports org.eclipse.persistence.internal.xr.sxf;
 
     //INTERNAL ONLY exports
     exports org.eclipse.persistence.internal.dbws to org.eclipse.persistence.dbws.builder;
 
-    uses org.eclipse.persistence.jpa.rs.PersistenceContextFactoryProvider;
 }

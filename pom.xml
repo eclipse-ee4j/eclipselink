@@ -255,6 +255,7 @@
 
         <module>jpa/org.eclipse.persistence.jpa</module>
         <module>jpa/org.eclipse.persistence.jpa.modelgen</module>
+        <module>jpa/org.eclipse.persistence.jpars.server</module>
         <module>jpa/org.eclipse.persistence.jpars</module>
 
         <module>foundation/org.eclipse.persistence.corba</module>
@@ -394,6 +395,12 @@
                 <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
                 <version>${project.version}</version>
                 <classifier>sources</classifier>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.jpars.server</artifactId>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,7 +35,6 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * @since EclipseLink 1.x
  */
 
-@SuppressWarnings("serial")
 public class XRDynamicEntityVHAccessor extends XRDynamicEntityAccessor {
 
     public XRDynamicEntityVHAccessor(DatabaseMapping mapping) {
@@ -48,12 +47,13 @@ public class XRDynamicEntityVHAccessor extends XRDynamicEntityAccessor {
         PropertyWrapper wrapper = propertiesMap.get(attributeName);
         Object v = null;
         if (wrapper.isSet()) {
-            v = ((ValueHolderInterface)wrapper.getValue()).getValue();
+            v = ((ValueHolderInterface<?>)wrapper.getValue()).getValue();
         }
         return v;
     }
 
     @Override
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public void setAttributeValueInObject(Object entity, Object value) throws DescriptorException {
         Map<String, PropertyWrapper> propertiesMap = ((XRDynamicEntity)entity).getPropertiesMap();
         PropertyWrapper wrapper = propertiesMap.get(attributeName);

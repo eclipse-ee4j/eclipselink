@@ -184,19 +184,14 @@ module eclipselink {
     exports org.eclipse.persistence.dbws;
     exports org.eclipse.persistence.jpa.rs;
     exports org.eclipse.persistence.jpa.rs.annotations;
-    exports org.eclipse.persistence.jpa.rs.eventlistener;
     exports org.eclipse.persistence.jpa.rs.exceptions;
     exports org.eclipse.persistence.jpa.rs.features;
     exports org.eclipse.persistence.jpa.rs.features.core.selflinks;
     exports org.eclipse.persistence.jpa.rs.features.fieldsfiltering;
     exports org.eclipse.persistence.jpa.rs.features.paging;
-    exports org.eclipse.persistence.jpa.rs.logging;
     exports org.eclipse.persistence.jpa.rs.resources;
     exports org.eclipse.persistence.jpa.rs.resources.common;
-    exports org.eclipse.persistence.jpa.rs.util;
     exports org.eclipse.persistence.jpa.rs.util.list;
-    exports org.eclipse.persistence.jpa.rs.util.metadatasources;
-    exports org.eclipse.persistence.jpa.rs.util.xmladapters;
 
     //exported through EclipseLink PUBLIC API
     exports org.eclipse.persistence.internal.cache;
@@ -219,7 +214,7 @@ module eclipselink {
     exports org.eclipse.persistence.internal.jpa.deployment;
     exports org.eclipse.persistence.internal.jpa.metadata.xml;
     exports org.eclipse.persistence.internal.jpa.rs.metadata.model;
-    exports org.eclipse.persistence.internal.jpa.rs.weaving;
+    exports org.eclipse.persistence.internal.jpa.rs.metadata.model.v2;
     exports org.eclipse.persistence.internal.libraries.asm;
     exports org.eclipse.persistence.internal.localization;
     exports org.eclipse.persistence.internal.oxm;
@@ -287,6 +282,8 @@ module eclipselink {
     exports org.eclipse.persistence.internal.sessions.factories.model.transport.discovery;
     exports org.eclipse.persistence.internal.sessions.factories.model.transport.naming;
     exports org.eclipse.persistence.internal.xr.sxf;
+
+    uses org.eclipse.persistence.jpa.rs.PersistenceContextFactoryProvider;
 
     provides jakarta.persistence.spi.PersistenceProvider with org.eclipse.persistence.jpa.PersistenceProvider;
     provides jakarta.xml.bind.JAXBContextFactory with org.eclipse.persistence.jaxb.XMLBindingContextFactory;

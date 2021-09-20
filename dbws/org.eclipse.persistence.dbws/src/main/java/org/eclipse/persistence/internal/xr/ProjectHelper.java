@@ -15,22 +15,20 @@
 package org.eclipse.persistence.internal.xr;
 
 //javase imports
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 
-//java eXtension imports
-
-//EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.indirection.BasicIndirectionPolicy;
-import org.eclipse.persistence.internal.xr.XRDynamicEntity;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.Project;
+
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
 import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
 
 /**
@@ -41,20 +39,25 @@ import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTIO
  * This API only supports EclipseLink 1.x format deployment XML
  */
 
-@SuppressWarnings({"rawtypes"})
-public class ProjectHelper {
+public final class ProjectHelper {
+
+    private ProjectHelper() {
+        // no instance please
+    }
+
     /**
      * INTERNAL: Fix the given EclipseLink OR and OX projects so that the
      * descriptors for all generated sub-classes of XRDynamicEntity have the correct
      * AttributeAccessors.
      */
     public static void fixOROXAccessors(Project orProject, Project oxProject) {
-        for (Iterator i = orProject.getDescriptors().values().iterator(); i.hasNext();) {
-            ClassDescriptor desc = (ClassDescriptor)i.next();
-            Class clz = desc.getJavaClass();
-            if (!XRDynamicEntity.class.isAssignableFrom(clz)) {
+        for (Iterator<ClassDescriptor> i = orProject.getDescriptors().values().iterator(); i.hasNext();) {
+            ClassDescriptor desc = i.next();
+            if (!XRDynamicEntity.class.isAssignableFrom(desc.getJavaClass())) {
                 continue;
             }
+            @SuppressWarnings({"unchecked"})
+            Class<? extends XRDynamicEntity> clz = (Class<? extends XRDynamicEntity>) desc.getJavaClass();
             ClassDescriptor xdesc = null;
             if (oxProject != null) {
                 xdesc = oxProject.getDescriptorForAlias(desc.getAlias());
@@ -62,7 +65,7 @@ public class ProjectHelper {
             XRDynamicPropertiesManager xrDPM = null;
             if (!clz.getName().endsWith(COLLECTION_WRAPPER_SUFFIX)) {
                 try {
-                    XRDynamicEntity newInstance = (XRDynamicEntity)clz.getConstructor().newInstance();
+                    XRDynamicEntity newInstance = clz.getConstructor().newInstance();
                     xrDPM = newInstance.fetchPropertiesManager();
                 }
                 catch (Exception e) {
@@ -70,8 +73,8 @@ public class ProjectHelper {
                 }
             }
             Set<String> propertiesNameSet = new HashSet<>();
-            for (Iterator j = desc.getMappings().iterator(); j.hasNext();) {
-                DatabaseMapping dm = (DatabaseMapping)j.next();
+            for (Iterator<DatabaseMapping> j = desc.getMappings().iterator(); j.hasNext();) {
+                DatabaseMapping dm = j.next();
                 String attributeName = dm.getAttributeName();
                 DatabaseMapping xdm = null;
                 if (xdesc != null) {
@@ -112,12 +115,12 @@ public class ProjectHelper {
                 }
             }
         }
-        if (cl != null && cl instanceof XRDynamicClassLoader) {
+        if (cl instanceof XRDynamicClassLoader) {
             XRDynamicClassLoader xrdecl = (XRDynamicClassLoader)cl;
             xrdecl.dontGenerateSubclasses();
         }
         if (oxProject != null) {
-        cl = null;
+            cl = null;
             login = oxProject.getDatasourceLogin();
             if (login != null) {
                 Platform platform = login.getDatasourcePlatform();
@@ -128,8 +131,8 @@ public class ProjectHelper {
                     }
                 }
             }
-            if (cl != null && cl instanceof XRDynamicClassLoader) {
-                XRDynamicClassLoader xrdecl = (XRDynamicClassLoader)cl;
+            if (cl instanceof XRDynamicClassLoader) {
+                XRDynamicClassLoader xrdecl = (XRDynamicClassLoader) cl;
                 xrdecl.dontGenerateSubclasses();
             }
         }

@@ -79,8 +79,7 @@ import org.w3c.dom.Document;
  * @author Mike Norman - michael.norman@oracle.com
  * @since EclipseLink 1.x
  */
-@SuppressWarnings("serial")
-public class Util {
+public final class Util {
     public static final XMLPlatform XML_PLATFORM = XMLPlatformFactory.getInstance().getXMLPlatform();
     public static final Document TEMP_DOC = XML_PLATFORM.createDocument();
     public static final int OPAQUE = 2007;
@@ -113,6 +112,10 @@ public class Util {
     public static final char COLON_CHAR = ':';
     public static final char SLASH_CHAR = '/';
 
+    private Util() {
+        // no instance please
+    }
+
     /**
      * Convert a SQL name to a valid XML name. Because not all characters that
      * are valid in a SQL name is valid in an XML name, they need to be escaped
@@ -139,7 +142,7 @@ public class Util {
             xmlName.append("_x003A_");
         }
         // escape _ of _x to _x005F_
-        else if ((length >= 2) && name.substring(0, 2).equals("_x")) {
+        else if ((length >= 2) && name.startsWith("_x")) {
             xmlName.append("_x005F_");
         }
         // check to see if it is a valid first character
@@ -192,7 +195,7 @@ public class Util {
      */
     public static String xmlToSqlName(String name) {
 
-        String sqlName = "";
+        StringBuilder sqlName = new StringBuilder();
         int length = name.length();
         boolean unescapeMode = false;
         String hexString = null;
@@ -208,30 +211,28 @@ public class Util {
                 } else if (c == '_') {
                     // done with escape mode
                     unescapeMode = false;
-                    if (hexString != null) {
-                        int i;
-                        int len;
-                        if ((len = hexString.length()) > 4) {
-                            char i1 = (char) (Integer.parseInt(hexString.substring(0, len - 4), 16));
-                            char i2 = (char) (Integer.parseInt(hexString.substring(len - 4), 16));
-                            sqlName += i1;
-                            sqlName += i2;
-                        } else {
-                            try {
-                                i = Integer.parseInt(hexString, 16);
-                                if (i != 0xffff) {
-                                    sqlName += (char) i;
-                                }
-                            } catch (NumberFormatException nfe) {
-                                throw new RuntimeException(nfe);
+                    int i;
+                    int len;
+                    if ((len = hexString.length()) > 4) {
+                        char i1 = (char) (Integer.parseInt(hexString.substring(0, len - 4), 16));
+                        char i2 = (char) (Integer.parseInt(hexString.substring(len - 4), 16));
+                        sqlName.append(i1);
+                        sqlName.append(i2);
+                    } else {
+                        try {
+                            i = Integer.parseInt(hexString, 16);
+                            if (i != 0xffff) {
+                                sqlName.append((char) i);
                             }
+                        } catch (NumberFormatException nfe) {
+                            throw new RuntimeException(nfe);
                         }
                     }
                 } else {
                     // invalid char in escape sequence! write everything into
                     // sqlName as is, or we could throw an exception here
                     // in the future
-                    sqlName += ("_x" + hexString + c);
+                    sqlName.append("_x").append(hexString).append(c);
                     unescapeMode = false;
                 }
             } else {
@@ -243,11 +244,11 @@ public class Util {
                     x++;
                 } else {
                     // just copy src char to destination
-                    sqlName += c;
+                    sqlName.append(c);
                 }
             }
         }
-        return sqlName;
+        return sqlName.toString();
     }
 
     public static String hexEscape(char c) {
@@ -319,38 +320,34 @@ public class Util {
                 || ((c >= 0xAC00) && (c <= 0xD7A3)) || ((c >= 0x0E47) && (c <= 0x0E4E)))
                 res = true;
             else {
-                if ((c == 0x02FF) || (c == 0x0346) || (c == 0x0362) || (c == 0x0487)
-                    || (c == 0x05A2) || (c == 0x05BA) || (c == 0x05BE) || (c == 0x05C0)
-                    || (c == 0x05C3) || (c == 0x0653) || (c == 0x06B8) || (c == 0x06B9)
-                    || (c == 0x06E9) || (c == 0x06EE) || (c == 0x0904) || (c == 0x093B)
-                    || (c == 0x094E) || (c == 0x0955) || (c == 0x0964) || (c == 0x0984)
-                    || (c == 0x09C5) || (c == 0x09C9) || (c == 0x09CE) || (c == 0x09D8)
-                    || (c == 0x09E4) || (c == 0x0A03) || (c == 0x0A3D) || (c == 0x0A46)
-                    || (c == 0x0A49) || (c == 0x0A4E) || (c == 0x0A80) || (c == 0x0A84)
-                    || (c == 0x0ABB) || (c == 0x0AC6) || (c == 0x0ACA) || (c == 0x0ACE)
-                    || (c == 0x0B04) || (c == 0x0B3B) || (c == 0x0B44) || (c == 0x0B4A)
-                    || (c == 0x0B4E) || (c == 0x0B58) || (c == 0x0B84) || (c == 0x0BC3)
-                    || (c == 0x0BC9) || (c == 0x0BD6) || (c == 0x0C0D) || (c == 0x0C45)
-                    || (c == 0x0C49) || (c == 0x0C54) || (c == 0x0C81) || (c == 0x0C84)
-                    || (c == 0x0CC5) || (c == 0x0CC9) || (c == 0x0CD4) || (c == 0x0CD7)
-                    || (c == 0x0D04) || (c == 0x0D45) || (c == 0x0D49) || (c == 0x0D4E)
-                    || (c == 0x0D58) || (c == 0x0E3F) || (c == 0x0E3B) || (c == 0x0E4F)
-                    || (c == 0x0EBA) || (c == 0x0EBE) || (c == 0x0ECE) || (c == 0x0F1A)
-                    || (c == 0x0F36) || (c == 0x0F38) || (c == 0x0F3B) || (c == 0x0F3A)
-                    || (c == 0x0F70) || (c == 0x0F85) || (c == 0x0F8C) || (c == 0x0F96)
-                    || (c == 0x0F98) || (c == 0x0FB0) || (c == 0x0FB8) || (c == 0x0FBA)
-                    || (c == 0x20DD) || (c == 0x20E2) || (c == 0x3030) || (c == 0x309B)
-                    || (c == 0x066A) || (c == 0x06FA) || (c == 0x0970) || (c == 0x09F2)
-                    || (c == 0x0AF0) || (c == 0x0B70) || (c == 0x0C65) || (c == 0x0CE5)
-                    || (c == 0x0CF0) || (c == 0x0D70) || (c == 0x0E5A) || (c == 0x0EDA)
-                    || (c == 0x0F2A) || (c == 0x02D2) || (c == 0x03FE) || (c == 0x065F)
-                    || (c == 0x0E5C) || (c == 0x0C04))
-                    res = false;
-                else {
-                    // Character.isLetter(c) || Character.isDigit(c) || '-' || '-' || '.'
-                    // is known to be true at this point
-                    res = true;
-                }
+                // Character.isLetter(c) || Character.isDigit(c) || '-' || '-' || '.'
+                // is known to be true at this point
+                res = (c != 0x02FF) && (c != 0x0346) && (c != 0x0362) && (c != 0x0487)
+                        && (c != 0x05A2) && (c != 0x05BA) && (c != 0x05BE) && (c != 0x05C0)
+                        && (c != 0x05C3) && (c != 0x0653) && (c != 0x06B8) && (c != 0x06B9)
+                        && (c != 0x06E9) && (c != 0x06EE) && (c != 0x0904) && (c != 0x093B)
+                        && (c != 0x094E) && (c != 0x0955) && (c != 0x0964) && (c != 0x0984)
+                        && (c != 0x09C5) && (c != 0x09C9) && (c != 0x09CE) && (c != 0x09D8)
+                        && (c != 0x09E4) && (c != 0x0A03) && (c != 0x0A3D) && (c != 0x0A46)
+                        && (c != 0x0A49) && (c != 0x0A4E) && (c != 0x0A80) && (c != 0x0A84)
+                        && (c != 0x0ABB) && (c != 0x0AC6) && (c != 0x0ACA) && (c != 0x0ACE)
+                        && (c != 0x0B04) && (c != 0x0B3B) && (c != 0x0B44) && (c != 0x0B4A)
+                        && (c != 0x0B4E) && (c != 0x0B58) && (c != 0x0B84) && (c != 0x0BC3)
+                        && (c != 0x0BC9) && (c != 0x0BD6) && (c != 0x0C0D) && (c != 0x0C45)
+                        && (c != 0x0C49) && (c != 0x0C54) && (c != 0x0C81) && (c != 0x0C84)
+                        && (c != 0x0CC5) && (c != 0x0CC9) && (c != 0x0CD4) && (c != 0x0CD7)
+                        && (c != 0x0D04) && (c != 0x0D45) && (c != 0x0D49) && (c != 0x0D4E)
+                        && (c != 0x0D58) && (c != 0x0E3F) && (c != 0x0E3B) && (c != 0x0E4F)
+                        && (c != 0x0EBA) && (c != 0x0EBE) && (c != 0x0ECE) && (c != 0x0F1A)
+                        && (c != 0x0F36) && (c != 0x0F38) && (c != 0x0F3B) && (c != 0x0F3A)
+                        && (c != 0x0F70) && (c != 0x0F85) && (c != 0x0F8C) && (c != 0x0F96)
+                        && (c != 0x0F98) && (c != 0x0FB0) && (c != 0x0FB8) && (c != 0x0FBA)
+                        && (c != 0x20DD) && (c != 0x20E2) && (c != 0x3030) && (c != 0x309B)
+                        && (c != 0x066A) && (c != 0x06FA) && (c != 0x0970) && (c != 0x09F2)
+                        && (c != 0x0AF0) && (c != 0x0B70) && (c != 0x0C65) && (c != 0x0CE5)
+                        && (c != 0x0CF0) && (c != 0x0D70) && (c != 0x0E5A) && (c != 0x0EDA)
+                        && (c != 0x0F2A) && (c != 0x02D2) && (c != 0x03FE) && (c != 0x065F)
+                        && (c != 0x0E5C) && (c != 0x0C04);
             }
         }
         return res;
@@ -381,25 +378,21 @@ public class Util {
                 || ((c >= 0xAC00) && (c <= 0xD7A3)))
                 res = true;
             else {
-                if ((c == 0x1101) || (c == 0x1104) || (c == 0x1108) || (c == 0x110A)
-                    || (c == 0x110D) || (c == 0x113B) || (c == 0x1141) || (c == 0x114D)
-                    || (c == 0x114F) || (c == 0x1151) || (c == 0x1156) || (c == 0x1162)
-                    || (c == 0x1164) || (c == 0x1166) || (c == 0x116B) || (c == 0x116F)
-                    || (c == 0x1174) || (c == 0x119F) || (c == 0x11AC) || (c == 0x11B6)
-                    || (c == 0x11B9) || (c == 0x11BB) || (c == 0x11C3) || (c == 0x11F1)
-                    || (c == 0x0132) || (c == 0x0133) || (c == 0x013F) || (c == 0x0140)
-                    || (c == 0x0149) || (c == 0x017F) || (c == 0x01C4) || (c == 0x01CC)
-                    || (c == 0x01F1) || (c == 0x01F3) || (c == 0x0E46) || (c == 0x113F)
-                    || (c == 0x01F6) || (c == 0x01F9) || (c == 0x0230) || (c == 0x03D7)
-                    || (c == 0x03DD) || (c == 0x03E1) || (c == 0x040D) || (c == 0x0450)
-                    || (c == 0x045D) || (c == 0x04EC) || (c == 0x04ED) || (c == 0x06B8)
-                    || (c == 0x06BF) || (c == 0x06CF) || (c == 0x0E2F) || (c == 0x0EAF)
-                    || (c == 0x0F6A) || (c == 0x4CFF) || (c == 0x212F) || (c == 0x0587)) {
-                    res = false;
-                } else {
-                    //Character.isLetter(c) || c == '_' is known to be true here
-                    res = true;
-                }
+                //Character.isLetter(c) || c == '_' is known to be true here
+                res = (c != 0x1101) && (c != 0x1104) && (c != 0x1108) && (c != 0x110A)
+                        && (c != 0x110D) && (c != 0x113B) && (c != 0x1141) && (c != 0x114D)
+                        && (c != 0x114F) && (c != 0x1151) && (c != 0x1156) && (c != 0x1162)
+                        && (c != 0x1164) && (c != 0x1166) && (c != 0x116B) && (c != 0x116F)
+                        && (c != 0x1174) && (c != 0x119F) && (c != 0x11AC) && (c != 0x11B6)
+                        && (c != 0x11B9) && (c != 0x11BB) && (c != 0x11C3) && (c != 0x11F1)
+                        && (c != 0x0132) && (c != 0x0133) && (c != 0x013F) && (c != 0x0140)
+                        && (c != 0x0149) && (c != 0x017F) && (c != 0x01C4) && (c != 0x01CC)
+                        && (c != 0x01F1) && (c != 0x01F3) && (c != 0x0E46) && (c != 0x113F)
+                        && (c != 0x01F6) && (c != 0x01F9) && (c != 0x0230) && (c != 0x03D7)
+                        && (c != 0x03DD) && (c != 0x03E1) && (c != 0x040D) && (c != 0x0450)
+                        && (c != 0x045D) && (c != 0x04EC) && (c != 0x04ED) && (c != 0x06B8)
+                        && (c != 0x06BF) && (c != 0x06CF) && (c != 0x0E2F) && (c != 0x0EAF)
+                        && (c != 0x0F6A) && (c != 0x4CFF) && (c != 0x212F) && (c != 0x0587);
             }
         }
         return res;
@@ -408,7 +401,7 @@ public class Util {
     /**
      * Char type table
      */
-    static final int chartype[] = new int[256];
+    static final int[] chartype = new int[256];
     static final int FWHITESPACE = 1;
     static final int FDIGIT = 2;
     static final int FLETTER = 4;

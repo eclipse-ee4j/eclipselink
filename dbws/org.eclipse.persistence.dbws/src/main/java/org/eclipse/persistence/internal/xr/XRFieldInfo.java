@@ -19,7 +19,7 @@ import java.util.Map;
 
 import org.eclipse.persistence.exceptions.DynamicException;
 
-public class XRFieldInfo {
+class XRFieldInfo {
 
     protected HashMap<String, Index> fieldInfo = new HashMap<>();
 
