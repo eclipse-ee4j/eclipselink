@@ -255,8 +255,8 @@
 
         <module>jpa/org.eclipse.persistence.jpa</module>
         <module>jpa/org.eclipse.persistence.jpa.modelgen</module>
-        <module>jpa/org.eclipse.persistence.jpars.server</module>
         <module>jpa/org.eclipse.persistence.jpars</module>
+        <module>jpa/org.eclipse.persistence.jpars.server</module>
 
         <module>foundation/org.eclipse.persistence.corba</module>
         <module>foundation/org.eclipse.persistence.extension</module>

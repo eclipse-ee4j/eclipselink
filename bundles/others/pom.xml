@@ -36,7 +36,6 @@
 
         <!--Javadoc properties-->
         <javadoc.prefixTitle>EclipseLink ${release.version}</javadoc.prefixTitle>
-        <javadoc.jpars.prefixTitle>EclipseLink JPA-RS ${release.version}</javadoc.jpars.prefixTitle>
         <javadoc.nosql.prefixTitle>EclipseLink NoSQL ${release.version}</javadoc.nosql.prefixTitle>
         <javadoc.postfixTitle>API Reference</javadoc.postfixTitle>
     </properties>
@@ -93,6 +92,10 @@
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpars</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpars.server</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
@@ -373,14 +376,6 @@
 
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.jpars</artifactId>
-            <classifier>javadoc</classifier>
-            <scope>provided</scope>
-            <!-- ### fix me -->
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.sdo</artifactId>
             <classifier>javadoc</classifier>
             <scope>provided</scope>
@@ -462,6 +457,7 @@
                                 <dependencySourceInclude>org.eclipse.persistence:org.eclipse.persistence.nosql</dependencySourceInclude>
                                 <dependencySourceInclude>org.eclipse.persistence:org.eclipse.persistence.oracle.nosql</dependencySourceInclude>
                                 <dependencySourceInclude>org.eclipse.persistence:org.eclipse.persistence.jpars</dependencySourceInclude>
+                                <dependencySourceInclude>org.eclipse.persistence:org.eclipse.persistence.jpars.server</dependencySourceInclude>
                             </dependencySourceIncludes>
                             <excludePackageNames>org.eclipse.persistence.internal.*</excludePackageNames>
                             <sourceFileExcludes>
@@ -526,7 +522,7 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>sdo-jpars-javadoc.jar</id>
+                        <id>sdo-javadoc.jar</id>
                         <phase>prepare-package</phase>
                         <goals>
                             <goal>copy-dependencies</goal>
@@ -537,7 +533,6 @@
                             <includeScope>provided</includeScope>
                             <classifier>javadoc</classifier>
                             <includeArtifactIds>
-                                org.eclipse.persistence.jpars,
                                 org.eclipse.persistence.sdo
                             </includeArtifactIds>
                             <stripVersion>true</stripVersion>
