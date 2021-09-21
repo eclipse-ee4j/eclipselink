@@ -160,9 +160,9 @@ public class XmlAttachmentRefCases extends ExternalizedMetadataTestCases {
         if (iStream == null) {
             fail("Couldn't load metadata file [" + metadataFile + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         boolean exceptionOccurred = false;

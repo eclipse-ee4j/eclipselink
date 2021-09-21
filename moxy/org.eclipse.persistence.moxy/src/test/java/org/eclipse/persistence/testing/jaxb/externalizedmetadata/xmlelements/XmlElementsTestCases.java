@@ -107,9 +107,9 @@ public class XmlElementsTestCases extends JAXBWithJSONTestCases{
     public void testXmlElementsWithIdRefSchemaGen() throws Exception {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelements/eclipselink-oxm-idref.xml");
 
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelements", new StreamSource(inputStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         List controlSchemas = new ArrayList();
@@ -138,9 +138,9 @@ public class XmlElementsTestCases extends JAXBWithJSONTestCases{
         if (iStream == null) {
             fail("Couldn't load metadata file [" + metadataFile + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         // create context

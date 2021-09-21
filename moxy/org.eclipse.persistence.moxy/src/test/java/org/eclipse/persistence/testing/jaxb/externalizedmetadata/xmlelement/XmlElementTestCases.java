@@ -109,9 +109,9 @@ public class XmlElementTestCases extends JAXBWithJSONTestCases {
         if (iStream == null) {
             fail("Couldn't load metadata file [" + metadataFile + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelement", new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         JAXBContext jContext = (JAXBContext) JAXBContextFactory.createContext(new Class[] { Team.class }, properties, loader);

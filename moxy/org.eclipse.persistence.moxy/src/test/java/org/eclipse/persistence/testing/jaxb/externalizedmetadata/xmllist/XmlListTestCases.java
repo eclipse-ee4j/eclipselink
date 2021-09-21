@@ -84,9 +84,9 @@ public class XmlListTestCases extends JAXBWithJSONTestCases {
     public void testXmlListInvalid() {
 
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmllist/eclipselink-oxm-invalid.xml");
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmllist", new StreamSource(inputStream));
-        Map<String, Map<String, Source>> invalidProperties = new HashMap<String, Map<String, Source>>();
+        Map<String, Object> invalidProperties = new HashMap<>();
         invalidProperties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         boolean exception = false;

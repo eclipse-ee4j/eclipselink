@@ -128,9 +128,9 @@ public class XmlTransientTestCases extends JAXBWithJSONTestCases{
     public void testReferenceToTransientClassException() {
         try {
             InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltransient/contactinfo-oxm.xml");
-            HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+            HashMap<String, Source> metadataSourceMap = new HashMap<>();
             metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.inheritance", new StreamSource(inputStream));
-            Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+            Map<String, Object> properties = new HashMap<>();
             properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
             JAXBContextFactory.createContext(new Class[] { ContactInfo.class }, properties);

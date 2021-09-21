@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.xml.bind.JAXBContext;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
@@ -53,9 +52,9 @@ public class ExceptionHandlingTestCases extends OXTestCase {
      * Negative test.
      */
     public void testInvalidMapParameterTypeBadKey() {
-        Map<Class, Source> metadataSourceMap = new HashMap<Class, Source>();
+        Map<Class<?>, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put(JAXBContextFactory.class, new StreamSource());
-        Map<String, Map<Class, Source>> properties = new HashMap<String, Map<Class, Source>>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         try {
@@ -73,9 +72,9 @@ public class ExceptionHandlingTestCases extends OXTestCase {
      * Negative test.
      */
     public void testInvalidMapParameterTypeNullKey() {
-        Map<Class, Source> metadataSourceMap = new HashMap<Class, Source>();
+        Map<Class<?>, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put(null, new StreamSource());
-        Map<String, Map<Class, Source>> properties = new HashMap<String, Map<Class, Source>>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         try {
@@ -94,9 +93,9 @@ public class ExceptionHandlingTestCases extends OXTestCase {
      * Negative test.
      */
     public void testInvalidParameterTypeBadValue() {
-        Map<String, Class> metadataSourceMap = new HashMap<String, Class>();
+        Map<String, Class<?>> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put(CONTEXT_PATH, this.getClass());
-        Map<String, Map<String, Class>> properties = new HashMap<String, Map<String, Class>>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         try {
@@ -114,9 +113,9 @@ public class ExceptionHandlingTestCases extends OXTestCase {
      * Negative test.
      */
     public void testInvalidMapParameterTypeNullValue() {
-        Map<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        Map<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put(CONTEXT_PATH, null);
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         try {
@@ -135,8 +134,8 @@ public class ExceptionHandlingTestCases extends OXTestCase {
      * Negative test.
      */
     public void testInvalidParameterTypeBadOxmXmlValue() {
-        Map<String, List<Integer>> properties = new HashMap<String, List<Integer>>();
-        ArrayList<Integer> ints = new ArrayList<Integer>();
+        Map<String, Object> properties = new HashMap<>();
+        ArrayList<Integer> ints = new ArrayList<>();
         ints.add(666);
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, ints);
         try {
@@ -160,9 +159,9 @@ public class ExceptionHandlingTestCases extends OXTestCase {
             fail("Couldn't load metadata file [" + metadataFile + "]");
         }
 
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         try {
@@ -186,9 +185,9 @@ public class ExceptionHandlingTestCases extends OXTestCase {
             fail("Couldn't load metadata file [" + metadataFile + "]");
         }
 
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         try {
@@ -215,13 +214,13 @@ public class ExceptionHandlingTestCases extends OXTestCase {
             fail("Couldn't load metadata file [" + metadataFile + "]");
         }
 
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put("java.util", new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         try {
-            JAXBContext ctx = JAXBContextFactory.createContext(contextPath, getClass().getClassLoader(), properties);
+            JAXBContextFactory.createContext(contextPath, getClass().getClassLoader(), properties);
         } catch (jakarta.xml.bind.JAXBException e) {
             assertTrue(e.getLinkedException() instanceof JAXBException);
             assertEquals(JAXBException.JAVATYPE_NOT_ALLOWED_IN_BINDINGS_FILE, ((JAXBException)e.getLinkedException()).getErrorCode());
@@ -239,9 +238,9 @@ public class ExceptionHandlingTestCases extends OXTestCase {
         String metadataFile = PATH + "eclipselink_doesnt_exist-oxm.xml";
         InputStream iStream = getClass().getClassLoader().getResourceAsStream(metadataFile);
 
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         try {
@@ -262,9 +261,9 @@ public class ExceptionHandlingTestCases extends OXTestCase {
     public void testInvalidLocation2() {
         String metadataFile = PATH + "eclipselink_doesnt_exist-oxm.xml";
 
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put(CONTEXT_PATH, new StreamSource(metadataFile));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         try {

@@ -143,9 +143,9 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
         try {
             InputStream inputStream = ClassLoader.getSystemResourceAsStream(INVALID_OXM_DOC);
 
-            HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+            HashMap<String, Source> metadataSourceMap = new HashMap<>();
             metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode", new StreamSource(inputStream));
-            Map<String, Map<String, Source>> invalidProperties = new HashMap<String, Map<String, Source>>();
+            Map<String, Object> invalidProperties = new HashMap<>();
             invalidProperties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
             JAXBContextFactory.createContext(new Class[] { Company.class }, invalidProperties);
@@ -164,9 +164,9 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
         try {
             InputStream inputStream = ClassLoader.getSystemResourceAsStream(INVALID_XPATH_OXM_DOC);
 
-            HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+            HashMap<String, Source> metadataSourceMap = new HashMap<>();
             metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode", new StreamSource(inputStream));
-            Map<String, Map<String, Source>> invalidProperties = new HashMap<String, Map<String, Source>>();
+            Map<String, Object> invalidProperties = new HashMap<>();
             invalidProperties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
             JAXBContextFactory.createContext(new Class[] { Company.class }, invalidProperties);
@@ -190,9 +190,9 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
 
             InputStream inputStream = ClassLoader.getSystemResourceAsStream(INVALID_TARGET_OXM_DOC);
 
-            HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+            HashMap<String, Source> metadataSourceMap = new HashMap<>();
             metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode", new StreamSource(inputStream));
-            Map<String, Map<String, Source>> invalidProperties = new HashMap<String, Map<String, Source>>();
+            Map<String, Object> invalidProperties = new HashMap<>();
             invalidProperties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
             JAXBContextFactory.createContext(new Class[] { Company.class }, invalidProperties);
@@ -210,9 +210,9 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
         try {
                InputStream inputStream = ClassLoader.getSystemResourceAsStream(OXM_DOC_V2);
 
-            HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+            HashMap<String, Source> metadataSourceMap = new HashMap<>();
             metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode", new StreamSource(inputStream));
-            Map<String, Map<String, Source>> invalidProperties = new HashMap<String, Map<String, Source>>();
+            Map<String, Object> invalidProperties = new HashMap<>();
             invalidProperties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
             jCtx = (JAXBContext)JAXBContextFactory.createContext(new Class[] { Company.class }, invalidProperties);

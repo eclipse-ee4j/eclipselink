@@ -60,7 +60,7 @@ public class TransformerPropertyBuilderTestCase {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(BINDINGS_DOC);
         HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmltransformation", new StreamSource(inputStream));
-        Map<String, Map<String, Source>> properties = new HashMap<>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
         Map<String, XmlBindings> bindings = JAXBContextFactory.getXmlBindingsFromProperties(properties, Thread.currentThread().getContextClassLoader());
         JavaModelInputImpl jModelInput = new JavaModelInputImpl(DOMAIN_CLASSES, new JavaModelImpl(new JaxbClassLoader(Thread.currentThread().getContextClassLoader(), DOMAIN_CLASSES)));
@@ -90,7 +90,7 @@ public class TransformerPropertyBuilderTestCase {
         // Indirect call of org.eclipse.persistence.jaxb.compiler.builder.TransformerPropertyBuilder.getTransformerJavaClass(...) with invalid TransformerClass name
         try {
             normalHoursProperty.getXmlTransformation().getXmlWriteTransformer().get(0).setTransformerClass("xxx.xxx.WrongClassName");
-            props = transformerPropertyBuilder.buildProperties();
+            transformerPropertyBuilder.buildProperties();
             fail("Expected JAXBException.");
         } catch (JAXBException expected) {
             assertEquals(50054, expected.getErrorCode());
