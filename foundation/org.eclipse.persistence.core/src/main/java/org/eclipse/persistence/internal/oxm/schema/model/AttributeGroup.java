@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,22 +15,23 @@
 package org.eclipse.persistence.internal.oxm.schema.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class AttributeGroup {
-    private java.util.List attributes;
+    private java.util.List<Attribute> attributes;
     private AnyAttribute anyAttribute;
     private String name;
     private String ref;
 
     public AttributeGroup() {
-        attributes = new ArrayList();
+        attributes = new ArrayList<>();
     }
 
-    public void setAttributes(java.util.List attributes) {
+    public void setAttributes(List<Attribute> attributes) {
         this.attributes = attributes;
     }
 
-    public java.util.List getAttributes() {
+    public List<Attribute> getAttributes() {
         return attributes;
     }
 

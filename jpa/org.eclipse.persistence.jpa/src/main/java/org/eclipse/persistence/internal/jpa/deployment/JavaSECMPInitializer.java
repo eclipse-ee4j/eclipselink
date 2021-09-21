@@ -242,8 +242,6 @@ public class JavaSECMPInitializer extends JPAInitializer {
     /**
      * Register a transformer.  In this case, we use the instrumentation to add a transformer for the
      * JavaSE environment
-     * @param transformer
-     * @param persistenceUnitInfo
      */
     @Override
     public void registerTransformer(final ClassTransformer transformer, PersistenceUnitInfo persistenceUnitInfo, Map properties){

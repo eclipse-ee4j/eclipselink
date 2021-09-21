@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,12 +15,13 @@
 package org.eclipse.persistence.internal.oxm.schema.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Extension {
     private String baseType;//QName lateR??
     private java.util.List attributes;
     private Content owner;
-    private java.util.List orderedAttributes;
+    private java.util.List<Attribute> orderedAttributes;
     private TypeDefParticle typeDefParticle;
     private Choice choice;
     private Sequence sequence;
@@ -28,7 +29,7 @@ public class Extension {
     private AnyAttribute anyAttribute;
 
     public Extension() {
-        orderedAttributes = new ArrayList();
+        orderedAttributes = new ArrayList<>();
     }
 
     public void setBaseType(String baseType) {
@@ -102,11 +103,11 @@ public class Extension {
         return null;
     }
 
-    public void setOrderedAttributes(java.util.List orderedAttributes) {
+    public void setOrderedAttributes(List<Attribute> orderedAttributes) {
         this.orderedAttributes = orderedAttributes;
     }
 
-    public java.util.List getOrderedAttributes() {
+    public List<Attribute> getOrderedAttributes() {
         return orderedAttributes;
     }
 

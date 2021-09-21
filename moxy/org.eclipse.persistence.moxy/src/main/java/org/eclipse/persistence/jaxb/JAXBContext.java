@@ -301,7 +301,6 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
      * not affect instances of Binder.  To get the new metadata you must create
      * a new instance of Binder after the refresh metadata call has been made.</li>
      * </ul>
-     * @throws jakarta.xml.bind.JAXBException
      */
     public void refreshMetadata() throws jakarta.xml.bind.JAXBException {
         JAXBContextState newState = newContextState();
@@ -784,7 +783,6 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
     /**
      * Returns true if any Object in this context contains a property annotated with an XmlAttachmentRef
      * annotation.
-     * @return
      */
     public boolean hasSwaRef() {
         return contextState.getGenerator().getAnnotationsProcessor().hasSwaRef();
@@ -1606,7 +1604,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
                 // initialize each callback in the map
                 ClassLoader classLoader = getXMLContext().getSession(0).getDatasourcePlatform().getConversionManager().getLoader();
                 for (Object o : generator.getMarshalCallbacks().keySet()) {
-                    MarshalCallback cb = (MarshalCallback) generator.getMarshalCallbacks().get(o);
+                    MarshalCallback cb = generator.getMarshalCallbacks().get(o);
                     cb.initialize(classLoader);
                 }
                 marshaller.setMarshalCallbacks(generator.getMarshalCallbacks());
@@ -1641,7 +1639,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
                 // initialize each callback in the map
                 ClassLoader classLoader = getXMLContext().getSession(0).getDatasourcePlatform().getConversionManager().getLoader();
                 for (Object o : generator.getUnmarshalCallbacks().keySet()) {
-                    UnmarshalCallback cb = (UnmarshalCallback) generator.getUnmarshalCallbacks().get(o);
+                    UnmarshalCallback cb = generator.getUnmarshalCallbacks().get(o);
                     cb.initialize(classLoader);
                 }
                 unmarshaller.setUnmarshalCallbacks(generator.getUnmarshalCallbacks());

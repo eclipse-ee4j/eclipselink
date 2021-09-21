@@ -81,7 +81,6 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * available until after the database insert has occurred. Returns null if
      * the entity does not yet have an id
      *
-     * @param entity
      * @return id of the entity
      * @throws IllegalArgumentException
      *             if the entity is found not to be an entity.
@@ -166,10 +165,6 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * ForeignReferenceMappings to see if has been instantiated and otherwise
      * check the fetch group.
      *
-     * @param entity
-     * @param attributeName
-     * @param mapping
-     * @return
      */
     public static boolean isLoaded(Object entity, String attributeName, DatabaseMapping mapping) {
         if (mapping.isForeignReferenceMapping()) {
@@ -191,7 +186,6 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * Will return an instance of the Factory. Should only be called by
      * EclipseLink.
      *
-     * @param serverSession
      */
     public EntityManagerFactoryImpl(AbstractSession serverSession) {
         delegate = new EntityManagerFactoryDelegate(serverSession, this);
@@ -215,7 +209,6 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * Re-bootstrap this factory.  This method will rebuild the EntityManagerFactory.  It should be used
      * in conjunction with a MetadataSource to allow mappings to be changed in a running system.  All existing
      * EntityMangers will continue to function with the old metadata, but new factories will use the new metadata.
-     * @param properties
      */
     @Override
     public void refreshMetadata(Map<String, Object> properties){
@@ -355,7 +348,6 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * This method will return a version of EntityManagerFactory that is
      * based on the available metadata at the time it is called.  Future calls
      * to refresh will not affect that metadata on this EntityManagerFactory.
-     * @return
      */
     @Override
     public EntityManagerFactoryDelegate unwrap(){
@@ -570,7 +562,6 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * possible case that we want to regenerate it. This function is outside of
      * the JPA 2.0 specification.
      *
-     * @param aMetamodel
      * @since Java Persistence 2.0
      */
     public void setMetamodel(Metamodel aMetamodel) {
@@ -616,7 +607,6 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * available until after the database insert has occurred. Returns null if
      * the entity does not yet have an id
      *
-     * @param entity
      * @return id of the entity
      * @throws IllegalStateException
      *             if the entity is found not to be an entity.

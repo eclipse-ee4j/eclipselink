@@ -163,7 +163,7 @@ public class DoesExistQuery extends DatabaseQuery {
             }
 
             CacheKey cacheKey;
-            Class<? extends Object> objectClass = object.getClass();
+            Class<?> objectClass = object.getClass();
             AbstractSession tempSession = session;
             if (tempSession.isUnitOfWork()){
                 cacheKey = tempSession.getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(primaryKey, objectClass, descriptor);

@@ -48,6 +48,7 @@ import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.RelationExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -792,8 +793,8 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
      */
     @Override
     public void writeUpdateOriginalFromTempTableSql(Writer writer, DatabaseTable table,
-                                                    Collection pkFields,
-                                                    Collection assignedFields) throws IOException
+                                                    Collection<DatabaseField> pkFields,
+                                                    Collection<DatabaseField> assignedFields) throws IOException
     {
         writer.write("UPDATE ");
         String tableName = table.getQualifiedNameDelimited(this);

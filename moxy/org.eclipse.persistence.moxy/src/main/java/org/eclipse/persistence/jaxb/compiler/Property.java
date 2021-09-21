@@ -206,7 +206,7 @@ public class Property implements Cloneable {
         ArrayList<JavaMethod> marshalMethods = new ArrayList<JavaMethod>();
 
         // Look for marshal method
-        for (JavaMethod method : (Collection<JavaMethod>) adapterCls.getMethods()) {
+        for (JavaMethod method : adapterCls.getMethods()) {
             if (!method.isBridge() && method.getName().equals(MARSHAL_METHOD_NAME)) {
                 final JavaClass[] parameterTypes = method.getParameterTypes();
                 if (parameterTypes.length != 1)

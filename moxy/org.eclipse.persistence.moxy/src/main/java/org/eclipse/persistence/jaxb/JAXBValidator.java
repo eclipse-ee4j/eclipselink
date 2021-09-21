@@ -33,7 +33,6 @@ public class JAXBValidator /*implements Validator*/ {
      * DefaultValidationEventHandlervalidation instance, and sets the
      * XMLMarshaller instance to the one provided.
      *
-     * @param newValidator
      */
     public JAXBValidator(XMLValidator newValidator) {
         super();
@@ -46,7 +45,6 @@ public class JAXBValidator /*implements Validator*/ {
      *
      * @param rootObject - the root object to be validated
      * @return true if a valid root object, false otherwise
-     * @throws JAXBException
      */
     public boolean validateRoot(Object rootObject) throws JAXBException {
         if (rootObject == null) {
@@ -65,7 +63,6 @@ public class JAXBValidator /*implements Validator*/ {
      *
      * @param object - the object to be validated
      * @return true if a valid object, false otherwise
-     * @throws JAXBException
      */
     public boolean validate(Object object) throws JAXBException {
         if (object == null) {

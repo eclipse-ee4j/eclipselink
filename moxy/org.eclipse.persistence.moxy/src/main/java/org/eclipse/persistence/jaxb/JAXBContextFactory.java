@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -277,8 +277,6 @@ public class JAXBContextFactory {
      *
      * @param originalBindings Map of bindings to be updated
      * @param bindingHandle handle to bindings file
-     * @param classLoader
-     * @return
      */
     private static Map<String, List<XmlBindings>> processBindingFile(Map<String, List<XmlBindings>> originalBindings, Object bindingHandle, ClassLoader classLoader, Map<String, Object> properties) {
         XmlBindings binding = getXmlBindings(bindingHandle, classLoader, properties);

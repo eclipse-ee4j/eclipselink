@@ -258,8 +258,6 @@ public class JAXBUnmarshaller implements Unmarshaller {
      * using the object's descriptor default root element - any
      * prefix will be resolved, and a QName created.
      *
-     * @param obj
-     * @return
      */
     private JAXBElement buildJAXBElementFromObject(Object obj, Class declaredClass) {
         // if an XMLRoot was returned, the root element != the default root

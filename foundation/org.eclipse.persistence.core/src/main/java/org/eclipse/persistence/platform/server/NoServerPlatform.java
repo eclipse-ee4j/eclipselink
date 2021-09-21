@@ -61,7 +61,6 @@ public final class NoServerPlatform extends ServerPlatformBase {
      * @see #isJTAEnabled()
      * @see #disableJTA()
      * @see #initializeExternalTransactionController()
-     * @return
      */
     @Override
     public Class<? extends ExternalTransactionController> getExternalTransactionControllerClass() {

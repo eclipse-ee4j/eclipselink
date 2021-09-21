@@ -28,7 +28,6 @@ import jakarta.xml.bind.SchemaOutputResolver;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.core.sessions.CoreProject;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
@@ -45,8 +44,6 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.Project;
 
 /**
@@ -82,7 +79,6 @@ public class Generator {
      * This constructor creates a Helper using the JavaModelInput
      * instance's JavaModel. Annotations are processed here as well.
      *
-     * @param jModelInput
      */
     public Generator(JavaModelInput jModelInput) {
         helper = new Helper(jModelInput.getJavaModel());
@@ -100,9 +96,7 @@ public class Generator {
      * If xmlBindings is null or empty, AnnotationsProcessor will be used to process
      * annotations as per usual.
      *
-     * @param jModelInput
      * @param xmlBindings map of XmlBindings keyed on package name
-     * @param cLoader
      */
     public Generator(JavaModelInput jModelInput, Map<String, XmlBindings> xmlBindings, ClassLoader cLoader, String defaultTargetNamespace, boolean enableXmlAccessorFactory) {
         helper = new Helper(jModelInput.getJavaModel());
@@ -124,7 +118,6 @@ public class Generator {
      * instance's JavaModel and a map of javaclasses that were generated from Type objects.
      * Annotations are processed here as well.
      *
-     * @param jModelInput
      */
     public Generator(JavaModelInput jModelInput, TypeMappingInfo[] typeMappingInfos, JavaClass[] javaClasses, Map<Type, TypeMappingInfo> typeToTypeMappingInfo, String defaultTargetNamespace) {
         helper = new Helper(jModelInput.getJavaModel());
@@ -144,14 +137,7 @@ public class Generator {
      * If xmlBindings is null or empty, AnnotationsProcessor will be used to process
      * annotations as per usual.
      *
-     * @param jModelInput
-     * @param defaultTargetNamespace
-     * @param enableXmlAccessorFactory
-     * @param javaClasses
-     * @param typeMappingInfos
-     * @param typeToTypeMappingInfo
      * @param xmlBindings map of XmlBindings keyed on package name
-     * @param cLoader
      */
     public Generator(JavaModelInput jModelInput, TypeMappingInfo[] typeMappingInfos, JavaClass[] javaClasses, Map<Type, TypeMappingInfo> typeToTypeMappingInfo, Map<String, XmlBindings> xmlBindings, ClassLoader cLoader, String defaultTargetNamespace, boolean enableXmlAccessorFactory) {
         helper = new Helper(jModelInput.getJavaModel());
@@ -238,7 +224,7 @@ public class Generator {
         java.util.Collection<Schema> schemas = schemaGenerator.getAllSchemas();
         // make sure that schemas will be passed to the output in specified order
         if (schemas instanceof List) {
-            ((List)schemas).sort(new SchemaCompareByNamespace());
+            ((List<Schema>)schemas).sort(new SchemaCompareByNamespace());
         }
         for(Schema schema : schemas) {
             try {
@@ -267,8 +253,6 @@ public class Generator {
      * It is assumed that the map of QName-Type entries contains Type instances that are either a Class or
      * a ParameterizedType.
      *
-     * @param additionalGlobalElements
-     * @param annotationsProcessor
      */
     private void processAdditionalElements(Map<QName, Type> additionalGlobalElements, AnnotationsProcessor annotationsProcessor) {
         if (additionalGlobalElements != null) {
@@ -288,7 +272,7 @@ public class Generator {
                 }
                 JavaClass jClass = null;
                 if (type instanceof Class) {
-                    Class tClass = (Class) type;
+                    Class<?> tClass = (Class<?>) type;
                     jClass = helper.getJavaClass(tClass);
                 }
                 // if no type is available don't do anything
@@ -300,11 +284,11 @@ public class Generator {
         }
     }
 
-    public Map getUnmarshalCallbacks() {
+    public Map<String, UnmarshalCallback> getUnmarshalCallbacks() {
         return annotationsProcessor.getUnmarshalCallbacks();
     }
 
-    public Map getMarshalCallbacks() {
+    public Map<String, MarshalCallback> getMarshalCallbacks() {
         return annotationsProcessor.getMarshalCallbacks();
     }
 

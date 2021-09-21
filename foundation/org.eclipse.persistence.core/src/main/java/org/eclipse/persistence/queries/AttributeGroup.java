@@ -151,7 +151,7 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
         if (isFetchGroup()) {
             return (FetchGroup) this;
         }
-        return toFetchGroup(new HashMap<AttributeGroup, FetchGroup>());
+        return toFetchGroup(new HashMap<>());
     }
 
     /**
@@ -273,7 +273,7 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
         if (this.isLoadGroup()) {
             return (LoadGroup) this;
         }
-        return toLoadGroup(new HashMap<AttributeGroup, LoadGroup>(), false);
+        return toLoadGroup(new HashMap<>(), false);
     }
 
     public LoadGroup toLoadGroup(Map<AttributeGroup, LoadGroup> cloneMap, boolean loadOnly){

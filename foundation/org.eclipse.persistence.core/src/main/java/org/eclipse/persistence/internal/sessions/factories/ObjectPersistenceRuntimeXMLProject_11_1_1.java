@@ -1452,7 +1452,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          }
 
          @Override
-         @SuppressWarnings({"unchecked", "rawtypes"})
+         @SuppressWarnings({"unchecked"})
          public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
              try {
                  // Get the Class of each entry in the collection

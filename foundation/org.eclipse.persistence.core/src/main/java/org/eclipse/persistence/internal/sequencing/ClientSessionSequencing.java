@@ -67,7 +67,6 @@ class ClientSessionSequencing implements Sequencing {
     * SequencingServer.getNextValue takes two arguments
     * the first argument being a session which owns write connection
     * (either DatabaseSession or ClientSession).
-     * @param cls
      */
     @Override
     public Object getNextValue(Class<?> cls) {

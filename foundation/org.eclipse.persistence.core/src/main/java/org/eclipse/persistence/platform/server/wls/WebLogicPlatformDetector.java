@@ -37,7 +37,7 @@ public class WebLogicPlatformDetector implements ServerPlatformDetector {
         String platform = null;
         String serverNameAndVersion;
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            serverNameAndVersion = AccessController.doPrivileged(new PrivilegedAction<String>() {
+            serverNameAndVersion = AccessController.doPrivileged(new PrivilegedAction<>() {
                 @Override
                 public String run() {
                     return getServerNameAndVersionInternal();

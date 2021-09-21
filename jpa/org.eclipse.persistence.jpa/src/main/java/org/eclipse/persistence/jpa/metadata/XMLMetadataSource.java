@@ -55,8 +55,6 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
      * resource from the classloader.
      * It will throw a ValidationException if no reader can be returned.
      *
-     * @param properties
-     * @param classLoader
      * @param log - SessionLog used for status messages.
      * @return Reader - a InputStreamReader with data in the form of an EclipseLink-orm.xml
      *

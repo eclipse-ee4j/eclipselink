@@ -36,7 +36,7 @@ import org.eclipse.persistence.sessions.Session;
  */
 public class UCPDataPartitioningCallback implements DataPartitioningCallback, DataBasedConnectionAffinityCallback {
     /** The id is stored in a thread local. */
-    protected ThreadLocal partitionId = new ThreadLocal();
+    protected ThreadLocal<Integer> partitionId = new ThreadLocal<>();
 
     /**
      * Default constructor.
@@ -63,7 +63,7 @@ public class UCPDataPartitioningCallback implements DataPartitioningCallback, Da
 
     @Override
     public int getPartitionId() {
-        Integer id = (Integer)this.partitionId.get();
+        Integer id = this.partitionId.get();
         if (id == null) {
             return 0;
         }

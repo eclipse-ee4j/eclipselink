@@ -1674,7 +1674,7 @@ public final class AnnotationsProcessor {
                     JavaClass newType =helper.getJavaClass(element.type());
                     if(!originalType.getName().equals(newType.getName())){
                         property.setTyped(true);
-                        property.setSchemaType((QName) helper.getXMLToJavaTypeMap().get(newType.getName()));
+                        property.setSchemaType(helper.getXMLToJavaTypeMap().get(newType.getName()));
                     }
                     property.setType(newType);
                 }
@@ -1930,7 +1930,7 @@ public final class AnnotationsProcessor {
             return properties;
         }
 
-        for (JavaField javaField : (Iterable<JavaField>) cls.getDeclaredFields()) {
+        for (JavaField javaField : cls.getDeclaredFields()) {
             Property property = null;
             int modifiers = javaField.getModifiers();
 
@@ -3331,7 +3331,7 @@ public final class AnnotationsProcessor {
         }
         info.setRestrictionBase(restrictionBase);
 
-        for (JavaField field : (Iterable<JavaField>) javaClass.getDeclaredFields()) {
+        for (JavaField field : javaClass.getDeclaredFields()) {
             if (field.isEnumConstant()) {
                 Object enumValue = field.getName();
                 if (helper.isAnnotationPresent(field, XmlEnumValue.class)) {
@@ -3365,7 +3365,7 @@ public final class AnnotationsProcessor {
         // check user defined types first
         QName schemaType = userDefinedSchemaTypes.get(javaClass.getQualifiedName());
         if (schemaType == null) {
-            schemaType = (QName) helper.getXMLToJavaTypeMap().get(javaClass.getRawName());
+            schemaType = helper.getXMLToJavaTypeMap().get(javaClass.getRawName());
         }
         return schemaType;
     }
@@ -4358,7 +4358,7 @@ public final class AnnotationsProcessor {
             }
 
             if (componentClass.isPrimitive() || helper.isBuiltInJavaType(componentClass)) {
-                qName = (QName) helper.getXMLToJavaTypeMap().get(componentClass.getQualifiedName());
+                qName = helper.getXMLToJavaTypeMap().get(componentClass.getQualifiedName());
                 if(null != qName) {
                     packageName = ARRAY_PACKAGE_NAME;
                     qualifiedClassName = ARRAY_PACKAGE_NAME + DOT_CHR + qName.getLocalPart() + ARRAY_CLASS_NAME_SUFFIX;

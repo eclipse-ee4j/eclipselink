@@ -3488,7 +3488,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             if(this.descriptor != null && this.descriptor.hasFetchGroupManager()) {
                 FetchGroup defaultFetchGroup = descriptor.getFetchGroupManager().getDefaultFetchGroup();
                 if(defaultFetchGroup != null) {
-                    str += '\n' + "Default " + defaultFetchGroup.toString();
+                    str += '\n' + "Default " + defaultFetchGroup;
                 }
             }
         }

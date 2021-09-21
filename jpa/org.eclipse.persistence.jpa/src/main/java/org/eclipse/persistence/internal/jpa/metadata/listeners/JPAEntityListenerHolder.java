@@ -175,8 +175,6 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
      * INTERNAL:
      * This returns a hashtable of methods which are used in a JPA EntityListener instance, built from
      * the MethodSerialImpl representation since Methods are not serializable
-     * @param loader
-     * @return
      */
     public Map<String,java.util.List<Method>> convertToMethods(ClassLoader loader) {
         Map<String,java.util.List<Method>> table = new ConcurrentHashMap<>();

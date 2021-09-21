@@ -306,8 +306,6 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * @param annotations - The annotations corresponding to domain object.
      * @param mediaType - The media type for the HTTP entity.
      * @param httpHeaders - HTTP headers associated with HTTP entity.
-     * @return
-     * @throws JAXBException
      */
     protected JAXBContext getJAXBContext(Set<Class<?>> domainClasses, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, ?> httpHeaders) throws JAXBException {
 
@@ -623,7 +621,6 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * @param httpHeaders - HTTP headers associated with HTTP entity.
      * @param unmarshaller - The instance of <i>Unmarshaller</i> that will be
      * used to unmarshal the JSON message.
-     * @throws JAXBException
      * @see org.eclipse.persistence.jaxb.UnmarshallerProperties
      */
     protected void preReadFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, Unmarshaller unmarshaller) throws JAXBException {
@@ -643,7 +640,6 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * @param httpHeaders - HTTP headers associated with HTTP entity.
      * @param marshaller - The instance of <i>Marshaller</i> that will be used
      * to marshal the domain object to JSON.
-     * @throws JAXBException
      * @see org.eclipse.persistence.jaxb.MarshallerProperties
      */
     protected void preWriteTo(Object object, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, Marshaller marshaller) throws JAXBException {

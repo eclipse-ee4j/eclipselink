@@ -487,7 +487,7 @@ public abstract class XMLMarshaller<
     }
 
     protected boolean isSimpleXMLRoot(Root xmlRoot) {
-        Class<? extends Object> xmlRootObjectClass = xmlRoot.getObject().getClass();
+        Class<?> xmlRootObjectClass = xmlRoot.getObject().getClass();
 
         ConversionManager conversionManager = (ConversionManager) context.getSession().getDatasourcePlatform().getConversionManager();
         if (conversionManager.schemaType(xmlRootObjectClass) != null || CoreClassConstants.List_Class.isAssignableFrom(xmlRootObjectClass) || CoreClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(xmlRootObjectClass) || CoreClassConstants.DURATION.isAssignableFrom(xmlRootObjectClass)) {
@@ -545,7 +545,7 @@ public abstract class XMLMarshaller<
                 }
             }
         }else{
-            Class<? extends Object> objectClass = object.getClass();
+            Class<?> objectClass = object.getClass();
             session = context.getSession(objectClass);
             xmlDescriptor = getDescriptor(objectClass, session);
         }
@@ -587,7 +587,7 @@ public abstract class XMLMarshaller<
                 }
             }
         }else{
-            Class<? extends Object> objectClass = object.getClass();
+            Class<?> objectClass = object.getClass();
             session = context.getSession(objectClass);
             xmlDescriptor = getDescriptor(objectClass, session);
         }
@@ -853,7 +853,7 @@ public abstract class XMLMarshaller<
                 }
             }
         }else{
-            Class<? extends Object> objectClass = object.getClass();
+            Class<?> objectClass = object.getClass();
             session = context.getSession(objectClass);
             xmlDescriptor = getDescriptor(objectClass, session);
         }
@@ -980,7 +980,7 @@ public abstract class XMLMarshaller<
                 }
             }
         }else{
-            Class<? extends Object> objectClass = object.getClass();
+            Class<?> objectClass = object.getClass();
             session = context.getSession(objectClass);
             xmlDescriptor = getDescriptor(objectClass, session);
         }
@@ -1135,7 +1135,7 @@ public abstract class XMLMarshaller<
                 }
             }
         }else{
-            Class<? extends Object> objectClass = object.getClass();
+            Class<?> objectClass = object.getClass();
             if(object instanceof Collection) {
                 int valueSize = ((Collection)object).size();
                 if(marshalRecord.getMarshaller().isApplicationJSON() && (valueSize > 1 || !marshalRecord.getMarshaller().isReduceAnyArrays())) {

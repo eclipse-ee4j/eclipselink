@@ -107,7 +107,7 @@ public interface DatabaseType {
             return sb.toString();
         }
 
-        protected String getTruncatedSHA1Name(String argName, String prefix) {
+        private String getTruncatedSHA1Name(String argName, String prefix) {
             if (argName.length() >= ARGNAME_SIZE_LIMIT) {
                 StringBuilder sb = new StringBuilder();
                 //the truncated SHA is great, but a PL/SQL identifier
@@ -170,12 +170,12 @@ public interface DatabaseType {
         }
 
         public void translate(PLSQLargument arg, AbstractRecord translationRow,
-                AbstractRecord copyOfTranslationRow, List copyOfTranslationFields,
-                List translationRowFields, List translationRowValues,
-                StoredProcedureCall call) {
+                              AbstractRecord copyOfTranslationRow, List<DatabaseField> copyOfTranslationFields,
+                              List<DatabaseField> translationRowFields, List translationRowValues,
+                              StoredProcedureCall call) {
             DatabaseField field = null;
-            for (Iterator i = copyOfTranslationFields.iterator(); i.hasNext(); ) {
-                DatabaseField f = (DatabaseField)i.next();
+            for (Iterator<DatabaseField> i = copyOfTranslationFields.iterator(); i.hasNext(); ) {
+                DatabaseField f = i.next();
                 if (f.getName().equals(arg.name)) {
                     field = f;
                     break;

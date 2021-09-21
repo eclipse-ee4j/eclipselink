@@ -38,7 +38,6 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.SessionProfiler;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * <b>Purpose</b>: Acts as a client to the server session.

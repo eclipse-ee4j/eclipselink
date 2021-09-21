@@ -66,7 +66,6 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
  * This handles conversion of PLSQL Record and Table types into SQL ARRAY (VARRAY) and STRUCT (OBJECT TYPE).
  * It also handles conversion of flat PLSQL Record types and PLSQL BOOLEAN and other basic types.
  */
-@SuppressWarnings("unchecked")
 public class PLSQLStoredProcedureCall extends StoredProcedureCall {
 
     // can't use Helper.cr(), Oracle PL/SQL parser only likes Unix-style newlines '\n'
@@ -94,7 +93,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
     /**
      * Map of conversion function routines for converting complex PLSQL types.
      */
-    protected Map<String, TypeInfo> typesInfo;
+    private Map<String, TypeInfo> typesInfo;
     /**
      * Id used to generate unique local functions.
      */
@@ -640,8 +639,8 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      * Add the nested function string required for the type and its subtypes. The functions
      * must be added in inverse order to resolve dependencies.
      */
-    protected void addNestedFunctionsForArgument(List functions, PLSQLargument argument,
-                DatabaseType databaseType, Set<DatabaseType> processed) {
+    protected void addNestedFunctionsForArgument(List<String> functions, PLSQLargument argument,
+                                                 DatabaseType databaseType, Set<DatabaseType> processed) {
         if ((databaseType == null)
               || !databaseType.isComplexDatabaseType()
               || databaseType.isJDBCType()
@@ -697,14 +696,14 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
     /**
      * INTERNAL: Generate the nested function to convert the PLSQL type to its compatible SQL type.
      */
-    protected TypeInfo generateNestedFunction(ComplexDatabaseType type) {
+    private TypeInfo generateNestedFunction(ComplexDatabaseType type) {
         return generateNestedFunction(type, false);
     }
 
     /**
      * INTERNAL: Generate the nested function to convert the PLSQL type to its compatible SQL type.
      */
-    protected TypeInfo generateNestedFunction(ComplexDatabaseType type, boolean isNonAssociativeCollection) {
+    private TypeInfo generateNestedFunction(ComplexDatabaseType type, boolean isNonAssociativeCollection) {
         TypeInfo info = new TypeInfo();
         info.pl2SqlName = PL2SQL_PREFIX + (this.functionId++);
         info.sql2PlName = SQL2PL_PREFIX + (this.functionId++);

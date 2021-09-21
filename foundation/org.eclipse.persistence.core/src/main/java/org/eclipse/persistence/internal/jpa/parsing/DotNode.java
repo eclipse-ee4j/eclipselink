@@ -18,7 +18,6 @@ import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 
@@ -217,7 +216,7 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
      * INTERNAL
      * Returns the attribute type if the right represents a direct-to-field mapping.
      */
-    public Class getTypeOfDirectToField(GenerationContext context) {
+    public Class<?> getTypeOfDirectToField(GenerationContext context) {
         DatabaseMapping mapping = resolveMapping(context);
         if ((mapping != null) && mapping.isDirectToFieldMapping()) {
             return mapping.getAttributeClassification();
@@ -261,7 +260,7 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
      */
     @Override
     public DatabaseMapping resolveMapping(GenerationContext context) {
-        Class leftClass = getLeft().resolveClass(context);
+        Class<?> leftClass = getLeft().resolveClass(context);
         return getRight().resolveMapping(context, leftClass);
     }
 
@@ -269,8 +268,8 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
     * resolveClass: Answer the class which results from traversing the mappings for the receiver's nodes
     */
     @Override
-    public Class resolveClass(GenerationContext context) {
-        Class leftClass = getLeft().resolveClass(context);
+    public Class<?> resolveClass(GenerationContext context) {
+        Class<?> leftClass = getLeft().resolveClass(context);
         return getRight().resolveClass(context, leftClass);
     }
 

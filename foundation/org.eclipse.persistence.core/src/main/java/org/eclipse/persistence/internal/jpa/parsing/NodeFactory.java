@@ -62,24 +62,24 @@ public interface NodeFactory {
 
     /** */
     Object newSelectClause(int line, int column,
-                           boolean distinct, List selectExprs);
+                           boolean distinct, List<Node> selectExprs);
 
-    Object newSelectClause(int line, int column, boolean distinct, List selectExprs, List identifiers);
+    Object newSelectClause(int line, int column, boolean distinct, List<Node> selectExprs, List<String> identifiers);
 
     /** */
-    Object newFromClause(int line, int column, List varDecls);
+    Object newFromClause(int line, int column, List<Node> varDecls);
 
     /** */
     Object newWhereClause(int line, int column, Object condition);
 
     /** */
-    Object newGroupByClause(int line, int column, List items);
+    Object newGroupByClause(int line, int column, List<Node> items);
 
     /** */
     Object newHavingClause(int line, int column, Object arg);
 
     /** */
-    Object newOrderByClause(int line, int column, List items);
+    Object newOrderByClause(int line, int column, List<Node> items);
 
     /** */
     Object newUpdateClause(int line, int column,
@@ -220,7 +220,7 @@ public interface NodeFactory {
 
     /** */
     Object newIn(int line, int column,
-                 boolean not, Object expr, List items);
+                 boolean not, Object expr, List<Node> items);
 
     /** */
     Object newIsNull(int line, int column, boolean not, Object expr);
@@ -272,7 +272,7 @@ public interface NodeFactory {
     // ------------------------------------------
 
     /** */
-    Object newConcat(int line, int column, List objects);
+    Object newConcat(int line, int column, List<Node> objects);
 
     /** */
     Object newSubstring(int line, int column,
@@ -329,7 +329,7 @@ public interface NodeFactory {
     // ------------------------------------------
 
     /** */
-    Object newFunc(int line, int column, String name, List parameters);
+    Object newFunc(int line, int column, String name, List<Node> parameters);
 
     // ------------------------------------------
     // Subquery nodes
@@ -366,10 +366,10 @@ public interface NodeFactory {
 
     /** */
     Object newConstructor(int line, int colimn,
-                          String className, List args);
+                          String className, List<Node> args);
 
     /** */
-    Object newSetClause(int line, int colimn, List assignments);
+    Object newSetClause(int line, int colimn, List<Node> assignments);
 
     /** */
     Object newSetAssignmentClause(int line, int column,
@@ -381,9 +381,9 @@ public interface NodeFactory {
 
     Object newType(int line, int column, Object left);
 
-    Object newCaseClause(int line, int column, Object base, List whenClauses, Object elseClause);
+    Object newCaseClause(int line, int column, Object base, List<Node> whenClauses, Object elseClause);
 
-    Object newCoalesceClause(int line, int column, List clauses);
+    Object newCoalesceClause(int line, int column, List<Node> clauses);
 
     Object newNullIfClause(int line, int column, Object left, Object right);
 

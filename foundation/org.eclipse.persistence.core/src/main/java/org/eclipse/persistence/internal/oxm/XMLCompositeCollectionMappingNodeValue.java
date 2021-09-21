@@ -303,7 +303,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         if(descriptor == null){
             descriptor = (Descriptor) session.getDescriptor(value.getClass());
         }else if(descriptor.hasInheritance()){
-            Class<? extends Object> objectValueClass = value.getClass();
+            Class<?> objectValueClass = value.getClass();
             if(!(objectValueClass == descriptor.getJavaClass())){
                 descriptor = (Descriptor) session.getDescriptor(objectValueClass);
             }

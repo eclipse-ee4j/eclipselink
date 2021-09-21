@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ import java.util.*;
  */
 public class FromNode extends MajorNode {
 
-    private List declarations;
+    private List<Node> declarations;
 
     public String getFirstVariable() {
         String variable = null;
@@ -39,11 +39,11 @@ public class FromNode extends MajorNode {
         return variable;
     }
 
-    public List getDeclarations() {
+    public List<Node> getDeclarations() {
         return declarations;
     }
 
-    public void setDeclarations(List decls) {
+    public void setDeclarations(List<Node> decls) {
         declarations = decls;
     }
 
@@ -56,7 +56,7 @@ public class FromNode extends MajorNode {
     @Override
     public Node qualifyAttributeAccess(ParseTreeContext context) {
         for (int i = 0; i < declarations.size(); i++) {
-            Node decl = (Node)declarations.get(i);
+            Node decl = declarations.get(i);
             declarations.set(i, decl.qualifyAttributeAccess(context));
         }
         return this;
@@ -68,8 +68,8 @@ public class FromNode extends MajorNode {
      */
     @Override
     public void validate(ParseTreeContext context) {
-        for (Iterator i = declarations.iterator(); i.hasNext();) {
-            Node decl = (Node)i.next();
+        for (Iterator<Node> i = declarations.iterator(); i.hasNext();) {
+            Node decl = i.next();
             decl.validate(context);
         }
     }

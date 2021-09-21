@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -142,14 +142,14 @@ public class SelectGenerationContext extends GenerationContext {
      * connect the inner variable expression with the outer one.
      */
     @Override
-    public Expression joinVariables(Set variables) {
+    public Expression joinVariables(Set<String> variables) {
         if ((outer == null) || (variables == null) || variables.isEmpty()) {
             // not an inner query or no variables to join
             return null;
         }
         Expression expr = null;
-        for (Iterator i = variables.iterator(); i.hasNext(); ) {
-            String name = (String)i.next();
+        for (Iterator<String> i = variables.iterator(); i.hasNext(); ) {
+            String name = i.next();
             VariableNode var = new VariableNode(name);
             Expression innerExpr = var.generateExpression(this);
             Expression outerExpr = var.generateExpression(outer);

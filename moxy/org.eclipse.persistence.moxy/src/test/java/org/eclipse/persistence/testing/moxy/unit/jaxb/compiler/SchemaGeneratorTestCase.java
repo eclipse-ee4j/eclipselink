@@ -115,7 +115,7 @@ public class SchemaGeneratorTestCase {
             @Override
             public boolean isSynthetic() { return false; }
             @Override
-            public Collection getActualTypeArguments() { return null; }
+            public Collection<JavaClass> getActualTypeArguments() { return null; }
             @Override
             public JavaClass getComponentType() { return null; }
             @Override
@@ -123,27 +123,27 @@ public class SchemaGeneratorTestCase {
             @Override
             public boolean hasActualTypeArguments() { return false; }
             @Override
-            public Collection getDeclaredClasses() { return null; }
+            public Collection<JavaClass> getDeclaredClasses() { return null; }
             @Override
             public JavaField getDeclaredField(String arg0) { return null; }
             @Override
-            public Collection getDeclaredFields() { return null; }
+            public Collection<JavaField> getDeclaredFields() { return null; }
             @Override
             public JavaMethod getDeclaredMethod(String arg0, JavaClass[] arg1) { return null; }
             @Override
-            public Collection getDeclaredMethods() { return null; }
+            public Collection<JavaMethod> getDeclaredMethods() { return null; }
             @Override
             public JavaMethod getMethod(String arg0, JavaClass[] arg1) { return null; }
             @Override
-            public Collection getMethods() { return null ;}
+            public Collection<JavaMethod> getMethods() { return null ;}
             @Override
             public JavaConstructor getConstructor(JavaClass[] parameterTypes) { return null; }
             @Override
-            public Collection getConstructors() { return null; }
+            public Collection<JavaConstructor> getConstructors() { return null; }
             @Override
             public JavaConstructor getDeclaredConstructor(JavaClass[] parameterTypes) { return null; }
             @Override
-            public Collection getDeclaredConstructors() { return null; }
+            public Collection<JavaConstructor> getDeclaredConstructors() { return null; }
             @Override
             public int getModifiers() { return 0; }
             @Override

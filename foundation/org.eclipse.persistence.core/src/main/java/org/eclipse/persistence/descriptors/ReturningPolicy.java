@@ -177,7 +177,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
         if (col1.size() != col2.size()) {
             return false;
         }
-        Collection<Info> c1 = new ArrayList<Info>(col1);
+        Collection<Info> c1 = new ArrayList<>(col1);
         Collection<Info> c2 = new ArrayList<>(col2);
         for (Iterator<Info> i = c1.iterator(); i.hasNext();) {
             Info o = i.next();
@@ -349,7 +349,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
         private boolean isInsert;
         private boolean isInsertModeReturnOnly;
         private boolean isUpdate;
-        private Class<? extends Object> referenceClass;
+        private Class<?> referenceClass;
         private String referenceClassName;
 
         Info() {
@@ -403,7 +403,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
             this.isUpdate = isUpdate;
         }
 
-        public Class<? extends Object> getReferenceClass() {
+        public Class<?> getReferenceClass() {
             return referenceClass;
         }
 
@@ -498,7 +498,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
         @Override
         public int hashCode() {
             DatabaseField field = getField();
-            Class<? extends Object> type = field != null ? field.getType() : null;
+            Class<?> type = field != null ? field.getType() : null;
             boolean isInsert = isInsert();
             boolean isInsertModeReturnOnly = isInsertModeReturnOnly();
             boolean isUpdate = isUpdate();
@@ -622,7 +622,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
     }
 
     protected Hashtable<DatabaseField, Info> removeDuplicateAndValidateInfos(AbstractSession session) {
-        Hashtable<DatabaseField, Info> infoHashtable = new Hashtable<DatabaseField, Info>();
+        Hashtable<DatabaseField, Info> infoHashtable = new Hashtable<>();
         for (int i = 0; i < infos.size(); i++) {
             Info info1 = infos.get(i);
             info1 = (Info)info1.clone();
@@ -670,12 +670,12 @@ public class ReturningPolicy implements Serializable, Cloneable {
         }
 
         if (!infos.isEmpty()) {
-            Hashtable<? extends DatabaseField, ? extends Info> infoHashtable = removeDuplicateAndValidateInfos(session);
-            Hashtable infoHashtableUnmapped = (Hashtable)infoHashtable.clone();
+            Hashtable<DatabaseField, Info> infoHashtable = removeDuplicateAndValidateInfos(session);
+            Hashtable<DatabaseField, Info> infoHashtableUnmapped = (Hashtable<DatabaseField, Info>)infoHashtable.clone();
             for (Enumeration<DatabaseField> fields = getDescriptor().getFields().elements();
                  fields.hasMoreElements();) {
                 DatabaseField field = fields.nextElement();
-                Info info = (Info)infoHashtableUnmapped.get(field);
+                Info info = infoHashtableUnmapped.get(field);
                 if (info != null) {
                     infoHashtableUnmapped.remove(field);
                     if (verifyFieldAndMapping(session, field)) {
@@ -690,10 +690,10 @@ public class ReturningPolicy implements Serializable, Cloneable {
             }
 
             if (!infoHashtableUnmapped.isEmpty()) {
-                Enumeration fields = infoHashtableUnmapped.keys();
+                Enumeration<DatabaseField> fields = infoHashtableUnmapped.keys();
                 while (fields.hasMoreElements()) {
-                    DatabaseField field = (DatabaseField)fields.nextElement();
-                    Info info = (Info)infoHashtableUnmapped.get(field);
+                    DatabaseField field = fields.nextElement();
+                    Info info = infoHashtableUnmapped.get(field);
                     if (verifyField(session, field, getDescriptor())) {
                         if (field.getType() != null) {
                             addUnmappedFieldToMain(field, info);
@@ -726,7 +726,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
      * Both ReturningPolicies should be initialized
      */
     public boolean hasEqualMains(ReturningPolicy policy) {
-        Collection[][] mainToCompare = policy.main;
+        Collection<DatabaseField>[][] mainToCompare = policy.main;
         if (main == mainToCompare) {
             return true;
         }
@@ -745,7 +745,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
         }
 
         // now compare types
-        Hashtable<DatabaseField, DatabaseField> allFields = new Hashtable<DatabaseField, DatabaseField>();
+        Hashtable<DatabaseField, DatabaseField> allFields = new Hashtable<>();
         for (int operation = INSERT; operation <= UPDATE; operation++) {
             if (main[operation][ALL] != null) {
                 Iterator<DatabaseField> it = main[operation][ALL].iterator();
@@ -757,9 +757,9 @@ public class ReturningPolicy implements Serializable, Cloneable {
         }
         for (int operation = INSERT; operation <= UPDATE; operation++) {
             if (mainToCompare[operation][ALL] != null) {
-                Iterator it = mainToCompare[operation][ALL].iterator();
+                Iterator<DatabaseField> it = mainToCompare[operation][ALL].iterator();
                 while (it.hasNext()) {
-                    DatabaseField fieldToCompare = (DatabaseField)it.next();
+                    DatabaseField fieldToCompare = it.next();
                     DatabaseField field = allFields.get(fieldToCompare);
                     if (!field.getType().equals(fieldToCompare.getType())) {
                         return false;
@@ -879,7 +879,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
      * INTERNAL:
      */
     public void validationAfterDescriptorInitialization(AbstractSession session) {
-        Hashtable<DatabaseField, DatabaseField> mapped = new Hashtable<DatabaseField, DatabaseField>();
+        Hashtable<DatabaseField, DatabaseField> mapped = new Hashtable<>();
         for (int operation = INSERT; operation <= UPDATE; operation++) {
             if ((main[operation][MAPPED] != null) && !main[operation][MAPPED].isEmpty()) {
                 Iterator<DatabaseField> it = main[operation][MAPPED].iterator();

@@ -736,7 +736,7 @@ public class SessionsFactory {
     /**
      * INTERNAL:
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     protected ServerPlatform buildCustomServerPlatformConfig(CustomServerPlatformConfig platformConfig, DatabaseSessionImpl session) {
         ServerPlatform platform;
 
@@ -1083,7 +1083,7 @@ public class SessionsFactory {
     /**
      * INTERNAL:
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     protected void buildOc4jJGroupsTransportManagerConfig(Oc4jJGroupsTransportManagerConfig tmConfig, RemoteCommandManager rcm) {
         TransportManager tm = null;
         try {

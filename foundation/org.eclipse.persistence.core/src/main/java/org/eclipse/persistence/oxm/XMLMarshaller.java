@@ -147,7 +147,7 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
                 }
             }
         }else{
-            Class<? extends Object> objectClass = object.getClass();
+            Class<?> objectClass = object.getClass();
             if(result instanceof ExtendedResult){
                 MarshalRecord writerRecord = ((ExtendedResult)result).createRecord();
                 if(object instanceof Collection){
@@ -374,7 +374,7 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
                 }
             }
         }else{
-            Class<? extends Object> objectClass = object.getClass();
+            Class<?> objectClass = object.getClass();
             session = context.getSession(objectClass);
             descriptor = getDescriptor(objectClass, session);
         }

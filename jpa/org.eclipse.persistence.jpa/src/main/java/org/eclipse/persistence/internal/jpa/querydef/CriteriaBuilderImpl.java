@@ -321,7 +321,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * Create a predicate corresponding to an all expression over the subquery
      * results.
      *
-     * @param subquery
      * @return all expression
      */
     @Override
@@ -333,7 +332,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * Create a predicate corresponding to a some expression over the subquery
      * results. This is equivalent to an any expression.
      *
-     * @param subquery
      * @return all expression
      */
     @Override
@@ -345,7 +343,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * Create a predicate corresponding to an any expression over the subquery
      * results. This is equivalent to a some expression.
      *
-     * @param subquery
      * @return any expression
      */
     @Override
@@ -1414,7 +1411,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create an expression literal.
      *
-     * @param value
      * @return expression literal
      */
     @Override
@@ -1439,7 +1435,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create an expression literal but without null validation.
      *
-     * @param value
      * @return expression literal
      */
     protected <T> Expression<T> internalLiteral(T value){
@@ -1464,7 +1459,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *
      * @param paramClass
      *            parameter class
-     * @param name
      * @return parameter
      */
     @Override
@@ -1507,7 +1501,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create an expression that tests the size of a collection.
      *
-     * @param collection
      * @return size expression
      */
     @Override
@@ -1604,7 +1597,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create an expression that returns the values of a map.
      *
-     * @param map
      * @return collection expression
      */
     @Override
@@ -1615,7 +1607,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create an expression that returns the keys of a map.
      *
-     * @param map
      * @return set expression
      */
     @Override

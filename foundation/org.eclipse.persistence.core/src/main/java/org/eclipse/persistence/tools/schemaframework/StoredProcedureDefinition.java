@@ -18,7 +18,6 @@ package org.eclipse.persistence.tools.schemaframework;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
 

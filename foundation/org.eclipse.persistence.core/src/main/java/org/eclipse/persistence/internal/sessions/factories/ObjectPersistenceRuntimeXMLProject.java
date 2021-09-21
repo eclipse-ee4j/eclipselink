@@ -1375,7 +1375,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 @SuppressWarnings({"unchecked"})
                 List<QueryArgument> queryArguments = (List<QueryArgument>)value;
                 List<String> arguments = new ArrayList<>(queryArguments.size());
-                List<Class> types = new ArrayList<>(queryArguments.size());
+                List<Class<?>> types = new ArrayList<>(queryArguments.size());
                 List<Object> values = new ArrayList<>(queryArguments.size());
                 for (int index = 0; index < queryArguments.size(); index++) {
                     QueryArgument queryArgument = queryArguments.get(index);

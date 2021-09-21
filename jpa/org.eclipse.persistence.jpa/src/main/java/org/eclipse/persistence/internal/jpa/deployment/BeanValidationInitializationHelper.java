@@ -120,8 +120,6 @@ public interface BeanValidationInitializationHelper {
          * @param className Fully qualified class name
          * @param classLoader ClassLoader to be used for loading the class
          * @return Loaded Class
-         * @throws java.security.PrivilegedActionException
-         * @throws ClassNotFoundException
          */
         private Class loadClass(String className, ClassLoader classLoader) throws PrivilegedActionException, ClassNotFoundException {
             Class loadedClass = null;

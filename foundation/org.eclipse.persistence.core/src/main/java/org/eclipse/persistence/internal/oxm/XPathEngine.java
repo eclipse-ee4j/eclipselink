@@ -674,7 +674,7 @@ public class XPathEngine <
         for (int i = 0; i < size; i++) {
             next = elements.item(i);
             if (next.getNodeType() == Node.ELEMENT_NODE) {
-                Class<? extends Object> valueClass = values.get(i).getClass();
+                Class<?> valueClass = values.get(i).getClass();
                 if(valueClass != CoreClassConstants.STRING){
                     ConversionManager conversionManager = (ConversionManager) session.getDatasourcePlatform().getConversionManager();
                     QName qname = field.getXMLType(valueClass, conversionManager);

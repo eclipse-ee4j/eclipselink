@@ -68,7 +68,6 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
     /**
      * INTERNAL:
      * Add an inheriting subclass to the map of Identifiable types that inherit from this mappedSuperclass.
-     * @param identifiableType
      */
     protected void addInheritingType(IdentifiableTypeImpl identifiableType) {
         // The Map will always be instantiated in the constructor
@@ -78,9 +77,6 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
     /**
      * INTERNAL:
      * Return an instance of a MappedSuperclassType based on the RelationalDescriptor.
-     * @param metamodel
-     * @param relationalDescriptor
-     * @return
      */
     protected static MappedSuperclassTypeImpl<?> create(MetamodelImpl metamodel, ClassDescriptor relationalDescriptor) {
         MappedSuperclassTypeImpl<?> mappedSuperclassTypeImpl = new MappedSuperclassTypeImpl(metamodel, relationalDescriptor);
@@ -91,8 +87,6 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
      * INTERNAL:
      *    MappedSuperclasses need special handling to get their type from an inheriting subclass.
      *    This function determines the type for an attribute by returning the same inherited attribute from a subclass
-     * @param name
-     * @return
      */
     public AttributeImpl getMemberFromInheritingType(String name) {
         AttributeImpl inheritedAttribute = null;
@@ -139,7 +133,6 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
     /**
      * INTERNAL:
      * Return whether this type is an Entity (true) or MappedSuperclass (false) or Embeddable (false)
-     * @return
      */
     @Override
     public boolean isEntity() {
@@ -149,7 +142,6 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
     /**
      * INTERNAL:
      * Return whether this type is an MappedSuperclass (true) or Entity (false) or Embeddable (false)
-     * @return
      */
     @Override
     public boolean isMappedSuperclass() {

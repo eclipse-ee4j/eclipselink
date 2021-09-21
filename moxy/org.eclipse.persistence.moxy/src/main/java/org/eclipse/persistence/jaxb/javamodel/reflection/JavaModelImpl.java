@@ -124,7 +124,6 @@ public class JavaModelImpl implements JavaModel {
      * JavaModelInput.  If a given package has no entry in this map it is
      * assumed to be metadata incomplete.
      *
-     * @param metadataCompletePackageMap
      */
     public void setMetadataCompletePackageMap(Map<String, Boolean> metadataCompletePackageMap) {
         this.metadataCompletePackages = metadataCompletePackageMap;

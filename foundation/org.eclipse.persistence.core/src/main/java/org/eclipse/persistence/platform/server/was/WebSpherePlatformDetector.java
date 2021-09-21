@@ -49,7 +49,7 @@ public class WebSpherePlatformDetector implements ServerPlatformDetector {
 
     private boolean isLiberty() {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+            return AccessController.doPrivileged(new PrivilegedAction<>() {
                 @Override
                 public Boolean run() {
                     return isLibertyInternal();
@@ -62,7 +62,7 @@ public class WebSpherePlatformDetector implements ServerPlatformDetector {
 
     private boolean isFullProfile() {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+            return AccessController.doPrivileged(new PrivilegedAction<>() {
                 @Override
                 public Boolean run() {
                     return isFullProfileInternal();

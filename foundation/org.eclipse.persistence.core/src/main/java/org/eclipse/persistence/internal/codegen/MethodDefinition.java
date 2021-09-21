@@ -74,7 +74,7 @@ public abstract class MethodDefinition extends CodeDefinition {
      * unambiguous.
      */
     private void adjustLine(String line, Map<String, Set<String>> typeNameMap) {
-        StringBuffer lineInProgress = new StringBuffer(line);
+        StringBuilder lineInProgress = new StringBuilder(line);
         Set<String> typeNames = parseForTypeNames(lineInProgress.toString());
 
         for (Iterator<String> i = typeNames.iterator(); i.hasNext();) {

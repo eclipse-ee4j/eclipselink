@@ -316,7 +316,6 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
             try {
                 // perform a reflective public java.lang.String
                 // weblogic.work.ExecuteThreadRuntime.<getMethodName>
-                @SuppressWarnings({"rawtypes"})
                 Method getMethod = PrivilegedAccessHelper.getPublicMethod(executeThread.getClass(), getMethodName, new Class[] {}, false);
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     classLoaderOrString = AccessController.doPrivileged(new PrivilegedMethodInvoker<>(getMethod, executeThread, null));
@@ -400,7 +399,6 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
      * so use this if available.
      */
     @Override
-    @SuppressWarnings({"rawtypes"})
     protected Method getVendorConnectionMethod() {
         if ((this.vendorConnectionMethod == null) && (!getWebLogicConnectionClass().equals(void.class))) {
             try {

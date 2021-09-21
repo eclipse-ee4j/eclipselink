@@ -63,7 +63,6 @@ public class TypeMappingInfo {
 
     /**
      * Return if the global element will be marked as nillable
-     * @return
      */
     public boolean isNillable() {
         return nillable;
@@ -71,7 +70,6 @@ public class TypeMappingInfo {
 
     /**
      * Set if the global element should be marked as nillable
-     * @param nillable
      */
     public void setNillable(boolean nillable) {
         this.nillable = nillable;

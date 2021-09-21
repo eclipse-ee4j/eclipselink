@@ -791,7 +791,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
     public Object clone() {
         TableDefinition clone = (TableDefinition)super.clone();
         if (fields != null) {
-            clone.setFields(new ArrayList<FieldDefinition>(fields.size()));
+            clone.setFields(new ArrayList<>(fields.size()));
             for (FieldDefinition fieldDef : getFields()) {
                 clone.addField((FieldDefinition)fieldDef.clone());
             }

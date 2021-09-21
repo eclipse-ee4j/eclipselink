@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -107,13 +107,13 @@ public class VariableNode extends Node implements AliasableNode {
                                             Expression expression,
                                             GenerationContext context) {
         String name = getCanonicalVariableName();
-        List fetchJoinNodes = context.getParseTreeContext().getFetchJoins(name);
+        List<Node> fetchJoinNodes = context.getParseTreeContext().getFetchJoins(name);
         if (fetchJoinNodes == null) {
             reportQuery.addAttribute(name, expression);
         } else {
-            List fetchJoinExprs = new ArrayList(fetchJoinNodes.size());
-            for (Iterator i = fetchJoinNodes.iterator(); i.hasNext(); ) {
-                Node node = (Node)i.next();
+            List<Expression> fetchJoinExprs = new ArrayList<>(fetchJoinNodes.size());
+            for (Iterator<Node> i = fetchJoinNodes.iterator(); i.hasNext(); ) {
+                Node node = i.next();
                 fetchJoinExprs.add(node.generateExpression(context));
             }
             reportQuery.addItem(name, expression, fetchJoinExprs);
@@ -129,10 +129,10 @@ public class VariableNode extends Node implements AliasableNode {
     private void addFetchJoins(ObjectLevelReadQuery theQuery,
                                GenerationContext context) {
         String name = getCanonicalVariableName();
-        List fetchJoinNodes = context.getParseTreeContext().getFetchJoins(name);
+        List<Node> fetchJoinNodes = context.getParseTreeContext().getFetchJoins(name);
         if (fetchJoinNodes != null) {
-            for (Iterator i = fetchJoinNodes.iterator(); i.hasNext(); ) {
-                Node node = (Node)i.next();
+            for (Iterator<Node> i = fetchJoinNodes.iterator(); i.hasNext(); ) {
+                Node node = i.next();
                 theQuery.addJoinedAttribute(node.generateExpression(context));
             }
         }
@@ -261,8 +261,8 @@ public class VariableNode extends Node implements AliasableNode {
      * an alias, where the variableName is registered to an alias.
      */
     @Override
-    public Class resolveClass(GenerationContext generationContext) {
-        Class clazz = null;
+    public Class<?> resolveClass(GenerationContext generationContext) {
+        Class<?> clazz = null;
         String name = getCanonicalVariableName();
         ParseTreeContext context = generationContext.getParseTreeContext();
         if (context.isRangeVariable(name)) {
@@ -284,7 +284,7 @@ public class VariableNode extends Node implements AliasableNode {
     public String toString(int indent) {
         StringBuilder buffer = new StringBuilder();
         toStringIndent(indent, buffer);
-        buffer.append(toStringDisplayName() + "[" + getVariableName() + "]");
+        buffer.append(toStringDisplayName()).append("[").append(getVariableName()).append("]");
         return buffer.toString();
     }
 

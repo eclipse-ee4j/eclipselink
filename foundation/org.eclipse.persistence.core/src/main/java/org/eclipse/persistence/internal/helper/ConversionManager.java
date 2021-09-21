@@ -36,7 +36,6 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -286,7 +285,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                 // treated as BigDecimal(1).
                 String numberString = String.valueOf(sourceObject);
                 if(numberString.endsWith(".0") || numberString.contains(".0E+")) {
-                    bigDecimal = new BigDecimal(((Number)sourceObject).doubleValue());
+                    bigDecimal = BigDecimal.valueOf(((Number) sourceObject).doubleValue());
                 } else {
                     bigDecimal = new BigDecimal(numberString);
                 }
@@ -687,7 +686,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             }
 
             if (sourceObject instanceof Number) {
-                return new BigDecimal(((Number)sourceObject).doubleValue());
+                return BigDecimal.valueOf(((Number) sourceObject).doubleValue());
             }
 
             if (sourceObject instanceof Boolean) {
@@ -1106,7 +1105,6 @@ public class ConversionManager extends CoreConversionManager implements Serializ
      * Resolve the given String className into a class using this
      * ConversionManager's classloader.
      */
-    @SuppressWarnings({"unchecked"})
     public <T> Class<T> convertClassNameToClass(String className) throws ConversionException {
         return convertObjectToClass(className);
     }

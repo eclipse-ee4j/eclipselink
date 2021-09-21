@@ -270,8 +270,8 @@ public class HSQLPlatform extends DatabasePlatform {
      */
      @Override
     public void writeUpdateOriginalFromTempTableSql(Writer writer, DatabaseTable table,
-                                                     Collection pkFields,
-                                                     Collection assignedFields) throws IOException
+                                                    Collection<DatabaseField> pkFields,
+                                                    Collection<DatabaseField> assignedFields) throws IOException
     {
         writer.write("UPDATE ");
         String tableName = table.getQualifiedNameDelimited(this);
@@ -280,14 +280,14 @@ public class HSQLPlatform extends DatabasePlatform {
 
         String tempTableName = getTempTableForTable(table).getQualifiedNameDelimited(this);
         boolean isFirst = true;
-        Iterator itFields = assignedFields.iterator();
+        Iterator<DatabaseField> itFields = assignedFields.iterator();
         while(itFields.hasNext()) {
             if(isFirst) {
                 isFirst = false;
             } else {
                 writer.write(", ");
             }
-            DatabaseField field = (DatabaseField)itFields.next();
+            DatabaseField field = itFields.next();
             String fieldName = field.getNameDelimited(this);
             writer.write(fieldName);
             writer.write(" = (SELECT ");
@@ -299,7 +299,7 @@ public class HSQLPlatform extends DatabasePlatform {
         }
 
         writer.write(" WHERE EXISTS(SELECT ");
-        writer.write(((DatabaseField)pkFields.iterator().next()).getNameDelimited(this));
+        writer.write(pkFields.iterator().next().getNameDelimited(this));
         writer.write(" FROM ");
         writer.write(tempTableName);
         writeAutoJoinWhereClause(writer, null, tableName, pkFields, this);

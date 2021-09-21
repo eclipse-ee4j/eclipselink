@@ -26,6 +26,8 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
@@ -234,12 +236,8 @@ public class XMLProjectReader {
 
         InputStreamReader reader = null;
         try {
-            try {
-                // Bug2631348  Only UTF-8 is supported
-                reader = new InputStreamReader(fileStream, "UTF-8");
-            } catch (UnsupportedEncodingException exception) {
-                throw ValidationException.fatalErrorOccurred(exception);
-            }
+            // Bug2631348  Only UTF-8 is supported
+            reader = new InputStreamReader(fileStream, StandardCharsets.UTF_8);
 
             Project project = read(reader, classLoader);
             return project;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,12 +22,15 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 
 import jakarta.xml.bind.JAXBElement;
 
 import org.eclipse.persistence.internal.oxm.Constants;
+
+import javax.xml.namespace.QName;
 
 /**
  * INTERNAL:
@@ -53,7 +56,7 @@ import org.eclipse.persistence.internal.oxm.Constants;
 public class Helper {
     protected ClassLoader loader;
     protected JavaModel jModel;
-    private HashMap xmlToJavaTypeMap;
+    private Map<String, QName> xmlToJavaTypeMap;
     private boolean facets;
 
     public final static String APBYTE = "byte[]";
@@ -113,7 +116,6 @@ public class Helper {
      * This constructor builds the map of XML-Java type pairs,
      * and sets the JavaModel and ClassLoader.
      *
-     * @param model
      */
     public Helper(JavaModel model) {
         xmlToJavaTypeMap = buildXMLToJavaTypeMap();
@@ -130,10 +132,9 @@ public class Helper {
     /**
      * Builds a map of Java types to XML types.
      *
-     * @return
      */
-    private HashMap buildXMLToJavaTypeMap() {
-        HashMap javaTypes = new HashMap();
+    private Map<String, QName> buildXMLToJavaTypeMap() {
+        Map<String, QName> javaTypes = new HashMap<>();
         // jaxb 2.0 spec pairs
         javaTypes.put(APBYTE, Constants.BASE_64_BINARY_QNAME);
         javaTypes.put(BIGDECIMAL, Constants.DECIMAL_QNAME);
@@ -176,17 +177,15 @@ public class Helper {
     /**
      * Return a given method's generic return type as a JavaClass.
      *
-     * @param meth
-     * @return
      */
     public JavaClass getGenericReturnType(JavaMethod meth) {
         JavaClass result = meth.getReturnType();
         JavaClass jClass = null;
         if (result == null) { return null; }
 
-        Collection args = result.getActualTypeArguments();
+        Collection<JavaClass> args = result.getActualTypeArguments();
         if (args.size() >0) {
-            jClass = (JavaClass) args.iterator().next();
+            jClass = args.iterator().next();
         }
         return jClass;
     }
@@ -196,8 +195,6 @@ public class Helper {
      * This assumes that the provided class exists on the classpath
      * - null is returned otherwise.
      *
-     * @param javaClass
-     * @return
      */
     public JavaClass getJavaClass(Class javaClass) {
         return jModel.getClass(javaClass);
@@ -207,7 +204,6 @@ public class Helper {
      * Return array of JavaClass instances created based on the provided classes.
      * This assumes provided classes exist on the classpath.
      *
-     * @param classes
      * @return JavaClass array
      */
     public JavaClass[] getJavaClassArray(Class... classes) {
@@ -227,8 +223,6 @@ public class Helper {
      * class name.  This assumes that a class with the provided name
      * exists on the classpath - null is returned otherwise.
      *
-     * @param javaClassName
-     * @return
      */
     public JavaClass getJavaClass(String javaClassName) {
         return jModel.getClass(javaClassName);
@@ -236,9 +230,8 @@ public class Helper {
 
     /**
      * Return a map of default Java types to XML types.
-     * @return
      */
-    public HashMap getXMLToJavaTypeMap() {
+    public Map<String, QName> getXMLToJavaTypeMap() {
         return xmlToJavaTypeMap;
     }
 
@@ -249,9 +242,6 @@ public class Helper {
      * exist.
      * Intended to be used in conjunction with isAnnotationPresent.
      *
-     * @param element
-     * @param annotationClass
-     * @return
      * @see #isAnnotationPresent
      */
     public Annotation getAnnotation(JavaHasAnnotations element, Class annotationClass) {
@@ -266,8 +256,6 @@ public class Helper {
      * Returns a JavaClass instance wrapping the provided field's resolved
      * type.
      *
-     * @param field
-     * @return
      */
     public JavaClass getType(JavaField field) {
         JavaClass type = field.getResolvedType();
@@ -282,7 +270,6 @@ public class Helper {
      *
      * Replacement of direct access to JAXBELEMENT_CLASS field.
      *
-     * @return
      */
     public JavaClass getJaxbElementClass() {
         return jaxbElementClass;
@@ -293,7 +280,6 @@ public class Helper {
      *
      * Replacement of direct access to OBJECT_CLASS field.
      *
-     * @return
      */
     public JavaClass getObjectClass() {
         return objectClass;
@@ -302,9 +288,6 @@ public class Helper {
     /**
      * Indicates if element contains a given annotation.
      *
-     * @param element
-     * @param annotationClass
-     * @return
      */
     public boolean isAnnotationPresent(JavaHasAnnotations element, Class annotationClass) {
         if (element == null || annotationClass == null) {
@@ -322,8 +305,6 @@ public class Helper {
      * 2 - the provided JavaClass' raw name starts with "java."
      * 3 - the provided JavaClass' raw name starts with "javax.", with
      *     the exception of "jakarta.xml.ws." and "javax.xml.rpc"
-     * @param jClass
-     * @return
      */
     public boolean isBuiltInJavaType(JavaClass jClass) {
         String rawName = jClass.getRawName();
@@ -399,9 +380,6 @@ public class Helper {
     /**
      * Convenience method to determine if two JavaClass instances are equal.
      *
-     * @param classA
-     * @param classB
-     * @return
      */
     private boolean areClassesEqual(JavaClass classA, JavaClass classB) {
         if (classA == classB) {
@@ -411,8 +389,8 @@ public class Helper {
             return false;
         }
 
-        Collection classAargs = classA.getActualTypeArguments();
-        Collection classBargs = classB.getActualTypeArguments();
+        Collection<JavaClass> classAargs = classA.getActualTypeArguments();
+        Collection<JavaClass> classBargs = classB.getActualTypeArguments();
         if (classAargs != null) {
             if (classBargs == null) {
                 return false;
@@ -421,12 +399,12 @@ public class Helper {
                 return false;
             }
 
-            Iterator classAargsIter = classAargs.iterator();
-            Iterator classBargsIter = classBargs.iterator();
+            Iterator<JavaClass> classAargsIter = classAargs.iterator();
+            Iterator<JavaClass> classBargsIter = classBargs.iterator();
 
             while(classAargsIter.hasNext()){
-                JavaClass nestedClassA = (JavaClass) classAargsIter.next();
-                JavaClass nestedClassB = (JavaClass) classBargsIter.next();
+                JavaClass nestedClassA = classAargsIter.next();
+                JavaClass nestedClassB = classBargsIter.next();
                 if (!areClassesEqual(nestedClassA, nestedClassB)) {
                     return false;
                 }

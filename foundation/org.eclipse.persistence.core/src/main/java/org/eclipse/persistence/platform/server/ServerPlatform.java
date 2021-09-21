@@ -104,7 +104,6 @@ public interface ServerPlatform {
      * @see #isJTAEnabled()
      * @see #disableJTA()
      * @see #initializeExternalTransactionController()
-     * @param newClass
      */
     void setExternalTransactionControllerClass(Class<? extends ExternalTransactionController> newClass);
 

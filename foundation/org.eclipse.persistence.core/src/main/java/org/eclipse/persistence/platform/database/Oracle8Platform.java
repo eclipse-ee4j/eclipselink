@@ -175,7 +175,6 @@ public class Oracle8Platform extends OraclePlatform {
     /**
      * INTERNAL: Write LOB value - only on Oracle8 and up
      */
-    @SuppressWarnings("deprecation")
     @Override
     public void writeLOB(DatabaseField field, Object value, ResultSet resultSet, AbstractSession session)
             throws SQLException {

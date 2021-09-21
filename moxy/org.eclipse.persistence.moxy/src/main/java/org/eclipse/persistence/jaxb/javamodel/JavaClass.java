@@ -31,22 +31,22 @@ import java.util.Collection;
  * @see java.lang.Class
  */
 public interface JavaClass extends JavaHasAnnotations {
-    Collection getActualTypeArguments();
+    Collection<JavaClass> getActualTypeArguments();
     JavaClass getComponentType();
     String getQualifiedName();
     String getRawName();
     boolean hasActualTypeArguments();
-    Collection getDeclaredClasses();
+    Collection<JavaClass> getDeclaredClasses();
     JavaField getDeclaredField(String arg0);
-    Collection getDeclaredFields();
+    Collection<JavaField> getDeclaredFields();
     JavaMethod getDeclaredMethod(String arg0, JavaClass[] arg1);
-    Collection getDeclaredMethods();
+    Collection<JavaMethod> getDeclaredMethods();
     JavaMethod getMethod(String arg0, JavaClass[] arg1);
-    Collection getMethods();
+    Collection<JavaMethod> getMethods();
     JavaConstructor getConstructor(JavaClass[] parameterTypes);
-    Collection getConstructors();
+    Collection<JavaConstructor> getConstructors();
     JavaConstructor getDeclaredConstructor(JavaClass[] parameterTypes);
-    Collection getDeclaredConstructors();
+    Collection<JavaConstructor> getDeclaredConstructors();
     int getModifiers();
     String getName();
     JavaPackage getPackage();

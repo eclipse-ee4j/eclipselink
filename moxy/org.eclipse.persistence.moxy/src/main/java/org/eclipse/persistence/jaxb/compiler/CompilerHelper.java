@@ -314,9 +314,6 @@ public class CompilerHelper {
      * unmarshal the Element. This assumes that the Element represents an
      * xml-element to be unmarshalled.
      *
-     * @param xmlElementNode
-     * @param classLoader
-     * @return
      */
     static org.eclipse.persistence.jaxb.xmlmodel.XmlElement getXmlElement(org.w3c.dom.Element xmlElementNode, ClassLoader classLoader) {
         try {

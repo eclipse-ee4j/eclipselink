@@ -88,9 +88,6 @@ public class CMP3Policy extends CMPPolicy {
     /**
      * INTERNAL:
      * Add the read only mappings for the given field to the allMappings list.
-     * @param aDescriptor
-     * @param field
-     * @param allMappings
      */
     protected void addWritableMapping(ClassDescriptor aDescriptor, DatabaseField field, List allMappings) {
         DatabaseMapping writableMapping = aDescriptor.getObjectBuilder().getMappingForField(field);
@@ -106,9 +103,6 @@ public class CMP3Policy extends CMPPolicy {
     /**
      * INTERNAL:
      * Add the writable mapping for the given field to the allMappings list.
-     * @param aDescriptor
-     * @param field
-     * @param allMappings
      */
     protected void addReadOnlyMappings(ClassDescriptor aDescriptor, DatabaseField field, List allMappings) {
         List<DatabaseMapping> readOnlyMappings = aDescriptor.getObjectBuilder().getReadOnlyMappingsForField(field);
@@ -135,7 +129,6 @@ public class CMP3Policy extends CMPPolicy {
      * Convert all the class-name-based settings in this object to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
@@ -279,10 +272,7 @@ public class CMP3Policy extends CMPPolicy {
 
     /**
      * INTERNAL:
-     * @param cls
-     * @param fieldName
      * @return the field from the class with name equal to fieldName.
-     * @throws NoSuchFieldException
      */
     protected Field getField(Class cls, String fieldName) throws NoSuchFieldException {
         Field keyField = null;

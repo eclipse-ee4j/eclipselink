@@ -87,7 +87,7 @@ public class AttributeNode extends Node {
             return exp;
         }
         TypeHelper typeHelper = context.getParseTreeContext().getTypeHelper();
-        Class cast = (Class)typeHelper.resolveSchema(castClassName);
+        Class<?> cast = (Class<?>)typeHelper.resolveSchema(castClassName);
         return exp.treat(cast);
     }
 
@@ -195,7 +195,7 @@ public class AttributeNode extends Node {
      * resolveMapping: Answer the mapping which corresponds to my variableName.
      */
     @Override
-    public DatabaseMapping resolveMapping(GenerationContext context, Class ownerClass) {
+    public DatabaseMapping resolveMapping(GenerationContext context, Class<?> ownerClass) {
         ClassDescriptor descriptor = context.getSession().getDescriptor(ownerClass);
         return (descriptor==null) ? null : descriptor.getObjectBuilder().getMappingForAttributeName(getAttributeName());
     }
@@ -205,7 +205,7 @@ public class AttributeNode extends Node {
      * Answer null if the node represents a mapping that doesn't exist
      */
     @Override
-    public Class resolveClass(GenerationContext context, Class ownerClass) {
+    public Class<?> resolveClass(GenerationContext context, Class<?> ownerClass) {
         DatabaseMapping mapping;
 
         mapping = resolveMapping(context, ownerClass);
@@ -227,7 +227,7 @@ public class AttributeNode extends Node {
     public String toString(int indent) {
         StringBuilder buffer = new StringBuilder();
         toStringIndent(indent, buffer);
-        buffer.append(toStringDisplayName() + "[" + getAttributeName() + "]");
+        buffer.append(toStringDisplayName()).append("[").append(getAttributeName()).append("]");
         return buffer.toString();
     }
 

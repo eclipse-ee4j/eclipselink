@@ -63,8 +63,6 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
 
     /**
      * Create an instance of the Attribute
-     * @param managedType
-     * @param mapping
      */
     protected SingularAttributeImpl(ManagedTypeImpl<X> managedType, DatabaseMapping mapping) {
         this(managedType, mapping, false);
@@ -72,9 +70,6 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
     /**
      * INTERNAL:
      * Create an Attribute instance with a passed in validation flag (usually set to true only during Metamodel initialization)
-     * @param managedType
-     * @param mapping
-     * @param validationEnabled
      */
     protected SingularAttributeImpl(ManagedTypeImpl<X> managedType, DatabaseMapping mapping, boolean validationEnabled) {
         super(managedType, mapping);
@@ -175,7 +170,6 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
     /**
      * INTERNAL:
      * Return whether the attribute is plural or singular
-     * @return
      */
     @Override
     public boolean isPlural() {

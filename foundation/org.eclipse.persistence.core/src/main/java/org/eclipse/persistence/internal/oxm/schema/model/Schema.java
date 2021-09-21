@@ -17,6 +17,7 @@ package org.eclipse.persistence.internal.oxm.schema.model;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -27,38 +28,38 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 
 public class Schema {
     private String name;//non-persistant, used to give a schema an identifier
-    private java.util.List imports;
-    private java.util.List includes;
+    private List<Import> imports;
+    private List<Include> includes;
     private String targetNamespace;
     private String defaultNamespace;
 
     private boolean elementFormDefault;//error mapping in mw
     private boolean attributeFormDefault;//error mapping in mw
-    private Map topLevelSimpleTypes;
-    private Map topLevelComplexTypes;
-    private Map topLevelElements;
-    private Map topLevelAttributes;
+    private Map<String, SimpleType> topLevelSimpleTypes;
+    private Map<String, ComplexType> topLevelComplexTypes;
+    private Map<String, Element> topLevelElements;
+    private Map<String, Attribute> topLevelAttributes;
     private NamespaceResolver namespaceResolver;
-    private Map attributesMap;
-    private Map attributeGroups;
-    private Map groups;
+    private Map<QName, String> attributesMap;
+    private Map<String, AttributeGroup> attributeGroups;
+    private Map<String, Group> groups;
     private Annotation annotation;
     private Result result;
 
     public Schema() {
         namespaceResolver = new NamespaceResolver();
-        imports = new ArrayList();
-        includes = new ArrayList();
+        imports = new ArrayList<>();
+        includes = new ArrayList<>();
         //LinkedHashMaps are needed to force determinism of generated schemas.
         //It is important to generate always the same schema (e.g. with SchemaGenerator) with given input Schema.
         //Without LinkedHashMap it would be JDK dependent and the output schema would be different with different JDKs used.
-        topLevelSimpleTypes = new LinkedHashMap();
-        topLevelComplexTypes = new LinkedHashMap();
-        topLevelElements = new LinkedHashMap();
-        topLevelAttributes = new LinkedHashMap();
-        attributesMap = new LinkedHashMap();
-        attributeGroups = new LinkedHashMap();
-        groups = new LinkedHashMap();
+        topLevelSimpleTypes = new LinkedHashMap<>();
+        topLevelComplexTypes = new LinkedHashMap<>();
+        topLevelElements = new LinkedHashMap<>();
+        topLevelAttributes = new LinkedHashMap<>();
+        attributesMap = new LinkedHashMap<>();
+        attributeGroups = new LinkedHashMap<>();
+        groups = new LinkedHashMap<>();
     }
 
     public void setTargetNamespace(String targetNamespace) {
@@ -77,11 +78,11 @@ public class Schema {
         return this.defaultNamespace;
     }
 
-    public void setTopLevelSimpleTypes(Map topLevelSimpleTypes) {
+    public void setTopLevelSimpleTypes(Map<String, SimpleType> topLevelSimpleTypes) {
         this.topLevelSimpleTypes = topLevelSimpleTypes;
     }
 
-    public Map getTopLevelSimpleTypes() {
+    public Map<String, SimpleType> getTopLevelSimpleTypes() {
         return topLevelSimpleTypes;
     }
 
@@ -89,11 +90,11 @@ public class Schema {
         topLevelSimpleTypes.put(simpleType.getName(), simpleType);
     }
 
-    public void setTopLevelComplexTypes(Map topLevelComplexTypes) {
+    public void setTopLevelComplexTypes(Map<String, ComplexType> topLevelComplexTypes) {
         this.topLevelComplexTypes = topLevelComplexTypes;
     }
 
-    public Map getTopLevelComplexTypes() {
+    public Map<String, ComplexType> getTopLevelComplexTypes() {
         return topLevelComplexTypes;
     }
 
@@ -101,11 +102,11 @@ public class Schema {
         topLevelComplexTypes.put(complexType.getName(), complexType);
     }
 
-    public void setTopLevelElements(Map topLevelElements) {
+    public void setTopLevelElements(Map<String, Element> topLevelElements) {
         this.topLevelElements = topLevelElements;
     }
 
-    public Map getTopLevelElements() {
+    public Map<String, Element> getTopLevelElements() {
         return topLevelElements;
     }
 
@@ -129,11 +130,11 @@ public class Schema {
         return attributeFormDefault;
     }
 
-    public void setTopLevelAttributes(Map topLevelAttributes) {
+    public void setTopLevelAttributes(Map<String, Attribute> topLevelAttributes) {
         this.topLevelAttributes = topLevelAttributes;
     }
 
-    public Map getTopLevelAttributes() {
+    public Map<String, Attribute> getTopLevelAttributes() {
         return topLevelAttributes;
     }
 
@@ -145,30 +146,30 @@ public class Schema {
         return namespaceResolver;
     }
 
-    public void setImports(java.util.List imports) {
+    public void setImports(List<Import> imports) {
         this.imports = imports;
     }
 
-    public java.util.List getImports() {
+    public List<Import> getImports() {
         return imports;
     }
 
-    public void setIncludes(java.util.List includes) {
+    public void setIncludes(List<Include> includes) {
         this.includes = includes;
     }
 
-    public java.util.List getIncludes() {
+    public List<Include> getIncludes() {
         return includes;
     }
 
-    public void setAttributesMap(Map attributesMap) {
+    public void setAttributesMap(Map<QName, String> attributesMap) {
         this.attributesMap = attributesMap;
-        Iterator<Entry> iter = attributesMap.entrySet().iterator();
+        Iterator<Entry<QName, String>> iter = attributesMap.entrySet().iterator();
         while (iter.hasNext()) {
-            Entry nextEntry = iter.next();
-            QName key = (QName)nextEntry.getKey();
+            Entry<QName, String> nextEntry = iter.next();
+            QName key = nextEntry.getKey();
             if (key.getNamespaceURI().equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI)) {
-                String value = (String)nextEntry.getValue();
+                String value = nextEntry.getValue();
                 String prefix = key.getLocalPart();
                 int index = prefix.indexOf(':');
                 if (index > -1) {
@@ -179,7 +180,7 @@ public class Schema {
         }
     }
 
-    public Map getAttributesMap() {
+    public Map<QName, String> getAttributesMap() {
         return attributesMap;
     }
 
@@ -191,76 +192,70 @@ public class Schema {
         return this.name;
     }
 
-    public void setAttributeGroups(Map attributeGroups) {
+    public void setAttributeGroups(Map<String, AttributeGroup> attributeGroups) {
         this.attributeGroups = attributeGroups;
     }
 
-    public Map getAttributeGroups() {
+    public Map<String, AttributeGroup> getAttributeGroups() {
         return attributeGroups;
     }
 
     public AttributeGroup getAttributeGroup(String uri, String localName) {
-        AttributeGroup globalAttributeGroup = null;
         if (uri.equals(targetNamespace)) {
-            globalAttributeGroup = (AttributeGroup)getAttributeGroups().get(localName);
+            AttributeGroup globalAttributeGroup = getAttributeGroups().get(localName);
             if (globalAttributeGroup != null) {
                 return globalAttributeGroup;
             }
         }
-        globalAttributeGroup = getAttributeGroupFromReferencedSchemas(uri, localName);
-
-        return globalAttributeGroup;
+        return getAttributeGroupFromReferencedSchemas(uri, localName);
     }
 
     protected AttributeGroup getAttributeGroupFromReferencedSchemas(String uri, String localName) {
         AttributeGroup globalAttributeGroup = null;
-        Iterator iter = getIncludes().iterator();
+        Iterator<Include> iter = getIncludes().iterator();
         while (iter.hasNext() && (globalAttributeGroup == null)) {
-            Schema includedSchema = ((Include)iter.next()).getSchema();
+            Schema includedSchema = iter.next().getSchema();
             globalAttributeGroup = includedSchema.getAttributeGroup(uri, localName);
         }
         if (globalAttributeGroup == null) {
-            iter = getImports().iterator();
-             while (iter.hasNext() && (globalAttributeGroup == null)) {
-                Schema importedSchema = ((Import)iter.next()).getSchema();
+            Iterator<Import> iter2 = getImports().iterator();
+             while (iter2.hasNext() && (globalAttributeGroup == null)) {
+                Schema importedSchema = iter2.next().getSchema();
                 globalAttributeGroup = importedSchema.getAttributeGroup(uri, localName);
             }
         }
         return globalAttributeGroup;
     }
 
-    public void setGroups(Map groups) {
+    public void setGroups(Map<String, Group> groups) {
         this.groups = groups;
     }
 
-    public Map getGroups() {
+    public Map<String, Group> getGroups() {
         return groups;
     }
 
     public Group getGroup(String uri, String localName) {
-        Group globalGroup = null;
         if (uri.equals(targetNamespace)) {
-            globalGroup = (Group)getGroups().get(localName);
+            Group globalGroup = getGroups().get(localName);
             if (globalGroup != null) {
                 return globalGroup;
             }
         }
-        globalGroup = getGroupFromReferencedSchemas(uri, localName);
-
-        return globalGroup;
+        return getGroupFromReferencedSchemas(uri, localName);
     }
 
     protected Group getGroupFromReferencedSchemas(String uri, String localName) {
         Group globalGroup = null;
-        Iterator iter = getIncludes().iterator();
+        Iterator<Include> iter = getIncludes().iterator();
         while (iter.hasNext() && (globalGroup == null)) {
-            Schema includedSchema = ((Include)iter.next()).getSchema();
+            Schema includedSchema = iter.next().getSchema();
             globalGroup = includedSchema.getGroup(uri, localName);
         }
         if (globalGroup == null) {
-            iter = getImports().iterator();
-            while (iter.hasNext() && (globalGroup == null)) {
-                Schema importedSchema = ((Import)iter.next()).getSchema();
+            Iterator<Import> iter2 = getImports().iterator();
+            while (iter2.hasNext() && (globalGroup == null)) {
+                Schema importedSchema = iter2.next().getSchema();
                 globalGroup = importedSchema.getGroup(uri, localName);
             }
         }

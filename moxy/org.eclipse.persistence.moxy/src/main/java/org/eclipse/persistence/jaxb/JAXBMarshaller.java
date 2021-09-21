@@ -159,8 +159,6 @@ public class JAXBMarshaller implements jakarta.xml.bind.Marshaller {
      * while the marshal operation is performed by TopLink OXM. This will avoid
      * adding any runtime dependencies to TopLink.
      *
-     * @param elt
-     * @return
      */
     private Root createXMLRootFromJAXBElement(JAXBElement elt) {
         // create an XMLRoot to hand into the marshaller

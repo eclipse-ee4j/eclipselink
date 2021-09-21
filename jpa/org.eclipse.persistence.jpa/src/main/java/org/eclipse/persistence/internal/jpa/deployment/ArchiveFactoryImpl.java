@@ -132,7 +132,6 @@ public class ArchiveFactoryImpl implements ArchiveFactory {
      * This method is called for a URL which has neither jar nor file protocol.
      * This attempts to find out if we can treat it as a URL from which a JAR
      * format InputStream can be obtained.
-     * @param url
      */
     protected boolean isJarInputStream(URL url) throws IOException {
         InputStream in = null;

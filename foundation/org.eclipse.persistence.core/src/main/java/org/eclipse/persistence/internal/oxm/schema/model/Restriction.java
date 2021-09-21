@@ -26,7 +26,7 @@ public class Restriction implements SimpleDerivation {
     private Sequence sequence;
     private All all;
     private SimpleType simpleType;
-    private java.util.ArrayList enumerationFacets;
+    private List enumerationFacets;
     private AnyAttribute anyAttribute;
     private String minInclusive;
     private String maxInclusive;
@@ -40,7 +40,7 @@ public class Restriction implements SimpleDerivation {
     private String maxLength;
 
     //private List facets
-    private java.util.List attributes;
+    private List<Attribute> attributes;
     private Restrictable owner;
 
     public Restriction() {
@@ -142,19 +142,19 @@ public class Restriction implements SimpleDerivation {
         return simpleType;
     }
 
-    public void setAttributes(java.util.List attributes) {
+    public void setAttributes(List<Attribute> attributes) {
         this.attributes = attributes;
     }
 
-    public java.util.List getAttributes() {
+    public List<Attribute> getAttributes() {
         return attributes;
     }
 
-    public java.util.ArrayList getEnumerationFacets() {
+    public List getEnumerationFacets() {
         return enumerationFacets;
     }
 
-    public void setEnumerationFacets(java.util.ArrayList values) {
+    public void setEnumerationFacets(List values) {
         enumerationFacets = values;
     }
 

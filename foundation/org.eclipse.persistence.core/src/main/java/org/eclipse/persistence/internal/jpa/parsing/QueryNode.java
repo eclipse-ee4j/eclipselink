@@ -55,7 +55,7 @@ public abstract class QueryNode extends MajorNode {
    * Compute the Reference class for this query
    * @return the class this query is querying for
    */
-    public Class getReferenceClass(GenerationContext genContext) {
+    public Class<?> getReferenceClass(GenerationContext genContext) {
         return resolveClass(genContext);
     }
 
@@ -75,7 +75,7 @@ public abstract class QueryNode extends MajorNode {
      * Return the class represented in this node.
      */
     @Override
-    public abstract Class resolveClass(GenerationContext context);
+    public abstract Class<?> resolveClass(GenerationContext context);
 
     /**
      * Set the parseTree

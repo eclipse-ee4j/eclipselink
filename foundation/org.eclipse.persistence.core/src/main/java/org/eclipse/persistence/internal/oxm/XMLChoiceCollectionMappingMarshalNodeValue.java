@@ -328,7 +328,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
                 if(xmlChoiceCollectionMapping.isAny()) {
                     return this.anyNodeValue;
                 }
-                Class<? extends Object> theClass = fieldValue.getClass();
+                Class<?> theClass = fieldValue.getClass();
                 while(associatedField == null) {
                     associatedField = (Field) xmlChoiceCollectionMapping.getClassToFieldMappings().get(theClass);
                     if(theClass.getSuperclass() != null) {
@@ -342,7 +342,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
                 nodeValue = this.fieldToNodeValues.get(associatedField);
             }
         } else {
-            Class<? extends Object> theClass = value.getClass();
+            Class<?> theClass = value.getClass();
             while(associatedField == null) {
                 associatedField = (Field) xmlChoiceCollectionMapping.getClassToFieldMappings().get(theClass);
                 List<FieldNodeValue> fieldNodes = classToNodeValues.get(theClass);
@@ -374,7 +374,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
         if(associatedField == null) {
             //check the field associations
             List<Field> sourceFields = null;
-            Class<? extends Object> theClass = value.getClass();
+            Class<?> theClass = value.getClass();
             while(theClass != null) {
                 sourceFields = (List<Field>) xmlChoiceCollectionMapping.getClassToSourceFieldsMappings().get(theClass);
                 if(sourceFields != null) {

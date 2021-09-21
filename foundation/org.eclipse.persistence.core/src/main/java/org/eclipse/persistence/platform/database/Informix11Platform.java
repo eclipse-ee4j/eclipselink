@@ -392,7 +392,7 @@ public class Informix11Platform extends InformixPlatform {
    * bug 402037</a>
    */
   @Override
-  public void writeUpdateOriginalFromTempTableSql(final Writer writer, final DatabaseTable table, final Collection pkFields, final Collection assignedFields) throws IOException {
+  public void writeUpdateOriginalFromTempTableSql(final Writer writer, final DatabaseTable table, final Collection<DatabaseField> pkFields, final Collection<DatabaseField> assignedFields) throws IOException {
     writer.write("UPDATE ");
     final String tableName = table.getQualifiedNameDelimited(this);
     writer.write(tableName);
@@ -412,7 +412,7 @@ public class Informix11Platform extends InformixPlatform {
     writer.write(tempTableName);
     writeAutoJoinWhereClause(writer, null, tableName, pkFields, this);
     writer.write(") WHERE EXISTS(SELECT ");
-    writer.write(((DatabaseField)pkFields.iterator().next()).getNameDelimited(this));
+    writer.write(pkFields.iterator().next().getNameDelimited(this));
     writer.write(" FROM ");
     writer.write(tempTableName);
     writeAutoJoinWhereClause(writer, null, tableName, pkFields, this);

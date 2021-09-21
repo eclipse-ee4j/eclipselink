@@ -325,7 +325,6 @@ public class XMLEntityMappingsReader {
      * eclipselink.orm.validate.schema is set to true or false.<br>
      * The default value is false.
      * @param properties - PersistenceUnitInfo properties on the project
-     * @return
      */
     private static boolean isORMSchemaValidationPerformed(Map properties) {
         // Get property from persistence.xml (we are not yet parsing sessions.xml)
@@ -391,11 +390,7 @@ public class XMLEntityMappingsReader {
 
     /**
      * INTERNAL:
-     * @param url
-     * @param classLoader
      * @param properties - PersistenceUnitInfo properties on the project
-     * @return
-     * @throws IOException
      */
     public static XMLEntityMappings read(URL url, ClassLoader classLoader, Properties properties) throws IOException {
         InputStreamReader reader1 = null;
@@ -430,8 +425,6 @@ public class XMLEntityMappingsReader {
      * will get the schema from the same classloader that loaded this class and
      * hence works for the case where the schema is shipped as part of EclipseLink
      *
-     * @param unmarshaller
-     * @param schema
      */
     private static void useLocalSchemaForUnmarshaller(XMLUnmarshaller unmarshaller, Schema schema) {
         try {

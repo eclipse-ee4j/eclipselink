@@ -268,9 +268,6 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
      * Return JPAInitializer corresponding to the passed classLoader.
      * Note: This is written as an instance method rather than a static to allow
      * it to be overridden
-     * @param emName
-     * @param m
-     * @return
      */
     public JPAInitializer getInitializer(String emName, Map m){
         ClassLoader classLoader = getClassLoader(emName, m);
@@ -425,7 +422,6 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
      * a reference to an attribute value, as this could trigger the
      * loading of entity state if the entity has been provided by a
      * different provider.
-     * @param entity
      * @param attributeName  name of attribute whose load status is
      *        to be determined
      * @return load status of the attribute
@@ -455,7 +451,6 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
      * attribute state will have already been determined by
      * <code>isLoadedWithoutReference</code>. )
      *
-     * @param entity
      * @param attributeName  name of attribute whose load status is
      *        to be determined
      * @return load status of the attribute
@@ -512,7 +507,6 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
      * If a classloader is not found in the properties map then
      * use the current thread classloader.
      *
-     * @param properties
      * @return ClassLoader
      */
     public ClassLoader getClassLoader(String emName, Map properties) {

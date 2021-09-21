@@ -1070,7 +1070,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      */
     @Override
     public Object removeFromIdentityMap(Object object) {
-        Class<? extends Object> theClass = object.getClass();
+        Class<?> theClass = object.getClass();
         return removeFromIdentityMap(getSession().getId(object), theClass, getSession().getDescriptor(theClass), object);
     }
 

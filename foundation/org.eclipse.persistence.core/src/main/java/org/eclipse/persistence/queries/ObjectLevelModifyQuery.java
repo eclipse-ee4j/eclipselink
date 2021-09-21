@@ -17,9 +17,6 @@ package org.eclipse.persistence.queries;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 /**

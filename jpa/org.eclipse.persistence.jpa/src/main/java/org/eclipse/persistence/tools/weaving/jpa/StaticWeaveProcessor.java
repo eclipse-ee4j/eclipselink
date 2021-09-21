@@ -65,7 +65,6 @@ public class StaticWeaveProcessor {
      * Constructs an instance of StaticWeaveProcessor
      * @param source the name of the location to be weaved
      * @param target the name of the location to be weaved to
-     * @throws MalformedURLException
      */
     public StaticWeaveProcessor(String source, String target)throws MalformedURLException{
         if (source != null) {
@@ -80,7 +79,6 @@ public class StaticWeaveProcessor {
      * Constructs an instance of StaticWeaveProcessor
      * @param source the File object of the source to be weaved
      * @param target the File object of the target to be weaved to
-     * @throws MalformedURLException
      */
     public StaticWeaveProcessor(File source, File target)throws MalformedURLException {
         this.source=source.toURL();
@@ -147,7 +145,6 @@ public class StaticWeaveProcessor {
     /**
      * Set a specific location to look for persistence.xml
      * by default we will look in META-INF/persistence.xml
-     * @param persistenceXMLLocation
      */
     public void setPersistenceXMLLocation(String persistenceXMLLocation) {
         this.persistenceXMLLocation = persistenceXMLLocation;

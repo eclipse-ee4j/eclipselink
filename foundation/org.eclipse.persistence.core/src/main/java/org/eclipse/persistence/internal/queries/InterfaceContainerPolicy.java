@@ -108,7 +108,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
         }
 
         Method cloneMethod;
-        Class<? extends Object> javaClass = container.getClass();
+        Class<?> javaClass = container.getClass();
         if (javaClass == getContainerClass()) {
             cloneMethod = getCloneMethod();
         } else {

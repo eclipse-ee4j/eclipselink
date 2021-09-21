@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,6 +13,8 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.oxm.schema.model;
+
+import java.util.List;
 
 /**
  * <p><b>Purpose</b>: Interface to represent a Choice or Sequence
@@ -30,13 +32,13 @@ public interface NestedParticle extends TypeDefParticleOwner {
 
     boolean hasAny();
 
-    void setSequences(java.util.List sequences);
+    void setSequences(List<Sequence> sequences);
 
-    void setChoices(java.util.List choices);
+    void setChoices(List<Choice> choices);
 
-    void setAnys(java.util.List anys);
+    void setAnys(List<Any> anys);
 
-    void setElements(java.util.List elements);
+    void setElements(List<Element> elements);
 
     void setMinOccurs(String minOccurs);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,8 +43,8 @@ public class EnumTypeInfo extends TypeInfo {
 
     public EnumTypeInfo(Helper helper, JavaClass javaClass) {
         super(helper, javaClass);
-        m_fieldNames = new ArrayList<String>();
-        m_xmlEnumValues = new ArrayList<Object>();
+        m_fieldNames = new ArrayList<>();
+        m_xmlEnumValues = new ArrayList<>();
     }
 
     @Override
@@ -71,8 +71,6 @@ public class EnumTypeInfo extends TypeInfo {
     /**
      * Add a Java field name to XmlEnumValue pair.
      *
-     * @param fieldName
-     * @param xmlEnumValue
      */
     public void addJavaFieldToXmlEnumValuePair(String fieldName, Object xmlEnumValue) {
         m_fieldNames.add(fieldName);
@@ -85,9 +83,6 @@ public class EnumTypeInfo extends TypeInfo {
      * 'override' will typically be used when performing overrides via XML metadata
      * in XmlProcessor.
      *
-     * @param override
-     * @param fieldName
-     * @param xmlEnumValue
      */
     public void addJavaFieldToXmlEnumValuePair(boolean override, String fieldName, Object xmlEnumValue) {
         if (!override) {
@@ -117,8 +112,6 @@ public class EnumTypeInfo extends TypeInfo {
      * Return the index in the fieldNames List for a given Java field
      * name, or -1 if it doesn't exist.
      *
-     * @param fieldName
-     * @return
      */
     private int getIndexForJavaField(String fieldName) {
         for (int i=0; i<m_fieldNames.size(); i++) {

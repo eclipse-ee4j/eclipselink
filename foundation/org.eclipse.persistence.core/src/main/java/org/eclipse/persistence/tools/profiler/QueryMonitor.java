@@ -84,7 +84,7 @@ public class QueryMonitor {
                 writer.write(misses.toString());
                 writer.write("\n");
             }
-            System.out.println(writer.toString());
+            System.out.println(writer);
         }
     }
 

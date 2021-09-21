@@ -669,7 +669,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * INTERNAL
      * Returns null unless the platform supports call with returning
      */
-    public DatabaseCall buildCallWithReturning(SQLCall sqlCall, Vector returnFields) {
+    public DatabaseCall buildCallWithReturning(SQLCall sqlCall, Vector<DatabaseField> returnFields) {
         throw ValidationException.platformDoesNotSupportCallWithReturning(Helper.getShortClassName(this));
     }
 
@@ -1317,7 +1317,7 @@ public class DatabasePlatform extends DatasourcePlatform {
             return Types.SMALLINT;
         } else if (javaType == ClassConstants.CALENDAR ) {
             return Types.TIMESTAMP;
-        } else if (javaType == ClassConstants.UTILDATE ) {
+        } else if (javaType == ClassConstants.UTILDATE ) {//bug 5237080, return TIMESTAMP for java.util.Date as well
             return Types.TIMESTAMP;
         } else if (javaType == ClassConstants.TIME ||
             javaType == ClassConstants.TIME_LTIME) { //bug 546312
@@ -1326,7 +1326,6 @@ public class DatabasePlatform extends DatasourcePlatform {
             javaType == ClassConstants.TIME_LDATE) { //bug 546312
             return Types.DATE;
         } else if (javaType == ClassConstants.TIMESTAMP ||
-            javaType == ClassConstants.UTILDATE || //bug 5237080, return TIMESTAMP for java.util.Date as well
             javaType == ClassConstants.TIME_LDATETIME) { //bug 546312
             return Types.TIMESTAMP;
         } else if(javaType == ClassConstants.TIME_OTIME) { //bug 546312
@@ -2965,23 +2964,23 @@ public class DatabasePlatform extends DatasourcePlatform {
      * @param allFields all mapped fields for the original table.
      */
      public void writeCreateTempTableSql(Writer writer, DatabaseTable table, AbstractSession session,
-                                        Collection pkFields,
-                                        Collection usedFields,
-                                        Collection allFields) throws IOException
+                                         Collection<DatabaseField> pkFields,
+                                         Collection<DatabaseField> usedFields,
+                                         Collection<DatabaseField> allFields) throws IOException
     {
         String body = getCreateTempTableSqlBodyForTable(table);
         if(body == null) {
             TableDefinition tableDef = new TableDefinition();
-            Collection fields;
+            Collection<DatabaseField> fields;
             if(supportsLocalTempTables()) {
                 fields = usedFields;
             } else {
                 // supportsGlobalTempTables() == true
                 fields = allFields;
             }
-            Iterator itFields = fields.iterator();
+            Iterator<DatabaseField> itFields = fields.iterator();
             while (itFields.hasNext()) {
-                DatabaseField field = (DatabaseField)itFields.next();
+                DatabaseField field = itFields.next();
                 FieldDefinition fieldDef;
                 //gfbug3307, should use columnDefinition if it was defined.
                 if ((field.getColumnDefinition()!= null) && (field.getColumnDefinition().length() == 0)) {
@@ -3021,7 +3020,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * @param table is original table for which temp table is created.
      * @param usedFields fields that will be used by operation for which temp table is created.
      */
-     public void writeInsertIntoTableSql(Writer writer, DatabaseTable table, Collection usedFields) throws IOException {
+     public void writeInsertIntoTableSql(Writer writer, DatabaseTable table, Collection<DatabaseField> usedFields) throws IOException {
         writer.write("INSERT INTO ");
         writer.write(getTempTableForTable(table).getQualifiedNameDelimited(this));
 
@@ -3075,8 +3074,8 @@ public class DatabasePlatform extends DatasourcePlatform {
      * @param assignedFields fields to be assigned a new value.
      */
      public void writeUpdateOriginalFromTempTableSql(Writer writer, DatabaseTable table,
-                                                     Collection pkFields,
-                                                     Collection assignedFields) throws IOException
+                                                     Collection<DatabaseField> pkFields,
+                                                     Collection<DatabaseField> assignedFields) throws IOException
     {
         writer.write("UPDATE ");
         String tableName = table.getQualifiedNameDelimited(this);
@@ -3090,7 +3089,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         writer.write(tempTableName);
         writeAutoJoinWhereClause(writer, null, tableName, pkFields, this);
         writer.write(") WHERE EXISTS(SELECT ");
-        writer.write(((DatabaseField)pkFields.iterator().next()).getNameDelimited(this));
+        writer.write(pkFields.iterator().next().getNameDelimited(this));
         writer.write(" FROM ");
         writer.write(tempTableName);
         writeAutoJoinWhereClause(writer, null, tableName, pkFields, this);
@@ -3113,14 +3112,14 @@ public class DatabasePlatform extends DatasourcePlatform {
      * @param targetPkFields primary key fields for the target table.
      */
      public void writeDeleteFromTargetTableUsingTempTableSql(Writer writer, DatabaseTable table, DatabaseTable targetTable,
-                                                     Collection pkFields,
-                                                     Collection targetPkFields, DatasourcePlatform platform) throws IOException
+                                                             Collection<DatabaseField> pkFields,
+                                                             Collection<DatabaseField> targetPkFields, DatasourcePlatform platform) throws IOException
     {
         writer.write("DELETE FROM ");
         String targetTableName = targetTable.getQualifiedNameDelimited(this);
         writer.write(targetTableName);
         writer.write(" WHERE EXISTS(SELECT ");
-        writer.write(((DatabaseField)pkFields.iterator().next()).getNameDelimited(platform));
+        writer.write(pkFields.iterator().next().getNameDelimited(platform));
         writer.write(" FROM ");
         String tempTableName = getTempTableForTable(table).getQualifiedNameDelimited(this);
         writer.write(tempTableName);
@@ -3215,16 +3214,16 @@ public class DatabasePlatform extends DatasourcePlatform {
      * INTERNAL:
      * helper method, don't override.
      */
-    protected static void writeFieldsList(Writer writer, Collection fields, DatasourcePlatform platform) throws IOException {
+    protected static void writeFieldsList(Writer writer, Collection<DatabaseField> fields, DatasourcePlatform platform) throws IOException {
         boolean isFirst = true;
-        Iterator itFields = fields.iterator();
+        Iterator<DatabaseField> itFields = fields.iterator();
         while(itFields.hasNext()) {
             if(isFirst) {
                 isFirst = false;
             } else {
                 writer.write(", ");
             }
-            DatabaseField field = (DatabaseField)itFields.next();
+            DatabaseField field = itFields.next();
             writer.write(field.getNameDelimited(platform));
         }
     }
@@ -3233,7 +3232,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * INTERNAL:
      * helper method, don't override.
      */
-    protected static void writeAutoAssignmentSetClause(Writer writer, String tableName1, String tableName2, Collection fields, DatasourcePlatform platform) throws IOException {
+    protected static void writeAutoAssignmentSetClause(Writer writer, String tableName1, String tableName2, Collection<DatabaseField> fields, DatasourcePlatform platform) throws IOException {
         writer.write(" SET ");
         writeFieldsAutoClause(writer, tableName1, tableName2, fields, ", ", platform);
     }
@@ -3242,7 +3241,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * INTERNAL:
      * helper method, don't override.
      */
-    protected static void writeAutoJoinWhereClause(Writer writer, String tableName1, String tableName2, Collection pkFields, DatasourcePlatform platform) throws IOException {
+    protected static void writeAutoJoinWhereClause(Writer writer, String tableName1, String tableName2, Collection<DatabaseField> pkFields, DatasourcePlatform platform) throws IOException {
         writer.write(" WHERE ");
         writeFieldsAutoClause(writer, tableName1, tableName2, pkFields, " AND ", platform);
     }
@@ -3251,14 +3250,14 @@ public class DatabasePlatform extends DatasourcePlatform {
      * INTERNAL:
      * helper method, don't override.
      */
-    protected static void writeFieldsAutoClause(Writer writer, String tableName1, String tableName2, Collection fields, String separator, DatasourcePlatform platform) throws IOException {
+    protected static void writeFieldsAutoClause(Writer writer, String tableName1, String tableName2, Collection<DatabaseField> fields, String separator, DatasourcePlatform platform) throws IOException {
         writeFields(writer, tableName1, tableName2, fields, fields, separator, platform);
     }
     /**
      * INTERNAL:
      * helper method, don't override.
      */
-    protected static void writeJoinWhereClause(Writer writer, String tableName1, String tableName2, Collection pkFields1, Collection pkFields2, DatasourcePlatform platform) throws IOException {
+    protected static void writeJoinWhereClause(Writer writer, String tableName1, String tableName2, Collection<DatabaseField> pkFields1, Collection<DatabaseField> pkFields2, DatasourcePlatform platform) throws IOException {
         writer.write(" WHERE ");
         writeFields(writer, tableName1, tableName2, pkFields1, pkFields2, " AND ", platform);
     }
@@ -3267,10 +3266,10 @@ public class DatabasePlatform extends DatasourcePlatform {
      * INTERNAL:
      * helper method, don't override.
      */
-    protected static void writeFields(Writer writer, String tableName1, String tableName2, Collection fields1, Collection fields2, String separator, DatasourcePlatform platform) throws IOException {
+    protected static void writeFields(Writer writer, String tableName1, String tableName2, Collection<DatabaseField> fields1, Collection<DatabaseField> fields2, String separator, DatasourcePlatform platform) throws IOException {
         boolean isFirst = true;
-        Iterator itFields1 = fields1.iterator();
-        Iterator itFields2 = fields2.iterator();
+        Iterator<DatabaseField> itFields1 = fields1.iterator();
+        Iterator<DatabaseField> itFields2 = fields2.iterator();
         while(itFields1.hasNext()) {
             if(isFirst) {
                 isFirst = false;
@@ -3281,14 +3280,14 @@ public class DatabasePlatform extends DatasourcePlatform {
                 writer.write(tableName1);
                 writer.write(".");
             }
-            String fieldName1 = ((DatabaseField)itFields1.next()).getNameDelimited(platform);
+            String fieldName1 = itFields1.next().getNameDelimited(platform);
             writer.write(fieldName1);
             writer.write(" = ");
             if(tableName2 != null) {
                 writer.write(tableName2);
                 writer.write(".");
             }
-            String fieldName2 = ((DatabaseField)itFields2.next()).getNameDelimited(platform);
+            String fieldName2 = itFields2.next().getNameDelimited(platform);
             writer.write(fieldName2);
         }
     }
@@ -3392,7 +3391,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * This method builds a Struct using the unwrapped connection within the session
      * @return Struct
      */
-    public Struct createStruct(String structTypeName, Object[] attributes, AbstractRecord row, Vector orderedFields, AbstractSession session, Connection connection) throws SQLException {
+    public Struct createStruct(String structTypeName, Object[] attributes, AbstractRecord row, Vector<DatabaseField> orderedFields, AbstractSession session, Connection connection) throws SQLException {
         java.sql.Connection unwrappedConnection = getConnection(session, connection);
         return createStruct(structTypeName,attributes,unwrappedConnection);
     }

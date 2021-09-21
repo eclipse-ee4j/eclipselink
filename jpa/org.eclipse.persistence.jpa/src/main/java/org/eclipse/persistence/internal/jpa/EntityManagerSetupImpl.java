@@ -875,11 +875,6 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * This method is used to resolve Descriptor Customizers that might have been stored in the project
      * for JPA project caching.
      *
-     * @param realClassLoader
-     * @throws ClassNotFoundException
-     * @throws PrivilegedActionException
-     * @throws IllegalAccessException
-     * @throws InstantiationException
      */
     private void processDescriptorsFromCachedProject(ClassLoader realClassLoader) throws ClassNotFoundException, PrivilegedActionException, IllegalAccessException, InstantiationException {
         for (ClassDescriptor descriptor: session.getProject().getDescriptors().values()) {
@@ -1404,8 +1399,6 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * Internal:
      * Returns a list of StructConverter instances from a list of StructConverter names stored within the project.
      *
-     * @param realClassLoader
-     * @return
      */
     protected List<StructConverter> getStructConverters(ClassLoader realClassLoader) {
         List<StructConverter> structConverters = new ArrayList<StructConverter>();
@@ -4120,7 +4113,6 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * Convenience function to allow us to reset the Metamodel
      * in the possible case that we want to regenerate it.
      * This function is outside of the JPA 2.0 specification.
-     * @param aMetamodel
      * @since Java Persistence 2.0
      */
     public void setMetamodel(Metamodel aMetamodel) {
@@ -4261,7 +4253,6 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * for a canonical metamodel class and initialize each attribute in it with a proxy that can cause the
      * rest of the metamodel population.  Attributes are found reflectively rather than through the metamodel
      * to avoid having to further initialize the metamodel.
-     * @param factory
      */
     public void preInitializeCanonicalMetamodel(EntityManagerFactoryImpl factory){
         // 338837: verify that the collection is not empty - this would mean entities did not make it into the search path
@@ -4471,8 +4462,6 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      *
      * This call will mean any users of this EntityManagerSetupImpl will get the new version the next time
      * they look it up (for instance and EntityManager creation time)
-     * @param properties
-     * @return
      */
     public EntityManagerSetupImpl refreshMetadata(Map properties){
         String sessionName = getSessionName();

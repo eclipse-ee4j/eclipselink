@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,7 +46,6 @@ public class CacheImpl implements JpaCache {
     private EntityManagerFactoryDelegate emf;
 
     /**
-     * @param emf
      */
     public CacheImpl(EntityManagerFactoryDelegate emf) {
         this.emf = emf;
@@ -87,8 +86,6 @@ public class CacheImpl implements JpaCache {
      * passed in class parameter and invalidates only entities found in the cache.
      * If the class is not an Entity or MappedSuperclass (such as an Embeddable or plain java class)
      *  - nothing will be evicted
-     * @param possibleSuperclass
-     * @param id
      */
     private void evictAssignableEntitySuperclass(Class possibleSuperclass, Object id) {
         // just remove the parent entity
@@ -444,7 +441,6 @@ public class CacheImpl implements JpaCache {
     /**
      * INTERNAL:
      * Return the EntityManagerFactory associated with this CacheImpl.
-     * @return
      */
     protected EntityManagerFactoryDelegate getEntityManagerFactory() {
         return this.emf;
@@ -453,7 +449,6 @@ public class CacheImpl implements JpaCache {
     /**
      * INTERNAL:
      * Return the Session associated with the EntityManagerFactory.
-     * @return
      */
     protected Session getSession() {
         return getEntityManagerFactory().getDatabaseSession();
@@ -462,7 +457,6 @@ public class CacheImpl implements JpaCache {
     /**
      * INTERNAL:
      * Return the IdentityMapAccessor associated with the session on the EntityManagerFactory on this CacheImpl.
-     * @return
      */
     protected IdentityMapAccessor getAccessor() {
         return getSession().getIdentityMapAccessor();

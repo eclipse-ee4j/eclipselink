@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,8 +38,6 @@ public class StaticWeaveDirectoryOutputHandler extends AbstractStaticWeaveOutput
 
     /**
      * Construct an instance of StaticWeaveDirectoryOutputHandler.
-     * @param source
-     * @param target
      */
     public StaticWeaveDirectoryOutputHandler(URL source,URL target){
         this.source=source;
@@ -47,8 +45,6 @@ public class StaticWeaveDirectoryOutputHandler extends AbstractStaticWeaveOutput
     }
     /**
      * create directory into target directory.
-     * @param dirPath
-     * @throws IOException
      */
     @Override
     public void addDirEntry(String dirPath)throws IOException {
@@ -63,9 +59,6 @@ public class StaticWeaveDirectoryOutputHandler extends AbstractStaticWeaveOutput
 
     /**
      * Write entry bytes into target, this method is usually invoked  if class has been tranformed
-     * @param targetEntry
-     * @param entryBytes
-     * @throws IOException
      */
     @Override
     public void addEntry(JarEntry targetEntry,byte[] entryBytes)throws IOException{
@@ -87,9 +80,6 @@ public class StaticWeaveDirectoryOutputHandler extends AbstractStaticWeaveOutput
 
     /**
      * Write entry into target, this method usually copy original class into target.
-     * @param jis
-     * @param entry
-     * @throws IOException
      */
     @Override
     public void addEntry(InputStream jis,JarEntry entry) throws IOException,URISyntaxException {

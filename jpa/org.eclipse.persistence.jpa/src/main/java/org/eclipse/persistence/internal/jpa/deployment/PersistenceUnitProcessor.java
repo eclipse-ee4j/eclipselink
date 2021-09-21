@@ -171,7 +171,6 @@ public class PersistenceUnitProcessor {
      * {@code descriptorLocation} via {@code Classloader.getResource(String)}).
      * @param descriptorLocation - the name of the resource.
      * @return The URL of the PU root containing the resource.
-     * @throws IOException
      * @throws ValidationException if the resolved root doesn't conform to the
      * JPA specification (8.2)
      */
@@ -720,8 +719,6 @@ public class PersistenceUnitProcessor {
     /**
      * Build the unique persistence name by concatenating the decoded URL with the persistence unit name.
      * A decoded URL is required while persisting on a multi-bytes OS.
-     * @param url
-     * @param puName
      * @return String
      */
    public static String buildPersistenceUnitName(URL url, String puName){

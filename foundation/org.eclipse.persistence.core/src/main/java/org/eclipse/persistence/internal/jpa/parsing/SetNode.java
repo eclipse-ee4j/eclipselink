@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,11 +24,11 @@ import java.util.*;
  * Slightly different from other nodes since holds more than two children in a list.
  */
 public class SetNode extends MajorNode {
-    private List assignmentNodes = null;
+    private List <Node>assignmentNodes = null;
 
     public SetNode() {
         super();
-        assignmentNodes = new Vector();
+        assignmentNodes = new Vector<>();
     }
 
     /**
@@ -36,7 +36,7 @@ public class SetNode extends MajorNode {
      * built expressions on the query.
      */
     public void addUpdatesToQuery(UpdateAllQuery theQuery, GenerationContext context) {
-        Iterator iterator = assignmentNodes.iterator();
+        Iterator<Node> iterator = assignmentNodes.iterator();
         while (iterator.hasNext()) {
             EqualsAssignmentNode node = (EqualsAssignmentNode)iterator.next();
             Expression leftExpression = getExpressionForNode(node.getLeft(), theQuery.getReferenceClass(), context);
@@ -53,8 +53,8 @@ public class SetNode extends MajorNode {
      */
     @Override
     public Node qualifyAttributeAccess(ParseTreeContext context) {
-        for (Iterator i = assignmentNodes.iterator(); i.hasNext(); ) {
-            Node item = (Node)i.next();
+        for (Iterator<Node> i = assignmentNodes.iterator(); i.hasNext(); ) {
+            Node item = i.next();
             item.qualifyAttributeAccess(context);
         }
         return this;
@@ -66,8 +66,8 @@ public class SetNode extends MajorNode {
      */
     @Override
     public void validate(ParseTreeContext context) {
-        for (Iterator i = assignmentNodes.iterator(); i.hasNext(); ) {
-            Node item = (Node)i.next();
+        for (Iterator<Node> i = assignmentNodes.iterator(); i.hasNext(); ) {
+            Node item = i.next();
             item.validate(context);
         }
     }
@@ -77,7 +77,7 @@ public class SetNode extends MajorNode {
      * We will assume that set_to nodes change elements that are direct mappings on the reference
      * class of the query.
      */
-    protected Expression getExpressionForNode(Node node, Class referenceClass, GenerationContext context) {
+    protected Expression getExpressionForNode(Node node, Class<?> referenceClass, GenerationContext context) {
         Expression expression = null;
         if (node.isAttributeNode()) {
             // look up a preexisting expression based on the reference class of the query.
@@ -97,7 +97,7 @@ public class SetNode extends MajorNode {
     /**
      * INTERNAL
      */
-    public void setAssignmentNodes(List nodes) {
+    public void setAssignmentNodes(List<Node> nodes) {
         assignmentNodes = nodes;
     }
 

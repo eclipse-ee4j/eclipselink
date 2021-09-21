@@ -260,7 +260,7 @@ public class JAXPPlatform implements XMLPlatform {
     }
       @Override
     public void namespaceQualifyFragment(Element next) {
-        namespaceQualifyFragment(next, new ArrayList<String>());
+        namespaceQualifyFragment(next, new ArrayList<>());
     }
 
     //pass list of prefixes declared and encountered

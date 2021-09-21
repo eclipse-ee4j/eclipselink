@@ -1695,7 +1695,6 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     public String convertListToString(Object sourceObject, QName schemaType) throws ConversionException {
         StringBuilder returnStringBuilder = new StringBuilder();
         if (sourceObject instanceof List) {
-            @SuppressWarnings({"unchecked"})
             List<?> list = (List<?>) sourceObject;
             for (int i = 0, listSize = list.size(); i < listSize; i++) {
                 Object next = list.get(i);

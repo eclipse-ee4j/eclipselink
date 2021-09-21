@@ -24,8 +24,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 
-import org.eclipse.persistence.internal.helper.Helper;
-
 /**
  * INTERNAL:
  * <p><b>Purpose</b>: Model a class for code generation purposes.

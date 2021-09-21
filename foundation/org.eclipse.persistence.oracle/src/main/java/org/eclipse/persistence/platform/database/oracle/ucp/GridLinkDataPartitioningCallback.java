@@ -33,7 +33,7 @@ import org.eclipse.persistence.sessions.Session;
  */
 public class GridLinkDataPartitioningCallback extends UCPDataPartitioningCallback {
     /** The id is stored in a static thread local. */
-    protected static ThreadLocal partitionId = new ThreadLocal();
+    protected static ThreadLocal<Integer> partitionId = new ThreadLocal<>();
 
     public static boolean isRegistered = false;
 
@@ -68,7 +68,7 @@ public class GridLinkDataPartitioningCallback extends UCPDataPartitioningCallbac
             Object instance = PrivilegedAccessHelper.invokeMethod(getInstance, null, null);
             Method getDataSourceService = PrivilegedAccessHelper.getMethod(instance.getClass(), "getDataSourceService", null, false);
             Object service = PrivilegedAccessHelper.invokeMethod(getDataSourceService, instance, null);
-            Class[] argumentTypes = new Class[] {DataBasedConnectionAffinityCallback.class};
+            Class<?>[] argumentTypes = new Class<?>[] {DataBasedConnectionAffinityCallback.class};
             Method registerDataAffinityCallback = PrivilegedAccessHelper.getMethod(service.getClass(), "registerDataAffinityCallback", argumentTypes, false);
             Object[] arguments = new Object[] {new GridLinkDataPartitioningCallback()};
             PrivilegedAccessHelper.invokeMethod(registerDataAffinityCallback, service, arguments);
@@ -88,7 +88,7 @@ public class GridLinkDataPartitioningCallback extends UCPDataPartitioningCallbac
 
     @Override
     public int getPartitionId() {
-        Integer id = (Integer)partitionId.get();
+        Integer id = partitionId.get();
         if (id == null) {
             return 0;
         }

@@ -564,8 +564,7 @@ public class ProviderHelper extends XRServiceFactory {
          * binary objects, we must convert
          */
         org.eclipse.persistence.internal.oxm.schema.model.Element invocationElement =
-          (org.eclipse.persistence.internal.oxm.schema.model.Element)
-           dbwsAdapter.getExtendedSchema().getTopLevelElements().get(invocation.getName());
+                dbwsAdapter.getExtendedSchema().getTopLevelElements().get(invocation.getName());
         String typeName = invocationElement.getType();
         int idx = typeName.indexOf(':');
         if (idx != -1) {
@@ -573,7 +572,7 @@ public class ProviderHelper extends XRServiceFactory {
           typeName = typeName.substring(idx+1);
         }
         ComplexType complexType =
-          (ComplexType)dbwsAdapter.getExtendedSchema().getTopLevelComplexTypes().get(typeName);
+                dbwsAdapter.getExtendedSchema().getTopLevelComplexTypes().get(typeName);
         if (complexType.getSequence() != null) {
             // for each operation, there is a corresponding top-level Request type
             // which has the arguments to the operation

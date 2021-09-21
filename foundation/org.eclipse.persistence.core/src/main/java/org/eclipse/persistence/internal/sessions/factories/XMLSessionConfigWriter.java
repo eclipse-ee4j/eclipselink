@@ -18,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
@@ -43,7 +44,7 @@ public class XMLSessionConfigWriter {
      */
     public static void write(SessionConfigs eclipseLinkSessions, String fileName) {
         //Bug#4305370 Needs to be utf-8 encoded.
-        try (Writer writer = new OutputStreamWriter(new FileOutputStream(fileName), "UTF-8")) {
+        try (Writer writer = new OutputStreamWriter(new FileOutputStream(fileName), StandardCharsets.UTF_8)) {
             write(eclipseLinkSessions, writer);
         } catch (IOException exception) {
             throw ValidationException.fileError(exception);

@@ -58,7 +58,6 @@ public interface JpaEntityManagerFactory extends EntityManagerFactory, AutoClose
      * This method will return a version of EntityManagerFactory that is
      * based on the available metadata at the time it is called.  Future calls
      * to refresh will not affect that metadata on this EntityManagerFactory.
-     * @return
      */
     EntityManagerFactoryDelegate unwrap();
 
@@ -66,7 +65,6 @@ public interface JpaEntityManagerFactory extends EntityManagerFactory, AutoClose
      * As this EntityManagerFactory to refresh itself.  This will cause the
      * underlying EntityManagerFactory implementation to be dropped and a new one
      * to be bootstrapped.  Existing EntityManagers will continue to use the old implementation
-     * @param properties
      */
     void refreshMetadata(Map<String, Object> properties);
 

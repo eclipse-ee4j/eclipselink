@@ -27,7 +27,7 @@ public abstract class TypeDefParticle {
     private TypeDefParticleOwner owner;
     private String minOccurs;
     private String maxOccurs;
-    private java.util.List elements;
+    private java.util.List<Element> elements;
 
     //Group??
     protected TypeDefParticle() {
@@ -37,13 +37,13 @@ public abstract class TypeDefParticle {
         getElements().add(elem);
     }
 
-    public void setElements(List elements) {
+    public void setElements(List<Element> elements) {
         this.elements = elements;
     }
 
-    public List getElements() {
+    public List<Element> getElements() {
         if (elements == null) {
-            elements = new ArrayList();
+            elements = new ArrayList<>();
         }
         return elements;
     }

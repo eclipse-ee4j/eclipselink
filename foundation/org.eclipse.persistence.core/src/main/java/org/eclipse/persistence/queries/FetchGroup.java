@@ -293,7 +293,7 @@ public class FetchGroup extends AttributeGroup {
      * LoadGroup created with all member groups with shouldLoad set to false dropped.
      */
     public LoadGroup toLoadGroupLoadOnly() {
-        return this.toLoadGroup(new HashMap<AttributeGroup, LoadGroup>(), true);
+        return this.toLoadGroup(new HashMap<>(), true);
     }
 
     @Override

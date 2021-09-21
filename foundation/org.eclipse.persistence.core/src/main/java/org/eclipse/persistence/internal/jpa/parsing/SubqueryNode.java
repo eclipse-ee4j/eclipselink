@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ public class SubqueryNode extends Node {
 
     /** Set of names of variables declared in an outer scope and used in teh
      * subquery. */
-    private Set outerVars;
+    private Set<String> outerVars;
 
     /**
      * Return a new SubqueryNode.
@@ -85,7 +85,7 @@ public class SubqueryNode extends Node {
         outerVars = context.getOuterScopeVariables();
         SelectNode selectNode = (SelectNode)subqueryParseTree.getQueryNode();
         // Get the select expression, subqueries only have one
-        Node selectExpr = (Node)selectNode.getSelectExpressions().get(0);
+        Node selectExpr = selectNode.getSelectExpressions().get(0);
         setType(selectExpr.getType());
     }
 

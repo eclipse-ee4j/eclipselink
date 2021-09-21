@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -139,7 +139,6 @@ public class XmlTransformation
     /**
      * Indicates if an XmlReadTransformer has been set, i.e. is non-null.
      *
-     * @return
      */
     public boolean isSetXmlReadTransformer() {
         return xmlReadTransformer != null;
@@ -174,7 +173,6 @@ public class XmlTransformation
      * set, i.e. the List of is XmlWriteTransformers is non-null
      * and non-empty.
      *
-     * @return
      */
     public boolean isSetXmlWriteTransformers() {
         return xmlWriteTransformer != null && xmlWriteTransformer.size() > 0;
@@ -292,7 +290,6 @@ public class XmlTransformation
         /**
          * Indicates if a method has been set, i.e. the method property is non-null.
          *
-         * @return
          */
         public boolean isSetMethod() {
             return method != null;
@@ -326,7 +323,6 @@ public class XmlTransformation
          * Indicates if a transformerClass has been set, i.e. the
          * transformerClass property is non-null.
          *
-         * @return
          */
         public boolean isSetTransformerClass() {
            return transformerClass != null;
@@ -391,7 +387,6 @@ public class XmlTransformation
         /**
          * Indicates if a method has been set, i.e. the method property is non-null.
          *
-         * @return
          */
         public boolean isSetMethod() {
             return method != null;
@@ -424,7 +419,6 @@ public class XmlTransformation
         /**
          * Indicates if a xmlPath has been set, i.e. the xmlPath property is non-null.
          *
-         * @return
          */
         public boolean isSetXmlPath() {
             return xmlPath != null;
@@ -458,7 +452,6 @@ public class XmlTransformation
          * Indicates if a transformerClass has been set, i.e. the
          * transformerClass property is non-null.
          *
-         * @return
          */
         public boolean isSetTransformerClass() {
            return transformerClass != null;

@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jakarta.persistence.Cache;
 import org.eclipse.persistence.annotations.CacheCoordinationType;
 import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.annotations.DatabaseChangeNotificationType;
@@ -47,7 +46,6 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.interceptors.CacheInterceptor;
-import org.eclipse.persistence.sessions.interceptors.CacheKeyInterceptor;
 
 /**
  * <p><b>Purpose</b>:

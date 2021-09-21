@@ -185,7 +185,6 @@ public class StaticWeaveAntTask extends Task{
 
     /**
      * Verify the value of attributes.
-     * @throws BuildException
      */
     private void verifyOptions() throws BuildException {
        if (source==null) {

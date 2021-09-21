@@ -484,7 +484,6 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     /**
      * Apply a predicate to test whether the expression is a member
      * of the argument list.
-     * @param values
      * @return predicate testing for membership
      */
     @Override

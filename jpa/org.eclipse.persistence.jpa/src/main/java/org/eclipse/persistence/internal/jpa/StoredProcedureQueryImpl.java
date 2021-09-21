@@ -896,7 +896,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * Set the lock mode type to be used for the query execution.
      *
-     * @param lockMode
      * @throws IllegalStateException
      *             if not a Java Persistence query language SELECT query
      */
@@ -908,7 +907,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * Set the maximum number of results to retrieve.
      *
-     * @param maxResult
      * @return the same query instance
      */
     @Override
@@ -919,9 +917,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * Bind an instance of java.util.Calendar to a positional parameter.
      *
-     * @param position
-     * @param value
-     * @param temporalType
      * @return the same query instance
      * @throws IllegalArgumentException if position does not correspond to a
      * positional parameter of the query or if the value argument is of
@@ -936,9 +931,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * Bind an instance of java.util.Date to a positional parameter.
      *
-     * @param position
-     * @param value
-     * @param temporalType
      * @return the same query instance
      * @throws IllegalArgumentException if position does not correspond to a
      * positional parameter of the query or if the value argument is of
@@ -953,8 +945,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * Bind an argument to a positional parameter.
      *
-     * @param position
-     * @param value
      * @return the same query instance
      * @throws IllegalArgumentException if position does not correspond to a
      * positional parameter of the query or if the argument is of incorrect type
@@ -974,9 +964,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * Bind an instance of java.util.Calendar to a Parameter object.
      *
-     * @param param
-     * @param value
-     * @param temporalType
      * @return the same query instance
      * @throws IllegalArgumentException if the parameter does not correspond to
      * a parameter of the query
@@ -1001,9 +988,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * Bind an instance of java.util.Date to a Parameter object.
      *
-     * @param param
-     * @param value
-     * @param temporalType
      * @return the same query instance
      * @throws IllegalArgumentException if the parameter does not correspond to
      * a parameter of the query
@@ -1028,8 +1012,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * Bind the value of a Parameter object.
      *
-     * @param param
-     * @param value
      * @return the same query instance
      * @throws IllegalArgumentException if the parameter does not correspond to
      * a parameter of the query
@@ -1054,9 +1036,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * Bind an instance of java.util.Calendar to a named parameter.
      *
-     * @param name
-     * @param value
-     * @param temporalType
      * @return the same query instance
      * @throws IllegalArgumentException if the parameter name does not
      * correspond to a parameter of the query or if the value argument is of
@@ -1071,9 +1050,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * Bind an instance of java.util.Date to a named parameter.
      *
-     * @param name
-     * @param value
-     * @param temporalType
      * @return the same query instance
      * @throws IllegalArgumentException if the parameter name does not
      * correspond to a parameter of the query or if the value argument is of
@@ -1088,8 +1064,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * Bind an argument to a named parameter.
      *
-     * @param name
-     * @param value
      * @return the same query instance
      * @throws IllegalArgumentException if the parameter name does not
      * correspond to a parameter of the query or if the argument is of incorrect

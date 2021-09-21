@@ -210,27 +210,39 @@ public class VectorUtils {
 
         @Override
         public ListIterator<E> listIterator(final int index) {
-            return new ListIterator<E>() {
+            return new ListIterator<>() {
                 private final ListIterator<? extends E> i
-                    = listIterator(index);
+                        = listIterator(index);
 
                 @Override
-                public boolean hasNext() {return i.hasNext();}
+                public boolean hasNext() {
+                    return i.hasNext();
+                }
 
                 @Override
-                public E next() {return i.next();}
+                public E next() {
+                    return i.next();
+                }
 
                 @Override
-                public boolean hasPrevious() {return i.hasPrevious();}
+                public boolean hasPrevious() {
+                    return i.hasPrevious();
+                }
 
                 @Override
-                public E previous() {return i.previous();}
+                public E previous() {
+                    return i.previous();
+                }
 
                 @Override
-                public int nextIndex() {return i.nextIndex();}
+                public int nextIndex() {
+                    return i.nextIndex();
+                }
 
                 @Override
-                public int previousIndex() {return i.previousIndex();}
+                public int previousIndex() {
+                    return i.previousIndex();
+                }
 
                 @Override
                 public void remove() {

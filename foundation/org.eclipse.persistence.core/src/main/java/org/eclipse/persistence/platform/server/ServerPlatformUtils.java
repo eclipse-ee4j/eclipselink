@@ -44,7 +44,7 @@ import org.eclipse.persistence.sessions.DatabaseSession;
  * A utility class to interact with ServerPlatforms.
  */
 public final class ServerPlatformUtils {
-    private static final List<ServerPlatformDetector> PLATFORMS = new ArrayList<ServerPlatformDetector>() {{
+    private static final List<ServerPlatformDetector> PLATFORMS = new ArrayList<>() {{
         add(new NoServerPlatformDetector());
         add(new WebSpherePlatformDetector());
         add(new WebLogicPlatformDetector());
@@ -105,7 +105,6 @@ public final class ServerPlatformUtils {
      *
      * @see ServerPlatformBase#ServerPlatformBase(DatabaseSession)
      */
-    @SuppressWarnings({"rawtypes"})
     public static ServerPlatform createServerPlatform(DatabaseSession session, String platformClass, ClassLoader loader) {
         if (platformClass == null) {
             throw ServerPlatformException.invalidServerPlatformClass(null, null);

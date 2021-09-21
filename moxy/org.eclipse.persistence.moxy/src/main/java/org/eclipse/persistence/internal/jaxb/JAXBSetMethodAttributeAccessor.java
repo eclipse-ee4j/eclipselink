@@ -45,8 +45,6 @@ public class JAXBSetMethodAttributeAccessor extends MethodAttributeAccessor {
      * well as the classloader that will be used to load the associated class
      * during initialization.
      *
-     * @param parameterTypeAsString
-     * @param loader
      */
     public JAXBSetMethodAttributeAccessor(String parameterTypeAsString, ClassLoader loader) {
         this.parameterTypeAsString = parameterTypeAsString;

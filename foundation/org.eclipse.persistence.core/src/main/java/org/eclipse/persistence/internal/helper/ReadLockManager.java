@@ -150,7 +150,6 @@ public class ReadLockManager {
      * that want to dump a snapshot of the current state of the system
      * or to go about doing
      */
-    @SuppressWarnings("unchecked")
     @Override
     public synchronized ReadLockManager clone() {
         ReadLockManager clone = new ReadLockManager();

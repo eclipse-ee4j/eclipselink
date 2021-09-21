@@ -14,12 +14,18 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.jpa.parsing;
 
-import java.util.*;
-
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.internal.localization.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.DeleteAllQuery;
+import org.eclipse.persistence.queries.ModifyAllQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.UpdateAllQuery;
+
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * INTERNAL
@@ -49,7 +55,7 @@ public class ParseTree {
     private ClassLoader classLoader = null;
     private short distinctState = ObjectLevelReadQuery.UNCOMPUTED_DISTINCT;
     private boolean validated = false;
-    private Set unusedVariables = null;
+    private Set<String> unusedVariables = null;
 
     /**
      * Return a new ParseTree.
@@ -74,7 +80,7 @@ public class ParseTree {
       * Need to test this for Employee, employee.getAddress(), report query
       */
     public void adjustReferenceClassForQuery(DatabaseQuery theQuery, GenerationContext generationContext) {
-        Class referenceClass = getReferenceClass(theQuery, generationContext);
+        Class<?> referenceClass = getReferenceClass(theQuery, generationContext);
         if ((referenceClass != null) && (referenceClass != theQuery.getReferenceClass())) {
             if (theQuery.isObjectLevelReadQuery()) {
                 // The referenceClass needs to be changed.
@@ -98,7 +104,7 @@ public class ParseTree {
         String variable = getFromNode().getFirstVariable();
         ParseTreeContext context = generationContext.getParseTreeContext();
         if (context.isRangeVariable(variable)) {
-            Class referenceClass = theQuery.getReferenceClass();
+            Class<?> referenceClass = theQuery.getReferenceClass();
             // Create a new expression builder for the reference class
             ExpressionBuilder builder = new ExpressionBuilder(referenceClass);
             // Use the expression builder as the default expression builder for the query
@@ -109,7 +115,7 @@ public class ParseTree {
             // Get the declaring node for the variable
             Node path = context.pathForVariable(variable);
             // Get the ExpressionBuilder of the range variable for the path
-            Class baseClass = getBaseExpressionClass(path, generationContext);
+            Class<?> baseClass = getBaseExpressionClass(path, generationContext);
             // and change the reference class accordingly
             theQuery.setReferenceClass(baseClass);
             theQuery.changeDescriptor(generationContext.getSession());
@@ -129,7 +135,7 @@ public class ParseTree {
     public void initBaseExpression(ModifyAllQuery theQuery, GenerationContext generationContext) {
         ModifyNode queryNode = (ModifyNode)getQueryNode();
         String variable = queryNode.getCanonicalAbstractSchemaIdentifier();
-        Class referenceClass = theQuery.getReferenceClass();
+        Class<?> referenceClass = theQuery.getReferenceClass();
         // Create a new expression builder for the reference class
         ExpressionBuilder builder = new ExpressionBuilder(referenceClass);
         // Use the expression builder as the default expression builder for the query
@@ -139,28 +145,28 @@ public class ParseTree {
     }
 
     /** */
-    private Class getBaseExpressionClass(Node node, GenerationContext generationContext) {
+    private Class<?> getBaseExpressionClass(Node node, GenerationContext generationContext) {
         ParseTreeContext context = generationContext.getParseTreeContext();
-        Class clazz = null;
-        if (node == null) {
-            clazz = null;
-        } else if (node.isDotNode()) {
-            // DotNode: delegate to left
-            clazz = getBaseExpressionClass(node.getLeft(), generationContext);
-        } else if (node.isVariableNode()) {
-            // VariableNode
-            String variable = ((VariableNode)node).getCanonicalVariableName();
-            if (!context.isRangeVariable(variable)) {
-                Node path = context.pathForVariable(variable);
-                // Variable is defined in JOIN/IN clause =>
-                // return the Class from its definition
-                clazz = getBaseExpressionClass(path, generationContext);
-            } else {
-                // Variable is defined in range variable decl =>
-                // return its class
-                String schema = context.schemaForVariable(variable);
-                if (schema != null) {
-                    clazz = context.classForSchemaName(schema, generationContext);
+        Class<?> clazz = null;
+        if (node != null) {
+            if (node.isDotNode()) {
+                // DotNode: delegate to left
+                clazz = getBaseExpressionClass(node.getLeft(), generationContext);
+            } else if (node.isVariableNode()) {
+                // VariableNode
+                String variable = ((VariableNode) node).getCanonicalVariableName();
+                if (!context.isRangeVariable(variable)) {
+                    Node path = context.pathForVariable(variable);
+                    // Variable is defined in JOIN/IN clause =>
+                    // return the Class from its definition
+                    clazz = getBaseExpressionClass(path, generationContext);
+                } else {
+                    // Variable is defined in range variable decl =>
+                    // return its class
+                    String schema = context.schemaForVariable(variable);
+                    if (schema != null) {
+                        clazz = context.classForSchemaName(schema, generationContext);
+                    }
                 }
             }
         }
@@ -280,8 +286,8 @@ public class ParseTree {
      */
     public void addNonFetchJoinAttributes(ObjectLevelReadQuery theQuery, GenerationContext generationContext) {
         ParseTreeContext context = generationContext.getParseTreeContext();
-        for (Iterator i = unusedVariables.iterator(); i.hasNext();) {
-            String variable = (String)i.next();
+        for (Iterator<String> i = unusedVariables.iterator(); i.hasNext();) {
+            String variable = i.next();
             Expression expr = null;
             if (!context.isRangeVariable(variable)) {
                 Node path = context.pathForVariable(variable);
@@ -314,10 +320,10 @@ public class ParseTree {
         //Bug#4646580  Add arguments to query
         if (context.hasParameters()) {
             TypeHelper typeHelper = context.getTypeHelper();
-            for (Iterator i = context.getParameterNames().iterator(); i.hasNext();) {
-                String param = (String)i.next();
+            for (Iterator<String> i = context.getParameterNames().iterator(); i.hasNext();) {
+                String param = i.next();
                 Object type = context.getParameterType(param);
-                Class clazz = typeHelper.getJavaClass(type);
+                Class<?> clazz = typeHelper.getJavaClass(type);
                 if (clazz == null) {
                     clazz = Object.class;
                 }
@@ -431,7 +437,7 @@ public class ParseTree {
      * getReferenceClass(): Answer the class which will be the reference class for the query.
      * Resolve this using the node parsed from the "SELECT" of the EJBQL query string
      */
-    public Class getReferenceClass(DatabaseQuery query, GenerationContext generationContext) {
+    public Class<?> getReferenceClass(DatabaseQuery query, GenerationContext generationContext) {
         if (getQueryNode() == null) {
             return null;
         }
@@ -584,9 +590,7 @@ public class ParseTree {
      */
     @Override
     public String toString() {
-        StringBuilder buffer = new StringBuilder();
-        buffer.append(getContext().toString());
-        return ToStringLocalization.buildMessage("context", null) + " " + buffer.toString();
+        return ToStringLocalization.buildMessage("context", null) + " " + getContext().toString();
     }
 
     /**

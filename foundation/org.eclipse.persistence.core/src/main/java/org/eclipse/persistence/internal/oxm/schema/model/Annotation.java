@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,26 +14,30 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.oxm.schema.model;
 
+import org.w3c.dom.Element;
+
+import java.util.List;
+
 public class Annotation {
-    private java.util.List documentation;
-    private java.util.List appInfo;
+    private java.util.List<String> documentation;
+    private java.util.List<org.w3c.dom.Element> appInfo;
 
     public Annotation() {
     }
 
-    public void setDocumentation(java.util.List documentation) {
+    public void setDocumentation(List<String> documentation) {
         this.documentation = documentation;
     }
 
-    public java.util.List getDocumentation() {
+    public List<String> getDocumentation() {
         return documentation;
     }
 
-    public void setAppInfo(java.util.List appInfo) {
+    public void setAppInfo(List<org.w3c.dom.Element> appInfo) {
         this.appInfo = appInfo;
     }
 
-    public java.util.List getAppInfo() {
+    public List<Element> getAppInfo() {
         return appInfo;
     }
 }

@@ -14,6 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.jpa.parsing;
 
+import org.eclipse.persistence.expressions.Expression;
+
 /**
  * INTERNAL
  * <p><b>Purpose</b>: Superclass for Aggregate Nodes
@@ -23,9 +25,6 @@ package org.eclipse.persistence.internal.jpa.parsing;
  *    @author Jon Driscoll
  *    @since TopLink 5.0
  */
-
-import org.eclipse.persistence.expressions.Expression;
-
 public abstract class AggregateNode extends Node implements AliasableNode {
 
     private boolean distinct = false;
@@ -43,7 +42,7 @@ public abstract class AggregateNode extends Node implements AliasableNode {
      * resolveClass: Answer the class associated with my left node.
      */
     @Override
-    public Class resolveClass(GenerationContext context) {
+    public Class<?> resolveClass(GenerationContext context) {
         return getLeft().resolveClass(context);
     }
 

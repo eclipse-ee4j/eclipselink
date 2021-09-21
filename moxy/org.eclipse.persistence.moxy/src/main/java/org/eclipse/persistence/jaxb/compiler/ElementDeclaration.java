@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -151,7 +151,6 @@ public class ElementDeclaration {
     }
     /**
      * Return if the global element will be marked as nillable
-     * @return
      */
     public boolean isNillable() {
         return nillable;
@@ -159,7 +158,6 @@ public class ElementDeclaration {
 
     /**
      * Set if the global element should be marked as nillable
-     * @param nillable
      */
     public void setNillable(boolean nillable) {
         this.nillable = nillable;

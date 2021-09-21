@@ -16,7 +16,6 @@ package org.eclipse.persistence.internal.jpa.parsing;
 
 import java.util.*;
 
-import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 
 /**
@@ -30,7 +29,7 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
  */
 public class OrderByNode extends MajorNode {
 
-    List orderByItems = null;
+    List<Node> orderByItems = null;
 
     /**
      * Return a new OrderByNode.
@@ -45,9 +44,9 @@ public class OrderByNode extends MajorNode {
      */
     public void addOrderingToQuery(ObjectLevelReadQuery theQuery, GenerationContext context) {
         if (theQuery.isReadAllQuery()) {
-            Iterator iter = getOrderByItems().iterator();
+            Iterator<Node> iter = getOrderByItems().iterator();
             while (iter.hasNext()) {
-                Node nextNode = (Node)iter.next();
+                Node nextNode = iter.next();
                 theQuery.addOrdering(nextNode.generateExpression(context));
             }
         }
@@ -58,8 +57,8 @@ public class OrderByNode extends MajorNode {
      * Validate node.
      */
     public void validate(ParseTreeContext context, SelectNode selectNode) {
-        for (Iterator i = orderByItems.iterator(); i.hasNext(); ) {
-            Node item = (Node)i.next();
+        for (Iterator<Node> i = orderByItems.iterator(); i.hasNext(); ) {
+            Node item = i.next();
             item.validate(context);
         }
     }
@@ -68,9 +67,9 @@ public class OrderByNode extends MajorNode {
      * INTERNAL
      * Return the order by statements
      */
-    public List getOrderByItems() {
+    public List<Node> getOrderByItems() {
         if (orderByItems == null) {
-            setOrderByItems(new Vector());
+            setOrderByItems(new Vector<>());
         }
         return orderByItems;
     }
@@ -79,7 +78,7 @@ public class OrderByNode extends MajorNode {
      * INTERNAL
      * Set the order by statements
      */
-    public void setOrderByItems(List newItems) {
+    public void setOrderByItems(List<Node> newItems) {
         orderByItems = newItems;
     }
 }
