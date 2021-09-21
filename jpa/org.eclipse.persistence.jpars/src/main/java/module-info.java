@@ -20,8 +20,8 @@ module org.eclipse.persistence.jpars {
     requires transitive jakarta.annotation;
     requires transitive jakarta.ws.rs;
 
-    requires transitive org.eclipse.persistence.dbws;
     requires org.eclipse.persistence.jpa;
+    requires transitive org.eclipse.persistence.jpars.server;
     requires org.eclipse.persistence.asm;
     requires org.eclipse.persistence.core;
     requires org.eclipse.persistence.jpa.jpql;

@@ -32,6 +32,12 @@ public class JPQLQueryHandler extends QueryHandler {
 
     protected String jpqlString;
 
+    /**
+     * Default constructor.
+     */
+    public JPQLQueryHandler() {
+    }
+
     public String getJpqlString() {
         return jpqlString;
     }

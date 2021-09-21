@@ -16,8 +16,6 @@
 package org.eclipse.persistence.internal.xr;
 
 //javase imports
-import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
-import static javax.xml.XMLConstants.NULL_NS_URI;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 import static org.eclipse.persistence.internal.oxm.Constants.ANY;
 import static org.eclipse.persistence.internal.oxm.Constants.ANY_QNAME;
@@ -117,7 +115,7 @@ public class QNameTransformer implements AttributeTransformer, FieldTransformer 
 
   AbstractTransformationMapping transformationMapping;
   private transient NamespaceResolver namespaceResolver;
-  private String xPath;
+  private final String xPath;
 
   public QNameTransformer(String xPath) {
       super();
@@ -139,7 +137,6 @@ public class QNameTransformer implements AttributeTransformer, FieldTransformer 
       if (null == value) {
           return null;
       }
-      QName qName = null;
       int index = value.lastIndexOf(COLON);
       if (index > -1) {
           String prefix = value.substring(0, index);
@@ -147,24 +144,15 @@ public class QNameTransformer implements AttributeTransformer, FieldTransformer 
           String namespaceURI = ((XMLRecord) dataRecord).resolveNamespacePrefix(prefix);
           // check for W3C_XML_SCHEMA_NS_URI - return TL_OX pre-built QName's
           if (W3C_XML_SCHEMA_NS_URI.equals(namespaceURI)) {
-              qName = SCHEMA_QNAMES.get(localName);
+              QName qName = SCHEMA_QNAMES.get(localName);
               if (qName == null) { // unknown W3C_XML_SCHEMA_NS_URI type ?
-                  qName = new QName(W3C_XML_SCHEMA_NS_URI, localName,
-                      prefix == null ? DEFAULT_NS_PREFIX : prefix);
+                  return new QName(W3C_XML_SCHEMA_NS_URI, localName, prefix);
               }
           }
-          else {
-              qName = new QName(namespaceURI == null ? NULL_NS_URI : namespaceURI, localName,
-                  prefix == null ? DEFAULT_NS_PREFIX : prefix);
-          }
-          return qName;
+          return new QName(namespaceURI, localName, prefix);
       }
-      else {
-          String namespaceURI = ((XMLRecord) dataRecord)
-              .resolveNamespacePrefix(DEFAULT_NAMESPACE_PREFIX);
-          qName = new QName(namespaceURI, value);
-      }
-      return qName;
+      String namespaceURI = ((XMLRecord) dataRecord).resolveNamespacePrefix(DEFAULT_NAMESPACE_PREFIX);
+      return new QName(namespaceURI, value);
   }
 
   @Override

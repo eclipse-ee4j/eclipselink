@@ -206,7 +206,9 @@ public class SOAPResponseWriter {
         XMLDescriptor descriptor = resultDescriptors.get(op.getName());
         SOAPResponse response = null;
         try {
-            response = (SOAPResponse) descriptor.getJavaClass().getConstructor().newInstance();
+            @SuppressWarnings({"unchecked"})
+            Class<? extends SOAPResponse> cls = descriptor.getJavaClass();
+            response = cls.getConstructor().newInstance();
         } catch (ReflectiveOperationException ie) {
             throw new SOAPException(ie);
         }

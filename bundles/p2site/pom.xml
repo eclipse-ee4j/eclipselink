@@ -71,6 +71,10 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpars.server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
         </dependency>
         <dependency>
@@ -316,6 +320,11 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpars.server</artifactId>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.dbws</artifactId>
             <classifier>sources</classifier>
         </dependency>
@@ -409,7 +418,7 @@
                                     <providerName>${project.groupId}</providerName>
                                     <description>EclipseLink DBWS provides a Java-based, declarative Web Service solution for accessing relational databases.</description>
                                     <copyright>\
-                                        Copyright (c) 1998, 2020 Oracle and others. All rights reserved.\n\
+                                        Copyright (c) 1998, 2021 Oracle and others. All rights reserved.\n\
                                         This program and the accompanying materials are made available under the\n\
                                         terms of the Eclipse Public License v. 2.0 which is available at\n\
                                         http://www.eclipse.org/legal/epl-2.0,\n\

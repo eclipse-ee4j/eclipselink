@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,7 +46,12 @@ public class XRSessionsFactory extends SessionsFactory {
     static Pattern matchDBWSOxProject =
         Pattern.compile(/*DBWS_OX_XML*/"eclipselink-db.s-ox.xml", Pattern.CASE_INSENSITIVE);
 
-    @SuppressWarnings("unchecked")
+    /**
+     * Default constructor.
+     */
+    public XRSessionsFactory() {
+    }
+
     @Override
     protected Project loadProjectConfig(ProjectConfig projectConfig) {
         Project project = null;
@@ -56,7 +61,7 @@ public class XRSessionsFactory extends SessionsFactory {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     project = (Project)AccessController.doPrivileged(
-                        new PrivilegedNewInstanceFromClass(m_classLoader.loadClass(projectString)));
+                        new PrivilegedNewInstanceFromClass<>(m_classLoader.loadClass(projectString)));
                 }else{
                     project = (Project)PrivilegedAccessHelper.newInstanceFromClass(
                         m_classLoader.loadClass(projectString));

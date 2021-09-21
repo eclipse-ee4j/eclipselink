@@ -21,7 +21,7 @@ import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.QueryParameters;
 import org.eclipse.persistence.jpa.rs.exceptions.ErrorResponse;
 import org.eclipse.persistence.jpa.rs.features.ServiceVersion;
-import org.eclipse.persistence.jpa.rs.util.list.ReadAllQueryResultCollection;
+import org.eclipse.persistence.jpa.rs.util.list.PageableCollection;
 import org.eclipse.persistence.jpa.rs.util.list.SimpleHomogeneousList;
 import org.eclipse.persistence.jpars.test.server.RestCallFailedException;
 
@@ -513,9 +513,9 @@ public class RestUtils {
         if (context.getServiceVersion().compareTo(ServiceVersion.VERSION_2_0) >= 0) {
             // 2.0 or higher
             final Object obj = context.unmarshalEntity("ReadAllQueryResultCollection", mediaType, new ByteArrayInputStream(result.getBytes()));
-            if (obj instanceof ReadAllQueryResultCollection) {
-                final ReadAllQueryResultCollection c = (ReadAllQueryResultCollection) obj;
-                return (List<T>)c.getItems();
+            if (obj instanceof PageableCollection) {
+                final PageableCollection<T> c = (PageableCollection<T>) obj;
+                return c.getItems();
             } else {
                 return Collections.emptyList();
             }

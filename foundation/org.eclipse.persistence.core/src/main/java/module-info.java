@@ -183,6 +183,7 @@ module org.eclipse.persistence.core {
             org.eclipse.persistence.dbws,
             org.eclipse.persistence.jpa,
             org.eclipse.persistence.jpa.modelgen,
+            org.eclipse.persistence.jpars.server,
             org.eclipse.persistence.moxy,
             org.eclipse.persistence.oracle,
             org.eclipse.persistence.sdo;

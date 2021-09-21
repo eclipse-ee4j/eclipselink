@@ -272,7 +272,7 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.jpars</artifactId>
+            <artifactId>org.eclipse.persistence.jpars.server</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -302,14 +302,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.jpars</artifactId>
-            <classifier>javadoc</classifier>
-            <scope>provided</scope>
-            <!-- ### fix me -->
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 
     <build>
@@ -385,6 +377,7 @@
                                 org.eclipse.persistence.dbws,
                                 org.eclipse.persistence.jpa,
                                 org.eclipse.persistence.jpa.jpql,
+                                org.eclipse.persistence.jpars.server,
                                 org.eclipse.persistence.moxy,
                                 org.eclipse.persistence.moxy.utils.xjc,
                                 org.eclipse.persistence.oracle,
@@ -425,6 +418,7 @@
                                 org.eclipse.persistence.dbws,
                                 org.eclipse.persistence.jpa,
                                 org.eclipse.persistence.jpa.jpql,
+                                org.eclipse.persistence.jpars.server,
                                 org.eclipse.persistence.moxy,
                                 org.eclipse.persistence.moxy.utils.xjc,
                                 org.eclipse.persistence.oracle,
