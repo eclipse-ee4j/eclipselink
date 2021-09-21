@@ -31,7 +31,6 @@ import junit.framework.TestCase;
 
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.exceptions.DynamicException;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
@@ -49,6 +48,14 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
     @Override
     public String getName() {
         return "Dynamic JAXB: Context Creation: " + super.getName();
+    }
+
+    public void setUp() {
+        System.setProperty(JAXBContext.JAXB_CONTEXT_FACTORY, DynamicJAXBContextFactory.class.getName());
+    }
+
+    public void tearDown() {
+        System.clearProperty(JAXBContext.JAXB_CONTEXT_FACTORY);
     }
 
     public void testNewInstanceString() throws JAXBException {
@@ -134,6 +141,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
     }
 
     public void testNewInstanceXSDExternalBinding() throws Exception {
+        System.clearProperty(JAXBContext.JAXB_CONTEXT_FACTORY);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         docFactory.setNamespaceAware(true);
@@ -151,6 +159,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(DynamicJAXBContextFactory.XML_SCHEMA_KEY, xsdSource);
         properties.put(DynamicJAXBContextFactory.EXTERNAL_BINDINGS_KEY, xjbSource);
+        properties.put(JAXBContextProperties.MOXY_FACTORY, JAXBContextProperties.Factory.DYNAMIC);
 
         // Have to include a path to a jaxb.properties, so just reusing a context path that does contain one.
         DynamicJAXBContext jaxbContext = (DynamicJAXBContext) JAXBContext.newInstance("org.eclipse.persistence.testing.jaxb.dynamic", classLoader, properties);
@@ -275,6 +284,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
     }
 
     public void testNewInstanceXSDExternalBindings() throws Exception {
+        System.clearProperty(JAXBContext.JAXB_CONTEXT_FACTORY);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         docFactory.setNamespaceAware(true);
@@ -301,6 +311,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(DynamicJAXBContextFactory.XML_SCHEMA_KEY, xsdSource);
         properties.put(DynamicJAXBContextFactory.EXTERNAL_BINDINGS_KEY, extBindings);
+        properties.put(JAXBContextProperties.MOXY_FACTORY, JAXBContextProperties.Factory.DYNAMIC);
 
         // Have to include a path to a jaxb.properties, so just reusing a context path that does contain one.
         DynamicJAXBContext jaxbContext = (DynamicJAXBContext) JAXBContext.newInstance("org.eclipse.persistence.testing.jaxb.dynamic", classLoader, properties);

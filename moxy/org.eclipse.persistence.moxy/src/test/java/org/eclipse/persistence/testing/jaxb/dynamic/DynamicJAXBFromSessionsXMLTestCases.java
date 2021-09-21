@@ -14,26 +14,32 @@
 //     rbarkhouse - 2010-03-04 12:22:11 - initial implementation
 package org.eclipse.persistence.testing.jaxb.dynamic;
 
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-import java.util.Vector;
+import org.eclipse.persistence.dynamic.DynamicEntity;
+import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
+import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
+import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLRoot;
+import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.Text;
 
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
-import org.eclipse.persistence.dynamic.DynamicEntity;
-import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
-import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLRoot;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-import org.w3c.dom.*;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Vector;
 
 public class DynamicJAXBFromSessionsXMLTestCases extends JAXBTestCases {
 
@@ -64,6 +70,11 @@ public class DynamicJAXBFromSessionsXMLTestCases extends JAXBTestCases {
     private static final String EMP_CLASS_NAME =
         "org.persistence.testing.jaxb.dynamic.zzz.Employee";
 
+    private static final Map<String, Object> PROPERTIES = new HashMap<>(1);
+    static {
+        PROPERTIES.put(JAXBContextProperties.MOXY_FACTORY, JAXBContextProperties.Factory.DYNAMIC);
+    }
+
     protected ArrayList objectsAlreadyCheckedForEquality;
 
     public DynamicJAXBFromSessionsXMLTestCases(String name) throws Exception {
@@ -71,8 +82,8 @@ public class DynamicJAXBFromSessionsXMLTestCases extends JAXBTestCases {
 
         setControlDocument(XML_RESOURCE);
 
-        // Calling newInstance will end up eventually end up in DynamicJAXBContextFactory.createContext
-        jaxbContext = DynamicJAXBContext.newInstance(SESSION_NAMES);
+        // Calling newInstance requires eclipselink.moxy.factory="dynamic" to end up in DynamicJAXBContextFactory.createContext
+        jaxbContext = DynamicJAXBContext.newInstance(SESSION_NAMES, Thread.currentThread().getContextClassLoader(), PROPERTIES);
         jaxbMarshaller = jaxbContext.createMarshaller();
         jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 

@@ -445,7 +445,6 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
      * Create a JAXBValidator.  The JAXBValidator is used to validate Java objects against
      * an XSD.
      */
-    @Override
     public JAXBValidator createValidator() {
         return new JAXBValidator(getXMLContext().createValidator());
     }

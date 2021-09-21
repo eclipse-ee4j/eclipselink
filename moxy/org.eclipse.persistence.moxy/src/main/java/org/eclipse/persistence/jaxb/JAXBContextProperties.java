@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,27 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
  * @since 2.4.0
  */
 public class JAXBContextProperties {
+
+    /**
+     * The name of the property used to specify which JAXB Context Factory
+     * will be used for context creation.
+     * Default {@link org.eclipse.persistence.jaxb.JAXBContextFactory} will be used when this property
+     * is not set.
+     * Supported values are listed in {@link Factory} class.
+     * @since 4.0
+     */
+    public static final String MOXY_FACTORY = "eclipselink.moxy.factory";
+
+    /**
+     * Supported values of {@code eclipselink.moxy.factory} property.
+     * @since 4.0
+     */
+    public static final class Factory {
+        /** Use default {@link org.eclipse.persistence.jaxb.JAXBContextFactory} for context creation. */
+        public static final String DEFAULT = "default";
+        /** Use {@link org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory} for context creation. */
+        public static final String DYNAMIC = "dynamic";
+    }
 
     /**`
      * The name of the property used to specify a value that will be prepended
