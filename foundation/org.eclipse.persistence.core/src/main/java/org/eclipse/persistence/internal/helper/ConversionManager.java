@@ -285,7 +285,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                 // treated as BigDecimal(1).
                 String numberString = String.valueOf(sourceObject);
                 if(numberString.endsWith(".0") || numberString.contains(".0E+")) {
-                    bigDecimal = BigDecimal.valueOf(((Number) sourceObject).doubleValue());
+                    bigDecimal = new BigDecimal(((Number)sourceObject).doubleValue());
                 } else {
                     bigDecimal = new BigDecimal(numberString);
                 }
@@ -686,7 +686,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             }
 
             if (sourceObject instanceof Number) {
-                return BigDecimal.valueOf(((Number) sourceObject).doubleValue());
+                return new BigDecimal(((Number)sourceObject).doubleValue());
             }
 
             if (sourceObject instanceof Boolean) {
