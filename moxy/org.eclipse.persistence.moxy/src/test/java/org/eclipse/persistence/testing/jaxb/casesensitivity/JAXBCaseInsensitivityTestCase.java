@@ -39,8 +39,10 @@ import org.junit.Test;
 public class JAXBCaseInsensitivityTestCase extends junit.framework.TestCase {
 
     private static final URL CUSTOMER_FILE_URL = Thread.currentThread().getContextClassLoader().getResource("org/eclipse/persistence/testing/jaxb/casesensitivity/customer.xml");
-    private static final Class[] CAMEL_CASE_CUSTOMER = new Class[]{CustomerImpl.class};
-    private static final Class[] UPPER_CASE_CUSTOMER = new Class[]{org.eclipse.persistence.testing.jaxb.casesensitivity.otherCase.CustomerImpl.class};
+    @SuppressWarnings({"unchecked"})
+    private static final Class<Customer>[] CAMEL_CASE_CUSTOMER = (Class<Customer>[]) new Class[]{CustomerImpl.class};
+    @SuppressWarnings({"unchecked"})
+    private static final Class<Customer>[] UPPER_CASE_CUSTOMER = (Class<Customer>[]) new Class[]{org.eclipse.persistence.testing.jaxb.casesensitivity.otherCase.CustomerImpl.class};
     private static final boolean DEBUG = false;
 
     private CustomerImpl baseCustomer;
@@ -111,7 +113,7 @@ public class JAXBCaseInsensitivityTestCase extends junit.framework.TestCase {
         baseCustomer.setPersonalName("cafeBabe");
 
         /* Create and assign case-insensitive unmarshallers */
-        Map<String, Boolean> properties = new HashMap<String, Boolean>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextProperties.UNMARSHALLING_CASE_INSENSITIVE, Boolean.TRUE);
         JAXBContext ctxCorrectCaseInsensitive = JAXBContextFactory.createContext(CAMEL_CASE_CUSTOMER, properties);
         JAXBContext ctxOtherCaseInsensitive = JAXBContextFactory.createContext(UPPER_CASE_CUSTOMER, null); /* we set CI by setProperty() */

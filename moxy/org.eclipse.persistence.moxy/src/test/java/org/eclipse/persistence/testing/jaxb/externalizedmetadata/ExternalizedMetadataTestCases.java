@@ -158,7 +158,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * file(s) in the properties map.
      *
      */
-    public MySchemaOutputResolver generateSchema(String contextPath, Map<String, Map<String, Source>> properties, int expectedSchemaCount) {
+    public MySchemaOutputResolver generateSchema(String contextPath, Map<String, Object> properties, int expectedSchemaCount) {
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
         try {
             generateSchema(contextPath, outputResolver, properties);
@@ -180,10 +180,10 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * @param iStream eclipselink-oxm.xml file as a stream
      */
     private MySchemaOutputResolver generateSchema(String contextPath, InputStream iStream, int expectedSchemaCount) {
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put(contextPath, new StreamSource(iStream));
         validateBindingsFileAgainstSchema(iStream);
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
         return generateSchema(contextPath, properties, expectedSchemaCount);
     }
@@ -208,9 +208,9 @@ public class ExternalizedMetadataTestCases extends TestCase {
             fail("Couldn't load metadata file [" + metadataFile + "]");
         }
         validateBindingsFileAgainstSchema(iStreamCopy);
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put(contextPath, new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
         return generateSchema(contextPath, properties, expectedSchemaCount);
     }
@@ -344,7 +344,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * Generate one or more schemas from a context path.
      *
      */
-    protected void generateSchema(String contextPath, SchemaOutputResolver outputResolver, Map<String, Map<String, Source>> properties) throws Exception {
+    protected void generateSchema(String contextPath, SchemaOutputResolver outputResolver, Map<String, Object> properties) throws Exception {
         try {
             jaxbContext = (JAXBContext) JAXBContextFactory.createContext(contextPath, loader, properties);
             jaxbContext.generateSchema(outputResolver);
@@ -766,9 +766,9 @@ public class ExternalizedMetadataTestCases extends TestCase {
         if (iStream == null) {
             fail("Couldn't load metadata file [" + metadataFile + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put(contextPath, new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
 

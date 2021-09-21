@@ -51,9 +51,9 @@ public class JAXBContextTransformationMappingTestCases extends TestCase{
     public void testBothClassAndMethod() {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(METADATA_FILE_CLASS_AND_METHOD);
 
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmltransformation", new StreamSource(inputStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         try {
@@ -73,9 +73,9 @@ public class JAXBContextTransformationMappingTestCases extends TestCase{
     public void testNoClassOrMethod() {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(METADATA_FILE_NO_CLASS_OR_METHOD);
 
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmltransformation", new StreamSource(inputStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
        try {
@@ -98,9 +98,9 @@ public class JAXBContextTransformationMappingTestCases extends TestCase{
     public void testInvalidMethod() {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(METADATA_FILE_BAD_METHOD);
 
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmltransformation", new StreamSource(inputStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         int exceptionCount = 0;
@@ -134,9 +134,9 @@ public class JAXBContextTransformationMappingTestCases extends TestCase{
     public void testInvalidTransformerClass() {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(METADATA_FILE_BAD_CLASS);
 
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmltransformation", new StreamSource(inputStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         int exceptionCount = 0;

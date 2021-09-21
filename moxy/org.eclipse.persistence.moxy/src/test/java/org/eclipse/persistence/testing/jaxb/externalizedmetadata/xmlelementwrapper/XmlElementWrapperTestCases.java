@@ -119,8 +119,6 @@ public class XmlElementWrapperTestCases extends JAXBWithJSONTestCases{
             .getSystemResourceAsStream(XML_RESOURCE);
          String result = validateAgainstSchema(instanceDocStream, schemaSource);
          assertTrue("Schema validation failed unxepectedly: " + result, result == null);
-
-
     }
 
     /**
@@ -138,24 +136,23 @@ public class XmlElementWrapperTestCases extends JAXBWithJSONTestCases{
     public void testXmlElementWrapperNSSchemaGen() throws Exception {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementwrapper/eclipselink-oxm-ns.xml");
 
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementwrapper",
-                        new StreamSource(inputStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+                new StreamSource(inputStream));
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE,
                 metadataSourceMap);
 
-         JAXBContext ctx = JAXBContextFactory.createContext(new Class[] { Employee.class }, properties);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{Employee.class}, properties);
 
-         MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
-         ctx.generateSchema(outputResolver);
+        MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
+        ctx.generateSchema(outputResolver);
 
-         List<Writer> generatedSchemas = outputResolver.getSchemaFiles();
-
-         List controlSchemas = new ArrayList();
+        List<Writer> generatedSchemas = outputResolver.getSchemaFiles();
+        List<InputStream> controlSchemas = new ArrayList<>();
         InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementwrapper/schema_ns.xsd");
         controlSchemas.add(is);
-         compareSchemas(controlSchemas, generatedSchemas);
+        compareSchemas(controlSchemas, generatedSchemas);
 
     }
 

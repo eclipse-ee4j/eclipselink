@@ -198,7 +198,7 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
         }
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.properties.foo", new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         outputResolver = generateSchema(contextPath, properties, 1);
@@ -262,7 +262,7 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
         }
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.stringarray.b", new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
@@ -309,7 +309,7 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
         }
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.stringarray.b", new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();

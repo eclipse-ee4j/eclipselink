@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,9 +28,10 @@ public abstract class Metadata {
     protected Map<String, XmlBindings> bindings;
     protected DynamicClassLoader dynamicClassLoader;
 
+    @SuppressWarnings("unchecked")
     public Metadata(DynamicClassLoader dynamicClassLoader, Map<String, ?> properties) {
         this.dynamicClassLoader = dynamicClassLoader;
-        this.bindings = JAXBContextFactory.getXmlBindingsFromProperties(properties, dynamicClassLoader);
+        this.bindings = JAXBContextFactory.getXmlBindingsFromProperties((Map<String, Object>) properties, dynamicClassLoader);
     }
 
     public Map<String, XmlBindings> getBindings() {
