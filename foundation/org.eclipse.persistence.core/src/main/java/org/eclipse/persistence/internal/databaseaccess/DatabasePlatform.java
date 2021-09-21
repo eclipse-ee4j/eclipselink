@@ -3389,6 +3389,16 @@ public class DatabasePlatform extends DatasourcePlatform {
 
     /**
      * INTERNAL:
+     * This method builds a Struct using the unwrapped connection within the session
+     * @return Struct
+     */
+    public Struct createStruct(String structTypeName, Object[] attributes, AbstractRecord row, Vector orderedFields, AbstractSession session, Connection connection) throws SQLException {
+        java.sql.Connection unwrappedConnection = getConnection(session, connection);
+        return createStruct(structTypeName,attributes,unwrappedConnection);
+    }
+
+    /**
+     * INTERNAL:
      * Platforms that support java.sql.Array may override this method.
      * @return Array
      */

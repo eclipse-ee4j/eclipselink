@@ -670,20 +670,26 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         if (info == null) {
             info = generateNestedFunction(type, isNestedTable);
         }
-        if (argument.direction == IN) {
-            if (!functions.contains(info.sql2PlConv)) {
-                functions.add(info.sql2PlConv);
-            }
-        } else if (argument.direction == INOUT) {
-            if (!functions.contains(info.sql2PlConv)) {
-                functions.add(info.sql2PlConv);
-            }
+        if (type.getTypeName().equals(type.getCompatibleType())) {
             if (!functions.contains(info.pl2SqlConv)) {
                 functions.add(info.pl2SqlConv);
             }
-        } else if (argument.direction == OUT) {
-            if (!functions.contains(info.pl2SqlConv)) {
-                functions.add(info.pl2SqlConv);
+        } else {
+            if (argument.direction == IN) {
+                if (!functions.contains(info.sql2PlConv)) {
+                    functions.add(info.sql2PlConv);
+                }
+            } else if (argument.direction == INOUT) {
+                if (!functions.contains(info.sql2PlConv)) {
+                    functions.add(info.sql2PlConv);
+                }
+                if (!functions.contains(info.pl2SqlConv)) {
+                    functions.add(info.pl2SqlConv);
+                }
+            } else if (argument.direction == OUT) {
+                if (!functions.contains(info.pl2SqlConv)) {
+                    functions.add(info.pl2SqlConv);
+                }
             }
         }
     }
