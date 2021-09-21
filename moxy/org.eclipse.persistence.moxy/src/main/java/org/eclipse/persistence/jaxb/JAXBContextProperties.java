@@ -32,18 +32,21 @@ public class JAXBContextProperties {
     /**
      * The name of the property used to specify which JAXB Context Factory
      * will be used for context creation.
-     * Default {@code JAXBContextFactory} will be used when this property
+     * Default {@link org.eclipse.persistence.jaxb.JAXBContextFactory} will be used when this property
      * is not set.
+     * Supported values are listed in {@link Factory} class.
+     * @since 4.0
      */
     public static final String MOXY_FACTORY = "eclipselink.moxy.factory";
 
     /**
      * Supported values of {@code eclipselink.moxy.factory} property.
+     * @since 4.0
      */
     public static final class Factory {
-        /** Use default {@code JAXBContextFactory} for context creation. */
+        /** Use default {@link org.eclipse.persistence.jaxb.JAXBContextFactory} for context creation. */
         public static final String DEFAULT = "default";
-        /** Use {@code DynamicJAXBContextFactory} for context creation. */
+        /** Use {@link org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory} for context creation. */
         public static final String DYNAMIC = "dynamic";
     }
 

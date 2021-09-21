@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -183,6 +183,7 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "sdo_helper_invalid_target_for_typehelper", "The provided target Class [{0}] must be EclipseLink SDOTypeHelper class." },
                                            { "sdo_helper_invalid_target_for_xmlhelper", "The provided target Class [{0}] must be one of EclipseLink SDOXMLHelper, EclipseLink XMLMarshaller or EclipseLink XMLUnmarshaller." },
                                            { "sdo_helper_invalid_target_for_xsdhelper", "The provided target Class [{0}] must be EclipseLink SDOXSDHelper class." },
+                                           { "jaxb_context_factory_property_invalid", "Property eclipselink.moxy.factory value {0} is invalid" },
                                            { "jaxb_helper_invalid_jaxbcontext", "The provided JAXBContext [{0}] is not an EclipseLink JAXBContext, and therefore could not be converted." },
                                            { "jaxb_helper_invalid_unmarshaller", "The provided Unmarshaller [{0}] is not an EclipseLink JAXBUnmarshaller, and therefore could not be converted." },
                                            { "jaxb_helper_invalid_marshaller", "The provided Marshaller [{0}] is not an EclipseLink JAXBMarshaller, and therefore could not be converted." },

@@ -14,8 +14,10 @@ package org.eclipse.persistence.jaxb;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -32,48 +34,38 @@ public class XMLBindingContextFactory implements jakarta.xml.bind.JAXBContextFac
 
     @Override
     public JAXBContext createContext(Class<?>[] types, Map<String, ?> map) throws JAXBException {
-        Object value = map != null ? map.get(JAXBContextProperties.MOXY_FACTORY) : null;
-        // Property vas not set, use default factory
-        if (value == null) {
-            return JAXBContextFactory.createContext(types, map);
-        }
-        // Handle valid String properties
-        if (String.class.isInstance(value)) {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> opts = map != null ? (Map<String, Object>) map : Collections.emptyMap();
+        Object value = opts.getOrDefault(JAXBContextProperties.MOXY_FACTORY, JAXBContextProperties.Factory.DEFAULT);
+        if (value instanceof String) {
             switch ((String) value) {
                 case JAXBContextProperties.Factory.DEFAULT:
-                    return JAXBContextFactory.createContext(types, map);
+                    return JAXBContextFactory.createContext(types, opts);
                 case JAXBContextProperties.Factory.DYNAMIC:
-                    return DynamicJAXBContextFactory.createContext(types, (Map<String, Object>) map);
+                    return DynamicJAXBContextFactory.createContext(types, opts);
                 default:
-                    throw new JAXBException(String.format("Property eclipselink.moxy.factory value \"%s\" is invalid", value));
+                    throw new JAXBException(ExceptionLocalization.buildMessage("jaxb_context_factory_property_invalid", new Object[] {value}));
             }
-        // Non String values are invalid
-        } else {
-            throw new JAXBException(String.format("Property eclipselink.moxy.factory value \"%s\" is invalid", value.toString()));
         }
+        throw new JAXBException(ExceptionLocalization.buildMessage("jaxb_context_factory_property_invalid", new Object[] {value}));
     }
 
     @Override
     public JAXBContext createContext(String string, ClassLoader cl, Map<String, ?> map) throws JAXBException {
-        Object value = map != null ? map.get(JAXBContextProperties.MOXY_FACTORY) : null;
-        // Property vas not set, use default factory
-        if (value == null) {
-            return JAXBContextFactory.createContext(string, cl, map);
-        }
-        // Handle valid String properties
-        if (String.class.isInstance(value)) {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> opts = map != null ? (Map<String, Object>) map : Collections.emptyMap();
+        Object value = opts.getOrDefault(JAXBContextProperties.MOXY_FACTORY, JAXBContextProperties.Factory.DEFAULT);
+        if (value instanceof String) {
             switch ((String) value) {
                 case JAXBContextProperties.Factory.DEFAULT:
-                    return JAXBContextFactory.createContext(string, cl, map);
+                    return JAXBContextFactory.createContext(string, cl, opts);
                 case JAXBContextProperties.Factory.DYNAMIC:
-                    return DynamicJAXBContextFactory.createContext(string, cl, (Map<String, Object>) map);
+                    return DynamicJAXBContextFactory.createContext(string, cl, opts);
                 default:
-                    throw new JAXBException(String.format("Property eclipselink.moxy.factory value \"%s\" is invalid", value));
+                    throw new JAXBException(ExceptionLocalization.buildMessage("jaxb_context_factory_property_invalid", new Object[] {value}));
             }
-        // Non String values are invalid
-        } else {
-            throw new JAXBException(String.format("Property eclipselink.moxy.factory value \"%s\" is invalid", value.toString()));
         }
+        throw new JAXBException(ExceptionLocalization.buildMessage("jaxb_context_factory_property_invalid", new Object[] {value}));
     }
 
 }

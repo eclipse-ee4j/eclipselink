@@ -13,7 +13,6 @@
 module org.eclipse.persistence.sdo {
     requires java.management;
     requires java.naming;
-    requires java.logging;
 
     requires org.eclipse.persistence.asm;
     requires transitive org.eclipse.persistence.moxy;
