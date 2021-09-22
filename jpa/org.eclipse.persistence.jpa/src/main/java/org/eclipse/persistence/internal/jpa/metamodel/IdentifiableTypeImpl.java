@@ -300,8 +300,6 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      * INTERNAL:
      * Return the version attribute on this type.
      * If no version attribute exists - return null.
-     * @param <Y>
-     * @return
      */
     private <Y> SingularAttribute<? super X, ?> getVersion() {
         if(hasVersionAttribute()) {
@@ -387,7 +385,6 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      * INTERNAL:
      * Return whether this type is identifiable.
      * This would be EntityType and MappedSuperclassType
-     * @return
      */
     @Override
     protected boolean isIdentifiableType() {

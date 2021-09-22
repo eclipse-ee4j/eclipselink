@@ -67,7 +67,7 @@ public class WebLogic_12_Platform extends WebLogic_10_Platform {
 
         static {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                cicManagerClass = AccessController.doPrivileged(new PrivilegedAction<Class<?>>() {
+                cicManagerClass = AccessController.doPrivileged(new PrivilegedAction<>() {
                     @Override
                     public Class<?> run() {
                         return getCicManagerClass(CIC_MANAGER_RESOURCE_NAME, CIC_MANAGER_CLASS_NAME);
@@ -104,7 +104,6 @@ public class WebLogic_12_Platform extends WebLogic_10_Platform {
             }
         }
 
-        @SuppressWarnings({"rawtypes"})
         private void initialize(final Class<?> managerClass, final String contextClassName) {
             try {
                 // Get component invocation manager
@@ -160,7 +159,7 @@ public class WebLogic_12_Platform extends WebLogic_10_Platform {
         private String getStringFromMethod(final Method methodToCall) {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    return AccessController.doPrivileged(new PrivilegedAction<String>() {
+                    return AccessController.doPrivileged(new PrivilegedAction<>() {
                         @Override
                         public String run() {
                             try {
@@ -189,7 +188,7 @@ public class WebLogic_12_Platform extends WebLogic_10_Platform {
         boolean isGlobalRuntime() {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+                    return AccessController.doPrivileged(new PrivilegedAction<>() {
                         @Override
                         public Boolean run() {
                             try {

@@ -1283,7 +1283,6 @@ public class MetadataProject {
     /**
      * INTERNAL:
      * Return the core API Project associated with this MetadataProject.
-     * @return
      * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation
      */
     public Project getProject() {

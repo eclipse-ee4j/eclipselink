@@ -21,7 +21,6 @@ import org.eclipse.persistence.internal.core.sessions.CoreAbstractRecord;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.sessions.DataRecord;
-import org.eclipse.persistence.internal.helper.DatabaseField;
 
 /**
  * <p>

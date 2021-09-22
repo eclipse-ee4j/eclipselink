@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -102,7 +102,7 @@ public abstract class ModifyNode extends QueryNode {
      * an alias, where the variableName is registered to an alias.
      */
     @Override
-    public Class resolveClass(GenerationContext context) {
+    public Class<?> resolveClass(GenerationContext context) {
         String alias = abstractSchemaName;
         ClassDescriptor descriptor = context.getSession().getDescriptorForAlias(alias);
         if (descriptor == null) {
@@ -110,7 +110,7 @@ public abstract class ModifyNode extends QueryNode {
                 context.getParseTreeContext().getQueryInfo(),
                 getLine(), getColumn(), alias);
         }
-        Class theClass = descriptor.getJavaClass();
+        Class<?> theClass = descriptor.getJavaClass();
         if (theClass == null) {
             throw JPQLException.resolutionClassNotFoundException2(
                 context.getParseTreeContext().getQueryInfo(),

@@ -33,8 +33,6 @@ public interface ArchiveFactory {
     /**
      * Return an instance of an implementer of Archive that can process the URL provided
      *
-     * @throws URISyntaxException
-     * @throws IOException
      */
     Archive createArchive(URL rootUrl, Map properties) throws URISyntaxException, IOException;
 
@@ -43,8 +41,6 @@ public interface ArchiveFactory {
      * This instance will allow access to the persistence descriptor associated with
      * this archive through the getDescriptorStream() method
      *
-     * @throws URISyntaxException
-     * @throws IOException
      */
     Archive createArchive(URL rootUrl, String descriptorLocation, Map properties) throws URISyntaxException, IOException;
 }

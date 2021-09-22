@@ -126,7 +126,7 @@ public class ConverterClass<T extends AttributeConverter<X,Y>,X,Y> implements Co
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
-                    return AccessController.doPrivileged(new PrivilegedClassForName<T>(attributeConverterClassName, true, classLoader));
+                    return AccessController.doPrivileged(new PrivilegedClassForName<>(attributeConverterClassName, true, classLoader));
                 } catch (PrivilegedActionException exception) {
                     throw ValidationException.classNotFoundWhileConvertingClassNames(attributeConverterClassName, exception.getException());
                 }

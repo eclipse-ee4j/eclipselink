@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,8 +50,6 @@ public class CollectionAttributeImpl<X, V> extends PluralAttributeImpl<X, Collec
     /**
      * INTERNAL:
      * Construct an instance of Collection for the managed type managedType
-     * @param managedType
-     * @param mapping
      */
     protected CollectionAttributeImpl(ManagedTypeImpl<X> managedType, CollectionMapping mapping) {
         this(managedType, mapping, false);
@@ -60,9 +58,6 @@ public class CollectionAttributeImpl<X, V> extends PluralAttributeImpl<X, Collec
     /**
      * INTERNAL:
      * Construct an instance of Collection for the managed type managedType
-     * @param managedType
-     * @param mapping
-     * @param validationEnabled
      */
     protected CollectionAttributeImpl(ManagedTypeImpl<X> managedType, CollectionMapping mapping, boolean validationEnabled) {
         super(managedType, mapping, validationEnabled);

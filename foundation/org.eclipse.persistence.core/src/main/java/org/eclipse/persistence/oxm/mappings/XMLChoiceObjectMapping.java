@@ -269,7 +269,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
     @Override
     public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session, WriteType writeType) throws DescriptorException {
         Object value = getAttributeValueFromObject(object);
-        Class<? extends Object> valueClass = value.getClass();
+        Class<?> valueClass = value.getClass();
         if(valueClass == XMLRoot.class) {
             //look for a nested mapping based on the Root's QName
             XMLRoot root = (XMLRoot)value;

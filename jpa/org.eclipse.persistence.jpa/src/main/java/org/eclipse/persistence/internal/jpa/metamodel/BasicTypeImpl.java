@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,7 +56,6 @@ public class BasicTypeImpl<X> extends TypeImpl<X> implements BasicType<X> {
     /**
      * INTERNAL:
      * Return whether this type is an Entity (true) or MappedSuperclass (false) or Embeddable (false)
-     * @return
      */
     @Override
     public boolean isEntity() {
@@ -67,7 +66,6 @@ public class BasicTypeImpl<X> extends TypeImpl<X> implements BasicType<X> {
      * INTERNAL:
      * Return whether this type is identifiable.
      * This would be EntityType and MappedSuperclassType
-     * @return
      */
     @Override
     protected boolean isIdentifiableType() {
@@ -78,7 +76,6 @@ public class BasicTypeImpl<X> extends TypeImpl<X> implements BasicType<X> {
      * INTERNAL:
      * Return whether this type is identifiable.
      * This would be EmbeddableType as well as EntityType and MappedSuperclassType
-     * @return
      */
     @Override
     protected boolean isManagedType() {
@@ -88,7 +85,6 @@ public class BasicTypeImpl<X> extends TypeImpl<X> implements BasicType<X> {
     /**
      * INTERNAL:
      * Return whether this type is an MappedSuperclass (true) or Entity (false) or Embeddable (false)
-     * @return
      */
     @Override
     public boolean isMappedSuperclass() {

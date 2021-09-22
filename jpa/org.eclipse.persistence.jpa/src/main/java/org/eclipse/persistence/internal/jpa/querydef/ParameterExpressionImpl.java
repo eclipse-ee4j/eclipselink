@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,7 +62,6 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
 
     /**
      * Returns the name used by EclipseLink when a name has not been assigned by the user.
-     * @return
      */
     public String getInternalName(){
         return this.internalName;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -77,8 +77,6 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
     /**
      * INTERNAL:
      *
-     * @param managedType
-     * @param mapping
      */
     protected AttributeImpl(ManagedTypeImpl<X> managedType, DatabaseMapping mapping) {
         this.mapping = mapping;
@@ -100,7 +98,6 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
     /**
      * INTERNAL:
      * Return the Descriptor associated with this attribute
-     * @return
      */
     protected ClassDescriptor getDescriptor() {
         return getManagedTypeImpl().getDescriptor();
@@ -200,7 +197,6 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
      * INTERNAL:
      * Return the managed type representing the type in which the member was
      * declared.
-     * @return
      */
     public ManagedTypeImpl<X> getManagedTypeImpl() {
         return this.managedType;
@@ -209,7 +205,6 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
     /**
      * INTERNAL:
      * Return the databaseMapping that represents the type
-     * @return
      */
     public DatabaseMapping getMapping() {
         return this.mapping;
@@ -311,7 +306,6 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
     /**
      * INTERNAL:
      * Return whether the attribute is plural or singular
-     * @return
      */
     public abstract boolean isPlural();
 }

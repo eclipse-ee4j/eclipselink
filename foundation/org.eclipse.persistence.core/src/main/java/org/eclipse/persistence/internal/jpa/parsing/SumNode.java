@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -67,13 +67,13 @@ public class SumNode extends AggregateNode {
      * INTERNAL
      * This method calculates the return type of the SUM operation.
      */
-    protected Class calculateReturnType(GenerationContext context) {
-        Class returnType = null;
+    protected Class<?> calculateReturnType(GenerationContext context) {
+        Class<?> returnType = null;
         if (getLeft().isDotNode()){
             DotNode arg = (DotNode)getLeft();
-            Class fieldType = arg.getTypeOfDirectToField(context);
+            Class<?> fieldType = arg.getTypeOfDirectToField(context);
             TypeHelper helper = context.getParseTreeContext().getTypeHelper();
-            returnType = (Class)calculateReturnType(fieldType, helper);
+            returnType = (Class<?>)calculateReturnType(fieldType, helper);
         }
         return returnType;
     }

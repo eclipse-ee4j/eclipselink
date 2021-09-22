@@ -289,10 +289,10 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * If the fields passed in are null, this means that the field are not known and should be
      * built from the column names.  This case occurs for DataReadQuery's.
      */
-    public Vector buildSortedFields(Vector fields, ResultSet resultSet, AbstractSession session) throws DatabaseException {
-        Vector sortedFields;
+    public Vector<DatabaseField> buildSortedFields(Vector<DatabaseField> fields, ResultSet resultSet, AbstractSession session) throws DatabaseException {
+        Vector<DatabaseField> sortedFields;
         try {
-            Vector columnNames = getColumnNames(resultSet, session);
+            Vector<DatabaseField> columnNames = getColumnNames(resultSet, session);
             if (fields == null) {// Means fields not known.
                 sortedFields = columnNames;
             } else {
@@ -460,7 +460,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * with values from the next valid row in the result set. Intended solely
      * for cursored stream support.
      */
-    public AbstractRecord cursorRetrieveNextRow(Vector fields, ResultSet resultSet, AbstractSession session) throws DatabaseException {
+    public AbstractRecord cursorRetrieveNextRow(Vector<DatabaseField> fields, ResultSet resultSet, AbstractSession session) throws DatabaseException {
         try {
             if (resultSet.next()) {
                 return fetchRow(fields, resultSet, resultSet.getMetaData(), session);
@@ -479,7 +479,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * with values from the next valid row in the result set. Intended solely
      * for scrollable cursor support.
      */
-    public AbstractRecord cursorRetrievePreviousRow(Vector fields, ResultSet resultSet, AbstractSession session) throws DatabaseException {
+    public AbstractRecord cursorRetrievePreviousRow(Vector<DatabaseField> fields, ResultSet resultSet, AbstractSession session) throws DatabaseException {
         try {
             if (resultSet.previous()) {
                 return fetchRow(fields, resultSet, resultSet.getMetaData(), session);
@@ -1040,14 +1040,14 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * match the number of column names available on the database.
      * PERF: This method must be highly optimized.
      */
-    protected AbstractRecord fetchRow(Vector fields, ResultSet resultSet, ResultSetMetaData metaData, AbstractSession session) throws DatabaseException {
+    protected AbstractRecord fetchRow(Vector<DatabaseField> fields, ResultSet resultSet, ResultSetMetaData metaData, AbstractSession session) throws DatabaseException {
         int size = fields.size();
         Vector values = NonSynchronizedVector.newInstance(size);
         // PERF: Pass platform and optimize data flag.
         DatabasePlatform platform = getPlatform();
         boolean optimizeData = platform.shouldOptimizeDataConversion();
         for (int index = 0; index < size; index++) {
-            DatabaseField field = (DatabaseField)fields.elementAt(index);
+            DatabaseField field = fields.elementAt(index);
             // Field can be null for fetch groups.
             if (field != null) {
                 values.add(getObject(resultSet, field, metaData, index + 1, platform, optimizeData, session));
@@ -1207,9 +1207,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * This is required for custom SQL execution only,
      * as generated SQL already knows the fields returned.
      */
-    protected Vector getColumnNames(ResultSet resultSet, AbstractSession session) throws SQLException {
+    protected Vector<DatabaseField> getColumnNames(ResultSet resultSet, AbstractSession session) throws SQLException {
         ResultSetMetaData metaData = resultSet.getMetaData();
-        Vector columnNames = new Vector(metaData.getColumnCount());
+        Vector<DatabaseField> columnNames = new Vector<>(metaData.getColumnCount());
 
         for (int index = 0; index < metaData.getColumnCount(); index++) {
             // Changed the following code to use metaData#getColumnLabel() instead of metaData.getColumnName()
@@ -1370,7 +1370,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
         // Optimize numeric values to avoid conversion into big-dec and back to primitives.
         if ((fieldType == ClassConstants.PLONG) || (fieldType == ClassConstants.LONG)) {
             value = resultSet.getLong(columnNumber);
-            isPrimitive = (Long) value == 0l;
+            isPrimitive = (Long) value == 0L;
         } else if ((fieldType == ClassConstants.INTEGER) || (fieldType == ClassConstants.PINT)) {
             value = resultSet.getInt(columnNumber);
             isPrimitive = (Integer) value == 0;
@@ -1385,7 +1385,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             isPrimitive = (Short) value == 0;
         } else if ((fieldType == ClassConstants.BOOLEAN) || (fieldType == ClassConstants.PBOOLEAN))  {
             value = resultSet.getBoolean(columnNumber);
-            isPrimitive = (Boolean) value == false;
+            isPrimitive = !((Boolean) value);
         } else if ((type == Types.TIME) || (type == Types.DATE) || (type == Types.TIMESTAMP)) {
             if (Helper.shouldOptimizeDates) {
                 // Optimize dates by avoid conversion to timestamp then back to date or time or util.date.
@@ -1495,7 +1495,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
         try {
             incrementCallCount(session);
             resultSet = getConnectionMetaData().getTables(catalog, schema, tableName, types);
-            Vector fields = buildSortedFields(null, resultSet, session);
+            Vector<DatabaseField> fields = buildSortedFields(null, resultSet, session);
             ResultSetMetaData metaData = resultSet.getMetaData();
 
             while (resultSet.next()) {
@@ -1790,7 +1790,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
     /**
      * The statement cache stores a fixed sized number of prepared statements.
      */
-    protected void setStatementCache(Hashtable statementCache) {
+    protected void setStatementCache(Hashtable<String, Statement> statementCache) {
         this.statementCache = statementCache;
     }
 
@@ -1798,20 +1798,21 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * This method will sort the fields in correct order based
      * on the column names.
      */
-    protected Vector sortFields(Vector fields, Vector columnNames) {
-        Vector sortedFields = new Vector(columnNames.size());
-        Vector eligableFields = (Vector)fields.clone();// Must clone to allow removing to support the same field twice.
-        Enumeration columnNamesEnum = columnNames.elements();
+    protected Vector<DatabaseField> sortFields(Vector<DatabaseField> fields, Vector<DatabaseField> columnNames) {
+        Vector<DatabaseField> sortedFields = new Vector<>(columnNames.size());
+        @SuppressWarnings({"unchecked"})
+        Vector<DatabaseField> eligableFields = (Vector<DatabaseField>)fields.clone();// Must clone to allow removing to support the same field twice.
+        Enumeration<DatabaseField> columnNamesEnum = columnNames.elements();
         boolean valueFound;
         DatabaseField field;
         DatabaseField column;//DatabaseField from the columnNames vector
         while (columnNamesEnum.hasMoreElements()) {
             field = null;
             valueFound = false;
-            column = (DatabaseField)columnNamesEnum.nextElement();
-            Enumeration fieldEnum = eligableFields.elements();
+            column = columnNamesEnum.nextElement();
+            Enumeration<DatabaseField> fieldEnum = eligableFields.elements();
             while (fieldEnum.hasMoreElements()) {
-                field = (DatabaseField)fieldEnum.nextElement();
+                field = fieldEnum.nextElement();
                 if(field != null && field.equals(column)){
                     valueFound = true;
                     sortedFields.addElement(field);

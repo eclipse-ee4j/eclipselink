@@ -57,7 +57,7 @@ public class JotmTransactionController extends JTATransactionController {
                 Class<? extends TransactionManager> clazz = AccessController.doPrivileged(new PrivilegedClassForName<>(TX_CURRENT_FACTORY_CLASS));
                 Method method = AccessController.doPrivileged(new PrivilegedGetMethod(clazz, TX_CURRENT_FACTORY_METHOD, null, false));
                 Method txMethod = AccessController.doPrivileged(new PrivilegedGetMethod(clazz, TX_MANAGER_FACTORY_METHOD, null, false));
-                TransactionManager current = AccessController.doPrivileged(new PrivilegedMethodInvoker<TransactionManager>(method, null, null));
+                TransactionManager current = AccessController.doPrivileged(new PrivilegedMethodInvoker<>(method, null, null));
                 return AccessController.doPrivileged(new PrivilegedMethodInvoker<>(txMethod, current, null));
             }catch (PrivilegedActionException ex){
                 if (ex.getCause() instanceof ClassNotFoundException){

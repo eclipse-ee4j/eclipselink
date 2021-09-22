@@ -61,9 +61,6 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
     /**
      * INTERNAL:
      * Create an Attribute instance with a passed in validation flag (usually set to true only during Metamodel initialization)
-     * @param managedType
-     * @param mapping
-     * @param validationEnabled
      */
     protected PluralAttributeImpl(ManagedTypeImpl<X> managedType, CollectionMapping mapping, boolean validationEnabled) {
         super(managedType, mapping);
@@ -157,7 +154,6 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
     /**
      * INTERNAL:
      * Return the mapping associated with this PluralAttribute.
-     * @return
      */
     public CollectionMapping getCollectionMapping() {
         return (CollectionMapping) getMapping();

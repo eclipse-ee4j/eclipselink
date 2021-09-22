@@ -431,7 +431,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * manager will be added here. On rollback or commit any left over open
      * queries should be closed.
      *
-     * @param query
      */
     public void addOpenQuery(QueryImpl query) {
         getOpenQueriesMap().put(query, query);
@@ -586,7 +585,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * object if it is new. The instance of the entity provided will become
      * managed.
      *
-     * @param entity
      * @throws IllegalArgumentException
      *             if the given Object is not an entity.
      */
@@ -615,7 +613,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * Merge the state of the given entity into the current persistence context,
      * using the unqualified class name as the entity name.
      *
-     * @param entity
      * @return the instance that the state was merged to
      */
     @Override
@@ -633,7 +630,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * Merge the state of the given entity into the current persistence context,
      * using the unqualified class name as the entity name.
      *
-     * @param entity
      * @return the instance that the state was merged to
      * @throws IllegalArgumentException
      *             if given Object is not an entity or is a removed entity
@@ -655,7 +651,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     /**
      * Remove the instance.
      *
-     * @param entity
      * @throws IllegalArgumentException
      *             if Object passed in is not an entity
      */
@@ -703,8 +698,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * vendor-specific property or hint is not recognized, it is silently
      * ignored.
      *
-     * @param entityClass
-     * @param primaryKey
      * @param properties
      *            standard and vendor-specific properties
      * @return the found entity instance or null if the entity does not exist
@@ -735,9 +728,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * thrown if the database locking failure causes only statement-level
      * rollback
      *
-     * @param entityClass
-     * @param primaryKey
-     * @param lockMode
      * @return the found entity instance or null if the entity does not exist
      * @throws IllegalArgumentException
      *             if the first argument does not denote an entity type or the
@@ -780,9 +770,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * timeout hint. Depending on the database in use and the locking mechanisms
      * used by the provider, the hint may or may not be observed.
      *
-     * @param entityClass
-     * @param primaryKey
-     * @param lockMode
      * @param properties
      *            standard and vendor-specific properties and hints
      * @return the found entity instance or null if the entity does not exist
@@ -1048,7 +1035,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * vendor-specific property or hint is not recognized, it is silently
      * ignored.
      *
-     * @param entity
      * @param properties
      *            standard and vendor-specific properties
      * @throws IllegalArgumentException
@@ -1076,8 +1062,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * LockTimeoutException will be thrown if the database locking failure
      * causes only statement-level rollback.
      *
-     * @param entity
-     * @param lockMode
      * @throws IllegalArgumentException
      *             if the instance is not an entity or the entity is not managed
      * @throws TransactionRequiredException
@@ -1111,8 +1095,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * in use and the locking mechanisms used by the provider, the hint may or
      * may not be observed.
      *
-     * @param entity
-     * @param lockMode
      * @param properties
      *            standard and vendor-specific properties and hints
      * @throws IllegalArgumentException
@@ -1170,8 +1152,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     /**
      * Check if the instance belongs to the current persistence context.
      *
-     * @param entity
-     * @return
      * @throws IllegalArgumentException
      *             if given Object is not an entity
      */
@@ -1451,8 +1431,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * if it is not found then search for it from EntityManagerFactory
      * properties.
      *
-     * @param name
-     * @return
      */
     public Object getProperty(String name) {
         Object propertyValue = null;
@@ -1508,8 +1486,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * unless it was accessed by the application while the entity manager was
      * open.
      *
-     * @param entityClass
-     * @param primaryKey
      * @return the found entity instance.
      * @throws IllegalArgumentException
      *             if the first argument does not denote an entity type or the
@@ -1974,8 +1950,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * Set the lock mode for an entity object contained in the persistence
      * context.
      *
-     * @param entity
-     * @param lockMode
      * @throws PersistenceException
      *             if an unsupported lock call is made
      * @throws IllegalArgumentException
@@ -1992,8 +1966,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * Set the lock mode for an entity object contained in the persistence
      * context.
      *
-     * @param entity
-     * @param lockMode
      * @throws PersistenceException
      *             if an unsupported lock call is made
      * @throws IllegalArgumentException
@@ -2287,7 +2259,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * Set the flush mode that applies to all objects contained in the
      * persistence context.
      *
-     * @param flushMode
      */
     @Override
     public void setFlushMode(FlushModeType flushMode) {
@@ -2679,7 +2650,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * database. Entities which previously referenced the detached entity will
      * continue to reference it.
      *
-     * @param entity
      * @throws IllegalArgumentException
      *             if the instance is not an entity
      *
@@ -2992,7 +2962,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * or have a common inheritance hierarchy mapped root class.
      * The AttributeGroup should correspond to the entity type.
      *
-     * @param entityOrEntities
      */
     @Override
     public void load(Object entityOrEntities, AttributeGroup group) {
@@ -3006,7 +2975,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * or have a common inheritance hierarchy mapped root class.
      * The AttributeGroup should correspond to the entity type.
      *
-     * @param entityOrEntities
      */
     @Override
     public Object copy(Object entityOrEntities, AttributeGroup group) {

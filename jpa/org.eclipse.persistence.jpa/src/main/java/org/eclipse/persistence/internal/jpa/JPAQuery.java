@@ -64,10 +64,6 @@ public class JPAQuery extends DatabaseQuery  {
 
     /**
      * JPQL
-     * @param name
-     * @param jpqlString
-     * @param lockMode
-     * @param hints
      */
     public JPAQuery(String name, String jpqlString, String lockMode, Map<String, Object> hints) {
         this.name = name;

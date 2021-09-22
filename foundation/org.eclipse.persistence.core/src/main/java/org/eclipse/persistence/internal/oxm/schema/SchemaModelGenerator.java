@@ -963,7 +963,7 @@ public class SchemaModelGenerator {
         Schema s = getSchema(fragUri, null, schemaForNamespace, properties);
         String targetNS = workingSchema.getTargetNamespace();
         if ((s.isElementFormDefault() && !fragUri.equals(targetNS)) || (!s.isElementFormDefault() && fragUri.length() > 0)) {
-            globalElement = (Element) s.getTopLevelElements().get(frag.getLocalName());
+            globalElement = s.getTopLevelElements().get(frag.getLocalName());
             if (globalElement == null) {
                 globalElement = new Element();
                 globalElement.setName(frag.getLocalName());
@@ -1040,7 +1040,7 @@ public class SchemaModelGenerator {
             if ((s.isElementFormDefault() && !fragUri.equals(targetNS)) || (!s.isElementFormDefault() && fragUri.length() > 0)) {
                 // must generate a global element are create a reference to it
                 // if the global element exists, use it; otherwise create a new one
-                globalElement = (Element) s.getTopLevelElements().get(frag.getLocalName());
+                globalElement = s.getTopLevelElements().get(frag.getLocalName());
                 if (globalElement == null) {
                     globalElement = new Element();
                     globalElement.setName(frag.getLocalName());
@@ -1375,7 +1375,7 @@ public class SchemaModelGenerator {
      *
      */
     protected boolean isComplexTypeWithSimpleContentRequired(Descriptor desc) {
-        return desc.getMappings().size() > 1 ? true : false;
+        return desc.getMappings().size() > 1;
     }
 
     /**
@@ -1393,10 +1393,7 @@ public class SchemaModelGenerator {
         }
 
         Collection<String> fieldValues = ((EnumTypeConverter) converter).getAttributeToFieldValues().values();
-        ArrayList facets = new ArrayList();
-        for (String field : fieldValues) {
-            facets.add(field);
-        }
+        List<String> facets = new ArrayList<>(fieldValues);
 
         Restriction restriction = new Restriction();
         restriction.setEnumerationFacets(facets);

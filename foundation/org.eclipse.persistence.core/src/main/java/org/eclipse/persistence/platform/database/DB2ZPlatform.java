@@ -158,8 +158,8 @@ public class DB2ZPlatform extends DB2Platform {
     @Override
     public void registerOutputParameter(CallableStatement statement, String name, int jdbcType) throws SQLException {
         try {
-            Class<?> clazz = null;
-            Method method = null;
+            Class<?> clazz;
+            Method method;
             String methodName = "registerJccOutParameterAtName";
             Class<?>[] methodArgs = (Class<?>[]) new Class[] {String.class, int.class};
             Object[] parameters = new Object[] {name, jdbcType};
@@ -197,10 +197,9 @@ public class DB2ZPlatform extends DB2Platform {
     @Override
     public void registerOutputParameter(CallableStatement statement, String name, int jdbcType, String typeName) throws SQLException {
         try {
-            Class<?> clazz = null;
-            Method method = null;
+            Class<?> clazz;
+            Method method;
             String methodName = "registerJccOutParameterAtName";
-            @SuppressWarnings({"rawtypes"})
             Class<?>[] methodArgs = (Class<?>[]) new Class[] {String.class, int.class, String.class};
             Object[] parameters = new Object[] {name, jdbcType, typeName};
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
@@ -401,8 +400,8 @@ public class DB2ZPlatform extends DB2Platform {
 
         if(methodName != null) {
             try {
-                Class<?> clazz = null;
-                Method method = null;
+                Class<?> clazz;
+                Method method;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     try {
                         ClassLoader cl = AccessController.doPrivileged(new PrivilegedGetContextClassLoader(Thread.currentThread()));
@@ -432,11 +431,10 @@ public class DB2ZPlatform extends DB2Platform {
     }
 
     @Override
-    @SuppressWarnings({"rawtypes"})
     protected void setNullFromDatabaseField(DatabaseField databaseField, CallableStatement statement, String name) throws SQLException {
-        String methodName = null;
-        Class<?>[] methodArgs = null;
-        Object[] parameters = null;
+        String methodName;
+        Class<?>[] methodArgs;
+        Object[] parameters;
         if (databaseField instanceof ObjectRelationalDatabaseField) {
             ObjectRelationalDatabaseField field = (ObjectRelationalDatabaseField)databaseField;
             methodName = "setJccNullAtName";
@@ -450,8 +448,8 @@ public class DB2ZPlatform extends DB2Platform {
         }
 
         try {
-            Class<?> clazz = null;
-            Method method = null;
+            Class<?> clazz;
+            Method method;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
                     ClassLoader cl = AccessController.doPrivileged(new PrivilegedGetContextClassLoader(Thread.currentThread()));
@@ -480,44 +478,41 @@ public class DB2ZPlatform extends DB2Platform {
     }
 
     @Override
-    @SuppressWarnings({"rawtypes"})
     public Object getParameterValueFromDatabaseCall(CallableStatement statement, String name, AbstractSession session)
                 throws SQLException {
-        String methodName = null;
-        Class<?>[] methodArgs = null;
-        Object[] parameters = null;
+        String methodName;
+        Class<?>[] methodArgs;
+        Object[] parameters;
 
         methodName = "getJccObjectAtName";
         methodArgs = (Class<?>[]) new Class[] {String.class};
         parameters = new Object[] {name};
 
-        if(methodName != null) {
-            try {
-                Class<?> clazz = null;
-                Method method = null;
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    try {
-                        ClassLoader cl = AccessController.doPrivileged(new PrivilegedGetContextClassLoader(Thread.currentThread()));
-                        clazz = AccessController.doPrivileged(new PrivilegedClassForName<>(DB2_CALLABLESTATEMENT_CLASS, true, cl));
-                        method = AccessController.doPrivileged(new PrivilegedGetMethod(clazz, methodName, methodArgs, true));
-                        Object o = statement.unwrap(clazz);
-                        return AccessController.doPrivileged(new PrivilegedMethodInvoker<>(method, o, parameters));
-                    } catch (PrivilegedActionException ex) {
-                        if (ex.getCause() instanceof ClassNotFoundException) {
-                            throw (ClassNotFoundException) ex.getCause();
-                        }
-                        throw (RuntimeException) ex.getCause();
-                    }
-                } else {
-                    ClassLoader cl = PrivilegedAccessHelper.getContextClassLoader(Thread.currentThread());
-                    clazz = PrivilegedAccessHelper.getClassForName(DB2_CALLABLESTATEMENT_CLASS, true, cl);
-                    method = PrivilegedAccessHelper.getMethod(clazz, methodName, methodArgs, true);
+        try {
+            Class<?> clazz;
+            Method method;
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                try {
+                    ClassLoader cl = AccessController.doPrivileged(new PrivilegedGetContextClassLoader(Thread.currentThread()));
+                    clazz = AccessController.doPrivileged(new PrivilegedClassForName<>(DB2_CALLABLESTATEMENT_CLASS, true, cl));
+                    method = AccessController.doPrivileged(new PrivilegedGetMethod(clazz, methodName, methodArgs, true));
                     Object o = statement.unwrap(clazz);
-                    return PrivilegedAccessHelper.invokeMethod(method, o, parameters);
+                    return AccessController.doPrivileged(new PrivilegedMethodInvoker<>(method, o, parameters));
+                } catch (PrivilegedActionException ex) {
+                    if (ex.getCause() instanceof ClassNotFoundException) {
+                        throw (ClassNotFoundException) ex.getCause();
+                    }
+                    throw (RuntimeException) ex.getCause();
                 }
-            } catch (ReflectiveOperationException e) {
-                AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, null, e);
+            } else {
+                ClassLoader cl = PrivilegedAccessHelper.getContextClassLoader(Thread.currentThread());
+                clazz = PrivilegedAccessHelper.getClassForName(DB2_CALLABLESTATEMENT_CLASS, true, cl);
+                method = PrivilegedAccessHelper.getMethod(clazz, methodName, methodArgs, true);
+                Object o = statement.unwrap(clazz);
+                return PrivilegedAccessHelper.invokeMethod(method, o, parameters);
             }
+        } catch (ReflectiveOperationException e) {
+            AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, null, e);
         }
         //Didn't work, fall back. This most likely still won't work, but the driver exception from there will be helpful.
         return super.getParameterValueFromDatabaseCall(statement, name, session);

@@ -171,7 +171,6 @@ public class DefaultSequence extends Sequence {
      * @param writeSession Session is a Session used for writing (either ClientSession or DatabaseSession);
      * @param seqName String is sequencing number field name
      * @param size int number of values to preallocate (output Vector size).
-     * @return
      */
     @Override
     public Vector<?> getGeneratedVector(Accessor accessor, AbstractSession writeSession, String seqName, int size) {

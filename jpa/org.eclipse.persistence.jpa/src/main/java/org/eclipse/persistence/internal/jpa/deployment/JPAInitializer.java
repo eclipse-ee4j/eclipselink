@@ -194,8 +194,6 @@ public abstract class JPAInitializer {
 
     /**
      * Returns whether the given persistence provider class is supported by this implementation
-     * @param providerClassName
-     * @return
      */
     public boolean isPersistenceProviderSupported(String providerClassName){
         return (providerClassName == null) || providerClassName.equals("") || providerClassName.equals(EntityManagerFactoryProvider.class.getName()) || providerClassName.equals(PersistenceProvider.class.getName());
@@ -224,8 +222,6 @@ public abstract class JPAInitializer {
     /**
      * Register a transformer.  This method should be overridden to provide the appropriate transformer
      * registration for the environment
-     * @param transformer
-     * @param persistenceUnitInfo
      */
     public abstract void registerTransformer(final ClassTransformer transformer, PersistenceUnitInfo persistenceUnitInfo, Map properties);
 

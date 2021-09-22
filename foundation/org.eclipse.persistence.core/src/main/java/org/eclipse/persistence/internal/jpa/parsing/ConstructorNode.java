@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ public class ConstructorNode extends Node implements AliasableNode {
     private String className = null;
 
     /** The list of constructor call argument nodes */
-    public List constructorItems = new ArrayList();
+    public List<Node> constructorItems = new ArrayList<>();
 
     /**
      * Return a new ConstructorNode
@@ -54,8 +54,8 @@ public class ConstructorNode extends Node implements AliasableNode {
             ReportQuery reportQuery = (ReportQuery)theQuery;
             reportQuery.beginAddingConstructorArguments(
                 getConstructorClass(context.getParseTreeContext()));
-            for (Iterator i = constructorItems.iterator(); i.hasNext();) {
-                Node node = (Node)i.next();
+            for (Iterator<Node> i = constructorItems.iterator(); i.hasNext();) {
+                Node node = i.next();
                 if (selectingRelationshipField(node, context)) {
                     selectContext.useOuterJoins();
                 }
@@ -72,8 +72,8 @@ public class ConstructorNode extends Node implements AliasableNode {
      */
     @Override
     public void validate(ParseTreeContext context) {
-        for (Iterator i = constructorItems.iterator(); i.hasNext();) {
-            Node item = (Node)i.next();
+        for (Iterator<Node> i = constructorItems.iterator(); i.hasNext();) {
+            Node item = i.next();
             item.validate(context);
         }
 
@@ -105,7 +105,7 @@ public class ConstructorNode extends Node implements AliasableNode {
      * INTERNAL
      * Add an Order By Item to this node
      */
-    public void addConstructorItem(Object theNode) {
+    public void addConstructorItem(Node theNode) {
         constructorItems.add(theNode);
     }
 
@@ -113,7 +113,7 @@ public class ConstructorNode extends Node implements AliasableNode {
      * INTERNAL
      * Set the list of constructor items of this node.
      */
-    public void setConstructorItems(List items) {
+    public void setConstructorItems(List<Node> items) {
         this.constructorItems = items;
     }
 
@@ -121,7 +121,7 @@ public class ConstructorNode extends Node implements AliasableNode {
      * INTERNAL
      * Get the list of constructor items of this node.
      */
-    public List getConstructorItems() {
+    public List<Node> getConstructorItems() {
         return this.constructorItems;
     }
 
@@ -130,13 +130,13 @@ public class ConstructorNode extends Node implements AliasableNode {
      * @exception JPQLException if the specified constructor class could not
      * be found.
      */
-    private Class getConstructorClass(ParseTreeContext context) {
+    private Class<?> getConstructorClass(ParseTreeContext context) {
         Object type = getType();
         if (type == null) {
             throw JPQLException.constructorClassNotFound(
                 context.getQueryInfo(), getLine(), getColumn(), className);
         }
-        return (Class)type;
+        return (Class<?>)type;
     }
 
     /**
@@ -163,8 +163,8 @@ public class ConstructorNode extends Node implements AliasableNode {
         StringBuilder repr = new StringBuilder();
         repr.append("NEW ").append(className);
         repr.append("(");
-        for (Iterator i = constructorItems.iterator(); i.hasNext();) {
-            Node node = (Node)i.next();
+        for (Iterator<Node> i = constructorItems.iterator(); i.hasNext();) {
+            Node node = i.next();
             repr.append(node.getAsString());
             if (i.hasNext()) {
                 repr.append(", ");

@@ -107,7 +107,7 @@ public class GlassfishPlatform extends JMXServerPlatformBase implements JMXEnabl
         Connection unwrappedConnection;
 
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            unwrappedConnection = AccessController.doPrivileged(new PrivilegedAction<Connection>() {
+            unwrappedConnection = AccessController.doPrivileged(new PrivilegedAction<>() {
                 @Override
                 public Connection run() {
                     return unwrapGlassFishConnectionHelper(connection);

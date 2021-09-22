@@ -29,7 +29,6 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -167,9 +166,9 @@ public class Oracle12Platform extends Oracle11Platform {
      * @return Struct
      */
     @Override
-    public Struct createStruct(String structTypeName, Object[] attributes, AbstractRecord row, Vector orderedFields, AbstractSession session, Connection connection) throws SQLException {
+    public Struct createStruct(String structTypeName, Object[] attributes, AbstractRecord row, Vector<DatabaseField> orderedFields, AbstractSession session, Connection connection) throws SQLException {
         for (int index = 0; index < orderedFields.size(); index++) {
-            DatabaseField field = (DatabaseField)orderedFields.elementAt(index);
+            DatabaseField field = orderedFields.elementAt(index);
             if (row.getField(field) != null && row.getField(field).getTypeName() != null) {
                 if (ClassConstants.BLOB.getTypeName().equals(row.getField(field).getTypeName())) {
                     Blob blob = connection.createBlob();

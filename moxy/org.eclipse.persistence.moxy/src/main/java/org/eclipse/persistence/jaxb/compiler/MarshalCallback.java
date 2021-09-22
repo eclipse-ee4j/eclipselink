@@ -62,7 +62,6 @@ public class MarshalCallback {
     }
 
     /**
-     * @param loader
      */
     public void initialize(ClassLoader loader) {
         try {
@@ -148,7 +147,6 @@ public class MarshalCallback {
      * Should use setDomainClassName - the init method will overwrite
      * the set value with Class.forName(domainClassName).
      *
-     * @param clazz
      */
     public void setDomainClass(Class clazz) {
         domainClass = clazz;

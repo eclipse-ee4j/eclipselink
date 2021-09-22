@@ -104,7 +104,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
             if (this.group == null){
                 this.group = group;
             }
-            Object type = group.getType();
+            Serializable type = group.getType();
             if (type == null){
                 type = group.getTypeName();
             }
@@ -202,9 +202,9 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
             if(obj == null) {
                 return false;
             }
-            CoreAttributeItem anotherItem = null;
+            CoreAttributeItem<ATTRIBUTE_GROUP> anotherItem = null;
             try {
-                anotherItem = (CoreAttributeItem)obj;
+                anotherItem = (CoreAttributeItem<ATTRIBUTE_GROUP>)obj;
             } catch (ClassCastException cce) {
                 return false;
             }
@@ -215,7 +215,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
                 }
                 if (this.subGroups.size() == anotherItem.subGroups.size()){
                     for (Map.Entry<Object, ATTRIBUTE_GROUP> entry : this.subGroups.entrySet()){
-                        ATTRIBUTE_GROUP anotherGroup = (ATTRIBUTE_GROUP)anotherItem.subGroups.get(entry.getKey());
+                        ATTRIBUTE_GROUP anotherGroup = anotherItem.subGroups.get(entry.getKey());
                         if (! entry.getValue().equals(anotherGroup)){
                             return false;
                         }
@@ -233,7 +233,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
                 }
                 if (this.keyGroups.size() == anotherItem.keyGroups.size()){
                     for (Map.Entry<Object, ATTRIBUTE_GROUP> entry : this.keyGroups.entrySet()){
-                        ATTRIBUTE_GROUP anotherGroup = (ATTRIBUTE_GROUP)anotherItem.keyGroups.get(entry.getKey());
+                        ATTRIBUTE_GROUP anotherGroup = anotherItem.keyGroups.get(entry.getKey());
                         if (! entry.getValue().equals(anotherGroup)){
                             return false;
                         }
@@ -344,10 +344,10 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" + getAttributeName() + ")" + (this.subGroups!=null ? " => " + this.subGroups.toString() : "") + (this.keyGroups!=null ? " => " + this.keyGroups.toString() : "");
+        return getClass().getSimpleName() + "(" + getAttributeName() + ")" + (this.subGroups!=null ? " => " + this.subGroups : "") + (this.keyGroups!=null ? " => " + this.keyGroups : "");
     }
 
     public String toStringNoClassName() {
-        return getAttributeName() + (this.subGroups!=null ? " => " + this.subGroups.toString() : "")+ (this.keyGroups!=null ? " => " + this.keyGroups.toString() : "");
+        return getAttributeName() + (this.subGroups!=null ? " => " + this.subGroups : "")+ (this.keyGroups!=null ? " => " + this.keyGroups : "");
     }
 }

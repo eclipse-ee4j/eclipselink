@@ -23,8 +23,6 @@ import org.eclipse.persistence.logging.SessionLog;
 import java.io.StringWriter;
 import java.util.*;
 
-import static java.lang.String.format;
-
 /**
  * The purpose of this class is to try explain the nature of a dead lock
  */
@@ -103,7 +101,7 @@ public class ExplainDeadLockUtil {
         Map<Thread, DeadLockComponent> helperMap = new HashMap<>();
 
         // (c) start our correction loop
-        List<DeadLockComponent> deadLockAsSimpleList = new ArrayList<DeadLockComponent>();
+        List<DeadLockComponent> deadLockAsSimpleList = new ArrayList<>();
         while (currentElementToIterate != null) {
 
             // (d) In this chaing of DTOs we built during our recursion

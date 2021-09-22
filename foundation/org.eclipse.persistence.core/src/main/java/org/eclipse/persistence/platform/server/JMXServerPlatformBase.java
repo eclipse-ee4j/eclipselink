@@ -208,12 +208,12 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     try {
                         mBeanServerList = AccessController.doPrivileged(
-                            new PrivilegedExceptionAction<List<MBeanServer>>() {
-                                @Override
-                                public List<MBeanServer> run() {
-                                    return MBeanServerFactory.findMBeanServer(null);
+                                new PrivilegedExceptionAction<>() {
+                                    @Override
+                                    public List<MBeanServer> run() {
+                                        return MBeanServerFactory.findMBeanServer(null);
+                                    }
                                 }
-                            }
                            );
                     } catch (PrivilegedActionException pae) {
                         getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER,
@@ -322,11 +322,10 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
                     args[0] = developmentMBean;
                     args[1] = name;
                     try {
-                        @SuppressWarnings({"rawtypes"})
                         Method getMethod = PrivilegedAccessHelper.getPublicMethod(MBeanServer.class,
                                 "registerMBean", new Class[] {Object.class, ObjectName.class}, false);
                         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                            info = AccessController.doPrivileged(new PrivilegedMethodInvoker<ObjectInstance>(getMethod, mBeanServerRuntime, args));
+                            info = AccessController.doPrivileged(new PrivilegedMethodInvoker<>(getMethod, mBeanServerRuntime, args));
                         } else {
                             info = mBeanServerRuntime.registerMBean(developmentMBean, name);
                         }
@@ -355,11 +354,10 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
                         Object[] args = new Object[2];
                         args[0] = runtimeServicesMBean;
                         args[1] = name;
-                        @SuppressWarnings({"rawtypes"})
                         Method getMethod = PrivilegedAccessHelper.getPublicMethod(MBeanServer.class,
                                 "registerMBean", new Class[] {Object.class, ObjectName.class}, false);
                         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                           runtimeInstance = AccessController.doPrivileged(new PrivilegedMethodInvoker<ObjectInstance>(getMethod, mBeanServerRuntime, args));
+                           runtimeInstance = AccessController.doPrivileged(new PrivilegedMethodInvoker<>(getMethod, mBeanServerRuntime, args));
                         } else {
                             runtimeInstance = mBeanServerRuntime.registerMBean(runtimeServicesMBean, name);
                         }
@@ -408,7 +406,6 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
                         Object[] args = new Object[1];
                         args[0] = name;
                         try {
-                            @SuppressWarnings({"rawtypes"})
                             Method getMethod = PrivilegedAccessHelper.getPublicMethod(MBeanServer.class,
                                     "unregisterMBean", new Class[] {ObjectName.class}, false);
                             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
@@ -437,7 +434,6 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
                         Object[] args = new Object[1];
                         args[0] = name;
                         try {
-                            @SuppressWarnings({"rawtypes"})
                             Method getMethod = PrivilegedAccessHelper.getPublicMethod(MBeanServer.class,
                                     "unregisterMBean", new Class[] {ObjectName.class}, false);
                             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {

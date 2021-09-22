@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -209,9 +209,9 @@ public class SimpleTableWithNestedSQLTestSuite extends DBWSTestSuite {
         XMLUnmarshaller unmarshaller = xmlContext2.createUnmarshaller();
         Schema schema = (Schema)unmarshaller.unmarshal(new StringReader(sw.toString()));
         ComplexType findByNameResponseType =
-            (ComplexType) schema.getTopLevelComplexTypes().get(FINDBYNAME_RESPONSETYPE);
-        Element result = (Element)findByNameResponseType.getSequence().getElements().get(0);
-        Element unnamed = (Element)result.getComplexType().getSequence().getElements().get(0);
+                schema.getTopLevelComplexTypes().get(FINDBYNAME_RESPONSETYPE);
+        Element result = findByNameResponseType.getSequence().getElements().get(0);
+        Element unnamed = result.getComplexType().getSequence().getElements().get(0);
         assertTrue("wrong refType for " + FINDBYNAME_RESPONSETYPE, TABLE_ALIAS.equals(unnamed.getRef()));
     }
 }

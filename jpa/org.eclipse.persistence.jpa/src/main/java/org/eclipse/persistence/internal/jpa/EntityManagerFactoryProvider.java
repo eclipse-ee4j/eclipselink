@@ -97,8 +97,6 @@ public class EntityManagerFactoryProvider {
     /**
      * Add an EntityManagerSetupImpl to the cached list
      * These are used to ensure all persistence units that are the same get the same underlying session
-     * @param name
-     * @param setup
      */
     public static void addEntityManagerSetupImpl(String name, EntityManagerSetupImpl setup){
         synchronized (EntityManagerFactoryProvider.emSetupImpls) {
@@ -111,7 +109,6 @@ public class EntityManagerFactoryProvider {
 
     /**
      * Calls the appropriate create,replace or alter SchemaManager api.
-     * @param mgr
      * @param ddlType - ddl operation to be performed
      */
     protected static void generateDefaultTables(SchemaManager mgr, TableCreationType ddlType) {
@@ -142,10 +139,6 @@ public class EntityManagerFactoryProvider {
     /**
      * Check the provided map for an object with the given key.  If that object is not available, check the
      * System properties.  If it is not available from either location, return the default value.
-     * @param propertyKey
-     * @param overrides
-     * @param defaultValue
-     * @return
      */
     public static String getConfigPropertyAsString(String propertyKey, Map overrides, String defaultValue){
         String value = getConfigPropertyAsString(propertyKey, overrides);
@@ -230,7 +223,6 @@ public class EntityManagerFactoryProvider {
 
     /**
      * Return the setup class for a given entity manager name
-     * @param emName
      */
     public static EntityManagerSetupImpl getEntityManagerSetupImpl(String emName) {
         synchronized (EntityManagerFactoryProvider.emSetupImpls){
@@ -274,8 +266,6 @@ public class EntityManagerFactoryProvider {
     /**
      * Merge the properties from the source object into the target object.  If the property
      * exists in both objects, use the one from the target
-     * @param target
-     * @param source
      * @return the target object
      */
     public static <K, V> Map<K, V> mergeMaps(Map<K, V> target, Map<K, V> source){
@@ -292,8 +282,6 @@ public class EntityManagerFactoryProvider {
 
     /**
      * Copies source into target, removes from target all keysToBeRemoved.
-     * @param source
-     * @param keysToBeRemoved
      * @return the target object
      */
     public static <K, V> Map<K, V> removeSpecifiedProperties(Map<K, V> source, Collection<K> keysToBeRemoved){
@@ -310,8 +298,6 @@ public class EntityManagerFactoryProvider {
 
     /**
      * target contains the entries from source with keysToBeKept.
-     * @param source
-     * @param keysToBeKept
      * @return the target object
      */
     public static <K, V> Map<K, V> keepSpecifiedProperties(Map<K, V> source, Collection<K> keysToBeKept){
@@ -333,8 +319,6 @@ public class EntityManagerFactoryProvider {
      * target is a array of two Maps
      * the first one contains specified properties;
      * the second all the rest.
-     * @param source
-     * @param keysToBeKept
      * @return the target object
      */
     public static <K, V> Map<K, V>[] splitSpecifiedProperties(Map<K, V> source, Collection<K> keysToBeKept){
@@ -362,7 +346,6 @@ public class EntityManagerFactoryProvider {
      * Target's size equals keys' size + 1:
      * all the source's Map.Entries not found in any of keys Collections
      * go into the last target's map.
-     * @param source
      * @param keys is array of Maps of size n
      * @return the target object is array of Maps of size n+1
      */
@@ -394,8 +377,6 @@ public class EntityManagerFactoryProvider {
     /**
      * This is a TEMPORARY method that will be removed.
      * DON'T USE THIS METHOD - for internal use only.
-     * @param m
-     * @param session
      */
     protected static void translateOldProperties(Map m, AbstractSession session) {
         for(int i=0; i < oldPropertyNames.length; i++) {

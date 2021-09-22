@@ -113,7 +113,7 @@ public class ReportQueryResult implements Serializable, Map {
             // For bug 3115576 this is only used for EXISTS sub-selects so no result is needed.
         }
 
-        List<Object> results = new ArrayList<Object>();
+        List<Object> results = new ArrayList<>();
         for(ReportItem item: query.getItems()) {
             if (item.isConstructorItem()) {
                 Object result = processConstructorItem(query, row, toManyData, (ConstructorReportItem) item);

@@ -635,7 +635,6 @@ public class QueryImpl {
     /**
      * Set the flush mode type to be used for the query execution.
      *
-     * @param flushMode
      */
     public QueryImpl setFlushMode(FlushModeType flushMode) {
         try {
@@ -720,8 +719,6 @@ public class QueryImpl {
 
     /**
      * Return the identifier of this parameter.  This will be the name if it is set, else it will be the position
-     * @param param
-     * @return
      */
     public static String getParameterId(Parameter param){
         Integer id= param.getPosition();
@@ -782,7 +779,6 @@ public class QueryImpl {
     /**
      * Set the lock mode type to be used for the query execution.
      *
-     * @param lockMode
      * @throws IllegalStateException
      *             if not a Java Persistence query language SELECT query
      */
@@ -838,7 +834,6 @@ public class QueryImpl {
     /**
      * Set the maximum number of results to retrieve.
      *
-     * @param maxResult
      * @return the same query instance
      */
     public QueryImpl setMaxResults(int maxResult) {
@@ -875,7 +870,6 @@ public class QueryImpl {
     /**
      * Set the maximum number of results to retrieve.
      *
-     * @param maxResult
      */
     public void setMaxResultsInternal(int maxResult) {
         if (maxResult < 0) {
@@ -913,8 +907,6 @@ public class QueryImpl {
     /**
      * Bind an argument to a positional parameter.
      *
-     * @param position
-     * @param value
      */
     protected void setParameterInternal(int position, Object value) {
         setParameterInternal(String.valueOf(position), value, true);
@@ -1094,7 +1086,6 @@ public class QueryImpl {
     /**
      * Return the value bound to the named parameter.
      *
-     * @param name
      * @return parameter value
      * @throws IllegalStateException
      *             if the parameter has not been been bound
@@ -1116,7 +1107,6 @@ public class QueryImpl {
     /**
      * Return the value bound to the positional parameter.
      *
-     * @param position
      * @return parameter value
      * @throws IllegalStateException
      *             if the parameter has not been been bound

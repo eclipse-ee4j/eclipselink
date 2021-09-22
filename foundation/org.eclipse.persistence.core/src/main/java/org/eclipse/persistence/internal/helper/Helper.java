@@ -32,7 +32,6 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -43,7 +42,6 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -240,8 +238,8 @@ public class Helper extends CoreHelper implements Serializable {
         getCalendarCache().offer(calendar);
     }
 
-    public static void addAllToVector(Vector theVector, Vector elementsToAdd) {
-        for (Enumeration stream = elementsToAdd.elements(); stream.hasMoreElements();) {
+    public static <E> void addAllToVector(Vector<E> theVector, Vector<? extends E> elementsToAdd) {
+        for (Enumeration<? extends E> stream = elementsToAdd.elements(); stream.hasMoreElements();) {
             theVector.addElement(stream.nextElement());
         }
     }
@@ -277,7 +275,7 @@ public class Helper extends CoreHelper implements Serializable {
     /**
     * Convert the specified vector into an array.
     */
-    public static Object[] arrayFromVector(Vector vector) {
+    public static Object[] arrayFromVector(Vector<?> vector) {
         Object[] result = new Object[vector.size()];
         for (int i = 0; i < vector.size(); i++) {
             result[i] = vector.elementAt(i);
@@ -421,8 +419,8 @@ public class Helper extends CoreHelper implements Serializable {
      * Return whether a Class is a subclass of, or the same as, another Class.
      * @return boolean
      */
-    public static boolean classIsSubclass(Class subClass, Class superClass) {
-        Class temp = subClass;
+    public static boolean classIsSubclass(Class<?> subClass, Class<?> superClass) {
+        Class<?> temp = subClass;
 
         if (superClass == null) {
             return false;
@@ -523,8 +521,8 @@ public class Helper extends CoreHelper implements Serializable {
         return res;
     }
 
-    public static Class getClassFromClasseName(String className, ClassLoader classLoader){
-        Class convertedClass = null;
+    public static <T> Class<T> getClassFromClasseName(String className, ClassLoader classLoader){
+        Class<T> convertedClass = null;
         if(className==null){
             return null;
         }
@@ -552,12 +550,12 @@ public class Helper extends CoreHelper implements Serializable {
         if (aString.length() > 3 && (aString.startsWith("[L") && aString.endsWith(";"))) {
             return aString.substring(2, aString.length() - 1);
         } else if (aString.startsWith("[")){
-            Class primitiveClass = null;
+            Class<?> primitiveClass = null;
             try {
                 primitiveClass = Class.forName(aString);
             } catch (ClassNotFoundException cnf) {
                 // invalid name specified - do not rethrow exception
-                primitiveClass = null;
+                // primitiveClass is still null;
             }
             if (primitiveClass != null) {
                 return primitiveClass.getComponentType().getName();
@@ -633,15 +631,15 @@ public class Helper extends CoreHelper implements Serializable {
     * same and each of the types in the first Vector are assignable from the types
     * in the corresponding objects in the second Vector.
     */
-    public static boolean areTypesAssignable(List types1, List types2) {
+    public static boolean areTypesAssignable(List<Class<?>> types1, List<Class<?>> types2) {
         if ((types1 == null) || (types2 == null)) {
             return false;
         }
 
         if (types1.size() == types2.size()) {
             for (int i = 0; i < types1.size(); i++) {
-                Class type1 = (Class)types1.get(i);
-                Class type2 = (Class)types2.get(i);
+                Class<?> type1 = types1.get(i);
+                Class<?> type2 = types2.get(i);
 
                 // if either are null then we assume assignability.
                 if ((type1 != null) && (type2 != null)) {
@@ -662,16 +660,15 @@ public class Helper extends CoreHelper implements Serializable {
       *
       * Added Nov 9, 2000 JED Patch 2.5.1.8
       */
-    public static boolean compareHashtables(Hashtable hashtable1, Hashtable hashtable2) {
-        Enumeration enumtr;
+    public static boolean compareHashtables(Hashtable<?, ?> hashtable1, Hashtable<?, ?> hashtable2) {
+        Enumeration<?> enumtr;
         Object element;
-        Hashtable clonedHashtable;
 
         if (hashtable1.size() != hashtable2.size()) {
             return false;
         }
 
-        clonedHashtable = (Hashtable)hashtable2.clone();
+        Hashtable<?, ?> clonedHashtable = (Hashtable<?, ?>)hashtable2.clone();
 
         enumtr = hashtable1.elements();
         while (enumtr.hasMoreElements()) {
@@ -689,8 +686,8 @@ public class Helper extends CoreHelper implements Serializable {
      * check for BigDecimals as well.
      */
     public static boolean comparePotentialArrays(Object firstValue, Object secondValue) {
-        Class<? extends Object> firstClass = firstValue.getClass();
-        Class<? extends Object> secondClass = secondValue.getClass();
+        Class<?> firstClass = firstValue.getClass();
+        Class<?> secondClass = secondValue.getClass();
 
         // Arrays must be checked for equality because default does identity
         if ((firstClass == ClassConstants.APBYTE) && (secondClass == ClassConstants.APBYTE)) {
@@ -711,8 +708,8 @@ public class Helper extends CoreHelper implements Serializable {
     /**
      * Merge the two Maps into a new HashMap.
      */
-    public static Map concatenateMaps(Map first, Map second) {
-        Map concatenation = new HashMap(first.size() + second.size() + 4);
+    public static <K, V> Map<K, V> concatenateMaps(Map<? extends K, ? extends V> first, Map<? extends K, ? extends V> second) {
+        Map<K, V> concatenation = new HashMap<>(first.size() + second.size() + 4);
 
         concatenation.putAll(first);
         concatenation.putAll(second);
@@ -723,17 +720,17 @@ public class Helper extends CoreHelper implements Serializable {
     /**
       * Return a new vector with no duplicated values.
       */
-    public static Vector concatenateUniqueVectors(Vector first, Vector second) {
-        Vector concatenation;
-        Object element;
+    public static <E> Vector<E> concatenateUniqueVectors(Vector<? extends E> first, Vector<? extends E> second) {
+        Vector<E> concatenation;
+        E element;
 
         concatenation = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
-        for (Enumeration stream = first.elements(); stream.hasMoreElements();) {
+        for (Enumeration<? extends E> stream = first.elements(); stream.hasMoreElements();) {
             concatenation.addElement(stream.nextElement());
         }
 
-        for (Enumeration stream = second.elements(); stream.hasMoreElements();) {
+        for (Enumeration<? extends E> stream = second.elements(); stream.hasMoreElements();) {
             element = stream.nextElement();
             if (!concatenation.contains(element)) {
                 concatenation.addElement(element);
@@ -747,11 +744,11 @@ public class Helper extends CoreHelper implements Serializable {
     /**
       * Return a new List with no duplicated values.
       */
-    public static List concatenateUniqueLists(List first, List second) {
-        List concatenation = new ArrayList(first.size() + second.size());
+    public static <E> List<E> concatenateUniqueLists(List<? extends E> first, List<? extends E> second) {
+        List<E> concatenation = new ArrayList<>(first.size() + second.size());
         concatenation.addAll(first);
 
-        for (Object element : second) {
+        for (E element : second) {
             if (!concatenation.contains(element)) {
                 concatenation.add(element);
             }
@@ -761,16 +758,16 @@ public class Helper extends CoreHelper implements Serializable {
 
     }
 
-    public static Vector concatenateVectors(Vector first, Vector second) {
-        Vector concatenation;
+    public static <E> Vector<E> concatenateVectors(Vector<? extends E> first, Vector<? extends E> second) {
+        Vector<E> concatenation;
 
         concatenation = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
-        for (Enumeration stream = first.elements(); stream.hasMoreElements();) {
+        for (Enumeration<? extends E> stream = first.elements(); stream.hasMoreElements();) {
             concatenation.addElement(stream.nextElement());
         }
 
-        for (Enumeration stream = second.elements(); stream.hasMoreElements();) {
+        for (Enumeration<? extends E> stream = second.elements(); stream.hasMoreElements();) {
             concatenation.addElement(stream.nextElement());
         }
 
@@ -784,8 +781,8 @@ public class Helper extends CoreHelper implements Serializable {
      *  @param startIndex - starting position in vector
      *  @param stopIndex - ending position in vector
      */
-    public static Vector copyVector(List originalVector, int startIndex, int stopIndex) throws ValidationException {
-        Vector newVector;
+    public static <E> Vector<E> copyVector(List<E> originalVector, int startIndex, int stopIndex) throws ValidationException {
+        Vector<E> newVector;
 
         if (stopIndex < startIndex) {
             return NonSynchronizedVector.newInstance();
@@ -1001,7 +998,7 @@ public class Helper extends CoreHelper implements Serializable {
      * the superclass is checked, and so on, recursively.
      * Set accessible to true, so we can access private/package/protected fields.
      */
-    public static Field getField(Class javaClass, String fieldName) throws NoSuchFieldException {
+    public static Field getField(Class<?> javaClass, String fieldName) throws NoSuchFieldException {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try {
                 return AccessController.doPrivileged(new PrivilegedGetField(javaClass, fieldName, true));
@@ -1021,7 +1018,7 @@ public class Helper extends CoreHelper implements Serializable {
      * is checked, and so on, recursively. Set accessible to true, so we can
      * access private/package/protected methods.
      */
-    public static Method getDeclaredMethod(Class javaClass, String methodName) throws NoSuchMethodException {
+    public static Method getDeclaredMethod(Class<?> javaClass, String methodName) throws NoSuchMethodException {
         return getDeclaredMethod(javaClass, methodName, null);
     }
 
@@ -1033,7 +1030,7 @@ public class Helper extends CoreHelper implements Serializable {
      * superclass is checked, and so on, recursively. Set accessible to true,
      * so we can access private/package/protected methods.
      */
-    public static Method getDeclaredMethod(Class javaClass, String methodName, Class[] methodParameterTypes) throws NoSuchMethodException {
+    public static Method getDeclaredMethod(Class<?> javaClass, String methodName, Class<?>[] methodParameterTypes) throws NoSuchMethodException {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try {
                 return AccessController.doPrivileged(
@@ -1056,7 +1053,7 @@ public class Helper extends CoreHelper implements Serializable {
     /**
      * Return the class instance from the class
      */
-    public static Object getInstanceFromClass(Class classFullName) {
+    public static Object getInstanceFromClass(Class<?> classFullName) {
         if (classFullName == null) {
             return null;
         }
@@ -1064,7 +1061,7 @@ public class Helper extends CoreHelper implements Serializable {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    return AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(classFullName));
+                    return AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(classFullName));
                 } catch (PrivilegedActionException exception) {
                     Exception throwableException = exception.getException();
                     if (throwableException instanceof InstantiationException) {
@@ -1080,13 +1077,9 @@ public class Helper extends CoreHelper implements Serializable {
             } else {
                 return PrivilegedAccessHelper.newInstanceFromClass(classFullName);
             }
-        } catch (InstantiationException notInstantiatedException) {
+        } catch (ReflectiveOperationException notInstantiatedException) {
             ValidationException exception = new ValidationException();
             exception.setInternalException(notInstantiatedException);
-            throw exception;
-        } catch (IllegalAccessException notAccessedException) {
-            ValidationException exception = new ValidationException();
-            exception.setInternalException(notAccessedException);
             throw exception;
         }
     }
@@ -1101,7 +1094,7 @@ public class Helper extends CoreHelper implements Serializable {
     /**
      *    Answers the unqualified class name for the provided class.
      */
-    public static String getShortClassName(Class javaClass) {
+    public static String getShortClassName(Class<?> javaClass) {
         return getShortClassName(javaClass.getName());
     }
 
@@ -1122,7 +1115,7 @@ public class Helper extends CoreHelper implements Serializable {
     /**
      *    return a package name for the specified class.
      */
-    public static String getPackageName(Class javaClass) {
+    public static String getPackageName(Class<?> javaClass) {
         String className = Helper.getShortClassName(javaClass);
         return javaClass.getName().substring(0, (javaClass.getName().length() - (className.length() + 1)));
     }
@@ -1146,7 +1139,7 @@ public class Helper extends CoreHelper implements Serializable {
      * This is needed in jdk1.1, where <code>Vector.contains(Object)</code>
      * for a <code>null</code> element will result in a <code>NullPointerException</code>....
      */
-    public static int indexOfNullElement(Vector v, int index) {
+    public static int indexOfNullElement(Vector<?> v, int index) {
         int size = v.size();
         for (int i = index; i < size; i++) {
             if (v.elementAt(i) == null) {
@@ -1160,7 +1153,7 @@ public class Helper extends CoreHelper implements Serializable {
      * ADVANCED
      * returns true if the class in question is a primitive wrapper
      */
-    public static boolean isPrimitiveWrapper(Class classInQuestion) {
+    public static boolean isPrimitiveWrapper(Class<?> classInQuestion) {
         return classInQuestion.equals(Character.class) || classInQuestion.equals(Boolean.class) || classInQuestion.equals(Byte.class) || classInQuestion.equals(Short.class) || classInQuestion.equals(Integer.class) || classInQuestion.equals(Long.class) || classInQuestion.equals(Float.class) || classInQuestion.equals(Double.class);
     }
 
@@ -1201,22 +1194,21 @@ public class Helper extends CoreHelper implements Serializable {
      * If it's a Collection, iterate over the collection and add each item to the Vector.
      * If it's not a collection create a Vector and add the object to it.
      */
-    public static Vector makeVectorFromObject(Object theObject) {
+    @SuppressWarnings({"unchecked"})
+    public static <T> Vector<T> makeVectorFromObject(Object theObject) {
         if (theObject instanceof Vector) {
-            return ((Vector)theObject);
+            return ((Vector<T>)theObject);
         }
         if (theObject instanceof Collection) {
-            Vector returnVector = new Vector(((Collection)theObject).size());
-            Iterator iterator = ((Collection)theObject).iterator();
-            while (iterator.hasNext()) {
-                returnVector.add(iterator.next());
-            }
+            Collection<? extends T> col = ((Collection<? extends T>)theObject);
+            Vector<T> returnVector = new Vector<>(col.size());
+            returnVector.addAll(col);
             return returnVector;
         }
 
-        Vector returnVector = new Vector();
+        Vector<Object> returnVector = new Vector<>();
         returnVector.addElement(theObject);
-        return returnVector;
+        return (Vector<T>) returnVector;
     }
 
     /**
@@ -1232,7 +1224,7 @@ public class Helper extends CoreHelper implements Serializable {
         while (tokenizer.hasMoreTokens()) {
             token = tokenizer.nextToken();
             if (tokenizer.hasMoreTokens()) {
-                directoryName.append(token + File.separator);
+                directoryName.append(token).append(File.separator);
             }
         }
         FileOutputStream fos = null;
@@ -1314,10 +1306,10 @@ public class Helper extends CoreHelper implements Serializable {
     /**
      * Given a Vector, print it, even if there is a null in it
      */
-    public static String printVector(Vector vector) {
+    public static String printVector(Vector<?> vector) {
         StringWriter stringWriter = new StringWriter();
         stringWriter.write("[");
-        Enumeration enumtr = vector.elements();
+        Enumeration<?> enumtr = vector.elements();
         stringWriter.write(String.valueOf(enumtr.nextElement()));
         while (enumtr.hasMoreElements()) {
             stringWriter.write(" ");
@@ -1328,26 +1320,26 @@ public class Helper extends CoreHelper implements Serializable {
 
     }
 
-    public static Hashtable rehashHashtable(Hashtable table) {
-        Hashtable rehashedTable = new Hashtable(table.size() + 2);
+    public static <K, V> Hashtable<K, V> rehashHashtable(Hashtable<K, V> table) {
+        Hashtable<K, V> rehashedTable = new Hashtable<>(table.size() + 2);
 
-        Enumeration values = table.elements();
-        for (Enumeration keys = table.keys(); keys.hasMoreElements();) {
-            Object key = keys.nextElement();
-            Object value = values.nextElement();
+        Enumeration<V> values = table.elements();
+        for (Enumeration<K> keys = table.keys(); keys.hasMoreElements();) {
+            K key = keys.nextElement();
+            V value = values.nextElement();
             rehashedTable.put(key, value);
         }
 
         return rehashedTable;
     }
 
-    public static Map rehashMap(Map table) {
-        HashMap rehashedTable = new HashMap(table.size() + 2);
+    public static <K, V> Map<K, V> rehashMap(Map<K, V> table) {
+        Map<K, V> rehashedTable = new HashMap<>(table.size() + 2);
 
-        Iterator values = table.values().iterator();
-        for (Iterator keys = table.keySet().iterator(); keys.hasNext();) {
-            Object key = keys.next();
-            Object value = values.next();
+        Iterator<V> values = table.values().iterator();
+        for (Iterator<K> keys = table.keySet().iterator(); keys.hasNext();) {
+            K key = keys.next();
+            V value = values.next();
             rehashedTable.put(key, value);
         }
 
@@ -1457,9 +1449,9 @@ public class Helper extends CoreHelper implements Serializable {
         return null;
     }
 
-    public static Vector reverseVector(Vector theVector) {
-        Vector tempVector = new Vector(theVector.size());
-        Object currentElement;
+    public static <T> Vector<T> reverseVector(Vector<T> theVector) {
+        Vector<T> tempVector = new Vector<>(theVector.size());
+        T currentElement;
 
         for (int i = theVector.size() - 1; i > -1; i--) {
             currentElement = theVector.elementAt(i);
@@ -1542,7 +1534,7 @@ public class Helper extends CoreHelper implements Serializable {
         }
 
         //
-        return buf1.toString() + buf2.toString();
+        return buf1.toString() + buf2;
     }
 
     /**
@@ -2156,14 +2148,14 @@ public class Helper extends CoreHelper implements Serializable {
                     //need to reverse the string
                     //bug fix: 3016423. append(BunfferString) is jdk1.4 version api. Use append(String) instead
                     //in order to support jdk1.3.
-                    newStringBuffer.append(newStringBufferTmp.reverse().toString());
+                    newStringBuffer.append(newStringBufferTmp.reverse());
                     return newStringBuffer.toString();
                 }
             }
         }
 
         //the shrunk string still too long, revrese the order back and truncate it!
-        return newStringBufferTmp.reverse().toString().substring(0, size);
+        return newStringBufferTmp.reverse().substring(0, size);
     }
 
     /**
@@ -2219,8 +2211,8 @@ public class Helper extends CoreHelper implements Serializable {
     /**
      * Convert the specified array into a vector.
      */
-    public static Vector vectorFromArray(Object[] array) {
-        Vector result = new Vector(array.length);
+    public static <T> Vector<T> vectorFromArray(T[] array) {
+        Vector<T> result = new Vector<>(array.length);
         for (int i = 0; i < array.length; i++) {
             result.addElement(array[i]);
         }
@@ -2258,7 +2250,7 @@ public class Helper extends CoreHelper implements Serializable {
      * specified object in the specified list.
      * If the list is null or empty (or both the object and the list is null), 0 is returned.
      */
-    public static int countOccurrencesOf(Object comparisonObject, List list) {
+    public static int countOccurrencesOf(Object comparisonObject, List<?> list) {
         int instances = 0;
         boolean comparisonObjectIsNull = comparisonObject == null;
         if (list != null) {
@@ -2422,7 +2414,7 @@ public class Helper extends CoreHelper implements Serializable {
     public static boolean isLob(DatabaseField field) {
         int sqlType = field.sqlType;
         if (sqlType == DatabaseField.NULL_SQL_TYPE) {
-            Class type = field.getType();
+            Class<?> type = field.getType();
             if (type != null) {
                 return ClassConstants.BLOB.equals(type) || ClassConstants.CLOB.equals(type);
             } else {

@@ -57,8 +57,8 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
 
     public BatchFetchPolicy(BatchFetchType type) {
         this.type = type;
-        this.dataResults = new HashMap<Object, List<AbstractRecord>>();
-        this.dataResults.put(this, new ArrayList<AbstractRecord>());
+        this.dataResults = new HashMap<>();
+        this.dataResults.put(this, new ArrayList<>());
     }
 
     @Override

@@ -15,6 +15,8 @@
 package org.eclipse.persistence.sessions.factories;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.sessions.factories.MissingDescriptorListener;
 import org.eclipse.persistence.internal.sessions.factories.ObjectPersistenceWorkbenchXMLProject;
@@ -49,7 +51,7 @@ public class XMLProjectWriter {
         Writer writer;
         try {
             FileOutputStream stream = new FileOutputStream(fileName);
-            writer = new OutputStreamWriter(stream, "UTF-8");
+            writer = new OutputStreamWriter(stream, StandardCharsets.UTF_8);
             write(project, writer);
             writer.close();
         } catch (IOException exception) {

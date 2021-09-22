@@ -46,7 +46,7 @@ import org.eclipse.persistence.sessions.Project;
  * @see commonj.sdo.helper.XSDHelper
  */
 public class SDOSchemaGenerator {
-    private Map namespaceToSchemaLocation;
+    private Map<String, String> namespaceToSchemaLocation;
     private SchemaLocationResolver schemaLocationResolver;
     private List allTypes;
     private Schema generatedSchema;
@@ -85,10 +85,10 @@ public class SDOSchemaGenerator {
 
         //Now we have a built schema model
         Project p = new SchemaModelProject();
-        Vector generatedNamespaces = generatedSchema.getNamespaceResolver().getNamespaces();
+        Vector<Namespace> generatedNamespaces = generatedSchema.getNamespaceResolver().getNamespaces();
         XMLDescriptor desc = ((XMLDescriptor)p.getDescriptor(Schema.class));
         for (int i = 0; i < generatedNamespaces.size(); i++) {
-            Namespace next = (Namespace)generatedNamespaces.get(i);
+            Namespace next = generatedNamespaces.get(i);
             desc.getNamespaceResolver().put(next.getPrefix(), next.getNamespaceURI());
 
             if (next.getNamespaceURI().equals(SDOConstants.SDO_URL) || next.getNamespaceURI().equals(SDOConstants.SDOXML_URL) || next.getNamespaceURI().equals(SDOConstants.SDOJAVA_URL)) {
@@ -156,7 +156,7 @@ public class SDOSchemaGenerator {
      * used for getting the value of the schemaLocation attribute of generated imports and includes
      * @return String The generated XSD.
     */
-    public String generate(List types, Map aNamespaceToSchemaLocation) {
+    public String generate(List types, Map<String, String> aNamespaceToSchemaLocation) {
         if ((types == null) || (types.size() == 0)) {
             throw new IllegalArgumentException("No Schema was generated from null or empty list of types.");
         }
@@ -175,9 +175,9 @@ public class SDOSchemaGenerator {
 
         //Now we have a built schema model
         Project p = new SchemaModelProject();
-        Vector namespaces = generatedSchema.getNamespaceResolver().getNamespaces();
+        Vector<Namespace> namespaces = generatedSchema.getNamespaceResolver().getNamespaces();
         for (int i = 0; i < namespaces.size(); i++) {
-            Namespace next = (Namespace)namespaces.get(i);
+            Namespace next = namespaces.get(i);
             ((XMLDescriptor)p.getDescriptor(Schema.class)).getNamespaceResolver().put(next.getPrefix(), next.getNamespaceURI());
         }
 
@@ -277,10 +277,10 @@ public class SDOSchemaGenerator {
         }
 
         Object value = sdoType.get(SDOConstants.JAVA_CLASS_PROPERTY);
-        if ((value != null) && value instanceof String) {
+        if (value instanceof String) {
             String sdoJavaPrefix = getPrefixForURI(SDOConstants.SDOJAVA_URL);
             QName qname = new QName(SDOConstants.SDOJAVA_URL, SDOConstants.SDOJAVA_INSTANCECLASS, sdoJavaPrefix);
-            simpleType.getAttributesMap().put(qname, value);
+            simpleType.getAttributesMap().put(qname, (String) value);
         }
 
         SDOType baseType = null;
@@ -747,7 +747,7 @@ public class SDOSchemaGenerator {
             boolean alreadyGenerated = allTypes.contains(targetType);
             String schemaLocation = null;
             if (namespaceToSchemaLocation != null) {
-                schemaLocation = (String)namespaceToSchemaLocation.get(targetType.getURI());
+                schemaLocation = namespaceToSchemaLocation.get(targetType.getURI());
 
                 if (targetType.getURI().equals(generatedSchema.getTargetNamespace())) {
                     if (!alreadyGenerated) {
@@ -807,7 +807,7 @@ public class SDOSchemaGenerator {
         }
         String lowerName = Character.toLowerCase(name.charAt(0)) + name.substring(1, name.length());
 
-        Object exists = schema.getTopLevelElements().get(lowerName);
+        Element exists = schema.getTopLevelElements().get(lowerName);
         if (exists != null) {
             elem.setName(name);
         } else {

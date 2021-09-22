@@ -26,7 +26,7 @@ public interface TypeHelper {
     String getTypeName(Object type);
 
     /** Returns the class object of the specified type. */
-    Class getJavaClass(Object type);
+    Class<?> getJavaClass(Object type);
 
     /** Returns a type representation for the specified type name or null if
      * there is no such type. */

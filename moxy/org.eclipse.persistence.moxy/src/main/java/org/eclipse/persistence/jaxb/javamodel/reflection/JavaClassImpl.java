@@ -84,7 +84,7 @@ public class JavaClassImpl implements JavaClass {
         this.javaModelImpl = javaModel;
     }
     @Override
-    public Collection getActualTypeArguments() {
+    public Collection<JavaClass> getActualTypeArguments() {
         ArrayList<JavaClass> argCollection = new ArrayList<>();
         if (jType != null) {
             Type[] params = jType.getActualTypeArguments();
@@ -209,7 +209,7 @@ public class JavaClassImpl implements JavaClass {
     }
 
     @Override
-    public Collection getDeclaredMethods() {
+    public Collection<JavaMethod> getDeclaredMethods() {
         ArrayList<JavaMethod> methodCollection = new ArrayList<>();
         Method[] methods = jClass.getDeclaredMethods();
         for (Method method : methods) {
@@ -258,7 +258,7 @@ public class JavaClassImpl implements JavaClass {
     }
 
     @Override
-    public Collection getConstructors() {
+    public Collection<JavaConstructor> getConstructors() {
         Constructor[] constructors = this.jClass.getConstructors();
         ArrayList<JavaConstructor> constructorCollection = new ArrayList(constructors.length);
         for(Constructor next:constructors) {
@@ -268,7 +268,7 @@ public class JavaClassImpl implements JavaClass {
     }
 
     @Override
-    public Collection getDeclaredConstructors() {
+    public Collection<JavaConstructor> getDeclaredConstructors() {
         Constructor[] constructors = this.jClass.getDeclaredConstructors();
         ArrayList<JavaConstructor> constructorCollection = new ArrayList(constructors.length);
         for(Constructor next:constructors) {
@@ -323,7 +323,7 @@ public class JavaClassImpl implements JavaClass {
     }
 
     @Override
-    public Collection getMethods() {
+    public Collection<JavaMethod> getMethods() {
         ArrayList<JavaMethod> methodCollection = new ArrayList<>();
         Method[] methods = PrivilegedAccessHelper.getMethods(jClass);
         for (Method method : methods) {
@@ -584,7 +584,6 @@ public class JavaClassImpl implements JavaClass {
      * Set the indicator for XML metadata complete - if true,
      * annotations will be ignored.
      *
-     * @param isMetadataComplete
      */
     void setIsMetadataComplete(Boolean isMetadataComplete) {
        if(isMetadataComplete != null){

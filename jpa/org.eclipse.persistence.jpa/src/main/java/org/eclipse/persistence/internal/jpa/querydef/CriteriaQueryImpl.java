@@ -394,9 +394,6 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      *
      * Also sets the query result to ResultType.CONSTRUCTOR
      *
-     * @param class1
-     * @param selections
-     * @throws IllegalArgumentException
      */
     public void populateAndSetConstructorSelection(ConstructorSelectionImpl constructorSelection, Class<?> class1, Selection<?>... selections) throws IllegalArgumentException{
         Class[] constructorArgs = new Class[selections.length];

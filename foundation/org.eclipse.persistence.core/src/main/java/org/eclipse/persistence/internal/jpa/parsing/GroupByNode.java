@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,7 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
  */
 public class GroupByNode extends MajorNode {
 
-    List groupByItems = null;
+    List<Node> groupByItems = null;
 
     /**
      * Return a new GroupByNode.
@@ -42,8 +42,8 @@ public class GroupByNode extends MajorNode {
      * Validate the current node.
      */
     public void validate(ParseTreeContext context, SelectNode selectNode) {
-        for (Iterator i = groupByItems.iterator(); i.hasNext(); ) {
-            Node item = (Node)i.next();
+        for (Iterator<Node> i = groupByItems.iterator(); i.hasNext(); ) {
+            Node item = i.next();
             item.validate(context);
         }
     }
@@ -54,9 +54,9 @@ public class GroupByNode extends MajorNode {
      */
     public void addGroupingToQuery(ObjectLevelReadQuery theQuery, GenerationContext context) {
         if (theQuery.isReportQuery()) {
-            Iterator iter = getGroupByItems().iterator();
+            Iterator<Node> iter = getGroupByItems().iterator();
             while (iter.hasNext()) {
-                Node nextNode = (Node)iter.next();
+                Node nextNode = iter.next();
                 ((ReportQuery)theQuery).addGrouping(nextNode.generateExpression(context));
             }
         }
@@ -85,8 +85,8 @@ public class GroupByNode extends MajorNode {
     private boolean isGroupbyItem(Node expr) {
         if (expr.isDotNode() || expr.isVariableNode()) {
             String exprRepr = expr.getAsString();
-            for (Iterator i = groupByItems.iterator(); i.hasNext();) {
-                Node item = (Node)i.next();
+            for (Iterator<Node> i = groupByItems.iterator(); i.hasNext();) {
+                Node item = i.next();
                 String itemRepr = item.getAsString();
                 if (exprRepr.equals(itemRepr)) {
                     return true;
@@ -100,9 +100,9 @@ public class GroupByNode extends MajorNode {
      * INTERNAL
      * Return the GROUP BY statements
      */
-    public List getGroupByItems() {
+    public List<Node> getGroupByItems() {
         if (groupByItems == null) {
-            setGroupByItems(new Vector());
+            setGroupByItems(new Vector<>());
         }
         return groupByItems;
     }
@@ -111,7 +111,7 @@ public class GroupByNode extends MajorNode {
      * INTERNAL
      * Set the GROUP BY statements
      */
-    public void setGroupByItems(List newItems) {
+    public void setGroupByItems(List<Node> newItems) {
         groupByItems = newItems;
     }
 
@@ -122,14 +122,14 @@ public class GroupByNode extends MajorNode {
     @Override
     public String getAsString() {
         StringBuilder repr = new StringBuilder();
-        for (Iterator i = groupByItems.iterator(); i.hasNext(); ) {
-            Node expr = (Node)i.next();
+        for (Iterator<Node> i = groupByItems.iterator(); i.hasNext(); ) {
+            Node expr = i.next();
             if (repr.length() > 0) {
                 repr.append(", ");
             }
             repr.append(expr.getAsString());
         }
-        return "GROUP BY " + repr.toString();
+        return "GROUP BY " + repr;
     }
 
 }

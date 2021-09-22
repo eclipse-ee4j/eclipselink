@@ -266,7 +266,7 @@ public abstract class Context<
 
     }
 
-    private class XPathQueryResult {
+    private static class XPathQueryResult {
         /*
          * Mapping corresponding to the XPath query
          */

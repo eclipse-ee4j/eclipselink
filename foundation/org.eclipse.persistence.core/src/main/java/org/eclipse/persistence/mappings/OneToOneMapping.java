@@ -451,7 +451,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
 
             // DatabaseField overrides equals, so we need to use an IdentifyHashMap for this implementation
             // to make sure we are using the object references to lookup clone references
-            AbstractMap<DatabaseField, DatabaseField> fieldToCloneMap = new IdentityHashMap<DatabaseField, DatabaseField>(getTargetToSourceKeyFields().size());
+            AbstractMap<DatabaseField, DatabaseField> fieldToCloneMap = new IdentityHashMap<>(getTargetToSourceKeyFields().size());
 
             //clone foreign keys and save the clones in a lookup table
             for (Enumeration<DatabaseField> enumtr = getForeignKeyFields().elements(); enumtr.hasMoreElements();) {

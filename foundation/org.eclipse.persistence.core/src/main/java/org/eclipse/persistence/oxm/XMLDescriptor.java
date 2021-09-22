@@ -1079,13 +1079,13 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
         xmlField.setNamespaceResolver(namespaceResolver);
         while(stringTokenizer.hasMoreElements()) {
             String nextToken = stringTokenizer.nextToken();
-            xmlField.setXPath(xPath.toString() + nextToken);
+            xmlField.setXPath(xPath + nextToken);
             xmlField.initialize();
             DatabaseMapping mapping = objectBuilder.getMappingForField(xmlField);
             if(null == mapping) {
                 XPathFragment xPathFragment = new XPathFragment(nextToken);
                 if(xPathFragment.getIndexValue() > 0) {
-                    xmlField.setXPath(xPath.toString() + nextToken.substring(0, nextToken.indexOf('[')));
+                    xmlField.setXPath(xPath + nextToken.substring(0, nextToken.indexOf('[')));
                     xmlField.initialize();
                     mapping = objectBuilder.getMappingForField(xmlField);
                     if(null != mapping) {

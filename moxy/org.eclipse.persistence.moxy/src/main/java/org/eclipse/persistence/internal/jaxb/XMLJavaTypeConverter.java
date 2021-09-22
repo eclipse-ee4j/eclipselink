@@ -70,7 +70,6 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
      * This constructor takes the XmlAdapter class to be used with this
      * converter.
      *
-     * @param xmlAdapterClass
      */
     public XMLJavaTypeConverter(Class xmlAdapterClass) {
         setXmlAdapterClass(xmlAdapterClass);
@@ -80,7 +79,6 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
      * This constructor takes an adapter class name.  The adapter
      * class will be loaded during initialization.
      *
-     * @param xmlAdapterClassName
      */
     public XMLJavaTypeConverter(String xmlAdapterClassName) {
         this.xmlAdapterClassName = xmlAdapterClassName;
@@ -93,8 +91,6 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
      * the schema type, then from that type to the bound type.  The opposite
      * will occur during marshal.
      *
-     * @param xmlAdapterClass
-     * @param schemaType
      */
     public XMLJavaTypeConverter(Class xmlAdapterClass, QName schemaType) {
         setSchemaType(schemaType);
@@ -108,8 +104,6 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
      * type will be converted to the schema type, then from that type to the
      * bound type.  The opposite will occur during marshal.
      *
-     * @param xmlAdapterClassName
-     * @param schemaType
      */
     public XMLJavaTypeConverter(String xmlAdapterClassName, QName schemaType) {
         setSchemaType(schemaType);
@@ -231,8 +225,6 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
      * either create an instance of the XmlAdapter, or if an instance is set
      * on the marshaller, use it.
      *
-     * @param mapping
-     * @param session
      */
     @Override
     public void initialize(DatabaseMapping mapping, Session session) {
@@ -322,7 +314,6 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
     /**
      * Set the XmlAdapter class to be used with this converter.
      *
-     * @param xmlAdapterClass
      */
     public void setXmlAdapterClass(Class xmlAdapterClass) {
         this.xmlAdapterClass = xmlAdapterClass;
@@ -331,7 +322,6 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
     /**
      * Set the XmlAdapter class to be used with this converter.
      *
-     * @param xmlAdapterClassName
      */
     public void setXmlAdapterClassName(String xmlAdapterClassName) {
         this.xmlAdapterClassName = xmlAdapterClassName;

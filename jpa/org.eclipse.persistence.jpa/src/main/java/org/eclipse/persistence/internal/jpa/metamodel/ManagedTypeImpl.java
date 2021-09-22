@@ -416,9 +416,6 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
     /**
      * INTERNAL:
      * Return an instance of a ManagedType based on the RelationalDescriptor parameter
-     * @param metamodel
-     * @param descriptor
-     * @return
      */
     protected static ManagedTypeImpl<?> create(MetamodelImpl metamodel, ClassDescriptor descriptor) {
         // Get the ManagedType property on the descriptor if it exists
@@ -659,7 +656,6 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
     /**
      * INTERNAL:
      * Return the RelationalDescriptor associated with this ManagedType
-     * @return
      */
     public ClassDescriptor getDescriptor() {
         return this.descriptor;
@@ -833,7 +829,6 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
     /**
      * INTERNAL:
      * Return the Map of AttributeImpl members keyed by String.
-     * @return
      */
     protected java.util.Map<String, Attribute<X, ?>> getMembers() {
         return this.members;
@@ -842,7 +837,6 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
     /**
      * INTERNAL:
      * Return the Metamodel that this ManagedType is associated with.
-     * @return
      */
     protected MetamodelImpl getMetamodel() {
         return this.metamodel;
@@ -924,7 +918,6 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *
      * @param targetPrimitiveOrWrapperClass (the type we are verifying against)
      * @param actualPrimitiveOrWrapperClass (the type that may be the autoboxed or primitive equal
-     * @return
      */
     private boolean isAutoboxedType(Class targetPrimitiveOrWrapperClass, Class actualPrimitiveOrWrapperClass) {
         BasicTypeHelperImpl typeHelper = BasicTypeHelperImpl.getInstance();
@@ -1112,9 +1105,6 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      * INTERNAL:
      * Handle the case where we were unable to determine the element type of the plural attribute.
      * Normally this function is never required and should have a code coverage of 0%.
-     * @param managedType
-     * @param collectionMapping
-     * @param validation
      */
     private AttributeImpl initializePluralAttributeTypeNotFound(ManagedTypeImpl managedType, CollectionMapping collectionMapping, boolean validation) {
         // default to List
@@ -1344,8 +1334,6 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      * INTERNAL:
      * Get the elementType directly from the class using a reflective method call
      * directly on the containing java class associated with this managedType.
-     * @param mapping
-     * @return
      */
     protected Class getTypeClassFromAttributeOrMethodLevelAccessor(DatabaseMapping mapping) {
         /**
@@ -1453,7 +1441,6 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      * INTERNAL:
      * Return whether this type is identifiable.
      * This would be EntityType and MappedSuperclassType
-     * @return
      */
     @Override
     protected boolean isIdentifiableType() {
@@ -1464,7 +1451,6 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      * INTERNAL:
      * Return whether this type is identifiable.
      * This would be EmbeddableType as well as EntityType and MappedSuperclassType
-     * @return
      */
     @Override
     protected boolean isManagedType() {

@@ -396,7 +396,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
         try {
             if (shouldLogProfile()) {
                 writeNestingTabs(writer);
-                writer.write(ToStringLocalization.buildMessage("begin_profile_of", null) + "{" + query.toString() + Helper.cr());
+                writer.write(ToStringLocalization.buildMessage("begin_profile_of", null) + "{" + query + Helper.cr());
                 writer.flush();
             }
 

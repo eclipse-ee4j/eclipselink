@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -286,7 +286,7 @@ public class Node {
      * resolveClass: Answer the class associated with the content of this node. Default is to return null.
      * Subclasses should override this.
      */
-    public Class resolveClass(GenerationContext context) {
+    public Class<?> resolveClass(GenerationContext context) {
         return null;
     }
 
@@ -294,7 +294,7 @@ public class Node {
      * resolveClass: Answer the class associated with the content of this node. Default is to return null.
      * Subclasses should override this.
      */
-    public Class resolveClass(GenerationContext context, Class ownerClass) {
+    public Class<?> resolveClass(GenerationContext context, Class<?> ownerClass) {
         return null;
     }
 
@@ -311,7 +311,7 @@ public class Node {
      * class as the context.
      * Subclasses should override this.
      */
-    public DatabaseMapping resolveMapping(GenerationContext context, Class ownerClass) {
+    public DatabaseMapping resolveMapping(GenerationContext context, Class<?> ownerClass) {
         return null;
     }
 
@@ -394,7 +394,7 @@ public class Node {
         buffer.append("\r\n");
         toStringIndent(indent, buffer);
         if (hasLeft()) {
-            buffer.append("Left: " + getLeft().toString(indent + 1));
+            buffer.append("Left: ").append(getLeft().toString(indent + 1));
         } else {
             buffer.append("Left: null");
         }
@@ -402,7 +402,7 @@ public class Node {
         buffer.append("\r\n");
         toStringIndent(indent, buffer);
         if (hasRight()) {
-            buffer.append("Right: " + getRight().toString(indent + 1));
+            buffer.append("Right: ").append(getRight().toString(indent + 1));
         } else {
             buffer.append("Right: null");
         }

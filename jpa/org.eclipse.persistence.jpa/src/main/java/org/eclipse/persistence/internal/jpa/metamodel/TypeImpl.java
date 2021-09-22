@@ -115,7 +115,6 @@ public abstract class TypeImpl<X> implements Type<X>, Serializable {
     /**
      * INTERNAL:
      * Return whether this type is an Entity (true) or MappedSuperclass (false) or Embeddable (false)
-     * @return
      */
     public abstract boolean isEntity();
 
@@ -123,7 +122,6 @@ public abstract class TypeImpl<X> implements Type<X>, Serializable {
      * INTERNAL:
      * Return whether this type is identifiable.
      * This would be EntityType and MappedSuperclassType
-     * @return
      */
     protected abstract boolean isIdentifiableType();
 
@@ -131,14 +129,12 @@ public abstract class TypeImpl<X> implements Type<X>, Serializable {
      * INTERNAL:
      * Return whether this type is identifiable.
      * This would be EmbeddableType as well as EntityType and MappedSuperclassType
-     * @return
      */
     protected abstract boolean isManagedType();
 
     /**
      * INTERNAL:
      * Return whether this type is an MappedSuperclass (true) or Entity (false) or Embeddable (false)
-     * @return
      */
     public abstract boolean isMappedSuperclass();
 

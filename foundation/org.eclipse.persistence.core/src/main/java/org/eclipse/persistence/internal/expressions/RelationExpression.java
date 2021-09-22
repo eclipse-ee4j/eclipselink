@@ -193,7 +193,7 @@ public class RelationExpression extends CompoundExpression {
             return performSelector(false);
         }
 
-        Class<? extends Object> javaClass = leftValue.getClass();
+        Class<?> javaClass = leftValue.getClass();
         if (javaClass != rightValue.getClass()) {
             return performSelector(false);
         }
@@ -623,8 +623,8 @@ public class RelationExpression extends CompoundExpression {
                 descriptor = mapping.getReferenceDescriptor();
                 left = left.normalize(normalizer);
                 Map<DatabaseField, DatabaseField> targetToSourceKeyFields = ((OneToOneMapping)mapping).getTargetToSourceKeyFields();
-                sourceFields = new ArrayList(targetToSourceKeyFields.size());
-                targetFields = new ArrayList(targetToSourceKeyFields.size());
+                sourceFields = new ArrayList<>(targetToSourceKeyFields.size());
+                targetFields = new ArrayList<>(targetToSourceKeyFields.size());
                 for (Map.Entry<DatabaseField, DatabaseField> entry : targetToSourceKeyFields.entrySet()) {
                     sourceFields.add(entry.getValue());
                     targetFields.add(entry.getKey());
@@ -642,7 +642,7 @@ public class RelationExpression extends CompoundExpression {
             Expression newLeft = null;
             if (composite) {
                 // For composite ids an array comparison is used, this only works on some databases.
-                List fieldExpressions = new ArrayList();
+                List<Expression> fieldExpressions = new ArrayList<>();
                 for (DatabaseField field : sourceFields) {
                     fieldExpressions.add(left.getField(field));
                 }
@@ -657,12 +657,12 @@ public class RelationExpression extends CompoundExpression {
                 ConstantExpression constant = (ConstantExpression)right;
                 if (constant.getValue() instanceof Collection) {
                     Collection objects = (Collection)constant.getValue();
-                    List newObjects = new ArrayList(objects.size());
+                    List<Object> newObjects = new ArrayList<>(objects.size());
                     for (Object object : objects) {
                         if (object instanceof Expression) {
                             if (composite) {
                                 // For composite ids an array comparison is used, this only works on some databases.
-                                List values = new ArrayList();
+                                List<Expression> values = new ArrayList<>();
                                 for (DatabaseField field : targetFields) {
                                     values.add(((Expression)object).getField(field));
                                 }
@@ -673,7 +673,7 @@ public class RelationExpression extends CompoundExpression {
                         } else if (descriptor.getJavaClass().isInstance(object)) {
                             if (composite) {
                                 // For composite ids an array comparison is used, this only works on some databases.
-                                List values = new ArrayList();
+                                List<Object> values = new ArrayList<>();
                                 for (DatabaseField field : targetFields) {
                                     values.add(descriptor.getObjectBuilder().extractValueFromObjectForField(object, field, normalizer.getSession()));
                                 }
@@ -800,7 +800,7 @@ public class RelationExpression extends CompoundExpression {
 
             // If FK joins go in the WHERE clause, want to get hold of it and
             // not put it in normalizer.additionalExpressions.
-            List<Expression> foreignKeyJoinPointer = new ArrayList(1);
+            List<Expression> foreignKeyJoinPointer = new ArrayList<>(1);
             QueryKeyExpression queryKey = (QueryKeyExpression)second;
 
             // If inside an OR the foreign key join must be on both sides.

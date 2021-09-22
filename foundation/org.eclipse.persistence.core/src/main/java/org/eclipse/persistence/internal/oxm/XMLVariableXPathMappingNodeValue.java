@@ -86,7 +86,7 @@ public abstract class XMLVariableXPathMappingNodeValue extends XMLRelationshipMa
         Descriptor descriptor = (Descriptor)mapping.getReferenceDescriptor();
 
         if(descriptor.hasInheritance()){
-              Class<? extends Object> objectValueClass = value.getClass();
+              Class<?> objectValueClass = value.getClass();
                if(!(objectValueClass == descriptor.getJavaClass())){
                    descriptor = (Descriptor) session.getDescriptor(objectValueClass);
                }

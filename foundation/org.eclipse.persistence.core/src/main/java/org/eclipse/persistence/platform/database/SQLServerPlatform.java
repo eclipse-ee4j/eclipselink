@@ -778,8 +778,8 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      */
     @Override
     public void writeUpdateOriginalFromTempTableSql(Writer writer, DatabaseTable table,
-                                                    Collection pkFields,
-                                                    Collection assignedFields) throws IOException
+                                                    Collection<DatabaseField> pkFields,
+                                                    Collection<DatabaseField> assignedFields) throws IOException
     {
         writer.write("UPDATE ");
         String tableName = table.getQualifiedNameDelimited(this);

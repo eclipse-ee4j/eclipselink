@@ -52,7 +52,6 @@ import org.eclipse.persistence.core.mappings.converters.CoreConverter;
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.core.sessions.CoreProject;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.JAXBException;
@@ -60,10 +59,8 @@ import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
 import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
 import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
-import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.descriptors.VirtualAttributeAccessor;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jaxb.AccessorFactoryWrapper;
 import org.eclipse.persistence.internal.jaxb.CustomAccessorAttributeAccessor;
 import org.eclipse.persistence.internal.jaxb.DefaultElementConverter;
@@ -280,17 +277,13 @@ public class MappingsGenerator {
             if (tInfo.getXmlCustomizer() != null) {
                 String customizerClassName = tInfo.getXmlCustomizer();
                 try {
-                    Class<Object> customizerClass = PrivilegedAccessHelper.getClassForName(customizerClassName, true, helper.getClassLoader());
-                    DescriptorCustomizer descriptorCustomizer = (DescriptorCustomizer) PrivilegedAccessHelper.newInstanceFromClass(customizerClass);
+                    Class<? extends DescriptorCustomizer> customizerClass = PrivilegedAccessHelper.getClassForName(customizerClassName, true, helper.getClassLoader());
+                    DescriptorCustomizer descriptorCustomizer = PrivilegedAccessHelper.newInstanceFromClass(customizerClass);
                     descriptorCustomizer.customize((XMLDescriptor)tInfo.getDescriptor());
-                } catch (IllegalAccessException iae) {
-                    throw JAXBException.couldNotCreateCustomizerInstance(iae, customizerClassName);
-                } catch (InstantiationException ie) {
-                    throw JAXBException.couldNotCreateCustomizerInstance(ie, customizerClassName);
                 } catch (ClassCastException cce) {
                     throw JAXBException.invalidCustomizerClass(cce, customizerClassName);
-                } catch (ClassNotFoundException cnfe) {
-                    throw JAXBException.couldNotCreateCustomizerInstance(cnfe, customizerClassName);
+                } catch (ReflectiveOperationException roe) {
+                    throw JAXBException.couldNotCreateCustomizerInstance(roe, customizerClassName);
                 }
             }
         }
@@ -660,9 +653,6 @@ public class MappingsGenerator {
     /**
      * Generate a mapping for a given Property.
      *
-     * @param property
-     * @param descriptor
-     * @param namespaceInfo
      * @return newly created mapping
      */
     public Mapping generateMapping(Property property, Descriptor descriptor, JavaClass descriptorJavaClass, NamespaceInfo namespaceInfo) {
@@ -1072,10 +1062,6 @@ public class MappingsGenerator {
     /**
      * Generate an XMLTransformationMapping based on a given Property.
      *
-     * @param property
-     * @param descriptor
-     * @param namespace
-     * @return
      */
     public TransformationMapping generateTransformationMapping(Property property, Descriptor descriptor, NamespaceInfo namespace) {
         TransformationMapping<AbstractSession, AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, XMLTransformationRecord, XMLRecord> mapping = new XMLTransformationMapping();
@@ -1177,9 +1163,7 @@ public class MappingsGenerator {
                 }
                 mapping.addChoiceElement(xpath, type.getQualifiedName());
                 if(!originalType.getQualifiedName().equals(type.getQualifiedName())) {
-                    if(mapping.getClassNameToFieldMappings().get(originalType.getQualifiedName()) == null) {
-                        mapping.getClassNameToFieldMappings().put(originalType.getQualifiedName(), xpath);
-                    }
+                    mapping.getClassNameToFieldMappings().putIfAbsent(originalType.getQualifiedName(), xpath);
                     mapping.addConverter(xpath, converter);
                 }
                 XMLMapping nestedMapping = mapping.getChoiceElementMappings().get(xpath);
@@ -1283,9 +1267,7 @@ public class MappingsGenerator {
                 xmlField = xpath;
                 mapping.addChoiceElement(xpath.getName(), type.getQualifiedName());
                 if(!originalType.getQualifiedName().equals(type.getQualifiedName())) {
-                    if(mapping.getClassNameToFieldMappings().get(originalType.getQualifiedName()) == null) {
-                        mapping.getClassNameToFieldMappings().put(originalType.getQualifiedName(), xpath);
-                    }
+                    mapping.getClassNameToFieldMappings().putIfAbsent(originalType.getQualifiedName(), xpath);
                     mapping.addConverter(xpath, converter);
                 }
 
@@ -1948,9 +1930,6 @@ public class MappingsGenerator {
      * the raw name of the JavaClass compared to the canonical
      * name of the Class.
      *
-     * @param src
-     * @param tgtCanonicalName
-     * @return
      */
     protected boolean areEquals(JavaClass src, String tgtCanonicalName) {
         if (src == null || tgtCanonicalName == null) {
@@ -2181,7 +2160,7 @@ public class MappingsGenerator {
             QName schemaType = userDefinedSchemaTypes.get(theType.getQualifiedName());
 
             if (schemaType == null) {
-                schemaType = (QName) helper.getXMLToJavaTypeMap().get(theType);
+                schemaType = helper.getXMLToJavaTypeMap().get(theType.getName());
             }
             ((Field) mapping.getField()).setSchemaType(schemaType);
             if(info != null && info.isEnumerationType()) {
@@ -2379,7 +2358,7 @@ public class MappingsGenerator {
 
     public String getPrefixForNamespace(String URI, NamespaceResolver namespaceResolver, boolean addPrefixToNR) {
         String defaultNS = namespaceResolver.getDefaultNamespaceURI();
-        if(defaultNS != null && URI.equals(defaultNS)){
+        if(URI.equals(defaultNS)){
             return null;
         }
         String prefix = namespaceResolver.resolveNamespaceURI(URI);
@@ -2426,7 +2405,6 @@ public class MappingsGenerator {
      * generateMappings() that determines when to copy down inherited
      * methods from the parent class will need to be changed as well.
      *
-     * @param jClass
      */
     private void setupInheritance(JavaClass jClass) {
         TypeInfo tInfo = typeInfo.get(jClass.getName());
@@ -2566,9 +2544,6 @@ public class MappingsGenerator {
     /**
      * Generate mappings for a given TypeInfo.
      *
-     * @param info
-     * @param descriptor
-     * @param namespaceInfo
      */
     public void generateMappings(TypeInfo info, Descriptor descriptor, JavaClass descriptorJavaClass, NamespaceInfo namespaceInfo) {
         if(info.isAnonymousComplexType()) {
@@ -2659,10 +2634,6 @@ public class MappingsGenerator {
     /**
      * Create an XMLCollectionReferenceMapping and add it to the descriptor.
      *
-     * @param property
-     * @param descriptor
-     * @param namespaceInfo
-     * @param referenceClass
      */
     public CollectionReferenceMapping generateXMLCollectionReferenceMapping(Property property, Descriptor descriptor, NamespaceInfo namespaceInfo, JavaClass referenceClass) {
         CollectionReferenceMapping<AbstractSession, AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, UnmarshalRecord, XMLField, XMLRecord> mapping = new XMLCollectionReferenceMapping();
@@ -2745,10 +2716,6 @@ public class MappingsGenerator {
     /**
      * Create an XMLObjectReferenceMapping and add it to the descriptor.
      *
-     * @param property
-     * @param descriptor
-     * @param namespaceInfo
-     * @param referenceClass
      */
     public ObjectReferenceMapping generateXMLObjectReferenceMapping(Property property, Descriptor descriptor, NamespaceInfo namespaceInfo, JavaClass referenceClass) {
         ObjectReferenceMapping<AbstractSession, AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, UnmarshalRecord, XMLField, XMLRecord> mapping = new XMLObjectReferenceMapping();
@@ -2932,7 +2899,7 @@ public class MappingsGenerator {
         if (schemaType == null) {
             String propertyActualTypeRawName = property.getActualType().getRawName();
             if(QName.class.getCanonicalName().equals(propertyActualTypeRawName)) {
-                 schemaType = (QName) helper.getXMLToJavaTypeMap().get(propertyActualTypeRawName);
+                 schemaType = helper.getXMLToJavaTypeMap().get(propertyActualTypeRawName);
             }
         }
         if(schemaType !=null && !schemaType.equals (Constants.NORMALIZEDSTRING_QNAME)){
@@ -3404,10 +3371,8 @@ public class MappingsGenerator {
     /**
      * Convenience method which returns an AbstractNullPolicy built from an XmlAbstractNullPolicy.
      *
-     * @param property
      * @param nsr if 'NullRepresentedByXsiNil' is true, this is the resolver
      *            that we will add the schema instance prefix/uri pair to
-     * @return
      * @see org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy
      * @see org.eclipse.persistence.jaxb.xmlmodel.XmlAbstractNullPolicy
      */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,8 +29,8 @@ import org.eclipse.persistence.expressions.*;
  */
 public class OrNode extends LogicalOperatorNode {
 
-    private Set leftOuterScopeVariables = null;
-    private Set rightOuterScopeVariables = null;
+    private Set<String> leftOuterScopeVariables = null;
+    private Set<String> rightOuterScopeVariables = null;
 
     /**
      * Return a new OrNode.
@@ -45,7 +45,7 @@ public class OrNode extends LogicalOperatorNode {
      */
     @Override
     public void validate(ParseTreeContext context) {
-        Set saved = context.getOuterScopeVariables();
+        Set<String> saved = context.getOuterScopeVariables();
         if (left != null) {
             context.resetOuterScopeVariables();
             left.validate(context);
@@ -89,7 +89,7 @@ public class OrNode extends LogicalOperatorNode {
      * INTERNAL
      */
     private Expression appendOuterScopeVariableJoins(
-        Expression expr, Set outerScopeVariables, GenerationContext context) {
+            Expression expr, Set<String> outerScopeVariables, GenerationContext context) {
         if ((outerScopeVariables == null) || outerScopeVariables.isEmpty()) {
             // no outer scope variables => nothing to be done
             return expr;

@@ -49,6 +49,7 @@ import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -723,8 +724,8 @@ public class MySQLPlatform extends DatabasePlatform {
      */
     @Override
     public void writeUpdateOriginalFromTempTableSql(Writer writer, DatabaseTable table,
-                                                    Collection pkFields,
-                                                    Collection assignedFields) throws IOException
+                                                    Collection<DatabaseField> pkFields,
+                                                    Collection<DatabaseField> assignedFields) throws IOException
     {
         writer.write("UPDATE ");
         String tableName = table.getQualifiedNameDelimited(this);
@@ -742,8 +743,8 @@ public class MySQLPlatform extends DatabasePlatform {
      */
     @Override
     public void writeDeleteFromTargetTableUsingTempTableSql(Writer writer, DatabaseTable table, DatabaseTable targetTable,
-            Collection pkFields,
-            Collection targetPkFields, DatasourcePlatform platform) throws IOException
+                                                            Collection<DatabaseField> pkFields,
+                                                            Collection<DatabaseField> targetPkFields, DatasourcePlatform platform) throws IOException
     {
         writer.write("DELETE FROM ");
         String targetTableName = targetTable.getQualifiedNameDelimited(this);

@@ -87,7 +87,7 @@ public class PackageRenamer {
     static {
         // bug 2756643
         CR = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
-                AccessController.doPrivileged(new PrivilegedAction<String>() {
+                AccessController.doPrivileged(new PrivilegedAction<>() {
                     @Override
                     public String run() {
                         return System.getProperty("line.separator");
@@ -262,10 +262,10 @@ public class PackageRenamer {
     public void createDestinationDirectory(File aDirectory) {
         if (!aDirectory.exists()) {
             if (!aDirectory.mkdirs()) {
-                throw new PackageRenamerException("Error while creating directory:" + CR + "  '" + aDirectory.toString() + "'");
+                throw new PackageRenamerException("Error while creating directory:" + CR + "  '" + aDirectory + "'");
             }
         } else {
-            throw new PackageRenamerException("Error directory: '" + aDirectory.toString() + "' already exists but shouldn't.");
+            throw new PackageRenamerException("Error directory: '" + aDirectory + "' already exists but shouldn't.");
         }
     }
 
@@ -304,7 +304,7 @@ public class PackageRenamer {
     public static String getDefaultPropertiesFileName() {
 
         String currentDirectory = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
-                AccessController.doPrivileged(new PrivilegedAction<String>() {
+                AccessController.doPrivileged(new PrivilegedAction<>() {
                     @Override
                     public String run() {
                         return System.getProperty("user.dir");
@@ -537,7 +537,7 @@ public class PackageRenamer {
         try {
             fis = new FileInputStream(new java.io.File(sourceFileName));
             byte[] buf = new byte[BUFSIZ];
-            StringBuffer strBuf = new StringBuffer((int)new java.io.File(sourceFileName).length());
+            StringBuilder strBuf = new StringBuilder((int)new java.io.File(sourceFileName).length());
             int i = 0;
             while ((i = fis.read(buf)) != -1) {
                 if (bufferContainsNullChar(buf, i)) {

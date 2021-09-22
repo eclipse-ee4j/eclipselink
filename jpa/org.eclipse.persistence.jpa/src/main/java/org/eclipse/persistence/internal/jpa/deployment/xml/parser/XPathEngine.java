@@ -51,7 +51,6 @@ public class XPathEngine {
      *
      * @param contextNode the node relative to which the XPath statement will be executed
      * @return the first node located matching the XPath statement
-     * @throws XMLPlatformException
      */
     public Node selectSingleNode(Node contextNode, String[] xPathFragments) {
         if (contextNode == null) {
@@ -75,7 +74,6 @@ public class XPathEngine {
      *
      * @param contextNode the node relative to which the XPath statement will be executed
      * @return a list of nodes matching the XPath statement
-     * @throws XMLPlatformException
      */
     public NodeList selectNodes(Node contextNode, String[] xPathFragments) {
         if (contextNode == null) {

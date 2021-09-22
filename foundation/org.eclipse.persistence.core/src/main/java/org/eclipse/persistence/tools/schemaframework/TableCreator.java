@@ -24,7 +24,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -58,7 +57,7 @@ public class TableCreator {
     protected boolean ignoreDatabaseException; //if true, DDL generation will continue even if exceptions occur
 
     public TableCreator() {
-        this(new ArrayList<TableDefinition>());
+        this(new ArrayList<>());
     }
 
     public TableCreator(List<TableDefinition> tableDefinitions) {

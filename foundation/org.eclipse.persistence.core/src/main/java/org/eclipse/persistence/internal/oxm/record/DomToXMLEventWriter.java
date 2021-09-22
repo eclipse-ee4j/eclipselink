@@ -28,10 +28,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
 
 public class DomToXMLEventWriter{
-    private XMLEventFactory xmlEventFactory;
+    private final XMLEventFactory xmlEventFactory;
 
     public DomToXMLEventWriter() {
         this.xmlEventFactory = XMLEventFactory.newInstance();
@@ -128,7 +127,6 @@ public class DomToXMLEventWriter{
         for(int i = 0; i < attrs.getLength(); i++) {
             Attr next = (Attr)attrs.item(i);
             if(next.getNodeType() == Node.ATTRIBUTE_NODE) {
-                Attr attribute = next;
                 if(next.getPrefix() != null && next.getPrefix().equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)) {
                     String currentUri = xew.getNamespaceContext().getNamespaceURI(next.getLocalName());
                     if(currentUri == null || !currentUri.equals(next.getValue())) {
@@ -140,7 +138,7 @@ public class DomToXMLEventWriter{
                         xew.add(xmlEventFactory.createNamespace(next.getValue()));
                         needToAddDefaultNS = false;
                     }else{
-                        nonNamespaceDeclAttrs.add(attribute);
+                        nonNamespaceDeclAttrs.add(next);
                     }
                 }
             }

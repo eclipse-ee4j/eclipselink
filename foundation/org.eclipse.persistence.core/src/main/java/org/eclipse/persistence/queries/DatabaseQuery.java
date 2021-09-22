@@ -108,7 +108,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     protected List<Object> argumentValues;
 
     /** Needed to differentiate queries with the same name. */
-    protected List<Class> argumentTypes;
+    protected List<Class<?>> argumentTypes;
 
     /** Used to build a list of argumentTypes by name pre-initialization */
     protected List<String> argumentTypeNames;
@@ -707,7 +707,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
                 if (cloneQuery.properties.isEmpty()) {
                     cloneQuery.properties = null;
                 } else {
-                    cloneQuery.properties = new HashMap(this.properties);
+                    cloneQuery.properties = new HashMap<>(this.properties);
                 }
             }
 
@@ -968,7 +968,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * INTERNAL: Return the argumentTypes for use with the pre-defined query
      * option
      */
-    public List<Class> getArgumentTypes() {
+    public List<Class<?>> getArgumentTypes() {
         if ((this.argumentTypes == null) || (this.argumentTypes.isEmpty() && (this.argumentTypeNames != null) && !this.argumentTypeNames.isEmpty())) {
             this.argumentTypes = new ArrayList<>();
             // Bug 3256198 - lazily initialize the argument types from their
@@ -999,12 +999,12 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /**
      * INTERNAL: Set the argumentTypes for use with the pre-defined query option
      */
-    public void setArgumentTypes(List<Class> argumentTypes) {
+    public void setArgumentTypes(List<Class<?>> argumentTypes) {
         this.argumentTypes = argumentTypes;
         // bug 3256198 - ensure the list of type names matches the argument
         // types.
         getArgumentTypeNames().clear();
-        for (Class type : argumentTypes) {
+        for (Class<?> type : argumentTypes) {
             this.argumentTypeNames.add(type.getName());
         }
     }
@@ -1021,7 +1021,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * Maintain the argumentTypes as well.
      */
     public void setArguments(List<String> arguments) {
-        List<Class> types = new ArrayList<>(arguments.size());
+        List<Class<?>> types = new ArrayList<>(arguments.size());
         List<String> typeNames = new ArrayList<>(arguments.size());
         List<DatabaseField> typeFields = new ArrayList<>(arguments.size());
         int size = arguments.size();
@@ -1189,7 +1189,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public Map<Object, Object> getProperties() {
         if (this.properties == null) {
             // Lazy initialize to conserve space and allocation time.
-            this.properties = new HashMap();
+            this.properties = new HashMap<>();
         }
         return this.properties;
     }
@@ -1341,13 +1341,13 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         if (operationName == null) {
             return getQueryNounName(sessionName);
         }
-
-        Hashtable sensorNames = (Hashtable)getProperty("DMSSensorNames");
+        @SuppressWarnings({"unchecked"})
+        Hashtable<String, String> sensorNames = (Hashtable<String, String>) getProperty("DMSSensorNames");
         if (sensorNames == null) {
-            sensorNames = new Hashtable();
+            sensorNames = new Hashtable<>();
             setProperty("DMSSensorNames", sensorNames);
         }
-        Object sensorName = sensorNames.get(operationName);
+        String sensorName = sensorNames.get(operationName);
         if (sensorName == null) {
             StringBuilder buffer = new StringBuilder(getQueryNounName(sessionName));
             buffer.append("_");
@@ -1355,7 +1355,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
             sensorName = buffer.toString();
             sensorNames.put(operationName, sensorName);
         }
-        return (String)sensorName;
+        return sensorName;
     }
 
     /**
@@ -2018,8 +2018,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public List<DatabaseField> buildArgumentFields() {
         List<String> arguments = getArguments();
-        List<Class> argumentTypes = getArgumentTypes();
-        List argumentFields = new ArrayList(arguments.size());
+        List<Class<?>> argumentTypes = getArgumentTypes();
+        List<DatabaseField> argumentFields = new ArrayList<>(arguments.size());
         int size = arguments.size();
         for (int index = 0; index < size; index++) {
             DatabaseField argumentField = new DatabaseField(arguments.get(index));
@@ -2072,7 +2072,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
             this.accessors = null;
             return;
         }
-        List<Accessor> accessors = new ArrayList(1);
+        List<Accessor> accessors = new ArrayList<>(1);
         accessors.add(accessor);
         this.accessors = accessors;
     }
@@ -2733,6 +2733,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * INTERNAL:
      * Return temporary map of batched objects.
      */
+    @SuppressWarnings({"unchecked"})
     public Map<Object, Object> getBatchObjects() {
         return (Map<Object, Object>)getProperty(BATCH_FETCH_PROPERTY);
     }

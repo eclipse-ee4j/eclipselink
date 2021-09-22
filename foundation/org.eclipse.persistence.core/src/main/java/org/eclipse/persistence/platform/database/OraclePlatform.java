@@ -266,7 +266,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * Returns null unless the platform supports call with returning
      */
     @Override
-    public DatabaseCall buildCallWithReturning(SQLCall sqlCall, Vector returnFields) {
+    public DatabaseCall buildCallWithReturning(SQLCall sqlCall, Vector<DatabaseField> returnFields) {
         SQLCall call = new SQLCall();
         call.setParameters(sqlCall.getParameters());
         call.setParameterTypes(sqlCall.getParameterTypes());
@@ -278,7 +278,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
             writer.write(" RETURNING ");
 
             for (int i = 0; i < returnFields.size(); i++) {
-                DatabaseField field = (DatabaseField)returnFields.elementAt(i);
+                DatabaseField field = returnFields.elementAt(i);
                 writer.write(field.getNameDelimited(this));
                 if ((i + 1) < returnFields.size()) {
                     writer.write(", ");
@@ -288,7 +288,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
             writer.write(" INTO ");
 
             for (int i = 0; i < returnFields.size(); i++) {
-                DatabaseField field = (DatabaseField)returnFields.elementAt(i);
+                DatabaseField field = returnFields.elementAt(i);
                 call.appendOut(writer, field);
                 if ((i + 1) < returnFields.size()) {
                     writer.write(", ");

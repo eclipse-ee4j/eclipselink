@@ -16,6 +16,7 @@ package org.eclipse.persistence.descriptors;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -43,11 +44,9 @@ public class CacheIndex implements Cloneable, Serializable {
         this.fields = new ArrayList<>();
     }
 
-    public CacheIndex(DatabaseField fields[]) {
+    public CacheIndex(DatabaseField[] fields) {
         this.fields = new ArrayList<>(fields.length);
-        for (DatabaseField field : fields) {
-            this.fields.add(field);
-        }
+        Collections.addAll(this.fields, fields);
     }
 
     public CacheIndex(String... fields) {

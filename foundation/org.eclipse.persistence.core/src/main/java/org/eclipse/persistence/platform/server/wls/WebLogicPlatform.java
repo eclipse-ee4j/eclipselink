@@ -132,7 +132,6 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
     /**
      * Return the method for the WebLogic JDBC connection wrapper vendorConnection.
      */
-    @SuppressWarnings({"rawtypes"})
     protected Method getVendorConnectionMethod() {
         if ((this.vendorConnectionMethod == null) && (!getWebLogicConnectionClass().equals(void.class))) {
             try {
@@ -166,7 +165,6 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
     /**
      * Return the method for the WebLogic connection clearStatementCache method.
      */
-    @SuppressWarnings({"rawtypes"})
     protected Method getClearStatementCacheMethod() {
         if ((this.clearStatementCacheMethod == null) && (!getWebLogicConnectionClass().equals(void.class))) {
             try {

@@ -497,7 +497,6 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      * INTERNAL:
      * Return the default table to hold the foreign key of a MapKey when
      * and Entity is used as the MapKey
-     * @return
      */
     @Override
     protected DatabaseTable getDefaultTableForEntityMapKey(){

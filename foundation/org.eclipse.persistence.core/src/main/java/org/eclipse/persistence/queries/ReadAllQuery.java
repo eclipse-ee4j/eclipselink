@@ -84,7 +84,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * Specifies the direction in which the hierarchy is traversed in a
      * hierarchical query.
      */
-    public static enum Direction {
+    public enum Direction {
         /**
          * Hierarchy will be traversed from parent to child - PRIOR keyword is
          * generated on the left side of the equation

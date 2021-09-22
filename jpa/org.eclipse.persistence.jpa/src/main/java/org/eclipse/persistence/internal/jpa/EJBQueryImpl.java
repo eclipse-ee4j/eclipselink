@@ -109,7 +109,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     /**
      * Build a DatabaseQuery from an jpql string.
      *
-     * @param jpql
      * @param session
      *            the session to get the descriptors for this query for.
      * @return a DatabaseQuery representing the given jpql.
@@ -270,8 +269,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * Set an implementation-specific hint. If the hint name is not recognized,
      * it is silently ignored.
      *
-     * @param hintName
-     * @param value
      * @return the same query instance
      * @throws IllegalArgumentException
      *             if the second argument is not valid for the implementation
@@ -291,7 +288,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     /**
      * Set the lock mode type to be used for the query execution.
      *
-     * @param lockMode
      * @throws IllegalStateException
      *             if not a Java Persistence query language SELECT query
      */
@@ -419,7 +415,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     /**
      * Set the flush mode type to be used for the query execution.
      *
-     * @param flushMode
      */
     @Override
     public EJBQueryImpl setFlushMode(FlushModeType flushMode) {
@@ -429,7 +424,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     /**
      * Set the maximum number of results to retrieve.
      *
-     * @param maxResult
      * @return the same query instance
      */
     @Override
@@ -440,9 +434,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     /**
      * Bind an instance of java.util.Calendar to a positional parameter.
      *
-     * @param position
-     * @param value
-     * @param temporalType
      * @return the same query instance
      */
     @Override
@@ -454,9 +445,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     /**
      * Bind an instance of java.util.Date to a positional parameter.
      *
-     * @param position
-     * @param value
-     * @param temporalType
      * @return the same query instance
      */
     @Override
@@ -468,8 +456,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     /**
      * Bind an argument to a positional parameter.
      *
-     * @param position
-     * @param value
      * @return the same query instance
      */
     @Override
@@ -487,9 +473,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     /**
      * Bind an instance of java.util.Calendar to a Parameter object.
      *
-     * @param param
-     * @param value
-     * @param temporalType
      * @return the same query instance
      * @throws IllegalArgumentException
      *             if position does not correspond to a parameter of the query
@@ -516,8 +499,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      *
      * @param param
      *            object
-     * @param value
-     * @param temporalType
      * @return the same query instance
      * @throws IllegalArgumentException
      *             if position does not correspond to a parameter of the query
@@ -569,9 +550,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     /**
      * Bind an instance of java.util.Calendar to a named parameter.
      *
-     * @param name
-     * @param value
-     * @param temporalType
      * @return the same query instance
      */
     @Override
@@ -583,9 +561,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     /**
      * Bind an instance of java.util.Date to a named parameter.
      *
-     * @param name
-     * @param value
-     * @param temporalType
      * @return the same query instance
      */
     @Override
@@ -599,7 +574,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      *
      * @param name
      *            the parameter name
-     * @param value
      * @return the same query instance
      */
     @Override

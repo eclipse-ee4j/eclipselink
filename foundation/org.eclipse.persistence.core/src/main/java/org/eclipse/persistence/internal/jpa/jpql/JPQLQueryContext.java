@@ -16,7 +16,6 @@
 package org.eclipse.persistence.internal.jpa.jpql;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.Collection;
@@ -59,7 +58,6 @@ import org.eclipse.persistence.queries.ReportQuery;
  * @author Pascal Filion
  * @author John Bracken
  */
-@SuppressWarnings("nls")
 final class JPQLQueryContext {
 
     /**
@@ -964,7 +962,7 @@ final class JPQLQueryContext {
         StringBuilder sb = new StringBuilder();
         sb.append(typeName.substring(0, index));
         sb.append("$");
-        sb.append(typeName.substring(index + 1, typeName.length()));
+        sb.append(typeName.substring(index + 1));
         typeName = sb.toString();
 
         return loadTypeImp(typeName);

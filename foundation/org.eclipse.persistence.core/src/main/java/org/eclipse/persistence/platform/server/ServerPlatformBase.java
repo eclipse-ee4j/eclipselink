@@ -264,7 +264,6 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * @see #isJTAEnabled()
      * @see #disableJTA()
      * @see #initializeExternalTransactionController()
-     * @param newClass
      */
     @Override
     public void setExternalTransactionControllerClass(Class<? extends ExternalTransactionController> newClass) {

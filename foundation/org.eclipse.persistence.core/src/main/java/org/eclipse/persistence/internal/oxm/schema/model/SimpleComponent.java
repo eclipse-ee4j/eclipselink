@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.oxm.schema.model;
 
+import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,13 +25,13 @@ public abstract class SimpleComponent {
     private String defaultValue;
     private boolean isSetDefaultValue = false;
     private String fixed;
-    private Map attributesMap;
+    private Map<QName, String> attributesMap;
     private Annotation annotation;
     private String form;
     private String ref;
 
     protected SimpleComponent() {
-        attributesMap = new HashMap();
+        attributesMap = new HashMap<>();
     }
 
     public void setSimpleType(SimpleType simpleType) {
@@ -74,11 +75,11 @@ public abstract class SimpleComponent {
         return fixed;
     }
 
-    public void setAttributesMap(Map attributesMap) {
+    public void setAttributesMap(Map<QName, String> attributesMap) {
         this.attributesMap = attributesMap;
     }
 
-    public Map getAttributesMap() {
+    public Map<QName, String> getAttributesMap() {
         return attributesMap;
     }
 

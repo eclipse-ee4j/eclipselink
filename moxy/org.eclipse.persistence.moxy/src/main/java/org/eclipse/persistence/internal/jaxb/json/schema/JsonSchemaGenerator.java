@@ -307,8 +307,6 @@ public class JsonSchemaGenerator {
      * simple type (a single direct mapping with xpath of text) then the name of the simple type is returned.
      * Otherwise null is returned.
      *
-     * @param properties
-     * @param descriptor
      * @return null for a complex type, the simple type name for a simple type.
      */
     private JsonType populateProperties(Map<String, Property> properties, XMLDescriptor descriptor) {

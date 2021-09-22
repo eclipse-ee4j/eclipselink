@@ -2063,7 +2063,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             int oldSize = changeRecord.getOldSize();
             int newSize = changeRecord.getNewSize();
             int delta = newSize - oldSize;
-            Object newTail[] = null;
+            Object[] newTail = null;
             if(delta > 0) {
                 newTail = new Object[delta];
             }

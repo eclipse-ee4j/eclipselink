@@ -23,7 +23,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.XMLField;
 import org.w3c.dom.Element;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
-import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.eis.*;

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -156,7 +156,6 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * Will return an instance of the Factory. Should only be called by
      * EclipseLink.
      *
-     * @param databaseSession
      */
     public EntityManagerFactoryDelegate(AbstractSession databaseSession, JpaEntityManagerFactory owner) {
         this.session = databaseSession;
@@ -239,7 +238,6 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     /**
      * INTERNAL:
      * Return the EntityManagerSetupImpl associated with this factory
-     * @return
      */
     public EntityManagerSetupImpl getSetupImpl(){
         return setupImpl;
@@ -353,7 +351,6 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * This method will return a version of EntityManagerFactory that is
      * based on the available metadata at the time it is called.  Future calls
      * to refresh will not affect that metadata on this EntityManagerFactory.
-     * @return
      */
     @Override
     public EntityManagerFactoryDelegate unwrap(){
@@ -459,7 +456,6 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * EntityMangers will continue to function with the old metadata, but new factories will use the new metadata.
      *
      * This call will throw an exception when called on EntityManagerFactoryImplDelegate
-     * @param properties
      */
     @Override
     public void refreshMetadata(Map properties){
@@ -683,7 +679,6 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     /**
      * INTERNAL:
      * Get the EntityManagerFactoryImpl that created this
-     * @return
      */
     public JpaEntityManagerFactory getOwner() {
         return owner;
@@ -694,7 +689,6 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * possible case that we want to regenerate it. This function is outside of
      * the JPA 2.0 specification.
      *
-     * @param aMetamodel
      * @since Java Persistence 2.0
      */
     public void setMetamodel(Metamodel aMetamodel) {
@@ -749,7 +743,6 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * available until after the database insert has occurred. Returns null if
      * the entity does not yet have an id
      *
-     * @param entity
      * @return id of the entity
      * @throws IllegalArgumentException
      *             if the entity is found not to be an entity.

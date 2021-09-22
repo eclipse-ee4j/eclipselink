@@ -78,7 +78,6 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
  * @author  Mike Norman - michael.norman@oracle.com
  * @since  Oracle TopLink 11.x.x
  */
-@SuppressWarnings("unchecked")
 public enum JDBCTypes implements JDBCType {
 
         ARRAY_TYPE(ARRAY, "ARRAY"),

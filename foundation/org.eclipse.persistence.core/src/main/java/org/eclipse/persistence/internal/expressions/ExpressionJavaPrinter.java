@@ -15,7 +15,6 @@
 package org.eclipse.persistence.internal.expressions;
 
 import java.io.*;
-import java.math.*;
 import java.util.Calendar;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.helper.ClassConstants;

@@ -33,7 +33,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
  */
 public class FetchGroupMonitor {
 
-    public static Hashtable<Class<?>, Set<String>> fetchedAttributes = new Hashtable<Class<?>, Set<String>>();
+    public static Hashtable<Class<?>, Set<String>> fetchedAttributes = new Hashtable<>();
     public static Boolean shouldMonitor;
 
     public static boolean shouldMonitor() {
@@ -54,7 +54,7 @@ public class FetchGroupMonitor {
         synchronized (fetchedAttributes) {
             Set<String> classesFetchedAttributes = fetchedAttributes.get(domainClass);
             if (classesFetchedAttributes == null) {
-                classesFetchedAttributes = new HashSet<String>();
+                classesFetchedAttributes = new HashSet<>();
                 fetchedAttributes.put(domainClass, classesFetchedAttributes);
             }
             if (!classesFetchedAttributes.contains(attributeName)) {

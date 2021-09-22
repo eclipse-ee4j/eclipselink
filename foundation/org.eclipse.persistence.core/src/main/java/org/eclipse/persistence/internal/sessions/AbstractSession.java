@@ -42,7 +42,6 @@ import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -1180,8 +1179,8 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         try{
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     Class<InjectionManager<T>> elim = AccessController.doPrivileged(new PrivilegedClassForName<>(InjectionManager.DEFAULT_CDI_INJECTION_MANAGER, true, getLoader()));
-                    Constructor<InjectionManager<T>> constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<InjectionManager<T>>(elim, new Class[] {String.class}, false));
-                    return AccessController.doPrivileged(new PrivilegedInvokeConstructor<InjectionManager<T>>(constructor, new Object[] {beanManager}));
+                    Constructor<InjectionManager<T>> constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(elim, new Class[]{String.class}, false));
+                    return AccessController.doPrivileged(new PrivilegedInvokeConstructor<>(constructor, new Object[]{beanManager}));
             } else {
                 Class<InjectionManager<T>> elim = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(InjectionManager.DEFAULT_CDI_INJECTION_MANAGER, true, getLoader());
                 Constructor<InjectionManager<T>> constructor = PrivilegedAccessHelper.<InjectionManager<T>>getConstructorFor(elim, new Class[] {Object.class}, false);

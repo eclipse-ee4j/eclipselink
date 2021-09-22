@@ -363,7 +363,7 @@ public class ConcurrencyUtil {
                     String.valueOf(System.identityHashCode(cacheKeyObject)),
                     cacheKeyClass, String.valueOf(System.identityHashCode(cacheKey)),
                     activeThread, concurrencyManager.getNumberOfReaders(), concurrencyManagerId,
-                    ConversionManager.getDefaultManager().convertObject(concurrencyManagerCreationDate, String.class).toString()
+                    ConversionManager.getDefaultManager().convertObject(concurrencyManagerCreationDate, String.class)
                     // metadata of number of times the cache key suffered increases in number readers
                     , cacheKey.getTotalNumberOfKeysAcquiredForReading(),
                     cacheKey.getTotalNumberOfKeysReleasedForReading(),
@@ -372,7 +372,7 @@ public class ConcurrencyUtil {
 
         } else {
             return TraceLocalization.buildMessage("concurrency_util_owned_cache_key_is_not_cache_key", new Object[] {cacheKeyClass, concurrencyManager, activeThread,
-                    concurrencyManagerId, ConversionManager.getDefaultManager().convertObject(concurrencyManagerCreationDate, String.class).toString(),
+                    concurrencyManagerId, ConversionManager.getDefaultManager().convertObject(concurrencyManagerCreationDate, String.class),
                     concurrencyManager.getTotalNumberOfKeysAcquiredForReading(),
                     concurrencyManager.getTotalNumberOfKeysReleasedForReading(), concurrencyManager
                     .getTotalNumberOfKeysReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero(),
@@ -640,7 +640,7 @@ public class ConcurrencyUtil {
         // (a) Step one - try to detect dead lock
         final long startTimeMillis = System.currentTimeMillis();
         List<DeadLockComponent> deadLockExplanation = Collections.emptyList();
-        long deadLockDetectionTotalExecutionTimeMs = 0l;
+        long deadLockDetectionTotalExecutionTimeMs = 0L;
         try {
             deadLockExplanation = ExplainDeadLockUtil.SINGLETON.explainPossibleDeadLockStartRecursion(concurrencyManagerState);
         } catch (Exception codeIsBuggyAndBlowingUp) {
@@ -787,7 +787,6 @@ public class ConcurrencyUtil {
         }
         // (b) Try to build a string that lists all of the active locks on the thread
         // Loop over all of the deferred locks and print them
-        @SuppressWarnings("unchecked")
         List<ConcurrencyManager> deferredLocks = new ArrayList<>(lockManager.getDeferredLocks());
         writer.write(TraceLocalization.buildMessage("concurrency_util_summary_deferred_locks_on_thread_3", new Object[] {deferredLocks.size()}));
         for (int deferredLockNumber = 0; deferredLockNumber < deferredLocks.size(); deferredLockNumber++) {
@@ -821,7 +820,6 @@ public class ConcurrencyUtil {
         }
         // (b) Try to build a string that lists all of the acitve locks on the thread
         // Loop over al of the active locks and print them
-        @SuppressWarnings("unchecked")
         List<ConcurrencyManager> readLocks = readLockManager.getReadLocks();
         writer.write(TraceLocalization.buildMessage("concurrency_util_summary_read_locks_on_thread_step001_3", new Object[] {readLocks.size()}));
         for (int readLockNumber = 0; readLockNumber < readLocks.size(); readLockNumber++) {
@@ -850,7 +848,7 @@ public class ConcurrencyUtil {
                 readLockNumber++;
                 writer.write(TraceLocalization.buildMessage("concurrency_util_summary_read_locks_on_thread_step002_3", new Object[] {readLockNumber,
                         SINGLETON.createToStringExplainingOwnedCacheKey(currentReadLockAcquiredAndNeverReleased.getCacheKeyWhoseNumberOfReadersThreadIsIncrementing()),
-                        ConversionManager.getDefaultManager().convertObject(currentReadLockAcquiredAndNeverReleased.getDateOfReadLockAcquisition(), String.class).toString(),
+                        ConversionManager.getDefaultManager().convertObject(currentReadLockAcquiredAndNeverReleased.getDateOfReadLockAcquisition(), String.class),
                         currentReadLockAcquiredAndNeverReleased.getNumberOfReadersOnCacheKeyBeforeIncrementingByOne(),
                         currentReadLockAcquiredAndNeverReleased.getCurrentThreadStackTraceInformationCpuTimeCostMs()}));
                 String stackTraceInformation = currentReadLockAcquiredAndNeverReleased.getCurrentThreadStackTraceInformation();
@@ -1543,8 +1541,7 @@ public class ConcurrencyUtil {
 
             // (b) First we focus on the active locks owned by the thread
             // enrich the map of cache key to thread doing something in respect to the cache key
-            for (Object activeLockObj : currentValue.getActiveLocks()) {
-                ConcurrencyManager activeLock = (ConcurrencyManager) activeLockObj;
+            for (ConcurrencyManager activeLock : currentValue.getActiveLocks()) {
                 CacheKeyToThreadRelationships dto = get(activeLock, mapOfCacheKeyToDtosExplainingThreadExpectationsOnCacheKey);
                 dto.addThreadsThatAcquiredActiveLock(currentThread);
             }
@@ -1552,8 +1549,7 @@ public class ConcurrencyUtil {
             // (c) Now we go over the defferred locks on this thread
             // (e.g. object locks that it could not acquire because some other thread was active at the time owning the
             // lock)
-            for (Object deferredLockObj : currentValue.getDeferredLocks()) {
-                ConcurrencyManager deferredLock = (ConcurrencyManager) deferredLockObj;
+            for (ConcurrencyManager deferredLock : currentValue.getDeferredLocks()) {
                 CacheKeyToThreadRelationships dto = get(deferredLock, mapOfCacheKeyToDtosExplainingThreadExpectationsOnCacheKey);
                 dto.addThreadsThatAcquiredDeferredLock(currentThread);
             }
@@ -1599,7 +1595,7 @@ public class ConcurrencyUtil {
         Thread currentThread = Thread.currentThread();
         StringWriter writer = new StringWriter();
         writer.write(TraceLocalization.buildMessage("concurrency_util_read_lock_manager_problem01", new Object[] {currentThread.getName(), currentNumberOfReaders, decrementedNumberOfReaders,
-                ConcurrencyUtil.SINGLETON.createToStringExplainingOwnedCacheKey(cacheKey), enrichGenerateThreadDumpForCurrentThread(), ConversionManager.getDefaultManager().convertObject(new Date(), String.class).toString()}));
+                ConcurrencyUtil.SINGLETON.createToStringExplainingOwnedCacheKey(cacheKey), enrichGenerateThreadDumpForCurrentThread(), ConversionManager.getDefaultManager().convertObject(new Date(), String.class)}));
         AbstractSessionLog.getLog().log(SessionLog.SEVERE, SessionLog.CACHE, writer.toString(), new Object[] {}, false);
         return writer.toString();
     }
@@ -1608,7 +1604,7 @@ public class ConcurrencyUtil {
         Thread currentThread = Thread.currentThread();
         StringWriter writer = new StringWriter();
         writer.write(TraceLocalization.buildMessage("concurrency_util_read_lock_manager_problem02", new Object[] {currentThread.getName(), SINGLETON.createToStringExplainingOwnedCacheKey(cacheKey),
-                threadId, enrichGenerateThreadDumpForCurrentThread(), ConversionManager.getDefaultManager().convertObject(new Date(), String.class).toString()}));
+                threadId, enrichGenerateThreadDumpForCurrentThread(), ConversionManager.getDefaultManager().convertObject(new Date(), String.class)}));
         // We do log immediately the error as we spot it
         AbstractSessionLog.getLog().log(SessionLog.SEVERE, SessionLog.CACHE, writer.toString(), new Object[] {}, false);
         // we also return the error message we just logged to added it to our tracing permanently
@@ -1619,7 +1615,7 @@ public class ConcurrencyUtil {
         Thread currentThread = Thread.currentThread();
         StringWriter writer = new StringWriter();
         writer.write(TraceLocalization.buildMessage("concurrency_util_read_lock_manager_problem03", new Object[] {currentThread.getName(), SINGLETON.createToStringExplainingOwnedCacheKey(cacheKey),
-                threadId, enrichGenerateThreadDumpForCurrentThread(), ConversionManager.getDefaultManager().convertObject(new Date(), String.class).toString()}));
+                threadId, enrichGenerateThreadDumpForCurrentThread(), ConversionManager.getDefaultManager().convertObject(new Date(), String.class)}));
         // We do log immediately the error as we spot it
         AbstractSessionLog.getLog().log(SessionLog.SEVERE, SessionLog.CACHE, writer.toString(), new Object[] {}, false);
         // we also return the error message we just logged to added it to our tracing permanently
@@ -1638,7 +1634,7 @@ public class ConcurrencyUtil {
     public ReadLockAcquisitionMetadata createReadLockAcquisitionMetadata(ConcurrencyManager concurrencyManager) {
         final boolean isAllowTakingStackTraceDuringReadLockAcquisition = isAllowTakingStackTraceDuringReadLockAcquisition();
         String currentThreadStackTraceInformation = TraceLocalization.buildMessage("concurrency_util_read_lock_acquisition_metadata");
-        long currentThreadStackTraceInformationCpuTimeCostMs = 0l;
+        long currentThreadStackTraceInformationCpuTimeCostMs = 0L;
         if (isAllowTakingStackTraceDuringReadLockAcquisition) {
             long startTimeMillis = System.currentTimeMillis();
             currentThreadStackTraceInformation = enrichGenerateThreadDumpForCurrentThread();

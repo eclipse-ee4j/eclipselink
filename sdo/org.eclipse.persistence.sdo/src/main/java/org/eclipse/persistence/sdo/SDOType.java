@@ -717,7 +717,7 @@ public class SDOType implements Type, Serializable {
                     NamespaceResolver nextNR = (NamespaceResolver)namespaceResolvers.get(i);
                     if (nextNR != null) {
                         for (int j = 0, size = nextNR.getNamespaces().size(); j < size; j++) {
-                            Namespace nextNamespace = (Namespace)nextNR.getNamespaces().get(j);
+                            Namespace nextNamespace = nextNR.getNamespaces().get(j);
                             if ((!nextNamespace.getPrefix().equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)) && (!nextNamespace.getNamespaceURI().equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI)) &&
                                 (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDOJAVA_URL)) && (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDOXML_URL)) &&
                                 (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDO_URL))) {
@@ -788,7 +788,7 @@ public class SDOType implements Type, Serializable {
                 NamespaceResolver parentNR = parentDescriptor.getNonNullNamespaceResolver();
                 if (parentNR != null) {
                     for (int i = 0; i < parentNR.getNamespaces().size(); i++) {
-                        Namespace nextNamespace = (Namespace)parentNR.getNamespaces().get(i);
+                        Namespace nextNamespace = parentNR.getNamespaces().get(i);
                         if ((!nextNamespace.getPrefix().equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)) && (!nextNamespace.getNamespaceURI().equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI)) &&
                             (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDOJAVA_URL)) && (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDOXML_URL)) &&
                             (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDO_URL))) {

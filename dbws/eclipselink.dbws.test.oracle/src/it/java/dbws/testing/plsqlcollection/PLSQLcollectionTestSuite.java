@@ -55,7 +55,6 @@ import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.factories.XMLProjectReader;
@@ -292,7 +291,7 @@ public class PLSQLcollectionTestSuite {
         Class<?> t1Clz = t1Descriptor.getJavaClass();
         ((DatabaseSession)session).login();
         String[] elements = {"first string", "second string", "third string"};
-        NonSynchronizedVector queryArgs = new NonSynchronizedVector();
+        NonSynchronizedVector<Object> queryArgs = new NonSynchronizedVector<>();
         queryArgs.add(elements);
         queryArgs.add("barf");
         boolean worked = false;

@@ -555,16 +555,15 @@ public class PostgreSQLPlatform extends DatabasePlatform {
      * for updating the original table from the temporary table. Precondition:
      * supportsTempTables() == true. Precondition: pkFields and assignFields
      * don't intersect.
-     *
-     * @param writer for writing the sql
+     *  @param writer for writing the sql
      * @param table is original table for which temp table is
      *            created.
      * @param pkFields - primary key fields for the original
-     *            table.
+ *            table.
      * @param assignedFields - fields to be assigned a new value.
      */
     @Override
-    public void writeUpdateOriginalFromTempTableSql(Writer writer, DatabaseTable table, Collection pkFields, Collection assignedFields) throws IOException {
+    public void writeUpdateOriginalFromTempTableSql(Writer writer, DatabaseTable table, Collection<DatabaseField> pkFields, Collection<DatabaseField> assignedFields) throws IOException {
         writer.write("UPDATE ");
         String tableName = table.getQualifiedNameDelimited(this);
         writer.write(tableName);
@@ -572,14 +571,14 @@ public class PostgreSQLPlatform extends DatabasePlatform {
 
         String tempTableName = getTempTableForTable(table).getQualifiedNameDelimited(this);
         boolean isFirst = true;
-        Iterator itFields = assignedFields.iterator();
+        Iterator<DatabaseField> itFields = assignedFields.iterator();
         while (itFields.hasNext()) {
             if (isFirst) {
                 isFirst = false;
             } else {
                 writer.write(", ");
             }
-            DatabaseField field = (DatabaseField) itFields.next();
+            DatabaseField field = itFields.next();
             String fieldName = field.getNameDelimited(this);
             writer.write(fieldName);
             writer.write(" = (SELECT ");
@@ -591,7 +590,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         }
 
         writer.write(" WHERE EXISTS(SELECT ");
-        writer.write(((DatabaseField) pkFields.iterator().next()).getNameDelimited(this));
+        writer.write(pkFields.iterator().next().getNameDelimited(this));
         writer.write(" FROM ");
         writer.write(tempTableName);
         writeAutoJoinWhereClause(writer, null, tableName, pkFields, this);
@@ -612,7 +611,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
      * Uses the returning clause on Postgres.
      */
     @Override
-    public DatabaseCall buildCallWithReturning(SQLCall sqlCall, Vector returnFields) {
+    public DatabaseCall buildCallWithReturning(SQLCall sqlCall, Vector<DatabaseField> returnFields) {
         SQLCall call = new SQLCall();
         call.setParameters(sqlCall.getParameters());
         call.setParameterTypes(sqlCall.getParameterTypes());
@@ -622,7 +621,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
             writer.write(sqlCall.getSQLString());
             writer.write(" RETURNING ");
             for (int i = 0; i < returnFields.size(); i++) {
-                DatabaseField field = (DatabaseField)returnFields.elementAt(i);
+                DatabaseField field = returnFields.elementAt(i);
                 writer.write(field.getNameDelimited(this));
                 if ((i + 1) < returnFields.size()) {
                     writer.write(", ");

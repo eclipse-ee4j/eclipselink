@@ -719,7 +719,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
      * The writeSession is always in a transaction, so a transaction is never required.
      * Table or sequence object with preallocation size 1 still goes through the preallocation state.
      */
-    class NoPreallocation_State extends State {
+    static class NoPreallocation_State extends State {
         @Override
         public Object getNextValue(Sequence sequence, AbstractSession writeSession) {
             return sequence.getGeneratedValue(null, writeSession);
@@ -752,7 +752,6 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
 
     /**
      * If sequencing is connected initialize the sequences used by descriptors, otherwise connect.
-     * @param descriptors
      */
     @Override
     public void onAddDescriptors(Collection<ClassDescriptor> descriptors) {
@@ -1143,7 +1142,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         return state.getNextValue(sequence, writeSession);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     protected void logDebugSequencingConnected(int nAlreadyConnectedSequences) {
         Vector<Sequence>[] sequenceVectors = (Vector<Sequence>[]) new Vector[NUMBER_OF_STATES];
         int size = connectedSequences.size();
