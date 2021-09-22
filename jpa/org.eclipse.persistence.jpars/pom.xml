@@ -30,6 +30,10 @@
     </parent>
 
     <properties>
+        <comp.xlint>-Xlint:all</comp.xlint>
+        <comp.xdoclint>-Xdoclint:all,-missing</comp.xdoclint>
+        <comp.test.xlint>-Xlint:all</comp.test.xlint>
+
         <!--Properties used for test resources filtering/replacement-->
         <!--DB connection properties-->
         <db_user>${db.user}</db_user>
@@ -119,6 +123,15 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerArgs>
+                        <arg>-Werror</arg>
+                    </compilerArgs>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -31,6 +31,10 @@
     </parent>
 
     <properties>
+        <comp.xlint>-Xlint:all</comp.xlint>
+        <comp.xdoclint>-Xdoclint:all,-missing</comp.xdoclint>
+        <comp.test.xlint>-Xlint:all</comp.test.xlint>
+
         <skip-server-test-sdo>true</skip-server-test-sdo>
 
         <data-source-name>jdbc/EclipseLinkDS</data-source-name>
@@ -102,6 +106,15 @@
         </testResources>
 
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerArgs>
+                        <arg>-Werror</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
             <!--Required for XLST to configure Wildfly modules (see sdo/eclipselink.sdo.test.server.maven/src/test/resources/wildfly/elResources.xml)-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

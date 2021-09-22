@@ -39,6 +39,8 @@ import static dbws.testing.shadowddlgeneration.oldjpub.Util.ALL_ARGUMENTS;
 @SuppressWarnings({"unchecked","rawtypes"})
 public class ViewCache implements Externalizable {
 
+    private static final long serialVersionUID = 5009092516275895424L;
+
     static final String VIEW_CACHE_PREFIX = "viewcachefor";
     public static final String PARAMETER_USER = "USER";
     public static final String PARAMETER_ALL = "ALL";

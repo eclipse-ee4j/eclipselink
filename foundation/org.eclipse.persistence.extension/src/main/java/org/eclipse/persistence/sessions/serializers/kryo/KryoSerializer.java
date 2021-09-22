@@ -30,6 +30,9 @@ import org.eclipse.persistence.sessions.serializers.AbstractSerializer;
  * @author James Sutherland
  */
 public class KryoSerializer extends AbstractSerializer {
+
+    private static final long serialVersionUID = 6538902324232789378L;
+
     /** Kryo is not thread safe, so need thread local. */
     transient ThreadLocal<Object> kryo;
     transient Constructor<?> kryoConstructor;

@@ -18,6 +18,8 @@ import org.eclipse.persistence.sdo.SDODataObject;
 
 public class DeptImpl extends SDODataObject implements Dept {
 
+    private static final long serialVersionUID = 4475447330847016834L;
+
     public static final int START_PROPERTY_INDEX = 0;
 
     public static final int END_PROPERTY_INDEX = START_PROPERTY_INDEX + 3;
