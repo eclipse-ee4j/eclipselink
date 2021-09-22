@@ -90,16 +90,16 @@
             <artifactId>parsson</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.glassfish.corba</groupId>
-            <artifactId>glassfish-corba-omgapi</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.corba</groupId>
-            <artifactId>glassfish-corba-orb</artifactId>
-            <scope>test</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.glassfish.corba</groupId>-->
+<!--            <artifactId>glassfish-corba-omgapi</artifactId>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.glassfish.corba</groupId>-->
+<!--            <artifactId>glassfish-corba-orb</artifactId>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
