@@ -58,6 +58,7 @@ public class TestRunnerBean implements TestRunner {
         // load the test class and create an instance
         TestCase testInstance = null;
         try {
+            @SuppressWarnings({"unchecked"})
             Class<? extends TestCase> testClass = (Class<? extends TestCase>) getClass().getClassLoader().loadClass(className);
             Constructor<? extends TestCase> c = testClass.getConstructor(String.class);
             testInstance = c.newInstance(test);
