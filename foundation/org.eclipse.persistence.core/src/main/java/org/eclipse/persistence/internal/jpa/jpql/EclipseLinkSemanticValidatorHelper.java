@@ -154,7 +154,7 @@ final class EclipseLinkSemanticValidatorHelper implements SemanticValidatorHelpe
 
     @Override
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public List getDeclarations() {
+    public List<? extends JPQLQueryDeclaration> getDeclarations() {
         return queryContext.getDeclarations();
     }
 

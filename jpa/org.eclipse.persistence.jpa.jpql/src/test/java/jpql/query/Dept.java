@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,9 @@ import jakarta.persistence.OneToMany;
 })
 @SuppressWarnings("unused")
 public class Dept implements Serializable {
+
+    private static final long serialVersionUID = 4238076584091468481L;
+
     @Id
     @Column(nullable = false)
     private Long deptno;

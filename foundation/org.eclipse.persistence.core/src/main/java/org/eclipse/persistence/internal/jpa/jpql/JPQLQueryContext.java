@@ -1000,7 +1000,7 @@ final class JPQLQueryContext {
      * @return A new instance or <code>null</code> if a problem was encountered during instantiation
      */
     <T> T newInstance(Class<T> type, Class<?> parameterType, Object parameter) {
-        return newInstance(type, new Class[] { parameterType }, new Object[] { parameter });
+        return newInstance(type, new Class<?>[] { parameterType }, new Object[] { parameter });
     }
 
     /**

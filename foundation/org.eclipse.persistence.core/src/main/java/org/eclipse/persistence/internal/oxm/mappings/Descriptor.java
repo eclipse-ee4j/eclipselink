@@ -106,7 +106,7 @@ public interface Descriptor <
     /**
      * Return the java class.
      */
-    Class<?> getJavaClass();
+    <T> Class<T> getJavaClass();
 
     /**
      * Return the class name, used by the MW.

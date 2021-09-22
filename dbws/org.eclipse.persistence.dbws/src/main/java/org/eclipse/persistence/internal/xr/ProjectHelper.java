@@ -56,8 +56,7 @@ public final class ProjectHelper {
             if (!XRDynamicEntity.class.isAssignableFrom(desc.getJavaClass())) {
                 continue;
             }
-            @SuppressWarnings({"unchecked"})
-            Class<? extends XRDynamicEntity> clz = (Class<? extends XRDynamicEntity>) desc.getJavaClass();
+            Class<?> clz = desc.getJavaClass();
             ClassDescriptor xdesc = null;
             if (oxProject != null) {
                 xdesc = oxProject.getDescriptorForAlias(desc.getAlias());
@@ -65,7 +64,7 @@ public final class ProjectHelper {
             XRDynamicPropertiesManager xrDPM = null;
             if (!clz.getName().endsWith(COLLECTION_WRAPPER_SUFFIX)) {
                 try {
-                    XRDynamicEntity newInstance = clz.getConstructor().newInstance();
+                    XRDynamicEntity newInstance = (XRDynamicEntity) clz.getConstructor().newInstance();
                     xrDPM = newInstance.fetchPropertiesManager();
                 }
                 catch (Exception e) {

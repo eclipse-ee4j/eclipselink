@@ -173,7 +173,9 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
         List<String> proposalsNotRemoved = new ArrayList<>();
         CollectionTools.addAll(proposalsNotRemoved, expectedProposals);
 
-        return (List<String>[]) new List[] { proposalsNotRemoved, unexpectedProposals };
+        @SuppressWarnings({"rawtypes"})
+        List<String>[] list = (List<String>[]) new List[] { proposalsNotRemoved, unexpectedProposals };
+        return list;
     }
 
     protected List<String> classNames() {

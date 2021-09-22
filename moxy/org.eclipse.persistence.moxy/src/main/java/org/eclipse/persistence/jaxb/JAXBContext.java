@@ -1517,7 +1517,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
             //Add schema types generated for mapped domain classes
             for (Object o : xmlContext.getSession().getProject().getOrderedDescriptors()) {
                 Descriptor next = (Descriptor) o;
-                Class javaClass = next.getJavaClass();
+                Class<?> javaClass = next.getJavaClass();
 
                 if (next.getSchemaReference() != null) {
                     QName schemaType = next.getSchemaReference().getSchemaContextAsQName(next.getNamespaceResolver());
