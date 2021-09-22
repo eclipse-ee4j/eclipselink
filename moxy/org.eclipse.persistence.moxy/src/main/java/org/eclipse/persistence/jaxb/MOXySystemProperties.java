@@ -14,10 +14,6 @@
 //     Martin Vojtek - 2.6.0 - initial implementation
 package org.eclipse.persistence.jaxb;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
-
 import org.eclipse.persistence.internal.oxm.OXMSystemProperties;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.AbstractSessionLog;
@@ -102,26 +98,9 @@ public final class MOXySystemProperties {
      * @return value of the system property
      */
     private static Boolean getBoolean(final String propertyName) {
-        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            return runDoPrivileged(propertyName);
-        } else {
-            return getSystemPropertyValue(propertyName);
-        }
+        return PrivilegedAccessHelper.callDoPrivileged(
+                () -> Boolean.getBoolean(propertyName)
+        );
     }
 
-    private static Boolean runDoPrivileged(final String propertyName) {
-        try {
-            return AccessController.doPrivileged(new PrivilegedExceptionAction<Boolean>() {
-                @Override
-                public Boolean run() throws Exception {
-                    return getSystemPropertyValue(propertyName);
-                }});
-        } catch (PrivilegedActionException e) {
-            throw (RuntimeException) e.getCause();
-        }
-    }
-
-    private static Boolean getSystemPropertyValue(final String propertyName) {
-        return Boolean.getBoolean(propertyName);
-    }
 }

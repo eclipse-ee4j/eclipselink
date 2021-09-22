@@ -15,14 +15,12 @@
 package org.eclipse.persistence.jaxb.compiler;
 
 import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 
 import jakarta.xml.bind.Unmarshaller;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
-import org.eclipse.persistence.internal.security.PrivilegedGetMethod;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * INTERNAL:
@@ -62,60 +60,44 @@ public class UnmarshalCallback {
     }
 
     /**
+     * Initialize information about class based JAXB 2.0 Callback methods.
+     *
+     * @param loader source class loader for {@code domainClass}
      */
     public void initialize(ClassLoader loader) {
         try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try{
-                    domainClass = AccessController.doPrivileged(new PrivilegedClassForName<>(domainClassName, true, loader));
-                }catch (PrivilegedActionException ex){
-                    if (ex.getCause() instanceof ClassNotFoundException){
-                        throw (ClassNotFoundException) ex.getCause();
-                    }
-                    throw (RuntimeException)ex.getCause();
-                }
-            }else{
-                domainClass = PrivilegedAccessHelper.getClassForName(domainClassName, true, loader);
-            }
+            domainClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> PrivilegedAccessHelper.getClassForName(domainClassName, true, loader)
+            );
         } catch (ClassNotFoundException ex) {
             return;
+        } catch (Exception ex) {
+            throw new RuntimeException(String.format("Failed initialization of %s class", domainClassName), ex);
         }
         Class<?>[] params = new Class<?>[]{ Unmarshaller.class, Object.class };
         if (hasBeforeUnmarshalCallback) {
             try {
-                Method beforeUnmarshal = null;
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try{
-                        beforeUnmarshal = AccessController.doPrivileged(new PrivilegedGetMethod(domainClass, "beforeUnmarshal", params, false));
-                    }catch (PrivilegedActionException ex){
-                        if (ex.getCause() instanceof NoSuchMethodException){
-                            throw (NoSuchMethodException) ex.getCause();
-                        }
-                        throw (RuntimeException)ex.getCause();
-                    }
-                }else{
-                    beforeUnmarshal = PrivilegedAccessHelper.getMethod(domainClass, "beforeUnmarshal", params, false);
-                }
+                Method beforeUnmarshal = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                        () -> PrivilegedAccessHelper.getMethod(domainClass, "beforeUnmarshal", params, false)
+                );
                 setBeforeUnmarshalCallback(beforeUnmarshal);
-            } catch (NoSuchMethodException nsmex) {}
+            } catch (NoSuchMethodException nsmex) {
+                AbstractSessionLog.getLog().logThrowable(SessionLog.FINE, nsmex);
+            } catch (Exception ex) {
+                throw new RuntimeException(String.format("Failed initialization of beforeMarshal method of %s class", domainClassName), ex);
+            }
         }
         if (hasAfterUnmarshalCallback) {
             try {
-                Method afterUnmarshal = null;
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try{
-                        afterUnmarshal = AccessController.doPrivileged(new PrivilegedGetMethod(domainClass, "afterUnmarshal", params, false));
-                    }catch (PrivilegedActionException ex){
-                        if (ex.getCause() instanceof NoSuchMethodException){
-                            throw (NoSuchMethodException) ex.getCause();
-                        }
-                        throw (RuntimeException)ex.getCause();
-                    }
-                }else{
-                    afterUnmarshal = PrivilegedAccessHelper.getMethod(domainClass, "afterUnmarshal", params, false);
-                }
+                Method afterUnmarshal = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                        () -> PrivilegedAccessHelper.getMethod(domainClass, "afterUnmarshal", params, false)
+                );
                 setAfterUnmarshalCallback(afterUnmarshal);
-            } catch (NoSuchMethodException nsmex) {}
+            } catch (NoSuchMethodException nsmex) {
+                AbstractSessionLog.getLog().logThrowable(SessionLog.FINE, nsmex);
+            } catch (Exception ex) {
+                throw new RuntimeException(String.format("Failed initialization of afterMarshal method of %s class", domainClassName), ex);
+            }
         }
     }
 

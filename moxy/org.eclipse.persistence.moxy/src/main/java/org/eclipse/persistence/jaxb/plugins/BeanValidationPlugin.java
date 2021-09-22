@@ -14,21 +14,7 @@
 //     Marcel Valovy - 2.6 - initial implementation
 package org.eclipse.persistence.jaxb.plugins;
 
-import static com.sun.xml.xsom.XSFacet.FACET_FRACTIONDIGITS;
-import static com.sun.xml.xsom.XSFacet.FACET_LENGTH;
-import static com.sun.xml.xsom.XSFacet.FACET_MAXEXCLUSIVE;
-import static com.sun.xml.xsom.XSFacet.FACET_MAXINCLUSIVE;
-import static com.sun.xml.xsom.XSFacet.FACET_MAXLENGTH;
-import static com.sun.xml.xsom.XSFacet.FACET_MINEXCLUSIVE;
-import static com.sun.xml.xsom.XSFacet.FACET_MININCLUSIVE;
-import static com.sun.xml.xsom.XSFacet.FACET_MINLENGTH;
-import static com.sun.xml.xsom.XSFacet.FACET_PATTERN;
-import static com.sun.xml.xsom.XSFacet.FACET_TOTALDIGITS;
-
 import java.io.IOException;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -44,9 +30,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import jakarta.xml.bind.annotation.XmlElement;
-
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.SAXParseException;
 
 import com.sun.codemodel.JAnnotationArrayMember;
 import com.sun.codemodel.JAnnotationUse;
@@ -78,6 +61,20 @@ import com.sun.xml.xsom.XSSimpleType;
 import com.sun.xml.xsom.XSTerm;
 import com.sun.xml.xsom.XSType;
 import com.sun.xml.xsom.impl.parser.DelayedRef;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXParseException;
+
+import static com.sun.xml.xsom.XSFacet.FACET_FRACTIONDIGITS;
+import static com.sun.xml.xsom.XSFacet.FACET_LENGTH;
+import static com.sun.xml.xsom.XSFacet.FACET_MAXEXCLUSIVE;
+import static com.sun.xml.xsom.XSFacet.FACET_MAXINCLUSIVE;
+import static com.sun.xml.xsom.XSFacet.FACET_MAXLENGTH;
+import static com.sun.xml.xsom.XSFacet.FACET_MINEXCLUSIVE;
+import static com.sun.xml.xsom.XSFacet.FACET_MININCLUSIVE;
+import static com.sun.xml.xsom.XSFacet.FACET_MINLENGTH;
+import static com.sun.xml.xsom.XSFacet.FACET_PATTERN;
+import static com.sun.xml.xsom.XSFacet.FACET_TOTALDIGITS;
 
 
 /**
@@ -209,7 +206,7 @@ public class BeanValidationPlugin extends Plugin {
 
     /* ######### CORE FUNCTIONALITY ######### */
     private static final String PATTERN_ANNOTATION_NOT_APPLICABLE = "Facet \"pattern\" was detected on a DOM node with non-string base type. Annotation was not generated, because it is not supported by the Bean Validation specification.";
-    private final boolean securityEnabled = System.getSecurityManager() != null;
+    //private final boolean securityEnabled = System.getSecurityManager() != null;
 
     private static final JClass ANNOTATION_VALID;
     private static final JClass ANNOTATION_NOTNULL;
@@ -772,18 +769,15 @@ public class BeanValidationPlugin extends Plugin {
     /* ######### GENERAL UTILITIES ######### */
     private Class<?> loadClass(String className) {
         Class<?> clazz = null;
-        if (securityEnabled) try {
-            clazz = AccessController.doPrivileged(ForNameActionExecutor.INSTANCE.with(className));
-        } catch (PrivilegedActionException ignored) {
-            // - Can be only of type ClassNotFoundException, no check needed, see AccessController.doPrivileged().
-            /* - ClassNotFoundException for us "means" that the fieldVar is of some unknown class - not an issue to be
-             solved by this plugin. */
-        }
-        else try {
-            clazz = loadClassInternal(className);
+        try {
+            clazz = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> Class.forName(className)
+            );
         } catch (ClassNotFoundException ignored) {
             /* - ClassNotFoundException for us "means" that the fieldVar is of some unknown class - not an issue to be
              solved by this plugin. */
+        } catch (Exception ex) {
+            throw new RuntimeException(String.format("Failed loading of %s class", className), ex);
         }
         return clazz;
     }
@@ -943,32 +937,6 @@ public class BeanValidationPlugin extends Plugin {
             this.min = String.valueOf(min);
             this.max = String.valueOf(max);
         }
-    }
-
-    private static final class ForNameActionExecutor {
-
-        private interface PrivilegedExceptionActionWith<T> extends PrivilegedExceptionAction<T> {
-            PrivilegedExceptionAction<T> with(String className);
-        }
-
-        private static final PrivilegedExceptionActionWith<Class<?>> INSTANCE = new PrivilegedExceptionActionWith<Class<?>>() {
-            private String className;
-
-            @Override
-            public Class<?> run() throws ClassNotFoundException {
-                return loadClassInternal(className);
-            }
-
-            @Override
-            public PrivilegedExceptionActionWith<Class<?>> with(String className) {
-                this.className = className;
-                return this;
-            }
-        };
-    }
-
-    private static Class<?> loadClassInternal(String className) throws ClassNotFoundException {
-        return Class.forName(className);
     }
 
 }
