@@ -98,7 +98,7 @@ public interface SemanticValidatorHelper {
      *
      * @return The list of {@link JPQLQueryDeclaration} of the current query that was parsed
      */
-    List<JPQLQueryDeclaration> getDeclarations();
+    List<? extends JPQLQueryDeclaration> getDeclarations();
 
     /**
      * Retrieves the embeddable with the given type.

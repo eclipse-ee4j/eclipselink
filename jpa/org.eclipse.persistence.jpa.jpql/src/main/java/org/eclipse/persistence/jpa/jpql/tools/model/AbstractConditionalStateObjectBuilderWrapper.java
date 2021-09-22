@@ -209,8 +209,13 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     }
 
     @Override
-    public IConditionalExpressionStateObjectBuilder in(IConditionalExpressionStateObjectBuilder... inItems) {
-        return delegate.in(inItems);
+    public IConditionalExpressionStateObjectBuilder in(IConditionalExpressionStateObjectBuilder builder1, IConditionalExpressionStateObjectBuilder builder2) {
+        return delegate.in(builder1, builder2);
+    }
+
+    @Override
+    public IConditionalExpressionStateObjectBuilder in(IConditionalExpressionStateObjectBuilder builder) {
+        return delegate.in(builder);
     }
 
     @Override
@@ -379,8 +384,13 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     }
 
     @Override
-    public IConditionalExpressionStateObjectBuilder notIn(IConditionalExpressionStateObjectBuilder... inItems) {
-        return delegate.notIn(inItems);
+    public IConditionalExpressionStateObjectBuilder notIn(IConditionalExpressionStateObjectBuilder builder1, IConditionalExpressionStateObjectBuilder builder2) {
+        return delegate.notIn(builder1, builder2);
+    }
+
+    @Override
+    public IConditionalExpressionStateObjectBuilder notIn(IConditionalExpressionStateObjectBuilder builder) {
+        return delegate.notIn(builder);
     }
 
     @Override

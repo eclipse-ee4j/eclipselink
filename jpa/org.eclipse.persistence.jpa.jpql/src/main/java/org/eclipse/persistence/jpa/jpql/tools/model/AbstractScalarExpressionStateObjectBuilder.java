@@ -15,6 +15,7 @@
 //
 package org.eclipse.persistence.jpa.jpql.tools.model;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -175,7 +176,12 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     }
 
     @Override
-    public T coalesce(T builder1, T builder2, T... builders) {
+    public T coalesce(T builder1, T builder2) {
+        return coalesce(builder1, builder2, (T[]) Array.newInstance(builder1.getClass(), 0));
+    }
+
+    @Override
+    public T coalesce(T builder1, T builder2, T[] builders) {
 
         checkBuilders(builder1, builder2);
         checkBuilders(builders);
@@ -191,7 +197,12 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     }
 
     @Override
-    public T concat(T builder1, T builder2, T... builders) {
+    public T concat(T builder1, T builder2) {
+        return concat(builder1, builder2, (T[]) Array.newInstance(builder1.getClass(), 0));
+    }
+
+    @Override
+    public T concat(T builder1, T builder2, T[] builders) {
 
         checkBuilders(builder1, builder2);
         checkBuilders(builders);
@@ -292,15 +303,28 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     }
 
     @Override
-    public T function(String identifier, String functionName, T... arguments) {
+    public T function(String identifier, String functionName) {
+        StateObject stateObject = new FunctionExpressionStateObject(
+                getParent(),
+                identifier,
+                functionName,
+                stateObjects(0)
+        );
+
+        add(stateObject);
+        return (T) this;
+    }
+
+    @Override
+    public T function(String identifier, String functionName, T[] arguments) {
 
         checkBuilders(arguments);
 
         StateObject stateObject = new FunctionExpressionStateObject(
-            getParent(),
-            identifier,
-            functionName,
-            stateObjects(arguments)
+                getParent(),
+                identifier,
+                functionName,
+                stateObjects(arguments)
         );
 
         add(stateObject);

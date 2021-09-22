@@ -364,7 +364,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
     protected boolean isIdentificationVariableDeclaredAfter(String variableName,
                                                             int variableNameIndex,
                                                             int joinIndex,
-                                                            List<JPQLQueryDeclaration> declarations) {
+                                                            List<? extends JPQLQueryDeclaration> declarations) {
 
         for (int index = variableNameIndex, declarationCount = declarations.size(); index < declarationCount; index++) {
 
@@ -525,7 +525,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
         // The identification variable declarations are evaluated from left to right in
         // the FROM clause, and an identification variable declaration can use the result
         // of a preceding identification variable declaration of the query string
-        List<JPQLQueryDeclaration> declarations = helper.getDeclarations();
+        List<? extends JPQLQueryDeclaration> declarations = helper.getDeclarations();
 
         for (int index = 0, count = declarations.size(); index < count; index++) {
 
@@ -1682,7 +1682,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
     }
 
     protected void validateJoinsIdentificationVariable(AbstractFromClause expression,
-                                                       List<JPQLQueryDeclaration> declarations,
+                                                       List<? extends JPQLQueryDeclaration> declarations,
                                                        JPQLQueryDeclaration declaration,
                                                        int index) {
 

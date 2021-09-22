@@ -275,9 +275,16 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     }
 
     @Override
-    public T in(T... inItems) {
-        checkBuilders(inItems);
-        in(false, inItems);
+    public T in(T builder) {
+        checkBuilders(builder);
+        in(false, builder);
+        return (T) this;
+    }
+
+    @Override
+    public T in(T builder1, T builder2) {
+        checkBuilders(builder1, builder2);
+        in(false, builder1, builder2);
         return (T) this;
     }
 
@@ -476,9 +483,16 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     }
 
     @Override
-    public T notIn(T... inItems) {
-        checkBuilders(inItems);
-        in(true, inItems);
+    public T notIn(T builder) {
+        checkBuilders(builder);
+        in(true, builder);
+        return (T) this;
+    }
+
+    @Override
+    public T notIn(T builder1, T builder2) {
+        checkBuilders(builder1, builder2);
+        in(true, builder1, builder2);
         return (T) this;
     }
 

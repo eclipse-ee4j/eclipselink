@@ -1449,6 +1449,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
             text = text.substring(0, text.length() - 1);
         }
 
+        @SuppressWarnings({"unchecked"})
         Number number = queryContext.newInstance((Class<? extends Number>) type[0], String.class, text);
 
         // Now create the numeric expression

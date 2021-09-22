@@ -2517,8 +2517,9 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return the java class.
      */
     @Override
-    public Class getJavaClass() {
-        return javaClass;
+    @SuppressWarnings({"unchecked"})
+    public <T> Class<T> getJavaClass() {
+        return (Class<T>) javaClass;
     }
 
     /**
@@ -2537,7 +2538,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     public List<DatabaseMapping> getLockableMappings() {
         if (this.lockableMappings == null) {
-            this.lockableMappings = new ArrayList();
+            this.lockableMappings = new ArrayList<>();
         }
         return this.lockableMappings;
     }
