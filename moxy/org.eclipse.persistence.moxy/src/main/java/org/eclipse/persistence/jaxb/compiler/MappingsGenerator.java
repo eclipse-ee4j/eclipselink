@@ -2160,7 +2160,7 @@ public class MappingsGenerator {
             QName schemaType = userDefinedSchemaTypes.get(theType.getQualifiedName());
 
             if (schemaType == null) {
-                schemaType = helper.getXMLToJavaTypeMap().get(theType);
+                schemaType = helper.getXMLToJavaTypeMap().get(theType.getName());
             }
             ((Field) mapping.getField()).setSchemaType(schemaType);
             if(info != null && info.isEnumerationType()) {
