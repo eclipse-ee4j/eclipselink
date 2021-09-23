@@ -87,8 +87,8 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
 
     private List<ContainerValue> containerValues;
     private int counter = 0;
-    private Class cycleRecoverableClass = null;
-    private Class cycleRecoverableContextClass = null;
+    private Class<?> cycleRecoverableClass = null;
+    private Class<?> cycleRecoverableContextClass = null;
     private List<ContainerValue> defaultEmptyContainerValues; //a list of container values that have isDefaultEmptyContainer() set to true
     private CoreDescriptor descriptor;
     private volatile boolean initialized = false;
@@ -262,7 +262,7 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
     }
 
     @Override
-    public Class classFromRow(UnmarshalRecord record, CoreAbstractSession session) {
+    public Class<?> classFromRow(UnmarshalRecord record, CoreAbstractSession session) {
         return descriptor.getInheritancePolicy().classFromRow((CoreAbstractRecord) record, session);
     }
 

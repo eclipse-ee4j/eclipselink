@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -44,7 +44,7 @@ public class ReportItem implements Cloneable, java.io.Serializable {
     protected ClassDescriptor descriptor;
 
     /** Result type for this report item. */
-    protected Class resultType;
+    protected Class<?> resultType;
     /** Stores the Join information for this item */
     protected JoinedAttributeManager joinedAttributeManager;
 
@@ -119,7 +119,7 @@ public class ReportItem implements Cloneable, java.io.Serializable {
         return resultIndex;
     }
 
-    public Class getResultType() {
+    public Class<?> getResultType() {
         return resultType;
     }
 
@@ -134,7 +134,7 @@ public class ReportItem implements Cloneable, java.io.Serializable {
                 if (mapping == null) {
                     //TODO: This feels like it should be set earlier during ReportItemBuild.visit. Should investigate.
                     if (this.attributeExpression.isExpressionBuilder()) {
-                        Class resultClass = ((ExpressionBuilder)this.attributeExpression).getQueryClass();
+                        Class<?> resultClass = ((ExpressionBuilder)this.attributeExpression).getQueryClass();
                         if (resultClass == null) {
                             resultClass = query.getReferenceClass();
                             ((ExpressionBuilder)this.attributeExpression).setQueryClass(resultClass);
@@ -208,7 +208,7 @@ public class ReportItem implements Cloneable, java.io.Serializable {
         }
     }
 
-    public void setResultType(Class resultType) {
+    public void setResultType(Class<?> resultType) {
         this.resultType = resultType;
 
         // Set it on the attribute expression as well if it is a function.

@@ -143,7 +143,7 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
 
         // Instantiate any custom converter class
         if (converterClassName != null) {
-            Class converterClass;
+            Class<?> converterClass;
             Converter converter;
 
             try {

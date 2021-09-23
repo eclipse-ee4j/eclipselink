@@ -451,7 +451,7 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBWithJSONTestCases{
 
     }
 
-    private Class getClassForDeclaredTypeOnUnmarshal() throws Exception{
+    private Class<?> getClassForDeclaredTypeOnUnmarshal() throws Exception{
         Type typeToUse = getTypeToUnmarshalTo();
         if(typeToUse instanceof Class){
             return (Class)typeToUse;

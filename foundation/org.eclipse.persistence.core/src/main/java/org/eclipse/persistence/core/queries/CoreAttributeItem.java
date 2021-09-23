@@ -266,7 +266,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
         return this.group;
     }
 
-    public ATTRIBUTE_GROUP getGroup(Class type) {
+    public ATTRIBUTE_GROUP getGroup(Class<?> type) {
         if (this.subGroups == null || type == null){
             return null;
         }
@@ -292,12 +292,12 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
         return this.keyGroups.get(CoreClassConstants.OBJECT);
     }
 
-    public ATTRIBUTE_GROUP getKeyGroup(Class type) {
+    public ATTRIBUTE_GROUP getKeyGroup(Class<?> type) {
         if (this.keyGroups == null || type == null){
             return null;
         }
         ATTRIBUTE_GROUP result = this.keyGroups.get(type);
-        Class currentType = type;
+        Class<?> currentType = type;
         while(result == null && !currentType.equals(CoreClassConstants.OBJECT)){
             currentType = currentType.getSuperclass();
             if (currentType == null){
@@ -321,7 +321,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
      * @return true if the group is the new root.
      */
     protected static boolean orderInheritance(CoreAttributeGroup group, Map<Object, ? extends CoreAttributeGroup> subGroups) {
-        Class type = group.getType();
+        Class<?> type = group.getType();
         if (type != null){
             CoreAttributeGroup superClass = null;
             while (!type.equals(CoreClassConstants.OBJECT) && superClass == null){

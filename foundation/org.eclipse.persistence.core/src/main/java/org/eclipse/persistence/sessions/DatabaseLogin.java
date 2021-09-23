@@ -821,7 +821,7 @@ public class DatabaseLogin extends DatasourceLogin {
      * Example: login.setDefaultNullValue(long.class, Long.valueOf(0))
      */
     @Override
-    public void setDefaultNullValue(Class type, Object value) {
+    public void setDefaultNullValue(Class<?> type, Object value) {
         getPlatform().getConversionManager().setDefaultNullValue(type, value);
     }
 
@@ -830,7 +830,7 @@ public class DatabaseLogin extends DatasourceLogin {
      * The driver class is the Java class for the JDBC driver to be used
      * (e.g. sun.jdbc.odbc.JdbcOdbcDriver.class).
      */
-    public void setDriverClass(Class driverClass) {
+    public void setDriverClass(Class<?> driverClass) {
         setDriverClassName(driverClass.getName());
     }
 

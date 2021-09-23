@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,12 +23,12 @@ import org.eclipse.persistence.sessions.Session;
 public abstract class AbstractSerializer implements Serializer {
 
     @Override
-    public Class getType() {
+    public Class<?> getType() {
         return byte[].class;
     }
 
     @Override
-    public void initialize(Class serializeClass, String serializePackage, Session session) { }
+    public void initialize(Class<?> serializeClass, String serializePackage, Session session) { }
 
     @Override
     public String toString() {

@@ -38,7 +38,7 @@ public class XMLSequencedDescriptor extends XMLDescriptor {
         }
         if(getGetSettingsMethodName() != null) {
             try {
-                this.getSettingsMethod = PrivilegedAccessHelper.getDeclaredMethod(this.getJavaClass(), this.getGetSettingsMethodName(), new Class[0]);
+                this.getSettingsMethod = PrivilegedAccessHelper.getDeclaredMethod(this.getJavaClass(), this.getGetSettingsMethodName(), new Class<?>[0]);
             } catch(Exception ex) {
 
             }

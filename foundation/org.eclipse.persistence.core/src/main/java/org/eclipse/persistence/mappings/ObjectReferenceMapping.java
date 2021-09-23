@@ -418,7 +418,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
                             // otherwise leave it as null which will stop the recursion
                             // CR 2855
                             // CR 3424 Need to build the right instance based on class type instead of refernceDescriptor
-                            Class objectClass = set.getClassType(mergeManager.getSession());
+                            Class<?> objectClass = set.getClassType(mergeManager.getSession());
                             targetValueOfSource = mergeManager.getSession().getDescriptor(objectClass).getObjectBuilder().buildNewInstance();
                             //Store the changeset to prevent us from creating this new object again
                             mergeManager.recordMerge(set, targetValueOfSource, targetSession);
@@ -1257,7 +1257,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      *
      */
     public void useProxyIndirection() {
-        Class[] targetInterfaces = getReferenceClass().getInterfaces();
+        Class<?>[] targetInterfaces = getReferenceClass().getInterfaces();
         if (!getReferenceClass().isInterface() && getReferenceClass().getSuperclass() == null) {
             setIndirectionPolicy(new ProxyIndirectionPolicy(targetInterfaces));
         } else {
@@ -1300,8 +1300,8 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * INTERNAL:
      * Build a list of all the interfaces and super interfaces for a given class.
      */
-    public Collection buildTargetInterfaces(Class aClass, Collection targetInterfacesCol) {
-        Class[] targetInterfaces = aClass.getInterfaces();
+    public Collection buildTargetInterfaces(Class<?> aClass, Collection targetInterfacesCol) {
+        Class<?>[] targetInterfaces = aClass.getInterfaces();
         for (int index = 0; index < targetInterfaces.length; index++) {
             targetInterfacesCol.add(targetInterfaces[index]);
         }
@@ -1332,7 +1332,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * @param    targetInterfaces        The interfaces that the target class implements.  The attribute must be typed
      *                                as one of these interfaces.
      */
-    public void useProxyIndirection(Class[] targetInterfaces) {
+    public void useProxyIndirection(Class<?>[] targetInterfaces) {
         setIndirectionPolicy(new ProxyIndirectionPolicy(targetInterfaces));
     }
 
@@ -1356,8 +1356,8 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * @param    targetInterface        The interface that the target class implements.  The attribute must be typed
      *                                as this interface.
      */
-    public void useProxyIndirection(Class targetInterface) {
-        Class[] targetInterfaces = new Class[] { targetInterface };
+    public void useProxyIndirection(Class<?> targetInterface) {
+        Class<?>[] targetInterfaces = new Class<?>[] { targetInterface };
         setIndirectionPolicy(new ProxyIndirectionPolicy(targetInterfaces));
     }
 

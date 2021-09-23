@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.internal.identitymaps.WeakIdentityMap;
 
 /**
@@ -101,8 +102,9 @@ public class CacheIndex implements Cloneable, Serializable {
      * This default to a weak cache, and should normally not be changed.
      * For a weak cache, the index will remain until the object gcs from the main cache.
      */
-    public Class getCacheType() {
-        return cacheType;
+    @SuppressWarnings({"unchecked"})
+    public <T extends WeakIdentityMap> Class<T> getCacheType() {
+        return (Class<T>) cacheType;
     }
 
     /**

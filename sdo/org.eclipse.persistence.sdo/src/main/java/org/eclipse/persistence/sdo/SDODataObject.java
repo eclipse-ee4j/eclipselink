@@ -2261,7 +2261,7 @@ public class SDODataObject implements DataObject, SequencedObject {
      * @throws ClassCastException
      * @throws IllegalArgumentException
      */
-    public Object convertObjectToValue(Property property, Class cls) throws ClassCastException, IllegalArgumentException {
+    public Object convertObjectToValue(Property property, Class<?> cls) throws ClassCastException, IllegalArgumentException {
         //ie get String - convert(thisprop, String.class)
         if (null == property) {
             throw new IllegalArgumentException(SDOException.cannotPerformOperationOnNullArgument("convertObjectToValue"));
@@ -2286,7 +2286,7 @@ public class SDODataObject implements DataObject, SequencedObject {
      * @throws ClassCastException
      * @throws IllegalArgumentException
      */
-    public Object convertObjectToValue(Property property, int position, Class cls) throws ClassCastException, IllegalArgumentException {
+    public Object convertObjectToValue(Property property, int position, Class<?> cls) throws ClassCastException, IllegalArgumentException {
         if (null == property) {
             throw new IllegalArgumentException(SDOException.cannotPerformOperationOnNullArgument("convertObjectToValue"));
         }

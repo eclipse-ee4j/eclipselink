@@ -147,7 +147,7 @@ public class SessionEventManager extends CoreSessionEventManager<SessionEventLis
      * INTERNAL:
      * Raised for missing descriptors for lazy registration.
      */
-    public void missingDescriptor(Class missingClass) {
+    public void missingDescriptor(Class<?> missingClass) {
         if (!hasListeners()) {
             return;
         }

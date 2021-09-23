@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -24,7 +24,7 @@ import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
  * <P><B>Purpose</B>: Conversion exceptions such as method or class not defined will raise this exception.
  */
 public class ConversionException extends EclipseLinkException {
-    protected Class classToConvertTo;
+    protected Class<?> classToConvertTo;
     protected transient Object sourceObject;
     public final static int COULD_NOT_BE_CONVERTED = 3001;
     public final static int COULD_NOT_BE_CONVERTED_EXTENDED = 3002;
@@ -49,7 +49,7 @@ public class ConversionException extends EclipseLinkException {
      * INTERNAL:
      * TopLink exceptions should only be thrown by TopLink.
      */
-    protected ConversionException(String message, Object sourceObject, Class classToConvertTo, Exception exception) {
+    protected ConversionException(String message, Object sourceObject, Class<?> classToConvertTo, Exception exception) {
         super(message, exception);
         setSourceObject(sourceObject);
         setClassToConvertTo(classToConvertTo);
@@ -60,7 +60,7 @@ public class ConversionException extends EclipseLinkException {
     // info (stack trace and internal exception over)
     public static ConversionException couldNotBeConverted(Object mapping, Object descriptor, ConversionException exception) {
         Object sourceObject = exception.getSourceObject();
-        Class javaClass = exception.getClassToConvertTo();
+        Class<?> javaClass = exception.getClassToConvertTo();
         Exception original = (Exception)exception.getInternalException();
 
         Object[] args = { sourceObject, sourceObject.getClass(), mapping, descriptor, javaClass };
@@ -71,8 +71,8 @@ public class ConversionException extends EclipseLinkException {
         return conversionException;
     }
 
-    public static ConversionException couldNotBeConverted(Object object, Class javaClass) {
-        Class objectClass = null;
+    public static ConversionException couldNotBeConverted(Object object, Class<?> javaClass) {
+        Class<?> objectClass = null;
         if (object!=null) {
             objectClass = object.getClass();
         }
@@ -83,8 +83,8 @@ public class ConversionException extends EclipseLinkException {
         return conversionException;
     }
 
-    public static ConversionException couldNotBeConverted(Object object, Class javaClass, Exception exception) {
-        Class objectClass = null;
+    public static ConversionException couldNotBeConverted(Object object, Class<?> javaClass, Exception exception) {
+        Class<?> objectClass = null;
         if (object!=null) {
             objectClass = object.getClass();
         }
@@ -95,7 +95,7 @@ public class ConversionException extends EclipseLinkException {
         return conversionException;
     }
 
-    public static ConversionException couldNotBeConvertedToClass(Object object, Class javaClass, Exception exception) {
+    public static ConversionException couldNotBeConvertedToClass(Object object, Class<?> javaClass, Exception exception) {
         Object[] args = { object, object.getClass(), javaClass };
         String message = ExceptionMessageGenerator.buildMessage(ConversionException.class, COULD_NOT_BE_CONVERTED_TO_CLASS, args);
         ConversionException conversionException = new ConversionException(message, object, javaClass, exception);
@@ -144,7 +144,7 @@ public class ConversionException extends EclipseLinkException {
         return conversionException;
     }
 
-    public static ConversionException incorrectDateTimeFormat(String dateTimeString, Class classBeingConvertedTo) {
+    public static ConversionException incorrectDateTimeFormat(String dateTimeString, Class<?> classBeingConvertedTo) {
         Object[] args = { dateTimeString };
         String message = ExceptionMessageGenerator.buildMessage(ConversionException.class, INCORRECT_DATE_TIME_FORMAT, args);
         ConversionException conversionException = new ConversionException(message, dateTimeString, classBeingConvertedTo, null);
@@ -160,7 +160,7 @@ public class ConversionException extends EclipseLinkException {
      * PUBLIC:
      * Return the class to convert to.
      */
-    public Class getClassToConvertTo() {
+    public Class<?> getClassToConvertTo() {
         return classToConvertTo;
     }
 
@@ -176,7 +176,7 @@ public class ConversionException extends EclipseLinkException {
      * INTERNAL:
      * Set the class to convert to.
      */
-    public void setClassToConvertTo(Class classToConvertTo) {
+    public void setClassToConvertTo(Class<?> classToConvertTo) {
         this.classToConvertTo = classToConvertTo;
     }
 

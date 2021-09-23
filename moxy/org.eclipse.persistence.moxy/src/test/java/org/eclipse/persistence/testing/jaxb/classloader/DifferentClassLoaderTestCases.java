@@ -26,7 +26,7 @@ public class DifferentClassLoaderTestCases extends JAXBWithJSONTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/classloader/classloader.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/classloader/classloader.json";
 
-    private Class rootClass;
+    private Class<?> rootClass;
 
     public DifferentClassLoaderTestCases(String name) throws Exception {
         super(name);

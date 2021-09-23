@@ -566,7 +566,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         }
         else{
             if (aDescriptor.hasInheritance()) {
-                Class newElementClass = aDescriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
+                Class<?> newElementClass = aDescriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
                 if (newElementClass == null) {
                     // no xsi:type attribute - look for type indicator on the field
                     QName leafElementType = ((XMLField) getField()).getLeafElementType();
@@ -667,7 +667,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
     }
 
     @Override
-    protected ClassDescriptor getReferenceDescriptor(Class theClass, AbstractSession session) {
+    protected ClassDescriptor getReferenceDescriptor(Class<?> theClass, AbstractSession session) {
         if ((getReferenceDescriptor() != null) && getReferenceDescriptor().getJavaClass().equals(theClass)) {
             return getReferenceDescriptor();
         }

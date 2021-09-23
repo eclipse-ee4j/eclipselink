@@ -446,7 +446,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
      * This is used to convert the row value to a consistent java value.
      */
     @Override
-    public Class getFieldClassification(DatabaseField fieldToClassify) throws DescriptorException {
+    public Class<?> getFieldClassification(DatabaseField fieldToClassify) throws DescriptorException {
         DatabaseField fieldInTarget = getSourceToTargetKeyFields().get(fieldToClassify);
         if (fieldInTarget == null) {
             return null;// Can be registered as multiple table secondary field mapping

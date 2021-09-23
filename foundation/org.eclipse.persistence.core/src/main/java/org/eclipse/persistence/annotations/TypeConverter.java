@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,11 +56,11 @@ public @interface TypeConverter {
      * (Optional) Specify the type stored on the database. The default is
      * inferred from the type of the persistence field or property.
      */
-    Class dataType() default void.class;
+    Class<?> dataType() default void.class;
 
     /**
      * (Optional) Specify the type stored on the entity. The default is inferred
      * from the type of the persistent field or property.
      */
-    Class objectType() default void.class;
+    Class<?> objectType() default void.class;
 }

@@ -34,7 +34,7 @@ public class JAXBElementByteArrayAttachmentTestCases  extends JAXBElementTestCas
 
 
     @Override
-    public Class getUnmarshalClass(){
+    public Class<?> getUnmarshalClass(){
         return byte[].class;
     }
 

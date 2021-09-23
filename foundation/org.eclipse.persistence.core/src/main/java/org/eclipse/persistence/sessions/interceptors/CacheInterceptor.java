@@ -229,7 +229,7 @@ public abstract class CacheInterceptor implements IdentityMap {
      * Return the class that this is the map for.
      */
     @Override
-    public Class getDescriptorClass() {
+    public Class<?> getDescriptorClass() {
         return this.targetIdentityMap.getDescriptorClass();
     }
 
@@ -255,7 +255,7 @@ public abstract class CacheInterceptor implements IdentityMap {
      * Recurse = true will include subclasses of myClass in the count.
      */
     @Override
-    public int getSize(Class myClass, boolean recurse) {
+    public int getSize(Class<?> myClass, boolean recurse) {
         return this.targetIdentityMap.getSize(myClass, recurse);
     }
 

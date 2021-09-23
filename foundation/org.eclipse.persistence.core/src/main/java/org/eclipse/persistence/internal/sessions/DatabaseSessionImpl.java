@@ -574,7 +574,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * The platform is used for database specific behavior.
      */
     @Override
-    public Platform getPlatform(Class domainClass) {
+    public Platform getPlatform(Class<?> domainClass) {
         // PERF: Cache the platform.
         if (platform == null) {
             if(isLoggedIn) {

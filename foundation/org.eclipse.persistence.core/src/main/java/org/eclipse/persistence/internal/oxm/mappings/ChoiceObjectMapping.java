@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,15 +54,15 @@ public interface ChoiceObjectMapping<
 
     Map<XML_FIELD, XML_MAPPING> getChoiceElementMappings();
 
-    Map<Class, XML_MAPPING> getChoiceElementMappingsByClass();
+    Map<Class<?>, XML_MAPPING> getChoiceElementMappingsByClass();
 
     List<XMLChoiceFieldToClassAssociation> getChoiceFieldToClassAssociations();
 
     Map<String, XML_FIELD> getClassNameToFieldMappings();
 
-    Map<Class, XML_FIELD> getClassToFieldMappings();
+    Map<Class<?>, XML_FIELD> getClassToFieldMappings();
 
-    Map<Class, List<XML_FIELD>> getClassToSourceFieldsMappings();
+    Map<Class<?>, List<XML_FIELD>> getClassToSourceFieldsMappings();
 
     CONVERTER getConverter();
 
@@ -70,7 +70,7 @@ public interface ChoiceObjectMapping<
 
     List<FIELD> getFields();
 
-    Map<XML_FIELD, Class> getFieldToClassMappings();
+    Map<XML_FIELD, Class<?>> getFieldToClassMappings();
 
     Object getFieldValue(Object object, CoreAbstractSession session, AbstractMarshalRecord marshalRecord);
 

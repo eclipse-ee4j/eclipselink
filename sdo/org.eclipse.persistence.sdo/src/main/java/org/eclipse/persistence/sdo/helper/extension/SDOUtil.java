@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -682,7 +682,7 @@ public class SDOUtil {
         } else {
             SDOType propertyType = property.getType();
             if(propertyType.isDataType()) {
-                Class instanceClass = propertyType.getInstanceClass();
+                Class<?> instanceClass = propertyType.getInstanceClass();
                 if (ClassConstants.ABYTE.equals(instanceClass)) {
                     return "Byte[]";
                 } else if (ClassConstants.APBYTE.equals(instanceClass)) {

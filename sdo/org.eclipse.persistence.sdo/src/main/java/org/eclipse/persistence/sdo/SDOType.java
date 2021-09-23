@@ -51,7 +51,7 @@ import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 
 public class SDOType implements Type, Serializable {
-    private static final Class[] EMPTY_CLASS_ARRAY = new Class[0];
+    private static final Class<?>[] EMPTY_CLASS_ARRAY = new Class<?>[0];
 
     private QName qName;
     private boolean open;// if this Type is open
@@ -72,10 +72,10 @@ public class SDOType implements Type, Serializable {
     private SDOProperty[] allPropertiesArr;
     private List subTypes;
     private boolean finalized;
-    private Class javaClass;
+    private Class<?> javaClass;
     private String javaClassName;
     private String javaImplClassName;
-    protected Class javaImplClass;
+    protected Class<?> javaImplClass;
     private List<SDOProperty> nonFinalizedReferencingProps;
     private List nonFinalizedMappingURIs;
 
@@ -176,7 +176,7 @@ public class SDOType implements Type, Serializable {
     }
 
     @Override
-    public Class getInstanceClass() {
+    public Class<?> getInstanceClass() {
         if ((javaClass == null) && (javaClassName != null)) {
             try {
                 SDOClassLoader loader = ((SDOXMLHelper)aHelperContext.getXMLHelper()).getLoader();
@@ -201,7 +201,7 @@ public class SDOType implements Type, Serializable {
     /**
      * Verify that the class is a valid instance class.
      */
-    private boolean isValidInstanceClass(Class clazz) {
+    private boolean isValidInstanceClass(Class<?> clazz) {
         if(isDataType) {
             return true;
         }
@@ -217,7 +217,7 @@ public class SDOType implements Type, Serializable {
      * @param clazz class to be checked
      * @return {@code true} if given class has getter for each property
      */
-    private boolean hasClassGetterForEachProperty(Class clazz) {
+    private boolean hasClassGetterForEachProperty(Class<?> clazz) {
         for(Object object: this.getDeclaredProperties()) {
             SDOProperty sdoProperty = (SDOProperty) object;
             SDOType sdoPropertyType = sdoProperty.getType();
@@ -268,7 +268,7 @@ public class SDOType implements Type, Serializable {
         }
 
         //this check is taken from page 77 of the spec
-        Class instanceClass = getInstanceClass();
+        Class<?> instanceClass = getInstanceClass();
         if (instanceClass != null) {
             return instanceClass.isInstance(object);
         }
@@ -527,7 +527,7 @@ public class SDOType implements Type, Serializable {
       * Sets the Java class that this type represents.
       * @param aClass the Java class that this type represents.
       */
-    public void setInstanceClass(Class aClass) {
+    public void setInstanceClass(Class<?> aClass) {
         javaClass = aClass;
         if (javaClass != null) {
             javaClassName = javaClass.getName();
@@ -745,7 +745,7 @@ public class SDOType implements Type, Serializable {
      * @param xdesc
      * @param pCls
      */
-    private void addClassIndicator(XMLDescriptor xdesc, Class pCls, boolean isInheritanceRoot) {
+    private void addClassIndicator(XMLDescriptor xdesc, Class<?> pCls, boolean isInheritanceRoot) {
         XMLField field = (XMLField)getXmlDescriptor().buildField("@xsi:type");
         field.initialize();
         xdesc.getInheritancePolicy().setClassIndicatorField(field);
@@ -808,10 +808,10 @@ public class SDOType implements Type, Serializable {
                     if (prefix != null) {
                         indicator = prefix + SDOConstants.SDO_XPATH_NS_SEPARATOR_FRAGMENT + indicator;
                     }
-                    Class implClass = getImplClass();
+                    Class<?> implClass = getImplClass();
                     parentDescriptor.getInheritancePolicy().addClassIndicator(implClass, indicator);
                     parentDescriptor.getInheritancePolicy().setShouldReadSubclasses(true);
-                    Class parentClass = parentType.getImplClass();
+                    Class<?> parentClass = parentType.getImplClass();
                     getXmlDescriptor().getInheritancePolicy().setParentClass(parentClass);
                     getXmlDescriptor().getInheritancePolicy().setParentDescriptor(parentType.getXmlDescriptor());
                     parentType.getXmlDescriptor().getNamespaceResolver().put(XMLConstants.SCHEMA_INSTANCE_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
@@ -946,7 +946,7 @@ public class SDOType implements Type, Serializable {
     /**
       * INTERNAL:
       */
-    public Class getImplClass() {
+    public Class<?> getImplClass() {
         if ((javaImplClass == null) && (getImplClassName() != null)) {
             try {
                 SDOClassLoader loader = ((SDOXMLHelper)aHelperContext.getXMLHelper()).getLoader();

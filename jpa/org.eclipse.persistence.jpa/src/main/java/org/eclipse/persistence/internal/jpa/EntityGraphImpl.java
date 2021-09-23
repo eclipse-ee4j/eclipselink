@@ -62,7 +62,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
     public EntityGraphImpl(AttributeGroup group) {
         super();
         this.attributeGroup = group;
-        this.classType = group.getType();
+        this.classType = (Class<X>) group.getType();
         if (this.classType == null){
             this.classType = (Class<X>) CoreClassConstants.OBJECT;
         }

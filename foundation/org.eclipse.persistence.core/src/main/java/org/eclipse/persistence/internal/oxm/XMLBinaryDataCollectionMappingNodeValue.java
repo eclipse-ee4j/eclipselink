@@ -168,7 +168,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
         this.endElement(xPathFragment, unmarshalRecord);
     }
 
-    public DataHandler getDataHandlerForObjectValue(Object obj, Class classification) {
+    public DataHandler getDataHandlerForObjectValue(Object obj, Class<?> classification) {
         if (classification == DataHandler.class) {
             return (DataHandler) obj;
         }

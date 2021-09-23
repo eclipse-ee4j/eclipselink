@@ -38,7 +38,7 @@ import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
  */
 public class SortedCollectionContainerPolicy extends CollectionContainerPolicy {
     protected Comparator m_comparator = null;
-    protected Class  comparatorClass = null ;
+    protected Class<?>  comparatorClass = null ;
     protected String comparatorClassName = null;
 
 
@@ -54,7 +54,7 @@ public class SortedCollectionContainerPolicy extends CollectionContainerPolicy {
      * INTERNAL:
      * Construct a new policy for the specified class.
      */
-    public SortedCollectionContainerPolicy(Class containerClass) {
+    public SortedCollectionContainerPolicy(Class<?> containerClass) {
         super(containerClass);
     }
 
@@ -81,7 +81,7 @@ public class SortedCollectionContainerPolicy extends CollectionContainerPolicy {
      * Sets a comparator class for this policy to use when instantiating
      * a new SortedSet object.
      */
-    public void setComparatorClass(Class comparatorClass) {
+    public void setComparatorClass(Class<?> comparatorClass) {
         if(Helper.classImplementsInterface(comparatorClass, java.util.Comparator.class)){
             m_comparator=(Comparator)Helper.getInstanceFromClass(comparatorClass);
         }else{
@@ -112,7 +112,7 @@ public class SortedCollectionContainerPolicy extends CollectionContainerPolicy {
      * INTERNAL:
      * Return the stored comparator class
      */
-    public Class getComparatorClass() {
+    public Class<?> getComparatorClass() {
         return comparatorClass;
     }
 
@@ -150,12 +150,12 @@ public class SortedCollectionContainerPolicy extends CollectionContainerPolicy {
             }
             if (m_comparator != null) {
                 Object[] arguments = new Object[] { m_comparator };
-                Class[] constructClass = new Class[] { Comparator.class };
-                Constructor constructor = null;
+                Class<?>[] constructClass = new Class<?>[] { Comparator.class };
+                Constructor<?> constructor = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<Class<?>>(getContainerClass(), constructClass, false));
-                        return AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, arguments));
+                        constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(getContainerClass(), constructClass, false));
+                        return AccessController.doPrivileged(new PrivilegedInvokeConstructor<>(constructor, arguments));
                     } catch (PrivilegedActionException exception) {
                         throw QueryException.couldNotInstantiateContainerClass(getContainerClass(), exception.getException());
                     }
@@ -166,7 +166,7 @@ public class SortedCollectionContainerPolicy extends CollectionContainerPolicy {
             } else {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        return AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(getContainerClass()));
+                        return AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(getContainerClass()));
                     } catch (PrivilegedActionException exception) {
                         throw QueryException.couldNotInstantiateContainerClass(getContainerClass(), exception.getException());
                     }
@@ -191,7 +191,7 @@ public class SortedCollectionContainerPolicy extends CollectionContainerPolicy {
         if(m_comparator==null){
              if(comparatorClass==null){
                  if(comparatorClassName!=null){
-                      Class comparatorClass = Helper.getClassFromClasseName(comparatorClassName, classLoader);
+                      Class<?> comparatorClass = Helper.getClassFromClasseName(comparatorClassName, classLoader);
                       if(Helper.classImplementsInterface(comparatorClass, java.util.Comparator.class)){
                           m_comparator=(Comparator)Helper.getInstanceFromClass(comparatorClass);
                       }else{

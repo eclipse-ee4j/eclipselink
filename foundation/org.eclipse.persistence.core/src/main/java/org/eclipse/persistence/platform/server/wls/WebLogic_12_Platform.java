@@ -107,14 +107,14 @@ public class WebLogic_12_Platform extends WebLogic_10_Platform {
         private void initialize(final Class<?> managerClass, final String contextClassName) {
             try {
                 // Get component invocation manager
-                final Method getInstance = PrivilegedAccessHelper.getDeclaredMethod(managerClass, "getInstance", new Class[]{});
+                final Method getInstance = PrivilegedAccessHelper.getDeclaredMethod(managerClass, "getInstance", new Class<?>[]{});
                 cicManagerInstance = PrivilegedAccessHelper.invokeMethod(getInstance, managerClass);
                 // Get component invocation context
-                getCurrentCicMethod = PrivilegedAccessHelper.getMethod(managerClass, "getCurrentComponentInvocationContext", new Class[]{}, true);
+                getCurrentCicMethod = PrivilegedAccessHelper.getMethod(managerClass, "getCurrentComponentInvocationContext", new Class<?>[]{}, true);
                 final Class<?> cicClass = PrivilegedAccessHelper.getClassForName(contextClassName);
-                getPartitionIdMethod = PrivilegedAccessHelper.getDeclaredMethod(cicClass, "getPartitionId", new Class[]{});
-                getPartitionNameMethod = PrivilegedAccessHelper.getDeclaredMethod(cicClass, "getPartitionName", new Class[]{});
-                isGlobalRuntimeMethod = PrivilegedAccessHelper.getDeclaredMethod(cicClass, "isGlobalRuntime", new Class[]{});
+                getPartitionIdMethod = PrivilegedAccessHelper.getDeclaredMethod(cicClass, "getPartitionId", new Class<?>[]{});
+                getPartitionNameMethod = PrivilegedAccessHelper.getDeclaredMethod(cicClass, "getPartitionName", new Class<?>[]{});
+                isGlobalRuntimeMethod = PrivilegedAccessHelper.getDeclaredMethod(cicClass, "isGlobalRuntime", new Class<?>[]{});
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | ClassNotFoundException ex) {
                 AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, null, ex);
             }

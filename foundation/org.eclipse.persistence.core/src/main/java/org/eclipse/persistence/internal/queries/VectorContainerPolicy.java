@@ -35,7 +35,7 @@ public class VectorContainerPolicy extends ListContainerPolicy {
      * INTERNAL:
      * Construct a new policy for the specified class.
      */
-    public VectorContainerPolicy(Class containerClass) {
+    public VectorContainerPolicy(Class<?> containerClass) {
         super(containerClass);
     }
 

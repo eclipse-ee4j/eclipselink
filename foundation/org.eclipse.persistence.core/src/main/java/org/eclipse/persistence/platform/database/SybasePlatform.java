@@ -127,7 +127,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
      * Sybase and SQL Anywhere do not support BLOB/CLOB but require LONGVARBINARY/LONGVARCHAR.
      */
     @Override
-    public int getJDBCType(Class javaType) {
+    public int getJDBCType(Class<?> javaType) {
         if (javaType == ClassConstants.BLOB)  {
             return Types.LONGVARBINARY;
         } else if (javaType == ClassConstants.CLOB) {

@@ -346,7 +346,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
         return this.collectFields();
     }
 
-    public void useMapClass(Class concreteMapClass) {
+    public void useMapClass(Class<?> concreteMapClass) {
         if (!Helper.classImplementsInterface(concreteMapClass, Map.class)) {
             throw DescriptorException.illegalContainerClass(concreteMapClass);
         }

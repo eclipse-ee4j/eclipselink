@@ -55,7 +55,7 @@ public class FunctionExpression extends BaseExpression {
     protected Vector<Expression> children;
     protected ExpressionOperator operator;
     protected transient ExpressionOperator platformOperator;
-    protected Class resultType;
+    protected Class<?> resultType;
 
     public FunctionExpression() {
         this.children = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
@@ -335,7 +335,7 @@ public class FunctionExpression extends BaseExpression {
         return platformOperator;
     }
 
-    public Class getResultType() {
+    public Class<?> getResultType() {
         return resultType;
     }
 
@@ -628,7 +628,7 @@ public class FunctionExpression extends BaseExpression {
         operator = theOperator;
     }
 
-    public void setResultType(Class resultType) {
+    public void setResultType(Class<?> resultType) {
         this.resultType = resultType;
     }
 

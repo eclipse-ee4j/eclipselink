@@ -153,7 +153,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     /** Mapping for the primary key fields. */
     protected List<DatabaseMapping> primaryKeyMappings;
     /** The types for the primary key fields, in same order as descriptor's primary key fields. */
-    protected List<Class> primaryKeyClassifications;
+    protected List<Class<?>> primaryKeyClassifications;
     /** All mapping other than primary key mappings. */
     protected transient List<DatabaseMapping> nonPrimaryKeyMappings;
     /** Expression for querying an object by primary key. */
@@ -815,7 +815,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             prefechedCacheKey = query.getPrefetchedCacheKeys().get(primaryKey);
         }
         if ((inheritancePolicy != null) && inheritancePolicy.shouldReadSubclasses()) {
-            Class classValue = inheritancePolicy.classFromRow(databaseRow, session);
+            Class<?> classValue = inheritancePolicy.classFromRow(databaseRow, session);
             concreteDescriptor = inheritancePolicy.getDescriptor(classValue);
             if ((concreteDescriptor == null) && query.hasPartialAttributeExpressions()) {
                 concreteDescriptor = this.descriptor;
@@ -3164,13 +3164,13 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                     writtenMappings.add(mapping);
                 }
             }
-            List<Class> primaryKeyClassifications = getPrimaryKeyClassifications();
+            List<Class<?>> primaryKeyClassifications = getPrimaryKeyClassifications();
             Platform platform = session.getPlatform(domainObject.getClass());
             // PERF: use index not enumeration
             for (int index = 0; index < size; index++) {
                 // Ensure that the type extracted from the object is the same type as in the descriptor,
                 // the main reason for this is that 1-1 can optimize on vh by getting from the row as the row-type.
-                Class classification = primaryKeyClassifications.get(index);
+                Class<?> classification = primaryKeyClassifications.get(index);
                 Object value = databaseRow.get(primaryKeyFields.get(index));
                 if (isPrimaryKeyComponentInvalid(value, index)) {
                     if (shouldReturnNullIfNull) {
@@ -3209,7 +3209,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         if(null == primaryKeyFields) {
             return null;
         }
-        List<Class> primaryKeyClassifications = getPrimaryKeyClassifications();
+        List<Class<?>> primaryKeyClassifications = getPrimaryKeyClassifications();
         int size = primaryKeyFields.size();
         Object[] primaryKeyValues = null;
         CacheKeyType cacheKeyType = this.descriptor.getCachePolicy().getCacheKeyType();
@@ -3223,7 +3223,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             DatabaseField field = primaryKeyFields.get(index);
 
             // Ensure that the type extracted from the row is the same type as in the object.
-            Class classification = primaryKeyClassifications.get(index);
+            Class<?> classification = primaryKeyClassifications.get(index);
             Object value = databaseRow.get(field);
             if (value != null) {
                 if (value.getClass() != classification) {
@@ -3311,7 +3311,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         for (int index = 0; index < primaryKeyFields.size(); index++) {
             // Ensure that the type extracted from the object is the same type as in the descriptor,
             // the main reason for this is that 1-1 can optimize on vh by getting from the row as the row-type.
-            Class classification = getPrimaryKeyClassifications().get(index);
+            Class<?> classification = getPrimaryKeyClassifications().get(index);
             DatabaseField field = primaryKeyFields.get(index);
             Object value = databaseRow.get(field);
             primaryKeyRow.put(field, session.getPlatform(domainObject.getClass()).convertObject(value, classification));
@@ -3459,7 +3459,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * Return the classification for the field contained in the mapping.
      * This is used to convert the row value to a consistent java value.
      */
-    public Class getFieldClassification(DatabaseField fieldToClassify) throws DescriptorException {
+    public Class<?> getFieldClassification(DatabaseField fieldToClassify) throws DescriptorException {
         DatabaseMapping mapping = getMappingForField(fieldToClassify);
         if (mapping == null) {
             // Means that the mapping is read-only or the classification is unknown,
@@ -3672,13 +3672,13 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * Return primary key classifications.
      * These are used to ensure a consistent type for the pk values.
      */
-    public List<Class> getPrimaryKeyClassifications() {
+    public List<Class<?>> getPrimaryKeyClassifications() {
         if (primaryKeyClassifications == null) {
             List<DatabaseField> primaryKeyFields = this.descriptor.getPrimaryKeyFields();
             if(null == primaryKeyFields) {
                 return Collections.emptyList();
             }
-            List<Class> classifications = new ArrayList(primaryKeyFields.size());
+            List<Class<?>> classifications = new ArrayList(primaryKeyFields.size());
 
             for (int index = 0; index < primaryKeyFields.size(); index++) {
                 if (getPrimaryKeyMappings().size() < (index + 1)) { // Check for failed initialization to avoid cascaded errors.
@@ -4497,7 +4497,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * Set primary key classifications.
      * These are used to ensure a consistent type for the pk values.
      */
-    public void setPrimaryKeyClassifications(List<Class> primaryKeyClassifications) {
+    public void setPrimaryKeyClassifications(List<Class<?>> primaryKeyClassifications) {
         this.primaryKeyClassifications = primaryKeyClassifications;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -533,7 +533,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
                 int index = schemaType.indexOf(XMLConstants.COLON);
                 if (index == -1) {
                     qname = new QName(schemaType);
-                    Class convertClass = key.getJavaClass(qname, xmlCnvMgr);
+                    Class<?> convertClass = key.getJavaClass(qname, xmlCnvMgr);
                     return xmlCnvMgr.convertObject(value, convertClass);
                 } else {
                     String prefix = schemaType.substring(0, index);
@@ -541,7 +541,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
                     XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
                     String url = xmlPlatform.resolveNamespacePrefix(node, prefix);
                     qname = new QName(url, localPart);
-                    Class convertClass = key.getJavaClass(qname, xmlCnvMgr);
+                    Class<?> convertClass = key.getJavaClass(qname, xmlCnvMgr);
                     return xmlCnvMgr.convertObject(value, convertClass, qname);
                 }
             }

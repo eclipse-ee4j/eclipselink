@@ -30,7 +30,7 @@ import org.eclipse.persistence.oxm.sequenced.Setting;
 public class Reference {
     protected Mapping mapping;        // mapping associated with this reference
     protected Object sourceObject;        // the source object instance
-    protected Class targetClass;        // the reference class
+    protected Class<?> targetClass;        // the reference class
     protected Object primaryKey;        // primary key values for cache lookup - used in single case
     protected HashMap primaryKeyMap;    // map of primary key values for cache lookup - used in collection case
     private Setting setting;
@@ -54,7 +54,7 @@ public class Reference {
     /**
      * Constructor typically used in the collection case.
      */
-    public Reference(Mapping mapping, Object source, Class target, HashMap primaryKeyMap, Object container) {
+    public Reference(Mapping mapping, Object source, Class<?> target, HashMap primaryKeyMap, Object container) {
         this.mapping = mapping;
         sourceObject = source;
         targetClass = target;
@@ -65,7 +65,7 @@ public class Reference {
     /**
      * Constructor typically used in the single case.
      */
-    public Reference(Mapping mapping, Object source, Class target, Object primaryKey) {
+    public Reference(Mapping mapping, Object source, Class<?> target, Object primaryKey) {
         this.mapping = mapping;
         sourceObject = source;
         targetClass = target;
@@ -110,7 +110,7 @@ public class Reference {
      * Return the target (reference) class for this reference.
      *
      */
-    public Class getTargetClass() {
+    public Class<?> getTargetClass() {
         return targetClass;
     }
 

@@ -124,7 +124,7 @@ public class ReportQuery extends ReadAllQuery {
         this.shouldUseSerializedObjectPolicy = false;
     }
 
-    public ReportQuery(Class javaClass, Expression expression) {
+    public ReportQuery(Class<?> javaClass, Expression expression) {
         this();
         this.defaultBuilder = expression.getBuilder();
         setReferenceClass(javaClass);
@@ -136,7 +136,7 @@ public class ReportQuery extends ReadAllQuery {
      * The report query is require to be constructor with an expression builder.
      * This build must be used for the selection critiera, any item expressions, group bys and order bys.
      */
-    public ReportQuery(Class javaClass, ExpressionBuilder builder) {
+    public ReportQuery(Class<?> javaClass, ExpressionBuilder builder) {
         this();
         this.defaultBuilder = builder;
         setReferenceClass(javaClass);
@@ -175,7 +175,7 @@ public class ReportQuery extends ReadAllQuery {
      * Add the attribute to be included in the result.  Return the result as the provided class
      * EXAMPLE: reportQuery.addAttribute("city", expBuilder.get("period").get("startTime"), Time.class);
      */
-    public void addAttribute(String itemName, Expression attributeExpression, Class type) {
+    public void addAttribute(String itemName, Expression attributeExpression, Class<?> type) {
         addItem(itemName, attributeExpression, type);
     }
 
@@ -196,7 +196,7 @@ public class ReportQuery extends ReadAllQuery {
      * Aggregation functions can be used with a group by, or on the entire result set.
      * EXAMPLE: reportQuery.addAverage("salary", Float.class);
      */
-    public void addAverage(String itemName, Class resultType) {
+    public void addAverage(String itemName, Class<?> resultType) {
         addAverage(itemName, getExpressionBuilder().get(itemName), resultType);
     }
 
@@ -217,7 +217,7 @@ public class ReportQuery extends ReadAllQuery {
      * Aggregation functions can be used with a group by, or on the entire result set.
      * EXAMPLE: reportQuery.addAverage("managerSalary", expBuilder.get("manager").get("salary"), Double.class);
      */
-    public void addAverage(String itemName, Expression attributeExpression, Class resultType) {
+    public void addAverage(String itemName, Expression attributeExpression, Class<?> resultType) {
         addItem(itemName, attributeExpression.average(), resultType);
     }
 
@@ -275,7 +275,7 @@ public class ReportQuery extends ReadAllQuery {
      * @param attributeName the number of rows where attributeName is not null will be returned.
      * @see #addCount(java.lang.String, org.eclipse.persistence.expressions.Expression)
      */
-    public void addCount(String attributeName, Class resultType) {
+    public void addCount(String attributeName, Class<?> resultType) {
         addCount(attributeName, getExpressionBuilder().get(attributeName), resultType);
     }
 
@@ -322,7 +322,7 @@ public class ReportQuery extends ReadAllQuery {
      * mappings.
      * @see #addCount()
      */
-    public void addCount(String itemName, Expression attributeExpression, Class resultType) {
+    public void addCount(String itemName, Expression attributeExpression, Class<?> resultType) {
         addItem(itemName, attributeExpression.count(), resultType);
     }
 
@@ -424,7 +424,7 @@ public class ReportQuery extends ReadAllQuery {
      * The resultType can be specified to support EJBQL that adheres to the
      * EJB 3.0 spec.
      */
-    protected void addItem(String itemName, Expression attributeExpression, Class resultType) {
+    protected void addItem(String itemName, Expression attributeExpression, Class<?> resultType) {
         ReportItem item = new ReportItem(itemName, attributeExpression);
         item.setResultType(resultType);
         addItem(item);
@@ -446,7 +446,7 @@ public class ReportQuery extends ReadAllQuery {
      * Aggregation functions can be used with a group by, or on the entire result set.
      * EXAMPLE: reportQuery.addMaximum("salary", Integer.class);
      */
-    public void addMaximum(String itemName, Class resultType) {
+    public void addMaximum(String itemName, Class<?> resultType) {
         addMaximum(itemName, getExpressionBuilder().get(itemName), resultType);
     }
 
@@ -466,7 +466,7 @@ public class ReportQuery extends ReadAllQuery {
      * Aggregation functions can be used with a group by, or on the entire result set.
      * EXAMPLE: reportQuery.addMaximum("managerSalary", expBuilder.get("manager").get("salary"), Integer.class);
      */
-    public void addMaximum(String itemName, Expression attributeExpression, Class resultType) {
+    public void addMaximum(String itemName, Expression attributeExpression, Class<?> resultType) {
         addItem(itemName, attributeExpression.maximum(), resultType);
     }
 
@@ -486,7 +486,7 @@ public class ReportQuery extends ReadAllQuery {
      * Aggregation functions can be used with a group by, or on the entire result set.
      * EXAMPLE: reportQuery.addMinimum("salary", Integer.class);
      */
-    public void addMinimum(String itemName, Class resultType) {
+    public void addMinimum(String itemName, Class<?> resultType) {
         addMinimum(itemName, getExpressionBuilder().get(itemName), resultType);
     }
 
@@ -506,7 +506,7 @@ public class ReportQuery extends ReadAllQuery {
      * Aggregation functions can be used with a group by, or on the entire result set.
      * EXAMPLE: reportQuery.addMinimum("managerSalary", expBuilder.get("manager").get("salary"), Integer.class);
      */
-    public void addMinimum(String itemName, Expression attributeExpression, Class resultType) {
+    public void addMinimum(String itemName, Expression attributeExpression, Class<?> resultType) {
         addItem(itemName, attributeExpression.minimum(), resultType);
     }
 
@@ -547,7 +547,7 @@ public class ReportQuery extends ReadAllQuery {
      * Aggregation functions can be used with a group by, or on the entire result set.
      * EXAMPLE: reportQuery.addSum("salary", Float.class);
      */
-    public void addSum(String itemName, Class resultType) {
+    public void addSum(String itemName, Class<?> resultType) {
         addSum(itemName, getExpressionBuilder().get(itemName), resultType);
     }
 
@@ -568,7 +568,7 @@ public class ReportQuery extends ReadAllQuery {
      * Aggregation functions can be used with a group by, or on the entire result set.
      * EXAMPLE: reportQuery.addSum("managerSalary", expBuilder.get("manager").get("salary"), Float.class);
      */
-    public void addSum(String itemName, Expression attributeExpression, Class resultType) {
+    public void addSum(String itemName, Expression attributeExpression, Class<?> resultType) {
         addItem(itemName, attributeExpression.sum(), resultType);
     }
 
@@ -595,7 +595,7 @@ public class ReportQuery extends ReadAllQuery {
     /**
      * PUBLIC: Call a constructor for the given class with the results of this query.
      */
-    public ConstructorReportItem beginAddingConstructorArguments(Class constructorClass){
+    public ConstructorReportItem beginAddingConstructorArguments(Class<?> constructorClass){
         ConstructorReportItem citem = new ConstructorReportItem(constructorClass.getName());
         citem.setResultType(constructorClass);
         //add directly to avoid addToConstructorItem behavior
@@ -609,7 +609,7 @@ public class ReportQuery extends ReadAllQuery {
      * PUBLIC: Call a constructor for the given class with the results of this query.
      * @param constructorArgTypes - sets the argument types to be passed to the constructor.
      */
-    public ConstructorReportItem beginAddingConstructorArguments(Class constructorClass, Class[] constructorArgTypes){
+    public ConstructorReportItem beginAddingConstructorArguments(Class<?> constructorClass, Class<?>[] constructorArgTypes){
         ConstructorReportItem citem =beginAddingConstructorArguments(constructorClass);
         citem.setConstructorArgTypes(constructorArgTypes);
         return citem;

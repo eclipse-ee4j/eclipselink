@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,7 @@ public interface ObjectBuilder<
 
     XMLRecord buildRow(XMLRecord record, Object object, CoreAbstractSession session, MARSHALLER marshaller, XPathFragment rootFragment);
 
-    Class classFromRow(UnmarshalRecord record, ABSTRACT_SESSION session);
+    Class<?> classFromRow(UnmarshalRecord record, ABSTRACT_SESSION session);
 
     ABSTRACT_RECORD createRecord(ABSTRACT_SESSION session);
 

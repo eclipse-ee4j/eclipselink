@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -77,7 +77,7 @@ public class SDOFragmentMappingAttributeAccessor extends AttributeAccessor {
      * get and set method names
      */
     @Override
-    public void initializeAttributes(Class theJavaClass) throws DescriptorException {
+    public void initializeAttributes(Class<?> theJavaClass) throws DescriptorException {
         if (getAttributeName() == null) {
             throw DescriptorException.attributeNameNotSpecified();
         }

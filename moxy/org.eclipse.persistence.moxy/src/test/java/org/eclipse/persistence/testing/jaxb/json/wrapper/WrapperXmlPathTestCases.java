@@ -75,7 +75,7 @@ public class WrapperXmlPathTestCases extends JSONMarshalUnmarshalTestCases {
     }
 
     @Override
-    public Class getUnmarshalClass() {
+    public Class<?> getUnmarshalClass() {
         return XmlPathCompany.class;
     }
 

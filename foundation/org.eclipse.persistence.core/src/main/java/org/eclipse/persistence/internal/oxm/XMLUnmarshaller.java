@@ -101,7 +101,7 @@ public class XMLUnmarshaller<
     private static final String XML_STREAM_READER_INPUT_SOURCE_CLASS_NAME = "org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource";
     private static final String XML_EVENT_READER_INPUT_SOURCE_CLASS_NAME = "org.eclipse.persistence.internal.oxm.record.XMLEventReaderInputSource";
 
-    private static Class staxSourceClass;
+    private static Class<?> staxSourceClass;
     private static Method staxSourceGetStreamReaderMethod;
     private static Method staxSourceGetEventReaderMethod;
     private static Constructor xmlStreamReaderReaderConstructor;
@@ -147,7 +147,7 @@ public class XMLUnmarshaller<
     private XMLAttachmentUnmarshaller attachmentUnmarshaller;
     private Properties unmarshalProperties;
 
-    private Class unmappedContentHandlerClass;
+    private Class<?> unmappedContentHandlerClass;
     private StrBuffer stringBuffer;
     private MEDIA_TYPE mediaType;
     private ID_RESOLVER idResolver;
@@ -176,21 +176,21 @@ public class XMLUnmarshaller<
         try {
             staxSourceClass = PrivilegedAccessHelper.getClassForName(STAX_SOURCE_CLASS_NAME);
             if(staxSourceClass != null) {
-                staxSourceGetStreamReaderMethod = PrivilegedAccessHelper.getDeclaredMethod(staxSourceClass, GET_XML_STREAM_READER_METHOD_NAME, new Class[]{});
-                staxSourceGetEventReaderMethod = PrivilegedAccessHelper.getDeclaredMethod(staxSourceClass, GET_XML_EVENT_READER_METHOD_NAME, new Class[]{});
+                staxSourceGetStreamReaderMethod = PrivilegedAccessHelper.getDeclaredMethod(staxSourceClass, GET_XML_STREAM_READER_METHOD_NAME, new Class<?>[]{});
+                staxSourceGetEventReaderMethod = PrivilegedAccessHelper.getDeclaredMethod(staxSourceClass, GET_XML_EVENT_READER_METHOD_NAME, new Class<?>[]{});
                 Class<Object> xmlStreamReaderInputSourceClass = PrivilegedAccessHelper.getClassForName(XML_STREAM_READER_INPUT_SOURCE_CLASS_NAME);
                 Class<Object> xmlEventReaderInputSourceClass = PrivilegedAccessHelper.getClassForName(XML_EVENT_READER_INPUT_SOURCE_CLASS_NAME);
                 Class<Object> xmlStreamReaderClass = PrivilegedAccessHelper.getClassForName(XML_STREAM_READER_CLASS_NAME);
-                xmlStreamReaderInputSourceConstructor = PrivilegedAccessHelper.getConstructorFor(xmlStreamReaderInputSourceClass, new Class[]{xmlStreamReaderClass}, true);
+                xmlStreamReaderInputSourceConstructor = PrivilegedAccessHelper.getConstructorFor(xmlStreamReaderInputSourceClass, new Class<?>[]{xmlStreamReaderClass}, true);
 
                 Class<Object> xmlEventReaderClass = PrivilegedAccessHelper.getClassForName(XML_EVENT_READER_CLASS_NAME);
-                xmlEventReaderInputSourceConstructor = PrivilegedAccessHelper.getConstructorFor(xmlEventReaderInputSourceClass, new Class[]{xmlEventReaderClass}, true);
+                xmlEventReaderInputSourceConstructor = PrivilegedAccessHelper.getConstructorFor(xmlEventReaderInputSourceClass, new Class<?>[]{xmlEventReaderClass}, true);
 
                 Class<Object> xmlStreamReaderReaderClass = PrivilegedAccessHelper.getClassForName(XML_STREAM_READER_READER_CLASS_NAME);
-                xmlStreamReaderReaderConstructor = PrivilegedAccessHelper.getConstructorFor(xmlStreamReaderReaderClass, new Class[0], true);
+                xmlStreamReaderReaderConstructor = PrivilegedAccessHelper.getConstructorFor(xmlStreamReaderReaderClass, new Class<?>[0], true);
 
                 Class<Object> xmlEventReaderReaderClass = PrivilegedAccessHelper.getClassForName(XML_EVENT_READER_READER_CLASS_NAME);
-                xmlEventReaderReaderConstructor = PrivilegedAccessHelper.getConstructorFor(xmlEventReaderReaderClass, new Class[0], true);
+                xmlEventReaderReaderConstructor = PrivilegedAccessHelper.getConstructorFor(xmlEventReaderReaderClass, new Class<?>[0], true);
             }
         } catch(Exception ex) {
         }
@@ -326,7 +326,7 @@ public class XMLUnmarshaller<
       * Class must implement the org.eclipse.persistence.oxm.unmapped.UnmappedContentHandler interface
       */
     @Override
-    public Class getUnmappedContentHandlerClass() {
+    public Class<?> getUnmappedContentHandlerClass() {
         return this.unmappedContentHandlerClass;
     }
 
@@ -334,7 +334,7 @@ public class XMLUnmarshaller<
      * Set the class that will be instantiated to handled unmapped content
      * Class must implement the org.eclipse.persistence.oxm.unmapped.UnmappedContentHandler interface
      */
-    public void setUnmappedContentHandlerClass(Class aClass) {
+    public void setUnmappedContentHandlerClass(Class<?> aClass) {
         this.unmappedContentHandlerClass = aClass;
     }
 
@@ -376,7 +376,7 @@ public class XMLUnmarshaller<
     * @return the object which resulted from unmarshalling the given file
     * @throws XMLMarshalException if an error occurred during unmarshalling
     */
-    public Object unmarshal(File file, Class clazz) throws XMLMarshalException {
+    public Object unmarshal(File file, Class<?> clazz) throws XMLMarshalException {
         if ((null == file) || (null == clazz)) {
             throw XMLMarshalException.nullArgumentException();
         }
@@ -414,7 +414,7 @@ public class XMLUnmarshaller<
     * @return the object which resulted from unmarshalling the given inputStream
     * @throws XMLMarshalException if an error occurred during unmarshalling
     */
-    public Object unmarshal(InputStream inputStream, Class clazz) throws XMLMarshalException {
+    public Object unmarshal(InputStream inputStream, Class<?> clazz) throws XMLMarshalException {
         if ((null == inputStream) || (null == clazz)) {
             throw XMLMarshalException.nullArgumentException();
         }
@@ -452,7 +452,7 @@ public class XMLUnmarshaller<
     * @return the object which resulted from unmarshalling the given reader
     * @throws XMLMarshalException if an error occurred during unmarshalling
     */
-    public Object unmarshal(Reader reader, Class clazz) throws XMLMarshalException {
+    public Object unmarshal(Reader reader, Class<?> clazz) throws XMLMarshalException {
         if ((null == reader) || (null == clazz)) {
             throw XMLMarshalException.nullArgumentException();
         }
@@ -490,7 +490,7 @@ public class XMLUnmarshaller<
     * @return the object which resulted from unmarshalling the given url
     * @throws XMLMarshalException if an error occurred during unmarshalling
     */
-    public Object unmarshal(URL url, Class clazz) throws XMLMarshalException {
+    public Object unmarshal(URL url, Class<?> clazz) throws XMLMarshalException {
         if ((null == url) || (null == clazz)) {
             throw XMLMarshalException.nullArgumentException();
         }
@@ -528,7 +528,7 @@ public class XMLUnmarshaller<
     * @return the object which resulted from unmarshalling the given inputSource
     * @throws XMLMarshalException if an error occurred during unmarshalling
     */
-    public Object unmarshal(InputSource inputSource, Class clazz) throws XMLMarshalException {
+    public Object unmarshal(InputSource inputSource, Class<?> clazz) throws XMLMarshalException {
         if ((null == inputSource) || (null == clazz)) {
             throw XMLMarshalException.nullArgumentException();
         }
@@ -569,7 +569,7 @@ public class XMLUnmarshaller<
     * @return the object which resulted from unmarshalling the given node
     * @throws XMLMarshalException if an error occurred during unmarshalling
     */
-    public Object unmarshal(Node node, Class clazz) throws XMLMarshalException {
+    public Object unmarshal(Node node, Class<?> clazz) throws XMLMarshalException {
         if ((null == node) || (null == clazz)) {
             throw XMLMarshalException.nullArgumentException();
         }
@@ -652,7 +652,7 @@ public class XMLUnmarshaller<
     * @return the object which resulted from unmarshalling the given source
     * @throws XMLMarshalException if an error occurred during unmarshalling
     */
-    public Object unmarshal(Source source, Class clazz) throws XMLMarshalException {
+    public Object unmarshal(Source source, Class<?> clazz) throws XMLMarshalException {
         if ((null == source) || (null == clazz)) {
             throw XMLMarshalException.nullArgumentException();
         }
@@ -691,7 +691,7 @@ public class XMLUnmarshaller<
         return result;
     }
 
-    public Object unmarshal(XMLReader xmlReader, InputSource inputSource, Class clazz) {
+    public Object unmarshal(XMLReader xmlReader, InputSource inputSource, Class<?> clazz) {
         Object result = this.platformUnmarshaller.unmarshal(xmlReader, inputSource, clazz);
         logUnmarshall(result);
         return result;
@@ -935,7 +935,7 @@ public class XMLUnmarshaller<
      * @since 2.5.0
      */
     @Override
-    public UnmarshalRecord createRootUnmarshalRecord(Class clazz) {
+    public UnmarshalRecord createRootUnmarshalRecord(Class<?> clazz) {
         return new XMLRootRecord(clazz, this);
     }
 

@@ -59,12 +59,12 @@ public @interface NamedStoredProcedureQuery {
      * @see #resultClasses
      */
     @Deprecated
-    Class resultClass() default void.class;
+    Class<?> resultClass() default void.class;
 
     /**
      * (Optional) Refers to the classes of the result.
      */
-    Class[] resultClasses() default {};
+    Class<?>[] resultClasses() default {};
 
     /**
      * (Optional) The name of the SQLResultMapping.

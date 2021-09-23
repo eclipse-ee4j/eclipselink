@@ -210,17 +210,17 @@ public class MappingsGenerator {
     private JavaClass jotTreeSet;
     private Map<String, PackageInfo> packageToPackageInfoMappings;
     private Map<String, TypeInfo> typeInfo;
-    private Map<QName, Class> qNamesToGeneratedClasses;
-    private Map<String, Class> classToGeneratedClasses;
-    private Map<QName, Class> qNamesToDeclaredClasses;
+    private Map<QName, Class<?>> qNamesToGeneratedClasses;
+    private Map<String, Class<?>> classToGeneratedClasses;
+    private Map<QName, Class<?>> qNamesToDeclaredClasses;
     private Map<QName, ElementDeclaration> globalElements;
     private List<ElementDeclaration> localElements;
-    private Map<TypeMappingInfo, Class> typeMappingInfoToGeneratedClasses;
-    private Map<MapEntryGeneratedKey, Class> generatedMapEntryClasses;
+    private Map<TypeMappingInfo, Class<?>> typeMappingInfoToGeneratedClasses;
+    private Map<MapEntryGeneratedKey, Class<?>> generatedMapEntryClasses;
     private CoreProject project;
     private org.eclipse.persistence.oxm.NamespaceResolver globalNamespaceResolver;
     private boolean isDefaultNamespaceAllowed;
-    private Map<TypeMappingInfo, Class>typeMappingInfoToAdapterClasses;
+    private Map<TypeMappingInfo, Class<?>>typeMappingInfoToAdapterClasses;
 
     public MappingsGenerator(Helper helper) {
         this.helper = helper;
@@ -236,7 +236,7 @@ public class MappingsGenerator {
         isDefaultNamespaceAllowed = true;
     }
 
-    public CoreProject generateProject(List<JavaClass> typeInfoClasses, Map<String, TypeInfo> typeInfo, Map<String, QName> userDefinedSchemaTypes, Map<String, PackageInfo> packageToPackageInfoMappings, Map<QName, ElementDeclaration> globalElements, List<ElementDeclaration> localElements, Map<TypeMappingInfo, Class> typeMappingInfoToGeneratedClass, Map<TypeMappingInfo, Class> typeMappingInfoToAdapterClasses,  boolean isDefaultNamespaceAllowed) throws Exception {
+    public CoreProject generateProject(List<JavaClass> typeInfoClasses, Map<String, TypeInfo> typeInfo, Map<String, QName> userDefinedSchemaTypes, Map<String, PackageInfo> packageToPackageInfoMappings, Map<QName, ElementDeclaration> globalElements, List<ElementDeclaration> localElements, Map<TypeMappingInfo, Class<?>> typeMappingInfoToGeneratedClass, Map<TypeMappingInfo, Class<?>> typeMappingInfoToAdapterClasses,  boolean isDefaultNamespaceAllowed) throws Exception {
         this.typeInfo = typeInfo;
         this.userDefinedSchemaTypes = userDefinedSchemaTypes;
         this.packageToPackageInfoMappings = packageToPackageInfoMappings;
@@ -564,7 +564,7 @@ public class MappingsGenerator {
                 mapping.setSetMethodName("setValue");
                 mapping.setGetMethodName("getValue");
 
-                Class attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(factoryMethodParamTypes[0], helper.getClassLoader());
+                Class<?> attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(factoryMethodParamTypes[0], helper.getClassLoader());
                 mapping.setAttributeClassification(attributeClassification);
                 mapping.getNullPolicy().setNullRepresentedByEmptyNode(false);
 
@@ -584,7 +584,7 @@ public class MappingsGenerator {
                 mapping.setGetMethodName("getValue");
                 mapping.setSetMethodName("setValue");
                 mapping.setXPath("text()");
-                Class attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(factoryMethodParamTypes[0], helper.getClassLoader());
+                Class<?> attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(factoryMethodParamTypes[0], helper.getClassLoader());
                 mapping.setAttributeClassification(attributeClassification);
                 xmlDescriptor.addMapping((CoreMapping)mapping);
             }
@@ -598,7 +598,7 @@ public class MappingsGenerator {
              mapping.setGetMethodName("getValue");
              mapping.setSetMethodName("setValue");
              mapping.setXPath("text()");
-             Class attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(factoryMethodParamTypes[0], helper.getClassLoader());
+             Class<?> attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(factoryMethodParamTypes[0], helper.getClassLoader());
              mapping.setAttributeClassification(attributeClassification);
              xmlDescriptor.addMapping((CoreMapping)mapping);
 
@@ -1352,7 +1352,7 @@ public class MappingsGenerator {
             accessor.setComponentClassName(property.getType().getComponentType().getQualifiedName());
             JavaClass componentType = propertyType.getComponentType();
             if(componentType.isArray()) {
-                Class adaptedClass = classToGeneratedClasses.get(componentType.getQualifiedName());
+                Class<?> adaptedClass = classToGeneratedClasses.get(componentType.getQualifiedName());
                 accessor.setAdaptedClassName(adaptedClass.getName());
             }
             mapping.setAttributeAccessor(accessor);
@@ -1456,12 +1456,12 @@ public class MappingsGenerator {
                 nullPolicy.setIgnoreAttributesForNil(false);
             }
             if (!element.isXmlRootElement()) {
-                Class scopeClass = element.getScopeClass();
+                Class<?> scopeClass = element.getScopeClass();
                 if (scopeClass == jakarta.xml.bind.annotation.XmlElementDecl.GLOBAL.class){
                     scopeClass = JAXBElement.GlobalScope.class;
                 }
 
-                Class declaredType = null;
+                Class<?> declaredType = null;
                 if(element.getAdaptedJavaType() != null){
                     declaredType =  org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(element.getAdaptedJavaType().getQualifiedName(), helper.getClassLoader());
                 }else{
@@ -1532,7 +1532,7 @@ public class MappingsGenerator {
             mapping.setWrapperNullPolicy(getWrapperNullPolicyFromProperty(property));
         }
 
-        Class declaredType = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(property.getActualType().getQualifiedName(), helper.getClassLoader());
+        Class<?> declaredType = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(property.getActualType().getQualifiedName(), helper.getClassLoader());
         JAXBElementRootConverter jaxbElementRootConverter = new JAXBElementRootConverter(declaredType);
         mapping.setConverter(jaxbElementRootConverter);
         if (property.getDomHandlerClassName() != null) {
@@ -1673,10 +1673,10 @@ public class MappingsGenerator {
             // Try to get the actual Class
             try {
                 JavaClass actualJavaClass = helper.getJavaClass(theClass);
-                Class actualClass =  org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(actualJavaClass.getQualifiedName(), helper.getClassLoader());
+                Class<?> actualClass =  org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(actualJavaClass.getQualifiedName(), helper.getClassLoader());
                 mapping.setAttributeClassification(actualClass);
                 if(targetClass != null) {
-                    Class fieldClass = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(targetClass, helper.getClassLoader());
+                    Class<?> fieldClass = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(targetClass, helper.getClassLoader());
                     mapping.getField().setType(fieldClass);
                 }
 
@@ -1896,7 +1896,7 @@ public class MappingsGenerator {
             mapping.setField(new XMLField(property.getXmlPath()));
         }
 
-        Class declaredType = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(property.getActualType().getQualifiedName(), helper.getClassLoader());
+        Class<?> declaredType = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(property.getActualType().getQualifiedName(), helper.getClassLoader());
         JAXBElementRootConverter jaxbElementRootConverter = new JAXBElementRootConverter(declaredType);
         mapping.setConverter(jaxbElementRootConverter);
         if (property.getDomHandlerClassName() != null) {
@@ -1918,7 +1918,7 @@ public class MappingsGenerator {
         return mapping;
     }
 
-    protected boolean areEquals(JavaClass src, Class tgt) {
+    protected boolean areEquals(JavaClass src, Class<?> tgt) {
         if (src == null || tgt == null) {
             return false;
         }
@@ -1939,7 +1939,7 @@ public class MappingsGenerator {
     }
 
 
-    private Class generateMapEntryClassAndDescriptor(Property property, NamespaceResolver nr){
+    private Class<?> generateMapEntryClassAndDescriptor(Property property, NamespaceResolver nr){
         JavaClass keyType = property.getKeyType();
         JavaClass valueType = property.getValueType();
         if(keyType == null){
@@ -1952,7 +1952,7 @@ public class MappingsGenerator {
         String mapEntryClassName = getJaxbClassLoader().nextAvailableGeneratedClassName();
 
         MapEntryGeneratedKey mapKey = new MapEntryGeneratedKey(keyType.getQualifiedName(),valueType.getQualifiedName());
-        Class generatedClass = getGeneratedMapEntryClasses().get(mapKey);
+        Class<?> generatedClass = getGeneratedMapEntryClasses().get(mapKey);
 
         if(generatedClass == null){
             generatedClass = generateMapEntryClass(mapEntryClassName, keyType.getQualifiedName(), valueType.getQualifiedName());
@@ -1968,7 +1968,7 @@ public class MappingsGenerator {
         return generatedClass;
     }
 
-    private Class generateMapEntryClass(String className, String keyType, String valueType){
+    private Class<?> generateMapEntryClass(String className, String keyType, String valueType){
 
         EclipseLinkASMClassWriter cw = new EclipseLinkASMClassWriter();
 
@@ -2070,7 +2070,7 @@ public class MappingsGenerator {
         cw.visitEnd();
 
         byte[] classBytes =cw.toByteArray();
-        Class generatedClass = getJaxbClassLoader().generateClass(className, classBytes);
+        Class<?> generatedClass = getJaxbClassLoader().generateClass(className, classBytes);
         return generatedClass;
     }
 
@@ -2110,7 +2110,7 @@ public class MappingsGenerator {
 
                     JavaClass componentType = theType.getComponentType();
                     try {
-                        Class declaredClass;
+                        Class<?> declaredClass;
                         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                                 try {
                                     declaredClass = AccessController.doPrivileged(new PrivilegedClassForName<>(componentType.getRawName(), false, helper.getClassLoader()));
@@ -2130,7 +2130,7 @@ public class MappingsGenerator {
                 if (args.size() > 0) {
                     JavaClass itemType = (JavaClass)args.iterator().next();
                     try {
-                        Class declaredClass;
+                        Class<?> declaredClass;
                         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                                 try {
                                     declaredClass = AccessController.doPrivileged(new PrivilegedClassForName<>(itemType.getRawName(), false, helper.getClassLoader()));
@@ -2199,7 +2199,7 @@ public class MappingsGenerator {
             JAXBArrayAttributeAccessor accessor = new JAXBArrayAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy(), helper.getClassLoader());
             JavaClass componentType = collectionType.getComponentType();
             if(componentType.isArray()) {
-                Class adaptedClass = classToGeneratedClasses.get(componentType.getName());
+                Class<?> adaptedClass = classToGeneratedClasses.get(componentType.getName());
                 referenceClassName = adaptedClass.getName();
                 accessor.setAdaptedClassName(referenceClassName);
                 JavaClass baseComponentType = getBaseComponentType(componentType);
@@ -2214,7 +2214,7 @@ public class MappingsGenerator {
             }
             mapping.setAttributeAccessor(accessor);
         }else if (helper.isMapType(property.getType())){
-            Class generatedClass = generateMapEntryClassAndDescriptor(property, descriptor.getNonNullNamespaceResolver());
+            Class<?> generatedClass = generateMapEntryClassAndDescriptor(property, descriptor.getNonNullNamespaceResolver());
             referenceClassName = generatedClass.getName();
             String mapClassName = property.getType().getRawName();
             mapping.setAttributeAccessor(new MapValueAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy(), generatedClass, mapClassName, helper.getClassLoader()));
@@ -2337,7 +2337,7 @@ public class MappingsGenerator {
         }
 
         if (property.isXmlElementType() && property.getGenericType()!=null ){
-            Class theClass = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(property.getGenericType().getQualifiedName(), helper.getClassLoader());
+            Class<?> theClass = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(property.getGenericType().getQualifiedName(), helper.getClassLoader());
             mapping.setAttributeElementClass(theClass);
         }
 
@@ -2649,7 +2649,7 @@ public class MappingsGenerator {
             JAXBArrayAttributeAccessor accessor = new JAXBArrayAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy(), helper.getClassLoader());
             JavaClass componentType = collectionType.getComponentType();
             if(componentType.isArray()) {
-                Class adaptedClass = classToGeneratedClasses.get(componentType.getName());
+                Class<?> adaptedClass = classToGeneratedClasses.get(componentType.getName());
                 referenceClassName = adaptedClass.getName();
                 accessor.setAdaptedClassName(referenceClassName);
                 JavaClass baseComponentType = getBaseComponentType(componentType);
@@ -2980,7 +2980,7 @@ public class MappingsGenerator {
 
                 if(next == null){
                     if(isBinaryData(nextElement.getJavaType())){
-                        Class generatedClass = addByteArrayWrapperAndDescriptor(type, nextElement.getJavaType().getRawName(), nextElement,nextClassName, attributeTypeName);
+                        Class<?> generatedClass = addByteArrayWrapperAndDescriptor(type, nextElement.getJavaType().getRawName(), nextElement,nextClassName, attributeTypeName);
                          this.qNamesToGeneratedClasses.put(next, generatedClass);
                          if(nextElement.getTypeMappingInfo() != null) {
                              typeMappingInfoToGeneratedClasses.put(nextElement.getTypeMappingInfo(), generatedClass);
@@ -2994,7 +2994,7 @@ public class MappingsGenerator {
                     if(nextElement.getJavaType().isEnum()) {
                         if(!(helper.getClassLoader() instanceof DynamicClassLoader)) {
                             //  Only generate enum wrappers in non-dynamic case.
-                            Class generatedClass = addEnumerationWrapperAndDescriptor(type, nextElement.getJavaType().getRawName(), nextElement, nextClassName, attributeTypeName);
+                            Class<?> generatedClass = addEnumerationWrapperAndDescriptor(type, nextElement.getJavaType().getRawName(), nextElement, nextClassName, attributeTypeName);
                             this.qNamesToGeneratedClasses.put(next, generatedClass);
                             if(nextElement.getTypeMappingInfo() != null) {
                                 typeMappingInfoToGeneratedClasses.put(nextElement.getTypeMappingInfo(), generatedClass);
@@ -3010,7 +3010,7 @@ public class MappingsGenerator {
                     }
                     continue;
                 }
-                Class generatedClass = generateWrapperClassAndDescriptor(type, next, nextElement, nextClassName, attributeTypeName);
+                Class<?> generatedClass = generateWrapperClassAndDescriptor(type, next, nextElement, nextClassName, attributeTypeName);
 
                 this.qNamesToGeneratedClasses.put(next, generatedClass);
                 if(type != null && type.isEnumerationType() && nextElement.isXmlRootElement()) {
@@ -3035,8 +3035,8 @@ public class MappingsGenerator {
         }
     }
 
-    private Class addByteArrayWrapperAndDescriptor(TypeInfo type , String javaClassName,  ElementDeclaration nextElement, String nextClassName, String attributeTypeName){
-        Class generatedClass = classToGeneratedClasses.get(javaClassName);
+    private Class<?> addByteArrayWrapperAndDescriptor(TypeInfo type , String javaClassName,  ElementDeclaration nextElement, String nextClassName, String attributeTypeName){
+        Class<?> generatedClass = classToGeneratedClasses.get(javaClassName);
         if(generatedClass == null){
             generatedClass = generateWrapperClassAndDescriptor(type, null, nextElement, nextClassName, attributeTypeName);
             classToGeneratedClasses.put(javaClassName, generatedClass);
@@ -3044,8 +3044,8 @@ public class MappingsGenerator {
         return generatedClass;
     }
 
-    private Class addEnumerationWrapperAndDescriptor(TypeInfo type, String javaClassName, ElementDeclaration nextElement, String nextClassName, String attributeTypeName) {
-        Class generatedClass = classToGeneratedClasses.get(javaClassName);
+    private Class<?> addEnumerationWrapperAndDescriptor(TypeInfo type, String javaClassName, ElementDeclaration nextElement, String nextClassName, String attributeTypeName) {
+        Class<?> generatedClass = classToGeneratedClasses.get(javaClassName);
         if(generatedClass == null){
             generatedClass = generateWrapperClassAndDescriptor(type, nextElement.getElementName(), nextElement, nextClassName, attributeTypeName);
             classToGeneratedClasses.put(javaClassName, generatedClass);
@@ -3053,7 +3053,7 @@ public class MappingsGenerator {
         return generatedClass;
     }
 
-     private Class generateWrapperClassAndDescriptor(TypeInfo type, QName next, ElementDeclaration nextElement, String nextClassName, String attributeTypeName){
+     private Class<?> generateWrapperClassAndDescriptor(TypeInfo type, QName next, ElementDeclaration nextElement, String nextClassName, String attributeTypeName){
         String namespaceUri = null;
           if(next!= null){
               //generate a class/descriptor for this element
@@ -3064,7 +3064,7 @@ public class MappingsGenerator {
           }
 
           TypeMappingInfo tmi = nextElement.getTypeMappingInfo();
-          Class generatedClass = null;
+          Class<?> generatedClass = null;
 
         JaxbClassLoader loader = getJaxbClassLoader();
 
@@ -3139,7 +3139,7 @@ public class MappingsGenerator {
                       mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
                       mapping.getNullPolicy().setNullRepresentedByEmptyNode(false);
 
-                      Class attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(attributeTypeName, helper.getClassLoader());
+                      Class<?> attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(attributeTypeName, helper.getClassLoader());
                       mapping.setAttributeClassification(attributeClassification);
 
                         mapping.setShouldInlineBinaryData(false);
@@ -3163,7 +3163,7 @@ public class MappingsGenerator {
 
 
                       if(helper.isBuiltInJavaType(nextElement.getJavaType())){
-                          Class attributeClassification = null;
+                          Class<?> attributeClassification = null;
                           if(nextElement.getJavaType().isPrimitive()) {
                               attributeClassification = XMLConversionManager.getDefaultManager().convertClassNameToClass(attributeTypeName);
                           } else {
@@ -3265,7 +3265,7 @@ public class MappingsGenerator {
         return null;
     }
 
-    public Class generateWrapperClass(String className, String attributeType, boolean isList, QName theQName) {
+    public Class<?> generateWrapperClass(String className, String attributeType, boolean isList, QName theQName) {
         EclipseLinkASMClassWriter cw = new EclipseLinkASMClassWriter();
 
         String sig = null;
@@ -3313,22 +3313,22 @@ public class MappingsGenerator {
             // to the unnamed module as we don't want to export internal package from eclipselink.jar
             moxyModule.addExports(WrappedValue.class.getPackageName(), getJaxbClassLoader().getUnnamedModule());
         }
-        Class generatedClass = getJaxbClassLoader().generateClass(className, classBytes);
+        Class<?> generatedClass = getJaxbClassLoader().generateClass(className, classBytes);
         return generatedClass;
     }
 
-    public Map<QName, Class> getQNamesToGeneratedClasses() {
+    public Map<QName, Class<?>> getQNamesToGeneratedClasses() {
         return qNamesToGeneratedClasses;
     }
 
-    public Map<String, Class> getClassToGeneratedClasses() {
+    public Map<String, Class<?>> getClassToGeneratedClasses() {
         return classToGeneratedClasses;
     }
-    public Map<QName, Class> getQNamesToDeclaredClasses() {
+    public Map<QName, Class<?>> getQNamesToDeclaredClasses() {
         return qNamesToDeclaredClasses;
     }
 
-    private Map<MapEntryGeneratedKey, Class> getGeneratedMapEntryClasses() {
+    private Map<MapEntryGeneratedKey, Class<?>> getGeneratedMapEntryClasses() {
         if(generatedMapEntryClasses == null){
             generatedMapEntryClasses = new HashMap<>();
         }
@@ -3392,7 +3392,7 @@ public class MappingsGenerator {
             isSetNullPolicy.setIsSetMethodName(xmlIsSetNullPolicy.getIsSetMethodName());
             // handle isSetParams
             ArrayList<Object> parameters = new ArrayList<>();
-            ArrayList<Class> parameterTypes = new ArrayList<>();
+            ArrayList<Class<?>> parameterTypes = new ArrayList<>();
             List<XmlIsSetNullPolicy.IsSetParameter> params = xmlIsSetNullPolicy.getIsSetParameter();
             for (XmlIsSetNullPolicy.IsSetParameter param : params) {
                 String valueStr = param.getValue();
@@ -3408,7 +3408,7 @@ public class MappingsGenerator {
                 parameterTypes.add(typeClass);
             }
             isSetNullPolicy.setIsSetParameters(parameters.toArray());
-            isSetNullPolicy.setIsSetParameterTypes(parameterTypes.toArray(new Class[parameterTypes.size()]));
+            isSetNullPolicy.setIsSetParameterTypes(parameterTypes.toArray(new Class<?>[parameterTypes.size()]));
             absNullPolicy = isSetNullPolicy;
         }
         // handle commmon settings

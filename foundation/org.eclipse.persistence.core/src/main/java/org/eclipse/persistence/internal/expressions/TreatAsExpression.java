@@ -313,7 +313,7 @@ public class TreatAsExpression extends QueryKeyExpression {
         this.typeExpressionBase = (ObjectExpression)typeExpressionBase.copiedVersionFrom(alreadyDone);
     }
 
-    public TreatAsExpression(Class castClass, ObjectExpression baseExpression) {
+    public TreatAsExpression(Class<?> castClass, ObjectExpression baseExpression) {
         super();
         this.name = "Treat as "+castClass;
         this.typeExpressionBase = baseExpression;

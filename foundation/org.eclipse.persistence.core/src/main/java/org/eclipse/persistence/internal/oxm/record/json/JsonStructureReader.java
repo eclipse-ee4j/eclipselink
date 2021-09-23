@@ -74,7 +74,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
     private NamespaceResolver namespaces = null;
     private boolean includeRoot;
     private String textWrapper;
-    private Class unmarshalClass;
+    private Class<?> unmarshalClass;
     private boolean isInCollection;
     private JsonStructure jsonStructure;
     private JsonAttributes attributes = new JsonAttributes();
@@ -88,7 +88,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
         this(u, null);
     }
 
-    public JsonStructureReader(Unmarshaller u, Class clazz) {
+    public JsonStructureReader(Unmarshaller u, Class<?> clazz) {
         this.attributePrefix = u.getAttributePrefix();
         if (Constants.EMPTY_STRING.equals(attributePrefix)) {
             attributePrefix = null;
@@ -568,7 +568,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
                     return new QName(localName);
                 }
             } else {
-                Class fieldType = xmlField.getType();
+                Class<?> fieldType = xmlField.getType();
                 if (fieldType == null) {
                     fieldType = xmlField.getJavaClass(xmlField.getSchemaType(), conversionManager);
                 }

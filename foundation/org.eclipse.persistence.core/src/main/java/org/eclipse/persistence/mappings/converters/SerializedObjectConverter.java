@@ -94,7 +94,7 @@ public class SerializedObjectConverter implements Converter, ClassNameConversion
     public void convertClassNamesToClasses(ClassLoader classLoader) {
         try{
             if (this.serializerClassName != null) {
-                Class serializerClass = null;
+                Class<?> serializerClass = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     serializerClass = AccessController.doPrivileged(new PrivilegedClassForName<>(this.serializerClassName, true, classLoader));
                 } else {

@@ -397,7 +397,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * on a per-class basis.
      * Example: login.setDefaultNullValue(long.class, Long.valueOf(0))
      */
-    public void setDefaultNullValue(Class type, Object value) {
+    public void setDefaultNullValue(Class<?> type, Object value) {
         getDatasourcePlatform().getConversionManager().setDefaultNullValue(type, value);
     }
 
@@ -502,7 +502,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
             platformClassName = "org.eclipse.persistence.platform.database.OraclePlatform";
         }
 
-        Class platformClass = null;
+        Class<?> platformClass = null;
         try {
             //First try loading with the Login's class loader
             platformClass = this.getClass().getClassLoader().loadClass(platformClassName);
@@ -521,7 +521,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
         Platform platform = null;
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                platform = (Platform)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(platformClass));
+                platform = (Platform)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(platformClass));
             } else {
                 platform = (Platform)PrivilegedAccessHelper.newInstanceFromClass(platformClass);
             }
@@ -542,14 +542,14 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      */
     public void setPlatformClassName(String platformClassName, ClassLoader loader) throws ValidationException {
         boolean exceptionCaught = false;
-        Class platformClass = null;
+        Class<?> platformClass = null;
         try {
             Platform platform = null;
             if (loader != null) {
                 platformClass = loader.loadClass(platformClassName);
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                       platform = (Platform)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(platformClass));
+                       platform = (Platform)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(platformClass));
                   } catch (PrivilegedActionException exception) {
                       throw ValidationException.platformClassNotFound(exception.getException(), platformClassName);
                   }

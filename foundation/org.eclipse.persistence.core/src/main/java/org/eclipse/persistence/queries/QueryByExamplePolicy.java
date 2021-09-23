@@ -173,7 +173,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
      * @see org.eclipse.persistence.expressions.Expression#containsSubstring(java.lang.String) containsSubstring
      * @see org.eclipse.persistence.expressions.Expression#containsSubstringIgnoringCase(java.lang.String) containsSubstringIgnoringCase
      */
-    public void addSpecialOperation(Class attributeValueClass, String operation) {
+    public void addSpecialOperation(Class<?> attributeValueClass, String operation) {
         this.getSpecialOperations().put(attributeValueClass, operation);
     }
 
@@ -193,7 +193,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
      * @param exampleClass The class that the attribute belongs to, normally this is the example class unless using nested QBE.
      * @param attributeName The name of a mapped attribute.
      */
-    public void alwaysIncludeAttribute(Class exampleClass, String attributeName) {
+    public void alwaysIncludeAttribute(Class<?> exampleClass, String attributeName) {
         Vector included = (Vector)getAttributesToAlwaysInclude().get(exampleClass);
         if (included == null) {
             included = new Vector(3);
@@ -207,7 +207,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
      * INTERNAL:
      * This method is used to determine which operation to use for comparison (equal, or a special operation).
      */
-    public Expression completeExpression(Expression expression, Object attributeValue, Class attributeValueClass) {
+    public Expression completeExpression(Expression expression, Object attributeValue, Class<?> attributeValueClass) {
         String operation = this.getOperation(attributeValue.getClass());
 
         if (operation == null) {
@@ -215,7 +215,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
             return expression.equal(attributeValue);
         }
 
-        Class[] argTypes = { attributeValueClass };
+        Class<?>[] argTypes = { attributeValueClass };
         Object[] args = { attributeValue };
         try {
             java.lang.reflect.Method anOperator = Helper.getDeclaredMethod(ClassConstants.Expression_Class, operation, argTypes);
@@ -232,7 +232,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
                 expression = PrivilegedAccessHelper.invokeMethod(anOperator, expression, args);
             }
         } catch (NoSuchMethodException nsme) {
-            Class superClass = attributeValueClass.getSuperclass();
+            Class<?> superClass = attributeValueClass.getSuperclass();
             if (superClass != null) {
                 return completeExpression(expression, attributeValue, superClass);
             } else {
@@ -386,7 +386,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
      * INTERNAL:
      * determines which operation to use for comparison.
      */
-    public String getOperation(Class aClass) {
+    public String getOperation(Class<?> aClass) {
         String operation = (String)this.getSpecialOperations().get(aClass);
         if (operation != null) {
             if (!operation.equals("equal")) {
@@ -443,7 +443,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
      * INTERNAL:
      * returns whether the attributeName is to be always included.
      */
-    public boolean isAlwaysIncluded(Class theClass, String attributeName) {
+    public boolean isAlwaysIncluded(Class<?> theClass, String attributeName) {
         Vector values = (Vector)this.getAttributesToAlwaysInclude().get(theClass);
         if (values != null) {
             return (values.contains(attributeName));
@@ -559,7 +559,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
      * INTERNAL:
      * This method determines whether an attribute pair is be included in the query.
      */
-    public boolean shouldIncludeInQuery(Class aClass, String attributeName, Object attributeValue) {
+    public boolean shouldIncludeInQuery(Class<?> aClass, String attributeName, Object attributeValue) {
         if (attributeValue == null) {
             if (this.isAlwaysIncluded(aClass, attributeName)) {
                 //this attribute is to be included always, even if its value is null.

@@ -573,7 +573,7 @@ public class DefaultTableGenerator {
                 // Must be a TransformerBasedFieldTransformation
                 TransformerBasedFieldTransformation classTransformation = (TransformerBasedFieldTransformation) transformation;
                 String methodName = "buildFieldValue";
-                Class[] params = new Class[] {Object.class, String.class, Session.class};
+                Class<?>[] params = new Class<?>[] {Object.class, String.class, Session.class};
 
                 try {
                     Class<?> returnType = Helper.getDeclaredMethod(classTransformation.getTransformerClass(), methodName, params).getReturnType();
@@ -816,7 +816,7 @@ public class DefaultTableGenerator {
                 // column like type, size,  "NULL/NOT NULL" clause, unique key clause
                 fieldDef.setTypeDefinition(dbField.getColumnDefinition());
             } else {
-                Class fieldType = dbField.getType();
+                Class<?> fieldType = dbField.getType();
                 FieldTypeDefinition fieldTypeDef = (fieldType == null) ? null : databasePlatform.getFieldTypeDefinition(fieldType);
 
                 // Check if the user field is a String and only then allow the length specified

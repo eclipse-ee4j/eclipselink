@@ -60,7 +60,7 @@ import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 public abstract class AggregateMapping extends DatabaseMapping {
 
     /** Stores a reference class */
-    protected Class referenceClass;
+    protected Class<?> referenceClass;
     protected String referenceClassName;
 
     /** The descriptor of the reference class */
@@ -441,7 +441,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
     /**
      * Convenience method
      */
-    protected ObjectBuilder getObjectBuilderForClass(Class javaClass, AbstractSession session) {
+    protected ObjectBuilder getObjectBuilderForClass(Class<?> javaClass, AbstractSession session) {
         return getReferenceDescriptor(javaClass, session).getObjectBuilder();
     }
 
@@ -463,7 +463,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * PUBLIC:
      * Returns the reference class
      */
-    public Class getReferenceClass() {
+    public Class<?> getReferenceClass() {
         return referenceClass;
     }
 
@@ -494,7 +494,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * INTERNAL:
      * For inheritance purposes.
      */
-    protected ClassDescriptor getReferenceDescriptor(Class theClass, AbstractSession session) {
+    protected ClassDescriptor getReferenceDescriptor(Class<?> theClass, AbstractSession session) {
         if (this.referenceDescriptor.getJavaClass() == theClass) {
             return this.referenceDescriptor;
         }
@@ -951,7 +951,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * PUBLIC:
      * This is a reference class whose instances this mapping will store in the domain objects.
      */
-    public void setReferenceClass(Class aClass) {
+    public void setReferenceClass(Class<?> aClass) {
         referenceClass = aClass;
     }
 

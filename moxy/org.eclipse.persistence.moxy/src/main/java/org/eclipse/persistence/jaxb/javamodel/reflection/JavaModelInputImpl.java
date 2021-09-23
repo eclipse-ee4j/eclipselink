@@ -78,7 +78,7 @@ public class JavaModelInputImpl implements JavaModelInput {
         }
    }
 
-    public JavaModelInputImpl(Class[] classes, JavaModel javaModel) {
+    public JavaModelInputImpl(Class<?>[] classes, JavaModel javaModel) {
         jModel = javaModel;
         jClasses = new JavaClass[classes.length];
         for (int i=0; i<classes.length; i++) {
@@ -91,7 +91,7 @@ public class JavaModelInputImpl implements JavaModelInput {
         if (type instanceof Class) {
             return (JavaClassImpl) jModel.getClass((Class) type);
         } else if (type instanceof GenericArrayType) {
-            Class genericTypeClass = (Class) ((GenericArrayType) type).getGenericComponentType();
+            Class<?> genericTypeClass = (Class) ((GenericArrayType) type).getGenericComponentType();
             genericTypeClass = java.lang.reflect.Array.newInstance(genericTypeClass, 0).getClass();
             return new JavaClassImpl(genericTypeClass, (JavaModelImpl) jModel);
         } else {

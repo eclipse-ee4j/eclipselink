@@ -284,7 +284,7 @@ public class DoesExistQuery extends DatabaseQuery {
      * Return the domain class associated with this query.
      */
     @Override
-    public Class getReferenceClass() {
+    public Class<?> getReferenceClass() {
         if (getObject() == null) {
             return null;
         }

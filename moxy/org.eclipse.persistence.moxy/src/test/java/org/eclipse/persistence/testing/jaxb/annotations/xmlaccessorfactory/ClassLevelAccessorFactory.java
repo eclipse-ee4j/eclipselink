@@ -38,7 +38,7 @@ public class ClassLevelAccessorFactory implements AccessorFactory {
 
     public static class MyCustomFieldAccessor extends Accessor {
 
-        protected MyCustomFieldAccessor(Class valueType) {
+        protected MyCustomFieldAccessor(Class<?> valueType) {
             super(valueType);
         }
 
@@ -58,7 +58,7 @@ public class ClassLevelAccessorFactory implements AccessorFactory {
 
     public class MyCustomPropertyAccessor extends Accessor{
 
-        protected MyCustomPropertyAccessor(Class valueType) {
+        protected MyCustomPropertyAccessor(Class<?> valueType) {
             super(valueType);
         }
 

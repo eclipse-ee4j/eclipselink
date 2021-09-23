@@ -53,7 +53,7 @@ public class JAXBByteArrayWithDataHandlerTestCases extends JAXBListOfObjectsTest
     }
 
     @Override
-    public Class getUnmarshalClass(){
+    public Class<?> getUnmarshalClass(){
         return byte[].class;
     }
 

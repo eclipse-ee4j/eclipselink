@@ -338,7 +338,7 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
         fieldValue = convertObjectValueToDataValue(fieldValue, (AbstractSession) session, (XMLMarshaller) record.getMarshaller());
 
         if (fieldValue != null) {
-             Class fieldClassification = getFieldClassification(field);
+             Class<?> fieldClassification = getFieldClassification(field);
              // PERF: Avoid conversion if not required.
              if(fieldClassification != fieldValue.getClass()){
                  try {

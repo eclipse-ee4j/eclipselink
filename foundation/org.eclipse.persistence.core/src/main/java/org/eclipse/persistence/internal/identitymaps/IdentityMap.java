@@ -143,7 +143,7 @@ public interface IdentityMap extends Cloneable{
         /**
      * Return the class that this is the map for.
      */
-    Class getDescriptorClass();
+    Class<?> getDescriptorClass();
 
     /**
      * Return the descriptor that this is the map for.
@@ -165,7 +165,7 @@ public interface IdentityMap extends Cloneable{
      * Return the number of actual objects of type myClass in the IdentityMap.
      * Recurse = true will include subclasses of myClass in the count.
      */
-    int getSize(Class myClass, boolean recurse);
+    int getSize(Class<?> myClass, boolean recurse);
 
     /**
      * Get the wrapper object from the cache key associated with the given primary key,

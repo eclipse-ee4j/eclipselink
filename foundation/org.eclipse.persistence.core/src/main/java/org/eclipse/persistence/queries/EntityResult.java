@@ -47,7 +47,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 public class EntityResult extends SQLResult {
     /** Stores the class name of result  */
     protected String entityClassName;
-    protected transient Class entityClass;
+    protected transient Class<?> entityClass;
 
     /** Stores the list of FieldResult */
     protected Map fieldResults;
@@ -57,7 +57,7 @@ public class EntityResult extends SQLResult {
      */
     protected DatabaseField discriminatorColumn;
 
-    public EntityResult(Class entityClass){
+    public EntityResult(Class<?> entityClass){
         this.entityClass = entityClass;
         if (this.entityClass == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("null_value_for_entity_result"));
@@ -93,7 +93,7 @@ public class EntityResult extends SQLResult {
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
-        Class entityClass = null;
+        Class<?> entityClass = null;
         try{
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
@@ -176,7 +176,7 @@ public class EntityResult extends SQLResult {
 
             // if multiple types may have been read get the correct descriptor.
             if ( descriptor.getInheritancePolicy().shouldReadSubclasses()) {
-                Class classValue = descriptor.getInheritancePolicy().classFromRow(entityRecord, query.getSession());
+                Class<?> classValue = descriptor.getInheritancePolicy().classFromRow(entityRecord, query.getSession());
                 descriptor = query.getSession().getDescriptor(classValue);
             }
         }

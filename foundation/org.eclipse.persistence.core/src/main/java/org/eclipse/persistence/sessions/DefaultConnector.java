@@ -41,7 +41,7 @@ public class DefaultConnector implements Connector {
     protected String driverURLHeader;
     protected String databaseURL;
     /** cache up the driver class to speed up reconnects */
-    protected Class driverClass;
+    protected Class<?> driverClass;
     /** cache up the instantiated Driver to speed up reconnects */
     protected Driver driver;
 
@@ -330,7 +330,7 @@ public class DefaultConnector implements Connector {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try{
-                    this.driver = (Driver)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(this.driverClass));
+                    this.driver = (Driver)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(this.driverClass));
                 }catch (PrivilegedActionException ex){
                     if (ex.getCause() instanceof IllegalAccessException){
                         throw (IllegalAccessException)ex.getCause();

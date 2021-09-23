@@ -49,7 +49,7 @@ public interface StructConverter {
      * PUBLIC:
      * @return The Java Class to perform conversions on
      */
-    Class getJavaType();
+    Class<?> getJavaType();
 
     /**
      * PUBLIC:

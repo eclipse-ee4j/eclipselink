@@ -251,7 +251,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         if (concreteDescriptor.hasInheritance() && (parent == null)) {
             // look for an xsi:type attribute in the xml document
             InheritancePolicy inheritancePolicy = concreteDescriptor.getInheritancePolicy();
-            Class classValue = inheritancePolicy.classFromRow(databaseRow, query.getSession());
+            Class<?> classValue = inheritancePolicy.classFromRow(databaseRow, query.getSession());
             if ((classValue == null) && isXmlDescriptor()) {
                 // no xsi:type attribute - look for type indicator on the
                 // default root element

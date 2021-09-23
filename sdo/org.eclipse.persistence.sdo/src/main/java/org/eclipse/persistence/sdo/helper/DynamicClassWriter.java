@@ -49,7 +49,7 @@ public class DynamicClassWriter {
     private static final String LIST = "List";
     private static final String WRITE_REPLACE = "writeReplace";
 
-    private Class parentClass;
+    private Class<?> parentClass;
     private String typeImplClassDescriptor;
     private SDOType type;
     private Integer startPropertyIndex;
@@ -97,7 +97,7 @@ public class DynamicClassWriter {
         }
     }
 
-    public Class getParentClass() {
+    public Class<?> getParentClass() {
         return this.parentClass;
     }
 

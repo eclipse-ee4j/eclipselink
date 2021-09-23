@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,7 +57,7 @@ public class JavaConstructorImpl implements JavaConstructor {
 
     @Override
     public JavaClass[] getParameterTypes() {
-        Class[] params = jConstructor.getParameterTypes();
+        Class<?>[] params = jConstructor.getParameterTypes();
         JavaClass[] paramArray = new JavaClass[params.length];
         for (int i=0; i<params.length; i++) {
             paramArray[i] = javaModelImpl.getClass(params[i]);

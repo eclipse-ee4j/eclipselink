@@ -278,7 +278,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * backward compatibility.
      */
     protected Method findMethod(int selector) throws DescriptorException {
-        Class[] declarationParameters = new Class[1];
+        Class<?>[] declarationParameters = new Class<?>[1];
         declarationParameters[0] = ClassConstants.DescriptorEvent_Class;
         String methodName = getEventSelectors().get(selector);
 

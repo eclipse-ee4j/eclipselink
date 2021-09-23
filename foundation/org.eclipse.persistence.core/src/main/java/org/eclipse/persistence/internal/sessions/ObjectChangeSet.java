@@ -89,7 +89,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
     protected transient Map<String, ChangeRecord> attributesToChanges;
     protected boolean shouldBeDeleted;
     protected Object id;
-    protected transient Class classType;
+    protected transient Class<?> classType;
     protected String className;
     protected boolean isNew;
     protected boolean isAggregate;
@@ -335,7 +335,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * The class type must be initialized, before this method is called.
      * @return java.lang.Class or null if the class type isn't initialized.
      */
-    public Class getClassType() {
+    public Class<?> getClassType() {
         return classType;
     }
 
@@ -345,7 +345,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * This requires the session to reload the class on serialization.
      */
     @Override
-    public Class getClassType(org.eclipse.persistence.sessions.Session session) {
+    public Class<?> getClassType(org.eclipse.persistence.sessions.Session session) {
         if (classType == null) {
             classType = session.getDatasourcePlatform().getConversionManager().convertObject(getClassName(), ClassConstants.CLASS);
         }
@@ -877,7 +877,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
     /**
      * Set the class type.
      */
-    public void setClassType(Class newValue) {
+    public void setClassType(Class<?> newValue) {
         this.classType = newValue;
     }
 

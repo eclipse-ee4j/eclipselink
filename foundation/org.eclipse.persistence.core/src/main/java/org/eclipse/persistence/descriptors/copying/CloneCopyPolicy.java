@@ -170,11 +170,11 @@ public class CloneCopyPolicy extends AbstractCopyPolicy {
      */
     @Override
     public void initialize(Session session) throws DescriptorException {
-        final Class javaClass = this.getDescriptor().getJavaClass();
+        final Class<?> javaClass = this.getDescriptor().getJavaClass();
         try {
             // Must allow for null clone method for 9.0.4 deployment XML.
             if (this.getMethodName() != null) {
-                this.setMethod(Helper.getDeclaredMethod(javaClass, this.getMethodName(), new Class[0]));
+                this.setMethod(Helper.getDeclaredMethod(javaClass, this.getMethodName(), new Class<?>[0]));
             }
         } catch (NoSuchMethodException exception) {
             session.getIntegrityChecker().handleError(DescriptorException.noSuchMethodWhileInitializingCopyPolicy(this.getMethodName(), this.getDescriptor(), exception));
@@ -183,7 +183,7 @@ public class CloneCopyPolicy extends AbstractCopyPolicy {
         }
         if (this.getWorkingCopyMethodName() != null) {
             try {
-                this.setWorkingCopyMethod(Helper.getDeclaredMethod(javaClass, this.getWorkingCopyMethodName(), new Class[0]));
+                this.setWorkingCopyMethod(Helper.getDeclaredMethod(javaClass, this.getWorkingCopyMethodName(), new Class<?>[0]));
             } catch (NoSuchMethodException exception) {
                 session.getIntegrityChecker().handleError(DescriptorException.noSuchMethodWhileInitializingCopyPolicy(this.getMethodName(), this.getDescriptor(), exception));
             } catch (SecurityException exception) {

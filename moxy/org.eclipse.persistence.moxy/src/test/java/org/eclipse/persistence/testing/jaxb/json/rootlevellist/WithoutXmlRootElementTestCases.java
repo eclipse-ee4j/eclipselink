@@ -39,7 +39,7 @@ public class WithoutXmlRootElementTestCases extends JSONMarshalUnmarshalTestCase
     }
 
     @Override
-    public Class getUnmarshalClass(){
+    public Class<?> getUnmarshalClass(){
         return WithoutXmlRootElementRoot.class;
     }
 

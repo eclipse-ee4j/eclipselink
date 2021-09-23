@@ -87,7 +87,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
     private boolean shouldInlineBinaryData;
     private MimeTypePolicy mimeTypePolicy;
     private boolean isSwaRef;
-    private Class collectionContentType;
+    private Class<?> collectionContentType;
     private static final String INCLUDE = "Include";
 
     public XMLBinaryDataCollectionMapping() {
@@ -489,7 +489,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
         return result;
     }
 
-    public void setCollectionContentType(Class javaClass) {
+    public void setCollectionContentType(Class<?> javaClass) {
         setAttributeElementClass(javaClass);
     }
 
@@ -497,7 +497,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
      * This is the same as calling getAttributeElementClass()
      * If not set by the user than byte[].class is the default
      */
-    public Class getCollectionContentType() {
+    public Class<?> getCollectionContentType() {
         return getAttributeElementClass();
     }
 
@@ -510,14 +510,14 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
      * to the object's collection unconverted.
      */
     @Override
-    public void setAttributeElementClass(Class attributeElementClass) {
+    public void setAttributeElementClass(Class<?> attributeElementClass) {
         super.setAttributeElementClass(attributeElementClass);
         this.collectionContentType = attributeElementClass;
     }
 
     @Override
-    public Class getAttributeElementClass() {
-        Class elementClass = super.getAttributeElementClass();
+    public Class<?> getAttributeElementClass() {
+        Class<?> elementClass = super.getAttributeElementClass();
         if(elementClass == null) {
             return this.collectionContentType;
         }

@@ -45,7 +45,7 @@ public interface ObjectChangeSet {
      * ADVANCE:
      * This method returns the class type that this changeSet Represents.
      */
-    Class getClassType(Session session);
+    Class<?> getClassType(Session session);
 
     /**
      * ADVANCE:

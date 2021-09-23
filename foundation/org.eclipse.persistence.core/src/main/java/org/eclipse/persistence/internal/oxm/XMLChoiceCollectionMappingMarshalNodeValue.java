@@ -40,7 +40,7 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType
 public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue implements ContainerValue {
     private ChoiceCollectionMapping xmlChoiceCollectionMapping;
     private Map<Field, NodeValue> fieldToNodeValues;
-    private Map<Class, List<FieldNodeValue>> classToNodeValues;
+    private Map<Class<?>, List<FieldNodeValue>> classToNodeValues;
     private NodeValue choiceElementNodeValue;
     private Field xmlField;
     private boolean isMixedNodeValue;
@@ -99,7 +99,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
         this.fieldToNodeValues = fieldToNodeValues;
         this.classToNodeValues = new HashMap<>();
         for(Field nextField:fieldToNodeValues.keySet()) {
-            Class associatedClass = ((Map<Field, Class>)this.xmlChoiceCollectionMapping.getFieldToClassMappings()).get(nextField);
+            Class<?> associatedClass = ((Map<Field, Class<?>>)this.xmlChoiceCollectionMapping.getFieldToClassMappings()).get(nextField);
 
             if (classToNodeValues.containsKey(associatedClass)) {
                 classToNodeValues.get(associatedClass).add(new FieldNodeValue(nextField, fieldToNodeValues.get(nextField)));
@@ -112,8 +112,8 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
 
         }
 
-        Collection<Class> classes = this.classToNodeValues.keySet();
-        for(Class nextClass:((Map<Class, Mapping>)this.xmlChoiceCollectionMapping.getChoiceElementMappingsByClass()).keySet()) {
+        Collection<Class<?>> classes = this.classToNodeValues.keySet();
+        for(Class<?> nextClass:((Map<Class<?>, Mapping>)this.xmlChoiceCollectionMapping.getChoiceElementMappingsByClass()).keySet()) {
             //Create node values for any classes that aren't already processed
             if(!(classes.contains(nextClass))) {
         Field field = (Field) xmlChoiceCollectionMapping.getClassToFieldMappings().get(nextClass);

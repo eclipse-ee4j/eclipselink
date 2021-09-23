@@ -126,7 +126,7 @@ public class WebSpherePlatform extends JMXServerPlatformBase {
     protected Method getVendorConnectionMethod() {
         if ((this.vendorConnectionMethod == null) && (!getWebsphereUtilClass().equals(void.class))) {
             try {
-                Class<?>[] args = (Class<?>[]) new Class[1];
+                Class<?>[] args = new Class<?>[1];
                 args[0] = getWebsphereConnectionClass();
                 this.vendorConnectionMethod = PrivilegedAccessHelper.getDeclaredMethod(getWebsphereUtilClass(), "getNativeConnection", args);
             } catch (NoSuchMethodException exception) {

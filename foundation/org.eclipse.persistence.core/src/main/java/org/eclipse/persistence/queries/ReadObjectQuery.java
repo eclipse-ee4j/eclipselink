@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -97,7 +97,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * Executing a query with selection criteria allows you to avoid a database
      * access if the selected instance is in the cache. For this reason, you may whish to use a ReadObjectQuery constructor that takes selection criteria, such as: {@link #ReadObjectQuery(Class, Call)}, {@link #ReadObjectQuery(Class, Expression)}, {@link #ReadObjectQuery(Class, ExpressionBuilder)}, {@link #ReadObjectQuery(ExpressionBuilder)}, {@link #ReadObjectQuery(Object)}, or {@link #ReadObjectQuery(Object, QueryByExamplePolicy)}.
      */
-    public ReadObjectQuery(Class classToRead) {
+    public ReadObjectQuery(Class<?> classToRead) {
         this();
         this.referenceClass = classToRead;
     }
@@ -106,7 +106,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * PUBLIC:
      * Return a new read object query for the class and the selection criteria.
      */
-    public ReadObjectQuery(Class classToRead, Expression selectionCriteria) {
+    public ReadObjectQuery(Class<?> classToRead, Expression selectionCriteria) {
         this();
         this.referenceClass = classToRead;
         setSelectionCriteria(selectionCriteria);
@@ -117,7 +117,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * Return a new read object query for the class.
      * The expression builder must be used for all associated expressions used with the query.
      */
-    public ReadObjectQuery(Class classToRead, ExpressionBuilder builder) {
+    public ReadObjectQuery(Class<?> classToRead, ExpressionBuilder builder) {
         this();
         this.defaultBuilder = builder;
         this.referenceClass = classToRead;
@@ -128,7 +128,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * Return a new read object query.
      * The call represents a database interaction such as SQL, Stored Procedure.
      */
-    public ReadObjectQuery(Class classToRead, Call call) {
+    public ReadObjectQuery(Class<?> classToRead, Call call) {
         this();
         this.referenceClass = classToRead;
         setCall(call);

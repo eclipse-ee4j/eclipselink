@@ -62,7 +62,7 @@ public class ExpressionOperator implements Serializable {
     protected String[] databaseStrings;
     protected boolean isPrefix = false;
     protected boolean isRepeating = false;
-    protected Class nodeClass;
+    protected Class<?> nodeClass;
     protected int type;
     protected int[] argumentIndices = null;
     protected static Map<Integer, ExpressionOperator> allOperators = initializeOperators();
@@ -1242,7 +1242,7 @@ public class ExpressionOperator implements Serializable {
     /**
      * INTERNAL:
      */
-    public Class getNodeClass() {
+    public Class<?> getNodeClass() {
         return nodeClass;
     }
 
@@ -1974,7 +1974,7 @@ public class ExpressionOperator implements Serializable {
             Expression node = null;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    node = (Expression)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(getNodeClass()));
+                    node = (Expression)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(getNodeClass()));
                 } catch (PrivilegedActionException exception) {
                     return null;
                 }
@@ -2442,7 +2442,7 @@ public class ExpressionOperator implements Serializable {
      * <p>FunctionOperator    RTRIM                 "
      * <p>Node classes given belong to org.eclipse.persistence.internal.expressions.
      */
-    public void setNodeClass(Class nodeClass) {
+    public void setNodeClass(Class<?> nodeClass) {
         this.nodeClass = nodeClass;
     }
 

@@ -92,7 +92,7 @@ public class MethodClassExtractor extends ClassExtractor {
     @Override
     public void initialize(ClassDescriptor descriptor, Session session) throws DescriptorException {
         setDescriptor(descriptor);
-        Class<?>[] declarationParameters = new Class[1];
+        Class<?>[] declarationParameters = new Class<?>[1];
         declarationParameters[0] = ClassConstants.DatabaseRow_Class;
 
         try {

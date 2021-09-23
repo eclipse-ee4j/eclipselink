@@ -1429,7 +1429,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * for inheritance purpose
      */
-    public ClassDescriptor getReferenceDescriptor(Class theClass, AbstractSession session) {
+    public ClassDescriptor getReferenceDescriptor(Class<?> theClass, AbstractSession session) {
         if (this.referenceDescriptor.getJavaClass() == theClass) {
             return this.referenceDescriptor;
         } else {
@@ -2241,7 +2241,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         ObjectChangeSet objectChanges = null;
         for (int index = 0; index < size; ++index) {
             objectChanges = aggregateObjects.get(index);
-            Class localClassType = objectChanges.getClassType(session);
+            Class<?> localClassType = objectChanges.getClassType(session);
             sourceAggregate = objectChanges.getUnitOfWorkClone();
 
             // cr 4155 Load the target from the UnitOfWork.  This will be the original

@@ -53,7 +53,7 @@ public abstract class IDResolver {
      * @return a <code>Callable</code> that will return the resolved object.
      *
      */
-    public abstract Callable<?> resolve(Object id, Class type) throws SAXException;
+    public abstract Callable<?> resolve(Object id, Class<?> type) throws SAXException;
 
     /**
      * <p>
@@ -66,7 +66,7 @@ public abstract class IDResolver {
      * @return a <code>Callable</code> that will return the resolved object.
      *
      */
-    public abstract Callable<?> resolve(Map<String, Object> id, Class type) throws SAXException;
+    public abstract Callable<?> resolve(Map<String, Object> id, Class<?> type) throws SAXException;
 
     /**
      * <p>

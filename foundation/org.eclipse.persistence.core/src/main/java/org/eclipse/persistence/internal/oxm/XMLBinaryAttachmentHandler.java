@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -94,7 +94,7 @@ public class XMLBinaryAttachmentHandler extends org.eclipse.persistence.internal
                 //Get the attachment and set it in the object.
                 XMLAttachmentUnmarshaller attachmentUnmarshaller = record.getUnmarshaller().getAttachmentUnmarshaller();
                 Object data = null;
-                Class attributeClassification = null;
+                Class<?> attributeClassification = null;
                 if(isCollection) {
                     attributeClassification = ((BinaryDataCollectionMapping)mapping).getAttributeElementClass();
                 } else {
@@ -149,7 +149,7 @@ public class XMLBinaryAttachmentHandler extends org.eclipse.persistence.internal
         return this.c_id;
     }
 
-    public Object getObjectValueFromDataHandler(DataHandler handler, Class cls) {
+    public Object getObjectValueFromDataHandler(DataHandler handler, Class<?> cls) {
         CoreContainerPolicy cp = null;
         if(isCollection){
             cp = mapping.getContainerPolicy();

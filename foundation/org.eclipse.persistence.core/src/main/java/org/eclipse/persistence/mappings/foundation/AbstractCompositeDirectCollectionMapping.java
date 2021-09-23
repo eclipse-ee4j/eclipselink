@@ -303,7 +303,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * This is optional - if left null, the elements will be added
      * to the object's collection unconverted.
      */
-    public Class getAttributeElementClass() {
+    public Class<?> getAttributeElementClass() {
         if (!(getValueConverter() instanceof TypeConversionConverter)) {
             return null;
         }
@@ -344,7 +344,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * This is optional - if left null, the elements will be added
      * to the database row's collection unconverted.
      */
-    public Class getFieldElementClass() {
+    public Class<?> getFieldElementClass() {
         if (!(getValueConverter() instanceof TypeConversionConverter)) {
             return null;
         }
@@ -429,7 +429,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * This is optional - if left null, the elements will be added
      * to the object's collection unconverted.
      */
-    public void setAttributeElementClass(Class attributeElementClass) {
+    public void setAttributeElementClass(Class<?> attributeElementClass) {
         TypeConversionConverter converter;
         if (getValueConverter() instanceof TypeConversionConverter) {
             converter = (TypeConversionConverter)getValueConverter();
@@ -483,7 +483,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * This is optional - if left null, the elements will be added
      * to the database row's collection unconverted.
      */
-    public void setFieldElementClass(Class fieldElementClass) {
+    public void setFieldElementClass(Class<?> fieldElementClass) {
         TypeConversionConverter converter;
         if (getValueConverter() instanceof TypeConversionConverter) {
             converter = (TypeConversionConverter)getValueConverter();
@@ -502,7 +502,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * <p>jdk1.1.x: The container class must be a subclass of Vector.
      */
     @Override
-    public void useCollectionClass(Class concreteClass) {
+    public void useCollectionClass(Class<?> concreteClass) {
         this.setContainerPolicy(ContainerPolicy.buildPolicyFor(concreteClass));
     }
 
@@ -532,7 +532,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * It supports only Collection containers.
      */
     @Override
-    public void useMapClass(Class concreteClass, String methodName) {
+    public void useMapClass(Class<?> concreteClass, String methodName) {
         throw new UnsupportedOperationException(this.getClass().getName() + ".useMapClass(Class, String)");
     }
 
@@ -701,7 +701,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * By default this is unknown.
      */
     @Override
-    public Class getFieldClassification(DatabaseField fieldToClassify) {
+    public Class<?> getFieldClassification(DatabaseField fieldToClassify) {
         return getAttributeElementClass();
     }
 

@@ -64,7 +64,7 @@ public interface BinaryDataMapping<
      * the base data type must be explicitly specified in the mapping to tell EclipseLink to force
      * the instance variable value to that data type
      */
-    void setAttributeClassification(Class attributeClassification);
+    void setAttributeClassification(Class<?> attributeClassification);
 
     /**
      * INTERNAL:

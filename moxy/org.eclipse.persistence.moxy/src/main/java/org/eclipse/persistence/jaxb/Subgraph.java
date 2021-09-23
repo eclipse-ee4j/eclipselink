@@ -61,7 +61,7 @@ public interface Subgraph extends AttributeNode {
      * @throws IllegalStateException
      *             if this EntityGraph has been statically defined
      */
-    Subgraph addSubgraph(String attribute, Class type);
+    Subgraph addSubgraph(String attribute, Class<?> type);
 
 
 
@@ -75,5 +75,5 @@ public interface Subgraph extends AttributeNode {
      * returns the type of this sub-graph if it was used to extend a superclass
      * sub-graph definition.
      */
-    Class getClassType();
+    Class<?> getClassType();
 }

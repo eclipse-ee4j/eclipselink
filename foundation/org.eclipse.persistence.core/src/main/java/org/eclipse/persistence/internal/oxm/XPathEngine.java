@@ -332,7 +332,7 @@ public class XPathEngine <
             try {
                 if (nextQName != null) {
                     ConversionManager conversionManager = (ConversionManager)session.getDatasourcePlatform().getConversionManager();
-                    Class javaClass = xmlField.getJavaClass(nextQName, conversionManager);
+                    Class<?> javaClass = xmlField.getJavaClass(nextQName, conversionManager);
                     value = conversionManager.convertObject(value, javaClass, nextQName);
                     schemaType = nextQName;
                     break;

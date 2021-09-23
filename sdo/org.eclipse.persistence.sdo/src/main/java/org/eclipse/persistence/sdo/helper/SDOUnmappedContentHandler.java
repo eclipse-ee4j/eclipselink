@@ -433,7 +433,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
             if(parentRecord != null){
                 unmarshalRecord.setXMLReader(parentRecord.getXMLReader());
             }
-            Class classValue = xmlDescriptor.getInheritancePolicy().classFromRow(unmarshalRecord, session);
+            Class<?> classValue = xmlDescriptor.getInheritancePolicy().classFromRow(unmarshalRecord, session);
             if (classValue == null) {
                 // no xsi:type attribute - look for type indicator on the default root element
                 QName leafElementType = xmlDescriptor.getDefaultRootElementType();

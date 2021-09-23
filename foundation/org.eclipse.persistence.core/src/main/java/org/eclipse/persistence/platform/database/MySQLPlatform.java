@@ -250,7 +250,7 @@ public class MySQLPlatform extends DatabasePlatform {
     }
 
     @Override
-    public int getJDBCType(Class javaType) {
+    public int getJDBCType(Class<?> javaType) {
         if (javaType == ClassConstants.TIME_ODATETIME) {
             return Types.TIMESTAMP;
         } else if (javaType == ClassConstants.TIME_OTIME) {

@@ -72,7 +72,7 @@ public interface ObjectGraph {
      * @throws IllegalStateException
      *             if this EntityGraph has been statically defined
      */
-    Subgraph addSubgraph(String attribute, Class type);
+    Subgraph addSubgraph(String attribute, Class<?> type);
 
     /*
      * returns the attributes of this entity that are included in the entity

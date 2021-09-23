@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -238,7 +238,7 @@ public class ClassTypeExpression extends DataExpression {
      * return value (a class), as none of the expressions will have a session.
      */
     public ClassDescriptor getContainingDescriptor(ObjectLevelReadQuery query) {
-        Class queryClass = null;
+        Class<?> queryClass = null;
         if (getBaseExpression().isExpressionBuilder()){
             queryClass = ((ExpressionBuilder)getBaseExpression()).getQueryClass();
             return query.getSession().getDescriptor(queryClass);

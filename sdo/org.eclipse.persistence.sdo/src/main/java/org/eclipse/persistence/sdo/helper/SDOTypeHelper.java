@@ -41,16 +41,16 @@ public interface SDOTypeHelper extends TypeHelper {
      * @param sdoType
      * @return
      */
-    Class getJavaWrapperTypeForSDOType(Type sdoType);
+    Class<?> getJavaWrapperTypeForSDOType(Type sdoType);
 
-    SDOType getTypeForImplClass(Class implClass);
+    SDOType getTypeForImplClass(Class<?> implClass);
 
     /**
      * INTERNAL:
      * @param implClass
      * @return
      */
-    Type getTypeForSimpleJavaType(Class implClass);
+    Type getTypeForSimpleJavaType(Class<?> implClass);
 
     /**
      * INTERNAL:
@@ -152,7 +152,7 @@ public interface SDOTypeHelper extends TypeHelper {
 
     Map getInterfacesToSDOTypeHashMap();
 
-    Map<Class, SDOType> getImplClassesToSDOType();
+    Map<Class<?>, SDOType> getImplClassesToSDOType();
 
     List getAnonymousTypes();
 

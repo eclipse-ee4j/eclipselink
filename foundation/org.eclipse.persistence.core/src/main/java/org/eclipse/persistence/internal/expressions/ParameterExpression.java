@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -463,7 +463,7 @@ public class ParameterExpression extends BaseExpression {
                     // this is a map key expression, operate on the key
                     ContainerPolicy cp = mapping.getContainerPolicy();
                     Object keyType = cp.getKeyType();
-                    Class keyTypeClass = keyType instanceof Class ? (Class)keyType: ((ClassDescriptor)keyType).getJavaClass();
+                    Class<?> keyTypeClass = keyType instanceof Class<?> ? (Class)keyType: ((ClassDescriptor)keyType).getJavaClass();
                     if (!keyTypeClass.isInstance(value)){
                         throw QueryException.incorrectClassForObjectComparison(baseExpression, value, mapping);
                     }

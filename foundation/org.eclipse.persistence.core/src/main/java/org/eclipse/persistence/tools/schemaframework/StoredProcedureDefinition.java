@@ -48,14 +48,14 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
     /**
      * The arguments are the names of the parameters to the procedure.
      */
-    public void addArgument(String argumentName, Class type) {
+    public void addArgument(String argumentName, Class<?> type) {
         addArgument(new FieldDefinition(argumentName, type));
     }
 
     /**
      * The arguments are the names of the parameters to the procedure.
      */
-    public void addArgument(String argumentName, Class type, int size) {
+    public void addArgument(String argumentName, Class<?> type, int size) {
         addArgument(new FieldDefinition(argumentName, type, size));
     }
 
@@ -77,7 +77,7 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
     /**
      * The output arguments are used to get values back from the proc.
      */
-    public void addInOutputArgument(String argumentName, Class type) {
+    public void addInOutputArgument(String argumentName, Class<?> type) {
         addInOutputArgument(new FieldDefinition(argumentName, type));
     }
 
@@ -92,14 +92,14 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
     /**
      * The output arguments are used to get values back from the proc.
      */
-    public void addOutputArgument(String argumentName, Class type) {
+    public void addOutputArgument(String argumentName, Class<?> type) {
         addOutputArgument(new FieldDefinition(argumentName, type));
     }
 
     /**
      * The output arguments are used to get values back from the proc.
      */
-    public void addOutputArgument(String argumentName, Class type, int size) {
+    public void addOutputArgument(String argumentName, Class<?> type, int size) {
         addOutputArgument(new FieldDefinition(argumentName, type, size));
     }
 

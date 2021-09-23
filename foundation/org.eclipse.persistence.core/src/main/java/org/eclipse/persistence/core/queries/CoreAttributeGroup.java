@@ -69,7 +69,7 @@ public class CoreAttributeGroup<
      * The class represented by this AttrbuteGroup.  Used to specify overriding
      * groups for subclasses.
      */
-    protected Class type;
+    protected Class<?> type;
 
     /**
      * To add inheritance support the two following attrbutes are used to create a model of the inheritance tree
@@ -118,7 +118,7 @@ public class CoreAttributeGroup<
      * INTERNAL:
      * This constructer is to only be used by EclipseLink internally
      */
-    public CoreAttributeGroup(String name, Class type, boolean isValidated) {
+    public CoreAttributeGroup(String name, Class<?> type, boolean isValidated) {
         this(name);
         this.type = type;
         this.isValidated = isValidated;
@@ -540,7 +540,7 @@ public class CoreAttributeGroup<
         return this.allsubclasses;
     }
 
-    public Class getType() {
+    public Class<?> getType() {
         return type;
     }
 

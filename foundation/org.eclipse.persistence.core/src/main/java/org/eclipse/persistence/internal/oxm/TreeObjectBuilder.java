@@ -193,7 +193,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder implements ObjectBuilder
     }
 
     @Override
-    public Class classFromRow(org.eclipse.persistence.internal.oxm.record.UnmarshalRecord unmarshalRecord, AbstractSession session) {
+    public Class<?> classFromRow(org.eclipse.persistence.internal.oxm.record.UnmarshalRecord unmarshalRecord, AbstractSession session) {
         UnmarshalRecord inheritanceRecord = new UnmarshalRecord(unmarshalRecord);
         return descriptor.getInheritancePolicy().classFromRow(inheritanceRecord, session);
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,7 +61,7 @@ public class LazyInitTestCases extends TestCase {
         assertNull(getFieldValue(TreeObjectBuilder.class, "relationshipMappings", treeObjectBuilder));
     }
 
-    private Object getFieldValue(Class clazz, String fieldName, Object object) throws Exception {
+    private Object getFieldValue(Class<?> clazz, String fieldName, Object object) throws Exception {
         Field field = PrivilegedAccessHelper.getField(clazz, fieldName, true);
         return field.get(object);
     }

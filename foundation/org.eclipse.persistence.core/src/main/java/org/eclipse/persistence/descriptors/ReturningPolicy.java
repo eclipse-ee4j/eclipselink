@@ -295,7 +295,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
      * is excluded from INSERT clause during SQL generation.
      * The type may be required to bind the output parameter if not known by the mapping.
      */
-    public void addFieldForInsertReturnOnly(String qualifiedName, Class type) {
+    public void addFieldForInsertReturnOnly(String qualifiedName, Class<?> type) {
         addFieldForInsertReturnOnly(createField(qualifiedName, type));
     }
 
@@ -569,7 +569,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
     /**
      * INTERNAL:
      */
-    protected DatabaseField createField(String qualifiedName, Class type) {
+    protected DatabaseField createField(String qualifiedName, Class<?> type) {
         DatabaseField field = new DatabaseField(qualifiedName);
         field.setType(type);
         return field;

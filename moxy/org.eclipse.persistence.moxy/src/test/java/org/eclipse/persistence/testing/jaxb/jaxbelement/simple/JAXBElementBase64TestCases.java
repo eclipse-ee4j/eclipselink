@@ -36,7 +36,7 @@ public class JAXBElementBase64TestCases  extends JAXBElementTestCases {
     }
 
     @Override
-    public Class getUnmarshalClass(){
+    public Class<?> getUnmarshalClass(){
         return byte[].class;
     }
 

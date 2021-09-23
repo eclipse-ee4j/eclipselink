@@ -103,7 +103,7 @@ public class EmployeeNullInCollectionTestCases extends JAXBWithJSONTestCases {
     }
 
     @Override
-    public Class getUnmarshalClass(){
+    public Class<?> getUnmarshalClass(){
     return Employee_B.class;
     }
     /*

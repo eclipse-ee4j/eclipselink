@@ -1634,7 +1634,7 @@ public class ValidationException extends EclipseLinkException {
     * Possible cause:  An amendment method was called but can not be found.
     * Action:  Check that the required amendment method exists on the class specified.
     */
-    public static ValidationException sessionAmendmentExceptionOccured(Exception exception, String amendmentMethod, String amendmentClass, Class[] parameters) {
+    public static ValidationException sessionAmendmentExceptionOccured(Exception exception, String amendmentMethod, String amendmentClass, Class<?>[] parameters) {
         StringBuffer buf = new StringBuffer(30);
         for (int i = 0; i < (parameters.length - 1); i++) {
             buf.append(parameters[i].getName());

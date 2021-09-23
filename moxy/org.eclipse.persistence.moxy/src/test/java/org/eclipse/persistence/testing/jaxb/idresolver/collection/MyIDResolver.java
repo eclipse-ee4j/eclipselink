@@ -53,7 +53,7 @@ public class MyIDResolver extends IDResolver {
     }
 
     @Override
-    public Callable<Object> resolve(final Map<String, Object> idWrapper, final Class type) throws SAXException {
+    public Callable<Object> resolve(final Map<String, Object> idWrapper, final Class<?> type) throws SAXException {
         hitResolve = true;
         return new Callable<Object>() {
             @Override
@@ -75,7 +75,7 @@ public class MyIDResolver extends IDResolver {
     }
 
     @Override
-    public Callable<?> resolve(Object id, Class type) throws SAXException {
+    public Callable<?> resolve(Object id, Class<?> type) throws SAXException {
         hitResolveSingle = true;
         Map<String, Object> idMap = new LinkedHashMap<String, Object>(1);
         idMap.put("stringId", id);

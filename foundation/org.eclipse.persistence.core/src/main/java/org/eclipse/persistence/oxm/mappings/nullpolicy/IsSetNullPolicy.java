@@ -54,10 +54,10 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
  * @since Oracle TopLink 11<i>g</i> Release 1 (11.1.1)
  */
 public class IsSetNullPolicy extends AbstractNullPolicy {
-    private static final Class[] PARAMETER_TYPES = {};
+    private static final Class<?>[] PARAMETER_TYPES = {};
     private static final Object[] PARAMETERS = {};
     private String isSetMethodName;
-    private Class[] isSetParameterTypes = PARAMETER_TYPES;
+    private Class<?>[] isSetParameterTypes = PARAMETER_TYPES;
     private Object[] isSetParameters = PARAMETERS;
     private Method isSetMethod;
 
@@ -185,14 +185,14 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
     /**
      *
      */
-    public Class[] getIsSetParameterTypes() {
+    public Class<?>[] getIsSetParameterTypes() {
         return isSetParameterTypes;
     }
 
     /**
      *
      */
-    public void setIsSetParameterTypes(Class[] parameterTypes) {
+    public void setIsSetParameterTypes(Class<?>[] parameterTypes) {
         isSetParameterTypes = parameterTypes;
     }
 
@@ -210,7 +210,7 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
         isSetParameters = parameters;
     }
 
-    private Method getIsSetMethod(Class aClass) throws NoSuchMethodException {
+    private Method getIsSetMethod(Class<?> aClass) throws NoSuchMethodException {
         if(null == isSetMethod) {
              isSetMethod = PrivilegedAccessHelper.getPublicMethod(aClass, getIsSetMethodName(), getIsSetParameterTypes(), false);
         }

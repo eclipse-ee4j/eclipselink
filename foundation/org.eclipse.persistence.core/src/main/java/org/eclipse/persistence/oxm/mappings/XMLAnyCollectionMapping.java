@@ -704,12 +704,12 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
      * <p>jdk1.1.x: The container class must be a subclass of Vector.
      */
     @Override
-    public void useCollectionClass(Class concreteContainerClass) {
+    public void useCollectionClass(Class<?> concreteContainerClass) {
         this.setContainerPolicy(ContainerPolicy.buildPolicyFor(concreteContainerClass));
     }
 
     @Override
-    public void useMapClass(Class concreteContainerClass, String methodName) {
+    public void useMapClass(Class<?> concreteContainerClass, String methodName) {
         throw DescriptorException.invalidMappingOperation(this, "useMapClass");
     }
 

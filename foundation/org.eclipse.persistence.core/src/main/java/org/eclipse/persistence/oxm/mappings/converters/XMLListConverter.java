@@ -39,7 +39,7 @@ public class XMLListConverter implements Converter {
 
     private XMLConversionManager conversionManager;
     private XMLCompositeDirectCollectionMapping mapping;
-    private Class objectClass = null;
+    private Class<?> objectClass = null;
     private String objectClassName = null;
 
     @Override
@@ -99,7 +99,7 @@ public class XMLListConverter implements Converter {
      * ArrayList&lt;ArrayList&lt;Double&gt;&gt;, FieldSubElementClass would be java.lang.Double.class).
      * @return Class the Class of the elements of this collection's "sub-collection"
      */
-    public Class getObjectClass() {
+    public Class<?> getObjectClass() {
         return objectClass;
     }
 
@@ -109,7 +109,7 @@ public class XMLListConverter implements Converter {
      * ArrayList&lt;ArrayList&lt;Double&gt;&gt;, FieldSubElementClass would be java.lang.Double.class).
      * @param aClass the Class of the elements of this collection's "sub-collection"
      */
-    public void setObjectClass(Class aClass) {
+    public void setObjectClass(Class<?> aClass) {
         this.objectClass = aClass;
         if (this.objectClassName == null) {
             this.objectClassName = aClass.getName();

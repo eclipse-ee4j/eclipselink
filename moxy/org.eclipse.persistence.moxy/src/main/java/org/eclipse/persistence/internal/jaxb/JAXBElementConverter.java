@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,10 +36,10 @@ public class JAXBElementConverter implements XMLConverter {
     private Field associatedField;
     private CoreMapping mapping;
     private CoreConverter nestedConverter;
-    private Class declaredType;
-    private Class scope;
+    private Class<?> declaredType;
+    private Class<?> scope;
 
-    public JAXBElementConverter(Field associatedField, Class declaredType, Class scope) {
+    public JAXBElementConverter(Field associatedField, Class<?> declaredType, Class<?> scope) {
         this.associatedField = associatedField;
         this.declaredType = declaredType;
         this.scope = scope;

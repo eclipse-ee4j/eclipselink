@@ -1087,7 +1087,7 @@ public class Helper extends CoreHelper implements Serializable {
     /**
      *    Returns the object class. If a class is primitive return its non primitive class
      */
-    public static Class getObjectClass(Class javaClass) {
+    public static Class<?> getObjectClass(Class<?> javaClass) {
         return ConversionManager.getObjectClass(javaClass);
     }
 

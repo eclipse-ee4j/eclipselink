@@ -1566,7 +1566,7 @@ public class SDOTypesGenerator {
 
     private Object convertDefaultValue(Type type, String stringValue) {
         if (type != null) {
-            Class javaClass = ((SDOTypeHelper) aHelperContext.getTypeHelper()).getJavaWrapperTypeForSDOType(type);
+            Class<?> javaClass = ((SDOTypeHelper) aHelperContext.getTypeHelper()).getJavaWrapperTypeForSDOType(type);
             if (javaClass != null) {
                 Object objectValue = ((SDODataHelper) aHelperContext.getDataHelper()).convertFromStringValue(stringValue, javaClass);
                 return objectValue;

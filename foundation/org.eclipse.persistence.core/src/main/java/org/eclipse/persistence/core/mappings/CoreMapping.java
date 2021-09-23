@@ -52,7 +52,7 @@ public abstract class CoreMapping<
      *
      * @return TODO
      */
-    public abstract Class getAttributeClassification();
+    public abstract Class<?> getAttributeClassification();
 
     /**
      * PUBLIC:

@@ -47,13 +47,13 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 public class ConstructorResult extends SQLResult {
     /** Stores the class of result  */
     protected String targetClassName;
-    protected transient Class targetClass;
+    protected transient Class<?> targetClass;
 
     /** Stored the column results of this constructor result */
     protected List<ColumnResult> columnResults;
 
-    protected transient Constructor constructor;
-    protected Class[] constructorArgTypes;
+    protected transient Constructor<?> constructor;
+    protected Class<?>[] constructorArgTypes;
 
     /**
      * Default constructor is protected. Users must initialize the constructor
@@ -66,7 +66,7 @@ public class ConstructorResult extends SQLResult {
     /**
      * Constructor accepting target class.
      */
-    public ConstructorResult(Class targetClass){
+    public ConstructorResult(Class<?> targetClass){
         this();
 
         if (targetClass == null) {
@@ -178,7 +178,7 @@ public class ConstructorResult extends SQLResult {
      */
     protected void initialize(DatabaseRecord record, ResultSetMappingQuery query) {
         int columnResultsSize = getColumnResults().size();
-        constructorArgTypes = new Class[columnResultsSize];
+        constructorArgTypes = new Class<?>[columnResultsSize];
 
         for (int i = 0; i < columnResultsSize; i++) {
             ColumnResult result = getColumnResults().get(i);
@@ -200,7 +200,7 @@ public class ConstructorResult extends SQLResult {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
-                    constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<Class<?>>(targetClass, constructorArgTypes, true));
+                    constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(targetClass, constructorArgTypes, true));
                 } catch (PrivilegedActionException exception) {
                     throw QueryException.exceptionWhileInitializingConstructor(exception.getException(), query, targetClass);
                 }

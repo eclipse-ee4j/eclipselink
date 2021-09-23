@@ -53,7 +53,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      * This is used to invalidate the query cache on any change.
      */
     @Override
-    public void invalidateQueryCache(Class classThatChanged) {
+    public void invalidateQueryCache(Class<?> classThatChanged) {
         this.session.getParent().getIdentityMapAccessor().invalidateQueryCache(classThatChanged);
     }
 
@@ -80,7 +80,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      * Clear the query cache associated with the named query on the descriptor for the given class
      */
     @Override
-    public void clearQueryCache(String descriptorQueryName, Class queryClass) {
+    public void clearQueryCache(String descriptorQueryName, Class<?> queryClass) {
         this.session.getParent().getIdentityMapAccessor().clearQueryCache((ReadQuery)session.getDescriptor(queryClass).getQueryManager().getQuery(descriptorQueryName));
     }
 
@@ -89,7 +89,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      * Return if their is an object for the primary key.
      */
     @Override
-    public boolean containsObjectInIdentityMap(Object primaryKey, Class theClass, ClassDescriptor descriptor) {
+    public boolean containsObjectInIdentityMap(Object primaryKey, Class<?> theClass, ClassDescriptor descriptor) {
         if (getIdentityMapManager().containsKey(primaryKey, theClass, descriptor)) {
             return true;
         }
@@ -102,7 +102,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      * will always be returned from a UnitOfWork.
      */
     @Override
-    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, DataRecord translationRow, int valueHolderPolicy, boolean shouldReturnInvalidatedObjects) throws QueryException {
+    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class<?> theClass, DataRecord translationRow, int valueHolderPolicy, boolean shouldReturnInvalidatedObjects) throws QueryException {
         return super.getAllFromIdentityMap(selectionCriteria, theClass, translationRow, valueHolderPolicy, true);
     }
 
@@ -112,7 +112,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      * invalidated objects are always returned since this is a UnitOfWork
      */
     @Override
-    public Object getFromIdentityMapWithDeferredLock(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
+    public Object getFromIdentityMapWithDeferredLock(Object primaryKey, Class<?> theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         Object objectFromCache = super.getFromIdentityMapWithDeferredLock(primaryKey, theClass, true, descriptor);
         if (objectFromCache != null){
             return objectFromCache;
@@ -129,7 +129,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      * In the parent session, only return the object if it has not been Invalidated
      */
     @Override
-    public Object getFromIdentityMap(Object primaryKey, Object object, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
+    public Object getFromIdentityMap(Object primaryKey, Object object, Class<?> theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         Object objectFromCache = super.getFromIdentityMap(primaryKey, object, theClass, true, descriptor);
 
         if (objectFromCache != null) {
@@ -143,7 +143,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      * INTERNAL:
      * This method will return the object from the parent and clone it.
      */
-    protected Object getAndCloneCacheKeyFromParent(Object primaryKey, Object objectToClone, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
+    protected Object getAndCloneCacheKeyFromParent(Object primaryKey, Object objectToClone, Class<?> theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         // Note: Objects returned from the parent's identity map should include invalidated
         // objects. This is important because this internal method is used in the existence
         // check in the UnitOfWork.
@@ -260,7 +260,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      * (e.g. when querying on large project, do not want to check small project, both are inherited
      * from the project, and stored in the same identity map).
      */
-    protected Object checkForInheritance(Object domainObject, Class superClass, ClassDescriptor descriptor) {
+    protected Object checkForInheritance(Object domainObject, Class<?> superClass, ClassDescriptor descriptor) {
         if ((domainObject != null) && ((domainObject.getClass() != superClass) && (!superClass.isInstance(domainObject)))) {
             if (descriptor.hasInheritance() && descriptor.getInheritancePolicy().getUseDescriptorsToValidateInheritedObjects()) {
                 if (descriptor.getInheritancePolicy().getSubclassDescriptor(domainObject.getClass()) == null) {

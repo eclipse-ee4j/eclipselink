@@ -42,12 +42,12 @@ import org.eclipse.persistence.testing.oxm.OXTestCase;
  *  - XMLObjectReferenceMapping
  */
 public class MappingTestProject extends Project {
-    private Class rootObjectClass;
-    private Class testObjectClass;
-    private Class addressClass;
-    private Class anyObjectClass;
-    private Class listContainerPolicyClass;
-    private Class mapContainerPolicyClass;
+    private Class<?> rootObjectClass;
+    private Class<?> testObjectClass;
+    private Class<?> addressClass;
+    private Class<?> anyObjectClass;
+    private Class<?> listContainerPolicyClass;
+    private Class<?> mapContainerPolicyClass;
     private OXTestCase.Platform platform;
     private OXTestCase.Metadata metadata;
 

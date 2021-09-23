@@ -91,7 +91,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
     /**
      * Allow the default collection class to be set.
      */
-    protected static Class<Vector> defaultContainerClass = ClassConstants.Vector_class;
+    protected static Class<? extends Collection> defaultContainerClass = ClassConstants.Vector_class;
 
     /** The descriptor is used to wrap and unwrap objects using the wrapper policy. **/
     protected transient ClassDescriptor elementDescriptor;
@@ -101,7 +101,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * ADVANCED:
      * Return the default collection class.
      */
-    public static Class getDefaultContainerClass() {
+    public static Class<?> getDefaultContainerClass() {
         return defaultContainerClass;
     }
 
@@ -109,7 +109,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * ADVANCED:
      * Allow the default collection class to be set.
      */
-    public static void setDefaultContainerClass(Class collectionClass) {
+    public static void setDefaultContainerClass(Class<? extends Collection> collectionClass) {
         defaultContainerClass = collectionClass;
     }
 
@@ -328,7 +328,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * Return the appropriate container policy for the specified
      * concrete container class.
      */
-    public static ContainerPolicy buildPolicyFor(Class concreteContainerClass) {
+    public static ContainerPolicy buildPolicyFor(Class<?> concreteContainerClass) {
         return buildPolicyFor(concreteContainerClass, false);
     }
 
@@ -337,7 +337,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * Return the appropriate container policy for the specified
      * concrete container class.
      */
-    public static ContainerPolicy buildPolicyFor(Class concreteContainerClass, boolean hasOrdering) {
+    public static ContainerPolicy buildPolicyFor(Class<?> concreteContainerClass, boolean hasOrdering) {
         if (Helper.classImplementsInterface(concreteContainerClass, ClassConstants.List_Class)) {
             if (hasOrdering) {
                 return new OrderedListContainerPolicy(concreteContainerClass);
@@ -609,7 +609,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      */
     @Override
     public Object containerInstance() {
-        Class containerClass = getContainerClass();
+        Class<?> containerClass = getContainerClass();
         // PERF: Avoid reflection for common cases.
         if (containerClass == ClassConstants.IndirectList_Class) {
             return IndirectCollectionsFactory.createIndirectList();
@@ -625,7 +625,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    return AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(containerClass));
+                    return AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(containerClass));
                 } catch (PrivilegedActionException exception) {
                     throw QueryException.couldNotInstantiateContainerClass(containerClass, exception.getException());
                 }
@@ -648,7 +648,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
         if (this.constructor == null) {
             return containerInstance();
         }
-        Class containerClass = getContainerClass();
+        Class<?> containerClass = getContainerClass();
         try {
             // PERF: Avoid reflection for common cases.
             if (containerClass == ClassConstants.IndirectList_Class) {
@@ -800,7 +800,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * INTERNAL:
      * Return the class used for the container.
      */
-    public Class getContainerClass() {
+    public Class<?> getContainerClass() {
         throw QueryException.methodNotValid(this, "getContainerClass()");
     }
 
@@ -906,16 +906,16 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      */
     public void initializeConstructor() {
         try {
-            Constructor constructor = null;
+            Constructor<?> constructor = null;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<Class<?>>(getContainerClass(), new Class[] { ClassConstants.PINT }, false));
+                    constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(getContainerClass(), new Class<?>[] { ClassConstants.PINT }, false));
                 } catch (PrivilegedActionException exception) {
                     // If there is no constructor then the default will be used.
                     return;
                 }
             } else {
-                constructor = PrivilegedAccessHelper.getConstructorFor(getContainerClass(), new Class[] { ClassConstants.PINT }, false);
+                constructor = PrivilegedAccessHelper.getConstructorFor(getContainerClass(), new Class<?>[] { ClassConstants.PINT }, false);
             }
             setConstructor(constructor);
         } catch (Exception exception) {
@@ -993,7 +993,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * INTERNAL:
      * Return whether the specified type is a valid container type.
      */
-    public boolean isValidContainerType(Class containerType) {
+    public boolean isValidContainerType(Class<?> containerType) {
         throw QueryException.methodNotValid(this, "isValidContainerType(Class containerType)");
     }
 
@@ -1057,7 +1057,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
                     // stop the recursion.
                     // CR 3424  - Need to build the right instance based on
                     // class type instead of referenceDescriptor.
-                    Class objectClass = objectChanges.getClassType(mergeManager.getSession());
+                    Class<?> objectClass = objectChanges.getClassType(mergeManager.getSession());
                     object = mergeManager.getSession().getDescriptor(objectClass).getObjectBuilder().buildNewInstance();
                     // Store the change set to prevent us from creating this new object again.
                     mergeManager.recordMerge(objectChanges, object, targetSession);
@@ -1457,7 +1457,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * Set the class used for the container.
      */
     @Override
-    public void setContainerClass(Class containerClass) {
+    public void setContainerClass(Class<?> containerClass) {
         throw QueryException.methodNotValid(this, "getContainerClass()");
     }
 
@@ -1495,7 +1495,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * An instance of the class is provided in the case when the descriptor is being
      * built in code.
      */
-    public void setKeyName(String instanceVariableName, Class elementClass) {
+    public void setKeyName(String instanceVariableName, Class<?> elementClass) {
         throw ValidationException.containerPolicyDoesNotUseKeys(this, instanceVariableName);
     }
 

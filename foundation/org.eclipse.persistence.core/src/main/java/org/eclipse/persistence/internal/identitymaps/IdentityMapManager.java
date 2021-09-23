@@ -83,13 +83,13 @@ public class IdentityMapManager implements Serializable, Cloneable {
     protected static final String MONITOR_PREFIX = SessionProfiler.CacheSize;
 
     /** A table of identity maps with the key being the domain Class. */
-    protected Map<Class, IdentityMap> identityMaps;
+    protected Map<Class<?>, IdentityMap> identityMaps;
 
     /** A table of identity maps with the key being the query */
     protected Map<Object, IdentityMap> queryResults;
 
     /** A map of class to list of queries that need to be invalidated when that class changes. */
-    protected Map<Class, Set> queryResultsInvalidationsByClass;
+    protected Map<Class<?>, Set> queryResultsInvalidationsByClass;
 
     /** A map of indexes on the cache. */
     protected Map<CacheIndex, IdentityMap> cacheIndexes;
@@ -135,7 +135,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
     /**
      * Provides access for setting a deferred lock on an object in the IdentityMap.
      */
-    public CacheKey acquireDeferredLock(Object primaryKey, Class domainClass, ClassDescriptor descriptor, boolean isCacheCheckComplete) {
+    public CacheKey acquireDeferredLock(Object primaryKey, Class<?> domainClass, ClassDescriptor descriptor, boolean isCacheCheckComplete) {
         CacheKey cacheKey = null;
         if (this.isCacheAccessPreCheckRequired) {
             this.session.startOperationProfile(SessionProfiler.Caching);
@@ -161,7 +161,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * Provides access for setting a concurrency lock on an object in the IdentityMap.
      * called with true from the merge process, if true then the refresh will not refresh the object.
      */
-    public CacheKey acquireLock(Object primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor, boolean isCacheCheckComplete) {
+    public CacheKey acquireLock(Object primaryKey, Class<?> domainClass, boolean forMerge, ClassDescriptor descriptor, boolean isCacheCheckComplete) {
         if (primaryKey == null) {
             CacheKey cacheKey = new CacheKey(null);
             cacheKey.acquire();
@@ -192,7 +192,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * Provides access for setting a concurrency lock on an object in the IdentityMap.
      * called with true from the merge process, if true then the refresh will not refresh the object.
      */
-    public CacheKey acquireLockNoWait(Object primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor) {
+    public CacheKey acquireLockNoWait(Object primaryKey, Class<?> domainClass, boolean forMerge, ClassDescriptor descriptor) {
         if (primaryKey == null) {
             CacheKey cacheKey = new CacheKey(null);
             cacheKey.acquire();
@@ -223,7 +223,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * Provides access for setting a concurrency lock on an object in the IdentityMap.
      * called with true from the merge process, if true then the refresh will not refresh the object.
      */
-    public CacheKey acquireLockWithWait(Object primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor, int wait) {
+    public CacheKey acquireLockWithWait(Object primaryKey, Class<?> domainClass, boolean forMerge, ClassDescriptor descriptor, int wait) {
         if (primaryKey == null) {
             CacheKey cacheKey = new CacheKey(null);
             cacheKey.acquire();
@@ -282,7 +282,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * This will allow multiple users to read the same object but prevent writes to
      * the object while the read lock is held.
      */
-    public CacheKey acquireReadLockOnCacheKey(Object primaryKey, Class domainClass, ClassDescriptor descriptor) {
+    public CacheKey acquireReadLockOnCacheKey(Object primaryKey, Class<?> domainClass, ClassDescriptor descriptor) {
         if (primaryKey == null) {
             CacheKey cacheKey = new CacheKey(null);
             cacheKey.acquireReadLock();
@@ -312,7 +312,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * the object while the read lock is held.
      * If no readlock can be acquired then do not wait but return null.
      */
-    public CacheKey acquireReadLockOnCacheKeyNoWait(Object primaryKey, Class domainClass, ClassDescriptor descriptor) {
+    public CacheKey acquireReadLockOnCacheKeyNoWait(Object primaryKey, Class<?> domainClass, ClassDescriptor descriptor) {
         if (primaryKey == null) {
             CacheKey cacheKey = new CacheKey(null);
             cacheKey.acquireReadLock();
@@ -394,13 +394,13 @@ public class IdentityMapManager implements Serializable, Cloneable {
             }
         }
         try {
-            Class[] parameters = new Class[]{ClassConstants.PINT, ClassDescriptor.class, AbstractSession.class, boolean.class};
+            Class<?>[] parameters = new Class<?>[]{ClassConstants.PINT, ClassDescriptor.class, AbstractSession.class, boolean.class};
             Object[] values = new Object[]{size, descriptor, this.session, isIsolated};
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 Constructor<T> constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(identityMapClass, parameters, false));
                 IdentityMap map = AccessController.doPrivileged(new PrivilegedInvokeConstructor<>(constructor, values));
                 if ((descriptor != null) && (descriptor.getCachePolicy().getCacheInterceptorClass() != null)) {
-                    Constructor<? extends CacheInterceptor> interceptor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(descriptor.getCacheInterceptorClass(), new Class[] { IdentityMap.class, AbstractSession.class }, false));
+                    Constructor<? extends CacheInterceptor> interceptor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(descriptor.getCacheInterceptorClass(), new Class<?>[] { IdentityMap.class, AbstractSession.class }, false));
                     Object params[] = new Object[]{map, this.session};
                     map = AccessController.doPrivileged(new PrivilegedInvokeConstructor<>(interceptor, params));
                 }
@@ -409,7 +409,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 Constructor<T> constructor = PrivilegedAccessHelper.<T>getConstructorFor(identityMapClass, parameters, false);
                 IdentityMap map = PrivilegedAccessHelper.<T>invokeConstructor(constructor, values);
                 if ((descriptor != null) && (descriptor.getCacheInterceptorClass() != null)) {
-                    Constructor<? extends CacheInterceptor> interceptor = PrivilegedAccessHelper.getConstructorFor(descriptor.getCacheInterceptorClass(), new Class[] { IdentityMap.class, AbstractSession.class }, false);
+                    Constructor<? extends CacheInterceptor> interceptor = PrivilegedAccessHelper.getConstructorFor(descriptor.getCacheInterceptorClass(), new Class<?>[] { IdentityMap.class, AbstractSession.class }, false);
                     Object params[] = new Object[]{map, this.session};
                     map = PrivilegedAccessHelper.invokeConstructor(interceptor, params);
                 }
@@ -438,8 +438,8 @@ public class IdentityMapManager implements Serializable, Cloneable {
         try {
             manager = (IdentityMapManager)super.clone();
             manager.setIdentityMaps(new ConcurrentHashMap());
-            for (Iterator<Map.Entry<Class, IdentityMap>> iterator = this.identityMaps.entrySet().iterator(); iterator.hasNext();) {
-                Map.Entry<Class, IdentityMap> entry = iterator.next();
+            for (Iterator<Map.Entry<Class<?>, IdentityMap>> iterator = this.identityMaps.entrySet().iterator(); iterator.hasNext();) {
+                Map.Entry<Class<?>, IdentityMap> entry = iterator.next();
                 manager.identityMaps.put(entry.getKey(), (IdentityMap) entry.getValue().clone());
             }
         } catch (CloneNotSupportedException exception) {
@@ -483,7 +483,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * Invalidate/remove any results for the class from the query cache.
      * This is used to invalidate the query cache on any change.
      */
-    public void invalidateQueryCache(Class classThatChanged) {
+    public void invalidateQueryCache(Class<?> classThatChanged) {
         if (this.queryResultsInvalidationsByClass == null) {
             return;
         }
@@ -493,7 +493,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 this.queryResults.remove(queryKey);
             }
         }
-        Class superClass = classThatChanged.getSuperclass();
+        Class<?> superClass = classThatChanged.getSuperclass();
         if ((superClass != null) && (superClass != ClassConstants.OBJECT)) {
             invalidateQueryCache(superClass);
         }
@@ -504,7 +504,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * User API.
      * @param key is the primary key for the object to search for.
      */
-    public boolean containsKey(Object key, Class theClass, ClassDescriptor descriptor) {
+    public boolean containsKey(Object key, Class<?> theClass, ClassDescriptor descriptor) {
         if (key == null) {
             return false;
         }
@@ -529,7 +529,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
     /**
      * Query the cache in-memory.
      */
-    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, DataRecord translationRow, int valueHolderPolicy, boolean shouldReturnInvalidatedObjects) {
+    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class<?> theClass, DataRecord translationRow, int valueHolderPolicy, boolean shouldReturnInvalidatedObjects) {
         ClassDescriptor descriptor = this.session.getDescriptor(theClass);
         this.session.startOperationProfile(SessionProfiler.Caching);
         Vector objects = null;
@@ -623,7 +623,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
     /**
      * Invalidate objects meeting selectionCriteria.
      */
-    public void invalidateObjects(Expression selectionCriteria, Class theClass, DataRecord translationRow, boolean shouldInvalidateOnException) {
+    public void invalidateObjects(Expression selectionCriteria, Class<?> theClass, DataRecord translationRow, boolean shouldInvalidateOnException) {
         ClassDescriptor descriptor = this.session.getDescriptor(theClass);
         this.session.startOperationProfile(SessionProfiler.Caching);
         try {
@@ -714,7 +714,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
     /**
      * Retrieve the cache key for the given identity information.
      */
-    public CacheKey getCacheKeyForObjectForLock(Object primaryKey, Class theClass, ClassDescriptor descriptor) {
+    public CacheKey getCacheKeyForObjectForLock(Object primaryKey, Class<?> theClass, ClassDescriptor descriptor) {
         if (primaryKey == null) {
             return null;
         }
@@ -741,7 +741,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
     /**
      * Retrieve the cache key for the given identity information.
      */
-    public CacheKey getCacheKeyForObject(Object primaryKey, Class theClass, ClassDescriptor descriptor, boolean forMerge) {
+    public CacheKey getCacheKeyForObject(Object primaryKey, Class<?> theClass, ClassDescriptor descriptor, boolean forMerge) {
         if (primaryKey == null) {
             return null;
         }
@@ -777,7 +777,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * This method is used to get a list of those classes with IdentityMaps in the Session.
      */
     public Vector getClassesRegistered() {
-        Iterator<Class> classes = getIdentityMaps().keySet().iterator();
+        Iterator<Class<?>> classes = getIdentityMaps().keySet().iterator();
         Vector results = new Vector(getIdentityMaps().size());
         while (classes.hasNext()) {
             results.add(classes.next().getName());
@@ -798,7 +798,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
     /**
      * Get the object from the identity map which has the given primary key and class.
      */
-    public Object getFromIdentityMap(Object key, Class theClass, ClassDescriptor descriptor) {
+    public Object getFromIdentityMap(Object key, Class<?> theClass, ClassDescriptor descriptor) {
         return getFromIdentityMap(key, theClass, true, descriptor);
     }
 
@@ -806,7 +806,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * Get the object from the identity map which has the given primary key and class.
      * Only return the object if it has not been invalidated.
      */
-    public Object getFromIdentityMap(Object key, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
+    public Object getFromIdentityMap(Object key, Class<?> theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         if (key == null) {
             return null;
         }
@@ -846,7 +846,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
         return domainObject;
     }
 
-    public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, DataRecord translationRow, int valueHolderPolicy, boolean conforming, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
+    public Object getFromIdentityMap(Expression selectionCriteria, Class<?> theClass, DataRecord translationRow, int valueHolderPolicy, boolean conforming, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         UnitOfWorkImpl unitOfWork = (conforming) ? (UnitOfWorkImpl)this.session : null;
         this.session.startOperationProfile(SessionProfiler.Caching);
         try {
@@ -923,7 +923,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * Get the object from the cache with the given primary key and class.
      * Do not return the object if it was invalidated.
      */
-    public Object getFromIdentityMapWithDeferredLock(Object key, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
+    public Object getFromIdentityMapWithDeferredLock(Object key, Class<?> theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         if (key == null) {
             return null;
         }
@@ -982,7 +982,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
         if (descriptor.hasInheritance()) {
             descriptor = descriptor.getInheritancePolicy().getRootParentDescriptor();
         }
-        Class descriptorClass = descriptor.getJavaClass();
+        Class<?> descriptorClass = descriptor.getJavaClass();
 
         // PERF: First check if same as lastAccessedIdentityMap to avoid lookup.
         IdentityMap tempMap = this.lastAccessedIdentityMap;
@@ -1014,7 +1014,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
         return identityMap;
     }
 
-    protected Map<Class, IdentityMap> getIdentityMaps() {
+    protected Map<Class<?>, IdentityMap> getIdentityMaps() {
         return identityMaps;
     }
 
@@ -1116,7 +1116,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * Get the wrapper object from the cache key associated with the given primary key,
      * this is used for EJB.
      */
-    public Object getWrapper(Object primaryKey, Class theClass) {
+    public Object getWrapper(Object primaryKey, Class<?> theClass) {
         ClassDescriptor descriptor = this.session.getDescriptor(theClass);
         IdentityMap map = getIdentityMap(descriptor, false);
         Object wrapper;
@@ -1152,7 +1152,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
     /**
      * Retrieve the write lock value of the cache key associated with the given primary key,
      */
-    public Object getWriteLockValue(Object primaryKey, Class domainClass, ClassDescriptor descriptor) {
+    public Object getWriteLockValue(Object primaryKey, Class<?> domainClass, ClassDescriptor descriptor) {
         if (primaryKey == null) {
             return null;
         }
@@ -1177,7 +1177,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * Reset the identity map for only the instances of the class.
      * For inheritance the user must make sure that they only use the root class.
      */
-    public void initializeIdentityMap(Class theClass) throws EclipseLinkException {
+    public void initializeIdentityMap(Class<?> theClass) throws EclipseLinkException {
         ClassDescriptor descriptor = this.session.getDescriptor(theClass);
 
         if (descriptor == null) {
@@ -1187,7 +1187,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
             throw ValidationException.childDescriptorsDoNotHaveIdentityMap();
         }
         // Bug 3736313 - look up identity map by descriptor's java class
-        Class javaClass = descriptor.getJavaClass();
+        Class<?> javaClass = descriptor.getJavaClass();
         IdentityMap identityMap = buildNewIdentityMap(descriptor);
         getIdentityMaps().put(javaClass, identityMap);
         clearLastAccessedIdentityMap();
@@ -1205,7 +1205,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * Used to print all the objects in the identity map of the passed in class.
      * The output of this method will be logged to this session's SessionLog at SEVERE level.
      */
-    public void printIdentityMap(Class businessClass) {
+    public void printIdentityMap(Class<?> businessClass) {
         String cr = Helper.cr();
         ClassDescriptor descriptor = this.session.getDescriptor(businessClass);
         int cacheCounter = 0;
@@ -1334,7 +1334,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * Used to print all the Locks in the specified identity map in this session.
      * The output of this method will be logged to this session's SessionLog at FINEST level.
      */
-    public void printLocks(Class theClass) {
+    public void printLocks(Class<?> theClass) {
         ClassDescriptor descriptor = this.session.getDescriptor(theClass);
         StringWriter writer = new StringWriter();
         HashMap threadCollection = new HashMap();
@@ -1432,7 +1432,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                     this.queryResults.put(queryKey, map);
                     // Mark the query to be invalidated for the query classes.
                     if (query.getQueryResultsCachePolicy().getInvalidateOnChange()) {
-                        for (Class queryClass : query.getQueryResultsCachePolicy().getInvalidationClasses()) {
+                        for (Class<?> queryClass : query.getQueryResultsCachePolicy().getInvalidationClasses()) {
                             Set invalidations = this.queryResultsInvalidationsByClass.get(queryClass);
                             if (invalidations == null) {
                                 invalidations = new HashSet();
@@ -1487,7 +1487,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
     /**
      * Remove the object from the object cache.
      */
-    public Object removeFromIdentityMap(Object key, Class domainClass, ClassDescriptor descriptor, Object objectToRemove) {
+    public Object removeFromIdentityMap(Object key, Class<?> domainClass, ClassDescriptor descriptor, Object objectToRemove) {
         if (key == null) {
             return null;
         }
@@ -1535,7 +1535,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * Update the wrapper object the cache key associated with the given primary key,
      * this is used for EJB.
      */
-    public void setWrapper(Object primaryKey, Class theClass, Object wrapper) {
+    public void setWrapper(Object primaryKey, Class<?> theClass, Object wrapper) {
         ClassDescriptor descriptor = this.session.getDescriptor(theClass);
         IdentityMap map = getIdentityMap(descriptor, false);
 
@@ -1557,7 +1557,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
     /**
      * Update the write lock value of the cache key associated with the given primary key,
      */
-    public void setWriteLockValue(Object primaryKey, Class theClass, Object writeLockValue) {
+    public void setWriteLockValue(Object primaryKey, Class<?> theClass, Object writeLockValue) {
         if (primaryKey == null) {
             return;
         }
@@ -1586,7 +1586,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * 2. EJB container-generated classes broke the inheritance hierarchy. Need to use associated descriptor to track
      *    the relationship. CR4005-2612426, King-Sept-18-2002
      */
-    protected Object checkForInheritance(Object domainObject, Class superClass, ClassDescriptor descriptor) {
+    protected Object checkForInheritance(Object domainObject, Class<?> superClass, ClassDescriptor descriptor) {
         if ((domainObject != null) && ((domainObject.getClass() != superClass) && (!superClass.isInstance(domainObject)))) {
             // Before returning null, check if we are using EJB inheritance.
             if (descriptor.hasInheritance() && descriptor.getInheritancePolicy().getUseDescriptorsToValidateInheritedObjects()) {

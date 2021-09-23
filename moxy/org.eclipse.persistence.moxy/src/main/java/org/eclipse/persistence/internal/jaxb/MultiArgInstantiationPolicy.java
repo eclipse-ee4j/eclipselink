@@ -36,7 +36,7 @@ import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
  */
 public class MultiArgInstantiationPolicy extends InstantiationPolicy {
     private String[] parameterTypeNames;
-    private Class[] parameterTypes;
+    private Class<?>[] parameterTypes;
 
     private Object[] defaultValues;
 
@@ -45,7 +45,7 @@ public class MultiArgInstantiationPolicy extends InstantiationPolicy {
         this.parameterTypeNames = parameterTypeNames;
     }
 
-    public void setParameterTypes(Class[] parameterTypes) {
+    public void setParameterTypes(Class<?>[] parameterTypes) {
         this.parameterTypes = parameterTypes;
     }
 
@@ -58,7 +58,7 @@ public class MultiArgInstantiationPolicy extends InstantiationPolicy {
         super.convertClassNamesToClasses(loader);
         if(parameterTypes == null) {
             if(parameterTypeNames != null) {
-                Class[] values = new Class[parameterTypeNames.length];
+                Class<?>[] values = new Class<?>[parameterTypeNames.length];
                 for(int i = 0; i < values.length; i++) {
                     try{
                         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
@@ -81,7 +81,7 @@ public class MultiArgInstantiationPolicy extends InstantiationPolicy {
     }
     @Override
     protected void initializeMethod() throws DescriptorException {
-        Class tempClass;
+        Class<?> tempClass;
         if (this.getFactory() != null) {
             tempClass = this.getFactory().getClass();
         } else if (this.getFactoryClass() == null) {
@@ -90,7 +90,7 @@ public class MultiArgInstantiationPolicy extends InstantiationPolicy {
             tempClass = this.getFactoryClass();
         }
         if(this.parameterTypes == null) {
-            this.setMethod(this.buildMethod(tempClass, this.getMethodName(), new Class[0]));
+            this.setMethod(this.buildMethod(tempClass, this.getMethodName(), new Class<?>[0]));
         } else {
             this.setMethod(this.buildMethod(tempClass, this.getMethodName(), this.parameterTypes));
         }

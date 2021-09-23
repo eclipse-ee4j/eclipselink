@@ -47,9 +47,9 @@ import org.eclipse.persistence.queries.ReadQuery;
  * @since 2.5.0.5
  */
 public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
-    private Class containerClass;
+    private Class<?> containerClass;
     private String containerClassName;
-    private transient Constructor containerConstructor;
+    private transient Constructor<?> containerConstructor;
 
     /**
      * INTERNAL:
@@ -144,7 +144,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
     /**
      * Returns the Container class which implements IndirectContainer.
      */
-    public Class getContainerClass() {
+    public Class<?> getContainerClass() {
         return containerClass;
     }
 
@@ -227,7 +227,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try{
-                    this.containerConstructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<Class<?>>(getContainerClass(), new Class[] { ClassConstants.ValueHolderInterface_Class }, false));
+                    this.containerConstructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(getContainerClass(), new Class<?>[] { ClassConstants.ValueHolderInterface_Class }, false));
                 }catch (PrivilegedActionException ex){
                     if (ex.getCause() instanceof NoSuchMethodException){
                         throw (NoSuchMethodException) ex.getCause();
@@ -235,7 +235,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
                     throw (RuntimeException)ex.getCause();
                 }
             }else{
-                this.containerConstructor = PrivilegedAccessHelper.getConstructorFor(getContainerClass(), new Class[] { ClassConstants.ValueHolderInterface_Class }, false);
+                this.containerConstructor = PrivilegedAccessHelper.getConstructorFor(getContainerClass(), new Class<?>[] { ClassConstants.ValueHolderInterface_Class }, false);
             }
             return;
         } catch (NoSuchMethodException nsme) {// DO NOTHING, exception thrown at end
@@ -245,7 +245,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try{
-                    this.containerConstructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<Class<?>>(getContainerClass(), new Class[0], false));
+                    this.containerConstructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(getContainerClass(), new Class<?>[0], false));
                 }catch (PrivilegedActionException ex){
                     if (ex.getCause() instanceof NoSuchMethodException){
                         throw (NoSuchMethodException) ex.getCause();
@@ -253,7 +253,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
                     throw (RuntimeException)ex.getCause();
                 }
             }else{
-                this.containerConstructor = PrivilegedAccessHelper.getConstructorFor(getContainerClass(), new Class[0], false);
+                this.containerConstructor = PrivilegedAccessHelper.getConstructorFor(getContainerClass(), new Class<?>[0], false);
             }
             return;
         } catch (NoSuchMethodException nsme) {// DO NOTHING, exception thrown at end
@@ -331,7 +331,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
     /**
      * Sets the Container class which implements IndirectContainer
      */
-    public void setContainerClass(Class containerClass) {
+    public void setContainerClass(Class<?> containerClass) {
         this.containerClass = containerClass;
     }
 

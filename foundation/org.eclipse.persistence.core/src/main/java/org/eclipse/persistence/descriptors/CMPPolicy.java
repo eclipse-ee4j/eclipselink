@@ -62,7 +62,7 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
 
 
     /** Class originally mapped, before anything was generated. */
-    protected Class mappedClass;
+    protected Class<?> mappedClass;
     protected ClassDescriptor descriptor;
 
     /** The object deferral level.  This controls when objects changes will be sent to the Database. */
@@ -128,7 +128,7 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
      * Define the mapped class. This is the class which was originally mapped in the MW
      *
      */
-    public void setMappedClass(Class newMappedClass) {
+    public void setMappedClass(Class<?> newMappedClass) {
         mappedClass = newMappedClass;
     }
 
@@ -137,7 +137,7 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
      * Answer the mapped class. This is the class which was originally mapped in the MW
      *
      */
-    public Class getMappedClass() {
+    public Class<?> getMappedClass() {
         return mappedClass;
     }
 
@@ -505,11 +505,11 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
      * INTERNAL:
      * Return a new instance of the class provided.
      */
-    public Object getClassInstance(Class cls) {
+    public Object getClassInstance(Class<?> cls) {
         if (cls != null){
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    return AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(cls));
+                    return AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(cls));
                 } else {
                     return org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(cls);
                 }

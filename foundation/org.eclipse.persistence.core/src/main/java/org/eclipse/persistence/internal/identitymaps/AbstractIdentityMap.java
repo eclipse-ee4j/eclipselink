@@ -381,7 +381,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * Recurse = true will include subclasses of myClass in the count.
      */
     @Override
-    public abstract int getSize(Class myClass, boolean recurse);
+    public abstract int getSize(Class<?> myClass, boolean recurse);
 
     /**
      * Get the wrapper object from the cache key associated with the given primary key,
@@ -485,7 +485,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * Return the class that this is the map for.
      */
     @Override
-    public Class getDescriptorClass() {
+    public Class<?> getDescriptorClass() {
         if (descriptor == null) {
             return null;
         }

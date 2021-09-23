@@ -33,7 +33,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 public class PopulationManager {
 
     /** Store the objects registered. */
-    protected Map<Class, Map<String, Object>> registeredObjects;
+    protected Map<Class<?>, Map<String, Object>> registeredObjects;
 
     /** Store the default instance. */
     protected static PopulationManager defaultManager;
@@ -46,7 +46,7 @@ public class PopulationManager {
      * Add all of the objects of the class and all of its subclasses.
      * The session is needed because there is no other way to find all subclasses.
      */
-    public void addAllObjectsForAbstractClass(Class objectsClass, AbstractSession session, Vector<Object> allObjects) {
+    public void addAllObjectsForAbstractClass(Class<?> objectsClass, AbstractSession session, Vector<Object> allObjects) {
         ClassDescriptor descriptor = session.getDescriptor(objectsClass);
         addAllObjectsForClass(objectsClass, allObjects);
         for (ClassDescriptor child : descriptor.getInheritancePolicy().getChildDescriptors()) {
@@ -58,14 +58,14 @@ public class PopulationManager {
      * Add all of the objects of the class and all of its subclasses.
      * The session is needed because there is no other way to find all subclasses.
      */
-    public void addAllObjectsForAbstractClass(Class objectsClass, org.eclipse.persistence.sessions.Session session, Vector<Object> allObjects) {
+    public void addAllObjectsForAbstractClass(Class<?> objectsClass, org.eclipse.persistence.sessions.Session session, Vector<Object> allObjects) {
         addAllObjectsForAbstractClass(objectsClass, (AbstractSession)session, allObjects);
     }
 
     /**
      * Add all of the objects of the class.
      */
-    public void addAllObjectsForClass(Class objectsClass, List<Object> allObjects) {
+    public void addAllObjectsForClass(Class<?> objectsClass, List<Object> allObjects) {
         if (!getRegisteredObjects().containsKey(objectsClass)) {
             return;
         }
@@ -78,7 +78,7 @@ public class PopulationManager {
     /**
      * Check if the object is registered given its name.
      */
-    public boolean containsObject(Class objectsClass, String objectsName) {
+    public boolean containsObject(Class<?> objectsClass, String objectsName) {
         return ((getRegisteredObjects().containsKey(objectsClass)) && (getRegisteredObjects().get(objectsClass).containsKey(objectsName)));
     }
 
@@ -92,8 +92,8 @@ public class PopulationManager {
     /**
      * Return all of the objects registered.
      */
-    public List<Class> getAllClasses() {
-        Vector<Class> allClasses = new Vector<>();
+    public List<Class<?>> getAllClasses() {
+        Vector<Class<?>> allClasses = new Vector<>();
         allClasses.addAll(getRegisteredObjects().keySet());
         return allClasses;
     }
@@ -103,7 +103,7 @@ public class PopulationManager {
      */
     public Vector<Object> getAllObjects() {
         Vector<Object> allObjects = new Vector<> ();
-        for (Class eachClass : getAllClasses()) {
+        for (Class<?> eachClass : getAllClasses()) {
             addAllObjectsForClass(eachClass, allObjects);
         }
 
@@ -113,7 +113,7 @@ public class PopulationManager {
     /**
      * Return all of the objects of the class and all of its subclasses.
      */
-    public List<Object> getAllObjectsForAbstractClass(Class objectsClass) {
+    public List<Object> getAllObjectsForAbstractClass(Class<?> objectsClass) {
         List<Object> allObjects = new Vector<>();
         // hummm, how can this be done....
         return allObjects;
@@ -123,7 +123,7 @@ public class PopulationManager {
      * Return all of the objects of the class and all of its subclasses.
      * The session is needed because there is no other way to find all subclasses.
      */
-    public List<Object> getAllObjectsForAbstractClass(Class objectsClass, AbstractSession session) {
+    public List<Object> getAllObjectsForAbstractClass(Class<?> objectsClass, AbstractSession session) {
         ClassDescriptor descriptor = session.getDescriptor(objectsClass);
         List<Object> allObjects = new Vector<>();
         addAllObjectsForClass(objectsClass, allObjects);
@@ -139,7 +139,7 @@ public class PopulationManager {
     /**
      * Return all of the objects of the class.
      */
-    public Vector<Object> getAllObjectsForClass(Class objectsClass) {
+    public Vector<Object> getAllObjectsForClass(Class<?> objectsClass) {
         Vector<Object> allObjects = new Vector<>();
         addAllObjectsForClass(objectsClass, allObjects);
 
@@ -159,7 +159,7 @@ public class PopulationManager {
     /**
      * Return the object registered given its name.
      */
-    public Object getObject(Class objectsClass, String objectsName) {
+    public Object getObject(Class<?> objectsClass, String objectsName) {
         if (!(getRegisteredObjects().containsKey(objectsClass))) {
             return null;
         }
@@ -170,7 +170,7 @@ public class PopulationManager {
     /**
      * Return the registered objects.
      */
-    public Map<Class, Map<String, Object>> getRegisteredObjects() {
+    public Map<Class<?>, Map<String, Object>> getRegisteredObjects() {
         return registeredObjects;
     }
 
@@ -178,7 +178,7 @@ public class PopulationManager {
      * Register the object given its name.
      * The objects are represented as a hashtable of hashtables, lazy initialized on the class.
      */
-    public Object registerObject(Class javaClass, Object objectToRegister, String objectsName) {
+    public Object registerObject(Class<?> javaClass, Object objectToRegister, String objectsName) {
         if (!(getRegisteredObjects().containsKey(javaClass))) {
             getRegisteredObjects().put(javaClass, new Hashtable<>());
         }
@@ -203,7 +203,7 @@ public class PopulationManager {
     /**
      * Remove the object given its class and name.
      */
-    public void removeObject(Class classToRemove, String objectsName) {
+    public void removeObject(Class<?> classToRemove, String objectsName) {
         if (getRegisteredObjects().containsKey(classToRemove)) {
             getRegisteredObjects().get(classToRemove).remove(objectsName);
         }
@@ -235,7 +235,7 @@ public class PopulationManager {
     /**
      * Set the registered objects.
      */
-    public void setRegisteredObjects(Map<Class, Map<String, Object>> registeredObjects) {
+    public void setRegisteredObjects(Map<Class<?>, Map<String, Object>> registeredObjects) {
         this.registeredObjects = registeredObjects;
     }
 }

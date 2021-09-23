@@ -52,7 +52,7 @@ public class ClassInstanceConverter implements Converter {
     public Object convertDataValueToObjectValue(Object fieldValue, Session session) {
         Object attributeValue = null;
         if (fieldValue != null) {
-            Class attributeClass = session.getDatasourcePlatform().convertObject(fieldValue, ClassConstants.CLASS);
+            Class<?> attributeClass = session.getDatasourcePlatform().convertObject(fieldValue, ClassConstants.CLASS);
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {

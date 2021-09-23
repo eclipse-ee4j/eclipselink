@@ -86,7 +86,7 @@ public class StoredFunctionDefinition extends StoredProcedureDefinition {
     /**
      * Prints return for stored function
      */
-    public void setReturnType(Class type) {
+    public void setReturnType(Class<?> type) {
         FieldDefinition argument = getArguments().get(0);
         argument.setType(type);
     }

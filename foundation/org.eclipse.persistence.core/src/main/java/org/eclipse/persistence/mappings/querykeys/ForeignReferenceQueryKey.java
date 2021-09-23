@@ -42,7 +42,7 @@ import org.eclipse.persistence.internal.security.PrivilegedClassForName;
  * </ul>
  */
 public class ForeignReferenceQueryKey extends QueryKey {
-    protected Class referenceClass;
+    protected Class<?> referenceClass;
     protected String referenceClassName;
     protected Expression joinCriteria;
 
@@ -53,7 +53,7 @@ public class ForeignReferenceQueryKey extends QueryKey {
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
-        Class referenceClass = null;
+        Class<?> referenceClass = null;
         try{
             if (referenceClassName != null){
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
@@ -84,7 +84,7 @@ public class ForeignReferenceQueryKey extends QueryKey {
      * PUBLIC:
      * Return the reference class of the relationship.
      */
-    public Class getReferenceClass() {
+    public Class<?> getReferenceClass() {
         return referenceClass;
     }
 
@@ -126,7 +126,7 @@ public class ForeignReferenceQueryKey extends QueryKey {
      * Set the reference class of the relationship.
      * This is not required for direct collection query keys.
      */
-    public void setReferenceClass(Class referenceClass) {
+    public void setReferenceClass(Class<?> referenceClass) {
         this.referenceClass = referenceClass;
     }
 

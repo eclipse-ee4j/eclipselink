@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,7 +47,7 @@ public @interface PLSQLRecord {
      * (Optional) The Java class to map the object-type to.
      * This class must be mapped using a @Struct annotation.
      */
-    Class javaType() default void.class;
+    Class<?> javaType() default void.class;
 
     /**
      * (Required) Defines the fields in the record type.

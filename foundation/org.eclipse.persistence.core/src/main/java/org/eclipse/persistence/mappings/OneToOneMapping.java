@@ -900,7 +900,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * This is used to convert the row value to a consistent java value.
      */
     @Override
-    public Class getFieldClassification(DatabaseField fieldToClassify) throws DescriptorException {
+    public Class<?> getFieldClassification(DatabaseField fieldToClassify) throws DescriptorException {
         DatabaseField fieldInTarget = getSourceToTargetKeyFields().get(fieldToClassify);
         if (fieldInTarget == null) {
             return null;// Can be registered as multiple table secondary field mapping
@@ -1094,7 +1094,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * Return the class this key mapping maps or the descriptor for it
      */
     @Override
-    public Class getMapKeyTargetType(){
+    public Class<?> getMapKeyTargetType(){
         return getReferenceClass();
     }
 
@@ -1787,7 +1787,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         AbstractRecord referenceRow = this.indirectionPolicy.extractReferenceRow(attributeValue);
         if (referenceRow != null) {
             Object value = referenceRow.get(field);
-            Class type = getFieldClassification(field);
+            Class<?> type = getFieldClassification(field);
             if ((value == null) || (value.getClass() != type)) {
                 // Must ensure the classification to get a cache hit.
                 try {

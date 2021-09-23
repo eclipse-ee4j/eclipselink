@@ -41,7 +41,7 @@ public class JAXBElementCharacterTestCases extends JAXBElementTestCases {
     }
 
     @Override
-    public Class getUnmarshalClass(){
+    public Class<?> getUnmarshalClass(){
         return Character.class;
     }
 

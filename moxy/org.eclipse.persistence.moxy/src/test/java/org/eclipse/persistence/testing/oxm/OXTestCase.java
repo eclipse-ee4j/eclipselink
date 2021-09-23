@@ -65,9 +65,9 @@ import org.w3c.dom.NodeList;
 public abstract class OXTestCase extends XMLTestCase {
     protected static XMLInputFactory XML_INPUT_FACTORY;
     protected static XMLOutputFactory XML_OUTPUT_FACTORY;
-    protected static Class staxResultClass;
+    protected static Class<?> staxResultClass;
     protected static String staxResultClassName = "javax.xml.transform.stax.StAXResult";
-    protected static Class staxSourceClass;
+    protected static Class<?> staxSourceClass;
     protected static String staxSourceClassName = "javax.xml.transform.stax.StAXSource";
     protected static Constructor staxResultStreamWriterConstructor;
     protected static Constructor staxResultEventWriterConstructor;

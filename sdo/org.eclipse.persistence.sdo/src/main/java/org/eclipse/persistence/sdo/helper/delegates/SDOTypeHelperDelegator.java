@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,7 +47,7 @@ public class SDOTypeHelperDelegator extends AbstractHelperDelegator implements S
     }
 
     @Override
-    public Class getJavaWrapperTypeForSDOType(Type sdoType) {
+    public Class<?> getJavaWrapperTypeForSDOType(Type sdoType) {
         return getTypeHelperDelegate().getJavaWrapperTypeForSDOType(sdoType);
     }
 
@@ -57,7 +57,7 @@ public class SDOTypeHelperDelegator extends AbstractHelperDelegator implements S
     }
 
     @Override
-    public Type getTypeForSimpleJavaType(Class implClass) {
+    public Type getTypeForSimpleJavaType(Class<?> implClass) {
         return getTypeHelperDelegate().getTypeForSimpleJavaType(implClass);
     }
 
@@ -67,12 +67,13 @@ public class SDOTypeHelperDelegator extends AbstractHelperDelegator implements S
     }
 
     @Override
+    @SuppressWarnings({"rawtypes"})
     public Type getType(Class interfaceClass) {
         return getTypeHelperDelegate().getType(interfaceClass);
     }
 
     @Override
-    public SDOType getTypeForImplClass(Class implClass) {
+    public SDOType getTypeForImplClass(Class<?> implClass) {
         return getTypeHelperDelegate().getTypeForImplClass(implClass);
     }
 
@@ -192,7 +193,7 @@ public class SDOTypeHelperDelegator extends AbstractHelperDelegator implements S
     }
 
     @Override
-    public Map<Class, SDOType> getImplClassesToSDOType() {
+    public Map<Class<?>, SDOType> getImplClassesToSDOType() {
         return getTypeHelperDelegate().getImplClassesToSDOType();
     }
 

@@ -59,7 +59,7 @@ import org.eclipse.persistence.sessions.remote.*;
  * filter expression may be required for concrete and branch querying.
  */
 public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, AbstractSession, ClassDescriptor, DatabaseField> implements Serializable, Cloneable {
-    protected Class parentClass;
+    protected Class<?> parentClass;
     protected String parentClassName;
     protected ClassDescriptor parentDescriptor;
     protected List<ClassDescriptor> childDescriptors;
@@ -180,7 +180,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * If the root class is concrete then it must also define an indicator.
      * Only the root class's descriptor of the entire inheritance hierarchy can define the class indicator mapping.
      */
-    public void addClassIndicator(Class childClass, Object typeValue) {
+    public void addClassIndicator(Class<?> childClass, Object typeValue) {
         // Note we should think about supporting null values.
         // Store as key and value for bi-directional lookup.
         getClassIndicatorMapping().put(typeValue, childClass);
@@ -342,7 +342,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * This method is invoked only for the abstract descriptors.
      */
     @Override
-    public Class classFromRow(AbstractRecord rowFromDatabase, AbstractSession session) throws DescriptorException {
+    public Class<?> classFromRow(AbstractRecord rowFromDatabase, AbstractSession session) throws DescriptorException {
         if (hasClassExtractor()) {
             return getClassExtractor().extractClassFromRow(rowFromDatabase, session);
         }
@@ -361,8 +361,8 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * This method is used to turn the a raw database field value classFieldValue into a Class object.  Used to determine
      * which class objects to build from database results, and for class type expression
      */
-    public Class classFromValue(Object classFieldValue, AbstractSession session) throws DescriptorException {
-        Class concreteClass;
+    public Class<?> classFromValue(Object classFieldValue, AbstractSession session) throws DescriptorException {
+        Class<?> concreteClass;
         if (!shouldUseClassNameAsIndicator()) {
             concreteClass = (Class)getClassIndicatorMapping().get(classFieldValue);
             if (concreteClass == null) {
@@ -755,7 +755,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * Returns the indicator field value for the given class
      * If no abstract indicator mapping is specified, use the class name.
      */
-    protected Object getClassIndicatorValue(Class javaClass) {
+    protected Object getClassIndicatorValue(Class<?> javaClass) {
         if (shouldUseClassNameAsIndicator()) {
             return javaClass.getName();
         } else {
@@ -799,7 +799,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * Return the parent class.
      */
     @Override
-    public Class getParentClass() {
+    public Class<?> getParentClass() {
         return parentClass;
     }
 
@@ -865,7 +865,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * INTERNAL:
      * use aggregate in inheritance
      */
-    public ClassDescriptor getSubclassDescriptor(Class theClass) {
+    public ClassDescriptor getSubclassDescriptor(Class<?> theClass) {
         if (hasChildren()) {
             for (Iterator<ClassDescriptor> enumtr = getChildDescriptors().iterator(); enumtr.hasNext();) {
                 ClassDescriptor childDescriptor = enumtr.next();
@@ -886,7 +886,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * INTERNAL:
      * Returns descriptor corresponding to the class owning the policy or its subclass - otherwise null.
      */
-    public ClassDescriptor getDescriptor(Class theClass) {
+    public ClassDescriptor getDescriptor(Class<?> theClass) {
         if(getDescriptor().getJavaClass().equals(theClass)) {
             return getDescriptor();
         } else {
@@ -1238,7 +1238,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
                 if (shouldUseClassNameAsIndicator()) {
                     getClassIndicatorField().setType(ClassConstants.STRING);
                 } else if (!getClassIndicatorMapping().isEmpty()) {
-                    Class type = null;
+                    Class<?> type = null;
                     Iterator fieldValuesEnum = getClassIndicatorMapping().values().iterator();
                     while (fieldValuesEnum.hasNext() && (type == null)) {
                         Object value = fieldValuesEnum.next();
@@ -1345,10 +1345,10 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
         // The indicator select is prepared in the original query, so can just be executed.
         List<AbstractRecord> classIndicators = ((ExpressionQueryMechanism)query.getQueryMechanism()).selectAllRowsFromTable();
 
-        List<Class> classes = new ArrayList<>();
-        Set<Class> uniqueClasses = new HashSet<>();
+        List<Class<?>> classes = new ArrayList<>();
+        Set<Class<?>> uniqueClasses = new HashSet<>();
         for (AbstractRecord row : classIndicators) {
-            Class concreteClass = classFromRow(row, query.getSession());
+            Class<?> concreteClass = classFromRow(row, query.getSession());
             if (!uniqueClasses.contains(concreteClass)) { // Ensure unique (a distinct is used, but may have been disabled)
                 uniqueClasses.add(concreteClass);
                 classes.add(concreteClass);
@@ -1369,11 +1369,11 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
             joinedMappingIndexes = new HashMap();
         }
         ClassDescriptor rootDescriptor = query.getDescriptor();
-        for (Class concreteClass : classes) {
+        for (Class<?> concreteClass : classes) {
             if (!uniqueClasses.contains(concreteClass)) {
                 continue;
             }
-            Set<Class> subclasses = new HashSet<>();
+            Set<Class<?>> subclasses = new HashSet<>();
             uniqueClasses.remove(concreteClass);
             subclasses.add(concreteClass);
             ClassDescriptor concreteDescriptor = getDescriptor(concreteClass);
@@ -1410,7 +1410,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
                         mappingIndexes = new HashMap(classes.size());
                         joinedMappingIndexes.put(entry.getKey(), mappingIndexes);
                     }
-                    for (Class subclass : subclasses) {
+                    for (Class<?> subclass : subclasses) {
                         mappingIndexes.put(subclass, entry.getValue());
                     }
                 }
@@ -1426,7 +1426,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
     /**
      * Remove all of the subclasses (and so on) from the set of classes.
      */
-    protected void removeChildren(ClassDescriptor descriptor, Set<Class> classes, Set<Class> subclasses) {
+    protected void removeChildren(ClassDescriptor descriptor, Set<Class<?>> classes, Set<Class<?>> subclasses) {
         for (ClassDescriptor childDescriptor : descriptor.getInheritancePolicy().getChildDescriptors()) {
             classes.remove(childDescriptor.getJavaClass());
             subclasses.add(childDescriptor.getJavaClass());
@@ -1496,7 +1496,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
             return null;
         }
 
-        Class concreteClass = classFromRow(typeRow, query.getSession());
+        Class<?> concreteClass = classFromRow(typeRow, query.getSession());
         ClassDescriptor concreteDescriptor = getDescriptor(concreteClass);
         if (concreteDescriptor == null) {
             throw QueryException.noDescriptorForClassFromInheritancePolicy(query, concreteClass);
@@ -1675,7 +1675,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * All children must share the same table as their parent but can add additional tables.
      * All children must share the root descriptor primary key.
      */
-    public void setParentClass(Class parentClass) {
+    public void setParentClass(Class<?> parentClass) {
         this.parentClass = parentClass;
         if (parentClass != null) {
             setParentClassName(parentClass.getName());

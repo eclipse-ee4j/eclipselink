@@ -36,7 +36,7 @@ public class ArrayListContainerPolicy extends ListContainerPolicy {
      * INTERNAL:
      * Construct a new policy for the specified class.
      */
-    public ArrayListContainerPolicy(Class containerClass) {
+    public ArrayListContainerPolicy(Class<?> containerClass) {
         super(containerClass);
     }
 

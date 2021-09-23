@@ -210,7 +210,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
                 AbstractRecord nestedRow = ord.buildRowFromStructure( (Struct)arrayValue);
                 ClassDescriptor descriptor = ord;
                 if (descriptor.hasInheritance()) {
-                    Class newElementClass = descriptor.getInheritancePolicy().classFromRow(nestedRow, session);
+                    Class<?> newElementClass = descriptor.getInheritancePolicy().classFromRow(nestedRow, session);
                     if (!descriptor.getJavaClass().equals(newElementClass)) {
                         descriptor = session.getDescriptor(newElementClass);
                         if (descriptor==null){

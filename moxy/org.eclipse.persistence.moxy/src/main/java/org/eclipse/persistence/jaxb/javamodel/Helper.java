@@ -196,7 +196,7 @@ public class Helper {
      * - null is returned otherwise.
      *
      */
-    public JavaClass getJavaClass(Class javaClass) {
+    public JavaClass getJavaClass(Class<?> javaClass) {
         return jModel.getClass(javaClass);
     }
 
@@ -206,13 +206,13 @@ public class Helper {
      *
      * @return JavaClass array
      */
-    public JavaClass[] getJavaClassArray(Class... classes) {
+    public JavaClass[] getJavaClassArray(Class<?>... classes) {
         if (0 == classes.length) {
             return new JavaClass[0];
         }
         JavaClass[] result = new JavaClass[classes.length];
         int i = 0;
-        for (Class clazz : classes) {
+        for (Class<?> clazz : classes) {
             result[i++] = getJavaClass(clazz);
         }
         return result;
@@ -244,7 +244,7 @@ public class Helper {
      *
      * @see #isAnnotationPresent
      */
-    public Annotation getAnnotation(JavaHasAnnotations element, Class annotationClass) {
+    public Annotation getAnnotation(JavaHasAnnotations element, Class<?> annotationClass) {
         JavaAnnotation janno = element.getAnnotation(jModel.getClass(annotationClass));
         if (janno == null) {
             return null;
@@ -289,7 +289,7 @@ public class Helper {
      * Indicates if element contains a given annotation.
      *
      */
-    public boolean isAnnotationPresent(JavaHasAnnotations element, Class annotationClass) {
+    public boolean isAnnotationPresent(JavaHasAnnotations element, Class<?> annotationClass) {
         if (element == null || annotationClass == null) {
             return false;
         }
@@ -330,7 +330,7 @@ public class Helper {
         return loader;
     }
 
-    public Class getClassForJavaClass(JavaClass javaClass){
+    public Class<?> getClassForJavaClass(JavaClass javaClass){
         String javaClassName = javaClass.getRawName();
         if (javaClass.isPrimitive() || javaClass.isArray() && javaClass.getComponentType().isPrimitive()){
             if (CoreClassConstants.APBYTE.getCanonicalName().equals(javaClassName)){

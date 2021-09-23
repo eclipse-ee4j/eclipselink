@@ -342,7 +342,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         return jaxbUnmarshaller;
     }
 
-    public Class getUnmarshalClass(){
+    public Class<?> getUnmarshalClass(){
         return null;
     }
 

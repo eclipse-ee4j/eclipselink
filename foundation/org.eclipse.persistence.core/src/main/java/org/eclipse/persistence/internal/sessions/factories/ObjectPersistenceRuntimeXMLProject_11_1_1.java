@@ -1457,7 +1457,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
              try {
                  // Get the Class of each entry in the collection
                  if(value instanceof Collection) {
-                     Class<?>[] parameterTypes = new Class[((Collection<?>)value).size()];
+                     Class<?>[] parameterTypes = new Class<?>[((Collection<?>)value).size()];
                      int i = 0;
                      for(Iterator<String> anIterator = ((Collection<String>)value).iterator(); anIterator.hasNext();) {
                          parameterTypes[i++] = Class.forName(anIterator.next());

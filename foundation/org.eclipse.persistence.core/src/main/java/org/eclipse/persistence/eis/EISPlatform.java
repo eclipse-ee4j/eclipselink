@@ -277,7 +277,7 @@ public class EISPlatform extends DatasourcePlatform {
      */
     public void setDOMInRecord(Element dom, jakarta.resource.cci.Record record, EISInteraction call, EISAccessor accessor) {
         if (domMethod == null) {
-            Class<?>[] argumentTypes = (Class<?>[]) new Class[1];
+            Class<?>[] argumentTypes = new Class<?>[1];
             argumentTypes[0] = Element.class;
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,7 +41,7 @@ public @interface QueryRedirectors {
      * it or alternately performing some side effect like auditing.
      *
      */
-    Class allQueries() default void.class;
+    Class<?> allQueries() default void.class;
 
     /**
      * A Default ReadAll Query Redirector will be applied to any executing
@@ -50,7 +50,7 @@ public @interface QueryRedirectors {
      * it or alternately performing some side effect like auditing.
      * For users executing a JPA Query through the getResultList() API this is the redirector that will be invoked
      *      */
-    Class readAll() default void.class;
+    Class<?> readAll() default void.class;
 
     /**
      * A Default ReadObject Query Redirector will be applied to any executing
@@ -58,7 +58,7 @@ public @interface QueryRedirectors {
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
      * For users executing a JPA Query through the getSingleResult() API or EntityManager.find() this is the redirector that will be invoked     */
-    Class readObject() default void.class;
+    Class<?> readObject() default void.class;
 
     /**
      * A Default ReportQuery Redirector will be applied to any executing
@@ -66,7 +66,7 @@ public @interface QueryRedirectors {
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
      * For users executing a JPA Query that contains agregate functions or selects multiple entities this is the redirector that will be invoked     */
-    Class report() default void.class;
+    Class<?> report() default void.class;
 
     /**
      * A Default Update Query Redirector will be applied to any executing
@@ -75,7 +75,7 @@ public @interface QueryRedirectors {
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
      */
-    Class update() default void.class;
+    Class<?> update() default void.class;
 
     /**
      * A Default Insert Query Redirector will be applied to any executing
@@ -84,7 +84,7 @@ public @interface QueryRedirectors {
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
      */
-    Class insert() default void.class;
+    Class<?> insert() default void.class;
 
     /**
      * A Default Delete Object Query Redirector will be applied to any executing
@@ -92,6 +92,6 @@ public @interface QueryRedirectors {
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
      */
-    Class delete() default void.class;
+    Class<?> delete() default void.class;
 
 }

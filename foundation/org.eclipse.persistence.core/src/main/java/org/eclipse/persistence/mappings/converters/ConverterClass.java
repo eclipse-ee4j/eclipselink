@@ -57,7 +57,7 @@ import jakarta.persistence.PersistenceException;
 public class ConverterClass<T extends AttributeConverter<X,Y>,X,Y> implements Converter, ClassNameConversionRequired {
     protected boolean isForMapKey;
     protected boolean disableConversion;
-    protected Class fieldClassification;
+    protected Class<?> fieldClassification;
     protected String fieldClassificationName;
     protected String attributeConverterClassName;
     protected AttributeConverter<X,Y> attributeConverter;

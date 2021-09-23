@@ -40,7 +40,7 @@ public interface BinaryDataCollectionMapping<
     UNMARSHALLER extends Unmarshaller,
     XML_RECORD extends XMLRecord> extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD>, XMLContainerMapping, XMLConverterMapping<MARSHALLER, SESSION, UNMARSHALLER> {
 
-    Class getAttributeElementClass();
+    Class<?> getAttributeElementClass();
 
     /**
      * INTERNAL
@@ -64,7 +64,7 @@ public interface BinaryDataCollectionMapping<
      * This is optional - if left null, the elements will be added
      * to the object's collection unconverted.
      */
-    void setAttributeElementClass(Class attributeElementClass);
+    void setAttributeElementClass(Class<?> attributeElementClass);
 
     /**
      * ADVANCED:

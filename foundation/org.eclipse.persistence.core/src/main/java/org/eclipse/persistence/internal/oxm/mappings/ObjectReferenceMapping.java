@@ -49,7 +49,7 @@ public interface ObjectReferenceMapping<
 
     InverseReferenceMapping getInverseReferenceMapping();
 
-    Class getReferenceClass();
+    Class<?> getReferenceClass();
 
     /**
      * INTERNAL:

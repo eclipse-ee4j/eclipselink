@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,8 +23,8 @@ package org.eclipse.persistence.mappings;
  * @since TOPLink/Java 3.0
  */
 public class TypedAssociation extends Association {
-    protected Class keyType;
-    protected Class valueType;
+    protected Class<?> keyType;
+    protected Class<?> valueType;
 
     /**
      * Default constructor.
@@ -52,7 +52,7 @@ public class TypedAssociation extends Association {
      * PUBLIC:
      * Return the class of the key.
      */
-    public Class getKeyType() {
+    public Class<?> getKeyType() {
         return keyType;
     }
 
@@ -60,7 +60,7 @@ public class TypedAssociation extends Association {
      * PUBLIC:
      * Return the class of the value.
      */
-    public Class getValueType() {
+    public Class<?> getValueType() {
         return valueType;
     }
 
@@ -78,7 +78,7 @@ public class TypedAssociation extends Association {
      * PUBLIC:
      * Set the class of the key.
      */
-    public void setKeyType(Class keyType) {
+    public void setKeyType(Class<?> keyType) {
         this.keyType = keyType;
     }
 
@@ -86,7 +86,7 @@ public class TypedAssociation extends Association {
      * PUBLIC:
      * Set the class of the value.
      */
-    public void setValueType(Class valueType) {
+    public void setValueType(Class<?> valueType) {
         this.valueType = valueType;
     }
 }

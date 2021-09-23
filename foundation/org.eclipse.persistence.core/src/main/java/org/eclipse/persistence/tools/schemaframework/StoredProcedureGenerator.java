@@ -566,7 +566,7 @@ public class StoredProcedureGenerator {
             Number dataType;
             dataRow = (AbstractRecord)fieldNames.get(fieldsEnum.nextElement());
             dataType = (Number)dataRow.get("DATA_TYPE");
-            Class type = this.getFieldType(dataType);
+            Class<?> type = this.getFieldType(dataType);
             String typeName = (String)dataRow.get("TYPE_NAME");
             if ((type != null) || (typeName == null) || (typeName.length() == 0)) {
                 definition.addArgument(prefixArgToken + dataRow.get("COLUMN_NAME"), type, ((Number)dataRow.get("COLUMN_SIZE")).intValue());
@@ -684,7 +684,7 @@ public class StoredProcedureGenerator {
      * INTERNAL:
      * return the class corresponding to the passed in JDBC type.
      */
-    protected Class getFieldType(Object jdbcDataType) {
+    protected Class<?> getFieldType(Object jdbcDataType) {
         Integer key = ((Number) jdbcDataType).intValue();
         return intToTypeConverterHash.get(key);
     }

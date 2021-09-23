@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,7 @@ import org.eclipse.persistence.sessions.Session;
  */
 public class JAXBTypesafeEnumConverter implements Converter {
     String enumClassName;
-    Class enumClass;
+    Class<?> enumClass;
     transient Method fromStringMethod;
 
     /**
@@ -91,7 +91,7 @@ public class JAXBTypesafeEnumConverter implements Converter {
             }
         }
         try {
-            fromStringMethod = PrivilegedAccessHelper.getMethod(enumClass, "fromString", new Class[] { String.class },true);
+            fromStringMethod = PrivilegedAccessHelper.getMethod(enumClass, "fromString", new Class<?>[] { String.class },true);
         } catch (Exception ex) {
             throw XMLMarshalException.errorInvokingFromStringMethod(ex, enumClass.getName());
         }
@@ -117,7 +117,7 @@ public class JAXBTypesafeEnumConverter implements Converter {
       * PUBLIC:
       * Set the enum class to know which class to invoke the fromValue method on.
       */
-    public void setEnumClass(Class enumClass) {
+    public void setEnumClass(Class<?> enumClass) {
         this.enumClass = enumClass;
     }
 
@@ -125,7 +125,7 @@ public class JAXBTypesafeEnumConverter implements Converter {
     * PUBLIC:
     * Get the class which was set as the enum class which contains the fromValue method.
     */
-    public Class getEnumClass() {
+    public Class<?> getEnumClass() {
         return enumClass;
     }
 }

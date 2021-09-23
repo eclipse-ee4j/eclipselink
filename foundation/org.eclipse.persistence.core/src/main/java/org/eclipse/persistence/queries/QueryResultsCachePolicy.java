@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +20,7 @@ import java.util.Set;
 
 import org.eclipse.persistence.descriptors.invalidation.*;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 
 /**
  * PUBLIC:
@@ -39,13 +40,13 @@ public class QueryResultsCachePolicy implements Serializable, Cloneable {
     /** Specifies the cache size. */
     protected int maximumResultSets;
     /** Allows the identity map class type to be set. */
-    protected Class cacheType;
+    protected Class<? extends IdentityMap> cacheType;
     /** Allows the caching of null to be configured. */
     protected boolean isNullIgnored;
     /** Allows the query cache to be invalidated when any object of any of the query classes is modified. */
     protected boolean invalidateOnChange;
     /** Stores the set of classes that should trigger the query cached results to be invalidated. */
-    protected Set<Class> invalidationClasses;
+    protected Set<Class<?>> invalidationClasses;
 
     /**
      * PUBLIC:
@@ -88,7 +89,7 @@ public class QueryResultsCachePolicy implements Serializable, Cloneable {
      * ADVANCED:
      * Return the set of classes that should trigger the query cached results to be invalidated.
      */
-    public Set<Class> getInvalidationClasses() {
+    public Set<Class<?>> getInvalidationClasses() {
         return invalidationClasses;
     }
 
@@ -97,7 +98,7 @@ public class QueryResultsCachePolicy implements Serializable, Cloneable {
      * Set the set of classes that should trigger the query cached results to be invalidated.
      * This is normally computed by the query, but can be set in the case of native queries.
      */
-    public void setInvalidationClasses(Set<Class> invalidationClasses) {
+    public void setInvalidationClasses(Set<Class<?>> invalidationClasses) {
         this.invalidationClasses = invalidationClasses;
     }
 
@@ -145,7 +146,7 @@ public class QueryResultsCachePolicy implements Serializable, Cloneable {
      * This defaults to a LRU cache (CacheIdentityMap), but can be
      * set to any IdentityMap class, such as Full or Soft.
      */
-    public Class getCacheType() {
+    public Class<? extends IdentityMap> getCacheType() {
         return cacheType;
     }
 
@@ -155,7 +156,7 @@ public class QueryResultsCachePolicy implements Serializable, Cloneable {
      * This defaults to a LRU cache (CacheIdentityMap), but can be
      * set to any IdentityMap class, such as Full or Soft.
      */
-    public void setCacheType(Class cacheType) {
+    public void setCacheType(Class<? extends IdentityMap> cacheType) {
         this.cacheType = cacheType;
     }
 

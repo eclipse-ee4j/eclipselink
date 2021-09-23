@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -141,7 +141,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
                 if (shouldUseClassNameAsIndicator()) {
                     getClassIndicatorField().setType(CoreClassConstants.STRING);
                 } else if (!getClassIndicatorMapping().isEmpty()) {
-                    Class type = null;
+                    Class<?> type = null;
                     Iterator fieldValuesEnum = getClassIndicatorMapping().values().iterator();
                     while (fieldValuesEnum.hasNext() && (type == null)) {
                         Object value = fieldValuesEnum.next();
@@ -230,7 +230,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
      * This method is invoked only for the abstract descriptors.
      */
     @Override
-    public Class classFromRow(AbstractRecord rowFromDatabase, AbstractSession session) throws DescriptorException {
+    public Class<?> classFromRow(AbstractRecord rowFromDatabase, AbstractSession session) throws DescriptorException {
         ((XMLRecord) rowFromDatabase).setSession(session);
         if (hasClassExtractor() || shouldUseClassNameAsIndicator()) {
             return super.classFromRow(rowFromDatabase, session);
@@ -245,7 +245,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
             return null;
         }
 
-        Class concreteClass;
+        Class<?> concreteClass;
         if (indicator instanceof String) {
             boolean namespaceAware = ((XMLRecord) rowFromDatabase).isNamespaceAware();
             String indicatorValue = (String)indicator;

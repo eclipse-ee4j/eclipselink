@@ -44,7 +44,7 @@ public class NoRootElementNSTestCases extends JSONMarshalUnmarshalTestCases {
     }
 
     @Override
-    public Class getUnmarshalClass(){
+    public Class<?> getUnmarshalClass(){
         return Address.class;
     }
 

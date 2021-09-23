@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,14 +32,14 @@ public class TransformerHelper {
         return CoreFieldTransformer.BUILD_FIELD_VALUE_METHOD;
     }
 
-    public List<Class[]> getTransformerMethodParameters(boolean isSetTransformerClass) {
-        List<Class[]> methodParameters = new ArrayList<>();
+    public List<Class<?>[]> getTransformerMethodParameters(boolean isSetTransformerClass) {
+        List<Class<?>[]> methodParameters = new ArrayList<>();
         if (isSetTransformerClass) {
-            methodParameters.add(new Class[] {Object.class, String.class, ClassConstants.SessionsSession_Class});
+            methodParameters.add(new Class<?>[] {Object.class, String.class, ClassConstants.SessionsSession_Class});
         } else {
-            methodParameters.add(new Class[0]);
-            methodParameters.add(new Class[] {ClassConstants.PublicInterfaceSession_Class});
-            methodParameters.add(new Class[] {ClassConstants.SessionsSession_Class});
+            methodParameters.add(new Class<?>[0]);
+            methodParameters.add(new Class<?>[] {ClassConstants.PublicInterfaceSession_Class});
+            methodParameters.add(new Class<?>[] {ClassConstants.SessionsSession_Class});
         }
         return methodParameters;
     }

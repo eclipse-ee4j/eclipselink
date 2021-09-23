@@ -551,7 +551,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
      * Sets the type of all start fields.  Not required to be set as the default
      * of Timestamp is assumed.
      */
-    public void setStartFieldType(Class type) {
+    public void setStartFieldType(Class<?> type) {
         for (DatabaseField existing : startFields) {
             existing.setType(type);
         }
@@ -593,7 +593,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
      * ADVANCED:
      * @see #setStartFieldType
      */
-    public void setEndFieldType(String fieldName, Class type) {
+    public void setEndFieldType(String fieldName, Class<?> type) {
         for (DatabaseField existing : endFields) {
             existing.setType(type);
         }
