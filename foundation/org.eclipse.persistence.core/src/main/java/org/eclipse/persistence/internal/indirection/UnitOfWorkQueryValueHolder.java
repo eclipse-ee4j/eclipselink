@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,16 +30,16 @@ import org.eclipse.persistence.mappings.*;
  *
  * @author    Sati
  */
-public class UnitOfWorkQueryValueHolder extends UnitOfWorkValueHolder {
+public class UnitOfWorkQueryValueHolder<T> extends UnitOfWorkValueHolder<T> {
     protected UnitOfWorkQueryValueHolder() {
         super();
     }
 
-    protected UnitOfWorkQueryValueHolder(ValueHolderInterface attributeValue, Object clone, DatabaseMapping mapping, UnitOfWorkImpl unitOfWork) {
+    protected UnitOfWorkQueryValueHolder(ValueHolderInterface<T> attributeValue, Object clone, DatabaseMapping mapping, UnitOfWorkImpl unitOfWork) {
         super(attributeValue, clone, mapping, unitOfWork);
     }
 
-    public UnitOfWorkQueryValueHolder(ValueHolderInterface attributeValue, Object clone, ForeignReferenceMapping mapping, AbstractRecord row, UnitOfWorkImpl unitOfWork) {
+    public UnitOfWorkQueryValueHolder(ValueHolderInterface<T> attributeValue, Object clone, ForeignReferenceMapping mapping, AbstractRecord row, UnitOfWorkImpl unitOfWork) {
         this(attributeValue, clone, mapping, unitOfWork);
         this.row = row;
     }
@@ -56,15 +56,16 @@ public class UnitOfWorkQueryValueHolder extends UnitOfWorkValueHolder {
      * Clone the original attribute value.
      */
     @Override
-    public Object buildCloneFor(Object originalAttributeValue) {
+    @SuppressWarnings({"unchecked"})
+    public T buildCloneFor(Object originalAttributeValue) {
         Integer refreshCascade = null;
         if (wrappedValueHolder instanceof QueryBasedValueHolder){
-            refreshCascade = ((QueryBasedValueHolder)getWrappedValueHolder()).getRefreshCascadePolicy();
+            refreshCascade = ((QueryBasedValueHolder<?>)getWrappedValueHolder()).getRefreshCascadePolicy();
         }
-        Object clone = this.mapping.buildCloneForPartObject(originalAttributeValue, null, null, this.relationshipSourceObject, getUnitOfWork(), refreshCascade, true, true);
+        T clone = (T) this.mapping.buildCloneForPartObject(originalAttributeValue, null, null, this.relationshipSourceObject, getUnitOfWork(), refreshCascade, true, true);
         // Bug 414801
         if (wrappedValueHolder.isInstantiated() && refreshCascade != null) {
-            ((QueryBasedValueHolder)getWrappedValueHolder()).setRefreshCascadePolicy(null);
+            ((QueryBasedValueHolder<T>)getWrappedValueHolder()).setRefreshCascadePolicy(null);
         }
         return clone;
     }
@@ -73,12 +74,12 @@ public class UnitOfWorkQueryValueHolder extends UnitOfWorkValueHolder {
      * Ensure that the backup value holder is populated.
      */
     @Override
-    public void setValue(Object theValue) {
+    public void setValue(T theValue) {
         // Must force instantiation to be able to compare with the old value.
         if (!this.isInstantiated) {
             instantiate();
         }
-        Object oldValue = getValue();
+        T oldValue = getValue();
         super.setValue(theValue);
         updateForeignReferenceSet(theValue, oldValue);
     }
@@ -116,7 +117,7 @@ public class UnitOfWorkQueryValueHolder extends UnitOfWorkValueHolder {
                 }
                 // PERF: If the collection is not instantiated, then do not instantiated it.
                 if (partner.isCollectionMapping()) {
-                    if ((!(oldParent instanceof IndirectContainer)) || ((IndirectContainer)oldParent).isInstantiated()) {
+                    if ((!(oldParent instanceof IndirectContainer)) || ((IndirectContainer<?>)oldParent).isInstantiated()) {
                         if (!partner.getContainerPolicy().contains(sourceObject, oldParent, getSession())) {
                             // value has already been set
                             return;
@@ -142,7 +143,7 @@ public class UnitOfWorkQueryValueHolder extends UnitOfWorkValueHolder {
      * We only worry about ObjectReferenceMappings as the collections mappings will be handled by transparentIndirection
      */
     public void updateForeignReferenceSet(Object value, Object oldValue) {
-        if ((value != null) && (value instanceof Collection)) {
+        if (value instanceof Collection) {
             //I'm passing a collection into the valueholder not an object
             return;
         }
@@ -166,7 +167,7 @@ public class UnitOfWorkQueryValueHolder extends UnitOfWorkValueHolder {
                 }
                 // PERF: If the collection is not instantiated, then do not instantiated it.
                 if (partner.isCollectionMapping()) {
-                    if ((!(oldParent instanceof IndirectContainer)) || ((IndirectContainer)oldParent).isInstantiated()) {
+                    if ((!(oldParent instanceof IndirectContainer)) || ((IndirectContainer<?>)oldParent).isInstantiated()) {
                         if (partner.getContainerPolicy().contains(sourceObject, oldParent, getSession())) {
                             // value has already been set
                             return;

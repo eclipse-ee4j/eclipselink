@@ -71,7 +71,7 @@ public interface Field<
       */
      QName getSchemaTypeForValue(Object value, CoreAbstractSession session);
 
-     @Override Class getType();
+     @Override Class<?> getType();
 
      /**
       * Return the qualified XML Schema type for a given class

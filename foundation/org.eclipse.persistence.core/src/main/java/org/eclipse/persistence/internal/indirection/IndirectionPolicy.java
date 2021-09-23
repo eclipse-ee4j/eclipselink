@@ -26,6 +26,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.sessions.remote.ObjectDescriptor;
 import org.eclipse.persistence.internal.sessions.remote.RemoteValueHolder;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -160,7 +161,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * Replace the transient attributes of the remote value holders
      * with client-side objects.
      */
-    public abstract void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session);
+    public abstract void fixObjectReferences(Object object, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query, DistributedSession session);
 
     /**
      * INTERNAL:
@@ -243,14 +244,14 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * Extract and return the appropriate value from the
      * specified remote value holder.
      */
-    public abstract Object getValueFromRemoteValueHolder(RemoteValueHolder remoteValueHolder);
+    public abstract Object getValueFromRemoteValueHolder(RemoteValueHolder<?> remoteValueHolder);
 
     /**
      * INTERNAL:
      * The method validateAttributeOfInstantiatedObject(Object attributeValue) fixes the value of the attributeValue
      * in cases where it is null and indirection requires that it contain some specific data structure.  Return whether this will happen.
      * This method is used to help determine if indirection has been triggered
-     * @see validateAttributeOfInstantiatedObject(Object attributeValue)
+     * @see #validateAttributeOfInstantiatedObject(Object)
      */
     public boolean isAttributeValueFullyBuilt(Object attributeValue){
         return true;
@@ -286,7 +287,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * Replace the client value holder with the server value holder,
      * after copying some of the settings from the client value holder.
      */
-    protected void mergeClientIntoServerValueHolder(RemoteValueHolder serverValueHolder, MergeManager mergeManager) {
+    protected void mergeClientIntoServerValueHolder(RemoteValueHolder<?> serverValueHolder, MergeManager mergeManager) {
         serverValueHolder.setMapping(this.mapping);
         serverValueHolder.setSession(mergeManager.getSession());
 
@@ -447,7 +448,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * indirection policy. If it is incorrect, add an exception to the
      * integrity checker.
      */
-    public void validateDeclaredAttributeType(Class attributeType, IntegrityChecker checker) throws DescriptorException {
+    public void validateDeclaredAttributeType(Class<?> attributeType, IntegrityChecker checker) throws DescriptorException {
         // by default, do nothing
     }
 
@@ -456,7 +457,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * Verify that attributeType is an appropriate collection type for the
      * indirection policy. If it is incorrect, add an exception to the integrity checker.
      */
-    public void validateDeclaredAttributeTypeForCollection(Class attributeType, IntegrityChecker checker) throws DescriptorException {
+    public void validateDeclaredAttributeTypeForCollection(Class<?> attributeType, IntegrityChecker checker) throws DescriptorException {
         // by default, do nothing
     }
 
@@ -466,7 +467,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * indirection policy. If it is incorrect, add an exception
      * to the integrity checker.
      */
-    public void validateGetMethodReturnType(Class returnType, IntegrityChecker checker) throws DescriptorException {
+    public void validateGetMethodReturnType(Class<?> returnType, IntegrityChecker checker) throws DescriptorException {
         // by default, do nothing
     }
 
@@ -475,7 +476,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * Verify that getter returnType is an appropriate collection type for the
      * indirection policy. If it is incorrect, add an exception to the integrity checker.
      */
-    public void validateGetMethodReturnTypeForCollection(Class returnType, IntegrityChecker checker) throws DescriptorException {
+    public void validateGetMethodReturnTypeForCollection(Class<?> returnType, IntegrityChecker checker) throws DescriptorException {
         // by default, do nothing
     }
 
@@ -485,7 +486,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * indirection policy. If it is incorrect, add an exception
      * to the integrity checker.
      */
-    public void validateSetMethodParameterType(Class parameterType, IntegrityChecker checker) throws DescriptorException {
+    public void validateSetMethodParameterType(Class<?> parameterType, IntegrityChecker checker) throws DescriptorException {
         // by default, do nothing
     }
 
@@ -494,7 +495,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * Verify that setter parameterType is an appropriate collection type for the
      * indirection policy. If it is incorrect, add an exception to the integrity checker.
      */
-    public void validateSetMethodParameterTypeForCollection(Class parameterType, IntegrityChecker checker) throws DescriptorException {
+    public void validateSetMethodParameterTypeForCollection(Class<?> parameterType, IntegrityChecker checker) throws DescriptorException {
         // by default, do nothing
     }
 

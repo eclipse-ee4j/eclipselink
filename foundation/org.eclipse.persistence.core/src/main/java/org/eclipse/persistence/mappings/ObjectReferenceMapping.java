@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,6 +46,7 @@ import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.ObjectReferenceChangeRecord;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.sessions.remote.ObjectDescriptor;
 import org.eclipse.persistence.queries.DeleteObjectQuery;
 import org.eclipse.persistence.queries.InsertObjectQuery;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
@@ -320,7 +321,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * reference object.
      */
     @Override
-    public void fixRealObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
+    public void fixRealObjectReferences(Object object, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         //bug 4147755 getRealAttribute... / setReal...
         Object attributeValue = getRealAttributeValueFromObject(object, session);
         attributeValue = getReferenceDescriptor().getObjectBuilder().unwrapObject(attributeValue, session);
@@ -397,7 +398,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     @Override
     public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         if (this.descriptor.getCachePolicy().isProtectedIsolation()&& !this.isCacheable && !targetSession.isProtectedSession()){
-            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
+            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder<>(null)));
             return;
         }
         Object targetValueOfSource = null;
@@ -467,7 +468,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     @Override
     public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         if (this.descriptor.getCachePolicy().isProtectedIsolation()&& !this.isCacheable && !targetSession.isProtectedSession()){
-            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
+            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder<>(null)));
             return;
         }
         if (isTargetUnInitialized) {
@@ -1037,8 +1038,8 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * the shared cache, and then cloning the original.
      */
     @Override
-    public DatabaseValueHolder createCloneValueHolder(ValueHolderInterface attributeValue, Object original, Object clone, AbstractRecord row, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
-        DatabaseValueHolder valueHolder = null;
+    public <T> DatabaseValueHolder<T> createCloneValueHolder(ValueHolderInterface<T> attributeValue, Object original, Object clone, AbstractRecord row, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
+        DatabaseValueHolder<T> valueHolder = null;
         //Bug#457480 : If original (from cache) is null, load from row
         if ((row == null && original != null) && (isPrimaryKeyMapping())) {
             // The row must be built if a primary key mapping for remote case.
@@ -1054,7 +1055,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         // Note that this UOW valueholder starts off as instantiated but that
         // is fine, for the reality is that it is.
         if (buildDirectlyFromRow && attributeValue.isInstantiated()) {
-            Object cloneAttributeValue = attributeValue.getValue();
+            T cloneAttributeValue = attributeValue.getValue();
             valueHolder.privilegedSetValue(cloneAttributeValue);
             valueHolder.setInstantiated();
 

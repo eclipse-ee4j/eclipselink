@@ -42,6 +42,7 @@ import org.eclipse.persistence.internal.sessions.ChangeRecord;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.sessions.remote.ObjectDescriptor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
@@ -402,8 +403,8 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
          * @see org.eclipse.persistence.mappings.DatabaseMapping#fixObjectReferences(java.lang.Object, java.util.Map, java.util.Map, org.eclipse.persistence.queries.ObjectLevelReadQuery, org.eclipse.persistence.sessions.remote.RemoteSession)
          */
         @Override
-        public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects,
-                ObjectLevelReadQuery query, DistributedSession session) {
+        public void fixObjectReferences(Object object, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects,
+                                        ObjectLevelReadQuery query, DistributedSession session) {
         }
 
         /* (non-Javadoc)

@@ -223,7 +223,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * They can be looked up by java Class or by Struct type
      */
     protected Map<String, StructConverter> structConverters = null;
-    protected Map<Class, StructConverter> typeConverters = null;
+    protected Map<Class<?>, StructConverter> typeConverters = null;
 
     /**
      * Some platforms allow a query's maxRows and FirstResult settings to be
@@ -368,7 +368,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * This map indexes StructConverters by the Java Class they are meant to
      * convert
      */
-    public Map<Class, StructConverter> getTypeConverters() {
+    public Map<Class<?>, StructConverter> getTypeConverters() {
         if (typeConverters == null){
             typeConverters = new HashMap<>();
         }
@@ -547,7 +547,7 @@ public class DatabasePlatform extends DatasourcePlatform {
                     appendByteArray((byte[])dbValue, writer);
                 }
             } else if (dbValue instanceof Collection) {
-                nBoundParameters = printValuelist((Collection)dbValue, databaseCall, writer);
+                nBoundParameters = printValuelist((Collection<?>)dbValue, databaseCall, writer);
             } else if (typeConverters != null && typeConverters.containsKey(dbValue.getClass())){
                 dbValue = new BindCallCustomParameter(dbValue);
                 // custom binding is required, object to be bound is wrapped (example NCHAR, NVARCHAR2, NCLOB on Oracle9)
@@ -1281,14 +1281,14 @@ public class DatabasePlatform extends DatasourcePlatform {
                 return getJDBCType(ConversionManager.getObjectClass(field.getType()));
             }
         } else {
-            return getJDBCType((Class)null);
+            return getJDBCType((Class<?>)null);
         }
     }
 
     /**
      * Return the JDBC type for the Java type.
      */
-    public int getJDBCType(Class javaType) {
+    public int getJDBCType(Class<?> javaType) {
         if (javaType == null) {
             return Types.VARCHAR;// Best guess, sometimes we cannot determine type from mapping, this may fail on some drivers, other dont care what type it is.
         } else if (javaType == ClassConstants.STRING) {
@@ -1757,10 +1757,10 @@ public class DatabasePlatform extends DatasourcePlatform {
         return nBoundParameters;
     }
 
-    public int printValuelist(Collection theObjects, DatabaseCall call, Writer writer) throws IOException {
+    public int printValuelist(Collection<?> theObjects, DatabaseCall call, Writer writer) throws IOException {
         int nBoundParameters = 0;
         writer.write("(");
-        Iterator iterator = theObjects.iterator();
+        Iterator<?> iterator = theObjects.iterator();
         while (iterator.hasNext()) {
             nBoundParameters = nBoundParameters + appendParameterInternal(call, writer, iterator.next());
             if (iterator.hasNext()) {
@@ -1938,7 +1938,7 @@ public class DatabasePlatform extends DatasourcePlatform {
             ((TableSequence)getDefaultSequence()).setCounterFieldName(name);
         } else {
             if (!name.equals((new TableSequence()).getCounterFieldName())) {
-                ValidationException.wrongSequenceType(Helper.getShortClassName(getDefaultSequence()), "setCounterFieldName");
+                throw ValidationException.wrongSequenceType(Helper.getShortClassName(getDefaultSequence()), "setCounterFieldName");
             }
         }
     }
@@ -2575,7 +2575,7 @@ public class DatabasePlatform extends DatasourcePlatform {
             statement.setBoolean(index, (Boolean) parameter);
         } else if (parameter == null) {
             // Normally null is passed as a DatabaseField so the type is included, but in some case may be passed directly.
-            statement.setNull(index, getJDBCType((Class)null));
+            statement.setNull(index, getJDBCType((Class<?>)null));
         } else if (parameter instanceof DatabaseField) {
             setNullFromDatabaseField((DatabaseField)parameter, statement, index);
         } else if (parameter instanceof byte[]) {
@@ -2680,7 +2680,7 @@ public class DatabasePlatform extends DatasourcePlatform {
             statement.setBoolean(name, (Boolean) parameter);
         } else if (parameter == null) {
             // Normally null is passed as a DatabaseField so the type is included, but in some case may be passed directly.
-            statement.setNull(name, getJDBCType((Class)null));
+            statement.setNull(name, getJDBCType((Class<?>)null));
         } else if (parameter instanceof DatabaseField) {
             setNullFromDatabaseField((DatabaseField)parameter, statement, name);
         } else if (parameter instanceof byte[]) {
@@ -2984,7 +2984,7 @@ public class DatabasePlatform extends DatasourcePlatform {
                 FieldDefinition fieldDef;
                 //gfbug3307, should use columnDefinition if it was defined.
                 if ((field.getColumnDefinition()!= null) && (field.getColumnDefinition().length() == 0)) {
-                    Class<? extends Class> type = ConversionManager.getObjectClass(field.getType());
+                    Class<?> type = ConversionManager.getObjectClass(field.getType());
                     // Default type to VARCHAR, if unknown.
                     if (type == null) {
                         type = ConversionManager.getObjectClass(ClassConstants.STRING);

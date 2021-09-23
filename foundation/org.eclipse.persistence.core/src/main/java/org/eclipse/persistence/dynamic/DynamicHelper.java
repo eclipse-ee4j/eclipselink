@@ -238,6 +238,12 @@ public class DynamicHelper {
      */
     public static class SessionCustomizer implements org.eclipse.persistence.config.SessionCustomizer {
 
+        /**
+         * Default constructor.
+         */
+        public SessionCustomizer() {
+        }
+
         @Override
         public void customize(Session session) throws Exception {
             DynamicClassLoader dcl = DynamicClassLoader.lookup(session);

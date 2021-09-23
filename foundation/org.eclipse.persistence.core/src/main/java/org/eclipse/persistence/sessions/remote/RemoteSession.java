@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -168,7 +168,7 @@ public class RemoteSession extends DistributedSession {
      * Return the corresponding objects from the remote session for the objects read from the server.
      */
     @Override
-    public Object getObjectCorrespondingTo(Object serverSideDomainObject, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query) {
+    public Object getObjectCorrespondingTo(Object serverSideDomainObject, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query) {
         if (serverSideDomainObject == null) {
             return null;
         }
@@ -187,7 +187,7 @@ public class RemoteSession extends DistributedSession {
         // with this primary key then that's the corresponding object. Other wise its a new object for the remote
         // session which needs to be registered in the remote sessions identity map and this is also a corresponding
         // object.
-        ObjectDescriptor objectDescriptor = (ObjectDescriptor)objectDescriptors.get(serverSideDomainObject);
+        ObjectDescriptor objectDescriptor = objectDescriptors.get(serverSideDomainObject);
         if (objectDescriptor == null){
             //the object must have been added concurrently before serialize generate a new ObjectDescriptor on this side
             objectDescriptor = new ObjectDescriptor();
@@ -243,7 +243,7 @@ public class RemoteSession extends DistributedSession {
      * Return the corresponding objects from the remote session for the objects read from the server.
      */
     @Override
-    public Object getObjectsCorrespondingToAll(Object serverSideDomainObjects, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, ContainerPolicy containerPolicy) {
+    public Object getObjectsCorrespondingToAll(Object serverSideDomainObjects, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query, ContainerPolicy containerPolicy) {
         Object clientSideDomainObjects = containerPolicy.containerInstance(containerPolicy.sizeFor(serverSideDomainObjects));
 
         for (Object iter = containerPolicy.iteratorFor(serverSideDomainObjects);
@@ -264,7 +264,7 @@ public class RemoteSession extends DistributedSession {
         startOperationProfile(SessionProfiler.RemoteLazy, null, SessionProfiler.ALL);
         Transporter transporter = getRemoteConnection().instantiateRemoteValueHolderOnServer(remoteValueHolder);
         endOperationProfile(SessionProfiler.RemoteLazy, null, SessionProfiler.ALL);
-        return remoteValueHolder.getMapping().getObjectCorrespondingTo(transporter.getObject(), this, transporter.getObjectDescriptors(), new IdentityHashMap(), remoteValueHolder.getQuery());
+        return remoteValueHolder.getMapping().getObjectCorrespondingTo(transporter.getObject(), this, transporter.getObjectDescriptors(), new IdentityHashMap<>(), remoteValueHolder.getQuery());
     }
 
     /**

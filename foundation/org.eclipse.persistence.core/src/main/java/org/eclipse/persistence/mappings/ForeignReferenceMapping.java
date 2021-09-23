@@ -78,6 +78,7 @@ import org.eclipse.persistence.internal.sessions.ChangeRecord;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.sessions.remote.ObjectDescriptor;
 import org.eclipse.persistence.internal.sessions.remote.RemoteSessionController;
 import org.eclipse.persistence.internal.sessions.remote.RemoteValueHolder;
 import org.eclipse.persistence.logging.SessionLog;
@@ -448,10 +449,9 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * Ignore the original object.
      * @param buildDirectlyFromRow indicates that we are building the clone directly
      * from a row as opposed to building the original from the row, putting it in
-     * the shared cache, and then cloning the original.
      */
     @Override
-    public DatabaseValueHolder createCloneValueHolder(ValueHolderInterface attributeValue, Object original, Object clone, AbstractRecord row, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
+    public <T> DatabaseValueHolder<T> createCloneValueHolder(ValueHolderInterface<T> attributeValue, Object original, Object clone, AbstractRecord row, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
         return cloningSession.createCloneQueryValueHolder(attributeValue, clone, row, this);
     }
 
@@ -997,7 +997,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * with client-side objects.
      */
     @Override
-    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
+    public void fixObjectReferences(Object object, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         this.indirectionPolicy.fixObjectReferences(object, objectDescriptors, processedObjects, query, session);
     }
 
@@ -1087,7 +1087,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * maintaining object identity.
      */
     @Override
-    public Object getObjectCorrespondingTo(Object object, DistributedSession session, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query) {
+    public Object getObjectCorrespondingTo(Object object, DistributedSession session, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query) {
         return session.getObjectCorrespondingTo(object, objectDescriptors, processedObjects, query);
     }
 
@@ -2157,7 +2157,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                     return getAttributeValueFromObject(cached);
                 }
             } else if (!this.isCacheable && !isTargetProtected && cacheKey != null) {
-                return this.indirectionPolicy.buildIndirectObject(new ValueHolder(null));
+                return this.indirectionPolicy.buildIndirectObject(new ValueHolder<>(null));
             }
         }
         if (row.hasSopObject()) {

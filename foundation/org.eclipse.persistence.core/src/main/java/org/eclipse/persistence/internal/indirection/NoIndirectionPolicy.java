@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ import org.eclipse.persistence.internal.queries.InterfaceContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.sessions.remote.ObjectDescriptor;
 import org.eclipse.persistence.internal.sessions.remote.RemoteValueHolder;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadQuery;
@@ -91,7 +92,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * In this case, the type MUST be a Vector (or, in the case of jdk1.2,
      * Collection or Map).
      */
-    protected boolean collectionTypeIsValid(Class collectionType) {
+    protected boolean collectionTypeIsValid(Class<?> collectionType) {
         return getCollectionMapping().getContainerPolicy().isValidContainerType(collectionType);
     }
 
@@ -114,7 +115,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * with client-side objects.
      */
     @Override
-    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
+    public void fixObjectReferences(Object object, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         this.mapping.fixRealObjectReferences(object, objectDescriptors, processedObjects, query, session);
     }
 
@@ -155,7 +156,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * specified remote value holder.
      */
     @Override
-    public Object getValueFromRemoteValueHolder(RemoteValueHolder remoteValueHolder) {
+    public Object getValueFromRemoteValueHolder(RemoteValueHolder<?> remoteValueHolder) {
         throw DescriptorException.invalidIndirectionPolicyOperation(this, "getValueFromRemoteValueHolder");
     }
 
@@ -203,7 +204,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * Return whether the type is appropriate for the indirection policy.
      * In this case, the attribute type CANNOT be ValueHolderInterface.
      */
-    protected boolean typeIsValid(Class attributeType) {
+    protected boolean typeIsValid(Class<?> attributeType) {
         return attributeType != ClassConstants.ValueHolderInterface_Class;
     }
 
@@ -225,7 +226,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * In this case, the attribute type CANNOT be ValueHolderInterface.
      */
     @Override
-    public void validateDeclaredAttributeType(Class attributeType, IntegrityChecker checker) throws DescriptorException {
+    public void validateDeclaredAttributeType(Class<?> attributeType, IntegrityChecker checker) throws DescriptorException {
         super.validateDeclaredAttributeType(attributeType, checker);
         if (!this.typeIsValid(attributeType)) {
             checker.handleError(DescriptorException.attributeAndMappingWithoutIndirectionMismatch(this.mapping));
@@ -240,7 +241,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * Collection or Map).
      */
     @Override
-    public void validateDeclaredAttributeTypeForCollection(Class attributeType, IntegrityChecker checker) throws DescriptorException {
+    public void validateDeclaredAttributeTypeForCollection(Class<?> attributeType, IntegrityChecker checker) throws DescriptorException {
         super.validateDeclaredAttributeTypeForCollection(attributeType, checker);
         if (!this.collectionTypeIsValid(attributeType)) {
             InterfaceContainerPolicy policy = (InterfaceContainerPolicy)getCollectionMapping().getContainerPolicy();
@@ -256,7 +257,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * In this case, the return type CANNOT be ValueHolderInterface.
      */
     @Override
-    public void validateGetMethodReturnType(Class returnType, IntegrityChecker checker) throws DescriptorException {
+    public void validateGetMethodReturnType(Class<?> returnType, IntegrityChecker checker) throws DescriptorException {
         super.validateGetMethodReturnType(returnType, checker);
         if (!this.typeIsValid(returnType)) {
             checker.handleError(DescriptorException.returnAndMappingWithoutIndirectionMismatch(this.mapping));
@@ -271,7 +272,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * Collection or Map).
      */
     @Override
-    public void validateGetMethodReturnTypeForCollection(Class returnType, IntegrityChecker checker) throws DescriptorException {
+    public void validateGetMethodReturnTypeForCollection(Class<?> returnType, IntegrityChecker checker) throws DescriptorException {
         super.validateGetMethodReturnTypeForCollection(returnType, checker);
         if (!this.collectionTypeIsValid(returnType)) {
             checker.handleError(DescriptorException.getMethodReturnTypeNotValid(getCollectionMapping()));
@@ -286,7 +287,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * In this case, the parameter type CANNOT be ValueHolderInterface.
      */
     @Override
-    public void validateSetMethodParameterType(Class parameterType, IntegrityChecker checker) throws DescriptorException {
+    public void validateSetMethodParameterType(Class<?> parameterType, IntegrityChecker checker) throws DescriptorException {
         super.validateSetMethodParameterType(parameterType, checker);
         if (!this.typeIsValid(parameterType)) {
             checker.handleError(DescriptorException.parameterAndMappingWithoutIndirectionMismatch(this.mapping));
@@ -301,7 +302,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * Collection or Map).
      */
     @Override
-    public void validateSetMethodParameterTypeForCollection(Class parameterType, IntegrityChecker checker) throws DescriptorException {
+    public void validateSetMethodParameterTypeForCollection(Class<?> parameterType, IntegrityChecker checker) throws DescriptorException {
         super.validateSetMethodParameterTypeForCollection(parameterType, checker);
         if (!this.collectionTypeIsValid(parameterType)) {
             checker.handleError(DescriptorException.setMethodParameterTypeNotValid(getCollectionMapping()));

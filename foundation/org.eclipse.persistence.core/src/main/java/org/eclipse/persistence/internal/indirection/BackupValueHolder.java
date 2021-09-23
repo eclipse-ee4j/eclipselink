@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,33 +26,33 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * @since 10.1.3
  * @author James Sutherland
  */
-public class BackupValueHolder extends DatabaseValueHolder {
+public class BackupValueHolder<T> extends DatabaseValueHolder<T> {
 
     /** Stores the original uow clone's value holder. */
-    protected ValueHolderInterface<?> unitOfWorkValueHolder;
+    protected ValueHolderInterface<T> unitOfWorkValueHolder;
 
-    public BackupValueHolder(ValueHolderInterface<?> unitOfWorkValueHolder) {
+    public BackupValueHolder(ValueHolderInterface<T> unitOfWorkValueHolder) {
         this.unitOfWorkValueHolder = unitOfWorkValueHolder;
     }
 
     @Override
     public boolean isPessimisticLockingValueHolder() {
-        return ((DatabaseValueHolder)this.unitOfWorkValueHolder).isPessimisticLockingValueHolder();
+        return ((DatabaseValueHolder<T>)this.unitOfWorkValueHolder).isPessimisticLockingValueHolder();
     }
 
     @Override
-    public Object instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder unitOfWorkValueHolder) {
-        return ((DatabaseValueHolder)this.unitOfWorkValueHolder).instantiateForUnitOfWorkValueHolder(unitOfWorkValueHolder);
+    public T instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder<T> unitOfWorkValueHolder) {
+        return ((DatabaseValueHolder<T>)this.unitOfWorkValueHolder).instantiateForUnitOfWorkValueHolder(unitOfWorkValueHolder);
     }
 
     @Override
     public AbstractRecord getRow() {
-        return ((DatabaseValueHolder)this.unitOfWorkValueHolder).getRow();
+        return ((DatabaseValueHolder<T>)this.unitOfWorkValueHolder).getRow();
     }
 
     @Override
     public AbstractSession getSession() {
-        return ((DatabaseValueHolder)this.unitOfWorkValueHolder).getSession();
+        return ((DatabaseValueHolder<T>)this.unitOfWorkValueHolder).getSession();
     }
 
     /**
@@ -60,7 +60,7 @@ public class BackupValueHolder extends DatabaseValueHolder {
      * then first instantiate it to obtain the backup value.
      */
     @Override
-    public Object instantiate() {
+    public T instantiate() {
         // Ensures instantiation of the original, and setting of this back value holder's value.
         return this.unitOfWorkValueHolder.getValue();
     }

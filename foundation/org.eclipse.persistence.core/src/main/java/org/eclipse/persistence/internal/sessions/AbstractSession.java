@@ -1167,12 +1167,12 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         return getDefaultReadOnlyClasses();
     }
 
-    public DatabaseValueHolder createCloneQueryValueHolder(ValueHolderInterface attributeValue, Object clone, AbstractRecord row, ForeignReferenceMapping mapping) {
-        return new ProtectedValueHolder(attributeValue, mapping, this);
+    public <T> DatabaseValueHolder<T> createCloneQueryValueHolder(ValueHolderInterface<T> attributeValue, Object clone, AbstractRecord row, ForeignReferenceMapping mapping) {
+        return new ProtectedValueHolder<>(attributeValue, mapping, this);
     }
 
-    public DatabaseValueHolder createCloneTransformationValueHolder(ValueHolderInterface attributeValue, Object original, Object clone, AbstractTransformationMapping mapping) {
-        return new ProtectedValueHolder(attributeValue, mapping, this);
+    public <T> DatabaseValueHolder<T> createCloneTransformationValueHolder(ValueHolderInterface<T> attributeValue, Object original, Object clone, AbstractTransformationMapping mapping) {
+        return new ProtectedValueHolder<>(attributeValue, mapping, this);
     }
 
     public <T> InjectionManager<T> createInjectionManager(Object beanManager){

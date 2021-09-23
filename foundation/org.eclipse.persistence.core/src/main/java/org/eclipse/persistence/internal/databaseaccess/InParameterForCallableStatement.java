@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -42,7 +42,7 @@ public class InParameterForCallableStatement extends BindCallCustomParameter {
         platform.setParameterValueInDatabaseCall(parameter, statement, parameterName, session);
     }
 
-    public Class getType(){
+    public Class<?> getType(){
         if ((inField != null) && (inField.getType() != null)) {
             return inField.getType();
         } else if (inParameter!=null) {

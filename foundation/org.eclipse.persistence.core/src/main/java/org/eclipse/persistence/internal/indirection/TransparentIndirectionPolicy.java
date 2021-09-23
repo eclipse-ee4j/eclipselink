@@ -92,11 +92,11 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * database will these contents be copied to the backup clone.
      */
     protected Object buildBackupClone(IndirectContainer container) {
-        ValueHolderInterface containerValueHolder = container.getValueHolder();
+        ValueHolderInterface<Object> containerValueHolder = container.getValueHolder();
         // CR#2852176 Use a BackupValueHolder to handle replacing of the original.
-        BackupValueHolder backupValueHolder = new BackupValueHolder(containerValueHolder);
+        BackupValueHolder<Object> backupValueHolder = new BackupValueHolder<>(containerValueHolder);
         if (containerValueHolder instanceof UnitOfWorkValueHolder) {
-           ((UnitOfWorkValueHolder) containerValueHolder).setBackupValueHolder(backupValueHolder);
+           ((UnitOfWorkValueHolder<Object>) containerValueHolder).setBackupValueHolder(backupValueHolder);
         }
         return this.buildIndirectContainer(backupValueHolder);
     }
@@ -149,7 +149,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      */
     @Override
     public Object cloneAttribute(Object attributeValue, Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
-        ValueHolderInterface valueHolder = null;
+        ValueHolderInterface<Object> valueHolder = null;
         Object container = null;
         IndirectList indirectList = null;
         IndirectContainer indirectContainer = null;
@@ -165,19 +165,19 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
             // This can occur if an existing serialized object is attempt to be registered as new.
             if ((valueHolder instanceof DatabaseValueHolder)
                     && (! valueHolder.isInstantiated())
-                    && (((DatabaseValueHolder) valueHolder).getSession() == null)
-                    && (! ((DatabaseValueHolder) valueHolder).isSerializedRemoteUnitOfWorkValueHolder())) {
+                    && (((DatabaseValueHolder<?>) valueHolder).getSession() == null)
+                    && (! ((DatabaseValueHolder<?>) valueHolder).isSerializedRemoteUnitOfWorkValueHolder())) {
                 throw DescriptorException.attemptToRegisterDeadIndirection(original, this.mapping);
             }
             if (this.mapping.getRelationshipPartner() == null) {
                 container = this.mapping.buildCloneForPartObject(attributeValue, original, cacheKey, clone, cloningSession, refreshCascade, false, false);
             } else {
                 if (indirectContainer == null) {
-                    valueHolder = new ValueHolder(attributeValue);
+                    valueHolder = new ValueHolder<>(attributeValue);
                 }
                 AbstractRecord row = null;
                 if (valueHolder instanceof DatabaseValueHolder) {
-                    row = ((DatabaseValueHolder)valueHolder).getRow();
+                    row = ((DatabaseValueHolder<?>)valueHolder).getRow();
                 }
 
                 //If a new object is being cloned then we must build a new UOWValueHolder
@@ -185,7 +185,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
                 // here the code instantiates the valueholder in a privledged manner because a
                 // UOWValueHolder will assume the objects in the collection are existing if the valueholder
                 //  Goes through it's own instantiation process.
-                DatabaseValueHolder newValueHolder = this.mapping.createCloneValueHolder(valueHolder, original, clone, row, cloningSession, buildDirectlyFromRow);
+                DatabaseValueHolder<Object> newValueHolder = this.mapping.createCloneValueHolder(valueHolder, original, clone, row, cloningSession, buildDirectlyFromRow);
                 container = buildIndirectContainer(newValueHolder);
                 Object cloneCollection = this.mapping.buildCloneForPartObject(attributeValue, original, cacheKey, clone, cloningSession, refreshCascade, false, false);
                 newValueHolder.privilegedSetValue(cloneCollection);
@@ -193,13 +193,13 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
             }
         } else {
             if (indirectContainer == null) {
-                valueHolder = new ValueHolder(attributeValue);
+                valueHolder = new ValueHolder<>(attributeValue);
             }
             AbstractRecord row = null;
             if (valueHolder instanceof DatabaseValueHolder) {
-                row = ((DatabaseValueHolder)valueHolder).getRow();
+                row = ((DatabaseValueHolder<?>)valueHolder).getRow();
             }
-            DatabaseValueHolder uowValueHolder = this.mapping.createCloneValueHolder(valueHolder, original, clone, row, cloningSession, buildDirectlyFromRow);
+            DatabaseValueHolder<?> uowValueHolder = this.mapping.createCloneValueHolder(valueHolder, original, clone, row, cloningSession, buildDirectlyFromRow);
             if ((indirectContainer == null) || !buildDirectlyFromRow) {
                 container = buildIndirectContainer(uowValueHolder);
             } else {
@@ -261,7 +261,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
         if (this.objectIsInstantiated(referenceObject)) {
             return null;
         } else {
-            return ((DatabaseValueHolder)((IndirectContainer)referenceObject).getValueHolder()).getRow();
+            return ((DatabaseValueHolder<?>)((IndirectContainer)referenceObject).getValueHolder()).getRow();
         }
     }
 
@@ -272,10 +272,10 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * with client-side objects.
      */
     @Override
-    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
+    public void fixObjectReferences(Object object, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         Object container = getMapping().getAttributeValueFromObject(object);
         if (container instanceof IndirectContainer && ((((IndirectContainer) container).getValueHolder() instanceof RemoteValueHolder)) ) {
-            RemoteValueHolder valueHolder = (RemoteValueHolder)((IndirectContainer)container).getValueHolder();
+            RemoteValueHolder<?> valueHolder = (RemoteValueHolder)((IndirectContainer)container).getValueHolder();
             valueHolder.setSession(session);
             valueHolder.setMapping(getMapping());
             if ((!query.shouldMaintainCache()) && ((!query.shouldCascadeParts()) || (query.shouldCascadePrivateParts() && (!this.mapping.isPrivateOwned())))) {
@@ -327,7 +327,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
     public Object getOriginalIndirectionObject(Object unitOfWorkIndirectionObject, AbstractSession session) {
         IndirectContainer container = (IndirectContainer)unitOfWorkIndirectionObject;
         if (container.getValueHolder() instanceof UnitOfWorkValueHolder) {
-            return buildIndirectContainer((ValueHolderInterface) getOriginalValueHolder(unitOfWorkIndirectionObject, session));
+            return buildIndirectContainer((ValueHolderInterface<?>) getOriginalValueHolder(unitOfWorkIndirectionObject, session));
         } else {
             return container;
         }
@@ -340,7 +340,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
     @Override
     public Object getOriginalIndirectionObjectForMerge(Object unitOfWorkIndirectionObject, AbstractSession session) {
         IndirectContainer container = (IndirectContainer) getOriginalIndirectionObject(unitOfWorkIndirectionObject, session);
-        DatabaseValueHolder holder = (DatabaseValueHolder)container.getValueHolder();
+        DatabaseValueHolder<?> holder = (DatabaseValueHolder<?>)container.getValueHolder();
         if (holder != null && holder.getSession()!= null){
             holder.setSession(session);
         }
@@ -355,23 +355,23 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
     @Override
     public Object getOriginalValueHolder(Object unitOfWorkIndirectionObject, AbstractSession session) {
         if (! (unitOfWorkIndirectionObject instanceof IndirectContainer)){
-            return new ValueHolder();
+            return new ValueHolder<>();
         }
         IndirectContainer container = (IndirectContainer)unitOfWorkIndirectionObject;
         if (container.getValueHolder() instanceof WrappingValueHolder) {
-            ValueHolderInterface<?> valueHolder = ((WrappingValueHolder)container.getValueHolder()).getWrappedValueHolder();
+            ValueHolderInterface<?> valueHolder = ((WrappingValueHolder<?>)container.getValueHolder()).getWrappedValueHolder();
             if ((valueHolder == null) && session.isRemoteUnitOfWork()) {
                 RemoteSessionController controller = ((RemoteUnitOfWork)session).getParentSessionController();
-                valueHolder = controller.getRemoteValueHolders().get(((UnitOfWorkValueHolder)container.getValueHolder()).getWrappedValueHolderRemoteID());
+                valueHolder = controller.getRemoteValueHolders().get(((UnitOfWorkValueHolder<?>)container.getValueHolder()).getWrappedValueHolderRemoteID());
             }
             if (!session.isProtectedSession()){
-                while (valueHolder instanceof WrappingValueHolder && ((WrappingValueHolder)valueHolder).getWrappedValueHolder() != null){
-                    valueHolder = ((WrappingValueHolder)valueHolder).getWrappedValueHolder();
+                while (valueHolder instanceof WrappingValueHolder && ((WrappingValueHolder<?>)valueHolder).getWrappedValueHolder() != null){
+                    valueHolder = ((WrappingValueHolder<?>)valueHolder).getWrappedValueHolder();
                 }
             }
             // EL bug 470161
-            if ((valueHolder != null) && (valueHolder instanceof DatabaseValueHolder)) {
-                ((DatabaseValueHolder) valueHolder).releaseWrappedValueHolder(session);
+            if (valueHolder instanceof DatabaseValueHolder) {
+                ((DatabaseValueHolder<?>) valueHolder).releaseWrappedValueHolder(session);
             }
             return valueHolder;
         } else {
@@ -404,7 +404,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * The method validateAttributeOfInstantiatedObject(Object attributeValue) fixes the value of the attributeValue
      * in cases where it is null and indirection requires that it contain some specific data structure.  Return whether this will happen.
      * This method is used to help determine if indirection has been triggered
-     * @see validateAttributeOfInstantiatedObject(Object attributeValue)
+     * @see #validateAttributeOfInstantiatedObject(Object)
      */
     @Override
     public boolean isAttributeValueFullyBuilt(Object attributeValue){
@@ -421,7 +421,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * specified remote value holder.
      */
     @Override
-    public Object getValueFromRemoteValueHolder(RemoteValueHolder remoteValueHolder) {
+    public Object getValueFromRemoteValueHolder(RemoteValueHolder<?> remoteValueHolder) {
         Object result = remoteValueHolder.getServerIndirectionObject();
         this.getContainerPolicy().sizeFor(result);// forgive me for this hack: but we have to do something to trigger the database read
         return result;
@@ -462,7 +462,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
         if( attributeValue instanceof IndirectContainer) {
             ValueHolderInterface valueHolder = ((IndirectContainer)attributeValue).getValueHolder();
             if (valueHolder instanceof QueryBasedValueHolder) {
-                ((QueryBasedValueHolder)valueHolder).setSourceObject(sourceObject);
+                ((QueryBasedValueHolder<?>)valueHolder).setSourceObject(sourceObject);
             }
         }
     }
@@ -517,7 +517,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
     public void mergeRemoteValueHolder(Object clientSideDomainObject, Object serverSideDomainObject, MergeManager mergeManager) {
         // This will always be a transparent with a remote.
         IndirectContainer serverContainer = (IndirectContainer)getMapping().getAttributeValueFromObject(serverSideDomainObject);
-        RemoteValueHolder serverValueHolder = (RemoteValueHolder)serverContainer.getValueHolder();
+        RemoteValueHolder<?> serverValueHolder = (RemoteValueHolder<?>)serverContainer.getValueHolder();
         mergeClientIntoServerValueHolder(serverValueHolder, mergeManager);
 
         getMapping().setAttributeValueInObject(clientSideDomainObject, serverContainer);
@@ -555,9 +555,9 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
     @Override
     public boolean objectIsEasilyInstantiated(Object object) {
         if (object instanceof IndirectContainer) {
-            ValueHolderInterface valueHolder = ((IndirectContainer)object).getValueHolder();
+            ValueHolderInterface<?> valueHolder = ((IndirectContainer)object).getValueHolder();
             if (valueHolder instanceof DatabaseValueHolder) {
-                return ((DatabaseValueHolder)valueHolder).isEasilyInstantiated();
+                return ((DatabaseValueHolder<?>)valueHolder).isEasilyInstantiated();
             }
         }
         return true;
@@ -590,7 +590,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * declared type [jdk1.1] or the container policy class implements
      * the declared interface [jdk1.2]).
      */
-    protected boolean typeIsValid(Class declaredType) {
+    protected boolean typeIsValid(Class<?> declaredType) {
         if (Helper.classIsSubclass(this.getContainerClass(), declaredType)) {
             return true;
         }
@@ -656,7 +656,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * compatible with the one specified by the ContainerPolicy.
      */
     @Override
-    public void validateDeclaredAttributeType(Class attributeType, IntegrityChecker checker) throws DescriptorException {
+    public void validateDeclaredAttributeType(Class<?> attributeType, IntegrityChecker checker) throws DescriptorException {
         super.validateDeclaredAttributeType(attributeType, checker);
         if (!this.typeIsValid(attributeType)) {
             checker.handleError(DescriptorException.attributeAndMappingWithTransparentIndirectionMismatch(this.getMapping(), attributeType, this.validTypeName()));
@@ -672,7 +672,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * compatible with the one specified by the ContainerPolicy.
      */
     @Override
-    public void validateGetMethodReturnType(Class returnType, IntegrityChecker checker) throws DescriptorException {
+    public void validateGetMethodReturnType(Class<?> returnType, IntegrityChecker checker) throws DescriptorException {
         super.validateGetMethodReturnType(returnType, checker);
         if (!this.typeIsValid(returnType)) {
             checker.handleError(DescriptorException.returnAndMappingWithTransparentIndirectionMismatch(this.getMapping(), returnType, this.validTypeName()));
@@ -688,7 +688,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * compatible with the one specified by the ContainerPolicy.
      */
     @Override
-    public void validateSetMethodParameterType(Class parameterType, IntegrityChecker checker) throws DescriptorException {
+    public void validateSetMethodParameterType(Class<?> parameterType, IntegrityChecker checker) throws DescriptorException {
         super.validateSetMethodParameterType(parameterType, checker);
         if (!this.typeIsValid(parameterType)) {
             checker.handleError(DescriptorException.parameterAndMappingWithTransparentIndirectionMismatch(this.getMapping(), parameterType, this.validTypeName()));
@@ -711,7 +711,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      */
     @Override
     public Object valueFromBatchQuery(ReadQuery batchQuery, AbstractRecord row, ObjectLevelReadQuery originalQuery, CacheKey parentCacheKey) {
-        return this.buildIndirectContainer(new BatchValueHolder(batchQuery, row, getForeignReferenceMapping(), originalQuery, parentCacheKey));
+        return this.buildIndirectContainer(new BatchValueHolder<>(batchQuery, row, getForeignReferenceMapping(), originalQuery, parentCacheKey));
     }
 
     /**
@@ -734,7 +734,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      */
     @Override
     public Object valueFromQuery(ReadQuery query, AbstractRecord row, AbstractSession session) {
-        return this.buildIndirectContainer(new QueryBasedValueHolder(query, row, session));
+        return this.buildIndirectContainer(new QueryBasedValueHolder<>(query, row, session));
     }
 
     /**
@@ -745,7 +745,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      */
     @Override
     public Object valueFromQuery(ReadQuery query, AbstractRecord row, Object object, AbstractSession session) {
-        return this.buildIndirectContainer(new QueryBasedValueHolder(query, object, row, session));
+        return this.buildIndirectContainer(new QueryBasedValueHolder<>(query, object, row, session));
     }
 
     /**

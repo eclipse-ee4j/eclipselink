@@ -6155,13 +6155,13 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     }
 
     @Override
-    public DatabaseValueHolder createCloneQueryValueHolder(ValueHolderInterface attributeValue, Object clone, AbstractRecord row, ForeignReferenceMapping mapping) {
-        return new UnitOfWorkQueryValueHolder(attributeValue, clone, mapping, row, this);
+    public <T> DatabaseValueHolder<T> createCloneQueryValueHolder(ValueHolderInterface<T> attributeValue, Object clone, AbstractRecord row, ForeignReferenceMapping mapping) {
+        return new UnitOfWorkQueryValueHolder<>(attributeValue, clone, mapping, row, this);
     }
 
     @Override
-    public DatabaseValueHolder createCloneTransformationValueHolder(ValueHolderInterface attributeValue, Object original, Object clone, AbstractTransformationMapping mapping) {
-        return new UnitOfWorkTransformerValueHolder(attributeValue, original, clone, mapping, this);
+    public <T> DatabaseValueHolder<T> createCloneTransformationValueHolder(ValueHolderInterface<T> attributeValue, Object original, Object clone, AbstractTransformationMapping mapping) {
+        return new UnitOfWorkTransformerValueHolder<>(attributeValue, original, clone, mapping, this);
     }
 
     /**

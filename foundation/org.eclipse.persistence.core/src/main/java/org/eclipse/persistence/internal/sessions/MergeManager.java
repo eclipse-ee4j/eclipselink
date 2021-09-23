@@ -60,13 +60,13 @@ public class MergeManager {
     protected AbstractSession session;
 
     /** Used only while refreshing objects on remote session */
-    protected Map objectDescriptors;
+    protected Map<Object, ObjectDescriptor> objectDescriptors;
 
     /** Used to unravel recursion. */
     protected Map<AbstractSession, Map<Object, Object>> objectsAlreadyMerged;
 
     /** Used to keep track of merged new objects. */
-    protected IdentityHashMap mergedNewObjects;
+    protected IdentityHashMap<Object, Object> mergedNewObjects;
 
     /** Used to store the list of locks that this merge manager has acquired for this merge */
     protected ArrayList<CacheKey> acquiredLocks;
@@ -115,8 +115,8 @@ public class MergeManager {
 
     public MergeManager(AbstractSession session) {
         this.session = session;
-        this.mergedNewObjects = new IdentityHashMap();
-        this.objectsAlreadyMerged = new IdentityHashMap();
+        this.mergedNewObjects = new IdentityHashMap<>();
+        this.objectsAlreadyMerged = new IdentityHashMap<>();
         this.cascadePolicy = CASCADE_ALL_PARTS;
         this.mergePolicy = WORKING_COPY_INTO_ORIGINAL;
         this.acquiredLocks = new ArrayList<>();
@@ -155,14 +155,14 @@ public class MergeManager {
         return mergePolicy;
     }
 
-    public Map getObjectDescriptors() {
+    public Map<Object, ObjectDescriptor> getObjectDescriptors() {
         if (this.objectDescriptors == null) {
-            this.objectDescriptors = new IdentityHashMap();
+            this.objectDescriptors = new IdentityHashMap<>();
         }
         return this.objectDescriptors;
     }
 
-    public Map getObjectsAlreadyMerged() {
+    public Map<AbstractSession, Map<Object, Object>> getObjectsAlreadyMerged() {
         return objectsAlreadyMerged;
     }
 
@@ -338,7 +338,7 @@ public class MergeManager {
     public void recordMerge(Object key, Object value, AbstractSession targetSession) {
         Map<Object, Object> sessionMap = this.objectsAlreadyMerged.get(targetSession);
         if (sessionMap == null){
-            sessionMap = new IdentityHashMap();
+            sessionMap = new IdentityHashMap<>();
             this.objectsAlreadyMerged.put(targetSession, sessionMap);
         }
         sessionMap.put(key, value);
@@ -371,7 +371,7 @@ public class MergeManager {
         Object clientSideDomainObject = this.session.getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, serverSideDomainObject.getClass(), descriptor);
         if (clientSideDomainObject == null) {
             //the referenced object came back as null from the cache.
-            ObjectDescriptor objectDescriptor = (ObjectDescriptor)getObjectDescriptors().get(serverSideDomainObject);
+            ObjectDescriptor objectDescriptor = getObjectDescriptors().get(serverSideDomainObject);
             if (objectDescriptor == null){
                 //the object must have been added concurently before serialize generate a new ObjectDescriptor on this side
                 objectDescriptor = new ObjectDescriptor();
@@ -394,7 +394,7 @@ public class MergeManager {
             // merge into the clientSideDomainObject from the serverSideDomainObject;
             // use clientSideDomainObject as the backup, as anything different should be merged
             descriptor.getObjectBuilder().mergeIntoObject(clientSideDomainObject, false, serverSideDomainObject, this, getSession());
-            ObjectDescriptor objectDescriptor = (ObjectDescriptor)getObjectDescriptors().get(serverSideDomainObject);
+            ObjectDescriptor objectDescriptor = getObjectDescriptors().get(serverSideDomainObject);
             if (objectDescriptor == null){
                 //the object must have been added concurently before serialize generate a new ObjectDescriptor on this side
                 objectDescriptor = new ObjectDescriptor();
@@ -436,7 +436,7 @@ public class MergeManager {
             // Iterate over each clone and let the object build merge to clones into the originals.
             this.session.getIdentityMapAccessorInstance().getWriteLockManager().acquireRequiredLocks(this, uowChangeSet);
             Iterator<ObjectChangeSet> objectChangeEnum = uowChangeSet.getAllChangeSets().keySet().iterator();
-            Set<Class> classesChanged = new HashSet<>();
+            Set<Class<?>> classesChanged = new HashSet<>();
             while (objectChangeEnum.hasNext()) {
                 ObjectChangeSet objectChangeSet = objectChangeEnum.next();
                 // Don't read the object here.  If it is null then we won't merge it at this stage, unless it
@@ -462,7 +462,7 @@ public class MergeManager {
                 }
             }
             // Clear the query cache as well.
-            for (Class changedClass : classesChanged) {
+            for (Class<?> changedClass : classesChanged) {
                 this.session.getIdentityMapAccessorInstance().invalidateQueryCache(changedClass);
             }
         } catch (RuntimeException exception) {
@@ -486,7 +486,7 @@ public class MergeManager {
 
         // Determine if the object needs to be registered in the parent's clone mapping,
         // This is required for registered new objects in a nested unit of work.
-        Class localClassType = changeSet.getClassType(session);
+        Class<?> localClassType = changeSet.getClassType(session);
         ClassDescriptor descriptor = session.getDescriptor(localClassType);
 
         // Perform invalidation of a cached object (when set on the ChangeSet) to avoid refreshing or merging
@@ -1003,7 +1003,7 @@ public class MergeManager {
      * The newly merged object will then be added to the cache.
      */
     public Object mergeNewObjectIntoCache(ObjectChangeSet changeSet) {
-        Class localClassType = changeSet.getClassType(session);
+        Class<?> localClassType = changeSet.getClassType(session);
         ClassDescriptor descriptor = this.session.getDescriptor(localClassType);
 
         Object newObject = null;
@@ -1158,11 +1158,11 @@ public class MergeManager {
         this.forceCascade = forceCascade;
     }
 
-    public void setObjectDescriptors(Map objectDescriptors) {
+    public void setObjectDescriptors(Map<Object, ObjectDescriptor> objectDescriptors) {
         this.objectDescriptors = objectDescriptors;
     }
 
-    protected void setObjectsAlreadyMerged(Map objectsAlreadyMerged) {
+    protected void setObjectsAlreadyMerged(Map<AbstractSession, Map<Object, Object>> objectsAlreadyMerged) {
         this.objectsAlreadyMerged = objectsAlreadyMerged;
     }
 
@@ -1290,7 +1290,7 @@ public class MergeManager {
      * registerObjectForMergeCloneIntoWorkingCopy method.
      * @return Map
      */
-    public IdentityHashMap getMergedNewObjects(){
+    public IdentityHashMap<Object, Object> getMergedNewObjects(){
         return mergedNewObjects;
     }
 

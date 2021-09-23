@@ -27,6 +27,7 @@ import java.util.Set;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
@@ -479,7 +480,7 @@ public class TableCreator {
                     //as it is stored internally.
                     String tableName = table.getTable()==null? table.getName(): table.getTable().getName();
                     final boolean usesDelimiting = (table.getTable()!=null && table.getTable().shouldUseDelimiters());
-                    List<DatabaseRecord> columnInfo = null;
+                    List<AbstractRecord> columnInfo = null;
 
                     //I need the actual table catalog, schema and tableName for getTableInfo.
                     columnInfo = abstractSession.getAccessor().getColumnInfo(null, null, tableName, null, abstractSession);
@@ -496,7 +497,7 @@ public class TableCreator {
                         //Table exists, add individual fields as necessary
 
                         //hash the table's existing columns by name
-                        final Map<DatabaseField, DatabaseRecord> columns = new HashMap<>(columnInfo.size());
+                        final Map<DatabaseField, AbstractRecord> columns = new HashMap<>(columnInfo.size());
                         final DatabaseField columnNameLookupField = new DatabaseField("COLUMN_NAME");
                         final DatabaseField schemaLookupField = new DatabaseField("TABLE_SCHEM");
                         boolean schemaMatchFound = false;
@@ -516,7 +517,7 @@ public class TableCreator {
                             }
                         }
                         final boolean checkSchema = (qualifier != null) && (qualifier.length() > 0);
-                        for (final DatabaseRecord record : columnInfo) {
+                        for (final AbstractRecord record : columnInfo) {
                             final String fieldName = (String)record.get(columnNameLookupField);
                             if (fieldName != null && fieldName.length() > 0) {
                                 final DatabaseField column = new DatabaseField(fieldName);

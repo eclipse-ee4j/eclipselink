@@ -763,7 +763,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
                     return this.getAttributeValueFromObject(cached);
                 }
             } else if (!this.isCacheable && !isTargetProtected && cacheKey != null) {
-                return this.indirectionPolicy.buildIndirectObject(new ValueHolder(null));
+                return this.indirectionPolicy.buildIndirectObject(new ValueHolder<>(null));
             }
         }
         if (row.hasSopObject()) {

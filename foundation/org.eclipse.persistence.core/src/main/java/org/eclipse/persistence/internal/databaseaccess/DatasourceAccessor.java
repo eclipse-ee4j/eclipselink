@@ -92,7 +92,7 @@ public abstract class DatasourceAccessor implements Accessor {
     /** Keep track of whether the accessor is "connected". */
     protected boolean isConnected;
 
-    /** PERF: Cache platform to avoid gets (small but can add up). */
+    /* PERF: Cache platform to avoid gets (small but can add up). */
     /** This is also required to ensure all accessors for a session are using the same platform. */
     protected DatasourcePlatform platform;
 
@@ -643,8 +643,8 @@ public abstract class DatasourceAccessor implements Accessor {
      * database objects.
      */
     @Override
-    public Vector getColumnInfo(String catalog, String schema, String tableName, String columnName, AbstractSession session) throws DatabaseException {
-        return new Vector();
+    public Vector<AbstractRecord> getColumnInfo(String catalog, String schema, String tableName, String columnName, AbstractSession session) throws DatabaseException {
+        return new Vector<>();
     }
 
     /**
@@ -673,8 +673,8 @@ public abstract class DatasourceAccessor implements Accessor {
      * database objects.
      */
     @Override
-    public Vector getTableInfo(String catalog, String schema, String tableName, String[] types, AbstractSession session) throws DatabaseException {
-        return new Vector();
+    public Vector<AbstractRecord> getTableInfo(String catalog, String schema, String tableName, String[] types, AbstractSession session) throws DatabaseException {
+        return new Vector<>();
     }
 
     /**

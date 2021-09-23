@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,17 +30,17 @@ import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping
  *
  * @author    Sati
  */
-public class UnitOfWorkTransformerValueHolder extends UnitOfWorkValueHolder {
+public class UnitOfWorkTransformerValueHolder<T> extends UnitOfWorkValueHolder<T> {
     protected transient Object cloneOfObject;
     protected transient Object object;
 
-    public UnitOfWorkTransformerValueHolder(ValueHolderInterface attributeValue, Object original, Object clone, AbstractTransformationMapping mapping, UnitOfWorkImpl unitOfWork) {
+    public UnitOfWorkTransformerValueHolder(ValueHolderInterface<T> attributeValue, Object original, Object clone, AbstractTransformationMapping mapping, UnitOfWorkImpl unitOfWork) {
         this(attributeValue, clone, mapping, unitOfWork);
         this.object = original;
         this.cloneOfObject = clone;
     }
 
-    protected UnitOfWorkTransformerValueHolder(ValueHolderInterface attributeValue, Object clone, DatabaseMapping mapping, UnitOfWorkImpl unitOfWork) {
+    protected UnitOfWorkTransformerValueHolder(ValueHolderInterface<T> attributeValue, Object clone, DatabaseMapping mapping, UnitOfWorkImpl unitOfWork) {
         super(attributeValue, clone, mapping, unitOfWork);
     }
 
@@ -56,8 +56,9 @@ public class UnitOfWorkTransformerValueHolder extends UnitOfWorkValueHolder {
      * Clone the original attribute value.
      */
     @Override
-    public Object buildCloneFor(Object originalAttributeValue) {
-        return getMapping().buildCloneForPartObject(originalAttributeValue, getObject(), null, getCloneOfObject(), getUnitOfWork(), null, true, true);
+    @SuppressWarnings({"unchecked"})
+    public T buildCloneFor(Object originalAttributeValue) {
+        return (T) getMapping().buildCloneForPartObject(originalAttributeValue, getObject(), null, getCloneOfObject(), getUnitOfWork(), null, true, true);
     }
 
     protected Object getCloneOfObject() {
@@ -72,7 +73,7 @@ public class UnitOfWorkTransformerValueHolder extends UnitOfWorkValueHolder {
      * Ensure that the backup value holder is populated.
      */
     @Override
-    public void setValue(Object theValue) {
+    public void setValue(T theValue) {
         // Must force instantiation to be able to compare with the old value.
         if (!this.isInstantiated) {
             instantiate();

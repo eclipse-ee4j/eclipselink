@@ -21,7 +21,7 @@ public interface CoreField {
      */
     String getName();
 
-    <T> Class<T> getType();
+    Class<?> getType();
 
     /**
      * Set the unqualified name of the field.

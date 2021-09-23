@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,16 +34,16 @@ import org.eclipse.persistence.logging.SessionLog;
  *
  * @author    Sati
  */
-public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implements WrappingValueHolder{
+public abstract class UnitOfWorkValueHolder<T> extends DatabaseValueHolder<T> implements WrappingValueHolder<T> {
 
     /** The value holder in the original object. */
-    protected transient ValueHolderInterface<?> wrappedValueHolder;
+    protected transient ValueHolderInterface<T> wrappedValueHolder;
 
     /** The mapping for the attribute. */
     protected transient DatabaseMapping mapping;
 
     /** The value holder stored in the backup copy, should not be transient. */
-    protected ValueHolderInterface<Object> backupValueHolder;
+    protected ValueHolderInterface<T> backupValueHolder;
 
     /** These cannot be transient because they are required for a remote unit of work.
     When the remote uow is serialized to the server to be committed, these
@@ -63,7 +63,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
         super();
     }
 
-    protected UnitOfWorkValueHolder(ValueHolderInterface attributeValue, Object clone, DatabaseMapping mapping, UnitOfWorkImpl unitOfWork) {
+    protected UnitOfWorkValueHolder(ValueHolderInterface<T> attributeValue, Object clone, DatabaseMapping mapping, UnitOfWorkImpl unitOfWork) {
         this.wrappedValueHolder = attributeValue;
         this.mapping = mapping;
         this.session = unitOfWork;
@@ -72,7 +72,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
 
         if (unitOfWork.isRemoteUnitOfWork()) {
             if (attributeValue instanceof RemoteValueHolder) {
-                this.wrappedValueHolderRemoteID = ((RemoteValueHolder)attributeValue).getID();
+                this.wrappedValueHolderRemoteID = ((RemoteValueHolder<T>)attributeValue).getID();
             }
             this.remoteUnitOfWork = unitOfWork;
             this.sourceObject = clone;
@@ -87,9 +87,9 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
     /**
      * Clone the original attribute value.
      */
-    public abstract Object buildCloneFor(Object originalAttributeValue);
+    public abstract T buildCloneFor(Object originalAttributeValue);
 
-    protected ValueHolderInterface<Object> getBackupValueHolder() {
+    protected ValueHolderInterface<T> getBackupValueHolder() {
         return backupValueHolder;
     }
 
@@ -123,7 +123,8 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
      * it needs to be instantiated, then we must find the original
      * object and get the appropriate attribute from it.
      */
-    protected Object getValueFromServerObject() {
+    @SuppressWarnings({"unchecked"})
+    protected T getValueFromServerObject() {
         setSession(getRemoteUnitOfWork());
         Object primaryKey = getSession().getId(getSourceObject());
         Object originalObject = getUnitOfWork().getParent().getIdentityMapAccessor().getFromIdentityMap(primaryKey, getSourceObject().getClass());
@@ -133,7 +134,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
         ClassDescriptor descriptor = getSession().getDescriptor(originalObject);
         DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForAttributeName(getSourceAttributeName());
         setMapping(mapping);
-        return getMapping().getRealAttributeValueFromObject(originalObject, getSession());
+        return (T) getMapping().getRealAttributeValueFromObject(originalObject, getSession());
     }
 
     /**
@@ -141,13 +142,13 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
      * The old name is no longer correct, as query based valueholders are now
      * sometimes triggered directly without triggering the underlying valueholder.
      */
-    protected Object instantiateImpl() {
+    protected T instantiateImpl() {
         Object value;
         // Bug 3835202 - Ensure access to valueholders is thread safe.  Several of the methods
         // called below are not threadsafe alone.
         synchronized (this.wrappedValueHolder) {
             if (this.wrappedValueHolder instanceof DatabaseValueHolder) {
-                DatabaseValueHolder wrapped = (DatabaseValueHolder)this.wrappedValueHolder;
+                DatabaseValueHolder<T> wrapped = (DatabaseValueHolder<T>)this.wrappedValueHolder;
                 UnitOfWorkImpl unitOfWork = getUnitOfWork();
                 if (!wrapped.isEasilyInstantiated()) {
                     if (wrapped.isPessimisticLockingValueHolder()) {
@@ -166,7 +167,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
                 if (!wrapped.isInstantiated()){
                     //if not instantiated then try and load the UOW versions to prevent the whole loading from the cache and cloning
                     //process
-                    Object result = wrapped.getValue((UnitOfWorkImpl) this.session);
+                    T result = wrapped.getValue((UnitOfWorkImpl) this.session);
                     if (result != null){
                         return result;
                     }
@@ -204,7 +205,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
     }
 
     @Override
-    public ValueHolderInterface<?> getWrappedValueHolder() {
+    public ValueHolderInterface<T> getWrappedValueHolder() {
         return wrappedValueHolder;
     }
 
@@ -229,9 +230,10 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
      * if necessary, and clone it.
      */
     @Override
-    protected Object instantiate() {
-        Object originalAttributeValue;
-        Object cloneAttributeValue;
+    @SuppressWarnings({"unchecked"})
+    protected T instantiate() {
+        T originalAttributeValue;
+        T cloneAttributeValue;
         if (isSerializedRemoteUnitOfWorkValueHolder()) {
             originalAttributeValue = getValueFromServerObject();
             cloneAttributeValue = buildCloneFor(originalAttributeValue);
@@ -245,7 +247,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
         // Set the value in the backup clone also.
         // In some cases we may want to force instantiation before the backup is built
         if (this.backupValueHolder != null) {
-            this.backupValueHolder.setValue(buildBackupCloneFor(cloneAttributeValue));
+            this.backupValueHolder.setValue((T)buildBackupCloneFor(cloneAttributeValue));
         }
         return cloneAttributeValue;
     }
@@ -261,7 +263,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
      * and the query.
      */
     @Override
-    public Object instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder unitOfWorkValueHolder) {
+    public T instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder<T> unitOfWorkValueHolder) {
         // This abstract method needs to be implemented but is not meaningful for
         // this subclass.
         return instantiate();
@@ -290,7 +292,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
         //do nothing.  nothing should be reset to null;
     }
 
-    public void setBackupValueHolder(ValueHolderInterface backupValueHolder) {
+    public void setBackupValueHolder(ValueHolderInterface<T> backupValueHolder) {
         this.backupValueHolder = backupValueHolder;
     }
 
@@ -314,7 +316,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
         this.relationshipSourceObject = relationshipSourceObject;
     }
 
-    protected void setWrappedValueHolder(DatabaseValueHolder valueHolder) {
+    protected void setWrappedValueHolder(DatabaseValueHolder<T> valueHolder) {
         wrappedValueHolder = valueHolder;
     }
 

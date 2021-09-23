@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,7 @@ import org.eclipse.persistence.mappings.*;
  * Remote value holders can be invoked locally and remotely.
  * In both situations the associated indirect object is invoked.
  */
-public class RemoteValueHolder extends DatabaseValueHolder implements Externalizable {
+public class RemoteValueHolder<T> extends DatabaseValueHolder<T> implements Externalizable {
     // This is a unique id for remote value holder.
     protected ObjID id;
 
@@ -38,7 +38,7 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
     protected transient ObjectLevelReadQuery query;
 
     // The server side original value holder.
-    protected transient ValueHolderInterface<Object> wrappedServerValueHolder;
+    protected transient ValueHolderInterface<T> wrappedServerValueHolder;
 
     // point back to the object holding the remote value holder;
     // for the moment, used only by TransparentIndirection
@@ -74,7 +74,7 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
             return false;
         }
 
-        return getID().equals(((RemoteValueHolder)object).getID());
+        return getID().equals(((RemoteValueHolder<?>)object).getID());
     }
 
     /**
@@ -149,7 +149,7 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
      * This is how we know whether the remote value holder is
      * being invoked on the client or on the server.
      */
-    public ValueHolderInterface<Object> getWrappedServerValueHolder() {
+    public ValueHolderInterface<T> getWrappedServerValueHolder() {
         return wrappedServerValueHolder;
     }
 
@@ -165,20 +165,21 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
      * Return the object.
      */
     @Override
-    public synchronized Object instantiate() {
-        Object valueOfServerValueHolder = null;
+    @SuppressWarnings({"unchecked"})
+    public synchronized T instantiate() {
+        T valueOfServerValueHolder = null;
 
         if (getWrappedServerValueHolder() != null) {// server invocation
             valueOfServerValueHolder = getWrappedServerValueHolder().getValue();
         } else {// client invocation
             // check whether object exists on the client
             if (canDoCacheCheck()) {
-                valueOfServerValueHolder = getObjectFromCache();
+                valueOfServerValueHolder = (T) getObjectFromCache();
             }
 
             // does not exist on the client - so invoke the value holder on the server
             if (valueOfServerValueHolder == null) {
-                valueOfServerValueHolder = ((DistributedSession)getSession()).instantiateRemoteValueHolderOnServer(this);
+                valueOfServerValueHolder = (T) ((DistributedSession)getSession()).instantiateRemoteValueHolderOnServer(this);
             }
         }
         return valueOfServerValueHolder;
@@ -193,7 +194,7 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
     public boolean isEasilyInstantiated() {
         // Nothing is easily instantiated when on the client side.
         return this.isInstantiated || ((this.wrappedServerValueHolder != null)
-                && (!(this.wrappedServerValueHolder instanceof DatabaseValueHolder) || ((DatabaseValueHolder)this.wrappedServerValueHolder).isEasilyInstantiated()));
+                && (!(this.wrappedServerValueHolder instanceof DatabaseValueHolder) || ((DatabaseValueHolder<T>)this.wrappedServerValueHolder).isEasilyInstantiated()));
     }
 
     /**
@@ -210,7 +211,7 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
         // This abstract method needs to be implemented but is not meaningfull for
         // this subclass.
         if (getWrappedServerValueHolder() != null) {
-            return ((getWrappedServerValueHolder() instanceof DatabaseValueHolder) && ((DatabaseValueHolder)getWrappedServerValueHolder()).isPessimisticLockingValueHolder());
+            return ((getWrappedServerValueHolder() instanceof DatabaseValueHolder) && ((DatabaseValueHolder<T>)getWrappedServerValueHolder()).isPessimisticLockingValueHolder());
         } else {
             // Pessimistic locking may not be supported on remote sessions, but if
             // it is make every attempt to do the right thing.
@@ -230,9 +231,9 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
      * Note: This method is not thread-safe.  It must be used in a synchronizaed manner
      */
     @Override
-    public Object instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder unitOfWorkValueHolder) {
+    public T instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder<T> unitOfWorkValueHolder) {
         if ((getWrappedServerValueHolder() != null) && (getWrappedServerValueHolder() instanceof DatabaseValueHolder)) {
-            DatabaseValueHolder wrapped = (DatabaseValueHolder)getWrappedServerValueHolder();
+            DatabaseValueHolder<T> wrapped = (DatabaseValueHolder<T>)getWrappedServerValueHolder();
             return wrapped.instantiateForUnitOfWorkValueHolder(unitOfWorkValueHolder);
         }
 
@@ -296,7 +297,7 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
      * Set the object.
      */
     @Override
-    public void setValue(Object theValue) {
+    public void setValue(T theValue) {
         super.setValue(theValue);
         if (getWrappedServerValueHolder() != null) {
             // This is a local setting of remote value holder
@@ -308,7 +309,7 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
     /**
      * Set the original value holder.
      */
-    public void setWrappedServerValueHolder(ValueHolderInterface wrappedServerValueHolder) {
+    public void setWrappedServerValueHolder(ValueHolderInterface<T> wrappedServerValueHolder) {
         this.wrappedServerValueHolder = wrappedServerValueHolder;
     }
 

@@ -148,7 +148,7 @@ public class SQLSelectStatement extends SQLStatement {
 
     public SQLSelectStatement() {
         this.fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
-        this.tables = new ArrayList(4);
+        this.tables = new ArrayList<>(4);
         this.requiresAliases = false;
         this.useUniqueFieldAliases=false;
         this.isAggregateSelect = false;
@@ -419,7 +419,7 @@ public class SQLSelectStatement extends SQLStatement {
                         DatabaseTable relationAlias = holder.outerJoinedMappingCriteria.aliasForTable(relationTable);
                         DatabaseTable mapKeyAlias = null;
                         DatabaseTable mapKeyTable = null;
-                        List<DatabaseTable> tablesInOrder = new ArrayList();
+                        List<DatabaseTable> tablesInOrder = new ArrayList<>();
                         // glassfish issue 2440: store aliases instead of tables
                         // in the tablesInOrder. This allows to distinguish source
                         // and target table in case of an self referencing relationship.
@@ -554,7 +554,7 @@ public class SQLSelectStatement extends SQLStatement {
 
         // Print outer joins
         boolean firstTable = true;
-        List<DatabaseTable> outerJoinedAliases = new ArrayList(4); // Must keep track of tables used for outer join so no normal join is given
+        List<DatabaseTable> outerJoinedAliases = new ArrayList<>(4); // Must keep track of tables used for outer join so no normal join is given
 
         // prepare to lock tables if required
         boolean shouldPrintUpdateClause = printer.getPlatform().shouldPrintForUpdateClause()
@@ -626,7 +626,7 @@ public class SQLSelectStatement extends SQLStatement {
 
         printer.getWriter().write(" GROUP BY ");
 
-        Vector newFields = new Vector();
+        Vector<DatabaseField> newFields = new Vector<>();
         // to avoid printing a comma before the first field
         printer.setIsFirstElementPrinted(false);
         for (Expression expression : getGroupByExpressions()) {
@@ -976,7 +976,7 @@ public class SQLSelectStatement extends SQLStatement {
      * no ambiguity
      */
     public void computeTablesFromTables() {
-        Map<DatabaseTable, DatabaseTable> allTables = new Hashtable();
+        Map<DatabaseTable, DatabaseTable> allTables = new Hashtable<>();
         AsOfClause asOfClause = null;
 
         if (getBuilder().hasAsOfClause() && !getBuilder().getSession().getProject().hasGenericHistorySupport()) {
@@ -1159,7 +1159,7 @@ public class SQLSelectStatement extends SQLStatement {
      */
     public List<Expression> getOrderByExpressions() {
         if (orderByExpressions == null) {
-            orderByExpressions = new ArrayList(4);
+            orderByExpressions = new ArrayList<>(4);
         }
 
         return orderByExpressions;
@@ -1167,7 +1167,7 @@ public class SQLSelectStatement extends SQLStatement {
 
     public List<Expression> getUnionExpressions() {
         if (unionExpressions == null) {
-            unionExpressions = new ArrayList(4);
+            unionExpressions = new ArrayList<>(4);
         }
         return unionExpressions;
     }
@@ -1182,7 +1182,7 @@ public class SQLSelectStatement extends SQLStatement {
      */
     public List<OuterJoinExpressionHolder> getOuterJoinExpressionsHolders() {
         if (outerJoinExpressionHolders == null) {
-            outerJoinExpressionHolders = new ArrayList(4);
+            outerJoinExpressionHolders = new ArrayList<>(4);
         }
 
         return outerJoinExpressionHolders;
@@ -1237,10 +1237,10 @@ public class SQLSelectStatement extends SQLStatement {
                             table = getTableAliases().get(alias);
                         }
                         if (this.additionalTargetAliases == null) {
-                            this.additionalTargetAliases = new ArrayList();
-                            this.additionalTargetTables = new ArrayList();
-                            this.additionalJoinOnExpression = new ArrayList();
-                            this.additionalTargetIsDescriptorTable = new ArrayList();
+                            this.additionalTargetAliases = new ArrayList<>();
+                            this.additionalTargetTables = new ArrayList<>();
+                            this.additionalJoinOnExpression = new ArrayList<>();
+                            this.additionalTargetIsDescriptorTable = new ArrayList<>();
                         }
                         this.additionalTargetAliases.add(alias);
                         this.additionalTargetTables.add(table);
@@ -1654,7 +1654,7 @@ public class SQLSelectStatement extends SQLStatement {
      * Order by the objects primary key or all fields for aggregates.
      */
     protected void normalizeOrderBy(Expression builder, List<Expression> allExpressions, Map<Expression, Expression> clonedExpressions, AbstractSession session) {
-        List<Expression> newOrderBys = new ArrayList(this.orderByExpressions.size());
+        List<Expression> newOrderBys = new ArrayList<>(this.orderByExpressions.size());
         for (Expression orderBy : this.orderByExpressions) {
             orderBy = rebuildExpression(orderBy, builder, clonedExpressions);
             Expression base = orderBy;
@@ -1686,7 +1686,7 @@ public class SQLSelectStatement extends SQLStatement {
                     // Check if a non basic mapping.
                     orderBys = expression.getMapping().getOrderByNormalizedExpressions(expression);
                 } else if (base.isExpressionBuilder()) {
-                    orderBys = new ArrayList(expression.getDescriptor().getPrimaryKeyFields().size());
+                    orderBys = new ArrayList<>(expression.getDescriptor().getPrimaryKeyFields().size());
                     for (DatabaseField field : expression.getDescriptor().getPrimaryKeyFields()) {
                         orderBys.add(expression.getField(field));
                     }
@@ -1722,9 +1722,9 @@ public class SQLSelectStatement extends SQLStatement {
     /**
      * Print the SQL representation of the statement on a stream.
      */
-    public Vector printSQL(ExpressionSQLPrinter printer) {
+    public Vector<DatabaseField> printSQL(ExpressionSQLPrinter printer) {
         try {
-            Vector selectFields = null;
+            Vector<DatabaseField> selectFields = null;
             printer.setRequiresDistinct(shouldDistinctBeUsed());
 
             if (hasUnionExpressions()) {
@@ -2133,17 +2133,17 @@ public class SQLSelectStatement extends SQLStatement {
     /**
      * INTERNAL:
      */
-    protected void writeFieldsFromExpression(ExpressionSQLPrinter printer, Expression expression, Vector newFields) {
+    protected void writeFieldsFromExpression(ExpressionSQLPrinter printer, Expression expression, Vector<DatabaseField> newFields) {
         expression.writeFields(printer, newFields, this);
     }
 
     /**
      * INTERNAL:
      */
-    protected Vector writeFieldsIn(ExpressionSQLPrinter printer) {
+    protected Vector<DatabaseField> writeFieldsIn(ExpressionSQLPrinter printer) {
         this.lastTable = null;
 
-        Vector newFields = NonSynchronizedVector.newInstance();
+        Vector<DatabaseField> newFields = NonSynchronizedVector.newInstance();
 
         for (Object next : getFields()) {
             // Fields can be null placeholders for fetch groups.
@@ -2152,7 +2152,7 @@ public class SQLSelectStatement extends SQLStatement {
                     writeFieldsFromExpression(printer, (Expression)next, newFields);
                 } else {
                     writeField(printer, (DatabaseField)next);
-                    newFields.add(next);
+                    newFields.add((DatabaseField) next);
                 }
             }
         }
@@ -2306,9 +2306,9 @@ public class SQLSelectStatement extends SQLStatement {
      *
      */
     protected void sortOuterJoinExpressionHolders(List<OuterJoinExpressionHolder> holders) {
-        Map<DatabaseTable, OuterJoinExpressionHolder> targetAliasToHolders = new HashMap();
-        Set<DatabaseTable> aliases = new HashSet();
-        Map<DatabaseTable, Integer> aliasToIndexes = new HashMap(aliases.size());
+        Map<DatabaseTable, OuterJoinExpressionHolder> targetAliasToHolders = new HashMap<>();
+        Set<DatabaseTable> aliases = new HashSet<>();
+        Map<DatabaseTable, Integer> aliasToIndexes = new HashMap<>(aliases.size());
         int i = 0;
         for(OuterJoinExpressionHolder holder : holders) {
             targetAliasToHolders.put(holder.targetAlias, holder);

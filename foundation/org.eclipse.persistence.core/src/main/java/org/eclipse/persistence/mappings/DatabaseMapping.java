@@ -73,6 +73,7 @@ import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.sessions.remote.ObjectDescriptor;
 import org.eclipse.persistence.internal.sessions.remote.RemoteSessionController;
 import org.eclipse.persistence.internal.sessions.remote.RemoteValueHolder;
 import org.eclipse.persistence.mappings.converters.Converter;
@@ -588,7 +589,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * @param classLoader TODO
      */
     protected void convertConverterClassNamesToClasses(Converter converter, ClassLoader classLoader) {
-        if (converter != null && converter instanceof ClassNameConversionRequired) {
+        if (converter instanceof ClassNameConversionRequired) {
             ((ClassNameConversionRequired)converter).convertClassNamesToClasses(classLoader);
         }
     }
@@ -607,7 +608,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * the shared cache, and then cloning the original.
      * @return TODO
      */
-    public DatabaseValueHolder createCloneValueHolder(ValueHolderInterface attributeValue, Object original, Object clone, AbstractRecord row, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
+    public <T> DatabaseValueHolder<T> createCloneValueHolder(ValueHolderInterface<T> attributeValue, Object original, Object clone, AbstractRecord row, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
         throw DescriptorException.invalidMappingOperation(this, "createUnitOfWorkValueHolder");
     }
 
@@ -641,7 +642,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * @return TODO
      */
     protected List<Expression> extractNestedExpressions(List<Expression> expressions, ExpressionBuilder newRoot) {
-        List<Expression> nestedExpressions = new ArrayList(expressions.size());
+        List<Expression> nestedExpressions = new ArrayList<>(expressions.size());
 
         /*
          * If the expression closest to to the Builder is for this mapping, that expression is rebuilt using
@@ -685,7 +686,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * @return TODO
      */
     protected List<Expression> extractNestedNonAggregateExpressions(List<Expression> expressions, ExpressionBuilder newRoot, boolean rootExpressionsAllowed) {
-        List<Expression> nestedExpressions = new ArrayList(expressions.size());
+        List<Expression> nestedExpressions = new ArrayList<>(expressions.size());
 
         /*
          * need to work on all expressions with at least 2 nestings off the base expression builder, excluding
@@ -777,7 +778,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * @param query TODO
      * @param session TODO
      */
-    public abstract void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session);
+    public abstract void fixObjectReferences(Object object, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query, DistributedSession session);
 
     /**
      * INTERNAL:
@@ -792,7 +793,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * @param query TODO
      * @param session TODO
      */
-    public void fixRealObjectReferences(Object object, Map objectInformation, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
+    public void fixRealObjectReferences(Object object, Map<Object, ObjectDescriptor> objectInformation, Map<Object, Object> processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         // do nothing
     }
 
@@ -996,7 +997,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * @param query TODO
      * @return TODO
      */
-    public Object getObjectCorrespondingTo(Object object, DistributedSession session, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query) {
+    public Object getObjectCorrespondingTo(Object object, DistributedSession session, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query) {
         return object;
     }
 

@@ -1014,13 +1014,13 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                 if (session.getIntegrityChecker().checkTable(table, session)) {
                     // To load the fields of database into a vector
                     List databaseFields = new ArrayList();
-                    List result = session.getAccessor().getColumnInfo(null, null, table.getName(), null, session);
+                    List<AbstractRecord> result = session.getAccessor().getColumnInfo(null, null, table.getName(), null, session);
                     // Table name may need to be lowercase.
                     if (result.isEmpty() && session.getPlatform().shouldForceFieldNamesToUpperCase()) {
                         result = session.getAccessor().getColumnInfo(null, null, table.getName().toLowerCase(), null, session);
                     }
-                    for (Iterator resultIterator = result.iterator(); resultIterator.hasNext();) {
-                        AbstractRecord row = (AbstractRecord)resultIterator.next();
+                    for (Iterator<AbstractRecord> resultIterator = result.iterator(); resultIterator.hasNext();) {
+                        AbstractRecord row = resultIterator.next();
                         if (session.getPlatform().shouldForceFieldNamesToUpperCase()) {
                             databaseFields.add(((String)row.get("COLUMN_NAME")).toUpperCase());
                         } else {

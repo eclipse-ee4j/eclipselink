@@ -41,7 +41,7 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
      */
     protected List<String> sqlStrings;
 
-    /**
+    /*
      * Stores the statement indexes for statements that are using optimistic locking.  This allows us to check individual
      * statement results on supported platforms
      */
@@ -60,7 +60,7 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
 
     public DynamicSQLBatchWritingMechanism(DatabaseAccessor databaseAccessor) {
         this.databaseAccessor = databaseAccessor;
-        this.sqlStrings = new ArrayList();
+        this.sqlStrings = new ArrayList<>();
         this.batchSize = 0;
         this.maxBatchSize = this.databaseAccessor.getLogin().getPlatform().getMaxBatchWritingSize();
         if (this.maxBatchSize == 0) {
@@ -90,9 +90,7 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
             this.usesOptimisticLocking = dbCall.hasOptimisticLock;
             this.statementCount++;
             // Store the largest queryTimeout on a single call for later use by the single statement in prepareJDK12BatchStatement
-            if (dbCall != null) {
-                cacheQueryTimeout(session, dbCall);
-            }
+            cacheQueryTimeout(session, dbCall);
             // feature for bug 4104613, allows users to force statements to flush on execution
             if (((ModifyQuery) dbCall.getQuery()).forceBatchStatementExecution()) {
               executeBatchedStatements(session);
@@ -112,7 +110,7 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
     public void clear() {
         //Bug#419326 : A clone may be holding a reference to this.parameters.
         //So, instead of clearing the parameters, just initialize with a new reference.
-        this.sqlStrings = new ArrayList();
+        this.sqlStrings = new ArrayList<>();
         this.statementCount = executionCount  = 0;
         this.usesOptimisticLocking = false;
         this.batchSize = 0;

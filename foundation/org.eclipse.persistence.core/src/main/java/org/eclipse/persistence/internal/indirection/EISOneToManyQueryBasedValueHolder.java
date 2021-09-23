@@ -30,7 +30,7 @@ import org.eclipse.persistence.queries.ReadQuery;
  * For composite source foreign keys EIS 1-m's a query must be performed
  * for each primary key, so a different type of value holder is required.
  */
-public class EISOneToManyQueryBasedValueHolder extends QueryBasedValueHolder {
+public class EISOneToManyQueryBasedValueHolder<T> extends QueryBasedValueHolder<T> {
     private EISOneToManyMapping mapping;
 
     public EISOneToManyQueryBasedValueHolder(EISOneToManyMapping mapping, ReadQuery query, AbstractRecord sourceRow, AbstractSession session) {
@@ -39,12 +39,13 @@ public class EISOneToManyQueryBasedValueHolder extends QueryBasedValueHolder {
     }
 
     @Override
-    protected Object instantiate(AbstractSession session) throws DatabaseException {
+    protected T instantiate(AbstractSession session) throws DatabaseException {
         Vector<AbstractRecord> rows = this.mapping.getForeignKeyRows(this.getRow(), session);
 
         int size = rows.size();
         ContainerPolicy cp = ((ReadAllQuery)this.getQuery()).getContainerPolicy();
-        Object returnValue = cp.containerInstance(size);
+        @SuppressWarnings({"unchecked"})
+        T returnValue = (T) cp.containerInstance(size);
 
         for (int i = 0; i < size; i++) {
             AbstractRecord nextRow = rows.get(i);
