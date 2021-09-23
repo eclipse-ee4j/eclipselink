@@ -40,8 +40,8 @@ import org.eclipse.persistence.exceptions.QueryException;
  * @author        Rick Barkhouse
  * @since        TopLink 3.0
  */
-public class ProxyIndirectionHandler implements InvocationHandler, Serializable {
-    private ValueHolderInterface<?> valueHolder;
+public class ProxyIndirectionHandler<T> implements InvocationHandler, Serializable {
+    private ValueHolderInterface<T> valueHolder;
 
     // =====================================================================
 
@@ -60,7 +60,7 @@ public class ProxyIndirectionHandler implements InvocationHandler, Serializable 
      *
      * Store the value holder.
      */
-    private ProxyIndirectionHandler(ValueHolderInterface valueHolder) {
+    private ProxyIndirectionHandler(ValueHolderInterface<T> valueHolder) {
         this.valueHolder = valueHolder;
     }
 
@@ -126,7 +126,7 @@ public class ProxyIndirectionHandler implements InvocationHandler, Serializable 
      *
      * Utility method to create a new proxy object.
      */
-    public static Object newProxyInstance(Class anInterface, Class[] interfaces, ValueHolderInterface valueHolder) {
+    public static <T> Object newProxyInstance(Class<?> anInterface, Class<?>[] interfaces, ValueHolderInterface<T> valueHolder) {
         ClassLoader classLoader = null;
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try{
@@ -137,7 +137,7 @@ public class ProxyIndirectionHandler implements InvocationHandler, Serializable 
         }else{
             classLoader = PrivilegedAccessHelper.getClassLoaderForClass(anInterface);
         }
-        return Proxy.newProxyInstance(classLoader, interfaces, new ProxyIndirectionHandler(valueHolder));
+        return Proxy.newProxyInstance(classLoader, interfaces, new ProxyIndirectionHandler<>(valueHolder));
     }
 
     // =====================================================================
@@ -147,7 +147,7 @@ public class ProxyIndirectionHandler implements InvocationHandler, Serializable 
      *
      * Get the ValueHolder associated with this handler.
      */
-    public ValueHolderInterface<?> getValueHolder() {
+    public ValueHolderInterface<T> getValueHolder() {
         return this.valueHolder;
     }
 
@@ -158,7 +158,7 @@ public class ProxyIndirectionHandler implements InvocationHandler, Serializable 
      *
      * Set the ValueHolder associated with this handler.
      */
-    public void setValueHolder(ValueHolderInterface<?> value) {
+    public void setValueHolder(ValueHolderInterface<T> value) {
         this.valueHolder = value;
     }
 }

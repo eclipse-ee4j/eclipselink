@@ -41,6 +41,7 @@ import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.*;
+import org.eclipse.persistence.internal.sessions.remote.ObjectDescriptor;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.sessions.CopyGroup;
@@ -409,7 +410,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * Replace the transient attributes of the remote value holders
      * with client-side objects.
      */
-    protected void fixAttributeValue(Object attributeValue, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
+    protected void fixAttributeValue(Object attributeValue, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         if (attributeValue == null) {
             return;
         }
@@ -423,7 +424,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * with client-side objects.
      */
     @Override
-    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
+    public void fixObjectReferences(Object object, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         Object attributeValue = getAttributeValueFromObject(object);
         fixAttributeValue(attributeValue, objectDescriptors, processedObjects, query, session);
     }

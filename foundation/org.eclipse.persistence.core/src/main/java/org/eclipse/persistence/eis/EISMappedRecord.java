@@ -55,7 +55,7 @@ public class EISMappedRecord extends AbstractRecord {
      */
     @Override
     public Vector getValues() {
-        return new Vector(getRecord().values());
+        return new Vector<>(getRecord().values());
     }
 
     /**

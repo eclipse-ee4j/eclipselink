@@ -231,7 +231,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
     private void processBidirectionalRelationships(PersistenceContext context, ClassDescriptor descriptor, Object entity) {
         final List<DatabaseMapping> mappings = descriptor.getMappings();
         for (DatabaseMapping mapping : mappings) {
-            if ((mapping != null) && (mapping instanceof ForeignReferenceMapping)) {
+            if (mapping instanceof ForeignReferenceMapping) {
                 final ForeignReferenceMapping jpaMapping = (ForeignReferenceMapping) mapping;
                 final Object attributeValue = mapping.getAttributeAccessor().getAttributeValueFromObject(entity);
                 if (jpaMapping.isCascadePersist()) {
@@ -242,7 +242,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
                             if (inverseMapping != null) {
                                 if (attributeValue != null) {
                                     if (attributeValue instanceof ValueHolder) {
-                                        final ValueHolder holder = (ValueHolder) attributeValue;
+                                        final ValueHolder<?> holder = (ValueHolder<?>) attributeValue;
                                         final Object obj = holder.getValue();
                                         if (obj != null) {
                                             inverseMapping.setAttributeValueInObject(obj, entity);
@@ -287,7 +287,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
                                     final Object value = mapping.getAttributeAccessor().getAttributeValueFromObject(entity);
                                     if (value != null) {
                                         if (value instanceof ValueHolder) {
-                                            final ValueHolder holder = (ValueHolder) value;
+                                            final ValueHolder<?> holder = (ValueHolder<?>) value;
                                             if (holder.getValue() != null) {
                                                 return false;
                                             }
@@ -318,10 +318,8 @@ public abstract class AbstractEntityResource extends AbstractResource {
         final AbstractDirectMapping sequenceMapping = descriptor.getObjectBuilder().getSequenceMapping();
         if (sequenceMapping != null) {
             final Object value = sequenceMapping.getAttributeAccessor().getAttributeValueFromObject(entity);
-            if (descriptor.getObjectBuilder().isPrimaryKeyComponentInvalid(value, descriptor.getPrimaryKeyFields().indexOf(descriptor.getSequenceNumberField()))
-                    || descriptor.getSequence().shouldAlwaysOverrideExistingValue()) {
-                return false;
-            }
+            return !descriptor.getObjectBuilder().isPrimaryKeyComponentInvalid(value, descriptor.getPrimaryKeyFields().indexOf(descriptor.getSequenceNumberField()))
+                    && !descriptor.getSequence().shouldAlwaysOverrideExistingValue();
         }
         return true;
     }
@@ -369,7 +367,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
             Map<String, String> matrixParams = getMatrixParameters(uriInfo, attribute);
             Map<String, Object> queryParams = getQueryParameters(uriInfo);
 
-            if ((queryParams != null) && (!queryParams.isEmpty())) {
+            if (!queryParams.isEmpty()) {
                 listItemId = (String) queryParams.get(QueryParameters.JPARS_LIST_ITEM_ID);
             }
 

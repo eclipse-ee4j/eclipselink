@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,12 +61,12 @@ public class OrmAttributeAccessor extends AttributeAccessor {
     @Override
     public Object getAttributeValueFromObject(Object object) {
         if(isValueHolderProperty) {
-            ValueHolderInterface vh = (ValueHolderInterface)ormAccessor.getAttributeValueFromObject(object);
+            ValueHolderInterface<?> vh = (ValueHolderInterface<?>)ormAccessor.getAttributeValueFromObject(object);
             if(vh != null && !vh.isInstantiated()) {
                 Object value = vh.getValue();
                 oxmAccessor.setAttributeValueInObject(object, value);
                 if(vh instanceof WeavedAttributeValueHolderInterface) {
-                    ((WeavedAttributeValueHolderInterface)vh).setIsCoordinatedWithProperty(true);
+                    ((WeavedAttributeValueHolderInterface<?>)vh).setIsCoordinatedWithProperty(true);
                 }
             }
         }
@@ -83,10 +83,11 @@ public class OrmAttributeAccessor extends AttributeAccessor {
             }
         }
         if(isValueHolderProperty) {
-            ValueHolderInterface vh = (ValueHolderInterface)ormAccessor.getAttributeValueFromObject(object);
+            @SuppressWarnings({"unchecked"})
+            ValueHolderInterface<Object> vh = (ValueHolderInterface<Object>)ormAccessor.getAttributeValueFromObject(object);
             if(vh == null) {
-                vh = new ValueHolder();
-                ((ValueHolder)vh).setIsNewlyWeavedValueHolder(true);
+                vh = new ValueHolder<>();
+                ((ValueHolder<?>)vh).setIsNewlyWeavedValueHolder(true);
             }
             vh.setValue(value);
             ormAccessor.setAttributeValueInObject(object, vh);

@@ -759,7 +759,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 }
             } else {
                 boolean hasMultipleResultsSets = call.hasMultipleResultSets();
-                Vector results = null;
+                Vector<AbstractRecord> results = null;
                 boolean hasMoreResultsSets = true;
                 while (hasMoreResultsSets) {
                     boolean hasNext = resultSet.next();
@@ -770,14 +770,14 @@ public class DatabaseAccessor extends DatasourceAccessor {
                             // do not close the result or statement as the rows are being fetched by the thread.
                             return buildThreadCursoredResult(call, resultSet, statement, metaData, session);
                         } else {
-                            results = new Vector(16);
+                            results = new Vector<>(16);
                             while (hasNext) {
                                 results.add(fetchRow(call.getFields(), call.getFieldsArray(), resultSet, metaData, session));
                                 hasNext = resultSet.next();
                             }
                         }
                     } else {
-                        results = new Vector(0);
+                        results = new Vector<>(0);
                     }
                     if (result == null) {
                         if (call.returnMultipleResultSetCollections()) {
@@ -817,7 +817,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * This allows for the rows to be fetched concurrently to the objects being built.
      * This code is not currently publicly supported.
      */
-    protected Vector buildThreadCursoredResult(final DatabaseCall dbCall, final ResultSet resultSet, final Statement statement, final ResultSetMetaData metaData, final AbstractSession session) {
+    protected Vector<AbstractRecord> buildThreadCursoredResult(final DatabaseCall dbCall, final ResultSet resultSet, final Statement statement, final ResultSetMetaData metaData, final AbstractSession session) {
         final ThreadCursoredList<AbstractRecord> results = new ThreadCursoredList<>(20);
         Runnable runnable = new Runnable() {
             @Override
@@ -1042,7 +1042,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      */
     protected AbstractRecord fetchRow(Vector<DatabaseField> fields, ResultSet resultSet, ResultSetMetaData metaData, AbstractSession session) throws DatabaseException {
         int size = fields.size();
-        Vector values = NonSynchronizedVector.newInstance(size);
+        Vector<Object> values = NonSynchronizedVector.newInstance(size);
         // PERF: Pass platform and optimize data flag.
         DatabasePlatform platform = getPlatform();
         boolean optimizeData = platform.shouldOptimizeDataConversion();
@@ -1070,7 +1070,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * match the number of column names available on the database.
      * PERF: This method must be highly optimized.
      */
-    public AbstractRecord fetchRow(Vector fields, DatabaseField[] fieldsArray, ResultSet resultSet, ResultSetMetaData metaData, AbstractSession session) throws DatabaseException {
+    public AbstractRecord fetchRow(Vector<DatabaseField> fields, DatabaseField[] fieldsArray, ResultSet resultSet, ResultSetMetaData metaData, AbstractSession session) throws DatabaseException {
         int size = fieldsArray.length;
         Object[] values = new Object[size];
         // PERF: Pass platform and optimize data flag.
@@ -1168,17 +1168,17 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * @return a Vector of DatabaseRows.
      */
     @Override
-    public Vector getColumnInfo(String catalog, String schema, String tableName, String columnName, AbstractSession session) throws DatabaseException {
+    public Vector<AbstractRecord> getColumnInfo(String catalog, String schema, String tableName, String columnName, AbstractSession session) throws DatabaseException {
         if (session.shouldLog(SessionLog.FINEST, SessionLog.QUERY)) {// Avoid printing if no logging required.
             Object[] args = { catalog, schema, tableName, columnName };
             session.log(SessionLog.FINEST, SessionLog.QUERY, "query_column_meta_data_with_column", args, this);
         }
-        Vector result = new Vector();
+        Vector<AbstractRecord> result = new Vector<>();
         ResultSet resultSet = null;
         try {
             incrementCallCount(session);
             resultSet = getConnectionMetaData().getColumns(catalog, schema, tableName, columnName);
-            Vector fields = buildSortedFields(null, resultSet, session);
+            Vector<DatabaseField> fields = buildSortedFields(null, resultSet, session);
             ResultSetMetaData metaData = resultSet.getMetaData();
 
             while (resultSet.next()) {
@@ -1346,7 +1346,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      */
     protected Object getObjectThroughOptimizedDataConversion(ResultSet resultSet, DatabaseField field, int type, int columnNumber, DatabasePlatform platform, AbstractSession session) throws SQLException {
         Object value = this;// Means no optimization, need to distinguish from null.
-        Class fieldType = field.type;
+        Class<?> fieldType = field.type;
 
         if (platform.shouldUseGetSetNString() && (type == Types.NVARCHAR || type == Types.NCHAR)) {
             value = resultSet.getNString(columnNumber);
@@ -1485,12 +1485,12 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * @return a Vector of DatabaseRows.
      */
     @Override
-    public Vector getTableInfo(String catalog, String schema, String tableName, String[] types, AbstractSession session) throws DatabaseException {
+    public Vector<AbstractRecord> getTableInfo(String catalog, String schema, String tableName, String[] types, AbstractSession session) throws DatabaseException {
         if (session.shouldLog(SessionLog.FINEST, SessionLog.QUERY)) {// Avoid printing if no logging required.
             Object[] args = { catalog, schema, tableName };
             session.log(SessionLog.FINEST, SessionLog.QUERY, "query_column_meta_data", args, this);
         }
-        Vector result = new Vector();
+        Vector<AbstractRecord> result = new Vector<>();
         ResultSet resultSet = null;
         try {
             incrementCallCount(session);

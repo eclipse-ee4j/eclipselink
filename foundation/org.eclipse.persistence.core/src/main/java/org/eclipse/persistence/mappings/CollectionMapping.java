@@ -1046,7 +1046,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * the corresponding object(s) from the remote session.
      */
     @Override
-    public void fixRealObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
+    public void fixRealObjectReferences(Object object, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         //bug 4147755 getRealAttribute... / setReal
         Object attributeValue = getRealAttributeValueFromObject(object, session);
 
@@ -1106,7 +1106,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * maintaining object identity.
      */
     @Override
-    public Object getObjectCorrespondingTo(Object object, DistributedSession session, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query) {
+    public Object getObjectCorrespondingTo(Object object, DistributedSession session, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query) {
         return session.getObjectsCorrespondingToAll(object, objectDescriptors, processedObjects, query, this.containerPolicy);
     }
 
@@ -1458,7 +1458,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     @Override
     public void mergeChangesIntoObject(Object target, ChangeRecord chgRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         if (this.descriptor.getCachePolicy().isProtectedIsolation()&& !this.isCacheable && !targetSession.isProtectedSession()){
-            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
+            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder<>(null)));
             return;
         }
         Object valueOfTarget = null;
@@ -1523,7 +1523,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     @Override
     public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         if (this.descriptor.getCachePolicy().isProtectedIsolation() && !this.isCacheable && !targetSession.isProtectedSession()){
-            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
+            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder<>(null)));
             return;
         }
         if (isTargetUnInitialized) {

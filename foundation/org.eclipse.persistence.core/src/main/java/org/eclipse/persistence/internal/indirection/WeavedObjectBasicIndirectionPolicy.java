@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -93,7 +93,7 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
         if (setMethod == null) {
             ForeignReferenceMapping sourceMapping = (ForeignReferenceMapping)mapping;
             // The parameter type for the set method must always be the return type of the get method.
-            Class[] parameterTypes = new Class[1];
+            Class<?>[] parameterTypes = new Class<?>[1];
             parameterTypes[0] = sourceMapping.getReferenceClass();
 
             try {
@@ -111,7 +111,7 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
                 }
                 try {
                     // Get the set method type from the get method.
-                    Method getMethod = Helper.getDeclaredMethod(sourceMapping.getDescriptor().getJavaClass(), getGetMethodName(), new Class[0]);
+                    Method getMethod = Helper.getDeclaredMethod(sourceMapping.getDescriptor().getJavaClass(), getGetMethodName(), new Class<?>[0]);
                     parameterTypes[0] = getMethod.getReturnType();
                     setMethod = Helper.getDeclaredMethod(sourceMapping.getDescriptor().getJavaClass(), setMethodName, parameterTypes);
                 } catch (NoSuchMethodException e2) {
@@ -175,7 +175,7 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
-                    AccessController.doPrivileged(new PrivilegedMethodInvoker(getSetMethod(), target, parameters));
+                    AccessController.doPrivileged(new PrivilegedMethodInvoker<>(getSetMethod(), target, parameters));
                 } catch (PrivilegedActionException exception) {
                     Exception throwableException = exception.getException();
                     if (throwableException instanceof IllegalAccessException) {

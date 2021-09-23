@@ -331,7 +331,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    return (Set<E>)AccessController.doPrivileged(new PrivilegedMethodInvoker(cloneMethod, this.getDelegate(), null));
+                    return AccessController.doPrivileged(new PrivilegedMethodInvoker<>(cloneMethod, this.getDelegate(), null));
                 } catch (PrivilegedActionException exception) {
                     Exception throwableException = exception.getException();
                     if (throwableException instanceof IllegalAccessException) {

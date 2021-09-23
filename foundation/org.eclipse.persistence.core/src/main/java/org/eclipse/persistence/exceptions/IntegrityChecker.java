@@ -28,7 +28,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 public class IntegrityChecker implements Serializable {
 
     /** To add all the Descriptor exceptions */
-    protected Vector caughtExceptions = null;
+    protected Vector<Exception> caughtExceptions = null;
 
     /** To load the tables from database    */
     protected Vector tables = null;
@@ -124,9 +124,9 @@ public class IntegrityChecker implements Serializable {
      * PUBLIC:
      * This method returns the vector which adds all the Descriptors Exceptions.
      */
-    public Vector getCaughtExceptions() {
+    public Vector<Exception> getCaughtExceptions() {
         if (caughtExceptions == null) {
-            caughtExceptions = new Vector();
+            caughtExceptions = new Vector<>();
         }
         return caughtExceptions;
     }
@@ -171,7 +171,7 @@ public class IntegrityChecker implements Serializable {
      */
     public boolean hasRuntimeExceptions() {
         if (hasErrors()) {
-            for (Enumeration exceptionsEnum = getCaughtExceptions().elements();
+            for (Enumeration<Exception> exceptionsEnum = getCaughtExceptions().elements();
                      exceptionsEnum.hasMoreElements();) {
                 if (exceptionsEnum.nextElement() instanceof RuntimeException) {
                     return true;
@@ -186,9 +186,9 @@ public class IntegrityChecker implements Serializable {
      * This method is used to get all the database tables and add them into a vector.
      */
     public void initializeTables(AbstractSession session) {
-        List result = session.getAccessor().getTableInfo(null, null, null, null, session);
-        for (Iterator iterator = result.iterator(); iterator.hasNext();) {
-            AbstractRecord row = (AbstractRecord)iterator.next();
+        List<AbstractRecord> result = session.getAccessor().getTableInfo(null, null, null, null, session);
+        for (Iterator<AbstractRecord> iterator = result.iterator(); iterator.hasNext();) {
+            AbstractRecord row = iterator.next();
             if (session.getPlatform().shouldForceFieldNamesToUpperCase()) {
                 this.tables.add(((String)row.get("TABLE_NAME")).toUpperCase());
             } else {
@@ -200,7 +200,7 @@ public class IntegrityChecker implements Serializable {
     /**
      * INTERNAL:
      */
-    public void setCaughtExceptions(Vector exceptions) {
+    public void setCaughtExceptions(Vector<Exception> exceptions) {
         this.caughtExceptions = exceptions;
     }
 

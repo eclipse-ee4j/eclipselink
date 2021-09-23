@@ -295,13 +295,13 @@ public class DatasourcePlatform implements Platform {
      * Return the operator for the operator constant defined in ExpressionOperator.
      */
     public ExpressionOperator getOperator(int selector) {
-        return (ExpressionOperator)getPlatformOperators().get(selector);
+        return getPlatformOperators().get(selector);
     }
 
     /**
      * Return any platform-specific operators
      */
-    public Map getPlatformOperators() {
+    public Map<Integer, ExpressionOperator> getPlatformOperators() {
         if (platformOperators == null) {
             synchronized (this) {
                 if (platformOperators == null) {

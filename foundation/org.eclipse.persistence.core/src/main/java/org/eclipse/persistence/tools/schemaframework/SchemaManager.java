@@ -35,6 +35,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.sequencing.DefaultSequence;
@@ -708,7 +709,7 @@ public class SchemaManager {
      * @param tableName a table name pattern
      * @return a Vector of Records.
      */
-    public Vector getAllColumnNames(String tableName) throws DatabaseException {
+    public Vector<AbstractRecord> getAllColumnNames(String tableName) throws DatabaseException {
         return getAccessor().getColumnInfo(null, null, tableName, null, getSession());
     }
 
@@ -753,7 +754,7 @@ public class SchemaManager {
      * @param tableName a table name pattern
      * @return a Vector of Records.
      */
-    public Vector getAllColumnNames(String creatorName, String tableName) throws DatabaseException {
+    public Vector<AbstractRecord> getAllColumnNames(String creatorName, String tableName) throws DatabaseException {
         return getAccessor().getColumnInfo(null, creatorName, tableName, null, getSession());
     }
 
@@ -776,7 +777,7 @@ public class SchemaManager {
      *
      * @return a Vector of Records.
      */
-    public Vector getAllTableNames() throws DatabaseException {
+    public Vector<AbstractRecord> getAllTableNames() throws DatabaseException {
         return getAccessor().getTableInfo(null, null, null, null, getSession());
     }
 
@@ -820,7 +821,7 @@ public class SchemaManager {
      * without a schema
      * @return a Vector of Records.
      */
-    public Vector getAllTableNames(String creatorName) throws DatabaseException {
+    public Vector<AbstractRecord> getAllTableNames(String creatorName) throws DatabaseException {
         return getAccessor().getTableInfo(null, creatorName, null, null, getSession());
     }
 
@@ -872,7 +873,7 @@ public class SchemaManager {
      * @param columnName a column name pattern
      * @return a Vector of Records.
      */
-    public Vector getColumnInfo(String catalog, String schema, String tableName, String columnName) throws DatabaseException {
+    public Vector<AbstractRecord> getColumnInfo(String catalog, String schema, String tableName, String columnName) throws DatabaseException {
         return getAccessor().getColumnInfo(catalog, schema, tableName, columnName, getSession());
     }
 
@@ -909,7 +910,7 @@ public class SchemaManager {
      * @param types a list of table types to include; null returns all types
      * @return a Vector of Records.
      */
-    public Vector getTableInfo(String catalog, String schema, String tableName, String[] types) throws DatabaseException {
+    public Vector<AbstractRecord> getTableInfo(String catalog, String schema, String tableName, String[] types) throws DatabaseException {
         return getAccessor().getTableInfo(catalog, schema, tableName, types, getSession());
     }
 

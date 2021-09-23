@@ -56,7 +56,7 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
 
     public ParameterizedSQLBatchWritingMechanism(DatabaseAccessor databaseAccessor) {
         this.databaseAccessor = databaseAccessor;
-        this.parameters = new ArrayList();
+        this.parameters = new ArrayList<>();
         this.maxBatchSize = this.databaseAccessor.getLogin().getPlatform().getMaxBatchWritingSize();
         if (this.maxBatchSize == 0) {
             // the max size was not set on the platform - use default
@@ -113,7 +113,7 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
         this.previousCall = null;
         //Bug#419326 : A clone may be holding a reference to this.parameters.
         //So, instead of clearing the parameters, just initialize with a new reference.
-        this.parameters = new ArrayList();
+        this.parameters = new ArrayList<>();
         this.statementCount = 0;
         this.executionCount  = 0;
         this.queryTimeoutCache = DescriptorQueryManager.NoTimeout;

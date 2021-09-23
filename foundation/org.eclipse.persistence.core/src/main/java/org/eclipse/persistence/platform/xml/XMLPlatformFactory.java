@@ -106,7 +106,7 @@ public class XMLPlatformFactory {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try{
-                    return (XMLPlatform)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(getXMLPlatformClass()));
+                    return AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(getXMLPlatformClass()));
                 }catch (PrivilegedActionException ex){
                     throw (RuntimeException) ex.getCause();
                 }
@@ -114,9 +114,7 @@ public class XMLPlatformFactory {
                 return PrivilegedAccessHelper.newInstanceFromClass(getXMLPlatformClass());
 
             }
-        } catch (IllegalAccessException e) {
-            throw XMLPlatformException.xmlPlatformCouldNotInstantiate(getXMLPlatformClass().getName(), e);
-        } catch (InstantiationException e) {
+        } catch (ReflectiveOperationException e) {
             throw XMLPlatformException.xmlPlatformCouldNotInstantiate(getXMLPlatformClass().getName(), e);
         }
     }

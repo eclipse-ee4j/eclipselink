@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,19 +28,19 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * @author Gordon Yorke
  * @since EclipseLink 2.2
  */
-public class ProtectedValueHolder extends DatabaseValueHolder implements WrappingValueHolder{
+public class ProtectedValueHolder<T> extends DatabaseValueHolder<T> implements WrappingValueHolder<T> {
 
-    protected transient ValueHolderInterface<?> wrappedValueHolder;
+    protected transient ValueHolderInterface<T> wrappedValueHolder;
     protected transient DatabaseMapping mapping;
 
-    public ProtectedValueHolder(ValueHolderInterface<?> attributeValue, DatabaseMapping mapping, AbstractSession cloningSession) {
+    public ProtectedValueHolder(ValueHolderInterface<T> attributeValue, DatabaseMapping mapping, AbstractSession cloningSession) {
         this.wrappedValueHolder = attributeValue;
         this.mapping = mapping;
         this.session = cloningSession;
     }
 
     @Override
-    protected Object instantiate() throws DatabaseException {
+    protected T instantiate() throws DatabaseException {
         if (this.session == null){
             throw ValidationException.instantiatingValueholderWithNullSession();
         }
@@ -48,18 +48,19 @@ public class ProtectedValueHolder extends DatabaseValueHolder implements Wrappin
         // wrapped valueholder or the ProtectedValueHolder would not have been created.
         Integer refreshCascade = null;
         if (wrappedValueHolder instanceof QueryBasedValueHolder){
-            refreshCascade = ((QueryBasedValueHolder)getWrappedValueHolder()).getRefreshCascadePolicy();
+            refreshCascade = ((QueryBasedValueHolder<T>)getWrappedValueHolder()).getRefreshCascadePolicy();
         }
-        Object clone = mapping.buildCloneForPartObject(this.wrappedValueHolder.getValue(),null, null, null, this.session, refreshCascade, true, true);
+        @SuppressWarnings({"unchecked"})
+        T clone = (T) mapping.buildCloneForPartObject(this.wrappedValueHolder.getValue(),null, null, null, this.session, refreshCascade, true, true);
         // Bug 414801
         if (wrappedValueHolder.isInstantiated() && refreshCascade != null) {
-            ((QueryBasedValueHolder)getWrappedValueHolder()).setRefreshCascadePolicy(null);
+            ((QueryBasedValueHolder<T>)getWrappedValueHolder()).setRefreshCascadePolicy(null);
         }
         return clone;
     }
 
     @Override
-    public Object instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder unitOfWorkValueHolder) {
+    public T instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder<T> unitOfWorkValueHolder) {
         throw ValidationException.operationNotSupported("instantiateForUnitOfWorkValueHolder");
     }
 
@@ -69,7 +70,7 @@ public class ProtectedValueHolder extends DatabaseValueHolder implements Wrappin
     }
 
     @Override
-    public ValueHolderInterface<?> getWrappedValueHolder() {
+    public ValueHolderInterface<T> getWrappedValueHolder() {
         return wrappedValueHolder;
     }
 

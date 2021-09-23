@@ -105,7 +105,7 @@ public abstract class DatabaseCall extends DatasourceCall {
     protected Boolean shouldCacheStatement;
 
     // The returned fields.
-    transient protected Vector fields;
+    transient protected Vector<DatabaseField> fields;
     // PERF: fields array
     transient protected DatabaseField[] fieldsArray;
 
@@ -384,7 +384,7 @@ public abstract class DatabaseCall extends DatasourceCall {
      * The fields expected by the calls result set.
      * null means that the fields are unknown and should be built from the result set.
      */
-    public Vector getFields() {
+    public Vector<DatabaseField> getFields() {
         return fields;
     }
 
@@ -856,13 +856,13 @@ public abstract class DatabaseCall extends DatasourceCall {
     /**
      * The fields expected by the calls result set.
      */
-    public void setFields(Vector fields) {
+    public void setFields(Vector<DatabaseField> fields) {
         this.fields = fields;
         if (fields != null) {
             int size = fields.size();
             this.fieldsArray = new DatabaseField[size];
             for (int index = 0; index < size; index++) {
-                this.fieldsArray[index] = (DatabaseField)fields.get(index);
+                this.fieldsArray[index] = fields.get(index);
             }
         } else {
             this.fieldsArray = null;

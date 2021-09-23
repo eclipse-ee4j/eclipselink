@@ -91,6 +91,7 @@ import org.eclipse.persistence.internal.sessions.DirectCollectionChangeRecord;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.sessions.remote.ObjectDescriptor;
 import org.eclipse.persistence.internal.sessions.remote.RemoteSessionController;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
@@ -1146,7 +1147,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * are primitives, so they do not need to be replaced.
      */
     @Override
-    public void fixRealObjectReferences(Object object, Map objectInformation, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
+    public void fixRealObjectReferences(Object object, Map<Object, ObjectDescriptor> objectInformation, Map<Object, Object> processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         // do nothing
     }
 
@@ -1282,7 +1283,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * maintaining object identity.
      */
     @Override
-    public Object getObjectCorrespondingTo(Object object, DistributedSession session, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query) {
+    public Object getObjectCorrespondingTo(Object object, DistributedSession session, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query) {
         return object;
     }
 
@@ -1973,7 +1974,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     @Override
     public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         if (this.descriptor.getCachePolicy().isProtectedIsolation()&& !this.isCacheable && !targetSession.isProtectedSession()){
-            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
+            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder<>(null)));
             return;
         }
         ContainerPolicy containerPolicy = getContainerPolicy();
@@ -2104,7 +2105,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     @Override
     public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         if (this.descriptor.getCachePolicy().isProtectedIsolation() && !this.isCacheable && !targetSession.isProtectedSession()){
-            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
+            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder<>(null)));
             return;
         }
         if (isTargetUnInitialized) {
@@ -3195,7 +3196,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 }
                 return result;
             } else if (!this.isCacheable && !isTargetProtected && cacheKey != null) {
-                return this.indirectionPolicy.buildIndirectObject(new ValueHolder(null));
+                return this.indirectionPolicy.buildIndirectObject(new ValueHolder<>(null));
             }
         }
         if (row.hasSopObject()) {

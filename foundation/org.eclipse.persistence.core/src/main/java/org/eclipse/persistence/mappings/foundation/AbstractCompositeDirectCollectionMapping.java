@@ -25,6 +25,7 @@ import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.*;
+import org.eclipse.persistence.internal.sessions.remote.ObjectDescriptor;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.converters.*;
 import org.eclipse.persistence.mappings.structures.ArrayCollectionMapping;
@@ -289,7 +290,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * with client-side objects.
      */
     @Override
-    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
+    public void fixObjectReferences(Object object, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         // Do nothing....
         // The nested collection should de-serialize without need for any further manipulation.
     }

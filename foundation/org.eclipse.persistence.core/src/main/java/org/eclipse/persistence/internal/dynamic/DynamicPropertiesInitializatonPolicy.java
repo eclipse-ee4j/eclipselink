@@ -28,6 +28,12 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 public class DynamicPropertiesInitializatonPolicy {
 
     /**
+     * Default constructor.
+     */
+    public DynamicPropertiesInitializatonPolicy() {
+    }
+
+    /**
      * After entity is created, initialize all required attributes.
      */
     public void initializeProperties(DynamicTypeImpl type, DynamicEntityImpl entity) {
@@ -76,7 +82,7 @@ public class DynamicPropertiesInitializatonPolicy {
             ForeignReferenceMapping refMapping = (ForeignReferenceMapping)mapping;
             if (refMapping.usesIndirection() &&
                 refMapping.getIndirectionPolicy() instanceof BasicIndirectionPolicy) {
-                value = new ValueHolder(value);
+                value = new ValueHolder<>(value);
             }
             else if (refMapping.isCollectionMapping()) {
                 value = refMapping.getContainerPolicy().containerInstance();

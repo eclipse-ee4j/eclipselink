@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,7 +62,7 @@ public class ArrayListContainerPolicy extends ListContainerPolicy {
         }
 
         // Could potentially be another Collection type as well.
-        return new ArrayList((Collection) container);
+        return new ArrayList<>((Collection) container);
     }
 
     /**
@@ -71,7 +71,7 @@ public class ArrayListContainerPolicy extends ListContainerPolicy {
      */
     @Override
     public Object buildContainerFromVector(Vector vector, AbstractSession session) {
-        return new ArrayList(vector);
+        return new ArrayList<>(vector);
     }
 
     /**
@@ -80,7 +80,7 @@ public class ArrayListContainerPolicy extends ListContainerPolicy {
      */
     @Override
     public Object containerInstance() {
-        return new ArrayList();
+        return new ArrayList<>();
     }
 
     /**
@@ -89,6 +89,6 @@ public class ArrayListContainerPolicy extends ListContainerPolicy {
      */
     @Override
     public Object containerInstance(int initialCapacity) {
-        return new ArrayList(initialCapacity);
+        return new ArrayList<>(initialCapacity);
     }
 }
