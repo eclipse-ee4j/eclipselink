@@ -47,7 +47,7 @@ public abstract class EISMappingTestCases extends OXTestCase {
     protected Connection connection;
     protected XMLFileConnectionFactory connectionFactory;
     protected RecordFactory recordFactory;
-    protected Class rootClass;
+    protected Class<?> rootClass;
     protected Document controlDocument;
     private String resourceName;
     private DocumentBuilder parser;
@@ -318,7 +318,7 @@ public abstract class EISMappingTestCases extends OXTestCase {
         logTestDocument();
     }
 
-    abstract protected Class getSourceClass();
+    abstract protected Class<?> getSourceClass();
 
     protected Document logTestDocument() throws Exception {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(getTestDocument());

@@ -40,9 +40,9 @@ public class JAXBCaseInsensitivityTestCase extends junit.framework.TestCase {
 
     private static final URL CUSTOMER_FILE_URL = Thread.currentThread().getContextClassLoader().getResource("org/eclipse/persistence/testing/jaxb/casesensitivity/customer.xml");
     @SuppressWarnings({"unchecked"})
-    private static final Class<Customer>[] CAMEL_CASE_CUSTOMER = (Class<Customer>[]) new Class[]{CustomerImpl.class};
+    private static final Class<Customer>[] CAMEL_CASE_CUSTOMER = (Class<Customer>[]) new Class<?>[]{CustomerImpl.class};
     @SuppressWarnings({"unchecked"})
-    private static final Class<Customer>[] UPPER_CASE_CUSTOMER = (Class<Customer>[]) new Class[]{org.eclipse.persistence.testing.jaxb.casesensitivity.otherCase.CustomerImpl.class};
+    private static final Class<Customer>[] UPPER_CASE_CUSTOMER = (Class<Customer>[]) new Class<?>[]{org.eclipse.persistence.testing.jaxb.casesensitivity.otherCase.CustomerImpl.class};
     private static final boolean DEBUG = false;
 
     private CustomerImpl baseCustomer;

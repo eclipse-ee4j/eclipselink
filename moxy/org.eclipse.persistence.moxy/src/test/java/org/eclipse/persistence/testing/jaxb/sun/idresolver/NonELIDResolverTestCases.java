@@ -24,7 +24,7 @@ public class NonELIDResolverTestCases extends JAXBTestCases {
 
     public NonELIDResolverTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { Melon.class, MelonRef.class, Box.class, FruitOrder.class });
+        setClasses(new Class<?>[] { Melon.class, MelonRef.class, Box.class, FruitOrder.class });
         setControlDocument(XML_RESOURCE);
     }
 

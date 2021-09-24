@@ -24,7 +24,7 @@ public class XmlAdapterDirectNullTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[2];
+        Class<?>[] classes = new Class<?>[2];
         classes[0] = MyCalendar.class;
         classes[1] = MyCalendarType.class;
         setClasses(classes);

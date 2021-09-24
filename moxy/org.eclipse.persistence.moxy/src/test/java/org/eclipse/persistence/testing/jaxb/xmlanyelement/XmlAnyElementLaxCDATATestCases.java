@@ -28,7 +28,7 @@ public class XmlAnyElementLaxCDATATestCases extends JAXBTestCases {
     public XmlAnyElementLaxCDATATestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
-        Class[] classes = new Class[2];
+        Class<?>[] classes = new Class<?>[2];
         classes[0] = EmployeeLaxCDATA.class;
         classes[1] = Address.class;
         setClasses(classes);

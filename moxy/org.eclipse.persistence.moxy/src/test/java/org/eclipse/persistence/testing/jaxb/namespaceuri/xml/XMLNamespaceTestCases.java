@@ -32,7 +32,7 @@ public class XMLNamespaceTestCases extends JAXBWithJSONTestCases{
 
     public XMLNamespaceTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Address.class});
+        setClasses(new Class<?>[]{Address.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
 

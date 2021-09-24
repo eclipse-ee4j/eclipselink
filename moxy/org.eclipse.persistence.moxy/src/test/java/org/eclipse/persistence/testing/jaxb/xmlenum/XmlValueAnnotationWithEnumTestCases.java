@@ -26,7 +26,7 @@ public class XmlValueAnnotationWithEnumTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[2];
+        Class<?>[] classes = new Class<?>[2];
         classes[0] = EmployeeSingleDepartmentWithXmlValue.class;
         classes[1] = Department.class;
         setClasses(classes);

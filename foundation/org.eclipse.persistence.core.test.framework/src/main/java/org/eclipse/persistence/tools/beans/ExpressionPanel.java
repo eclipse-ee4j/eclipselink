@@ -105,7 +105,7 @@ public class ExpressionPanel extends JPanel {
         String operator = (String)getOperatorCombo().getSelectedItem();
         String method = ExpressionNode.getMethod(operator);
         String value = getValueText().getText();
-        Class[] types = new Class[1];
+        Class<?>[] types = new Class<?>[1];
         types[0] = Object.class;
         Object[] arguments = new Object[1];
         arguments[0] = value;

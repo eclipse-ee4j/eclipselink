@@ -108,7 +108,7 @@ CacheInvalidator {
             removePrefixFromDatabaseObjectNames(descTableNames);
 
             // handle inheritance: table name should be mapped to the base mapped class
-            Class baseClass = desc.getJavaClass();
+            Class<?> baseClass = desc.getJavaClass();
             while (desc.isChildDescriptor()) {
                 desc = session.getDescriptor(desc.getInheritancePolicy().getParentClass());
                 baseClass = desc.getJavaClass();
@@ -150,7 +150,7 @@ CacheInvalidator {
         if (tableName == null) {
             return;
         }
-        Class baseClass = (Class)tableNameToClass.get(tableName);
+        Class<?> baseClass = (Class)tableNameToClass.get(tableName);
         if (baseClass == null) {
             return;
         }

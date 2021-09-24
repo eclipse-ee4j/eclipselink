@@ -35,7 +35,7 @@ public class NoneTestCases extends JAXBWithJSONTestCases {
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
 
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Root.class;
         setClasses(classes);
     }
@@ -54,7 +54,7 @@ public class NoneTestCases extends JAXBWithJSONTestCases {
     }
 
     public void testXmlMetadata() throws Exception {
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Root.class;
 
         Map<String, Object> properties = new HashMap<String, Object>(1);

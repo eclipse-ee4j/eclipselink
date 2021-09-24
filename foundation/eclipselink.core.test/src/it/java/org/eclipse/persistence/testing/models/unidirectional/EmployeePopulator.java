@@ -242,7 +242,7 @@ public class EmployeePopulator {
         employeeExample12();
     }
 
-    protected boolean containsObject(Class domainClass, String identifier) {
+    protected boolean containsObject(Class<?> domainClass, String identifier) {
         return populationManager.containsObject(domainClass, identifier);
     }
 
@@ -416,11 +416,11 @@ public class EmployeePopulator {
         return populationManager.getAllObjects();
     }
 
-    public Vector<Object> getAllObjectsForClass(Class domainClass) {
+    public Vector<Object> getAllObjectsForClass(Class<?> domainClass) {
         return populationManager.getAllObjectsForClass(domainClass);
     }
 
-    protected Object getObject(Class domainClass, String identifier) {
+    protected Object getObject(Class<?> domainClass, String identifier) {
         return populationManager.getObject(domainClass, identifier);
     }
 
@@ -461,7 +461,7 @@ public class EmployeePopulator {
         return phoneNumber.toString();
     }
 
-    protected void registerObject(Class domainClass, Object domainObject, String identifier) {
+    protected void registerObject(Class<?> domainClass, Object domainObject, String identifier) {
         populationManager.registerObject(domainClass, domainObject, identifier);
     }
 

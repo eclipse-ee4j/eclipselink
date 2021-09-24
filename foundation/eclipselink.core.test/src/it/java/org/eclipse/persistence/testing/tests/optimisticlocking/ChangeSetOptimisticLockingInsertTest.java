@@ -29,9 +29,9 @@ import org.eclipse.persistence.testing.models.optimisticlocking.*;
 public class ChangeSetOptimisticLockingInsertTest extends AutoVerifyTestCase {
     protected UnitOfWork uow;
     protected Object originalObject;
-    protected Class domainClass;
+    protected Class<?> domainClass;
 
-    public ChangeSetOptimisticLockingInsertTest(Class aClass) {
+    public ChangeSetOptimisticLockingInsertTest(Class<?> aClass) {
         setName(getName() + "(" + aClass + ")");
         domainClass = aClass;
         setDescription("This test verifies that a changeset gets the correct writelock value");

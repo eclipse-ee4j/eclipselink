@@ -47,7 +47,7 @@ public class SDODataFactoryCreateSimpleTestCases extends SDOXMLHelperTestCases {
     }
 
     public void testCreateByInvalidClass() {
-        Class oldClass = simpleType.getInstanceClass();
+        Class<?> oldClass = simpleType.getInstanceClass();
         simpleType.setInstanceClass(String.class);
         try {
             DataObject dataObject = dataFactory.create(simpleType);
@@ -60,7 +60,7 @@ public class SDODataFactoryCreateSimpleTestCases extends SDOXMLHelperTestCases {
     }
 
     public void testCreateByNullClass() {
-        Class oldClass = simpleType.getInstanceClass();
+        Class<?> oldClass = simpleType.getInstanceClass();
         String oldClassName = simpleType.getInstanceClassName();
         simpleType.setInstanceClass(null);
         simpleType.setInstanceClassName(null);

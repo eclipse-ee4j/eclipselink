@@ -33,7 +33,7 @@ public class XmlAnyElementWithEltRefsViaAnnotationTestCases extends JAXBWithJSON
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[]{FooImpl.class, Bar.class, ObjectFactory3.class});
+        setClasses(new Class<?>[]{FooImpl.class, Bar.class, ObjectFactory3.class});
         jaxbMarshaller.setProperty(MarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,7 +48,7 @@ public class XmlLocationSchemaGenTests extends SchemaGenTestCases {
     }
 
     public void testSchemaGen() throws Exception {
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{ Data.class, SubData.class, DetailData.class, LeafData.class }, null);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{ Data.class, SubData.class, DetailData.class, LeafData.class }, null);
         StringOutputResolver sor = new StringOutputResolver();
         ctx.generateSchema(sor);
 
@@ -78,7 +78,7 @@ public class XmlLocationSchemaGenTests extends SchemaGenTestCases {
     }
 
     public void testSchemaGenNonTransient() throws Exception {
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{ DataNT.class, SubDataNT.class, DetailDataNT.class, LeafDataNT.class }, null);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{ DataNT.class, SubDataNT.class, DetailDataNT.class, LeafDataNT.class }, null);
         StringOutputResolver sor = new StringOutputResolver();
         ctx.generateSchema(sor);
 

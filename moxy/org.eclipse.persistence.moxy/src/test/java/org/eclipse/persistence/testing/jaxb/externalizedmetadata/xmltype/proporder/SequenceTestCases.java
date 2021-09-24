@@ -33,7 +33,7 @@ public class SequenceTestCases extends JAXBWithJSONTestCases {
 
     public SequenceTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {Root.class});
+        setClasses(new Class<?>[] {Root.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

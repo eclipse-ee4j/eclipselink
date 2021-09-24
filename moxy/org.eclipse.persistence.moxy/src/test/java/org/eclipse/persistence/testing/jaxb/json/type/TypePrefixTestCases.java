@@ -37,7 +37,7 @@ public class TypePrefixTestCases extends JSONTestCases {
 
     public TypePrefixTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Person.class});
+        setClasses(new Class<?>[]{Person.class});
         setControlJSON(JSON_RESOURCE);
     }
 

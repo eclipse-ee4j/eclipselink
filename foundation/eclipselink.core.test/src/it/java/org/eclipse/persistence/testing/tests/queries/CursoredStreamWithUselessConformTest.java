@@ -24,7 +24,7 @@ import org.eclipse.persistence.expressions.*;
  * and comparing the contents to a normal query read.
  */
 public class CursoredStreamWithUselessConformTest extends CursoredStreamTest {
-    public CursoredStreamWithUselessConformTest(Class referenceClass, Expression expression) {
+    public CursoredStreamWithUselessConformTest(Class<?> referenceClass, Expression expression) {
         super(referenceClass, expression);
     }
 

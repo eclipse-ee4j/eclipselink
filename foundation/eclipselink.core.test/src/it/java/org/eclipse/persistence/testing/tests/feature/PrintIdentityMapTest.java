@@ -18,7 +18,7 @@ import java.io.*;
 import org.eclipse.persistence.testing.framework.*;
 
 public class PrintIdentityMapTest extends AutoVerifyTestCase {
-    protected Class classToPrint;
+    protected Class<?> classToPrint;
     protected StringWriter outWriter;
 
     /**
@@ -32,7 +32,7 @@ public class PrintIdentityMapTest extends AutoVerifyTestCase {
     /**
      * PrintIdentityMapTestModel constructor comment.
      */
-    public PrintIdentityMapTest(Class classToPrint) {
+    public PrintIdentityMapTest(Class<?> classToPrint) {
         this();
         this.classToPrint = classToPrint;
     }

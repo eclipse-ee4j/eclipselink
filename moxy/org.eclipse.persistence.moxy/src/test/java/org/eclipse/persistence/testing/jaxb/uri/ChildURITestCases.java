@@ -30,7 +30,7 @@ public class ChildURITestCases extends JAXBWithJSONTestCases{
 
     public ChildURITestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{TestObject.class});
+        setClasses(new Class<?>[]{TestObject.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

@@ -31,7 +31,7 @@ public class UpdateNullOneToManyValueTest2 extends SwitchableOptimisticLockingPo
     protected Controller original;
     protected Controller original2;
 
-    public UpdateNullOneToManyValueTest2(Class optimisticLockingPolicyClass) {
+    public UpdateNullOneToManyValueTest2(Class<?> optimisticLockingPolicyClass) {
         super(optimisticLockingPolicyClass);
         addClassToModify(Controller.class);
         addClassToModify(GamesConsole.class);

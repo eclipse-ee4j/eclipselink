@@ -39,7 +39,7 @@ public class XmlValueCdnPriceInheritanceTestCases extends JAXBWithJSONTestCases{
 
     public XmlValueCdnPriceInheritanceTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { CDNPriceInheritance.class });
+        setClasses(new Class<?>[] { CDNPriceInheritance.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

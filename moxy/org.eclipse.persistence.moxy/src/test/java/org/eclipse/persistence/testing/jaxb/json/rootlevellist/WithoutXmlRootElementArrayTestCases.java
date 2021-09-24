@@ -35,7 +35,7 @@ public class WithoutXmlRootElementArrayTestCases extends JSONMarshalUnmarshalTes
 
     public WithoutXmlRootElementArrayTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {WithoutXmlRootElementRoot.class});
+        setClasses(new Class<?>[] {WithoutXmlRootElementRoot.class});
         setControlJSON(CONTROL_JSON);
         jsonUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, Boolean.FALSE);
     }

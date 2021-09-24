@@ -50,7 +50,7 @@ public class XmlElementsTestCases extends JAXBWithJSONTestCases{
       */
     public XmlElementsTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { Foo.class });
+        setClasses(new Class<?>[] { Foo.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }
@@ -116,7 +116,7 @@ public class XmlElementsTestCases extends JAXBWithJSONTestCases{
         InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelements/schema_idref.xsd");
         controlSchemas.add(is);
 
-        JAXBContext ctx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { Bar.class, Address.class, Phone.class }, properties);
+        JAXBContext ctx = (JAXBContext) JAXBContextFactory.createContext(new Class<?>[] { Bar.class, Address.class, Phone.class }, properties);
 
          MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
          ctx.generateSchema(outputResolver);
@@ -147,7 +147,7 @@ public class XmlElementsTestCases extends JAXBWithJSONTestCases{
         boolean exception = false;
         JAXBContext jCtx = null;
         try {
-            jCtx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { Bar.class, Address.class, Foo.class }, properties);
+            jCtx = (JAXBContext) JAXBContextFactory.createContext(new Class<?>[] { Bar.class, Address.class, Foo.class }, properties);
         } catch (JAXBException e1) {
             exception = true;
         }

@@ -22,7 +22,7 @@ import org.eclipse.persistence.expressions.ExpressionMath;
 import org.eclipse.persistence.testing.framework.*;
 
 public class ModTest extends JPQLTestCase {
-    private static ModTest getNewTestCaseNamed(String name, String ejbql, Class referenceClass) {
+    private static ModTest getNewTestCaseNamed(String name, String ejbql, Class<?> referenceClass) {
         ModTest test = new ModTest();
 
         test.setName(name);

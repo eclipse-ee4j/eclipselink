@@ -34,7 +34,7 @@ public class XmlElementNillableTypeLevelOverrideTestCases extends JAXBTestCases 
     public XmlElementNillableTypeLevelOverrideTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_CONTROL_RESOURCE);
-        setClasses(new Class[] { TypeRootOverride.class });
+        setClasses(new Class<?>[] { TypeRootOverride.class });
     }
 
     @Override

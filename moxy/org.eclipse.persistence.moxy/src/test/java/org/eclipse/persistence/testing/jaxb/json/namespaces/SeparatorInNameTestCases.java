@@ -32,7 +32,7 @@ public class SeparatorInNameTestCases extends JSONMarshalUnmarshalTestCases{
     public SeparatorInNameTestCases(String name) throws Exception {
         super(name);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[]{Person.class});
+        setClasses(new Class<?>[]{Person.class});
     }
 
     @Override

@@ -28,7 +28,7 @@ public class TypeNoTypeTestCases extends JAXBWithJSONTestCases{
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[]{Foo.class, Bar.class, BarXmlValue.class};
+        Class<?>[] classes = new Class<?>[]{Foo.class, Bar.class, BarXmlValue.class};
         setClasses(classes);
     }
 

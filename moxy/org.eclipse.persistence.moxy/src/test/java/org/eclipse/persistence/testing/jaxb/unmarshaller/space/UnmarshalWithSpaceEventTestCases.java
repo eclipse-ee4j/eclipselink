@@ -30,7 +30,7 @@ public class UnmarshalWithSpaceEventTestCases extends JAXBTestCases{
 
     public UnmarshalWithSpaceEventTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{TestObject.class});
+        setClasses(new Class<?>[]{TestObject.class});
         setControlDocument(XML_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);
 

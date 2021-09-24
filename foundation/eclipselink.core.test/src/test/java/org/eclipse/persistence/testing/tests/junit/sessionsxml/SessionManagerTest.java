@@ -211,7 +211,7 @@ public class SessionManagerTest {
         }
     }
 
-    private Object getField(Class c, String field, Object o) {
+    private Object getField(Class<?> c, String field, Object o) {
         Field f = null;
         try {
             f = c.getDeclaredField(field);
@@ -226,7 +226,7 @@ public class SessionManagerTest {
         }
     }
 
-    private void setStaticField(Class c, String field, Object value) {
+    private void setStaticField(Class<?> c, String field, Object value) {
         Field f = null;
         try {
             f = c.getDeclaredField(field);

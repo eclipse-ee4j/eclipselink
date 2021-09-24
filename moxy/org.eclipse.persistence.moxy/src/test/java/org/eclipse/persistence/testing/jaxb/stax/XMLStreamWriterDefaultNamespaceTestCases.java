@@ -41,7 +41,7 @@ public class XMLStreamWriterDefaultNamespaceTestCases extends OXTestCase {
     }
 
     public void testDefaultNamespaceOverride() throws Exception {
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[] { Employee.class }, null);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[] { Employee.class }, null);
         StringWriter writer = new StringWriter();
         XMLStreamWriter streamWriter = XMLOutputFactory.newInstance().createXMLStreamWriter(writer);
         streamWriter.writeStartElement("", "root", "someNamespace");
@@ -68,7 +68,7 @@ public class XMLStreamWriterDefaultNamespaceTestCases extends OXTestCase {
     public void testDuplicateDefaultNamespace() throws Exception {
         String testXmlData = "<child xmlns=\"someDefaultNameSpace\" xmlns:bi=\"definedBINameSpace\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">Test</child>";
         EmployeeLax employeeLax = createEmployeeLax(testXmlData);
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{EmployeeLax.class}, null);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{EmployeeLax.class}, null);
 
         StringWriter writer = new StringWriter();
         XMLOutputFactory factory = XMLOutputFactory.newInstance();

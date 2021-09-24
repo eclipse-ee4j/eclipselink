@@ -53,7 +53,7 @@ public class PropertyLevelTestCases extends JAXBWithJSONTestCases {
     public PropertyLevelTestCases(String name) throws Exception {
         super(name);
         setUp();
-        setTypes(new Class[]{Container.class});
+        setTypes(new Class<?>[]{Container.class});
         setControlDocument("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/unmappable/container.xml");
         setControlJSON("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/unmappable/container.json");
     }

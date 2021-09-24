@@ -27,20 +27,20 @@ import org.eclipse.persistence.testing.framework.TestCase;
  */
 public class PLSQLTest extends TestCase {
     protected String queryName;
-    protected Class queryClass;
+    protected Class<?> queryClass;
     protected List queryArguments;
     protected Object result;
 
     public PLSQLTest() {
     }
 
-    public PLSQLTest(String queryName, Class queryClass, List queryArguments) {
+    public PLSQLTest(String queryName, Class<?> queryClass, List queryArguments) {
         this.queryName = queryName;
         this.queryClass = queryClass;
         this.queryArguments = queryArguments;
     }
 
-    public PLSQLTest(String queryName, Class queryClass, List queryArguments, Object result) {
+    public PLSQLTest(String queryName, Class<?> queryClass, List queryArguments, Object result) {
         this.queryName = queryName;
         this.queryClass = queryClass;
         this.queryArguments = queryArguments;

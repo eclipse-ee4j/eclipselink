@@ -35,7 +35,7 @@ public class AdapterHexBinaryTestCases extends JAXBWithJSONTestCases{
 
     public AdapterHexBinaryTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Customer.class});
+        setClasses(new Class<?>[]{Customer.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

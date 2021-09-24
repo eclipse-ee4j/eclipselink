@@ -41,7 +41,7 @@ public class DirectIsSetNullPolicyElementAbsentIsSetAbsentFalseWithParamsTestCas
         // Alter marshal policy state
         aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.ABSENT_NODE); // no effect when isset=false
 
-        Class[] isSetParameterTypes = {String.class, String.class, Boolean.class, Integer.class, Short.class, Long.class, Double.class, Float.class, Byte.class, Character.class};
+        Class<?>[] isSetParameterTypes = {String.class, String.class, Boolean.class, Integer.class, Short.class, Long.class, Double.class, Float.class, Byte.class, Character.class};
         //Class[] isSetParameterTypes = {String.class, String.class};
 
         // TODO: verify EMPTY_STRING behavior

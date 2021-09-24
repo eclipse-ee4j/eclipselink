@@ -48,7 +48,7 @@ public class XmlValueTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[] { MyValueClass.class });
+        setClasses(new Class<?>[] { MyValueClass.class });
     }
 
     @Override
@@ -92,7 +92,7 @@ public class XmlValueTestCases extends JAXBWithJSONTestCases {
         boolean exceptionOccurred = false;
 
         try {
-            JAXBContextFactory.createContext(new Class[] { InternationalPriceNoAnnotation.class }, properties, getClass().getClassLoader());
+            JAXBContextFactory.createContext(new Class<?>[] { InternationalPriceNoAnnotation.class }, properties, getClass().getClassLoader());
         } catch (Exception x) {
             exceptionOccurred = true;
         }
@@ -122,7 +122,7 @@ public class XmlValueTestCases extends JAXBWithJSONTestCases {
         boolean exceptionOccurred = false;
 
         try {
-            JAXBContextFactory.createContext(new Class[] { InternationalPriceNoAnnotation.class }, properties, getClass().getClassLoader());
+            JAXBContextFactory.createContext(new Class<?>[] { InternationalPriceNoAnnotation.class }, properties, getClass().getClassLoader());
         } catch (Exception x) {
             exceptionOccurred = true;
         }

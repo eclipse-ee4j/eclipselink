@@ -37,7 +37,7 @@ public class SDOXMLHelperDatatypeBooleanTestCases extends SDOXMLHelperDatatypeTe
     }
 
     @Override
-    protected Class getDatatypeJavaClass() {
+    protected Class<?> getDatatypeJavaClass() {
         return Boolean.class;
     }
 

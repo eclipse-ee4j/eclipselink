@@ -84,7 +84,7 @@ public class NoGroupingElementMapTestCases extends EISMappingTestCases {
   }
 
     @Override
-    protected Class getSourceClass(){
+    protected Class<?> getSourceClass(){
         return Employee.class;
     }
 

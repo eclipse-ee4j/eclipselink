@@ -71,8 +71,8 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
                 setIsRecoverableMethod = sopClass.getDeclaredMethod("setIsRecoverable", boolean.class);
             }
 
-            Class[] sopEntities = {Employee.class, Address.class, Project.class};
-            for (Class sopEntity : sopEntities) {
+            Class<?>[] sopEntities = {Employee.class, Address.class, Project.class};
+            for (Class<?> sopEntity : sopEntities) {
                 ClassDescriptor descriptor = session.getDescriptor(sopEntity);
                 Object sop = sopClass.getConstructor().newInstance();
                 if (isRecoverable) {

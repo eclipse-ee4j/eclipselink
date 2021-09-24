@@ -42,7 +42,7 @@ public class JAXBArrayTestCases extends JAXBListOfObjectsTestCases {
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[4];
+        Class<?>[] classes = new Class<?>[4];
         classes[0] = char[].class;
         classes[1] = BigDecimal[].class;
         classes[2] = BigInteger[].class;
@@ -94,7 +94,7 @@ public class JAXBArrayTestCases extends JAXBListOfObjectsTestCases {
 
     public void testConflict() {
         try {
-            Class[] classes = new Class[2];
+            Class<?>[] classes = new Class<?>[2];
             classes[0] = Integer[].class;
             classes[1] = int[].class;
             JAXBContextFactory.createContext(classes, null);

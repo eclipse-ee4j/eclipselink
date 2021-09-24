@@ -30,7 +30,7 @@ public class SchemaGenXmlPathTestCases extends JAXBTestCases {
 
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);
-        setClasses(new Class[] { MyClass.class, Phone.class, Address.class, CanadianAddress.class });
+        setClasses(new Class<?>[] { MyClass.class, Phone.class, Address.class, CanadianAddress.class });
     }
 
     public  List<InputStream> getControlSchemaFiles(){

@@ -32,7 +32,7 @@ public class XmlInverseRefObjectsTestCases extends JAXBWithJSONTestCases{
         super(name);
         setControlJSON(JSON_RESOURCE);
         setControlDocument(XML_RESOURCE);
-        setClasses(new Class[]{Person.class});
+        setClasses(new Class<?>[]{Person.class});
     }
 
     @Override

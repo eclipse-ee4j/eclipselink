@@ -31,10 +31,10 @@ import org.eclipse.persistence.queries.*;
 public class ReadAllCallTest extends AutoVerifyTestCase {
     protected int originalObjectsSize;
     protected Object objectsFromDatabase;
-    protected Class referenceClass;
+    protected Class<?> referenceClass;
     protected Call call;
 
-    public ReadAllCallTest(Class referenceClass, int originalObjectsSize, Call aCall) {
+    public ReadAllCallTest(Class<?> referenceClass, int originalObjectsSize, Call aCall) {
         setOriginalObjectsSize(originalObjectsSize);
         setReferenceClass(referenceClass);
         setCall(aCall);
@@ -54,7 +54,7 @@ public class ReadAllCallTest extends AutoVerifyTestCase {
         return originalObjectsSize;
     }
 
-    public Class getReferenceClass() {
+    public Class<?> getReferenceClass() {
         return referenceClass;
     }
 
@@ -62,7 +62,7 @@ public class ReadAllCallTest extends AutoVerifyTestCase {
         originalObjectsSize = size;
     }
 
-    public void setReferenceClass(Class aClass) {
+    public void setReferenceClass(Class<?> aClass) {
         referenceClass = aClass;
     }
 

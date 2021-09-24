@@ -30,7 +30,7 @@ public class URITestCases extends JAXBWithJSONTestCases{
 
     public URITestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{});
+        setClasses(new Class<?>[]{});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         //setWriteControlDocument(XML_WRITE_RESOURCE);

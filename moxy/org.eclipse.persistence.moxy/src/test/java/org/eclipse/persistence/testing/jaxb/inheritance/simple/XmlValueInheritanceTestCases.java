@@ -26,7 +26,7 @@ public class XmlValueInheritanceTestCases extends JAXBWithJSONTestCases{
 
     public XmlValueInheritanceTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { Simple.class, Complex.class});
+        setClasses(new Class<?>[] { Simple.class, Complex.class});
         setControlDocument("org/eclipse/persistence/testing/jaxb/inheritance/simple/xmlvalue.xml");
         setControlJSON("org/eclipse/persistence/testing/jaxb/inheritance/simple/xmlvalue.json");
     }

@@ -43,7 +43,7 @@ public class AnyAttributeWriteOnlyMappingTestCases extends JAXBWithJSONTestCases
         setControlDocument(XML_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[] { Employee.class });
+        setClasses(new Class<?>[] { Employee.class });
 
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("http://www.example.com/other", "ns0");

@@ -61,11 +61,11 @@ public class MapPopulator {
         registerObject(getEntityEntityU1MMapHolder(), "0015");
     }
 
-    protected boolean containsObject(Class domainClass, String identifier) {
+    protected boolean containsObject(Class<?> domainClass, String identifier) {
         return populationManager.containsObject(domainClass, identifier);
     }
 
-    protected Object getObject(Class domainClass, String identifier) {
+    protected Object getObject(Class<?> domainClass, String identifier) {
         return populationManager.getObject(domainClass, identifier);
     }
 

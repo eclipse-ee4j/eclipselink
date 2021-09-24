@@ -44,7 +44,7 @@ public class BinderWithNullPolicyCompositeTestCases extends TestCase {
         String controlSource = "org/eclipse/persistence/testing/jaxb/binder/nullpolicy/emptynodecomposite.xml";
         Document controlDocument = parser.parse(Thread.currentThread().getContextClassLoader().getResource(controlSource));
 
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{EmployeeCompositeA.class}, null);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{EmployeeCompositeA.class}, null);
 
         Binder<Node> binder = ctx.createBinder();
 

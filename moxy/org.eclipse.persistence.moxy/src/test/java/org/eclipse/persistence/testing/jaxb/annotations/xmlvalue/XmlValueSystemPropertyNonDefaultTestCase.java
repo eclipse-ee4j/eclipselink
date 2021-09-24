@@ -31,7 +31,7 @@ public class XmlValueSystemPropertyNonDefaultTestCase extends JAXBWithJSONTestCa
 
     public XmlValueSystemPropertyNonDefaultTestCase(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Parent.class, Child.class});
+        setClasses(new Class<?>[]{Parent.class, Child.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

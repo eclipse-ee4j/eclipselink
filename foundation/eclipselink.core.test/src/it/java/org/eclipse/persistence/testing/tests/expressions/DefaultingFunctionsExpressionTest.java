@@ -23,7 +23,7 @@ public class DefaultingFunctionsExpressionTest extends ReadAllExpressionTest {
      * @param referenceClass java.lang.Class
      * @param originalObjectsSize int
      */
-    public DefaultingFunctionsExpressionTest(Class referenceClass, int originalObjectsSize) {
+    public DefaultingFunctionsExpressionTest(Class<?> referenceClass, int originalObjectsSize) {
         super(referenceClass, originalObjectsSize);
     }
 

@@ -49,7 +49,7 @@ public class XmlDiscriminatorTestCases extends JAXBWithJSONTestCases {
         setWriteControlDocument(XML_WRITE_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         setWriteControlJSON(JSON_WRITE_RESOURCE);
-        setClasses(new Class[] { Car.class, Vehicle.class });
+        setClasses(new Class<?>[] { Car.class, Vehicle.class });
     }
 
     @Override

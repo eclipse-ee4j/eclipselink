@@ -49,7 +49,7 @@ public class InverseReferenceAdapterTestCases extends OXTestCase {
 
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, OXM_METADATA);
-        jc = JAXBContextFactory.createContext(new Class[] { Customer.class, Address.class, PhoneNumber.class }, properties);
+        jc = JAXBContextFactory.createContext(new Class<?>[] { Customer.class, Address.class, PhoneNumber.class }, properties);
     }
 
 

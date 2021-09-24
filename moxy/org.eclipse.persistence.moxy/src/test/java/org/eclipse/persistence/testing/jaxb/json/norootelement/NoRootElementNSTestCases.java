@@ -29,7 +29,7 @@ public class NoRootElementNSTestCases extends JSONMarshalUnmarshalTestCases {
     public NoRootElementNSTestCases(String name) throws Exception {
         super(name);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[]{Address.class});
+        setClasses(new Class<?>[]{Address.class});
 
     }
 

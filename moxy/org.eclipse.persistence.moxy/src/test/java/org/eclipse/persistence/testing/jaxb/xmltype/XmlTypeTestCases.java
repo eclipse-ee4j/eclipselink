@@ -35,7 +35,7 @@ public class XmlTypeTestCases extends JAXBWithJSONTestCases {
 
     public XmlTypeTestCases(String name) throws Exception {
         super(name);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Employee.class;
         setClasses(classes);
         setControlDocument(XML_RESOURCE);
@@ -55,7 +55,7 @@ public class XmlTypeTestCases extends JAXBWithJSONTestCases {
 
     public void testBuiltInTypeSchemaGen() throws Exception {
 
-        JAXBContext jctx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { EmploymentPeriod.class, MyDate.class}, null);
+        JAXBContext jctx = (JAXBContext) JAXBContextFactory.createContext(new Class<?>[] { EmploymentPeriod.class, MyDate.class}, null);
         MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
         jctx.generateSchema(outputResolver);
 

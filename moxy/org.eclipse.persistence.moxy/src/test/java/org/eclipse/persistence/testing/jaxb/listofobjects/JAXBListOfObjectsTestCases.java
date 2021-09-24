@@ -50,7 +50,7 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBWithJSONTestCases{
     }
 
     @Override
-    public void setClasses(Class[] newClasses) throws Exception {
+    public void setClasses(Class<?>[] newClasses) throws Exception {
         classLoader = new JaxbClassLoader(Thread.currentThread()
                 .getContextClassLoader());
         JAXBContextFactory factory = new JAXBContextFactory();

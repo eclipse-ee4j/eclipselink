@@ -34,7 +34,7 @@ public class XmlTransientUnsetPropTestCases extends JAXBWithJSONTestCases{
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[] { PhoneNumber.class });
+        setClasses(new Class<?>[] { PhoneNumber.class });
     }
 
      @Override

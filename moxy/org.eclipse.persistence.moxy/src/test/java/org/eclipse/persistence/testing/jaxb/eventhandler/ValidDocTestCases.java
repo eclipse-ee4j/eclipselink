@@ -20,7 +20,7 @@ public class ValidDocTestCases extends JAXBWithJSONTestCases{
     MyEventHandler handler;
     public ValidDocTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {MyClass.class});
+        setClasses(new Class<?>[] {MyClass.class});
         setControlDocument("org/eclipse/persistence/testing/jaxb/eventhandler/valid.xml");
         setControlJSON("org/eclipse/persistence/testing/jaxb/eventhandler/valid.json");
     }

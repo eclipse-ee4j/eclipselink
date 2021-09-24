@@ -37,7 +37,7 @@ public class InheritanceTypeElementTestCases extends JAXBWithJSONTestCases{
 
     public InheritanceTypeElementTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { Root.class, Child.class, Parent.class});
+        setClasses(new Class<?>[] { Root.class, Child.class, Parent.class});
         setControlDocument("org/eclipse/persistence/testing/jaxb/inheritance/typeElem/typeElement.xml");
         setControlJSON("org/eclipse/persistence/testing/jaxb/inheritance/typeElem/typeElement.json");
 

@@ -30,7 +30,7 @@ public class ElementFragmentTestCases extends JAXBWithJSONTestCases{
 
     public ElementFragmentTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{});
+        setClasses(new Class<?>[]{});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         jaxbMarshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);

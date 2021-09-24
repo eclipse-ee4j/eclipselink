@@ -31,10 +31,10 @@ CursoredStreamTest extends AutoVerifyTestCase {
     protected int size;
     protected Vector normalQueryObjects;
     protected Vector cursoredQueryObjects;
-    protected Class referenceClass;
+    protected Class<?> referenceClass;
     protected Expression joinExpression;
 
-    public CursoredStreamTest(Class referenceClass, Expression expression) {
+    public CursoredStreamTest(Class<?> referenceClass, Expression expression) {
         setReferenceClass(referenceClass);
         setName(getName() + "(" + referenceClass + ")");
         setDescription("This test verifies that the number of objects read in using a cursored stream" +
@@ -50,7 +50,7 @@ CursoredStreamTest extends AutoVerifyTestCase {
         return normalQueryObjects;
     }
 
-    public Class getReferenceClass() {
+    public Class<?> getReferenceClass() {
         return referenceClass;
     }
 
@@ -66,7 +66,7 @@ CursoredStreamTest extends AutoVerifyTestCase {
         normalQueryObjects = objects;
     }
 
-    public void setReferenceClass(Class aClass) {
+    public void setReferenceClass(Class<?> aClass) {
         referenceClass = aClass;
     }
 

@@ -297,9 +297,9 @@ public abstract class IndirectContainerProject extends GeneratedIndirectContaine
 
     protected abstract void modifyOrderDescriptor(RelationalDescriptor descriptor);
 
-    protected abstract Class orderClass();
+    protected abstract Class<?> orderClass();
 
-    protected abstract Class orderLineClass();
+    protected abstract Class<?> orderLineClass();
 
-    protected abstract Class salesRepClass();
+    protected abstract Class<?> salesRepClass();
 }

@@ -25,7 +25,7 @@ public class ClassLevelAdapterTestCases extends JAXBWithJSONTestCases{
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
 
-        Class[] classes = new Class[2];
+        Class<?>[] classes = new Class<?>[2];
         classes[0] = TestObject.class;
         classes[1] = ClassA.class;
         setClasses(classes);

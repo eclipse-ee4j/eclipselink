@@ -32,7 +32,7 @@ public class OverrideAllTestCases extends JAXBWithJSONTestCases {
     private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltype/proporder/sequence.json";
     public OverrideAllTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {OverrideAllRoot.class});
+        setClasses(new Class<?>[] {OverrideAllRoot.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

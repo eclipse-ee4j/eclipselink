@@ -27,7 +27,7 @@ public class JSONWithPaddingSimpleTestCases extends JAXBWithJSONTestCases{
 
     public JSONWithPaddingSimpleTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Simple.class});
+        setClasses(new Class<?>[]{Simple.class});
         setControlJSON(JSON_RESOURCE);
         setControlDocument(XML_RESOURCE);
         setWriteControlFormattedJSON(JSON_FORMATTED_RESOURCE);

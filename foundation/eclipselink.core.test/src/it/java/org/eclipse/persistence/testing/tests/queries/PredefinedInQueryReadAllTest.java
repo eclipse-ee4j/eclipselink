@@ -24,7 +24,7 @@ import org.eclipse.persistence.testing.framework.ReadAllTest;
  *
  */
 public class PredefinedInQueryReadAllTest extends ReadAllTest {
-    public PredefinedInQueryReadAllTest(Class referenceClass, int originalObjectsSize) {
+    public PredefinedInQueryReadAllTest(Class<?> referenceClass, int originalObjectsSize) {
         super(referenceClass, originalObjectsSize);
         setName("PredefinedInQueryReadAllTest");
     }

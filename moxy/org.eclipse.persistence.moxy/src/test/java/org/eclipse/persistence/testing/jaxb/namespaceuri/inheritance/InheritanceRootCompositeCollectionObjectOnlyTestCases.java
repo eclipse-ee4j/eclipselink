@@ -30,7 +30,7 @@ public class InheritanceRootCompositeCollectionObjectOnlyTestCases extends JAXBW
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[] {RootCompositeCollectionObjectOnly.class, BaseType.class});
+        setClasses(new Class<?>[] {RootCompositeCollectionObjectOnly.class, BaseType.class});
         initXsiType();
     }
 

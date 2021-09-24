@@ -91,8 +91,8 @@ public class ProjectXMLSortedCollectionMapping extends TestCase {
         CollectionMapping collectionMapping = (CollectionMapping)readBackMapping;
         ContainerPolicy containerPolciy = collectionMapping.getContainerPolicy();
         if(containerPolciy.isCollectionPolicy()){
-            Class conatinerClass = containerPolciy.getContainerClass();
-            Class comparatorClass = ((SortedCollectionContainerPolicy)containerPolciy).getComparatorClass();
+            Class<?> conatinerClass = containerPolciy.getContainerClass();
+            Class<?> comparatorClass = ((SortedCollectionContainerPolicy)containerPolciy).getComparatorClass();
             if(!conatinerClass.equals(TreeSet.class) ){
                 throw new TestErrorException("The container class read was not equal to the conatiner class set originally, which expected as the java.util.TreeSet class. ");
             }
@@ -104,7 +104,7 @@ public class ProjectXMLSortedCollectionMapping extends TestCase {
         }
     }
 
-    public Class getComparator(){
+    public Class<?> getComparator(){
         return ProjectXMLSortedCollectionMapping.ProjectComparator.class;
     }
 

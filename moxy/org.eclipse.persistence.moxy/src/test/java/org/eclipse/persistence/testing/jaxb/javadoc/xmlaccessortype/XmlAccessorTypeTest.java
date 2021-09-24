@@ -25,7 +25,7 @@ public class XmlAccessorTypeTest extends JAXBTestCases {
     public XmlAccessorTypeTest(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Address.class;
         setClasses(classes);
     }

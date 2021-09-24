@@ -27,7 +27,7 @@ public class AdapterEnumTestCases extends JAXBWithJSONTestCases{
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = {EnumRoot.class};
+        Class<?>[] classes = {EnumRoot.class};
         setClasses(classes);
     }
 

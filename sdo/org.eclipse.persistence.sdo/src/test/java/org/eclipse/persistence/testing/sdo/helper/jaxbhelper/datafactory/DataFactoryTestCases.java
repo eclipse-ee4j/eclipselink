@@ -47,7 +47,7 @@ public class DataFactoryTestCases extends SDOTestCase {
     @Override
     public void setUp() {
         try {
-            Class[] classes = new Class[1];
+            Class<?>[] classes = new Class<?>[1];
             classes[0] = Root.class;
             JAXBContext jaxbContext = JAXBContext.newInstance(classes);
             jaxbHelperContext = new JAXBHelperContext(jaxbContext);

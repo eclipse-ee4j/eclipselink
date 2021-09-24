@@ -35,13 +35,13 @@ public class LazyInitTestCases extends TestCase {
     }
 
     public void testEventManager() throws Exception {
-        JAXBContext jc = JAXBContextFactory.createContext(new Class[] {Root.class}, null);
+        JAXBContext jc = JAXBContextFactory.createContext(new Class<?>[] {Root.class}, null);
         XMLDescriptor xmlDescriptor = JAXBHelper.getJAXBContext(jc).getXMLContext().getDescriptor(new QName("root"));
         assertFalse(xmlDescriptor.hasEventManager());
     }
 
     public void testCopyPolicy() throws Exception {
-        JAXBContext jc = JAXBContextFactory.createContext(new Class[] {Root.class}, null);
+        JAXBContext jc = JAXBContextFactory.createContext(new Class<?>[] {Root.class}, null);
         XMLDescriptor xmlDescriptor = JAXBHelper.getJAXBContext(jc).getXMLContext().getDescriptor(new QName("root"));
 
         assertNull(getFieldValue(XMLDescriptor.class, "copyPolicy", xmlDescriptor));
@@ -49,7 +49,7 @@ public class LazyInitTestCases extends TestCase {
     }
 
     public void testTreeObjectBuilder() throws Exception {
-        JAXBContext jc = JAXBContextFactory.createContext(new Class[] {Root.class}, null);
+        JAXBContext jc = JAXBContextFactory.createContext(new Class<?>[] {Root.class}, null);
         XMLDescriptor xmlDescriptor = JAXBHelper.getJAXBContext(jc).getXMLContext().getDescriptor(new QName("root"));
         TreeObjectBuilder treeObjectBuilder = (TreeObjectBuilder) xmlDescriptor.getObjectBuilder();
 

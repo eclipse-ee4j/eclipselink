@@ -290,7 +290,7 @@ public class TestQueryHints implements PUPropertiesProvider {
         }
 
         public static Connector createStatementProxy(Connector toWrap) {
-            return (Connector) Proxy.newProxyInstance(Connector.class.getClassLoader(), new Class[] { Connector.class }, new ConnectorInvocationHandler(toWrap));
+            return (Connector) Proxy.newProxyInstance(Connector.class.getClassLoader(), new Class<?>[] { Connector.class }, new ConnectorInvocationHandler(toWrap));
         }
     }
 
@@ -314,7 +314,7 @@ public class TestQueryHints implements PUPropertiesProvider {
         }
 
         public static Connection createStatementProxy(Connection toWrap) {
-            return (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(), new Class[] { Connection.class }, new ConnectionInvocationHandler(toWrap));
+            return (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(), new Class<?>[] { Connection.class }, new ConnectionInvocationHandler(toWrap));
         }
     }
 
@@ -342,7 +342,7 @@ public class TestQueryHints implements PUPropertiesProvider {
         }
 
         public static PreparedStatement createStatementProxy(PreparedStatement toWrap) {
-            return (PreparedStatement) Proxy.newProxyInstance(PreparedStatement.class.getClassLoader(), new Class[] { PreparedStatement.class }, new PreparedStatementInvocationHandler(toWrap));
+            return (PreparedStatement) Proxy.newProxyInstance(PreparedStatement.class.getClassLoader(), new Class<?>[] { PreparedStatement.class }, new PreparedStatementInvocationHandler(toWrap));
         }
     }
 }

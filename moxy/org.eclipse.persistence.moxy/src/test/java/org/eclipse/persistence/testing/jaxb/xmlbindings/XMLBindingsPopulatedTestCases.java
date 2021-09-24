@@ -59,7 +59,7 @@ public class XMLBindingsPopulatedTestCases extends JAXBWithJSONTestCases{
 
     public XMLBindingsPopulatedTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{XmlBindings.class});
+        setClasses(new Class<?>[]{XmlBindings.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         jaxbMarshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);

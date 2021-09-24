@@ -23,7 +23,7 @@ import org.eclipse.persistence.testing.models.employee.domain.*;
  * Read objects into the cache, force garbage collection, see that the cache is empty.
  */
 public class CreateCacheKeyWeakIdentityMapTest extends TestCase {
-    protected Class originalIdentityMapClass;
+    protected Class<? extends IdentityMap> originalIdentityMapClass;
     protected int originalIdentityMapSize;
     protected int querySize;
 

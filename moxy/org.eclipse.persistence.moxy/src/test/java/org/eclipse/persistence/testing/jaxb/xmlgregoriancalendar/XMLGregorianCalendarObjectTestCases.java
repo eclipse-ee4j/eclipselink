@@ -53,7 +53,7 @@ public class XMLGregorianCalendarObjectTestCases extends JAXBWithJSONTestCases{
 
     public XMLGregorianCalendarObjectTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {XMLGregorianCalendarHolder.class});
+        setClasses(new Class<?>[] {XMLGregorianCalendarHolder.class});
     }
 
     @Override

@@ -34,7 +34,7 @@ public class SDOXMLHelperDatatypeIntegerTestCases extends SDOXMLHelperDatatypeTe
     }
 
     @Override
-    protected Class getDatatypeJavaClass() {
+    protected Class<?> getDatatypeJavaClass() {
         return BigInteger.class;
     }
 

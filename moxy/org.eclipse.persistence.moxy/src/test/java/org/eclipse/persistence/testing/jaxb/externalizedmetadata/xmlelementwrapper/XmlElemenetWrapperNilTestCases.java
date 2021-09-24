@@ -37,7 +37,7 @@ public class XmlElemenetWrapperNilTestCases extends JAXBWithJSONTestCases{
      */
     public XmlElemenetWrapperNilTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { Employee.class });
+        setClasses(new Class<?>[] { Employee.class });
         setControlDocument(XML_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);
         setControlJSON(JSON_RESOURCE);

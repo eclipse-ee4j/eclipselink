@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2015, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -183,7 +183,7 @@ public class TestQueryProperties implements PUPropertiesProvider {
         }
 
         public static Connector createStatementProxy(Connector toWrap) {
-            return (Connector) Proxy.newProxyInstance(Connector.class.getClassLoader(), new Class[] { Connector.class }, new ConnectorInvocationHandler(toWrap));
+            return (Connector) Proxy.newProxyInstance(Connector.class.getClassLoader(), new Class<?>[] { Connector.class }, new ConnectorInvocationHandler(toWrap));
         }
     }
 
@@ -207,7 +207,7 @@ public class TestQueryProperties implements PUPropertiesProvider {
         }
 
         public static Connection createStatementProxy(Connection toWrap) {
-            return (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(), new Class[] { Connection.class }, new ConnectionInvocationHandler(toWrap));
+            return (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(), new Class<?>[] { Connection.class }, new ConnectionInvocationHandler(toWrap));
         }
     }
 
@@ -235,7 +235,7 @@ public class TestQueryProperties implements PUPropertiesProvider {
         }
 
         public static PreparedStatement createStatementProxy(PreparedStatement toWrap) {
-            return (PreparedStatement) Proxy.newProxyInstance(PreparedStatement.class.getClassLoader(), new Class[] { PreparedStatement.class }, new PreparedStatementInvocationHandler(toWrap));
+            return (PreparedStatement) Proxy.newProxyInstance(PreparedStatement.class.getClassLoader(), new Class<?>[] { PreparedStatement.class }, new PreparedStatementInvocationHandler(toWrap));
         }
     }
 }

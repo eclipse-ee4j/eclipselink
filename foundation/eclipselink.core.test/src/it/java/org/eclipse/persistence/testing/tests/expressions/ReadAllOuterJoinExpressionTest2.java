@@ -21,7 +21,7 @@ public class ReadAllOuterJoinExpressionTest2 extends ReadAllExpressionTest {
      * @param referenceClass java.lang.Class
      * @param originalObjectsSize int
      */
-    public ReadAllOuterJoinExpressionTest2(Class referenceClass, int originalObjectsSize) {
+    public ReadAllOuterJoinExpressionTest2(Class<?> referenceClass, int originalObjectsSize) {
         super(referenceClass, originalObjectsSize);
     }
 

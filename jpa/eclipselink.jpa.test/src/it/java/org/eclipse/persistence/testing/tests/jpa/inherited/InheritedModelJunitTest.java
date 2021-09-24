@@ -1842,9 +1842,9 @@ public class InheritedModelJunitTest extends JUnitTestCase {
     // Bug 370975
     public void testNodeImplWeaving(){
         if (isWeavingEnabled()) {
-            Class[] interfaces = NodeImpl.class.getInterfaces();
+            Class<?>[] interfaces = NodeImpl.class.getInterfaces();
             boolean found = false;
-            for (Class c : interfaces){
+            for (Class<?> c : interfaces){
                 if (c == PersistenceWeaved.class){
                     found = true;
                 }
@@ -1891,10 +1891,10 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         // ensure weaving has occured
         EntityManager em = createEntityManager();
         em.getCriteriaBuilder();
-        Class[] testClasses = new Class[]{BeerConsumer.class, Alpine.class, NoviceBeerConsumer.class, Bluish.class, Blue.class, Corona.class, ExpertBeerConsumer.class, Heineken.class};
+        Class<?>[] testClasses = new Class<?>[]{BeerConsumer.class, Alpine.class, NoviceBeerConsumer.class, Bluish.class, Blue.class, Corona.class, ExpertBeerConsumer.class, Heineken.class};
 
         for (int index = 0;index<testClasses.length;index++){
-            Class[] interfaces = testClasses[index].getInterfaces();
+            Class<?>[] interfaces = testClasses[index].getInterfaces();
             Type[] genericInterfaces = testClasses[index].getGenericInterfaces();
 
             if (interfaces.length != genericInterfaces.length){

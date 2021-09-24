@@ -24,7 +24,7 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
 
     public XmlJoinNodeTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{ Company.class });
+        setClasses(new Class<?>[]{ Company.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

@@ -32,7 +32,7 @@ public class SDOXMLHelperDatatypeFloatTestCases extends SDOXMLHelperDatatypeTest
     }
 
     @Override
-    protected Class getDatatypeJavaClass() {
+    protected Class<?> getDatatypeJavaClass() {
         return Float.class;
     }
 

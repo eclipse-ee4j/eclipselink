@@ -28,7 +28,7 @@ public class OtherRootTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[3];
+        Class<?>[] classes = new Class<?>[3];
         classes[0] = Root.class;
         classes[1] = Foo.class;
         classes[2] = ObjectFactory.class;
@@ -42,7 +42,7 @@ public class OtherRootTestCases extends JAXBWithJSONTestCases {
     }
 
     public void testRI()throws Exception{
-         Class[] classes = new Class[3];
+         Class<?>[] classes = new Class<?>[3];
          classes[0] = Root.class;
          classes[1] = Foo.class;
          classes[2] = ObjectFactory.class;

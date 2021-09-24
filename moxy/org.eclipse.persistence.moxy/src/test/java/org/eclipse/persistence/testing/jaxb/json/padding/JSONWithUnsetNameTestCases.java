@@ -26,7 +26,7 @@ public class JSONWithUnsetNameTestCases extends JAXBWithJSONTestCases{
 
     public JSONWithUnsetNameTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Simple.class});
+        setClasses(new Class<?>[]{Simple.class});
         setControlJSON(JSON_RESOURCE);
         setControlDocument(XML_RESOURCE);
     }

@@ -29,7 +29,7 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 public class JAXBInheritanceIdTestCases extends JAXBWithJSONTestCases {
     public JAXBInheritanceIdTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {AImpl.class, BImpl.class, Base.class});
+        setClasses(new Class<?>[] {AImpl.class, BImpl.class, Base.class});
         setControlDocument("org/eclipse/persistence/testing/jaxb/inheritance/id/a.xml");
         setControlJSON("org/eclipse/persistence/testing/jaxb/inheritance/id/a.json");
 

@@ -195,8 +195,8 @@ public class JPAPerformanceComparisonModel extends TestModel {
     }
 
     static class PerformanceComparisonTestCaseWithTargetClass extends PerformanceComparisonTestCase {
-        Class targetClass;
-        public PerformanceComparisonTestCaseWithTargetClass(Class targetClass) {
+        Class<?> targetClass;
+        public PerformanceComparisonTestCaseWithTargetClass(Class<?> targetClass) {
             super();
             this.targetClass = targetClass;
         }
@@ -204,7 +204,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
     /**
      * Add a test to see if the provider is using change tracking.
      */
-    public TestCase buildReadAllVsReadAllResultSet(Class targetClass) {
+    public TestCase buildReadAllVsReadAllResultSet(Class<?> targetClass) {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCaseWithTargetClass(targetClass) {
             ReadAllQuery query;
             ReadAllQuery resultSetQuery;
@@ -942,7 +942,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
      * Useful for side-by-side profiling regular vs ResultSet Access optimization.
      */
     static class ResultSetSideBySideTest extends TestCase {
-        Class targetClass;
+        Class<?> targetClass;
         boolean withCache;
         ReadAllQuery query;
         ReadAllQuery resultSetQuery;
@@ -951,7 +951,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
         long time1;
         long time0square;
         long time1square;
-        public ResultSetSideBySideTest(Class targetClass, boolean withCache) {
+        public ResultSetSideBySideTest(Class<?> targetClass, boolean withCache) {
             super();
             this.targetClass = targetClass;
             this.withCache = withCache;

@@ -22,14 +22,14 @@ import org.eclipse.persistence.testing.models.aggregate.Company;
 import org.eclipse.persistence.testing.models.aggregate.Customer;
 
 public class VerifyCascadeDelete extends TransactionalTestCase {
-    public Class cls;
+    public Class<?> cls;
     public Company company;
     public Object object;
     private OneToOneMapping companyMapping;
     private boolean privateOwnedValue = false;
 
     // Must be Agent or Builder
-    public VerifyCascadeDelete(Class cls) {
+    public VerifyCascadeDelete(Class<?> cls) {
         super();
         this.cls = cls;
         setName(getName() + AgentBuilderHelper.getNameInBrackets(cls));

@@ -31,7 +31,7 @@ import org.w3c.dom.Node;
 public class NullIteratorListTestCases extends TestCase {
 
     public void testMarshal() throws Exception {
-        JAXBContext jc = JAXBContextFactory.createContext(new Class[] {NullIteratorListRoot.class}, null);
+        JAXBContext jc = JAXBContextFactory.createContext(new Class<?>[] {NullIteratorListRoot.class}, null);
 
         NullIteratorListRoot nilr = new NullIteratorListRoot();
         nilr.setElementList(new NullIteratorList());
@@ -43,7 +43,7 @@ public class NullIteratorListTestCases extends TestCase {
     }
 
     public void testBinderMarshal() throws Exception {
-        JAXBContext jc = JAXBContextFactory.createContext(new Class[] {NullIteratorListRoot.class}, null);
+        JAXBContext jc = JAXBContextFactory.createContext(new Class<?>[] {NullIteratorListRoot.class}, null);
 
         NullIteratorListRoot nilr = new NullIteratorListRoot();
         nilr.setElementList(new NullIteratorList());

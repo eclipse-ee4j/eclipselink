@@ -26,7 +26,7 @@ public class XMLValuePropDifferentTestCases extends XMLValuePropTestCases {
 
     public XMLValuePropDifferentTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Person.class});
+        setClasses(new Class<?>[]{Person.class});
         setControlJSON(JSON_RESOURCE);
         setWriteControlJSON(JSON_WRITE_RESOURCE);
     }

@@ -49,7 +49,7 @@ public class AnyObjectReadOnlyMappingTestCases extends JAXBWithJSONTestCases{
         setWriteControlDocument(XML_WRITE_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         setWriteControlJSON(JSON_WRITE_RESOURCE);
-        setClasses(new Class[] { Employee.class });
+        setClasses(new Class<?>[] { Employee.class });
     }
 
      @Override

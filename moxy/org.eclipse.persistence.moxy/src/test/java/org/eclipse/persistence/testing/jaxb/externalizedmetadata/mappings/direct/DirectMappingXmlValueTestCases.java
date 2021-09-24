@@ -37,7 +37,7 @@ public class DirectMappingXmlValueTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[]{Price.class});
+        setClasses(new Class<?>[]{Price.class});
     }
 
     @Override

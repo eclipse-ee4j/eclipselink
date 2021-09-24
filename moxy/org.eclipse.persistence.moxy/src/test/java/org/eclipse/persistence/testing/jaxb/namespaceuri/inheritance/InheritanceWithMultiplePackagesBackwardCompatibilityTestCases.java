@@ -35,7 +35,7 @@ public class InheritanceWithMultiplePackagesBackwardCompatibilityTestCases exten
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[] {RootComplex.class});
+        setClasses(new Class<?>[] {RootComplex.class});
         jaxbMarshaller.setProperty(JAXBContextProperties.JSON_TYPE_COMPATIBILITY, true);
         jaxbUnmarshaller.setProperty(JAXBContextProperties.JSON_TYPE_COMPATIBILITY, true);
     }

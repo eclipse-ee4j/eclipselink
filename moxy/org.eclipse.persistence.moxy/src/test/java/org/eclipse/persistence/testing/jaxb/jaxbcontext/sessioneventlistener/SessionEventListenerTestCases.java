@@ -45,7 +45,7 @@ public class SessionEventListenerTestCases extends TestCase {
     public void testClassArrayMap() throws Exception {
         Map<String, Object> properties = new HashMap<String, Object>(1);
         properties.put(JAXBContextProperties.SESSION_EVENT_LISTENER, sessionEventListener);
-        JAXBContext jc = JAXBContextFactory.createContext(new Class[] {Address.class}, properties);
+        JAXBContext jc = JAXBContextFactory.createContext(new Class<?>[] {Address.class}, properties);
         assertEquals(0, Address.INSTANTIATION_COUNTER);
         unmarshalTest(jc);
     }
@@ -53,7 +53,7 @@ public class SessionEventListenerTestCases extends TestCase {
     public void testClassArrayMapClassLoader() throws Exception {
         Map<String, Object> properties = new HashMap<String, Object>(1);
         properties.put(JAXBContextProperties.SESSION_EVENT_LISTENER, sessionEventListener);
-        JAXBContext jc = JAXBContextFactory.createContext(new Class[] {Address.class}, properties, Address.class.getClassLoader());
+        JAXBContext jc = JAXBContextFactory.createContext(new Class<?>[] {Address.class}, properties, Address.class.getClassLoader());
         assertEquals(0, Address.INSTANTIATION_COUNTER);
         unmarshalTest(jc);
     }

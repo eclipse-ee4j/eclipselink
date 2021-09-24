@@ -52,7 +52,7 @@ public class SchemaGenXmlElementWrapperTestCases extends SchemaGenTestCases {
     public void testElementWrapper() {
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
         try {
-            generateSchema(new Class[]{ MyClassThree.class }, outputResolver, null);
+            generateSchema(new Class<?>[]{ MyClassThree.class }, outputResolver, null);
         } catch (Exception ex) {
             fail("Schema generation failed unexpectedly: " + ex.toString());
         }
@@ -70,7 +70,7 @@ public class SchemaGenXmlElementWrapperTestCases extends SchemaGenTestCases {
     public void testElementWrapperRef() {
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
         try {
-            generateSchema(new Class[]{ MyClassOne.class, MyClassTwo.class }, outputResolver, null);
+            generateSchema(new Class<?>[]{ MyClassOne.class, MyClassTwo.class }, outputResolver, null);
         } catch (Exception ex) {
             fail("Schema generation failed unexpectedly: " + ex.toString());
         }

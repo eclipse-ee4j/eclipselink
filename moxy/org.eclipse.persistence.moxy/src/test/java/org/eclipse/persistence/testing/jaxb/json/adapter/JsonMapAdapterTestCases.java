@@ -26,7 +26,7 @@ public class JsonMapAdapterTestCases extends JSONMarshalUnmarshalTestCases {
     public JsonMapAdapterTestCases(String name) throws Exception {
         super(name);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[]{RootObject.class});
+        setClasses(new Class<?>[]{RootObject.class});
     }
 
     @Override

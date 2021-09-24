@@ -26,7 +26,7 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 public class JAXBInheritanceSubTypeNoParentRootTestCases extends JAXBWithJSONTestCases {
     public JAXBInheritanceSubTypeNoParentRootTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {SubTypeWithRootElementNoParentRoot.class});
+        setClasses(new Class<?>[] {SubTypeWithRootElementNoParentRoot.class});
         setControlDocument("org/eclipse/persistence/testing/jaxb/inheritance/ns/subTypeNoParentRoot.xml");
         setControlJSON("org/eclipse/persistence/testing/jaxb/inheritance/ns/subTypeNoParentRoot.json");
 

@@ -24,7 +24,7 @@ import org.eclipse.persistence.testing.framework.*;
 
 public class NestedOneToManyBatchReadAllTest extends ReadAllTest {
 
-    public NestedOneToManyBatchReadAllTest(Class referenceClass, int originalObjectsSize) {
+    public NestedOneToManyBatchReadAllTest(Class<?> referenceClass, int originalObjectsSize) {
         super(referenceClass, originalObjectsSize);
     }
 

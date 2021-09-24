@@ -30,7 +30,7 @@ public class Nested2dArrayTestCases extends JSONTestCases {
 
     public Nested2dArrayTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Root2DArray.class});
+        setClasses(new Class<?>[]{Root2DArray.class});
         setControlJSON(JSON_RESOURCE);
     }
 

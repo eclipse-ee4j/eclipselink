@@ -24,7 +24,7 @@ public class EscapeCharactersTestCases extends JSONMarshalUnmarshalTestCases {
 
     public EscapeCharactersTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{EscapeCharacterHolder.class});
+        setClasses(new Class<?>[]{EscapeCharacterHolder.class});
         setControlJSON(JSON_RESOURCE);
     }
 

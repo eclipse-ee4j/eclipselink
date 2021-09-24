@@ -34,7 +34,7 @@ public class DifferentClassLoaderTestCases extends JAXBWithJSONTestCases {
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
 
-        Class[] classes = new Class[2];
+        Class<?>[] classes = new Class<?>[2];
 
         URL[] urls = new URL[1];
         urls[0] = Thread.currentThread().getContextClassLoader().getResource("org/eclipse/persistence/testing/jaxb/classloader/test.jar");

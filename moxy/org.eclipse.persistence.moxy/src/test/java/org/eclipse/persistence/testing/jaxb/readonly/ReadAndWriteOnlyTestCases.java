@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ public class ReadAndWriteOnlyTestCases extends JAXBWithJSONTestCases {
 
     public ReadAndWriteOnlyTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {RootObject.class});
+        setClasses(new Class<?>[] {RootObject.class});
         setControlDocument(READ_CONTROL_DOC);
         setWriteControlDocument(WRITE_CONTROL_DOC);
         setControlJSON(JSON_READ_CONTROL_DOC);

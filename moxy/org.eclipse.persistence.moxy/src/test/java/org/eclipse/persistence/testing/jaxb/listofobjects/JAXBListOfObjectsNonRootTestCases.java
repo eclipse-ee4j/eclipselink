@@ -64,7 +64,7 @@ public class JAXBListOfObjectsNonRootTestCases extends JAXBListOfObjectsNoJSONTe
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);
         setWriteControlDocument(XML_RESOURCE_NO_XSI_TYPE);
-        Class[] classes = new Class[2];
+        Class<?>[] classes = new Class<?>[2];
         classes[0] = ListofObjects.class;
         classes[1] = Employee.class;
         setClasses(classes);

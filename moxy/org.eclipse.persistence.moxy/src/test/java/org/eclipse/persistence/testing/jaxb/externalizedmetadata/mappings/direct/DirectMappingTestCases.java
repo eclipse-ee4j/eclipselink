@@ -68,7 +68,7 @@ public class DirectMappingTestCases extends JAXBTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);
-        setClasses(new Class[]{Employee.class});
+        setClasses(new Class<?>[]{Employee.class});
     }
 
     @Override

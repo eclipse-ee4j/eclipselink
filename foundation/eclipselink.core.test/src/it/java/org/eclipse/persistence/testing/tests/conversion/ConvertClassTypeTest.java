@@ -21,16 +21,16 @@ import org.eclipse.persistence.testing.framework.TestErrorException;
 public class ConvertClassTypeTest extends AutoVerifyTestCase {
     protected boolean m_failure;
     protected String m_testStr;
-    protected Class m_testClass;
-    protected Class m_type;
+    protected Class<?> m_testClass;
+    protected Class<?> m_type;
 
-    public ConvertClassTypeTest(String testStr, Class type) {
+    public ConvertClassTypeTest(String testStr, Class<?> type) {
         m_testStr = testStr;
         m_testClass = null;
         m_type = type;
     }
 
-    public ConvertClassTypeTest(Class testClass, Class type) {
+    public ConvertClassTypeTest(Class<?> testClass, Class<?> type) {
         m_testClass = testClass;
         m_testStr = null;
         m_type = type;

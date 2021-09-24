@@ -41,7 +41,7 @@ public class ProjectXMLSortedCollectionMappingWithInvalidComparatorTest extends 
     }
 
     @Override
-    public Class getComparator(){
+    public Class<?> getComparator(){
         return ProjectXMLSortedCollectionMappingWithInvalidComparatorTest.ProjectComparator.class;
     }
 

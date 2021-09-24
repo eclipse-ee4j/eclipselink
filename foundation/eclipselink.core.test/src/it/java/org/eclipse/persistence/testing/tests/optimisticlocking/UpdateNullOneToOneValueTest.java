@@ -33,7 +33,7 @@ public class UpdateNullOneToOneValueTest extends SwitchableOptimisticLockingPoli
     protected GamesConsole original;
     protected GamesConsole original2;
 
-    public UpdateNullOneToOneValueTest(Class optimisticLockingPolicyClass) {
+    public UpdateNullOneToOneValueTest(Class<?> optimisticLockingPolicyClass) {
         super(optimisticLockingPolicyClass);
         addClassToModify(GamesConsole.class);
         addClassToModify(Camera.class);

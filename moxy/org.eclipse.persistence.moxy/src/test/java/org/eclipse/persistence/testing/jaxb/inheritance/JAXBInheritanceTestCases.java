@@ -28,7 +28,7 @@ public class JAXBInheritanceTestCases extends JAXBWithJSONTestCases {
     private static final String JSON_SCHEMA_RESOURCE = "org/eclipse/persistence/testing/jaxb/inheritance/inheritanceschema.json";
     public JAXBInheritanceTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { A.class, B.class, C.class, D.class, E.class });
+        setClasses(new Class<?>[] { A.class, B.class, C.class, D.class, E.class });
         setControlDocument("org/eclipse/persistence/testing/jaxb/inheritance/inheritance.xml");
         setControlJSON("org/eclipse/persistence/testing/jaxb/inheritance/inheritance.json");
     }

@@ -170,12 +170,12 @@ public class DbChangeNotificationAdapter implements ProjectAndDatabaseAdapter {
 
     protected String getPkFieldString(DatabaseField field) {
         String name = field.getName();
-        Class type = field.getType();
+        Class<?> type = field.getType();
         String str = "  msg.set_" + getJmsPropertyTypeName(type) + "_property('" + name + "', :old." + name + ");";
         return str;
     }
 
-    protected String getJmsPropertyTypeName(Class type) {
+    protected String getJmsPropertyTypeName(Class<?> type) {
         if (Helper.getShortClassName(type).equals("BigDecimal")) {
             return "double";
         } else if (Helper.getShortClassName(type).equals("String")) {

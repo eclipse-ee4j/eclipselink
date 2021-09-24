@@ -102,7 +102,7 @@ public class FieldTest extends PerformanceComparisonTestCase {
             @Override
             public final void test() {
                 if (method == null) {
-                    Class[] argTypes = { Object.class };
+                    Class<?>[] argTypes = { Object.class };
                     try {
                         method = getClass().getMethod("setVariable", argTypes);
                     } catch (Exception ignore) {

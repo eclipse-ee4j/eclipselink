@@ -485,7 +485,7 @@ public class DDLTestSuite extends JUnitTestCase {
         PersistenceProvider provider = new PersistenceProvider();
         JPAInitializer initializer = provider.getInitializer(puName, properties);
         SEPersistenceUnitInfo sePUImpl = initializer.findPersistenceUnitInfo(puName, properties);
-        PersistenceUnitInfo puinfo = (PersistenceUnitInfo) Proxy.newProxyInstance(SEPersistenceUnitInfo.class.getClassLoader(), new Class[] { PersistenceUnitInfo.class }, new PUInfoInvocationHandler(sePUImpl));
+        PersistenceUnitInfo puinfo = (PersistenceUnitInfo) Proxy.newProxyInstance(SEPersistenceUnitInfo.class.getClassLoader(), new Class<?>[] { PersistenceUnitInfo.class }, new PUInfoInvocationHandler(sePUImpl));
         provider.generateSchema(puinfo, properties);
 
         // Now create an entity manager and build some objects for this PU using

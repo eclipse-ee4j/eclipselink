@@ -46,7 +46,7 @@ public class PropertyTestCases extends TestCase {
     public PropertyTestCases(String name) throws Exception {
         super(name);
 
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[] { Employee.class }, null);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[] { Employee.class }, null);
         m = ctx.createMarshaller();
         u = ctx.createUnmarshaller();
     }

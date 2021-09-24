@@ -624,7 +624,7 @@ public void buildExamples()
     employeeVLIOExample12();
 
 }
-protected boolean containsObject(Class domainClass, String identifier)
+protected boolean containsObject(Class<?> domainClass, String identifier)
 {
     return populationManager.containsObject(domainClass, identifier);
 }
@@ -1849,11 +1849,11 @@ protected Vector<Object> getAllObjects()
 {
     return populationManager.getAllObjects();
 }
-public Vector<Object> getAllObjectsForClass(Class domainClass)
+public Vector<Object> getAllObjectsForClass(Class<?> domainClass)
 {
     return populationManager.getAllObjectsForClass(domainClass);
 }
-protected Object getObject(Class domainClass, String identifier)
+protected Object getObject(Class<?> domainClass, String identifier)
 {
     return populationManager.getObject(domainClass, identifier);
 }
@@ -1954,7 +1954,7 @@ public PhoneNumberVLIO phoneNumberVLIOExample6()
     return new PhoneNumberVLIO("ISDN", "905" , "5553691");
 }
 
-protected void registerObject(Class domainClass, Object domainObject, String identifier)
+protected void registerObject(Class<?> domainClass, Object domainObject, String identifier)
 {
     populationManager.registerObject(domainClass, domainObject, identifier);
 }

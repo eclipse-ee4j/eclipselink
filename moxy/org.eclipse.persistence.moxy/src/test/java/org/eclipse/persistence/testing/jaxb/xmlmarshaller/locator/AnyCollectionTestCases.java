@@ -35,8 +35,8 @@ public class AnyCollectionTestCases extends LocatorTestCase {
     }
 
     @Override
-    public Class[] getClasses() {
-        Class[] classes = {AnyCollectionRoot.class, Child.class};
+    public Class<?>[] getClasses() {
+        Class<?>[] classes = {AnyCollectionRoot.class, Child.class};
         return classes;
     }
 

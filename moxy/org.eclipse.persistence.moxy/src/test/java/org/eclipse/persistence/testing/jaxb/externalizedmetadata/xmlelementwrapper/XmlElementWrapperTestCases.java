@@ -44,7 +44,7 @@ public class XmlElementWrapperTestCases extends JAXBWithJSONTestCases{
      */
     public XmlElementWrapperTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { Employee.class });
+        setClasses(new Class<?>[] { Employee.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }
@@ -99,7 +99,7 @@ public class XmlElementWrapperTestCases extends JAXBWithJSONTestCases{
      * Positive test.
      */
     public void testXmlElementWrapperNoOverrideSchemaGen() throws Exception {
-         JAXBContext ctx = JAXBContextFactory.createContext(new Class[] { Employee.class }, null);
+         JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[] { Employee.class }, null);
 
          MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
          ctx.generateSchema(outputResolver);
@@ -143,7 +143,7 @@ public class XmlElementWrapperTestCases extends JAXBWithJSONTestCases{
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE,
                 metadataSourceMap);
 
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{Employee.class}, properties);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{Employee.class}, properties);
 
         MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
         ctx.generateSchema(outputResolver);

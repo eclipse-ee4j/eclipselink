@@ -53,7 +53,7 @@ public class XmlElementRefsTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlElementRefsSchemaGen() throws URISyntaxException {
         MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
-        generateSchemaWithFileName(new Class[] { Foos.class, ObjectFactory.class }, CONTEXT_PATH, PATH + "eclipselink-oxm.xml", 2, outputResolver);
+        generateSchemaWithFileName(new Class<?>[] { Foos.class, ObjectFactory.class }, CONTEXT_PATH, PATH + "eclipselink-oxm.xml", 2, outputResolver);
         // validate schema
         URI controlSchema = Thread.currentThread().getContextClassLoader().getResource(PATH + "schema.xsd").toURI();
         compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE).toString(), new File(controlSchema));
@@ -66,7 +66,7 @@ public class XmlElementRefsTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlElementRefs() throws JAXBException {
         // load XML metadata
-        generateSchema(new Class[] { Foos.class, ObjectFactory.class }, CONTEXT_PATH, PATH, 2);
+        generateSchema(new Class<?>[] { Foos.class, ObjectFactory.class }, CONTEXT_PATH, PATH, 2);
 
         // load instance doc
         String src = PATH + "foos.xml";
@@ -128,7 +128,7 @@ public class XmlElementRefsTestCases extends ExternalizedMetadataTestCases {
         try {
             Map<String, Object> properties = new HashMap<>();
             properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, new File(Thread.currentThread().getContextClassLoader().getResource(PATH + "collectiontype/oxm.xml").toURI()));
-            JAXBContextFactory.createContext(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementrefs.collectiontype.ObjectFactory.class, Root.class }, properties);
+            JAXBContextFactory.createContext(new Class<?>[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementrefs.collectiontype.ObjectFactory.class, Root.class }, properties);
         } catch (Exception e) {
             e.printStackTrace();
             fail("An unexpected exception was thrown while attempting to create the JAXBContext: " + e.getMessage());

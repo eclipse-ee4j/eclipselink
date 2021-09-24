@@ -28,7 +28,7 @@ public class EmptyStringNSTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[] {TestObject.class, ObjectFactory.class});
+        setClasses(new Class<?>[] {TestObject.class, ObjectFactory.class});
     }
 
     @Override

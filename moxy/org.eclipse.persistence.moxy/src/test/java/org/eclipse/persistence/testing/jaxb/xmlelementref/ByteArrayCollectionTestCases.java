@@ -32,7 +32,7 @@ public class ByteArrayCollectionTestCases  extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[2];
+        Class<?>[] classes = new Class<?>[2];
         classes[0] = FooObjectFactory.class;
         classes[1] = Foo.class;
         setClasses(classes);

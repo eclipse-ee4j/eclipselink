@@ -50,7 +50,7 @@ public class JAXBSingleObjectIntegerNoXsiTestCases extends JAXBWithJSONTestCases
         setControlDocument(XML_RESOURCE);
         setWriteControlDocument(XML_RESOURCE_WRITE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Object.class;
         setClasses(classes);
         Map namespaces = new HashMap();

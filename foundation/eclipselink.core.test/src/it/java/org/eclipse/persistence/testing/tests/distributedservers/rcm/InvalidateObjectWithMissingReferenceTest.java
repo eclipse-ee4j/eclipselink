@@ -57,7 +57,7 @@ public class InvalidateObjectWithMissingReferenceTest extends ConfigurableCacheS
         }
         Enumeration keys = oldCacheSyncConfigValues.keys();
         while (keys.hasMoreElements()) {
-            Class keyClass = (Class)keys.nextElement();
+            Class<?> keyClass = (Class)keys.nextElement();
             ClassDescriptor descriptor = getSession().getDescriptor(keyClass);
             int newCacheSyncType = (Integer) oldCacheSyncConfigValues.get(keyClass);
             descriptor.setCacheSynchronizationType(newCacheSyncType);
@@ -69,7 +69,7 @@ public class InvalidateObjectWithMissingReferenceTest extends ConfigurableCacheS
         oldCacheSyncConfigValues = new Hashtable();
         Enumeration keys = cacheSyncConfigValues.keys();
         while (keys.hasMoreElements()) {
-            Class keyClass = (Class)keys.nextElement();
+            Class<?> keyClass = (Class)keys.nextElement();
             ClassDescriptor descriptor = getSession().getDescriptor(keyClass);
 
             if (descriptor != null) {

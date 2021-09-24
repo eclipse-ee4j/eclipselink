@@ -26,7 +26,7 @@ import org.eclipse.persistence.internal.helper.*;
 public class CollectionReadAllTest extends org.eclipse.persistence.testing.framework.ReadAllTest {
     protected Object dbContainter;
 
-    public CollectionReadAllTest(Class referenceClass, int originalObjectsSize, ReadAllQuery query) {
+    public CollectionReadAllTest(Class<?> referenceClass, int originalObjectsSize, ReadAllQuery query) {
         super(referenceClass, originalObjectsSize);
         this.setQuery(query);
         setName("CollectionReadAllTest(" + org.eclipse.persistence.internal.helper.Helper.getShortClassName(getQuery().getContainerPolicy().getContainerClass()) + "," + org.eclipse.persistence.internal.helper.Helper.getShortClassName(referenceClass) + ")");
@@ -60,7 +60,7 @@ public class CollectionReadAllTest extends org.eclipse.persistence.testing.frame
      */
     @Override
     protected void verify() {
-        Class queryContainerClass = getQuery().getContainerPolicy().getContainerClass();
+        Class<?> queryContainerClass = getQuery().getContainerPolicy().getContainerClass();
         if (!queryContainerClass.isInstance(dbContainter)) {
             throw new TestErrorException("The container class returned was" + dbContainter.getClass().toString() + " we expected a " + queryContainerClass.toString() + " to be returned.");
         }

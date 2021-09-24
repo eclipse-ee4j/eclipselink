@@ -46,7 +46,7 @@ public class EmployeeNullInCollectionTestCases extends JAXBWithJSONTestCases {
         setWriteControlDocument(XML_WRITE_RESOURCE);
         setControlJSON(JSON_RESOURCE);
 
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Employee_B.class;
         setClasses(classes);
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, Boolean.TRUE);

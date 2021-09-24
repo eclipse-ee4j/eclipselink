@@ -76,7 +76,7 @@ public class NamedQueriesDescriptorQueryManagerTest extends MultiNameQueriesTest
     }
 
     // end of getDescriptorNamedQuery
-    public void setDescriptorNamedQueries(Class cls) {
+    public void setDescriptorNamedQueries(Class<?> cls) {
         this.descriptor = serverSession.getClassDescriptor(cls);
     }
 

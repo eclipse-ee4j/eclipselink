@@ -57,7 +57,7 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[] { Company.class });
+        setClasses(new Class<?>[] { Company.class });
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("http://www.example.com", "x");
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
@@ -148,7 +148,7 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
             Map<String, Object> invalidProperties = new HashMap<>();
             invalidProperties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
-            JAXBContextFactory.createContext(new Class[] { Company.class }, invalidProperties);
+            JAXBContextFactory.createContext(new Class<?>[] { Company.class }, invalidProperties);
         } catch (JAXBException e) {
             exception = true;
         }
@@ -169,7 +169,7 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
             Map<String, Object> invalidProperties = new HashMap<>();
             invalidProperties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
-            JAXBContextFactory.createContext(new Class[] { Company.class }, invalidProperties);
+            JAXBContextFactory.createContext(new Class<?>[] { Company.class }, invalidProperties);
 
         } catch (JAXBException e) {
             return;
@@ -195,7 +195,7 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
             Map<String, Object> invalidProperties = new HashMap<>();
             invalidProperties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
-            JAXBContextFactory.createContext(new Class[] { Company.class }, invalidProperties);
+            JAXBContextFactory.createContext(new Class<?>[] { Company.class }, invalidProperties);
 
         } catch (JAXBException e) {
             return;
@@ -215,7 +215,7 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
             Map<String, Object> invalidProperties = new HashMap<>();
             invalidProperties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
-            jCtx = (JAXBContext)JAXBContextFactory.createContext(new Class[] { Company.class }, invalidProperties);
+            jCtx = (JAXBContext)JAXBContextFactory.createContext(new Class<?>[] { Company.class }, invalidProperties);
 
 
         } catch (JAXBException e) {

@@ -54,17 +54,17 @@ public class IndirectSetProject extends IndirectContainerProject {
     }
 
     @Override
-    protected Class orderClass() {
+    protected Class<?> orderClass() {
         return org.eclipse.persistence.testing.models.transparentindirection.SetOrder.class;
     }
 
     @Override
-    public Class orderLineClass() {
+    public Class<?> orderLineClass() {
         return org.eclipse.persistence.testing.models.transparentindirection.SetOrderLine.class;
     }
 
     @Override
-    protected Class salesRepClass() {
+    protected Class<?> salesRepClass() {
         return org.eclipse.persistence.testing.models.transparentindirection.SetSalesRep.class;
     }
 }

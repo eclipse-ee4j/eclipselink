@@ -37,7 +37,7 @@ public class XmlAnyElementWithEltRefsNonGlobalTestCases extends JAXBWithJSONTest
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[]{Customer.class, ObjectFactory2.class });
+        setClasses(new Class<?>[]{Customer.class, ObjectFactory2.class });
         jaxbMarshaller.setProperty(MarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
     }

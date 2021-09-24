@@ -90,7 +90,7 @@ public class NestedOwnedToExternalRootTestCases extends EISMappingTestCases {
   }
 
     @Override
-    protected Class getSourceClass(){
+    protected Class<?> getSourceClass(){
         return Company.class;
     }
   @Override

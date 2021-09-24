@@ -71,7 +71,7 @@ public class NullsLastOrderedListContainerPolicy extends OrderedListContainerPol
      * INTERNAL:
      * Construct a new policy for the specified class.
      */
-    public NullsLastOrderedListContainerPolicy(Class containerClass) {
+    public NullsLastOrderedListContainerPolicy(Class<?> containerClass) {
         super(containerClass);
     }
 

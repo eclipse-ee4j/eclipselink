@@ -34,7 +34,7 @@ public class JPAMetadataPerformanceTest extends PerformanceRegressionTestCase {
     @Override
     public void test() throws Exception {
         MetadataAsmFactory factory = new MetadataAsmFactory(new MetadataLogger(getAbstractSession()), getClass().getClassLoader());
-        for (Class javaClass : ((EntityManagerFactoryImpl)getExecutor().getEntityManagerFactory()).getServerSession().getDescriptors().keySet()) {
+        for (Class<?> javaClass : ((EntityManagerFactoryImpl)getExecutor().getEntityManagerFactory()).getServerSession().getDescriptors().keySet()) {
             factory.getMetadataClass(javaClass.getName());
         }
     }

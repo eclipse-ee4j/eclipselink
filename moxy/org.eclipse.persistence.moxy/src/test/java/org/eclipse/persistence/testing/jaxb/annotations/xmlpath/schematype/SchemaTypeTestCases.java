@@ -29,7 +29,7 @@ public class SchemaTypeTestCases extends JAXBWithJSONTestCases {
 
     public SchemaTypeTestCases(String name) throws Exception {
         super(name);
-        setTypes(new Class[] {Root.class});
+        setTypes(new Class<?>[] {Root.class});
     }
 
     @Override

@@ -29,7 +29,7 @@ public class AttributeFormUnqualifiedTestCases extends JAXBWithJSONTestCases{
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[]{TestObject.class});
+        setClasses(new Class<?>[]{TestObject.class});
     }
 
     @Override

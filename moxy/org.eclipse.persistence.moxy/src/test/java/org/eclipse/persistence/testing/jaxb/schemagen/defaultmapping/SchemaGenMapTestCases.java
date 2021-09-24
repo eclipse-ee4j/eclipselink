@@ -38,7 +38,7 @@ public class SchemaGenMapTestCases  extends SchemaGenTestCases {
      */
     public void testMapSchemaGeneration() {
 
-        Class[] loadedClasses = {MapTest.class};
+        Class<?>[] loadedClasses = {MapTest.class};
 
         org.eclipse.persistence.jaxb.compiler.Generator generator = new Generator(new JavaModelInputImpl(loadedClasses, new JavaModelImpl(MapTest.class.getClassLoader())));
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();

@@ -34,7 +34,7 @@ public class InvalidAttributeTypeForProxyIndirectionTest extends ExceptionTest {
 
     IntegrityChecker orgIntegrityChecker;
     Class<Employee> attributeType = org.eclipse.persistence.testing.models.employee.domain.Employee.class;
-    Class[] targetInterfaces = { InvalidAttributeTypeForProxyIndirectionTest.class };
+    Class<?>[] targetInterfaces = { InvalidAttributeTypeForProxyIndirectionTest.class };
     OneToManyMapping mapping = new OneToManyMapping();
 
     @Override

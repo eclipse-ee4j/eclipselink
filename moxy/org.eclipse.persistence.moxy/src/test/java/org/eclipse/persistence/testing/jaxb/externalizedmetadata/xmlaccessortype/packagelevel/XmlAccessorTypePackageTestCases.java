@@ -45,7 +45,7 @@ public class XmlAccessorTypePackageTestCases extends JAXBWithJSONTestCases {
      */
     public XmlAccessorTypePackageTestCases(String name) throws Exception{
         super(name);
-        setClasses(new Class[]{Employee.class});
+        setClasses(new Class<?>[]{Employee.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

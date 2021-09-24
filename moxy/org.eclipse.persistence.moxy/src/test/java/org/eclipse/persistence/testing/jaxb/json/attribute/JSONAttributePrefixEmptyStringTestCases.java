@@ -26,7 +26,7 @@ public class JSONAttributePrefixEmptyStringTestCases extends JSONMarshalUnmarsha
     public JSONAttributePrefixEmptyStringTestCases(String name) throws Exception {
         super(name);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[]{Address.class});
+        setClasses(new Class<?>[]{Address.class});
     }
 
     @Override

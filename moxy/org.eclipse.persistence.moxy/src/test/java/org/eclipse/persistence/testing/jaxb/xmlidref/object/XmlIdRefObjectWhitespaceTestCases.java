@@ -37,7 +37,7 @@ public class XmlIdRefObjectWhitespaceTestCases extends JAXBWithJSONTestCases {
 
     public XmlIdRefObjectWhitespaceTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { Whitespace.class });
+        setClasses(new Class<?>[] { Whitespace.class });
         setControlDocument(XML_RESOURCE);
         setWriteControlDocument(XML_RESOURCE_WRITE);
         setControlJSON(JSON_RESOURCE);

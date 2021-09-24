@@ -26,7 +26,7 @@ public class XmlReadOnlyTestCases extends JAXBWithJSONTestCases {
     private static final String JSON_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlreadonly/employee_write.json";
     public XmlReadOnlyTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {Employee.class});
+        setClasses(new Class<?>[] {Employee.class});
         setControlDocument(XML_READ_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);
         setControlJSON(JSON_READ_RESOURCE);

@@ -29,7 +29,7 @@ public class ClassLevelAccessorTestCases extends JAXBWithJSONTestCases {
 
     public ClassLevelAccessorTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { CustomerClassOverride.class });
+        setClasses(new Class<?>[] { CustomerClassOverride.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

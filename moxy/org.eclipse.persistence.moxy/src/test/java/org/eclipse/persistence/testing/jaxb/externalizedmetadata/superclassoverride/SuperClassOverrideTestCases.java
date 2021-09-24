@@ -32,7 +32,7 @@ public class SuperClassOverrideTestCases extends JAXBWithJSONTestCases {
 
     public SuperClassOverrideTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{SubClass.class});
+        setClasses(new Class<?>[]{SubClass.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

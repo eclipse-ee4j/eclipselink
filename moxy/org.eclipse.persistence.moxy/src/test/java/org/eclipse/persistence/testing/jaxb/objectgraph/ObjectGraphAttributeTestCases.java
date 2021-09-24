@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,7 @@ public class ObjectGraphAttributeTestCases extends JAXBWithJSONTestCases {
 
     public ObjectGraphAttributeTestCases(String name) throws Exception {
         super(name);
-        this.setClasses(new Class[]{Customer.class, Address.class, PhoneNumber.class});
+        this.setClasses(new Class<?>[]{Customer.class, Address.class, PhoneNumber.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);

@@ -29,7 +29,7 @@ public class PropOrderTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument("org/eclipse/persistence/testing/jaxb/xmlvirtualaccessmethods/proporder/customer.xml");
         setControlJSON("org/eclipse/persistence/testing/jaxb/xmlvirtualaccessmethods/proporder/customer.json");
-        setTypes(new Class[] {Customer.class, Parent.class, PhoneNumber.class, Address.class});
+        setTypes(new Class<?>[] {Customer.class, Parent.class, PhoneNumber.class, Address.class});
     }
 
 

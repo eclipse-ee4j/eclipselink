@@ -24,7 +24,7 @@ public class XmlElementRefNotGivenToContextTestCases extends JAXBWithJSONTestCas
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelementref/root.json";
     public XmlElementRefNotGivenToContextTestCases(String name)throws Exception {
         super(name);
-        setClasses(new Class[]{Root.class});
+        setClasses(new Class<?>[]{Root.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

@@ -51,7 +51,7 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         DataObject do1 = dataFactory.create(testObjectUri, testObjectName);
 
         Class<IllegalArgumentException> expectedExceptionClass = IllegalArgumentException.class;
-        Class caughtExceptionClass = null;
+        Class<?> caughtExceptionClass = null;
         try {
             do1.set("activity[0]", new String("Test"));
         } catch (Exception e) {
@@ -67,7 +67,7 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         DataObject do1 = dataFactory.create(testObjectUri, testObjectName);
 
         Class<IndexOutOfBoundsException> expectedExceptionClass = IndexOutOfBoundsException.class;
-        Class caughtExceptionClass = null;
+        Class<?> caughtExceptionClass = null;
         try {
             do1.set("activity[99]", new String("Test"));
         } catch (Exception e) {
@@ -83,7 +83,7 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         DataObject do1 = dataFactory.create(testObjectUri, testObjectName);
 
         Class<IndexOutOfBoundsException> expectedExceptionClass = IndexOutOfBoundsException.class;
-        Class caughtExceptionClass = null;
+        Class<?> caughtExceptionClass = null;
         try {
             do1.set("activity.99", new String("Test"));
         } catch (Exception e) {
@@ -99,7 +99,7 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         DataObject do1 = dataFactory.create(testObjectUri, testObjectName);
 
         Class<IllegalArgumentException> expectedExceptionClass = IllegalArgumentException.class;
-        Class caughtExceptionClass = null;
+        Class<?> caughtExceptionClass = null;
         try {
             do1.set("activity", new String("Test"));
         } catch (Exception e) {
@@ -115,7 +115,7 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         DataObject do1 = dataFactory.create(testObjectUri, testObjectName);
 
         Class<SDOException> expectedExceptionClass = SDOException.class;
-        Class caughtExceptionClass = null;
+        Class<?> caughtExceptionClass = null;
         try {
             do1.set("activity[0]/what", new String("Test"));
         } catch (Exception e) {
@@ -131,7 +131,7 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         DataObject do1 = dataFactory.create(testObjectUri, testObjectName);
 
         Class<SDOException> expectedExceptionClass = SDOException.class;
-        Class caughtExceptionClass = null;
+        Class<?> caughtExceptionClass = null;
         try {
             do1.set("activity[99]/what", new String("Test"));
         } catch (Exception e) {
@@ -147,7 +147,7 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         DataObject do1 = dataFactory.create(testObjectUri, testObjectName);
 
         Class<SDOException> expectedExceptionClass = SDOException.class;
-        Class caughtExceptionClass = null;
+        Class<?> caughtExceptionClass = null;
         try {
             do1.set("activity.99/what", new String("Test"));
         } catch (Exception e) {
@@ -163,7 +163,7 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         DataObject do1 = dataFactory.create(testObjectUri, testObjectName);
 
         Class<SDOException> expectedExceptionClass = SDOException.class;
-        Class caughtExceptionClass = null;
+        Class<?> caughtExceptionClass = null;
         try {
             do1.set("activity/what", new String("Test"));
         } catch (Exception e) {
@@ -180,8 +180,8 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         List types = xsdHelper.define(is, null);
         DataObject do1 = dataFactory.create(testObjectUri, testObjectName);
 
-        Class expectedExceptionClass = null;
-        Class caughtExceptionClass = null;
+        Class<?> expectedExceptionClass = null;
+        Class<?> caughtExceptionClass = null;
         try {
             do1.get("activity[0]");
         } catch (Exception e) {
@@ -196,8 +196,8 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         List types = xsdHelper.define(is, null);
         DataObject do1 = dataFactory.create(testObjectUri, testObjectName);
 
-        Class expectedExceptionClass = null;
-        Class caughtExceptionClass = null;
+        Class<?> expectedExceptionClass = null;
+        Class<?> caughtExceptionClass = null;
         try {
             do1.get("activity[99]");
         } catch (Exception e) {
@@ -212,8 +212,8 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         List types = xsdHelper.define(is, null);
         DataObject do1 = dataFactory.create(testObjectUri, testObjectName);
 
-        Class expectedExceptionClass = null;
-        Class caughtExceptionClass = null;
+        Class<?> expectedExceptionClass = null;
+        Class<?> caughtExceptionClass = null;
         try {
             do1.get("activity.99");
         } catch (Exception e) {
@@ -228,8 +228,8 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         List types = xsdHelper.define(is, null);
         DataObject do1 = dataFactory.create(testObjectUri, testObjectName);
 
-        Class expectedExceptionClass = null;
-        Class caughtExceptionClass = null;
+        Class<?> expectedExceptionClass = null;
+        Class<?> caughtExceptionClass = null;
         try {
             do1.get("activity[0]/what");
         } catch (Exception e) {
@@ -244,8 +244,8 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         List types = xsdHelper.define(is, null);
         DataObject do1 = dataFactory.create(testObjectUri, testObjectName);
 
-        Class expectedExceptionClass = null;
-        Class caughtExceptionClass = null;
+        Class<?> expectedExceptionClass = null;
+        Class<?> caughtExceptionClass = null;
         try {
             do1.get("activity[99]/what");
         } catch (Exception e) {
@@ -260,8 +260,8 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         List types = xsdHelper.define(is, null);
         DataObject do1 = dataFactory.create(testObjectUri, testObjectName);
 
-        Class expectedExceptionClass = null;
-        Class caughtExceptionClass = null;
+        Class<?> expectedExceptionClass = null;
+        Class<?> caughtExceptionClass = null;
         try {
             do1.get("activity.99/what");
         } catch (Exception e) {
@@ -277,7 +277,7 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         DataObject do1 = dataFactory.create(testObjectUri, testObjectName);
 
         // This should not throw an exception
-        Class caughtExceptionClass = null;
+        Class<?> caughtExceptionClass = null;
         try {
             do1.get("activity");
         } catch (Exception e) {
@@ -292,8 +292,8 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         List types = xsdHelper.define(is, null);
         DataObject do1 = dataFactory.create(testObjectUri, testObjectName);
 
-        Class expectedExceptionClass = null;
-        Class caughtExceptionClass = null;
+        Class<?> expectedExceptionClass = null;
+        Class<?> caughtExceptionClass = null;
         try {
             do1.get("activity/what");
         } catch (Exception e) {

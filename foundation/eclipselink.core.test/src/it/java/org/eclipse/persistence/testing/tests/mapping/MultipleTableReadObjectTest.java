@@ -35,7 +35,7 @@ public class MultipleTableReadObjectTest extends org.eclipse.persistence.testing
         super.setup();
         try {
             // Get the Method
-            Class[] parms = new Class[1];
+            Class<?>[] parms = new Class<?>[1];
             parms[0] = DatabaseSessionImpl.class;
             java.lang.reflect.Method method = Employee1.class.getMethod(this.amendmentMethodName, parms);
 

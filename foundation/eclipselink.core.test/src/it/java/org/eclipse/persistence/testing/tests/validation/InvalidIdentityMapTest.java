@@ -18,6 +18,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.IntegrityChecker;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.internal.identitymaps.IdentityMapManager;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.DatabaseSession;
@@ -29,7 +30,7 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 public class InvalidIdentityMapTest extends ExceptionTest {
 
     ClassDescriptor descriptor;
-    Class orgIdentityMapClass;
+    Class<? extends IdentityMap> orgIdentityMapClass;
     IntegrityChecker orgIntegrityChecker;
 
     public InvalidIdentityMapTest() {

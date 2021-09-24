@@ -26,7 +26,7 @@ public class SecurityWhileInitializingCopyPolicyTest extends ExceptionTestSaveSe
 
     private CloneCopyPolicy policy;
 
-    public SecurityWhileInitializingCopyPolicyTest(Class c) {
+    public SecurityWhileInitializingCopyPolicyTest(Class<?> c) {
         super("This tests Security While Initializing Copy Policy (TL-ERROR 89)", c);
     }
 

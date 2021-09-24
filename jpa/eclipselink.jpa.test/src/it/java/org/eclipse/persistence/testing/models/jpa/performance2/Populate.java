@@ -618,7 +618,7 @@ public class Populate {
      * native ReportQuery.
      *
      */
-    public void assertCount(EntityManager em, Class entityClass, int count) {
+    public void assertCount(EntityManager em, Class<?> entityClass, int count) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Object> criteria = cb.createQuery();
         Root entity = criteria.from(entityClass);

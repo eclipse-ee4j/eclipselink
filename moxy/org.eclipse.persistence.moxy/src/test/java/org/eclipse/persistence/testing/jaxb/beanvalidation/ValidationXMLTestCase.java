@@ -105,7 +105,7 @@ public class ValidationXMLTestCase extends junit.framework.TestCase {
      */
     public void testExternalConstraints() throws Exception {
         JAXBMarshaller marshaller = (JAXBMarshaller) JAXBContextFactory.createContext(new
-                Class[]{ExternallyConstrainedEmployee.class, ExternallyConstrainedEmployee2.class},
+                Class<?>[]{ExternallyConstrainedEmployee.class, ExternallyConstrainedEmployee2.class},
                 null).createMarshaller();
         ExternallyConstrainedEmployee employee = new ExternallyConstrainedEmployee().withId(null).withAge(15);
         ExternallyConstrainedEmployee2 employee2 = new ExternallyConstrainedEmployee2().withId(null).withAge(15);

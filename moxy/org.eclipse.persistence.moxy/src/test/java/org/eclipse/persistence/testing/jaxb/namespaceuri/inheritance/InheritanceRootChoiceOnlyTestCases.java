@@ -39,7 +39,7 @@ public class InheritanceRootChoiceOnlyTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[] {RootChoiceOnly.class});
+        setClasses(new Class<?>[] {RootChoiceOnly.class});
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("rootNamespace","ns0");
         namespaces.put("uri1", "ns5");

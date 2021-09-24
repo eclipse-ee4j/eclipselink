@@ -31,7 +31,7 @@ public class JSONWithPaddingSimpleListTestCases extends JSONTestCases{
 
     public JSONWithPaddingSimpleListTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Simple.class});
+        setClasses(new Class<?>[]{Simple.class});
         setControlJSON(JSON_RESOURCE);
         //setWriteControlFormattedJSON(JSON_FORMATTED_RESOURCE);
     }

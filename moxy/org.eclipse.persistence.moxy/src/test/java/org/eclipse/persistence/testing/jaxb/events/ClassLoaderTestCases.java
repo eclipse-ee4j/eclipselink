@@ -59,7 +59,7 @@ public class ClassLoaderTestCases extends TestCase {
 
         JaxbClassLoader classLoader = new JaxbClassLoader(ClassLoaderRoot.class.getClassLoader());
         classLoaderChildClass = classLoader.generateClass(CLASS_NAME, cw.toByteArray());
-        jaxbContext = JAXBContextFactory.createContext(new Class[] {classLoaderChildClass}, null);
+        jaxbContext = JAXBContextFactory.createContext(new Class<?>[] {classLoaderChildClass}, null);
     }
 
     public void testMarshalJSON() throws Exception {

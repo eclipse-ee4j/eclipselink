@@ -26,7 +26,7 @@ public class XmlAttachmentRefExampleTest extends JAXBTestCases{
     public XmlAttachmentRefExampleTest(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = RootObject.class;
         setClasses(classes);
     }

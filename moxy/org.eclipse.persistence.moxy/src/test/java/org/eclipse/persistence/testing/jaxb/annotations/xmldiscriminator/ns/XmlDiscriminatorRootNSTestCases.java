@@ -23,7 +23,7 @@ public class XmlDiscriminatorRootNSTestCases extends JAXBWithJSONTestCases {
 
     public XmlDiscriminatorRootNSTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{ Root.class, Car.class});
+        setClasses(new Class<?>[]{ Root.class, Car.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

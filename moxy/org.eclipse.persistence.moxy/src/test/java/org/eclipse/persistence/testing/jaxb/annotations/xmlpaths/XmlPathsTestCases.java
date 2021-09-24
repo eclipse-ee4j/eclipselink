@@ -42,7 +42,7 @@ public class XmlPathsTestCases extends JAXBWithJSONTestCases{
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[]{Employee.class});
+        setClasses(new Class<?>[]{Employee.class});
     }
 
 
@@ -78,7 +78,7 @@ public class XmlPathsTestCases extends JAXBWithJSONTestCases{
 
     public void testInvalidXmlPaths() {
         try {
-            JAXBContext jaxbCtx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { InvalidEmployee.class }, null);
+            JAXBContext jaxbCtx = (JAXBContext) JAXBContextFactory.createContext(new Class<?>[] { InvalidEmployee.class }, null);
         } catch (JAXBException e) {
             //e.printStackTrace();
             return;

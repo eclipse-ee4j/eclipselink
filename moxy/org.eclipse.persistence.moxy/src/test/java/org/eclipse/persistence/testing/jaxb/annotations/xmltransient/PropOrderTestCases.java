@@ -39,7 +39,7 @@ public class PropOrderTestCases extends TestCase {
     }
 
     public void testContextCreation() throws Exception {
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[] { PurchaseOrder.class }, null);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[] { PurchaseOrder.class }, null);
     }
 
 }

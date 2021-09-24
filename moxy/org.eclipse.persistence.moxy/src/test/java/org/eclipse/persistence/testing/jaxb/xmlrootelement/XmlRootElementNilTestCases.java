@@ -29,7 +29,7 @@ public class XmlRootElementNilTestCases extends JAXBWithJSONTestCases {
         setWriteControlDocument(XML_WRITE_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         setWriteControlJSON(JSON_WRITE_RESOURCE);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = EmployeeNoNamespace.class;
         setClasses(classes);
     }

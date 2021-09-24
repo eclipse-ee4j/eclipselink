@@ -90,7 +90,7 @@ public class XmlAttachmentRefCases extends ExternalizedMetadataTestCases {
         }
 */
 
-        Class[] classesToProcess = new Class[] { AttTypes.class };
+        Class<?>[] classesToProcess = new Class<?>[] { AttTypes.class };
         MySchemaOutputResolver outputResolver = generateSchema(classesToProcess, CONTEXT_PATH , PATH, 1);
 
         // test unmarshal
@@ -168,7 +168,7 @@ public class XmlAttachmentRefCases extends ExternalizedMetadataTestCases {
         boolean exceptionOccurred = false;
         JAXBContext jaxbContext = null;
         try {
-            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(new Class[] { AttTypes.class }, properties);
+            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(new Class<?>[] { AttTypes.class }, properties);
         } catch (JAXBException e1) {
             exceptionOccurred = true;
         }

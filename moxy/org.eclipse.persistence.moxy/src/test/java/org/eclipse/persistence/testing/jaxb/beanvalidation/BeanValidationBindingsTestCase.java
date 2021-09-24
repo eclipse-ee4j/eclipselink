@@ -416,7 +416,7 @@ public class BeanValidationBindingsTestCase extends junit.framework.TestCase {
     private Class<?>[] loadCompiledClasses(String... loadList) throws Throwable {
         ClassLoader cl = new URLClassLoader(new URL[] {new File(TARGET_PATH).toURI().toURL()},
                 Thread.currentThread().getContextClassLoader());
-        Class<?>[] loadedClasses = new Class[loadList.length];
+        Class<?>[] loadedClasses = new Class<?>[loadList.length];
         for (int i = 0; i < loadedClasses.length; i++)
             loadedClasses[i] = cl.loadClass(loadList[i]);
         return loadedClasses;

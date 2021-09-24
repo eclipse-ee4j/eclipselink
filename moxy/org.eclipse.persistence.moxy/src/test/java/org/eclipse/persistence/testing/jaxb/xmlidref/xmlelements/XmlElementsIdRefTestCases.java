@@ -41,7 +41,7 @@ public class XmlElementsIdRefTestCases extends JAXBWithJSONTestCases {
 
     public XmlElementsIdRefTestCases(String name) throws Exception {
         super(name);
-        Class[] classes = new Class[4];
+        Class<?>[] classes = new Class<?>[4];
         classes[0] = Address.class;
         classes[1] = EmployeeWithElements.class;
         classes[2] = Root.class;

@@ -27,7 +27,7 @@ public class XmlAdapterListMultipleBarTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[2];
+        Class<?>[] classes = new Class<?>[2];
         classes[0] = FooWithBars.class;
         classes[1] = Bar.class;
         setClasses(classes);

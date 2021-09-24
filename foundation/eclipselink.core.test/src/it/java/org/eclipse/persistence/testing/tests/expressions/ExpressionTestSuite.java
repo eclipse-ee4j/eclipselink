@@ -213,7 +213,7 @@ public class ExpressionTestSuite extends TestSuite {
         addTest(test);
     }
 
-    private void addAggregeateCollectionJoinTest(Class cls) {
+    private void addAggregeateCollectionJoinTest(Class<?> cls) {
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = builder.anyOf("customers").anyOf("dependants").get("firstName").equal("Kyle");
 

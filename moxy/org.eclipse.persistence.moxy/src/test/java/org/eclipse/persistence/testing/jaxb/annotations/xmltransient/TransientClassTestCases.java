@@ -44,7 +44,7 @@ public class TransientClassTestCases extends JAXBWithJSONTestCases {
 
     public TransientClassTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { TransientClass.class });
+        setClasses(new Class<?>[] { TransientClass.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }
@@ -70,7 +70,7 @@ public class TransientClassTestCases extends JAXBWithJSONTestCases {
     }
 
     public void testTransientClassNoOverride() throws JAXBException {
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[] { TransientClass.class }, null);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[] { TransientClass.class }, null);
         // With no overrides, no errors should be thrown.
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();

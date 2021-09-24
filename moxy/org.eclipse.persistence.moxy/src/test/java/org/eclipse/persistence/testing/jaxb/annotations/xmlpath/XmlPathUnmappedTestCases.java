@@ -30,7 +30,7 @@ public class XmlPathUnmappedTestCases extends JAXBWithJSONTestCases {
 
     public XmlPathUnmappedTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {Root.class, Employee.class, Address.class, PhoneNumber.class});
+        setClasses(new Class<?>[] {Root.class, Employee.class, Address.class, PhoneNumber.class});
         setControlDocument(XML_RESOURCE_UNMAPPED);
         setWriteControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE_UNMAPPED);

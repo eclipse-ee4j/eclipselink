@@ -38,7 +38,7 @@ public class TypePropertyCustomNameTestCases extends JSONMarshalUnmarshalTestCas
 
     public TypePropertyCustomNameTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{PersonWithType.class, Contact.class});
+        setClasses(new Class<?>[]{PersonWithType.class, Contact.class});
         setControlJSON(JSON_RESOURCE);
     }
 

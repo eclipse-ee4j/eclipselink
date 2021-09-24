@@ -31,7 +31,7 @@ public class TestSuite extends TestCollection {
     /**
      * Constructs a TestSuite from the given class with the given name.
      */
-    public TestSuite(Class theClass, String name) {
+    public TestSuite(Class<?> theClass, String name) {
         super(theClass, name);
     }
 
@@ -39,7 +39,7 @@ public class TestSuite extends TestCollection {
      * Constructs a TestSuite from the given class. Adds all the methods
      * starting with "test" as test cases to the suite.
      */
-    public TestSuite(final Class theClass) {
+    public TestSuite(final Class<?> theClass) {
         super(theClass);
     }
 

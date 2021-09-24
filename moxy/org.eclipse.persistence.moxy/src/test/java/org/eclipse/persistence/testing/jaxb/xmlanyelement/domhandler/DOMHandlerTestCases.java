@@ -27,7 +27,7 @@ public class DOMHandlerTestCases extends JAXBWithJSONTestCases {
 
     public DOMHandlerTestCases(String name) throws Exception {
         super(name);
-        this.setClasses(new Class[] {Root.class});
+        this.setClasses(new Class<?>[] {Root.class});
         this.setControlDocument(XML_RESOURCE);
         this.setControlJSON(JSON_RESOURCE);
     }

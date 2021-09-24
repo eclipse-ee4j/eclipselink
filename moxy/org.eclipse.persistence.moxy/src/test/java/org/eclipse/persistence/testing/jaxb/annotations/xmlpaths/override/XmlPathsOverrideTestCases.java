@@ -45,7 +45,7 @@ public class XmlPathsOverrideTestCases extends JAXBWithJSONTestCases{
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[]{});
+        setClasses(new Class<?>[]{});
     }
 
     @Override

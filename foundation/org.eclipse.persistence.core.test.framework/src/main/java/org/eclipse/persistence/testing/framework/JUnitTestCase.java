@@ -105,7 +105,7 @@ public class JUnitTestCase extends AutoVerifyTestCase {
      *   void testC() {...
      * }
      */
-    public static Vector suite(Class junitTestCaseClass) {
+    public static Vector suite(Class<?> junitTestCaseClass) {
         if (!(junit.framework.TestCase.class.isAssignableFrom(junitTestCaseClass))) {
             throw new TestProblemException("Class " + junitTestCaseClass + " is not derived from junit.framework.TestCase");
         }

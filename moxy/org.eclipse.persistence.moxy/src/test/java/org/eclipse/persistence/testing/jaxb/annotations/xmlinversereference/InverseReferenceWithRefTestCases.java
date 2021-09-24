@@ -24,7 +24,7 @@ public class InverseReferenceWithRefTestCases extends JAXBWithJSONTestCases {
 
     public InverseReferenceWithRefTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{ Parent.class, Child.class, ChildSubclass.class });
+        setClasses(new Class<?>[]{ Parent.class, Child.class, ChildSubclass.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

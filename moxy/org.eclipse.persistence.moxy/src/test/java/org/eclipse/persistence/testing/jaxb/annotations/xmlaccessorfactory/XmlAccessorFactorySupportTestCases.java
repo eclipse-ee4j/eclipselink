@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,7 +45,7 @@ public class XmlAccessorFactorySupportTestCases extends TestCase {
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(JAXBContextProperties.XML_ACCESSOR_FACTORY_SUPPORT, true);
 
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[] { CustomerClassOverride.class }, properties);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[] { CustomerClassOverride.class }, properties);
 
         InputStream is = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
         CustomerClassOverride cust = (CustomerClassOverride) ctx.createUnmarshaller().unmarshal(is);
@@ -59,7 +59,7 @@ public class XmlAccessorFactorySupportTestCases extends TestCase {
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("org.glassfish.jaxb.XmlAccessorFactory", true);
 
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[] { CustomerClassOverride.class }, properties);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[] { CustomerClassOverride.class }, properties);
 
         InputStream is = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
         CustomerClassOverride cust = (CustomerClassOverride) ctx.createUnmarshaller().unmarshal(is);
@@ -74,7 +74,7 @@ public class XmlAccessorFactorySupportTestCases extends TestCase {
         // properties.put("org.glassfish.jaxb.XmlAccessorFactory", true);
         // properties.put(JAXBContextProperties.XML_ACCESSOR_FACTORY_SUPPORT, true);
 
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[] { CustomerClassOverride.class }, properties);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[] { CustomerClassOverride.class }, properties);
 
         InputStream is = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
         CustomerClassOverride cust = (CustomerClassOverride) ctx.createUnmarshaller().unmarshal(is);

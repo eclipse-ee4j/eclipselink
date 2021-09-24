@@ -22,7 +22,7 @@ public class ElementInvalidTypeTestCases extends JAXBWithJSONTestCases{
     MyEventHandler handler;
     public ElementInvalidTypeTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {MyClass.class});
+        setClasses(new Class<?>[] {MyClass.class});
         setControlDocument("org/eclipse/persistence/testing/jaxb/eventhandler/elementWrongType.xml");
         setControlJSON("org/eclipse/persistence/testing/jaxb/eventhandler/elementWrongType.json");
         setWriteControlDocument("org/eclipse/persistence/testing/jaxb/eventhandler/valid.xml");

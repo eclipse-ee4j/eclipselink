@@ -32,7 +32,7 @@ public class MissingRefTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[2];
+        Class<?>[] classes = new Class<?>[2];
         classes[0] = MissingRefObjectFactory.class;
         classes[1] = Person.class;
         setClasses(classes);

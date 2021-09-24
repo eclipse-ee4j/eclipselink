@@ -42,7 +42,7 @@ public class XmlTransientTestCases extends JAXBWithJSONTestCases{
      */
     public XmlTransientTestCases(String name) throws Exception{
         super(name);
-        setClasses(new Class[]{Employee.class});
+        setClasses(new Class<?>[]{Employee.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }
@@ -133,7 +133,7 @@ public class XmlTransientTestCases extends JAXBWithJSONTestCases{
             Map<String, Object> properties = new HashMap<>();
             properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
-            JAXBContextFactory.createContext(new Class[] { ContactInfo.class }, properties);
+            JAXBContextFactory.createContext(new Class<?>[] { ContactInfo.class }, properties);
         } catch (JAXBException jaxbex) {
             return;
         }

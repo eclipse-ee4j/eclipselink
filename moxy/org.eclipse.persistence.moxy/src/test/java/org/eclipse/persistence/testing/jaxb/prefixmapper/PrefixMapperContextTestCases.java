@@ -41,7 +41,7 @@ public class PrefixMapperContextTestCases extends TestCase {
     }
 
     public void testMarshalWithContextualNamespaces() throws Exception  {
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{EmployeeContext.class}, null);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{EmployeeContext.class}, null);
         Marshaller m = ctx.createMarshaller();
         m.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, new ContextPrefixMapper());
         m.setProperty(XMLConstants.JAXB_FRAGMENT, Boolean.TRUE);

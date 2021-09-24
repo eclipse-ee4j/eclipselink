@@ -22,7 +22,7 @@ import org.eclipse.persistence.testing.models.optimisticlocking.RockMusician;
  * Test the optimistic locking feature by changing the write lock value on the database.
  */
 public class OptimisticLockingPolicyUpdateTest extends OptimisticLockingPolicyChangedValueUpdateTest {
-    public OptimisticLockingPolicyUpdateTest(Class aClass) {
+    public OptimisticLockingPolicyUpdateTest(Class<?> aClass) {
         super(aClass);
         setDescription("This test verifies that an optimistic lock exception is thrown when the write lock is changed");
     }

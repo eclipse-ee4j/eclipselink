@@ -31,7 +31,7 @@ public class UpdateNullTransformationValueTest extends SwitchableOptimisticLocki
     protected GamesConsole original;
     protected GamesConsole original2;
 
-    public UpdateNullTransformationValueTest(Class optimisticLockingPolicyClass) {
+    public UpdateNullTransformationValueTest(Class<?> optimisticLockingPolicyClass) {
         super(optimisticLockingPolicyClass);
         addClassToModify(GamesConsole.class);
     }

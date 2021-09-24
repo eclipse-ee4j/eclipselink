@@ -34,7 +34,7 @@ public class BooleanArrayTestCases extends JSONTestCases {
 
     public BooleanArrayTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Boolean.class});
+        setClasses(new Class<?>[]{Boolean.class});
         setControlJSON(JSON_RESOURCE);
     }
 

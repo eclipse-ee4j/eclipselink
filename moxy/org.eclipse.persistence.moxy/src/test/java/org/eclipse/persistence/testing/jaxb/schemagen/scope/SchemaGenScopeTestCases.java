@@ -32,7 +32,7 @@ public class SchemaGenScopeTestCases extends JAXBWithJSONTestCases{
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[2];
+        Class<?>[] classes = new Class<?>[2];
         classes[0] = ClassA.class;
         classes[1] = ObjectFactory.class;
         setClasses(classes);

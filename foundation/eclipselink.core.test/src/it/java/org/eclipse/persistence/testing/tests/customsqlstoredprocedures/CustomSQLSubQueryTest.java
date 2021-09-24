@@ -33,7 +33,7 @@ public class CustomSQLSubQueryTest extends AutoVerifyTestCase {
     protected ReadAllQuery query;
     protected int numberOfManagedEmployees;
     protected Object objectsFromDatabase;
-    protected Class referenceClass;
+    protected Class<?> referenceClass;
     protected Employee someManager;
 
     public CustomSQLSubQueryTest() {

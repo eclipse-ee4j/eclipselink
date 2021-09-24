@@ -39,7 +39,7 @@ public class RootWithCompositeObjectTestCases extends JAXBWithJSONTestCases {
 
     public RootWithCompositeObjectTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {Employee.class});
+        setClasses(new Class<?>[] {Employee.class});
         setControlDocument("org/eclipse/persistence/testing/jaxb/events/composite_object.xml");
         setControlJSON("org/eclipse/persistence/testing/jaxb/events/composite_object.json");
 

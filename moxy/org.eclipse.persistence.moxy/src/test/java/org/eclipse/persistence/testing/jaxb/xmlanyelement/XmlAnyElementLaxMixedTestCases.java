@@ -40,7 +40,7 @@ public class XmlAnyElementLaxMixedTestCases extends JAXBWithJSONTestCases {
             setWriteControlDocument(XML_WRITE_RESOURCE);
             setWriteControlJSON(JSON_WRITE_RESOURCE);
             setControlJSON(JSON_RESOURCE);
-            Class[] classes = new Class[2];
+            Class<?>[] classes = new Class<?>[2];
             classes[0] = EmployeeLaxMixed.class;
             classes[1] = Address.class;
             setClasses(classes);

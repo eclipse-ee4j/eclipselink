@@ -37,7 +37,7 @@ public class XmlVariableNodeBindingsTestCases extends JAXBWithJSONTestCases{
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[]{RootNoAnnotations.class});
+        setClasses(new Class<?>[]{RootNoAnnotations.class});
     }
 
     @Override

@@ -36,7 +36,7 @@ public class DirectMapMergeTest extends DistributedCacheMergeTest {
     }
 
     @Override
-    protected Class getRootClass() {
+    protected Class<?> getRootClass() {
         return DirectMapMappings.class;
     }
 

@@ -173,8 +173,9 @@ public class CMP3Policy extends CMPPolicy {
      * Return the java Class representing the primary key class name
      */
     @Override
-    public Class<?> getPKClass() {
-        return this.pkClass;
+    @SuppressWarnings({"unchecked"})
+    public <T> Class<T> getPKClass() {
+        return (Class<T>) this.pkClass;
     }
 
     /**

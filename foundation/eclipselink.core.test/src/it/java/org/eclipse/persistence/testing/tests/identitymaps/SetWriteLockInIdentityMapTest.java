@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.identitymaps;
 
+import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.testing.framework.*;
 
 /**
@@ -25,7 +26,7 @@ public class SetWriteLockInIdentityMapTest extends RegisterInIdentityMapTest {
     protected Object originalWriteLockValue;
     protected Object retrievedWriteLockValue;
 
-    public SetWriteLockInIdentityMapTest(Class mapClass) {
+    public SetWriteLockInIdentityMapTest(Class<? extends IdentityMap> mapClass) {
         super(mapClass);
         originalWriteLockValue = new java.math.BigDecimal("9999999999999999999999999");
     }

@@ -62,7 +62,7 @@ public class CompositeMappingTestCases extends JAXBTestCases {
      */
     public CompositeMappingTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Employee.class});
+        setClasses(new Class<?>[]{Employee.class});
         setControlDocument(XML_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);
     }
@@ -243,7 +243,7 @@ public class CompositeMappingTestCases extends JAXBTestCases {
         controlSchemas.add(is2);
 
         MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite.multiplenamespaces.Employee.class}, getPropertiesMultipleNS());
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite.multiplenamespaces.Employee.class}, getPropertiesMultipleNS());
         ctx.generateSchema(outputResolver);
 
         compareSchemas(controlSchemas, outputResolver.getSchemaFiles());
@@ -258,7 +258,7 @@ public class CompositeMappingTestCases extends JAXBTestCases {
         controlSchemas.add(is2);
 
         MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite.cyclic.Employee.class}, getPropertiesCyclic());
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite.cyclic.Employee.class}, getPropertiesCyclic());
         ctx.generateSchema(outputResolver);
 
         compareSchemas(controlSchemas, outputResolver.getSchemaFiles());
@@ -275,7 +275,7 @@ public class CompositeMappingTestCases extends JAXBTestCases {
         controlSchemas.add(is3);
 
         MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite.cyclic.multiplenamespaces.Employee.class}, getPropertiesMultipleNamespacesCyclic());
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite.cyclic.multiplenamespaces.Employee.class}, getPropertiesMultipleNamespacesCyclic());
         ctx.generateSchema(outputResolver);
 
         compareSchemas(controlSchemas, outputResolver.getSchemaFiles());

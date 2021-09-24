@@ -140,7 +140,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
         employeePopulator.persistExample(session);
     }
 
-    public Vector getAttributeFromAll(String attributeName, Vector objects, Class referenceClass){
+    public Vector getAttributeFromAll(String attributeName, Vector objects, Class<?> referenceClass){
 
         EntityManager em = createEntityManager();
 

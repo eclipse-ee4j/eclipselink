@@ -29,12 +29,12 @@ public class ScrollableCursorTest extends TestCase {
     protected int size;
     protected Vector normalQueryObjects;
     protected Vector cursoredQueryObjects;
-    protected Class referenceClass;
+    protected Class<?> referenceClass;
     protected Expression joinExpression;
     protected boolean TYPE_SCROLL_INSENSITIVE_isSupported;
     protected boolean CONCUR_UPDATABLE_isSupported;
 
-    public ScrollableCursorTest(Class referenceClass, Expression expression) {
+    public ScrollableCursorTest(Class<?> referenceClass, Expression expression) {
         setReferenceClass(referenceClass);
         setName(getName() + "(" + referenceClass + ")");
         setDescription("This test verifies that the number of objects read in using a scrollable cursor" +
@@ -50,7 +50,7 @@ public class ScrollableCursorTest extends TestCase {
         return normalQueryObjects;
     }
 
-    public Class getReferenceClass() {
+    public Class<?> getReferenceClass() {
         return referenceClass;
     }
 
@@ -66,7 +66,7 @@ public class ScrollableCursorTest extends TestCase {
         normalQueryObjects = objects;
     }
 
-    public void setReferenceClass(Class aClass) {
+    public void setReferenceClass(Class<?> aClass) {
         referenceClass = aClass;
     }
 

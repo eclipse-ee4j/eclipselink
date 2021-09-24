@@ -87,7 +87,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     protected JAXBContext jaxbContext;
     protected Marshaller jaxbMarshaller;
     protected Unmarshaller jaxbUnmarshaller;
-    protected Class[] classes;
+    protected Class<?>[] classes;
     protected Type[] types;
     protected String contextPath;
 
@@ -133,7 +133,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         this.project = project;
     }
 
-    public void setClasses(Class[] newClasses) throws Exception {
+    public void setClasses(Class<?>[] newClasses) throws Exception {
 
         classLoader = Thread.currentThread().getContextClassLoader();
         jaxbContext = JAXBContextFactory.createContext(newClasses, getProperties(), classLoader);

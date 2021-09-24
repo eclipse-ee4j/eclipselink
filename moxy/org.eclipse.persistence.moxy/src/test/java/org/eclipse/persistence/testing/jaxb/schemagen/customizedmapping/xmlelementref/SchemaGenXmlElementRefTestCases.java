@@ -60,7 +60,7 @@ public class SchemaGenXmlElementRefTestCases extends SchemaGenTestCases {
         if (shouldGenerateSchema) {
             outputResolver = new MySchemaOutputResolver();
             try {
-                Class[] classes = new Class[]{ Employee.class, Address.class, Thing.class };
+                Class<?>[] classes = new Class<?>[]{ Employee.class, Address.class, Thing.class };
                 JAXBContext context = (org.eclipse.persistence.jaxb.JAXBContext) org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(classes, null);
                 context.generateSchema(outputResolver);
             } catch (Exception ex) {

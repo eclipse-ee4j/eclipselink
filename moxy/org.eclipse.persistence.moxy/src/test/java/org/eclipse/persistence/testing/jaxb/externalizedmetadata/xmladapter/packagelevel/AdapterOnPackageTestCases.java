@@ -43,7 +43,7 @@ public class AdapterOnPackageTestCases extends JAXBWithJSONTestCases{
 
     public AdapterOnPackageTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{MyClass.class, SomeLameClass.class});
+        setClasses(new Class<?>[]{MyClass.class, SomeLameClass.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

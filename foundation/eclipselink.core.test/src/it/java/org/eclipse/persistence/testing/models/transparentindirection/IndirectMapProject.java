@@ -47,17 +47,17 @@ public class IndirectMapProject extends IndirectContainerProject {
     }
 
     @Override
-    public Class orderClass() {
+    public Class<?> orderClass() {
         return org.eclipse.persistence.testing.models.transparentindirection.MappedOrder.class;
     }
 
     @Override
-    public Class orderLineClass() {
+    public Class<?> orderLineClass() {
         return org.eclipse.persistence.testing.models.transparentindirection.MappedOrderLine.class;
     }
 
     @Override
-    protected Class salesRepClass() {
+    protected Class<?> salesRepClass() {
         return org.eclipse.persistence.testing.models.transparentindirection.MappedSalesRep.class;
     }
 }

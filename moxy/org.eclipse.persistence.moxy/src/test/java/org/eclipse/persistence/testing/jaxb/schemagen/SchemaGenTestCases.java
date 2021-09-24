@@ -68,7 +68,7 @@ public class SchemaGenTestCases extends TestCase {
      * Generate one or more schemas from an array of Classes.
      *
      */
-    protected void generateSchema(Class[] classesToBeBound, MySchemaOutputResolver outputResolver, Map<QName, Type> additionalGlobalElements) throws Exception {
+    protected void generateSchema(Class<?>[] classesToBeBound, MySchemaOutputResolver outputResolver, Map<QName, Type> additionalGlobalElements) throws Exception {
         JAXBContext jaxbContext;
         try {
             jaxbContext = (JAXBContext) JAXBContextFactory.createContext(classesToBeBound, null, loader);

@@ -57,7 +57,7 @@ public class JAXBContextTransformationMappingTestCases extends TestCase{
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         try {
-            JAXBContext jaxbContext = JAXBContextFactory.createContext(new Class[]{Employee.class}, properties, Thread.currentThread().getContextClassLoader());
+            JAXBContext jaxbContext = JAXBContextFactory.createContext(new Class<?>[]{Employee.class}, properties, Thread.currentThread().getContextClassLoader());
         } catch (JAXBException e) {
             return;
         }
@@ -79,7 +79,7 @@ public class JAXBContextTransformationMappingTestCases extends TestCase{
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
        try {
-            JAXBContext jaxbContext = JAXBContextFactory.createContext(new Class[]{Employee.class}, properties, Thread.currentThread().getContextClassLoader());
+            JAXBContext jaxbContext = JAXBContextFactory.createContext(new Class<?>[]{Employee.class}, properties, Thread.currentThread().getContextClassLoader());
 
         } catch (JAXBException e) {
             return;
@@ -105,7 +105,7 @@ public class JAXBContextTransformationMappingTestCases extends TestCase{
 
         int exceptionCount = 0;
         try {
-            JAXBContext jaxbContext = JAXBContextFactory.createContext(new Class[]{Employee.class}, properties, Thread.currentThread().getContextClassLoader());
+            JAXBContext jaxbContext = JAXBContextFactory.createContext(new Class<?>[]{Employee.class}, properties, Thread.currentThread().getContextClassLoader());
 
         } catch (JAXBException e) {
             exceptionCount++;
@@ -115,7 +115,7 @@ public class JAXBContextTransformationMappingTestCases extends TestCase{
         // test exception from SchemaGenerator
         try {
             Map<String, XmlBindings> bindings = JAXBContextFactory.getXmlBindingsFromProperties(properties, Thread.currentThread().getContextClassLoader());
-            JavaModelInputImpl jModelInput = new JavaModelInputImpl(new Class[]{Employee.class}, new JavaModelImpl(new JaxbClassLoader(Thread.currentThread().getContextClassLoader(), new Class[]{Employee.class})));
+            JavaModelInputImpl jModelInput = new JavaModelInputImpl(new Class<?>[]{Employee.class}, new JavaModelImpl(new JaxbClassLoader(Thread.currentThread().getContextClassLoader(), new Class<?>[]{Employee.class})));
             Generator generator = new Generator(jModelInput, bindings, Thread.currentThread().getContextClassLoader(), "", false);
             generator.generateSchema();
         } catch (Exception e) {
@@ -142,7 +142,7 @@ public class JAXBContextTransformationMappingTestCases extends TestCase{
         int exceptionCount = 0;
         // test exception from MappingsGenerator
         try {
-            JAXBContext jaxbContext = JAXBContextFactory.createContext(new Class[]{Employee.class}, properties, Thread.currentThread().getContextClassLoader());
+            JAXBContext jaxbContext = JAXBContextFactory.createContext(new Class<?>[]{Employee.class}, properties, Thread.currentThread().getContextClassLoader());
 
         } catch (JAXBException e) {
             exceptionCount++;
@@ -152,7 +152,7 @@ public class JAXBContextTransformationMappingTestCases extends TestCase{
         // test exception from SchemaGenerator
         try {
             Map<String, XmlBindings> bindings = JAXBContextFactory.getXmlBindingsFromProperties(properties, Thread.currentThread().getContextClassLoader());
-            JavaModelInputImpl jModelInput = new JavaModelInputImpl(new Class[]{Employee.class}, new JavaModelImpl(new JaxbClassLoader(Thread.currentThread().getContextClassLoader(), new Class[]{Employee.class})));
+            JavaModelInputImpl jModelInput = new JavaModelInputImpl(new Class<?>[]{Employee.class}, new JavaModelImpl(new JaxbClassLoader(Thread.currentThread().getContextClassLoader(), new Class<?>[]{Employee.class})));
             Generator generator = new Generator(jModelInput, bindings, Thread.currentThread().getContextClassLoader(), "", false);
             generator.generateSchema();
         } catch (Exception e) {

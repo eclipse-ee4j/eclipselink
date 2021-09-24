@@ -34,7 +34,7 @@ public class JsonUnmappedTestCases extends TestCase {
 
     public void testLastNull() throws JAXBException, FileNotFoundException {
         Map<String, Object> jaxbProperties = Collections.singletonMap(JAXBContextProperties.MEDIA_TYPE, "application/json");
-        JAXBContext jc = JAXBContextFactory.createContext(new Class[]{Foo.class}, jaxbProperties);
+        JAXBContext jc = JAXBContextFactory.createContext(new Class<?>[]{Foo.class}, jaxbProperties);
         Unmarshaller um = jc.createUnmarshaller();
 
         String file = "org/eclipse/persistence/testing/jaxb/json/unmapped/unmapped.json";

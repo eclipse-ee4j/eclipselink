@@ -77,7 +77,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
     }
 
     public void testNewInstanceClassesError() throws JAXBException {
-        Class[] classes = new Class[] { this.getClass() };
+        Class<?>[] classes = new Class<?>[] { this.getClass() };
 
         JAXBException caughtException = null;
         try {
@@ -91,7 +91,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
     }
 
     public void testNewInstanceClassesPropsError() throws JAXBException {
-        Class[] classes = new Class[] { this.getClass() };
+        Class<?>[] classes = new Class<?>[] { this.getClass() };
 
         JAXBException ex = null;
         try {

@@ -76,7 +76,7 @@ public class NamespaceTestCases extends XMLTestCase {
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, bindings);
 
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{ Customer.class }, properties);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{ Customer.class }, properties);
 
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         builderFactory.setNamespaceAware(true);
@@ -103,7 +103,7 @@ public class NamespaceTestCases extends XMLTestCase {
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, bindings);
 
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{ Customer.class }, properties);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{ Customer.class }, properties);
 
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         builderFactory.setNamespaceAware(true);

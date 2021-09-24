@@ -42,7 +42,7 @@ public class ObjectReferenceMappingReadOnlyTestCases extends JAXBWithJSONTestCas
          */
         public ObjectReferenceMappingReadOnlyTestCases(String name) throws Exception {
             super(name);
-            setClasses(new Class[]{Root.class});
+            setClasses(new Class<?>[]{Root.class});
             setControlDocument(XML_RESOURCE);
             setWriteControlDocument(XML_WRITE_RESOURCE);
             setControlJSON(JSON_RESOURCE);

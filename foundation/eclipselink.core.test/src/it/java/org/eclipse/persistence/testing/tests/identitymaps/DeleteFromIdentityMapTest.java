@@ -17,6 +17,7 @@ package org.eclipse.persistence.testing.tests.identitymaps;
 import java.util.Vector;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.descriptors.*;
+import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 import org.eclipse.persistence.testing.tests.employee.EmployeeDeleteTest;
@@ -34,7 +35,7 @@ public class DeleteFromIdentityMapTest extends RegisterInIdentityMapTest {
     protected Object retrievalAttempt;
     protected OptimisticLockingPolicy lockingPolicy;
 
-    public DeleteFromIdentityMapTest(Class mapClass) {
+    public DeleteFromIdentityMapTest(Class<? extends IdentityMap> mapClass) {
         super(mapClass);
     }
 

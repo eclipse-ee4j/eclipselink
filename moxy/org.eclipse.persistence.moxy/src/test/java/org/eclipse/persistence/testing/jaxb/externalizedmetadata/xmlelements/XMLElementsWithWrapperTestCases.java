@@ -34,7 +34,7 @@ public class XMLElementsWithWrapperTestCases extends JAXBWithJSONTestCases{
 
     public XMLElementsWithWrapperTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { Foo.class });
+        setClasses(new Class<?>[] { Foo.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

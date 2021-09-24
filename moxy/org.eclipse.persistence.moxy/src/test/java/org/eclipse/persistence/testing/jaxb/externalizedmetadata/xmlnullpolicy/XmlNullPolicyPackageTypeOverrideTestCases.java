@@ -34,7 +34,7 @@ public class XmlNullPolicyPackageTypeOverrideTestCases extends JAXBTestCases {
     public XmlNullPolicyPackageTypeOverrideTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_CONTROL_RESOURCE);
-        setClasses(new Class[] { PackageTypeOverride.class });
+        setClasses(new Class<?>[] { PackageTypeOverride.class });
     }
 
     @Override

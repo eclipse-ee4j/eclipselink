@@ -39,7 +39,7 @@ public class XmlReadOnlyOverrideTestCases extends JAXBWithJSONTestCases {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        setTypes(new Class[] {Employee.class});
+        setTypes(new Class<?>[] {Employee.class});
     }
 
     @Override

@@ -25,7 +25,7 @@ public class RownumFilteringFirstResultQueryTest extends RownumFilteringQueryTes
         super(0,11,1);
     }
 
-    public RownumFilteringFirstResultQueryTest(Class classToQueryOn){
+    public RownumFilteringFirstResultQueryTest(Class<?> classToQueryOn){
         super(0,11,1);
         this.queryToUse = new ReadAllQuery(classToQueryOn);
     }

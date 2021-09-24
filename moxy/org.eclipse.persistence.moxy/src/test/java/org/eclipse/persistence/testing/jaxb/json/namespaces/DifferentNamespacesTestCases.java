@@ -34,7 +34,7 @@ public class DifferentNamespacesTestCases extends JSONMarshalUnmarshalTestCases{
         super(name);
         setControlJSON(JSON_RESOURCE);
         setWriteControlJSON(JSON_WRITE_RESOURCE);
-        setClasses(new Class[]{Person.class});
+        setClasses(new Class<?>[]{Person.class});
     }
 
     @Override

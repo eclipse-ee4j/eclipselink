@@ -62,15 +62,7 @@ public class TestRunnerBean implements TestRunner {
             Class<? extends TestCase> testClass = (Class<? extends TestCase>) getClass().getClassLoader().loadClass(className);
             Constructor<? extends TestCase> c = testClass.getConstructor(String.class);
             testInstance = c.newInstance(test);
-        } catch (ClassNotFoundException e) {
-            throw new EJBException(e);
-        } catch (NoSuchMethodException e) {
-            throw new EJBException(e);
-        } catch (InstantiationException e) {
-            throw new EJBException(e);
-        } catch (IllegalAccessException e) {
-            throw new EJBException(e);
-        } catch (InvocationTargetException e) {
+        } catch (ReflectiveOperationException e) {
             throw new EJBException(e);
         }
 

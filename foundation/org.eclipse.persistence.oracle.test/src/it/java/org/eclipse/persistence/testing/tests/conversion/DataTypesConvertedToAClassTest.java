@@ -34,9 +34,9 @@ public class DataTypesConvertedToAClassTest extends AutoVerifyTestCase {
     protected Object cm;
     protected Exception exception1;
     protected Exception exception2;
-    protected Class sourceClass;
-    protected Class targetClass;
-    protected Class[] convertedToClasses = new Class[] { BigDecimal.class, BigInteger.class, Boolean.class, Byte.class, byte[].class, Byte[].class, Calendar.class, Character.class, Character[].class, char[].class, java.sql.Date.class, Double.class, Float.class, Integer.class, Long.class, Number.class, Short.class, String.class, Timestamp.class, Time.class, java.util.Date.class };
+    protected Class<?> sourceClass;
+    protected Class<?> targetClass;
+    protected Class<?>[] convertedToClasses = new Class<?>[] { BigDecimal.class, BigInteger.class, Boolean.class, Byte.class, byte[].class, Byte[].class, Calendar.class, Character.class, Character[].class, char[].class, java.sql.Date.class, Double.class, Float.class, Integer.class, Long.class, Number.class, Short.class, String.class, Timestamp.class, Time.class, java.util.Date.class };
 
     public DataTypesConvertedToAClassTest() {
         setDescription("Test getDataTypesConvertedTo() in ConversionManager.");
@@ -54,7 +54,7 @@ public class DataTypesConvertedToAClassTest extends AutoVerifyTestCase {
         int y;
         int z;
         Object obj;
-        Class type;
+        Class<?> type;
         CMAndPlatformWrapper wrapper = new CMAndPlatformWrapper(cm);
 
         ConversionDataObjectForSupportedTypes example = ConversionDataObjectForSupportedTypes.example();
@@ -97,15 +97,15 @@ public class DataTypesConvertedToAClassTest extends AutoVerifyTestCase {
         }
     }
 
-    protected boolean isNumber(Class aClass) {
+    protected boolean isNumber(Class<?> aClass) {
         return Number.class.isAssignableFrom(aClass);
     }
 
-    protected boolean isTimestamp(Class aClass) {
+    protected boolean isTimestamp(Class<?> aClass) {
         return (aClass == java.util.Date.class) || (aClass == Timestamp.class) || (aClass == Calendar.class);
     }
 
-    protected boolean isChar(Class aClass) {
+    protected boolean isChar(Class<?> aClass) {
         return (aClass == Character.class) || (aClass == Character[].class) || (aClass == char[].class) || (aClass == String.class) || (aClass == java.sql.Clob.class);
     }
 }

@@ -43,7 +43,7 @@ public class BinderTestCases extends XMLTestCase {
     }
 
     public void testUnmarshal() throws Exception {
-        JAXBContext jc = JAXBContextFactory.createContext(new Class[] {Customer.class}, null);
+        JAXBContext jc = JAXBContextFactory.createContext(new Class<?>[] {Customer.class}, null);
         Binder<Node> binder = jc.createBinder();
         Customer test = (Customer) binder.unmarshal(getControlDocument());
 

@@ -30,7 +30,7 @@ public class UpdateNullDirectToFieldValueTest extends SwitchableOptimisticLockin
     protected Camera original;
     protected Camera original2;
 
-    public UpdateNullDirectToFieldValueTest(Class optimisticLockingPolicyClass) {
+    public UpdateNullDirectToFieldValueTest(Class<?> optimisticLockingPolicyClass) {
         super(optimisticLockingPolicyClass);
         addClassToModify(Camera.class);
     }

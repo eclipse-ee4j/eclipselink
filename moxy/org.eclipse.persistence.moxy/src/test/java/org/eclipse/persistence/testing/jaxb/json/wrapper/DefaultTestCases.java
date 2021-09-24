@@ -32,7 +32,7 @@ public class DefaultTestCases extends JSONMarshalUnmarshalTestCases {
     public DefaultTestCases(String name) throws Exception {
         super(name);
         setControlJSON(JSON);
-        setClasses(new Class[] {Company.class});
+        setClasses(new Class<?>[] {Company.class});
     }
 
     @Override

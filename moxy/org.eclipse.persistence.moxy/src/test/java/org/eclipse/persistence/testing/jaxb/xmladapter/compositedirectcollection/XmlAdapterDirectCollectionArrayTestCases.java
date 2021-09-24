@@ -31,7 +31,7 @@ public class XmlAdapterDirectCollectionArrayTestCases extends JAXBWithJSONTestCa
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[2];
+        Class<?>[] classes = new Class<?>[2];
         classes[0] = MyCalendarWithArray.class;
         classes[1] = MyCalendarType.class;
         setClasses(classes);

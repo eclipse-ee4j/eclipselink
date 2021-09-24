@@ -52,7 +52,7 @@ public class UnmappedElementsWarningTestCases extends OXTestCase{
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = BulkUnmapped.class;
         jaxbContext = JAXBContextFactory.createContext(classes, null, Thread.currentThread().getContextClassLoader());
     }

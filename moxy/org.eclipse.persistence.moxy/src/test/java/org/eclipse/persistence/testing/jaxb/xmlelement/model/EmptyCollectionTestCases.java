@@ -27,7 +27,7 @@ public class EmptyCollectionTestCases extends JAXBWithJSONTestCases{
 
     public EmptyCollectionTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Order.class});
+        setClasses(new Class<?>[]{Order.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

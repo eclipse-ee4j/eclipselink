@@ -38,7 +38,7 @@ public class XmlElementWrapperElementOverrideTestCases extends JAXBWithJSONTestC
      */
     public XmlElementWrapperElementOverrideTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { Employee.class });
+        setClasses(new Class<?>[] { Employee.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

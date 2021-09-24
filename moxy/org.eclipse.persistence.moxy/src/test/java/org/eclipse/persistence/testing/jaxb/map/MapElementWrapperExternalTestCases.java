@@ -35,7 +35,7 @@ public class MapElementWrapperExternalTestCases extends JAXBWithJSONTestCases{
 
     public MapElementWrapperExternalTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{RootNoAnnotations.class});
+        setClasses(new Class<?>[]{RootNoAnnotations.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

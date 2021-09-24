@@ -47,7 +47,7 @@ public class SchemaGenImportURLTestCases extends TestCase {
     }
 
     public void testSchemaGen() throws Exception {
-        JAXBContext jaxbContext = JAXBContextFactory.createContext(new Class[]{Employee.class}, null);
+        JAXBContext jaxbContext = JAXBContextFactory.createContext(new Class<?>[]{Employee.class}, null);
         StringOutputResolver sor = new StringOutputResolver();
         jaxbContext.generateSchema(sor);
 

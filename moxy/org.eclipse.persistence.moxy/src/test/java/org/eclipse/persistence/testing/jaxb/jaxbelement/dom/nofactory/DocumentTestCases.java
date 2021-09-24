@@ -30,7 +30,7 @@ public class DocumentTestCases extends JAXBWithJSONTestCases{
 
     public DocumentTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{});
+        setClasses(new Class<?>[]{});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

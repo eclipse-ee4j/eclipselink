@@ -47,7 +47,7 @@ public class XmlIdRefArrayTestCases  extends JAXBWithJSONTestCases {
 
     public XmlIdRefArrayTestCases(String name) throws Exception {
         super(name);
-        Class[] classes = new Class[3];
+        Class<?>[] classes = new Class<?>[3];
         classes[0] = AddressArray.class;
         classes[1] = EmployeeArray.class;
         classes[2] = RootArray.class;

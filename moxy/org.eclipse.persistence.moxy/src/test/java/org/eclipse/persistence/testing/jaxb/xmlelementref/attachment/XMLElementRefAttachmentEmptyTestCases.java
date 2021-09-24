@@ -39,7 +39,7 @@ public class XMLElementRefAttachmentEmptyTestCases extends JAXBWithJSONTestCases
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[2];
+        Class<?>[] classes = new Class<?>[2];
         classes[0] = ObjectFactory.class;
         classes[1] = Employee.class;
         setClasses(classes);

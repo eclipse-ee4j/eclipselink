@@ -55,7 +55,7 @@ public class DateTimePopulator {
                     Method shouldTruncateDateMethod = PrivilegedAccessHelper.getMethod(clazz, "shouldTruncateDate", null, false);
                     boolean shouldTruncateDate = PrivilegedAccessHelper.invokeMethod(shouldTruncateDateMethod, session.getPlatform(), null);
                     if (!shouldTruncateDate) {
-                        Method setShouldTruncateDateMethod = PrivilegedAccessHelper.getMethod(clazz, "setShouldTruncateDate", new Class[]{boolean.class}, false);
+                        Method setShouldTruncateDateMethod = PrivilegedAccessHelper.getMethod(clazz, "setShouldTruncateDate", new Class<?>[]{boolean.class}, false);
                         PrivilegedAccessHelper.invokeMethod(setShouldTruncateDateMethod, session.getPlatform(), new Object[]{true});
                         hasSetTruncateDate = true;
                     }
@@ -73,7 +73,7 @@ public class DateTimePopulator {
             // Now setting shouldTruncateDate flag back to its original value "false".
             try {
                 Class<Object> clazz = PrivilegedAccessHelper.getClassForName("org.eclipse.persistence.platform.database.oracle.Oracle9Platform");
-                Method setShouldTruncateDateMethod = PrivilegedAccessHelper.getMethod(clazz, "setShouldTruncateDate", new Class[]{boolean.class}, false);
+                Method setShouldTruncateDateMethod = PrivilegedAccessHelper.getMethod(clazz, "setShouldTruncateDate", new Class<?>[]{boolean.class}, false);
                 PrivilegedAccessHelper.invokeMethod(setShouldTruncateDateMethod, session.getPlatform(), new Object[]{false});
             } catch (Exception ex) {
                 throw new RuntimeException("Failed oracle9Platform.setShouldTruncateDate(false)", ex);

@@ -28,7 +28,7 @@ public class XmlIdRefContainmentTest extends JAXBWithJSONTestCases{
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[4];
+        Class<?>[] classes = new Class<?>[4];
         classes[0] = Customer.class;
         classes[1] = Invoice.class;
         classes[2] = Shipping.class;

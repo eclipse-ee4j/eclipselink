@@ -42,7 +42,7 @@ public class STI_JoinedAttributeTest extends TestCase {
     static protected boolean eachTestShouldEnsurePopulation = false;
 
     // the following static variables are used only in case eachTestShouldEnsurePopulation==true
-    static protected Class[] classes = {STI_Employee.class, STI_Project.class};
+    static protected Class<?>[] classes = {STI_Employee.class, STI_Project.class};
     static protected Vector[] objectVectors = {null, null};
     static protected STI_EmployeePopulator populator = new STI_EmployeePopulator();
 
@@ -78,7 +78,7 @@ public class STI_JoinedAttributeTest extends TestCase {
     // stolen from junit.framework.TestSuite
     private static boolean isTestMethod(Method m) {
         String name= m.getName();
-        Class[] parameters= m.getParameterTypes();
+        Class<?>[] parameters= m.getParameterTypes();
         Class<?> returnType= m.getReturnType();
         return parameters.length == 0 && name.startsWith("test") && returnType.equals(Void.TYPE);
      }

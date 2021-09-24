@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,7 +50,7 @@ public class XmlSchemaTypeTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlSchemaTypePkgSchemaGen() throws URISyntaxException {
         String metadataFile = PATH + "eclipselink-oxm-package.xml";
-        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, metadataFile, 1);
+        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(new Class<?>[] { Employee.class }, CONTEXT_PATH, metadataFile, 1);
         // validate schema
         URI controlSchema = Thread.currentThread().getContextClassLoader().getResource(PATH + "schema.xsd").toURI();
         compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
@@ -65,7 +65,7 @@ public class XmlSchemaTypeTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlSchemaTypePropSchemaGen() throws URISyntaxException {
         String metadataFile = PATH + "eclipselink-oxm-property.xml";
-        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, metadataFile, 1);
+        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(new Class<?>[] { Employee.class }, CONTEXT_PATH, metadataFile, 1);
         // validate schema
         URI controlSchema = Thread.currentThread().getContextClassLoader().getResource(PATH + "schema.xsd").toURI();
         compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
@@ -81,7 +81,7 @@ public class XmlSchemaTypeTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlSchemaTypeOverrideSchemaGen() throws URISyntaxException {
         String metadataFile = PATH + "eclipselink-oxm-override.xml";
-        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, metadataFile, 1);
+        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(new Class<?>[] { Employee.class }, CONTEXT_PATH, metadataFile, 1);
         // validate schema
         URI controlSchema = Thread.currentThread().getContextClassLoader().getResource(PATH + "schema.xsd").toURI();
         compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
@@ -97,7 +97,7 @@ public class XmlSchemaTypeTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlSchemaTypeClassOverridesPackageSchemaGen() throws URISyntaxException {
         String metadataFile = PATH + "eclipselink-oxm-class-overrides-package.xml";
-        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(new Class[] { EmployeeWithAnnotation.class }, CONTEXT_PATH, metadataFile, 1);
+        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(new Class<?>[] { EmployeeWithAnnotation.class }, CONTEXT_PATH, metadataFile, 1);
         // validate schema
         URI controlSchema = Thread.currentThread().getContextClassLoader().getResource(PATH + "schema1.xsd").toURI();
         compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
@@ -111,7 +111,7 @@ public class XmlSchemaTypeTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlSchemaTypeWithIDSchemaGen() throws URISyntaxException {
         String metadataFile = PATH + "eclipselink-oxm-method.xml";
-        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(new Class[] { EmployeeWithMethods.class }, CONTEXT_PATH, metadataFile, 1);
+        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(new Class<?>[] { EmployeeWithMethods.class }, CONTEXT_PATH, metadataFile, 1);
         // validate schema
         URI controlSchema = Thread.currentThread().getContextClassLoader().getResource(PATH + "schema2.xsd").toURI();
         compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
@@ -123,7 +123,7 @@ public class XmlSchemaTypeTestCases extends ExternalizedMetadataTestCases {
      * Positive test.
      */
     public void testXmlSchemaTypeWithIDAnnotationSchemaGen() throws URISyntaxException {
-        MySchemaOutputResolver outputResolver = generateSchema(new Class[] { EmployeeWithAnnotationOnMethod.class }, 1);
+        MySchemaOutputResolver outputResolver = generateSchema(new Class<?>[] { EmployeeWithAnnotationOnMethod.class }, 1);
         // validate schema
         URI controlSchema = Thread.currentThread().getContextClassLoader().getResource(PATH + "schema3.xsd").toURI();
         compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
@@ -132,7 +132,7 @@ public class XmlSchemaTypeTestCases extends ExternalizedMetadataTestCases {
     public void testXmlSchemaType() {
         // load XML metadata and create JAXBContext
         String metadataFile = PATH + "eclipselink-oxm-property.xml";
-        generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, metadataFile, 1);
+        generateSchemaWithFileName(new Class<?>[] { Employee.class }, CONTEXT_PATH, metadataFile, 1);
 
         // This test's instance document contains a date in EST time zone, so temporarily
         // reset the VM time zone

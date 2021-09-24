@@ -76,14 +76,14 @@ public abstract class LoadAndSaveTestCases extends LoadAndSaveWithOptionsTestCas
         Class<?> urlLoadedClass = myURLLoader.loadClass(className);
 
         ((SDOXMLHelper)xmlHelper).setLoader(new SDOClassLoader(myURLLoader, aHelperContext));
-        Class loadedClass2 = ((SDOXMLHelper)xmlHelper).getLoader().loadClass(className);
+        Class<?> loadedClass2 = ((SDOXMLHelper)xmlHelper).getLoader().loadClass(className);
 
         defineTypes();
 
         assertEquals(urlLoadedClass, loadedClass2);
         FileInputStream inputStream = new FileInputStream(getControlFileName());
         XMLDocument document = xmlHelper.load(inputStream);
-        Class loadedClass = document.getRootObject().getType().getInstanceClass();
+        Class<?> loadedClass = document.getRootObject().getType().getInstanceClass();
         assertEquals(urlLoadedClass, loadedClass);
 
         verifyAfterLoad(document);

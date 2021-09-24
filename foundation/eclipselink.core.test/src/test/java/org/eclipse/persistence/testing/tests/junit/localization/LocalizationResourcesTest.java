@@ -70,15 +70,15 @@ public class LocalizationResourcesTest {
      * Test {@code getContents()} method of specified resource bundle class for duplicate keys.
      * @param c Logging resource bundle class being tested.
      */
-    private static void verifyBundle(final Class c) {
+    private static void verifyBundle(final Class<?> c) {
         final List<String> nonStringKeys = new LinkedList<>();
         final List<String> duplicateKeys = new LinkedList<>();
         final String bundleName = c.getSimpleName();
         final Set<String> keys = new HashSet<>();
         Object[][] bundle;
         try {
-            Object instance = ReflectionHelper.getInstance(c, new Class[] {});
-            bundle = (Object[][])ReflectionHelper.invokeMethod("getContents", instance, new Class[] {}, new Object[] {});
+            Object instance = ReflectionHelper.getInstance(c, new Class<?>[] {});
+            bundle = (Object[][])ReflectionHelper.invokeMethod("getContents", instance, new Class<?>[] {}, new Object[] {});
         } catch (ReflectiveOperationException | SecurityException e) {
             Assert.fail("Could not access " + bundleName + "#getContents()");
             bundle = null;

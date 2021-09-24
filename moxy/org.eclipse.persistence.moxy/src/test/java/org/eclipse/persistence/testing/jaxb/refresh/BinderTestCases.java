@@ -55,7 +55,7 @@ public class BinderTestCases extends TestCase {
 
         Map<String, Object> props = new HashMap<String, Object>(1);
         props.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataDocument);
-        JAXBContext jc = JAXBContextFactory.createContext(new Class[] {Root.class}, props);
+        JAXBContext jc = JAXBContextFactory.createContext(new Class<?>[] {Root.class}, props);
         Binder<Node> binder = jc.createBinder();
 
         Root controlRoot = new Root();

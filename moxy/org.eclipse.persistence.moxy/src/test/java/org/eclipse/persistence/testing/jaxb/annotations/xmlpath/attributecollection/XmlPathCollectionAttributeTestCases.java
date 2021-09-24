@@ -32,7 +32,7 @@ public class XmlPathCollectionAttributeTestCases extends JAXBTestCases {
     public XmlPathCollectionAttributeTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
-        setTypes(new Class[] { TestClass.class });
+        setTypes(new Class<?>[] { TestClass.class });
     }
 
     @Override

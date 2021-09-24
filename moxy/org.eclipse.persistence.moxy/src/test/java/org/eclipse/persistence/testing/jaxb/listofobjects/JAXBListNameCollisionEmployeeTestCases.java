@@ -48,7 +48,7 @@ JAXBListOfObjectsNoJSONTestCases {
 
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);
-        Class[] classes = new Class[2];
+        Class<?>[] classes = new Class<?>[2];
 
         Field fld = ListofObjects.class.getField("empList");
         Type[] types = new Type[2];

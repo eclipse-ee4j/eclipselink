@@ -87,7 +87,7 @@ public class HistoryFacade {
      * PUBLIC:
      */
     public static long currentDatabaseTimeMillis(org.eclipse.persistence.sessions.Session session,
-                                   Class domainClass) {
+                                   Class<?> domainClass) {
         Session rootSession = session;
         while (rootSession.isUnitOfWork() || rootSession.isClientSession() ||
                rootSession instanceof HistoricalSession ||

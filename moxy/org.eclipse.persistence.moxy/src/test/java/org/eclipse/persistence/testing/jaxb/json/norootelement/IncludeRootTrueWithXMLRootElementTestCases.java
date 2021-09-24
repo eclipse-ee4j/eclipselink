@@ -26,7 +26,7 @@ public class IncludeRootTrueWithXMLRootElementTestCases extends IncludeRootFalse
         super(name);
         setControlJSON(JSON_RESOURCE_WITH_ROOT);
         setWriteControlJSON(JSON_RESOURCE_WITH_ROOT);
-        setClasses(new Class[]{AddressWithRootElement.class});
+        setClasses(new Class<?>[]{AddressWithRootElement.class});
     }
 
     @Override

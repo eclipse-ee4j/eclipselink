@@ -38,7 +38,7 @@ public class JAXBBooleanArrayTestCases extends JAXBListOfObjectsTestCases {
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = boolean[].class;
         setClasses(classes);
         initXsiType();

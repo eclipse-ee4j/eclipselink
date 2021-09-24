@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.internal.identitymaps.WeakIdentityMap;
 import org.eclipse.persistence.queries.InsertObjectQuery;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
@@ -26,7 +27,7 @@ import org.eclipse.persistence.testing.framework.*;
 
 //bug4649617  Test if there is any memory leak in InsertObjectQuery with WeakIdentityMap.
 public class InsertWeakIdentityMapTest extends TestCase {
-    protected Class originalIdentityMapClass;
+    protected Class<? extends IdentityMap> originalIdentityMapClass;
     protected int originalIdentityMapSize;
     protected int identityMapSize = 10;
 

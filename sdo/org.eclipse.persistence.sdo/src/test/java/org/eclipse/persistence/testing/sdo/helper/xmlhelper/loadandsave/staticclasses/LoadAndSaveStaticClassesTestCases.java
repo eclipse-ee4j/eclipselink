@@ -124,10 +124,10 @@ public class LoadAndSaveStaticClassesTestCases extends LoadAndSaveTestCases{
             List types = defineTypes();
             assertTrue(types.size() == 1);
             SDOType theType = (SDOType)types.get(0);
-            Class instanceClass = theType.getInstanceClass();
+            Class<?> instanceClass = theType.getInstanceClass();
             assertTrue(instanceClass != null);
 
-            Class implClass = theType.getImplClass();
+            Class<?> implClass = theType.getImplClass();
             assertTrue(implClass != null);
         }
 }

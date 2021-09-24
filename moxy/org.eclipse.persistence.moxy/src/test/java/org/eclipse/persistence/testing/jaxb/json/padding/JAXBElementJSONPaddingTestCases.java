@@ -29,7 +29,7 @@ public class JAXBElementJSONPaddingTestCases extends JAXBWithJSONTestCases{
 
     public JAXBElementJSONPaddingTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Simple.class});
+        setClasses(new Class<?>[]{Simple.class});
         setControlJSON(JSON_RESOURCE);
         setControlDocument(XML_RESOURCE);
     }

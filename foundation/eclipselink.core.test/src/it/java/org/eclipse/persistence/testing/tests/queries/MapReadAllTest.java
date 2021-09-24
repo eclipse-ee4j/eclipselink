@@ -26,7 +26,7 @@ import org.eclipse.persistence.internal.helper.*;
 public class MapReadAllTest extends ReadAllTest {
     protected Object dbContainter;
 
-    public MapReadAllTest(Class referenceClass, int originalObjectsSize, ReadAllQuery query) {
+    public MapReadAllTest(Class<?> referenceClass, int originalObjectsSize, ReadAllQuery query) {
         super(referenceClass, originalObjectsSize);
         this.setQuery(query);
         setName("MapReadAllTest(" + org.eclipse.persistence.internal.helper.Helper.getShortClassName(getQuery().getContainerPolicy().getContainerClass()) + "," + org.eclipse.persistence.internal.helper.Helper.getShortClassName(referenceClass) + ")");
@@ -67,7 +67,7 @@ public class MapReadAllTest extends ReadAllTest {
      */
     @Override
     protected void verify() {
-        Class queryContainerClass = getQuery().getContainerPolicy().getContainerClass();
+        Class<?> queryContainerClass = getQuery().getContainerPolicy().getContainerClass();
         if (!queryContainerClass.isInstance(dbContainter)) {
             throw new TestErrorException("The container class returned was" + dbContainter.getClass().toString() + " we expected a " + queryContainerClass.toString() + " to be returned.");
         }

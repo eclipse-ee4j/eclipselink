@@ -38,7 +38,7 @@ public class ChoiceMappingWithJoinNodesTestCases extends JAXBWithJSONTestCases{
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choice.reference.Root.class });
+        setClasses(new Class<?>[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choice.reference.Root.class });
         jaxbMarshaller.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, "value");
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_VALUE_WRAPPER, "value");
     }
@@ -106,7 +106,7 @@ public class ChoiceMappingWithJoinNodesTestCases extends JAXBWithJSONTestCases{
             Map<String, Object> props = new HashMap<String, Object>();
             InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/choice/reference/root-invalid-oxm.xml");
             props.put(JAXBContextProperties.OXM_METADATA_SOURCE, inputStream);
-            JAXBContext ctx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choice.reference.Root.class }, props);
+            JAXBContext ctx = (JAXBContext) JAXBContextFactory.createContext(new Class<?>[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choice.reference.Root.class }, props);
         } catch (JAXBException e1) {
             return;
         }

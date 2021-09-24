@@ -24,7 +24,7 @@ import org.eclipse.persistence.testing.models.mapping.Employee1;
 public class MultipleTableReadAllTest extends org.eclipse.persistence.testing.framework.ReadAllTest {
     String amendmentMethodName;
 
-    public MultipleTableReadAllTest(Class aClass, int numberOfInstances, String amendmentMethodName) {
+    public MultipleTableReadAllTest(Class<?> aClass, int numberOfInstances, String amendmentMethodName) {
         super(aClass, numberOfInstances);
         this.amendmentMethodName = amendmentMethodName;
         setName("MultipleTableReadAllTest(" + amendmentMethodName + "," + aClass + ", " + numberOfInstances + ")");
@@ -35,7 +35,7 @@ public class MultipleTableReadAllTest extends org.eclipse.persistence.testing.fr
         super.setup();
         try {
             // Get the Method
-            Class[] parms = new Class[1];
+            Class<?>[] parms = new Class<?>[1];
             parms[0] = DatabaseSessionImpl.class;
             java.lang.reflect.Method method = Employee1.class.getMethod(this.amendmentMethodName, parms);
 

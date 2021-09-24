@@ -46,7 +46,7 @@ public class IllegalArgumentWhileInstantiatingMethodBasedProxyTest extends Excep
         descriptor.setJavaClass(IllegalArgumentWhileInstantiatingMethodBasedProxyTest.class);
         descriptor.addTableName("Dummy_Table");
         row = new DatabaseRecord();
-        Class[] parmClasses = { DatabaseRecord.class };
+        Class<?>[] parmClasses = { DatabaseRecord.class };
         theTransformer = new MethodBasedAttributeTransformer();
         theTransformer.setAttributeTransformationMethod(IllegalArgumentWhileInstantiatingMethodBasedProxyTest.class.getDeclaredMethod("invalidMethod", parmClasses));
         //   theReceiver = new IllegalArgumentWhileInstantiatingMethodBasedProxyTest(); //not correct error

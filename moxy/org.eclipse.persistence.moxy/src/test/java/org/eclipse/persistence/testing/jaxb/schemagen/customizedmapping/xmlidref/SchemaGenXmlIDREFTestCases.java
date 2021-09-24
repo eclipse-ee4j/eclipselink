@@ -55,7 +55,7 @@ public class SchemaGenXmlIDREFTestCases  extends SchemaGenTestCases {
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
         boolean exception = false;
         try {
-            generateSchema(new Class[]{ MyInvalidClass.class, MyNonIDClass.class }, outputResolver, null);
+            generateSchema(new Class<?>[]{ MyInvalidClass.class, MyNonIDClass.class }, outputResolver, null);
         } catch (Exception ex) {
             exception = true;
         }

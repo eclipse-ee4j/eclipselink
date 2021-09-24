@@ -60,7 +60,7 @@ public class VariableOneToOneGetTypeFieldTest extends TestCase {
 
     @Override
     public void verify() {
-        Class actualClass;
+        Class<?> actualClass;
         Object actualValue;
 
         // valueReturned1

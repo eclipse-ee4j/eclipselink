@@ -48,8 +48,8 @@ public class JAXBElementTestCases extends JAXBWithJSONTestCases {
         setClasses(getClasses());
     }
 
-    public Class[] getClasses(){
-        Class[] classes = new Class[1];
+    public Class<?>[] getClasses(){
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Person.class;
         return classes;
     }

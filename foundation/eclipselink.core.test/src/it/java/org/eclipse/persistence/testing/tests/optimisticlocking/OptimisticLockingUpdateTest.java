@@ -26,10 +26,10 @@ import org.eclipse.persistence.testing.models.optimisticlocking.LockObject;
 public class OptimisticLockingUpdateTest extends AutoVerifyTestCase {
     protected UnitOfWork uow;
     protected Object originalObject;
-    protected Class domainClass;
+    protected Class<?> domainClass;
     protected boolean useUOW;
 
-    public OptimisticLockingUpdateTest(Class aClass, boolean useUnitOfWork) {
+    public OptimisticLockingUpdateTest(Class<?> aClass, boolean useUnitOfWork) {
         setName(getName() + "(" + aClass + ")");
         domainClass = aClass;
         this.useUOW = useUnitOfWork;

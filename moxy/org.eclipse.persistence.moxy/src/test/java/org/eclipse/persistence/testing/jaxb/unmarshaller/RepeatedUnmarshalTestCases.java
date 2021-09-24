@@ -47,7 +47,7 @@ public class RepeatedUnmarshalTestCases extends OXTestCase{
         String controlString ="This is testing that if an unmarshal operation fails the unmarshaller will be left in a clean state so it can be reused to unmarshal subsequent documents";
         controlObject.bytes = controlString.getBytes();
 
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = TestObject.class;
         jaxbContext = JAXBContextFactory.createContext(classes, null, Thread.currentThread().getContextClassLoader());
     }

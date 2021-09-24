@@ -29,7 +29,7 @@ public class SimpleBeanAttrNullTestCases extends JAXBWithJSONTestCases {
 
     public SimpleBeanAttrNullTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{SimpleBean.class});
+        setClasses(new Class<?>[]{SimpleBean.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         setWriteControlJSON(JSON_WRITE_RESOURCE);

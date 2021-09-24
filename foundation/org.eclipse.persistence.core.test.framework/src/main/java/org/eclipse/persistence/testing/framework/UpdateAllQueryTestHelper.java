@@ -37,11 +37,11 @@ import org.eclipse.persistence.internal.expressions.DataExpression;
 
 public class UpdateAllQueryTestHelper {
 
-    public static String execute(Session mainSession, Class referenceClass, HashMap updateClauses, Expression selectionExpression) {
+    public static String execute(Session mainSession, Class<?> referenceClass, HashMap updateClauses, Expression selectionExpression) {
         return execute(mainSession, referenceClass, updateClauses, selectionExpression, true);
     }
 
-    public static String execute(Session mainSession, Class referenceClass, HashMap updateClauses, Expression selectionExpression, boolean handleChildren) {
+    public static String execute(Session mainSession, Class<?> referenceClass, HashMap updateClauses, Expression selectionExpression, boolean handleChildren) {
         return execute(mainSession, createUpdateAllQuery(referenceClass, updateClauses, selectionExpression), true);
     }
 
@@ -60,7 +60,7 @@ public class UpdateAllQueryTestHelper {
         // Find the inheritance root class - the test will compare all instances of this class
         // after traditional TopLink update (one-by-one) with all instances of this class
         // after UpdateAllQuery. The test succeeds if the two collections are equal.
-        Class rootClass = uq.getReferenceClass();
+        Class<?> rootClass = uq.getReferenceClass();
         ClassDescriptor descriptor = mainSession.getClassDescriptor(uq.getReferenceClass());
         if(descriptor.hasInheritance()) {
             ClassDescriptor parentDescriptor = descriptor;
@@ -80,7 +80,7 @@ public class UpdateAllQueryTestHelper {
     }
 
     protected static String execute(Session mainSession, UpdateAllQuery uq, boolean handleChildren,
-                                  Class rootClass) {
+                                  Class<?> rootClass) {
         String errorMsg = "";
         ClassDescriptor descriptor = mainSession.getDescriptor(uq.getReferenceClass());
 
@@ -220,7 +220,7 @@ public class UpdateAllQueryTestHelper {
                 Iterator<ClassDescriptor> it = descriptor.getInheritancePolicy().getChildDescriptors().iterator();
                 while(it.hasNext()) {
                     ClassDescriptor childDescriptor = it.next();
-                    Class childReferenceClass = childDescriptor.getJavaClass();
+                    Class<?> childReferenceClass = childDescriptor.getJavaClass();
                     UpdateAllQuery childUq = (UpdateAllQuery)uq.clone();
                     childUq.setReferenceClass(childReferenceClass);
                     childUq.setIsPrepared(false);
@@ -235,7 +235,7 @@ public class UpdateAllQueryTestHelper {
         mainSession.getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
-    public static UpdateAllQuery createUpdateAllQuery(Class referenceClass, HashMap updateClauses, Expression selectionExpression) {
+    public static UpdateAllQuery createUpdateAllQuery(Class<?> referenceClass, HashMap updateClauses, Expression selectionExpression) {
         // Construct UpdateAllQuery
         UpdateAllQuery uq = new UpdateAllQuery(referenceClass, selectionExpression);
         Iterator itEntrySets = updateClauses.entrySet().iterator();
@@ -252,7 +252,7 @@ public class UpdateAllQueryTestHelper {
         return copy;
     }
 
-    static protected String getQualifiedFieldNameFromKey(Object key, Class referenceClass, ClassDescriptor descriptor, Session session) {
+    static protected String getQualifiedFieldNameFromKey(Object key, Class<?> referenceClass, ClassDescriptor descriptor, Session session) {
         DatabaseField field = null;
         if(key instanceof String) {
             // attribute name

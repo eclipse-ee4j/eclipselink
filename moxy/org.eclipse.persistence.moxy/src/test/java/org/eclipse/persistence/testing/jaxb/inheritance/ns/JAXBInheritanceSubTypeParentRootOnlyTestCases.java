@@ -29,7 +29,7 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 public class JAXBInheritanceSubTypeParentRootOnlyTestCases extends JAXBWithJSONTestCases {
     public JAXBInheritanceSubTypeParentRootOnlyTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {SubTypeParentRootOnly.class});
+        setClasses(new Class<?>[] {SubTypeParentRootOnly.class});
         setControlDocument("org/eclipse/persistence/testing/jaxb/inheritance/ns/subTypeParentRoot.xml");
         setControlJSON("org/eclipse/persistence/testing/jaxb/inheritance/ns/subTypeParentRoot.json");
 

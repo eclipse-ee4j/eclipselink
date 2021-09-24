@@ -24,7 +24,7 @@ public class XMLSchemaModelTestCases extends JAXBWithJSONTestCases{
 
     public XMLSchemaModelTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{ObjectFactory.class});
+        setClasses(new Class<?>[]{ObjectFactory.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

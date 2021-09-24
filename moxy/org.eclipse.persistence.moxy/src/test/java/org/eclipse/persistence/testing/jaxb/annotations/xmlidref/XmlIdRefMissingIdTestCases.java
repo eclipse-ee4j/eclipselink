@@ -27,7 +27,7 @@ public class XmlIdRefMissingIdTestCases extends JAXBWithJSONTestCases{
 
     public XmlIdRefMissingIdTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Owner.class});
+        setClasses(new Class<?>[]{Owner.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

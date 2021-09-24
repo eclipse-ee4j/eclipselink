@@ -3599,7 +3599,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             MapAttribute<? super Manufacturer, ?, ?> anAttribute =
             entityManufacturer_.getMap("hardwareDesignersMap", Integer.class,  HardwareDesigner.class);
             // verify the default key type is the not the Map key - rather that is is the managedType PK
-            Class keyJavaType = anAttribute.getKeyJavaType();
+            Class<?> keyJavaType = anAttribute.getKeyJavaType();
             //@OneToMany(cascade=ALL, mappedBy="mappedEmployer")
             //private Map<String, HardwareDesigner> hardwareDesignersMap;// = new HashMap<String, HardwareDesigner>();
             // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_63:_20090824:_Add_Map_support_for_.40MapKey_to_MapAttribute
@@ -3667,7 +3667,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             MapAttribute<? super Manufacturer, ?, ?> anAttribute =
             entityManufacturer_.getDeclaredMap("hardwareDesignersMap", Integer.class,  HardwareDesigner.class);
             // verify the default key type is the not the Map key - rather that is is the managedType PK
-            Class keyJavaType = anAttribute.getKeyJavaType();
+            Class<?> keyJavaType = anAttribute.getKeyJavaType();
             //@OneToMany(cascade=ALL, mappedBy="mappedEmployer")
             //private Map<String, HardwareDesigner> hardwareDesignersMap;// = new HashMap<String, HardwareDesigner>();
             // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_63:_20090824:_Add_Map_support_for_.40MapKey_to_MapAttribute
@@ -4628,7 +4628,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             MapAttribute<? super Manufacturer, ?, ?> anAttribute =
             entityManufacturer_.getMap("hardwareDesignersMap");
             // verify the default key type is the not the Map key - rather that is is the managedType PK
-            Class keyJavaType = anAttribute.getKeyJavaType();
+            Class<?> keyJavaType = anAttribute.getKeyJavaType();
             //@OneToMany(cascade=ALL, mappedBy="mappedEmployer")
             //private Map<String, HardwareDesigner> hardwareDesignersMap;// = new HashMap<String, HardwareDesigner>();
             // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_63:_20090824:_Add_Map_support_for_.40MapKey_to_MapAttribute
@@ -4667,7 +4667,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             MapAttribute<? super Manufacturer, ?, ?> anAttribute =
             entityManufacturer_.getMap("hardwareDesignersMapUC1a");
             // verify the key type is the Map key - not the managedType PK
-            Class keyJavaType = anAttribute.getKeyJavaType();
+            Class<?> keyJavaType = anAttribute.getKeyJavaType();
             // UC 1a: Generics KV set, no @MapKey present, PK is singular field
             //@OneToMany(cascade=ALL, mappedBy="mappedEmployerUC1a")
             //private Map<String, HardwareDesigner> hardwareDesignersMapUC1a;
@@ -4705,7 +4705,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             MapAttribute<? super Manufacturer, ?, ?> anAttribute =
             entityManufacturer_.getMap("hardwareDesignersMapUC2");
             // verify the key type is the Map key - not the managedType PK
-            Class keyJavaType = anAttribute.getKeyJavaType();
+            Class<?> keyJavaType = anAttribute.getKeyJavaType();
             // UC 2: Generics KV set, @MapKey is present
             //@OneToMany(cascade=ALL, mappedBy="mappedEmployerUC2")
             //@MapKey(name="name")
@@ -4744,7 +4744,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             MapAttribute<? super Manufacturer, ?, ?> anAttribute =
             entityManufacturer_.getMap("hardwareDesignersMapUC4");
             // verify the key type is the Map key - not the managedType PK
-            Class keyJavaType = anAttribute.getKeyJavaType();
+            Class<?> keyJavaType = anAttribute.getKeyJavaType();
             // UC 4: No Generics KV set, @MapKey is present
             //@OneToMany(targetEntity=HardwareDesigner.class, cascade=ALL, mappedBy="mappedEmployerUC4")
             //@MapKey(name="name")
@@ -4784,7 +4784,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             MapAttribute<? super Manufacturer, ?, ?> anAttribute =
             entityManufacturer_.getMap("hardwareDesignersMapUC7");
             // verify the key type is the Map key - not the managedType PK
-            Class keyJavaType = anAttribute.getKeyJavaType();
+            Class<?> keyJavaType = anAttribute.getKeyJavaType();
             // UC 7: Generics KV set, targetEntity is also set, @MapKey is *(set/unset)
             //@OneToMany(targetEntity=HardwareDesigner.class, cascade=ALL, mappedBy="mappedEmployerUC7")
             // Same as UC1a - that is missing the @MapKey
@@ -4824,7 +4824,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             MapAttribute<? super Manufacturer, ?, ?> anAttribute =
             entityManufacturer_.getMap("hardwareDesignersMapUC8");
             // verify the key type is the Map key - not the managedType PK
-            Class keyJavaType = anAttribute.getKeyJavaType();
+            Class<?> keyJavaType = anAttribute.getKeyJavaType();
             // UC 8: Generics KV set, targetEntity not set, @MapKey is set but name attribute is defaulted
             //@OneToMany(targetEntity=HardwareDesigner.class, cascade=ALL, mappedBy="mappedEmployerUC8")
             // Same as UC1a - that is missing the @MapKey name attribute
@@ -4866,7 +4866,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             MapAttribute<? super Manufacturer, ?, ?> anAttribute =
             entityManufacturer_.getMap("enclosureByBoardMapUC9");
             // verify the key type is the Map key - not the managedType PK
-            Class keyJavaType = anAttribute.getKeyJavaType();
+            Class<?> keyJavaType = anAttribute.getKeyJavaType();
             // UC9: no targetEntity, no MapKey, but generics are set (MapKey has an IdClass with an Embeddable)
             //@OneToMany(cascade=CascadeType.ALL, mappedBy="mappedManufacturerUC9")
             //private Map<Board, Enclosure> enclosureByBoardMapUC9;
@@ -4904,7 +4904,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             MapAttribute<? super Manufacturer, ?, ?> anAttribute =
             entityManufacturer_.getMap("hardwareDesignersMap");
             // verify the default key type is the not the Map key - rather that is is the managedType PK
-            Class keyJavaType = anAttribute.getKeyJavaType();
+            Class<?> keyJavaType = anAttribute.getKeyJavaType();
             //@OneToMany(cascade=ALL, mappedBy="mappedEmployer")
             //private Map<String, HardwareDesigner> hardwareDesignersMap;// = new HashMap<String, HardwareDesigner>();
             // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_63:_20090824:_Add_Map_support_for_.40MapKey_to_MapAttribute
@@ -4943,7 +4943,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             MapAttribute<? super Manufacturer, ?, ?> anAttribute =
             entityManufacturer_.getMap("hardwareDesignersMapUC1a");
             // verify the key type is the Map key - not the managedType PK
-            Class keyJavaType = anAttribute.getKeyJavaType();
+            Class<?> keyJavaType = anAttribute.getKeyJavaType();
             // UC 1a: Generics KV set, no @MapKey present, PK is singular field
             //@OneToMany(cascade=ALL, mappedBy="mappedEmployerUC1a")
             //private Map<String, HardwareDesigner> hardwareDesignersMapUC1a;
@@ -4981,7 +4981,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             MapAttribute<? super Manufacturer, ?, ?> anAttribute =
             entityManufacturer_.getMap("hardwareDesignersMapUC2");
             // verify the key type is the Map key - not the managedType PK
-            Class keyJavaType = anAttribute.getKeyJavaType();
+            Class<?> keyJavaType = anAttribute.getKeyJavaType();
             // UC 2: Generics KV set, @MapKey is present
             //@OneToMany(cascade=ALL, mappedBy="mappedEmployerUC2")
             //@MapKey(name="name")
@@ -5020,7 +5020,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             MapAttribute<? super Manufacturer, ?, ?> anAttribute =
             entityManufacturer_.getMap("hardwareDesignersMapUC4");
             // verify the key type is the Map key - not the managedType PK
-            Class keyJavaType = anAttribute.getKeyJavaType();
+            Class<?> keyJavaType = anAttribute.getKeyJavaType();
             // UC 4: No Generics KV set, @MapKey is present
             //@OneToMany(targetEntity=HardwareDesigner.class, cascade=ALL, mappedBy="mappedEmployerUC4")
             //@MapKey(name="name")
@@ -5059,7 +5059,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             MapAttribute<? super Manufacturer, ?, ?> anAttribute =
             entityManufacturer_.getMap("hardwareDesignersMapUC7");
             // verify the key type is the Map key - not the managedType PK
-            Class keyJavaType = anAttribute.getKeyJavaType();
+            Class<?> keyJavaType = anAttribute.getKeyJavaType();
             // UC 7: Generics KV set, targetEntity is also set, @MapKey is *(set/unset)
             //@OneToMany(targetEntity=HardwareDesigner.class, cascade=ALL, mappedBy="mappedEmployerUC7")
             // Same as UC1a - that is missing the @MapKey
@@ -5098,7 +5098,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             MapAttribute<? super Manufacturer, ?, ?> anAttribute =
             entityManufacturer_.getMap("hardwareDesignersMapUC8");
             // verify the key type is the Map key - not the managedType PK
-            Class keyJavaType = anAttribute.getKeyJavaType();
+            Class<?> keyJavaType = anAttribute.getKeyJavaType();
             // UC 8: Generics KV set, targetEntity not set, @MapKey is set but name attribute is defaulted
             //@OneToMany(targetEntity=HardwareDesigner.class, cascade=ALL, mappedBy="mappedEmployerUC8")
             // Same as UC1a - that is missing the @MapKey name attribute
@@ -5139,7 +5139,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             MapAttribute<? super Manufacturer, ?, ?> anAttribute =
             entityManufacturer_.getMap("enclosureByBoardMapUC9");
             // verify the key type is the Map key - not the managedType PK
-            Class keyJavaType = anAttribute.getKeyJavaType();
+            Class<?> keyJavaType = anAttribute.getKeyJavaType();
             // UC9: no targetEntity, no MapKey, but generics are set (MapKey has an IdClass with an Embeddable)
             //@OneToMany(cascade=CascadeType.ALL, mappedBy="mappedManufacturerUC9")
             //private Map<Board, Enclosure> enclosureByBoardMapUC9;
@@ -5178,7 +5178,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             MapAttribute<? super Computer, ?, ?> anAttribute =
             entityComputer_.getMap("enclosuresUC10");
             // verify the key type is the Map key - not the managedType PK
-            Class keyJavaType = anAttribute.getKeyJavaType();
+            Class<?> keyJavaType = anAttribute.getKeyJavaType();
             // UC10: no targetEntity, no MapKey attribute, but generics are set (MapKey has an IdClass with an Embeddable)
             //@OneToMany(mappedBy="computerUC10", cascade=ALL, fetch=EAGER)
             //@MapKey // key defaults to an instance of the composite pk class
@@ -5216,7 +5216,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             MapAttribute<? super Computer, ?, ?> anAttribute =
             entityComputer_.getMap("positionUniUC13");
             // verify the key type is the Map key - not the managedType PK
-            Class keyJavaType = anAttribute.getKeyJavaType();
+            Class<?> keyJavaType = anAttribute.getKeyJavaType();
             // UC13:  mapKey defined via generics and is an Embeddable (EmbeddedId) java class defined as an IdClass on the element(value) class
             // However, here we make the owning OneToMany - unidirectional and an effective ManyToMany
             //@MapKey // key defaults to an instance of the composite pk class
@@ -5254,7 +5254,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             MapAttribute<? super Computer, ?, ?> anAttribute =
             entityComputer_.getMap("positionUC12");
             // verify the key type is the Map key - not the managedType PK
-            Class keyJavaType = anAttribute.getKeyJavaType();
+            Class<?> keyJavaType = anAttribute.getKeyJavaType();
             // UC12:  mapKey defined via generics and is an Embeddable (EmbeddedId) java class defined as an IdClass on the element(value) class
             //@OneToMany(mappedBy="computerUC12", cascade=ALL, fetch=EAGER)
             //@MapKey // key defaults to an instance of the composite pk class
@@ -6213,7 +6213,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             }
             assertNotNull("elementType should not be null", elementType);
             // Since the javaType may be computed off the elementType - it must not be null or we will get a NPE below
-            Class javaType = anAttribute.getJavaType();
+            Class<?> javaType = anAttribute.getJavaType();
             }
 
         boolean expectedIAExceptionThrown = false;

@@ -61,7 +61,7 @@ public class BeanValidationRuntimeTestCase extends junit.framework.TestCase {
     private static final String JAVAX_PATTERN_MESSAGE = "{jakarta.validation.constraints.Pattern.message}";
     private static final String JAVAX_FUTURE_MESSAGE = "{jakarta.validation.constraints.Future.message}";
     private static final String JAVAX_DIGITS_MESSAGE = "{jakarta.validation.constraints.Digits.message}";
-    private static final Class[] EMPLOYEE = new Class[]{Employee.class};
+    private static final Class<?>[] EMPLOYEE = new Class<?>[]{Employee.class};
     private static final boolean DEBUG = false;
 
     private static File FILE_VALID;
@@ -203,13 +203,13 @@ public class BeanValidationRuntimeTestCase extends junit.framework.TestCase {
 
     private void toggleDriversGroupOnOff() throws PropertyException {
         if (toggle ^= true) {
-            marshallerValidOn.setProperty(MarshallerProperties.BEAN_VALIDATION_GROUPS, new Class[]{Default.class,
+            marshallerValidOn.setProperty(MarshallerProperties.BEAN_VALIDATION_GROUPS, new Class<?>[]{Default.class,
                     Drivers.class});
-            unmarshallerValidOn.setProperty(MarshallerProperties.BEAN_VALIDATION_GROUPS, new Class[] { Default.class,
+            unmarshallerValidOn.setProperty(MarshallerProperties.BEAN_VALIDATION_GROUPS, new Class<?>[] { Default.class,
                    Drivers.class });
         } else {
-            marshallerValidOn.setProperty(MarshallerProperties.BEAN_VALIDATION_GROUPS, new Class[0]);
-            unmarshallerValidOn.setProperty(MarshallerProperties.BEAN_VALIDATION_GROUPS, new Class[0]);
+            marshallerValidOn.setProperty(MarshallerProperties.BEAN_VALIDATION_GROUPS, new Class<?>[0]);
+            unmarshallerValidOn.setProperty(MarshallerProperties.BEAN_VALIDATION_GROUPS, new Class<?>[0]);
         }
     }
 

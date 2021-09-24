@@ -33,7 +33,7 @@ public class SimpleDocumentDateTestCases extends JAXBWithJSONTestCases {
 
         public SimpleDocumentDateTestCases(String name) throws Exception {
             super(name);
-            Class[] classes = new Class[1];
+            Class<?>[] classes = new Class<?>[1];
             classes[0] = DateObjectFactory.class;
             setClasses(classes);
         }

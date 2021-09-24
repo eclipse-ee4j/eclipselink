@@ -110,7 +110,7 @@ public abstract class JSONTestCases extends OXTestCase{
         return null;
     }
 
-    public void setClasses(Class[] newClasses) throws Exception {
+    public void setClasses(Class<?>[] newClasses) throws Exception {
         classLoader = Thread.currentThread().getContextClassLoader();
         jaxbContext = JAXBContextFactory.createContext(newClasses, getProperties(), classLoader);
         xmlContext = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext();

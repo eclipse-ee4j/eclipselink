@@ -32,7 +32,7 @@ public class JAXBByteArrayWithDataHandlerTestCases extends JAXBListOfObjectsTest
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[]{byte[].class, DataHandler.class});
+        setClasses(new Class<?>[]{byte[].class, DataHandler.class});
     }
 
     @Override

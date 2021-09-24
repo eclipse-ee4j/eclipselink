@@ -26,7 +26,7 @@ public class InheritanceWithMultiplePackagesXMLTestCases extends JAXBTestCases {
     public InheritanceWithMultiplePackagesXMLTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
-        setClasses(new Class[] {RootComplex.class});
+        setClasses(new Class<?>[] {RootComplex.class});
     }
 
     @Override

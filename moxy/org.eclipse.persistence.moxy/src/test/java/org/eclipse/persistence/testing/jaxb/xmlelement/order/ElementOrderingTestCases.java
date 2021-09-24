@@ -31,7 +31,7 @@ public class ElementOrderingTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[]{AlbumInfo.class};
+        Class<?>[] classes = new Class<?>[]{AlbumInfo.class};
         setClasses(classes);
         jaxbMarshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);

@@ -43,7 +43,7 @@ public class XmlAnyElementTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[2];
+        Class<?>[] classes = new Class<?>[2];
         classes[0] = Employee.class;
         classes[1] = Address.class;
         setClasses(classes);

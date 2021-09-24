@@ -25,7 +25,7 @@ import org.eclipse.persistence.testing.framework.*;
 
 public class RemoteConnectionExceptionsTest extends TestCase {
 
-    public RemoteConnectionExceptionsTest(int mode, Class remoteConnectionClass) {
+    public RemoteConnectionExceptionsTest(int mode, Class<?> remoteConnectionClass) {
         this.remoteConnectionClass = remoteConnectionClass;
         generator = new TransporterGenerator(mode);
         setNameAndCheckMode();
@@ -39,7 +39,7 @@ public class RemoteConnectionExceptionsTest extends TestCase {
         this(mode, Class.forName(remoteConnectionClassName));
     }
 
-    protected Class remoteConnectionClass;
+    protected Class<?> remoteConnectionClass;
     private RemoteConnection remoteConnection;
     protected TransporterGenerator generator;
     protected Object[] results;
@@ -107,10 +107,10 @@ public class RemoteConnectionExceptionsTest extends TestCase {
             }
             methods.add(method);
 
-            Class[] types = method.getParameterTypes();
+            Class<?>[] types = method.getParameterTypes();
             Object[] params = new Object[types.length];
             for (int j = 0; j < types.length; j++) {
-                Class type = types[j];
+                Class<?> type = types[j];
                 if (type.isPrimitive()) {
                     params[j] = getWrapperClassInstance(type);
                 }
@@ -222,7 +222,7 @@ public class RemoteConnectionExceptionsTest extends TestCase {
         }
     }
 
-    public static Object getWrapperClassInstance(Class cls) {
+    public static Object getWrapperClassInstance(Class<?> cls) {
         if (Integer.TYPE.equals(cls)) {
             return 0;
         } else if (Boolean.TYPE.equals(cls)) {

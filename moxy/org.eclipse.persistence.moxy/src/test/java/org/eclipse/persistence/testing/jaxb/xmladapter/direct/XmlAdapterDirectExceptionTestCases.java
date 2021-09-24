@@ -28,7 +28,7 @@ public class XmlAdapterDirectExceptionTestCases extends JAXBWithJSONTestCases {
         setWriteControlDocument(XML_WRITE_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         setWriteControlJSON(JSON_WRITE_RESOURCE);
-        Class[] classes = new Class[2];
+        Class<?>[] classes = new Class<?>[2];
         classes[0] = MyCalendarException.class;
         classes[1] = MyCalendarType.class;
         setClasses(classes);

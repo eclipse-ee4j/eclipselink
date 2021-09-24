@@ -39,7 +39,7 @@ public class WrapperNamespaceTestCases extends JSONMarshalUnmarshalTestCases {
 
     public WrapperNamespaceTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {Company.class});
+        setClasses(new Class<?>[] {Company.class});
         setControlJSON(JSON);
     }
 

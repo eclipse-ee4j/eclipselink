@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,7 +55,7 @@ public class JaxbTypeToSchemaTypeTestCases extends OXTestCase{
     }
 
     public void testClassArray() throws Exception{
-        Class[] classes = new Class[]{String.class};
+        Class<?>[] classes = new Class<?>[]{String.class};
         JAXBContext ctx = (JAXBContext) JAXBContextFactory.createContext(classes, null);
         Map<Type, QName> typeMap = ctx.getTypeToSchemaType();
         assertEquals(1, typeMap.size());

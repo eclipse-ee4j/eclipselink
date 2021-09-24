@@ -30,7 +30,7 @@ public class InheritanceWithMultiplePackagesTestCases extends JAXBWithJSONTestCa
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[] {RootComplex.class});
+        setClasses(new Class<?>[] {RootComplex.class});
         initXsiType();
     }
 

@@ -31,7 +31,7 @@ public class XmlIdSystemPropertyNonDefaultTestCase extends JAXBWithJSONTestCases
 
     public XmlIdSystemPropertyNonDefaultTestCase(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{OwnerIntegerId.class, ThingIntegerId.class});
+        setClasses(new Class<?>[]{OwnerIntegerId.class, ThingIntegerId.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

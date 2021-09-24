@@ -379,7 +379,7 @@ public class JoinedAttributeTestHelper {
                 value1 = frm.getRealAttributeValueFromObject(obj1, session);
                 value2 = frm.getRealAttributeValueFromObject(obj2, session);
                 if(frm.isCollectionMapping()) {
-                    Class containerClass = frm.getContainerPolicy().getContainerClass();
+                    Class<?> containerClass = frm.getContainerPolicy().getContainerClass();
                     if(Collection.class.isAssignableFrom(containerClass)) {
                         errorMsg += compareCollections((Collection)value1, (Collection)value2, frm.getReferenceDescriptor(), session, processed);
                     } else if(Map.class.isAssignableFrom(containerClass)) {

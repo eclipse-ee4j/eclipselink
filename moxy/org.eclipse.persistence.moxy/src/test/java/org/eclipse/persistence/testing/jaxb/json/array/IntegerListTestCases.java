@@ -33,7 +33,7 @@ public class IntegerListTestCases extends JSONTestCases {
 
     public IntegerListTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Integer.class});
+        setClasses(new Class<?>[]{Integer.class});
         setControlJSON(JSON_RESOURCE);
     }
 
