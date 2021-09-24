@@ -465,7 +465,7 @@ public class QueryImpl {
             // its not the right type
             DatabaseQuery query = getDatabaseQueryInternal();
             if (query.isReadAllQuery()) {
-                Class containerClass = ((ReadAllQuery) query).getContainerPolicy().getContainerClass();
+                Class<?> containerClass = ((ReadAllQuery) query).getContainerPolicy().getContainerClass();
                 if (!Helper.classImplementsInterface(containerClass, ClassConstants.List_Class)) {
                     throw QueryException.invalidContainerClass(containerClass, ClassConstants.List_Class);
                 }
@@ -933,7 +933,7 @@ public class QueryImpl {
                     throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-argument-name", new Object[] { name, query.getEJBQLString() }));
                 }
             }
-            Class type = query.getArgumentTypes().get(index);
+            Class<?> type = query.getArgumentTypes().get(index);
             if (!isValidActualParameter(value, type)) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-incorrect-parameter-type", new Object[] { name, value.getClass(), query.getArgumentTypes().get(index), query.getEJBQLString() }));
             }
@@ -946,7 +946,7 @@ public class QueryImpl {
         this.parameterValues.put(name, value);
     }
 
-    protected boolean isValidActualParameter(Object value, Class parameterType) {
+    protected boolean isValidActualParameter(Object value, Class<?> parameterType) {
         if (value == null) {
             return true;
         } else {

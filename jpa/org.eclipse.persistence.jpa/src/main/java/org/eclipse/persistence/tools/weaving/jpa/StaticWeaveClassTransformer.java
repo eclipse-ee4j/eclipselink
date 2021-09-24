@@ -82,7 +82,7 @@ public class StaticWeaveClassTransformer {
      * The method performs weaving function on the given class.
      * @return the converted(woven) class
      */
-    public byte[] transform(String originalClassName, Class originalClass, byte[] originalClassBytes)throws IllegalClassFormatException{
+    public byte[] transform(String originalClassName, Class<?> originalClass, byte[] originalClassBytes)throws IllegalClassFormatException{
         byte[] newClassBytes = null;
         for(ClassTransformer transformer : classTransformers){
             newClassBytes=transformer.transform(aClassLoader, originalClassName, originalClass, null, originalClassBytes);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -137,7 +137,7 @@ public abstract class MetadataConverter extends ORMetadata {
      * not class. This class name will be initialized at run time with the real
      * class loader.
      */
-    protected void setFieldClassification(DatabaseMapping mapping, Class classification, boolean isForMapKey) {
+    protected void setFieldClassification(DatabaseMapping mapping, Class<?> classification, boolean isForMapKey) {
         setFieldClassification(mapping, classification.getName(), isForMapKey);
     }
 

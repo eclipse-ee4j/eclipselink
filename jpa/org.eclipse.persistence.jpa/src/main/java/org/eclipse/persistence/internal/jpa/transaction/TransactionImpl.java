@@ -105,7 +105,7 @@ public class TransactionImpl implements Transaction {
         Connection proxyConnection = null;
         try {
             InvocationHandler handler = new ConnectionProxyHandler(connection);
-            proxyConnection = (Connection)proxyClass.getConstructor(new Class[] { InvocationHandler.class }).newInstance(new Object[] { handler });
+            proxyConnection = (Connection)proxyClass.getConstructor(new Class<?>[] { InvocationHandler.class }).newInstance(new Object[] { handler });
         } catch (Exception ex) {
             throw TransactionException.internalProxyException(ex);
         }

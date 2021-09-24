@@ -45,11 +45,11 @@ public class CompoundSelectionImpl extends SelectionImpl implements CompoundSele
     //bug 366386 - track items using duplicate alias names
     protected ArrayList<String> duplicateAliasNames;
 
-    public CompoundSelectionImpl(Class javaType, Selection[] subSelections) {
+    public CompoundSelectionImpl(Class<?> javaType, Selection[] subSelections) {
         this(javaType, subSelections, false);
     }
 
-    public CompoundSelectionImpl(Class javaType, Selection[] subSelections, boolean validate) {
+    public CompoundSelectionImpl(Class<?> javaType, Selection[] subSelections, boolean validate) {
         super(javaType, null);
         this.subSelections = new ArrayList<>();
         //used to validate that an alias is only used once

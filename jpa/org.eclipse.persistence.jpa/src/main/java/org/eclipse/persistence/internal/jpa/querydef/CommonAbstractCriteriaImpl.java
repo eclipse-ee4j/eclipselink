@@ -53,7 +53,7 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
     protected Metamodel metamodel;
     protected Expression<Boolean> where;
     protected CriteriaBuilderImpl queryBuilder;
-    protected Class queryType;
+    protected Class<T> queryType;
 
     protected Set<ParameterExpression<?>> parameters;
 
@@ -114,7 +114,7 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
      *            the entity class
      * @return query root corresponding to the given entity
      */
-    public Root internalFrom(Class entityClass) {
+    public Root internalFrom(Class<?> entityClass) {
         EntityType entity = this.metamodel.entity(entityClass);
         return this.internalFrom(entity);
     }

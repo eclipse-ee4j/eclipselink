@@ -1186,12 +1186,12 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     }
 
     @Override
-    public jakarta.persistence.Query createDescriptorNamedQuery(String queryName, Class descriptorClass) {
+    public jakarta.persistence.Query createDescriptorNamedQuery(String queryName, Class<?> descriptorClass) {
         return createDescriptorNamedQuery(queryName, descriptorClass, null);
     }
 
     @Override
-    public jakarta.persistence.Query createDescriptorNamedQuery(String queryName, Class descriptorClass, List argumentTypes) {
+    public jakarta.persistence.Query createDescriptorNamedQuery(String queryName, Class<?> descriptorClass, List argumentTypes) {
         try {
             verifyOpen();
             ClassDescriptor descriptor = this.databaseSession.getDescriptor(descriptorClass);
@@ -1290,6 +1290,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * expected return type.
      */
     @Override
+    @SuppressWarnings({"rawtypes"})
     public Query createNativeQuery(String sqlString, Class resultType) {
         try {
             verifyOpen();
@@ -1449,7 +1450,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     /**
      * Build a selection query for the primary key values.
      */
-    protected ReadObjectQuery getReadObjectQuery(Class referenceClass, Object primaryKey, Map properties) {
+    protected ReadObjectQuery getReadObjectQuery(Class<?> referenceClass, Object primaryKey, Map properties) {
         ReadObjectQuery query = getReadObjectQuery(properties);
         query.setReferenceClass(referenceClass);
         query.setSelectionId(primaryKey);
@@ -1580,7 +1581,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * Session broker implement composite persistence unit.
      */
     @Override
-    public DatabaseSessionImpl getMemberDatabaseSession(Class cls) {
+    public DatabaseSessionImpl getMemberDatabaseSession(Class<?> cls) {
         if(this.databaseSession.isBroker()) {
             return (DatabaseSessionImpl) this.databaseSession.getSessionForClass(cls);
         } else {
@@ -1594,7 +1595,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * Session broker implement composite persistence unit.
      */
     @Override
-    public ServerSession getMemberServerSession(Class cls) {
+    public ServerSession getMemberServerSession(Class<?> cls) {
         if(this.databaseSession.isBroker()) {
             return (ServerSession) this.databaseSession.getSessionForClass(cls);
         } else {
@@ -1608,7 +1609,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * Session broker implement composite persistence unit.
      */
     @Override
-    public String getMemberSessionName(Class cls) {
+    public String getMemberSessionName(Class<?> cls) {
         if(this.databaseSession.isBroker()) {
             return this.databaseSession.getSessionForClass(cls).getName();
         } else {
@@ -1621,7 +1622,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * the return type.
      */
     @Override
-    public jakarta.persistence.Query createQuery(Expression expression, Class resultType) {
+    public jakarta.persistence.Query createQuery(Expression expression, Class<?> resultType) {
         try {
             verifyOpen();
             DatabaseQuery query = createQueryInternal(expression, resultType);
@@ -1697,7 +1698,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * This method is used to create a query using a EclipseLink Call.
      */
     @Override
-    public jakarta.persistence.Query createQuery(Call call, Class entityClass) {
+    public jakarta.persistence.Query createQuery(Call call, Class<?> entityClass) {
         try {
             verifyOpen();
             ReadAllQuery query = new ReadAllQuery(entityClass, call);
@@ -1752,7 +1753,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * This method is used to create a query using a EclipseLink Expression and
      * the return type.
      */
-    protected DatabaseQuery createQueryInternal(Expression expression, Class resultType) {
+    protected DatabaseQuery createQueryInternal(Expression expression, Class<?> resultType) {
         ReadAllQuery query = new ReadAllQuery(resultType);
         query.setSelectionCriteria(expression);
         return query;
@@ -1803,6 +1804,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @since EclipseLink 2.5/Java Persistence 2.1
      */
     @Override
+    @SuppressWarnings({"rawtypes"})
     public StoredProcedureQuery createStoredProcedureQuery(String procedureName, Class... resultClasses) {
         try {
             verifyOpen();
@@ -1811,7 +1813,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             call.setHasMultipleResultSets(resultClasses.length > 1);
 
             List<SQLResultSetMapping> sqlResultSetMappings = new ArrayList<SQLResultSetMapping>();
-            for (Class resultClass : resultClasses) {
+            for (Class<?> resultClass : resultClasses) {
                 sqlResultSetMappings.add(new SQLResultSetMapping(resultClass));
             }
 
@@ -2716,7 +2718,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 // If the descriptor is isolated then it is not cacheable so ignore
                 // the properties. A null descriptor case will be handled in the
                 // individual operation methods so no need to worry about it here.
-                Class cls = entity instanceof Class ? (Class) entity : entity.getClass();
+                Class<?> cls = entity instanceof Class<?> ? (Class) entity : entity.getClass();
                 ClassDescriptor descriptor = getActiveSession().getDescriptor(cls);
 
                 if (descriptor != null && ! descriptor.isIsolated()) {

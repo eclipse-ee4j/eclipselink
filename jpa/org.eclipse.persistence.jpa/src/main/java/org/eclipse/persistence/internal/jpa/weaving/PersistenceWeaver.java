@@ -90,7 +90,7 @@ public class PersistenceWeaver implements ClassTransformer {
      */
     @Override
     public byte[] transform(final ClassLoader loader, final String className,
-            final Class classBeingRedefined, final ProtectionDomain protectionDomain,
+            final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain,
             final byte[] classfileBuffer) throws IllegalClassFormatException {
         final SessionLog log = AbstractSessionLog.getLog();
         // PERF: Is finest logging on weaving turned on?

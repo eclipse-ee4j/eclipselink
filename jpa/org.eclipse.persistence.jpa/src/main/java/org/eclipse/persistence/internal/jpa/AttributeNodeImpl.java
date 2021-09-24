@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,7 @@ import jakarta.persistence.Subgraph;
  * Concrete JPA AttributeNode class. For this implementation the AttributeNode includes information from live
  * AttributeItems.
  */
+@SuppressWarnings({"rawtypes"})
 public class AttributeNodeImpl<X> implements AttributeNode<X>{
 
 

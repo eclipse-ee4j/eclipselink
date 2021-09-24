@@ -210,7 +210,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * Build a ReadAllQuery from a class and stored procedure call.
      */
-    public static DatabaseQuery buildStoredProcedureQuery(Class resultClass, StoredProcedureCall call, Map<String, Object> hints, ClassLoader classLoader, AbstractSession session) {
+    public static DatabaseQuery buildStoredProcedureQuery(Class<?> resultClass, StoredProcedureCall call, Map<String, Object> hints, ClassLoader classLoader, AbstractSession session) {
         DatabaseQuery query = new ReadAllQuery(resultClass);
         query.setCall(call);
         query.setIsUserDefined(true);
@@ -791,6 +791,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * @return the same query instance
      */
     @Override
+    @SuppressWarnings({"rawtypes"})
     public StoredProcedureQuery registerStoredProcedureParameter(int position, Class type, ParameterMode mode) {
         entityManager.verifyOpenWithSetRollbackOnly();
         StoredProcedureCall call = (StoredProcedureCall) getDatabaseQuery().getCall();
@@ -823,6 +824,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * @return the same query instance
      */
     @Override
+    @SuppressWarnings({"rawtypes"})
     public StoredProcedureQuery registerStoredProcedureParameter(String parameterName, Class type, ParameterMode mode) {
         entityManager.verifyOpenWithSetRollbackOnly();
         StoredProcedureCall call = (StoredProcedureCall) getDatabaseQuery().getCall();

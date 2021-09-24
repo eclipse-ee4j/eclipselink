@@ -92,7 +92,7 @@ public class MetadataHelper {
      * INTERNAL:
      * Load a class from a given class name. (XMLEntityMappings calls this one)
      */
-    public static Class getClassForName(String classname, ClassLoader loader) {
+    public static Class<?> getClassForName(String classname, ClassLoader loader) {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
@@ -106,7 +106,7 @@ public class MetadataHelper {
         } catch (ClassNotFoundException exception) {
             if (classname.indexOf('$') != -1) {
                 String outer = classname.substring(0, classname.indexOf('$'));
-                Class outerClass = getClassForName(outer, loader);
+                Class<?> outerClass = getClassForName(outer, loader);
                 for (int index = 0; index < outerClass.getClasses().length; index++)
                 {
                     if (outerClass.getClasses()[index].getName().equals(classname))
@@ -123,7 +123,7 @@ public class MetadataHelper {
      * INTERNAL:
      * Create a new instance of the class given.
      */
-    static Object getClassInstance(Class cls) {
+    static Object getClassInstance(Class<?> cls) {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {

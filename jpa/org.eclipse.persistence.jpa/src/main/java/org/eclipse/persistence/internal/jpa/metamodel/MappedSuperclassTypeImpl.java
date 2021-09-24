@@ -57,11 +57,11 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
      * The types in this map are keyed on the Java class of the inheriting type.
      * This map acts as the reverse of all superType fields that point to "this" MappedSuperclass.
      **/
-    private Map<Class, IdentifiableTypeImpl> inheritingIdentifiableTypes;
+    private Map<Class<?>, IdentifiableTypeImpl> inheritingIdentifiableTypes;
 
     protected MappedSuperclassTypeImpl(MetamodelImpl metamodel, ClassDescriptor relationalDescriptor) {
         super(metamodel, relationalDescriptor);
-        inheritingIdentifiableTypes = new HashMap<Class, IdentifiableTypeImpl>();
+        inheritingIdentifiableTypes = new HashMap<Class<?>, IdentifiableTypeImpl>();
         // The supertype field will remain uninstantiated until MetamodelImpl.initialize() is complete
     }
 

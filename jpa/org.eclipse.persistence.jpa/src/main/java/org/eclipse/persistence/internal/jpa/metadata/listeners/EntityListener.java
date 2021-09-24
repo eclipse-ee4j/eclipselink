@@ -64,7 +64,7 @@ public class EntityListener<T> extends DescriptorEventAdapter {
 
     private T m_listener;
     private Class<T> m_listenerClass;
-    private Class m_entityClass;
+    private Class<?> m_entityClass;
     private Map<String, List<Method>> m_methods;
     private final Map<String, Map<Integer, Boolean>> m_overriddenEvents;
     private static final Map<Integer, String> m_eventStrings;
@@ -87,7 +87,7 @@ public class EntityListener<T> extends DescriptorEventAdapter {
     /**
      * INTERNAL:
      */
-    protected EntityListener(Class entityClass) {
+    protected EntityListener(Class<?> entityClass) {
         m_entityClass = entityClass;
         m_methods = new ConcurrentHashMap<>();
 
@@ -96,7 +96,7 @@ public class EntityListener<T> extends DescriptorEventAdapter {
         m_overriddenEvents = new ConcurrentHashMap<>();
     }
 
-    public EntityListener(Class<T> listenerClass, Class entityClass){
+    public EntityListener(Class<T> listenerClass, Class<?> entityClass){
         this(entityClass);
         this.m_listenerClass = listenerClass;
     }
@@ -174,7 +174,7 @@ public class EntityListener<T> extends DescriptorEventAdapter {
     /**
      * INTERNAL:
      */
-    public Class getEntityClass() {
+    public Class<?> getEntityClass() {
         return m_entityClass;
     }
 
@@ -234,7 +234,7 @@ public class EntityListener<T> extends DescriptorEventAdapter {
     /**
      * INTERNAL:
      */
-    public Class getListenerClass() {
+    public Class<?> getListenerClass() {
         return m_listenerClass;
     }
 

@@ -223,7 +223,7 @@ public class CORBAConnection extends RemoteConnection {
      * Return the table descriptor specified for the class.
      */
     @Override
-    public ClassDescriptor getDescriptor(Class domainClass) {
+    public ClassDescriptor getDescriptor(Class<?> domainClass) {
         Transporter transporter = getRemoteSessionController().getDescriptor(new Transporter(domainClass));
         if (!transporter.wasOperationSuccessful()) {
             throw transporter.getException();
@@ -250,7 +250,7 @@ public class CORBAConnection extends RemoteConnection {
      * INTERNAL:
      * Return the table descriptor specified for the alias.
      */
-    public ClassDescriptor getDescriptorForAlias(Class domainClass) {
+    public ClassDescriptor getDescriptorForAlias(Class<?> domainClass) {
         Transporter transporter = getRemoteSessionController().getDescriptorForAlias(new Transporter(domainClass));
         if (!transporter.wasOperationSuccessful()) {
             throw transporter.getException();
@@ -357,7 +357,7 @@ public class CORBAConnection extends RemoteConnection {
      * Execute query remotely.
      */
     @Override
-    public Transporter remoteExecuteNamedQuery(String name, Class javaClass, Vector arguments) {
+    public Transporter remoteExecuteNamedQuery(String name, Class<?> javaClass, Vector arguments) {
         Transporter transporter = getRemoteSessionController().executeNamedQuery(new Transporter(name), new Transporter(javaClass), new Transporter(arguments));
         if (!transporter.wasOperationSuccessful()) {
             throw transporter.getException();

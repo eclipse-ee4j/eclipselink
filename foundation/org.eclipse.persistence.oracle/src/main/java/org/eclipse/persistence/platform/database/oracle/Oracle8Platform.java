@@ -135,7 +135,7 @@ public class Oracle8Platform extends OraclePlatform {
      */
     @Override
     public Object getCustomModifyValueForCall(Call call, Object value, DatabaseField field, boolean shouldBind) {
-        Class type = field.getType();
+        Class<?> type = field.getType();
         if (ClassConstants.BLOB.equals(type) || ClassConstants.CLOB.equals(type)) {
             if(value == null) {
                 return null;
@@ -176,7 +176,7 @@ public class Oracle8Platform extends OraclePlatform {
     @Override
     public boolean shouldUseCustomModifyForCall(DatabaseField field) {
         if (shouldUseLocatorForLOBWrite()) {
-            Class type = field.getType();
+            Class<?> type = field.getType();
             if (ClassConstants.BLOB.equals(type) || ClassConstants.CLOB.equals(type)) {
                 return true;
             }
@@ -211,7 +211,7 @@ public class Oracle8Platform extends OraclePlatform {
      * INTERNAL:
      * Used in writeLOB method only to identify a BLOB
      */
-    protected boolean isBlob(Class type) {
+    protected boolean isBlob(Class<?> type) {
         return ClassConstants.BLOB.equals(type);
     }
 
@@ -219,7 +219,7 @@ public class Oracle8Platform extends OraclePlatform {
      * INTERNAL:
      * Used in writeLOB method only to identify a CLOB
      */
-    protected boolean isClob(Class type) {
+    protected boolean isClob(Class<?> type) {
         return ClassConstants.CLOB.equals(type);
     }
 

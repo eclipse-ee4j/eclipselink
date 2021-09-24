@@ -64,7 +64,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
 
     protected Set<FromImpl> joins;
 
-    public CriteriaQueryImpl(Metamodel metamodel, ResultType queryResult, Class result, CriteriaBuilderImpl queryBuilder) {
+    public CriteriaQueryImpl(Metamodel metamodel, ResultType queryResult, Class<T> result, CriteriaBuilderImpl queryBuilder) {
         super(metamodel, queryResult, queryBuilder, result);
     }
 
@@ -89,20 +89,20 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             }
             if (selection.getJavaType().equals(Tuple.class)) {
                 this.queryResult = ResultType.TUPLE;
-                this.queryType = Tuple.class;
+                this.queryType = (Class<T>) Tuple.class;
             } else if (((InternalSelection) selection).isConstructor()) {
                 Selection[] selectArray = selection.getCompoundSelectionItems().toArray(new Selection[selection.getCompoundSelectionItems().size()]);
                 populateAndSetConstructorSelection((ConstructorSelectionImpl)selection, this.selection.getJavaType(), selectArray);
-                this.queryType = selection.getJavaType();
+                this.queryType = (Class<T>) selection.getJavaType();
             } else {
                 this.queryResult = ResultType.OBJECT_ARRAY;
-                this.queryType = ClassConstants.AOBJECT;
+                this.queryType = (Class<T>) ClassConstants.AOBJECT;
             }
         } else {
             // Update query type only when it's not null in selection argument.
-            Class queryType = selection.getJavaType();
+            Class<?> queryType = selection.getJavaType();
             if (queryType != null) {
-                this.queryType = queryType;
+                this.queryType = (Class<T>) queryType;
             }
             TypeImpl type = ((MetamodelImpl)this.metamodel).getType(this.queryType);
             if (type != null && type.getPersistenceType().equals(PersistenceType.ENTITY)) {
@@ -396,7 +396,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      *
      */
     public void populateAndSetConstructorSelection(ConstructorSelectionImpl constructorSelection, Class<?> class1, Selection<?>... selections) throws IllegalArgumentException{
-        Class[] constructorArgs = new Class[selections.length];
+        Class<?>[] constructorArgs = new Class<?>[selections.length];
         int count = 0;
         for (Selection select : selections) {
             if(select instanceof ConstructorSelectionImpl) {

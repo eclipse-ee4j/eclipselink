@@ -160,7 +160,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
      * with the specification.
      * See http://bugs.eclipse.org/338837
      */
-    private void entityEmbeddableManagedTypeNotFound(Map typeMap, Object aType, Class clazz, String metamodelType, String metamodelTypeName) {
+    private void entityEmbeddableManagedTypeNotFound(Map typeMap, Object aType, Class<?> clazz, String metamodelType, String metamodelTypeName) {
         // 338837: verify that the collection is not empty - this would mean entities did not make it into the search path
         if(typeMap.isEmpty()) {
             AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.METAMODEL, "metamodel_type_collection_empty_during_lookup", clazz, metamodelTypeName);
@@ -444,7 +444,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
                 AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_itentifiableType_javaclass_null_cannot_set_supertype",
                         potentialIdentifiableType.getDescriptor(), this);
             } else {
-                Class superclass = aClass.getSuperclass();
+                Class<?> superclass = aClass.getSuperclass();
                 // explicitly set the superType to null (just in case it is initialized to a non-null value in a constructor)
                 IdentifiableType<?> identifiableTypeSuperclass = null;
                 if(potentialIdentifiableType.isIdentifiableType() && (superclass != ClassConstants.OBJECT && superclass != null)) {

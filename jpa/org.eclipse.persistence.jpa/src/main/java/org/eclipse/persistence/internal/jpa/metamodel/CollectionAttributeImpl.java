@@ -77,6 +77,7 @@ public class CollectionAttributeImpl<X, V> extends PluralAttributeImpl<X, Collec
      *  @return Java type
      */
     @Override
+    @SuppressWarnings({"rawtypes"})
     public Class getJavaType() {
         return Collection.class;
     }

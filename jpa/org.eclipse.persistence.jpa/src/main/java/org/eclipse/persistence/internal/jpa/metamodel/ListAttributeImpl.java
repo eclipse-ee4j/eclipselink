@@ -75,6 +75,7 @@ public class ListAttributeImpl<X, V> extends PluralAttributeImpl<X, List<V>, V> 
      *  @return Java type
      */
     @Override
+    @SuppressWarnings({"rawtypes"})
     public Class getJavaType() {
         return List.class;
     }

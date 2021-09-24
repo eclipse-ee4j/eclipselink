@@ -79,7 +79,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
 
 
 
-    public SubQueryImpl(Metamodel metamodel, Class result, CriteriaBuilderImpl queryBuilder, CommonAbstractCriteria parent){
+    public SubQueryImpl(Metamodel metamodel, Class<T> result, CriteriaBuilderImpl queryBuilder, CommonAbstractCriteria parent){
         super(metamodel, ResultType.OTHER, queryBuilder, result);
         this.subQuery = new ReportQuery();
         TypeImpl queryType = ((MetamodelImpl)metamodel).getType(result);
@@ -111,7 +111,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
         }
 
         this.selection = (SelectionImpl) selection;
-        this.queryType = selection.getJavaType();
+        this.queryType = (Class<T>) selection.getJavaType();
 
         this.subQuery.getItems().clear();
 

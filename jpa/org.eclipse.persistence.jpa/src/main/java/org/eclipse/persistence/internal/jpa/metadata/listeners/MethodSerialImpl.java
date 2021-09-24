@@ -48,7 +48,7 @@ public class MethodSerialImpl implements Serializable {
 
     public Method convertToMethod(ClassLoader loader) throws NoSuchMethodException {
         //Build the class
-        Class declaringClass = null;
+        Class<?> declaringClass = null;
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
@@ -64,7 +64,7 @@ public class MethodSerialImpl implements Serializable {
         }
 
         //Build the method argument class types.
-        Class[] argTypes = new Class[paramList.size()];
+        Class<?>[] argTypes = new Class<?>[paramList.size()];
         int i=0;
         for (String paramType: paramList) {
             try {

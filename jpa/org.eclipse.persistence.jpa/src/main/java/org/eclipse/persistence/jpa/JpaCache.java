@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,7 +41,7 @@ public interface JpaCache extends Cache {
      * <p> NOTE: Caution must be used in doing this to ensure that the Objects within the cache
      * are not referenced from other Objects of other classes or from the application.
      */
-    void clear(Class cls);
+    void clear(Class<?> cls);
 
     /**
      * Clear all the query results caches.
@@ -56,7 +56,7 @@ public interface JpaCache extends Cache {
     /**
      * Clear all named query results cache associated with entity class.
      */
-    void clearQueryCache(Class entityClass);
+    void clearQueryCache(Class<?> entityClass);
 
     /**
      * Returns the remaining life of the given Object (in milliseconds).  This method is associated with use of
@@ -74,7 +74,7 @@ public interface JpaCache extends Cache {
     /**
      * Returns true if the Object with the id and Class type is valid in the cache.
      */
-    boolean isValid(Class cls, Object id);
+    boolean isValid(Class<?> cls, Object id);
 
     /**
      * Used to print all the Objects in the cache.
@@ -86,7 +86,7 @@ public interface JpaCache extends Cache {
      * Used to print all the Objects in the cache of the Class type.
      * The output of this method will be logged to this persistence unit's SessionLog at SEVERE level.
      */
-    void print(Class cls);
+    void print(Class<?> cls);
 
     /**
      * Used to print all the currently locked cache keys in the cache.
@@ -106,7 +106,7 @@ public interface JpaCache extends Cache {
      * Returns the Object from the cache map with the id
      * and Class type.
      */
-    Object getObject(Class cls, Object id);
+    Object getObject(Class<?> cls, Object id);
 
     /**
      * ADVANCED:
@@ -131,7 +131,7 @@ public interface JpaCache extends Cache {
      * <p> NOTE: Caution should be used when calling to avoid violating Object identity.
      * The application should only call this if its known that no references to the Object exist.
      */
-    Object removeObject(Class cls, Object id);
+    Object removeObject(Class<?> cls, Object id);
 
     /**
      * Returns true if the cache contains an Object with the same id and Class type of the given object.
@@ -155,7 +155,7 @@ public interface JpaCache extends Cache {
      * If true is passed, the object is also invalidated across cache coordination.
      * Cache coordination must be enabled for this to have an affect.
      */
-    void evict(Class classToEvict, Object id, boolean invalidateInCluster);
+    void evict(Class<?> classToEvict, Object id, boolean invalidateInCluster);
 
     /**
      * Returns the object's Id.

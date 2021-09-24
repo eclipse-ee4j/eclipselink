@@ -202,7 +202,7 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
      */
     Method[] getCandidateCallbackMethodsForEntityListener() {
         Set<Method> candidateMethods = new HashSet<>();
-        Class listenerClass = m_listener.getListenerClass();
+        Class<?> listenerClass = m_listener.getListenerClass();
 
         // Add all the declared methods ...
         Method[] declaredMethods = getDeclaredMethods(listenerClass);
@@ -227,7 +227,7 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
      * INTERNAL:
      * Load a class from a given class name.
      */
-    Class getClass(MetadataClass metadataClass, ClassLoader loader) {
+    Class<?> getClass(MetadataClass metadataClass, ClassLoader loader) {
         String classname = metadataClass.getName();
 
         try {
@@ -259,7 +259,7 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
      * access. This call returns all methods (private, protected, package and
      * public) on the given class ONLY. It does not traverse the superclasses.
      */
-    Method[] getDeclaredMethods(Class cls) {
+    Method[] getDeclaredMethods(Class<?> cls) {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
             return AccessController.doPrivileged(new PrivilegedGetDeclaredMethods(cls));
         } else {
@@ -278,7 +278,7 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
     /**
      * INTERNAL:
      */
-    protected Object getInstance(Class cls) {
+    protected Object getInstance(Class<?> cls) {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
@@ -318,7 +318,7 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
      * This call returns only public methods from the given class and its
      * superclasses.
      */
-    Method[] getMethods(Class cls) {
+    Method[] getMethods(Class<?> cls) {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
             return AccessController.doPrivileged(new PrivilegedGetMethods(cls));
         } else {

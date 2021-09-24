@@ -75,6 +75,7 @@ public class SetAttributeImpl<X, V> extends PluralAttributeImpl<X, Set<V>, V> im
      *  @return Java type
      */
     @Override
+    @SuppressWarnings({"rawtypes"})
     public Class getJavaType() {
         return Set.class;
     }

@@ -179,7 +179,7 @@ public class JavaSECMPInitializer extends JPAInitializer {
         ClassLoader tempLoader = null;
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
             try {
-                Class[] argsClasses = new Class[] { URL[].class, ClassLoader.class, Collection.class, boolean.class };
+                Class<?>[] argsClasses = new Class<?>[] { URL[].class, ClassLoader.class, Collection.class, boolean.class };
                 Object[] args = new Object[] { urlPath, currentLoader, col, shouldOverrideLoadClassForCollectionMembers };
                 Constructor<TempEntityLoader> classLoaderConstructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(TempEntityLoader.class, argsClasses, true));
                 tempLoader = (ClassLoader) AccessController.doPrivileged(new PrivilegedInvokeConstructor(classLoaderConstructor, args));
@@ -347,7 +347,7 @@ public class JavaSECMPInitializer extends JPAInitializer {
         }
 
         @Override
-        protected synchronized Class loadClass(String name, boolean resolve) throws ClassNotFoundException {
+        protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
             if (shouldOverrideLoadClass(name)) {
                 // First, check if the class has already been loaded.
                 // Note that the check only for classes loaded by this loader,
