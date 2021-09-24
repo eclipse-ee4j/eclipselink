@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.events;
 
 import java.util.ArrayList;
 
-import jakarta.xml.bind.*;
+import jakarta.xml.bind.Marshaller;
 
 
 public class JAXBMarshalListenerImpl extends Marshaller.Listener {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.jaxb;
 
-import java.lang.reflect.InvocationTargetException;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.Map;
 
 import jakarta.xml.bind.Marshaller;
@@ -24,7 +21,6 @@ import jakarta.xml.bind.Marshaller;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.jaxb.compiler.MarshalCallback;
 import org.eclipse.persistence.oxm.XMLMarshalListener;
 
@@ -62,69 +58,39 @@ public class JAXBMarshalListener implements XMLMarshalListener {
     }
 
     @Override
-    public void beforeMarshal(Object obj) {
+    public void beforeMarshal(final Object obj) {
         if(classBasedMarshalEvents != null) {
             MarshalCallback callback = (MarshalCallback)classBasedMarshalEvents.get(obj.getClass().getName());
             if(callback != null && callback.getBeforeMarshalCallback() != null) {
-                try {
-                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                        try{
-                            AccessController.doPrivileged(new PrivilegedMethodInvoker(callback.getBeforeMarshalCallback(), obj, new Object[]{marshaller}));
-                        }catch (PrivilegedActionException ex){
-                            if (ex.getCause() instanceof IllegalAccessException){
-                                throw (IllegalAccessException) ex.getCause();
-                            }
-                            if (ex.getCause() instanceof InvocationTargetException){
-                                throw (InvocationTargetException) ex.getCause();
-                            }
-                            throw (RuntimeException)ex.getCause();
-                        }
-                    }else{
-                        PrivilegedAccessHelper.invokeMethod(callback.getBeforeMarshalCallback(), obj, new Object[]{marshaller});
-                    }
-                } catch(Exception ex) {
-                    throw XMLMarshalException.marshalException(ex);
-                }
+                PrivilegedAccessHelper.callDoPrivilegedWithException(
+                        () -> PrivilegedAccessHelper.invokeMethod(callback.getBeforeMarshalCallback(), obj, new Object[]{marshaller}),
+                        (ex) -> XMLMarshalException.marshalException(ex)
+                );
             }
         }
         if (listener != null) {
-            if(obj instanceof Root){
-                obj = jaxbContext.createJAXBElementFromXMLRoot((Root) obj, ((Root) obj).getDeclaredType());
-            }
-            listener.beforeMarshal(obj);
+            listener.beforeMarshal(
+                    obj instanceof Root
+                            ? jaxbContext.createJAXBElementFromXMLRoot((Root) obj, ((Root) obj).getDeclaredType()) : obj
+            );
         }
     }
     @Override
-    public void afterMarshal(Object obj) {
+    public void afterMarshal(final Object obj) {
         if(classBasedMarshalEvents != null) {
             MarshalCallback callback = (MarshalCallback)classBasedMarshalEvents.get(obj.getClass().getName());
             if (callback != null && callback.getAfterMarshalCallback() != null) {
-                try {
-                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                        try{
-                            AccessController.doPrivileged(new PrivilegedMethodInvoker(callback.getAfterMarshalCallback(), obj, new Object[]{marshaller}));
-                        }catch (PrivilegedActionException ex){
-                            if (ex.getCause() instanceof IllegalAccessException){
-                                throw (IllegalAccessException) ex.getCause();
-                            }
-                            if (ex.getCause() instanceof InvocationTargetException){
-                                throw (InvocationTargetException) ex.getCause();
-                            }
-                            throw (RuntimeException)ex.getCause();
-                        }
-                    }else{
-                        PrivilegedAccessHelper.invokeMethod(callback.getAfterMarshalCallback(), obj, new Object[]{marshaller});
-                    }
-                } catch(Exception ex) {
-                    throw XMLMarshalException.marshalException(ex);
-                }
+                PrivilegedAccessHelper.callDoPrivilegedWithException(
+                        () -> PrivilegedAccessHelper.invokeMethod(callback.getAfterMarshalCallback(), obj, new Object[]{marshaller}),
+                        (ex) -> XMLMarshalException.marshalException(ex)
+                );
             }
         }
         if (listener != null) {
-            if(obj instanceof Root){
-                obj = jaxbContext.createJAXBElementFromXMLRoot((Root) obj, ((Root) obj).getDeclaredType());
-            }
-            listener.afterMarshal(obj);
+            listener.afterMarshal(
+                    obj instanceof Root
+                            ? jaxbContext.createJAXBElementFromXMLRoot((Root) obj, ((Root) obj).getDeclaredType()) : obj
+            );
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +18,8 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Vector;
+
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
@@ -332,7 +334,8 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                         xmlChoiceMapping.addChoiceElement(compositeMapping.getXPath(), Link.class);
                         xmlChoiceMapping.addChoiceElement(compositeMapping.getXPath(), refDesc.getJavaClass());
 
-                        xmlChoiceMapping.setConverter(new XMLJavaTypeConverter(Class.forName(adapterClassName, true, cl)));
+                        xmlChoiceMapping.setConverter(new XMLJavaTypeConverter(
+                                (Class<? extends XmlAdapter<?,?>>) Class.forName(adapterClassName, true, cl)));
                         jaxbDescriptor.removeMappingForAttributeName(jaxbMapping.getAttributeName());
                         jaxbDescriptor.addMapping(xmlChoiceMapping);
 
@@ -347,7 +350,8 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                         xmlChoiceMapping.addChoiceElement(compositeMapping.getXPath(), refDesc.getJavaClass());
 
                         xmlChoiceMapping.setContainerPolicy(jaxbMapping.getContainerPolicy());
-                        xmlChoiceMapping.setConverter(new XMLJavaTypeConverter(Class.forName(adapterClassName, true, cl)));
+                        xmlChoiceMapping.setConverter(new XMLJavaTypeConverter(
+                                (Class<? extends XmlAdapter<?,?>>) Class.forName(adapterClassName, true, cl)));
                         jaxbDescriptor.removeMappingForAttributeName(jaxbMapping.getAttributeName());
                         jaxbDescriptor.addMapping(xmlChoiceMapping);
                     }

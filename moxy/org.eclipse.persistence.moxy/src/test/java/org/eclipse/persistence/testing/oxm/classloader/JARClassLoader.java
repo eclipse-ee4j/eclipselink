@@ -14,16 +14,16 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.classloader;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.util.*;
-import java.util.zip.*;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetClassLoaderForClass;
-
 
 /**
  * This class is an implementation of the <code>ClassLoader</code> abstract class.
@@ -35,7 +35,7 @@ import org.eclipse.persistence.internal.security.PrivilegedGetClassLoaderForClas
  */
 public class JARClassLoader extends ClassLoader {
     /** Map each package name to the appropriate JAR file. */
-    private Hashtable overridePackageNames;
+    private Hashtable<String, String> overridePackageNames;
 
 /**
  * Default constructor - initialize the new instance.
@@ -64,9 +64,7 @@ public JARClassLoader (String jarFileName) {
 protected ZipFile buildJARFile(String jarFileName) {
     try {
         return new ZipFile(new File(Thread.currentThread().getContextClassLoader().getResource(jarFileName).toURI()));
-    } catch (IOException e) {
-        throw new RuntimeException(e);
-    } catch (URISyntaxException e) {
+    } catch (IOException | URISyntaxException e) {
         throw new RuntimeException(e);
     }
 }
@@ -79,8 +77,8 @@ protected String buildPackageName(String className) {
 /**
  * Return the class for the specified name, leaving it "unresolved".
  */
-protected Class customLoadUnresolvedClass(String className) throws ClassNotFoundException {
-    String jarFileName = (String) overridePackageNames.get(this.buildPackageName(className));
+protected Class<?> customLoadUnresolvedClass(String className) throws ClassNotFoundException {
+    String jarFileName = overridePackageNames.get(this.buildPackageName(className));
     ZipFile jarFile = this.buildJARFile(jarFileName);
 
     String url = className.replace('.', '/').concat(".class");
@@ -93,7 +91,6 @@ protected Class customLoadUnresolvedClass(String className) throws ClassNotFound
         data = this.loadData(jarFile, jarEntry);
         jarFile.close();
     } catch (IOException e) {
-        Object[] args = {jarFileName, url};
         throw new ClassNotFoundException();
     }
     return this.defineClass(className, data, 0, data.length);
@@ -121,7 +118,7 @@ protected void extractPackageNames(String jarFileName) {
  * Initialize the newly-created instance.
  */
 protected void initialize() {
-    this.overridePackageNames = new Hashtable();
+    this.overridePackageNames = new Hashtable<>();
 }
 /**
  * Initialize
@@ -182,16 +179,9 @@ protected Class loadUnresolvedClass(String className) throws ClassNotFoundExcept
     if (this.shouldCustomLoad(className)) {
         return this.customLoadUnresolvedClass(className);
     } else {
-        ClassLoader cl = null;
-        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            try{
-                cl = AccessController.doPrivileged(new PrivilegedGetClassLoaderForClass(this.getClass()));
-            }catch (PrivilegedActionException ex){
-                throw (RuntimeException)ex.getCause();
-            }
-        }else{
-             cl = PrivilegedAccessHelper.getClassLoaderForClass(this.getClass());
-        }
+        final ClassLoader cl = PrivilegedAccessHelper.callDoPrivileged(
+                () -> PrivilegedAccessHelper.getClassLoaderForClass(this.getClass())
+        );
         if (cl == null) {
             // this should only occur under jdk1.1.x
             return this.findSystemClass(className);

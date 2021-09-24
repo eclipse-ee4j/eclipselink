@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -90,6 +93,102 @@ public class PrivilegedAccessHelper {
         primitiveClasses.put("byte", byte.class);
         primitiveClasses.put("void", void.class);
         primitiveClasses.put("short", short.class);
+    }
+
+    /**
+     * INTERNAL
+     * A task that returns a result and shall not throw an exception.
+     * Implementors define a single {@code call()} method with no arguments.
+     *
+     * @param <T> the result type of method call
+     */
+    @FunctionalInterface
+    public interface PrivilegedCallable<T> {
+        T call();
+    }
+
+    /**
+     * INTERNAL
+     * A task that returns a result and may throw an exception.
+     * Implementors define a single {@code call()} method with no arguments.
+     *
+     * @param <T> the result type of method call
+     */
+    @FunctionalInterface
+    public interface PrivilegedExceptionCallable<T> {
+        T call() throws Exception;
+    }
+
+    /**
+     * INTERNAL
+     * Specific {@code Exception} supplier for {@link PrivilegedExceptionCallable}.
+     *
+     * @param <E> specific {@link Exception} type
+     */
+    @FunctionalInterface
+    public interface CallableExceptionSupplier<E extends Exception> {
+        E get(Exception e);
+    }
+
+    /**
+     * INTERNAL
+     * Executes provided {@link PrivilegedCallable} task using {@link AccessController#doPrivileged(PrivilegedAction)}
+     * when privileged access is enabled.
+     *
+     * @param <T> {@link PrivilegedCallable} return type
+     * @param task task to execute
+     */
+    @SuppressWarnings("removal")
+    public static <T> T callDoPrivileged(PrivilegedCallable<T> task) {
+        if (shouldUsePrivilegedAccess()) {
+            return AccessController.doPrivileged((PrivilegedAction<T>) task::call);
+        } else {
+            return task.call();
+        }
+    }
+
+    /**
+     * INTERNAL
+     * Executes provided {@link PrivilegedExceptionCallable} task using {@link AccessController#doPrivileged(PrivilegedExceptionAction)}
+     * when privileged access is enabled.
+     *
+     * @param <T> {@link PrivilegedExceptionCallable} return type
+     * @param task task to execute
+     */
+    @SuppressWarnings("removal")
+    public static <T> T callDoPrivilegedWithException(PrivilegedExceptionCallable<T> task) throws Exception {
+        if (shouldUsePrivilegedAccess()) {
+            try {
+                return AccessController.doPrivileged((PrivilegedExceptionAction<T>) task::call);
+            // AccessController.doPrivileged wraps Exception instances with PrivilegedActionException. Let's unwrap them
+            // to provide the same exception output as original callable without AccessController.doPrivileged
+            } catch (PrivilegedActionException pae) {
+                throw pae.getException();
+            }
+        } else {
+            return task.call();
+        }
+    }
+
+    /**
+     * INTERNAL
+     * Executes provided {@link PrivilegedExceptionCallable} task using {@link AccessController#doPrivileged(PrivilegedExceptionAction)}
+     * when privileged access is enabled.
+     * If {@link Exception} is thrown from task, it will be processed by provided {@link CallableExceptionSupplier}.
+     *
+     * @param <T> {@link PrivilegedExceptionCallable} return type
+     * @param <E> specific {@link Exception} type
+     * @param task task to execute
+     * @param exception specific {@link Exception} supplier
+     */
+    @SuppressWarnings("removal")
+    public static <T,E extends Exception> T callDoPrivilegedWithException(
+            PrivilegedExceptionCallable<T> task, CallableExceptionSupplier<E> exception) throws E {
+        try {
+            return callDoPrivilegedWithException(task);
+        } catch (Exception e) {
+            throw exception.get(e);
+        }
     }
 
     /**
@@ -484,15 +583,16 @@ public class PrivilegedAccessHelper {
     /**
      * Get the value of the given field in the given object.
      */
-    public static Object getValueFromField(final Field field, final Object object) throws IllegalAccessException {
-        return field.get(object);
+    @SuppressWarnings("unchecked")
+    public static <T> T getValueFromField(final Field field, final Object object) throws IllegalAccessException {
+        return (T) field.get(object);
     }
 
     /**
      * Construct an object with the given Constructor and the given array of arguments.  Wrap the call in a
      * doPrivileged block if necessary.
      */
-    public static Object invokeConstructor(final Constructor constructor, final Object[] args) throws IllegalAccessException, InvocationTargetException, InstantiationException {
+    public static <T> T invokeConstructor(final Constructor<T> constructor, final Object[] args) throws IllegalAccessException, InvocationTargetException, InstantiationException {
         return constructor.newInstance(args);
     }
 
@@ -500,7 +600,7 @@ public class PrivilegedAccessHelper {
      * Invoke the givenMethod on a givenObject. Assumes method does not take
      * parameters. Wrap in a doPrivileged block if necessary.
      */
-    public static Object invokeMethod(final Method method, final Object object) throws IllegalAccessException, InvocationTargetException {
+    public static <T> T invokeMethod(final Method method, final Object object) throws IllegalAccessException, InvocationTargetException {
         return invokeMethod(method, object, null);
     }
 
@@ -508,12 +608,13 @@ public class PrivilegedAccessHelper {
      * Invoke the givenMethod on a givenObject using the array of parameters given.  Wrap in a doPrivileged block
      * if necessary.
      */
-    public static Object invokeMethod(final Method method, final Object object, final Object[] parameters) throws IllegalAccessException, InvocationTargetException {
+    @SuppressWarnings("unchecked")
+    public static <T> T invokeMethod(final Method method, final Object object, final Object[] parameters) throws IllegalAccessException, InvocationTargetException {
         // Ensure the method is accessible.
         if (!method.isAccessible()) {
             method.setAccessible(true);
         }
-        return method.invoke(object, parameters);
+        return (T) method.invoke(object, parameters);
     }
 
     /**
