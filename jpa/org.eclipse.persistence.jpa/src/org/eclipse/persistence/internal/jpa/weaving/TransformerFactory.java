@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle, IBM Corporation, and/or their affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -104,7 +104,7 @@ public class TransformerFactory {
      * We assume that if a mapping exists, the attribute must either be mapped from the owning
      * class or from a superclass.
      */
-    public void addClassDetailsForMappedSuperClasses(MetadataClass clz, ClassDescriptor initialDescriptor, ClassDetails classDetails, Map classDetailsMap, List unMappedAttributes, boolean weaveChangeTracking){
+    public void addClassDetailsForMappedSuperClasses(MetadataClass clz, ClassDescriptor initialDescriptor, ClassDetails classDetails, Map classDetailsMap, List<DatabaseMapping> unMappedAttributes, boolean weaveChangeTracking){
         MetadataClass superClz = clz.getSuperclass();
         if (superClz == null || superClz.isObject()){
             return;
@@ -117,10 +117,30 @@ public class TransformerFactory {
                 return;
             }
         }
-        
+
+        // If the superclass declares more mappings than there are unmapped mappings still to process, this superclass has shadowed attributes
+        if(mappedSuperclassDescriptor != null && unMappedAttributes.size() < mappedSuperclassDescriptor.getMappings().size()) {
+            List<DatabaseMapping> hiddenMappings = new ArrayList<DatabaseMapping>();
+            for(DatabaseMapping mapping : mappedSuperclassDescriptor.getMappings()) {
+                boolean contains = false;
+                String name = mapping.getAttributeName();
+                for(DatabaseMapping newmapping : unMappedAttributes) {
+                    if(name.equals(newmapping.getAttributeName())) {
+                        contains = true;
+                        break;
+                    }
+                }
+                // If the super has a mapping that wasn't processed by the subclasses, add it to be processed
+                if(!contains) {
+                    hiddenMappings.add(mapping);
+                }
+            }
+            unMappedAttributes.addAll(hiddenMappings);
+        }
+
         boolean weaveValueHolders = canWeaveValueHolders(superClz, unMappedAttributes);
 
-        List stillUnMappedMappings = null;
+        List<DatabaseMapping> stillUnMappedMappings = null;
         ClassDetails superClassDetails = createClassDetails(superClz, weaveValueHolders, weaveChangeTracking, weaveFetchGroups, weaveInternal, weaveRest);
         superClassDetails.setIsMappedSuperClass(true);
         
@@ -171,7 +191,7 @@ public class TransformerFactory {
                     
                     classDetails.getVirtualAccessMethods().addAll(descriptor.getVirtualAttributeMethods());
 
-                    List unMappedAttributes = storeAttributeMappings(metaClass, classDetails, descriptor.getMappings(), weaveValueHoldersForClass);
+                    List<DatabaseMapping> unMappedAttributes = storeAttributeMappings(metaClass, classDetails, descriptor.getMappings(), weaveValueHoldersForClass);
                     classDetailsMap.put(classDetails.getClassName() ,classDetails);
 
                     classDetails.setShouldWeaveConstructorOptimization((classDetails.getDescribedClass().getFields().size() - (descriptor.getMappings().size() - unMappedAttributes.size()))<=0);
@@ -343,14 +363,14 @@ public class TransformerFactory {
      *  Return the list of mappings that is not specifically found on the given class.  These attributes will 
      *  be found on MappedSuperclasses.
      */
-    protected List storeAttributeMappings(MetadataClass metadataClass, ClassDetails classDetails, List mappings, boolean weaveValueHolders) {      
-        List unMappedAttributes = new ArrayList();
+    protected List<DatabaseMapping> storeAttributeMappings(MetadataClass metadataClass, ClassDetails classDetails, List<DatabaseMapping> mappings, boolean weaveValueHolders) {      
+        List<DatabaseMapping> unMappedAttributes = new ArrayList<DatabaseMapping>();
         Map<String, AttributeDetails> attributesMap = new HashMap<String, AttributeDetails>();
         Map<String, AttributeDetails> settersMap = new HashMap<String, AttributeDetails>();
         Map<String, AttributeDetails> gettersMap = new HashMap<String, AttributeDetails>();
 
-        for (Iterator iterator = mappings.iterator(); iterator.hasNext();) {
-            DatabaseMapping mapping = (DatabaseMapping)iterator.next();
+        for (Iterator<DatabaseMapping> iterator = mappings.iterator(); iterator.hasNext();) {
+            DatabaseMapping mapping = iterator.next();
             
             // Can't weave something that isn't really there and not going to be there.
             if (mapping.isMultitenantPrimaryKeyMapping()) {
