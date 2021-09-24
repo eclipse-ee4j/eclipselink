@@ -38,7 +38,7 @@ public class XmlElementWrapperDefaultNameTestCases extends JAXBWithJSONTestCases
 
     public XmlElementWrapperDefaultNameTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { Company.class, Employee.class });
+        setClasses(new Class<?>[] { Company.class, Employee.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         initXsiType();

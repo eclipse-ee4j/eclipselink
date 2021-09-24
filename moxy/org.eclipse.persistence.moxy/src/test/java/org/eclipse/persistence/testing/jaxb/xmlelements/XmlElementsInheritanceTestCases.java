@@ -34,7 +34,7 @@ public class XmlElementsInheritanceTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[3];
+        Class<?>[] classes = new Class<?>[3];
         classes[0] = EmployeeCollection.class;
         classes[1] = Address.class;
         classes[2] = CanadianAddress.class;

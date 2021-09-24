@@ -22,7 +22,7 @@ public class XmlCDATATestCases extends JAXBWithJSONTestCases {
     private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlcdata/employee.json";
     public XmlCDATATestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {Employee.class});
+        setClasses(new Class<?>[] {Employee.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

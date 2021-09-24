@@ -28,7 +28,7 @@ public class SecurityWhileInitializingClassExtractionMethodTest extends Exceptio
 
     private InheritancePolicy policy;
 
-    public SecurityWhileInitializingClassExtractionMethodTest(Class c) {
+    public SecurityWhileInitializingClassExtractionMethodTest(Class<?> c) {
         super("This tests Security While Initializing Class Extraction Method (TL-ERROR 88)", c);
     }
 

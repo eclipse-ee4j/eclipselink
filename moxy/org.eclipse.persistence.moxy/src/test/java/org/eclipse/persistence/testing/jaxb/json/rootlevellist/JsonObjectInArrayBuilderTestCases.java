@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,7 +41,7 @@ public class JsonObjectInArrayBuilderTestCases extends OXTestCase {
     }
 
     public void testMarshalToArrayBuilderResult() throws Exception{
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{WithoutXmlRootElementRoot.class}, null);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{WithoutXmlRootElementRoot.class}, null);
         Marshaller jsonMarshaller = ctx.createMarshaller();
         jsonMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
         jsonMarshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
@@ -72,7 +72,7 @@ public class JsonObjectInArrayBuilderTestCases extends OXTestCase {
     }
 
     public void testMarshalToGeneratorResult() throws Exception{
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{WithoutXmlRootElementRoot.class}, null);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{WithoutXmlRootElementRoot.class}, null);
         Marshaller jsonMarshaller = ctx.createMarshaller();
         jsonMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
         jsonMarshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
@@ -100,7 +100,7 @@ public class JsonObjectInArrayBuilderTestCases extends OXTestCase {
     }
 
     public void testMarshalToArrayBuilderResultWithRoot() throws Exception{
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{WithXmlRootElementRoot.class}, null);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{WithXmlRootElementRoot.class}, null);
         Marshaller jsonMarshaller = ctx.createMarshaller();
         jsonMarshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, true);
         jsonMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
@@ -130,7 +130,7 @@ public class JsonObjectInArrayBuilderTestCases extends OXTestCase {
     }
 
     public void testNestedResults() throws Exception{
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{WithXmlRootElementRoot.class}, null);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{WithXmlRootElementRoot.class}, null);
         Marshaller jsonMarshaller = ctx.createMarshaller();
         jsonMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
         jsonMarshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);

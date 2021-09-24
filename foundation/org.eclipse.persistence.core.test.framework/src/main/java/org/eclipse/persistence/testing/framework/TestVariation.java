@@ -136,7 +136,7 @@ public class TestVariation {
         return out;
     }
 
-    protected static void getMembers(Class cls, Vector names, Vector getters, Vector setters, Vector fields, boolean throwExceptionIfNotFound) {
+    protected static void getMembers(Class<?> cls, Vector names, Vector getters, Vector setters, Vector fields, boolean throwExceptionIfNotFound) {
         Method[] allMethods = cls.getMethods();
         Field[] allFields = cls.getFields();
 
@@ -151,7 +151,7 @@ public class TestVariation {
 
         for (int i = 0; i < allMethods.length; i++) {
             Class<?> returnType = allMethods[i].getReturnType();
-            Class[] parameterTypes = allMethods[i].getParameterTypes();
+            Class<?>[] parameterTypes = allMethods[i].getParameterTypes();
             if (returnType.equals(boolean.class) && (parameterTypes.length == 0)) {
                 candidateGetters.addElement(allMethods[i]);
                 candidateGettersNames.addElement(allMethods[i].getName().toLowerCase());

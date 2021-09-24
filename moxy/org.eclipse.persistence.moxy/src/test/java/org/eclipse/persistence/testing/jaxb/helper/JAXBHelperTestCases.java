@@ -41,7 +41,7 @@ public class JAXBHelperTestCases extends TestCase {
 
     @Override
     public void setUp() throws Exception {
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Customer.class;
         jaxbContext = JAXBContextFactory.createContext(classes, null);
     }

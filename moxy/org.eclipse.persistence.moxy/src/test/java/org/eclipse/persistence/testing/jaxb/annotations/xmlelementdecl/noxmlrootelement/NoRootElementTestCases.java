@@ -35,7 +35,7 @@ public class NoRootElementTestCases extends JAXBWithJSONTestCases{
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[] {Foo.class, ObjectFactory.class});
+        setClasses(new Class<?>[] {Foo.class, ObjectFactory.class});
         jaxbMarshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
     }
 

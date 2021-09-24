@@ -36,7 +36,7 @@ public class XMLValuePropTestCases extends JAXBWithJSONTestCases {
     private final static String JSON_SCHEMA_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/xmlvalue/personSchema.json";
     public XMLValuePropTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Person.class});
+        setClasses(new Class<?>[]{Person.class});
         setControlJSON(JSON_RESOURCE);
         setControlDocument(XML_RESOURCE);
     }

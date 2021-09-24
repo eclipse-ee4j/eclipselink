@@ -26,7 +26,7 @@ public class InheritanceRootCompositeCollectionObjectOnlyXMLTestCases extends JA
     public InheritanceRootCompositeCollectionObjectOnlyXMLTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
-        setClasses(new Class[] {RootCompositeCollectionObjectOnly.class, BaseType.class});
+        setClasses(new Class<?>[] {RootCompositeCollectionObjectOnly.class, BaseType.class});
     }
 
     @Override

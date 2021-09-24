@@ -42,7 +42,7 @@ public class RownumFilteringQueryTest extends TestCase{
         expectedResultSize = 1;
     }
 
-    public RownumFilteringQueryTest(Class classToQuery) {
+    public RownumFilteringQueryTest(Class<?> classToQuery) {
         this();
         queryToUse = new ReadAllQuery(classToQuery);
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,11 +37,11 @@ public class Bus extends FueledVehicle {
     public ArrayList prePersistCalledListeners = new ArrayList();
     public ArrayList postPersistCalledListeners = new ArrayList();
 
-    public void addPostPersistCalledListener(Class listener) {
+    public void addPostPersistCalledListener(Class<?> listener) {
         postPersistCalledListeners.add(listener);
     }
 
-    public void addPrePersistCalledListener(Class listener) {
+    public void addPrePersistCalledListener(Class<?> listener) {
         prePersistCalledListeners.add(listener);
     }
 
@@ -57,11 +57,11 @@ public class Bus extends FueledVehicle {
         return prePersistCalledListeners.size();
     }
 
-    public Class getPostPersistCalledListenerAt(int index) {
+    public Class<?> getPostPersistCalledListenerAt(int index) {
         return (Class) postPersistCalledListeners.get(index);
     }
 
-    public Class getPrePersistCalledListenerAt(int index) {
+    public Class<?> getPrePersistCalledListenerAt(int index) {
         return (Class) prePersistCalledListeners.get(index);
     }
 

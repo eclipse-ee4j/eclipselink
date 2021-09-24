@@ -24,7 +24,7 @@ import org.eclipse.persistence.testing.framework.*;
  * This test will throws warnings on problem, not error because of VM differences.
  */
 public class ReadSoftCacheWeakIdentityMapTest extends ReadWeakIdentityMapTest {
-    public ReadSoftCacheWeakIdentityMapTest(Class mapClass) {
+    public ReadSoftCacheWeakIdentityMapTest(Class<? extends IdentityMap> mapClass) {
         super(mapClass);
         setDescription("This test verifies that the SoftCacheWeakIdentityMap holds onto the SoftReferences appropriately");
     }

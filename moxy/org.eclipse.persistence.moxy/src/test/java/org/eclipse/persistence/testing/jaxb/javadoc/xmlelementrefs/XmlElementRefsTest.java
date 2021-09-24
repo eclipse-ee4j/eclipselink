@@ -27,7 +27,7 @@ public class XmlElementRefsTest extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[4];
+        Class<?>[] classes = new Class<?>[4];
 
         classes[0] = TransportType.class;
         classes[1] = ViaAir.class;

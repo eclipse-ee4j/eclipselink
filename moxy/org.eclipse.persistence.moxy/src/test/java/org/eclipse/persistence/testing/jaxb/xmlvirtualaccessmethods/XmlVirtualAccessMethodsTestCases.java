@@ -77,7 +77,7 @@ public class XmlVirtualAccessMethodsTestCases extends XMLTestCase {
          *      - forwards (LinkedList of PhoneNumber)
          */
 
-        ctx = JAXBContextFactory.createContext(new Class[] {Employee.class, PhoneNumber.class}, ctxProperties);
+        ctx = JAXBContextFactory.createContext(new Class<?>[] {Employee.class, PhoneNumber.class}, ctxProperties);
 
         Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
 
@@ -130,7 +130,7 @@ public class XmlVirtualAccessMethodsTestCases extends XMLTestCase {
          *       - myStringArray
          */
 
-        ctx = JAXBContextFactory.createContext(new Class[] {ExtObjectRoot.class, ExtObjectA.class,
+        ctx = JAXBContextFactory.createContext(new Class<?>[] {ExtObjectRoot.class, ExtObjectA.class,
                 ExtObjectB.class, ExtObjectC.class}, ctxProperties);
 
         Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
@@ -194,7 +194,7 @@ public class XmlVirtualAccessMethodsTestCases extends XMLTestCase {
         Map<String, Object> ctxProperties = new HashMap<String, Object>();
         ctxProperties.put(JAXBContextProperties.OXM_METADATA_SOURCE, oxm);
 
-        ctx = JAXBContextFactory.createContext(new Class[] {Employee.class, PhoneNumber.class}, ctxProperties);
+        ctx = JAXBContextFactory.createContext(new Class<?>[] {Employee.class, PhoneNumber.class}, ctxProperties);
 
         validateAgainstSchema(ctx, getControlObjectBasic());
     }
@@ -206,7 +206,7 @@ public class XmlVirtualAccessMethodsTestCases extends XMLTestCase {
         Map<String, Object> ctxProperties = new HashMap<String, Object>();
         ctxProperties.put(JAXBContextProperties.OXM_METADATA_SOURCE, oxm);
 
-        ctx = JAXBContextFactory.createContext(new Class[] {ExtObjectRoot.class, ExtObjectA.class,
+        ctx = JAXBContextFactory.createContext(new Class<?>[] {ExtObjectRoot.class, ExtObjectA.class,
                 ExtObjectB.class, ExtObjectC.class}, ctxProperties);
 
         validateAgainstSchema(ctx, getControlObjectComplete());

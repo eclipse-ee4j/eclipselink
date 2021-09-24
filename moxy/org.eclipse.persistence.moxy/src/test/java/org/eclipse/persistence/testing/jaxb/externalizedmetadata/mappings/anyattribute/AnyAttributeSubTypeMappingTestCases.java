@@ -52,7 +52,7 @@ public class AnyAttributeSubTypeMappingTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[]{XmlAnyAttributeSubTypeMapModel.class});
+        setClasses(new Class<?>[]{XmlAnyAttributeSubTypeMapModel.class});
 
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("http://www.example.com/other", "ns0");

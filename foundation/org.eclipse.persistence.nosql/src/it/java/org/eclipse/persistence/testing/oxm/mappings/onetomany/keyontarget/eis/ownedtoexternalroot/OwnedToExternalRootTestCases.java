@@ -91,7 +91,7 @@ public class OwnedToExternalRootTestCases extends EISMappingTestCases {
     }
 
     @Override
-    protected Class getSourceClass() {
+    protected Class<?> getSourceClass() {
         return Team.class;
     }
 

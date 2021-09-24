@@ -54,7 +54,7 @@ public class XmlNullPolicyNoXmlElementTestCases extends JAXBTestCases {
      */
     public XmlNullPolicyNoXmlElementTestCases(String name) throws Exception{
         super(name);
-        setClasses(new Class[] { EmployeeNoXmlElement.class });
+        setClasses(new Class<?>[] { EmployeeNoXmlElement.class });
         setControlDocument(XML_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);
     }

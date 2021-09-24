@@ -30,7 +30,7 @@ public class SameElementAttributeNameTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class<?>[]{EmployeeSameElementAttributeName.class};
+        Class<?>[] classes = new Class<?>[]{EmployeeSameElementAttributeName.class};
         setClasses(classes);
         jaxbMarshaller.setProperty(MarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");

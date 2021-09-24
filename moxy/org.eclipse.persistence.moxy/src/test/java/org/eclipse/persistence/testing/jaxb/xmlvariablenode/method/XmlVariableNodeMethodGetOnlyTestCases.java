@@ -26,7 +26,7 @@ public class XmlVariableNodeMethodGetOnlyTestCases extends JAXBWithJSONTestCases
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[]{RootGetOnly.class});
+        setClasses(new Class<?>[]{RootGetOnly.class});
     }
 
     @Override

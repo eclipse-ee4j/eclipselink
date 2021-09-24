@@ -31,7 +31,7 @@ public class AnyCollectionTestCases extends JSONMarshalUnmarshalTestCases {
 
     public AnyCollectionTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {AnyCollectionRoot.class});
+        setClasses(new Class<?>[] {AnyCollectionRoot.class});
         setControlJSON(JSON);
     }
 

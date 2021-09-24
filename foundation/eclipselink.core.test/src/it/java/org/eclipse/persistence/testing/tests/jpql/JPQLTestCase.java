@@ -32,7 +32,7 @@ import org.eclipse.persistence.testing.models.employee.domain.*;
 public class JPQLTestCase extends TransactionalTestCase {
     private String ejbql;
     protected ObjectLevelReadQuery theQuery = null;
-    private Class referenceClass;
+    private Class<?> referenceClass;
     private Expression originalExpression = null;
     private Object originalObject;
     private DomainObjectComparer comparer = null;
@@ -64,7 +64,7 @@ public class JPQLTestCase extends TransactionalTestCase {
         this.theQuery = theQuery;
     }
 
-    public JPQLTestCase(String ejbqlString, ObjectLevelReadQuery theQuery, Class theReferenceClass) {
+    public JPQLTestCase(String ejbqlString, ObjectLevelReadQuery theQuery, Class<?> theReferenceClass) {
         this();
         this.ejbql = ejbqlString;
         this.theQuery = theQuery;
@@ -240,11 +240,11 @@ public class JPQLTestCase extends TransactionalTestCase {
         this.theQuery = theQuery;
     }
 
-    public Class getReferenceClass() {
+    public Class<?> getReferenceClass() {
         return referenceClass;
     }
 
-    public void setReferenceClass(Class theClass) {
+    public void setReferenceClass(Class<?> theClass) {
         this.referenceClass = theClass;
     }
 
@@ -324,7 +324,7 @@ public class JPQLTestCase extends TransactionalTestCase {
         }
         if (supportedPlatforms != null) {
             for (Iterator iterator = supportedPlatforms.iterator(); iterator.hasNext();) {
-                Class platformClass = (Class)iterator.next();
+                Class<?> platformClass = (Class)iterator.next();
                 if (platformClass.isInstance(platform)) {
                     supported = true;
                 }
@@ -334,7 +334,7 @@ public class JPQLTestCase extends TransactionalTestCase {
         }
         if (unsupportedPlatforms != null) {
             for (Iterator iterator = unsupportedPlatforms.iterator(); iterator.hasNext();) {
-                Class platformClass = (Class)iterator.next();
+                Class<?> platformClass = (Class)iterator.next();
                 if (platformClass.isInstance(platform)) {
                     notSupported = true;
                 }
@@ -343,14 +343,14 @@ public class JPQLTestCase extends TransactionalTestCase {
         return supported && (!notSupported);
     }
 
-    public void addSupportedPlatform(Class platform) {
+    public void addSupportedPlatform(Class<?> platform) {
         if (supportedPlatforms == null) {
             supportedPlatforms = new Vector();
         }
         supportedPlatforms.addElement(platform);
     }
 
-    public void addUnsupportedPlatform(Class platform) {
+    public void addUnsupportedPlatform(Class<?> platform) {
         if (unsupportedPlatforms == null) {
             unsupportedPlatforms = new Vector();
         }

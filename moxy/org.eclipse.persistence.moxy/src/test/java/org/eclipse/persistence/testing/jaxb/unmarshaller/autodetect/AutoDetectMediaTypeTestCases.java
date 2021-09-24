@@ -36,7 +36,7 @@ public class AutoDetectMediaTypeTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = TestObjectFactory.class;
         setClasses(classes);
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.AUTO_DETECT_MEDIA_TYPE, true);

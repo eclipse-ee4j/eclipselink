@@ -30,7 +30,7 @@ public class JAXBElementNestedTestCases extends JAXBWithJSONTestCases {
 
     public JAXBElementNestedTestCases(String name) throws Exception {
         super(name);
-        Class[] classes = new Class[2];
+        Class<?>[] classes = new Class<?>[2];
         classes[0] = ObjectFactory.class;
         classes[1] = Root.class;
         setClasses(classes);

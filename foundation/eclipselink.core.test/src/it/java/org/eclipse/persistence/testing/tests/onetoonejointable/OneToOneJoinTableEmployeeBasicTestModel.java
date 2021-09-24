@@ -749,7 +749,7 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
     }
 
     static class ReadAllExpressionTest extends org.eclipse.persistence.testing.tests.expressions.ReadAllExpressionTest {
-        public ReadAllExpressionTest(Class referenceClass, int originalObjectsSize) {
+        public ReadAllExpressionTest(Class<?> referenceClass, int originalObjectsSize) {
             super(referenceClass, originalObjectsSize);
         }
 

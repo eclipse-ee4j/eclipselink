@@ -46,7 +46,7 @@ public class XmlElementRefTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[] { Foo.class });
+        setClasses(new Class<?>[] { Foo.class });
     }
 
     @Override

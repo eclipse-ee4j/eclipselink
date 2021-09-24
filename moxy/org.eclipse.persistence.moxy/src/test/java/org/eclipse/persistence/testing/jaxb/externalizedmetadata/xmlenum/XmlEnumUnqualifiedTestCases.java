@@ -40,7 +40,7 @@ public class XmlEnumUnqualifiedTestCases extends JAXBWithJSONTestCases{
      */
     public XmlEnumUnqualifiedTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { Game.class });
+        setClasses(new Class<?>[] { Game.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

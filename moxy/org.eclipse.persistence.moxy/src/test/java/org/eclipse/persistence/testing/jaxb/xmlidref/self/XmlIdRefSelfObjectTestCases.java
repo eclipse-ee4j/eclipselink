@@ -32,7 +32,7 @@ public class XmlIdRefSelfObjectTestCases extends JAXBWithJSONTestCases {
 
     public XmlIdRefSelfObjectTestCases(String name) throws Exception {
         super(name);
-        Class[] classes = new Class[2];
+        Class<?>[] classes = new Class<?>[2];
         classes[0] = Root.class;
         classes[1] = Item.class;
         setClasses(classes);

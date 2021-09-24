@@ -31,10 +31,10 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
  */
 public class NullDelegateInValueHolderTest extends TestCase {
 
-    protected Class indirectCollectionClass;
+    protected Class<?> indirectCollectionClass;
     protected AbstractOrder testOrder;
 
-    public NullDelegateInValueHolderTest(Class indirectCollectionClass) {
+    public NullDelegateInValueHolderTest(Class<?> indirectCollectionClass) {
         super();
         this.indirectCollectionClass = indirectCollectionClass;
         setDescription("NullDelegateInValueHolderTest: " + Helper.getShortClassName(this.indirectCollectionClass));

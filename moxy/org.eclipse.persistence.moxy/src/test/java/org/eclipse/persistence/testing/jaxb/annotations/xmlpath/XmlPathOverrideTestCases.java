@@ -42,7 +42,7 @@ public class XmlPathOverrideTestCases extends JAXBTestCases {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        setTypes(new Class[]{Employee.class, Address.class, Root.class, PhoneNumber.class});
+        setTypes(new Class<?>[]{Employee.class, Address.class, Root.class, PhoneNumber.class});
     }
 
     @Override

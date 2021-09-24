@@ -217,7 +217,7 @@ public abstract class DistributedCacheMergeTest extends TestCase {
 
     }
 
-    protected Class getRootClass() {
+    protected Class<?> getRootClass() {
         return Employee.class;
     }
 

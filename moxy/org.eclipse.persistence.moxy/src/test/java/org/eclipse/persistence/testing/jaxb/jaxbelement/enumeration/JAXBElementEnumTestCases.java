@@ -63,7 +63,7 @@ public class JAXBElementEnumTestCases extends JAXBElementTestCases {
     }
 
     @Override
-    public Class[] getClasses() {
-        return new Class[]{Coin.class};
+    public Class<?>[] getClasses() {
+        return new Class<?>[]{Coin.class};
     }
 }

@@ -23,13 +23,13 @@ public class ConvertObjectTest extends AutoVerifyTestCase {
     protected boolean m_failure;
     protected boolean m_testingFailure;
     protected Object m_testObj;
-    protected Class m_targetClass;
+    protected Class<?> m_targetClass;
 
     /**
      * This constructor is used when an exception being thrown implies the test
      * failed.
      */
-    public ConvertObjectTest(Object testObj, Class targetClass) {
+    public ConvertObjectTest(Object testObj, Class<?> targetClass) {
         m_testObj = testObj;
         m_targetClass = targetClass;
         m_testingFailure = false;
@@ -39,7 +39,7 @@ public class ConvertObjectTest extends AutoVerifyTestCase {
      * This constructor is used when an exception being thrown implies the test
      * passed.
      */
-    public ConvertObjectTest(Object testObj, Class targetClass, boolean testingFailure) {
+    public ConvertObjectTest(Object testObj, Class<?> targetClass, boolean testingFailure) {
         m_testObj = testObj;
         m_targetClass = targetClass;
         m_testingFailure = testingFailure;

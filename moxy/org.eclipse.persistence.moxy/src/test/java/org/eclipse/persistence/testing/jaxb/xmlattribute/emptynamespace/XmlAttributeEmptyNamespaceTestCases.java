@@ -29,7 +29,7 @@ public class XmlAttributeEmptyNamespaceTestCases extends JAXBWithJSONTestCases{
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[]{EmptyNamespaceTestObject.class});
+        setClasses(new Class<?>[]{EmptyNamespaceTestObject.class});
     }
 
     @Override

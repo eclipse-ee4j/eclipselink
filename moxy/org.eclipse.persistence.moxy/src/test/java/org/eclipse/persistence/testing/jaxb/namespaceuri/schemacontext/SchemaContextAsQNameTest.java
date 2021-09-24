@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ public class SchemaContextAsQNameTest extends TestCase {
     private static QName qName = new QName(NAMESPACE_URI, LOCAL_PART);
 
     public void testSchemaContextAsQName() throws Exception {
-        JAXBContext ctx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { Root.class }, new HashMap());
+        JAXBContext ctx = (JAXBContext) JAXBContextFactory.createContext(new Class<?>[] { Root.class }, new HashMap());
         assertTrue("JAXBContext creation failed", ctx != null);
         XMLContext xCtx = ctx.getXMLContext();
         assertTrue("XMLContext is null", xCtx != null);

@@ -54,7 +54,7 @@ public class RefreshTestCases extends TestCase {
 
         Map<String, Object> props = new HashMap<String, Object>(1);
         props.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataDocument);
-        JAXBContext jc = JAXBContextFactory.createContext(new Class[] {Root.class}, props);
+        JAXBContext jc = JAXBContextFactory.createContext(new Class<?>[] {Root.class}, props);
         Unmarshaller unmarshaller = jc.createUnmarshaller();
 
         Root controlRoot = new Root();

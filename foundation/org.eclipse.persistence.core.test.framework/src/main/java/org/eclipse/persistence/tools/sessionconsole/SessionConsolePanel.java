@@ -771,7 +771,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
                 Object[] params = new Object[1];
                 params[0] = source;
                 Class<?> mainClass = Class.forName("com.sun.tools.javac.Main");
-                Class[] parameterTypes = new Class[1];
+                Class<?>[] parameterTypes = new Class<?>[1];
                 parameterTypes[0] = String[].class;
                 Method method = mainClass.getMethod("compile", parameterTypes);
                 int result = (Integer) method.invoke(null, params);
@@ -785,7 +785,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
                 newClass.getField("session").set(newInstance, getSession());
                 Object value;
                 try {
-                    value = newClass.getMethod("exec", (Class[]) null).invoke(
+                    value = newClass.getMethod("exec", (Class<?>[]) null).invoke(
                             newInstance, (Object[]) null);
                 } catch (java.lang.reflect.InvocationTargetException exception) {
                     throw exception.getCause();
@@ -3757,7 +3757,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
             try {
                 Class<?> connectionPoolHelperClass = Class
                         .forName("org.eclipse.persistence.tools.sessionconsole.OracleConnectionPoolHelper");
-                Class[] params = new Class[] { java.lang.String.class };
+                Class<?>[] params = new Class<?>[] { java.lang.String.class };
                 java.lang.reflect.Method method = connectionPoolHelperClass
                         .getDeclaredMethod("getOracleDataSource", params);
                 Object[] args = new Object[] { getLoginEditorPanel().getLogin()

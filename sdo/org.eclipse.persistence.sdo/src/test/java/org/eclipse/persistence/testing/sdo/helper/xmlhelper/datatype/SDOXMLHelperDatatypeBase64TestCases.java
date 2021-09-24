@@ -36,7 +36,7 @@ public class SDOXMLHelperDatatypeBase64TestCases extends SDOXMLHelperDatatypeTes
     }
 
     @Override
-    protected Class getDatatypeJavaClass() {
+    protected Class<?> getDatatypeJavaClass() {
         return byte[].class;
     }
 

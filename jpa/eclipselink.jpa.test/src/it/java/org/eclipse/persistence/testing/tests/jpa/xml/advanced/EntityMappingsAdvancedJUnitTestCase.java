@@ -1335,13 +1335,13 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             fail(errorMsg);
         }
     }
-    protected String verifyPropertyValue(ClassDescriptor descriptor, String propertyName, Class expectedPropertyValueType, Object expectedPropertyValue) {
+    protected String verifyPropertyValue(ClassDescriptor descriptor, String propertyName, Class<?> expectedPropertyValueType, Object expectedPropertyValue) {
         return verifyPropertyValue(propertyName, descriptor.getProperty(propertyName), expectedPropertyValueType, expectedPropertyValue, Helper.getShortClassName(descriptor.getJavaClass()) + " descriptor");
     }
-    protected String verifyPropertyValue(DatabaseMapping mapping, String propertyName, Class expectedPropertyValueType, Object expectedPropertyValue) {
+    protected String verifyPropertyValue(DatabaseMapping mapping, String propertyName, Class<?> expectedPropertyValueType, Object expectedPropertyValue) {
         return verifyPropertyValue(propertyName, mapping.getProperty(propertyName), expectedPropertyValueType, expectedPropertyValue, mapping.getAttributeName() + " attribute");
     }
-    protected String verifyPropertyValue(String propertyName, Object propertyValue, Class expectedPropertyValueType, Object expectedPropertyValue, String masterName) {
+    protected String verifyPropertyValue(String propertyName, Object propertyValue, Class<?> expectedPropertyValueType, Object expectedPropertyValue, String masterName) {
         String errorMsg = "";
         String errorPrefix = " property " + propertyName + " for " + masterName;
         if(expectedPropertyValueType == null) {

@@ -30,7 +30,7 @@ public class WithXmlRootElementTestCases extends JSONMarshalUnmarshalTestCases {
 
     public WithXmlRootElementTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {WithXmlRootElementRoot.class});
+        setClasses(new Class<?>[] {WithXmlRootElementRoot.class});
         setControlJSON(CONTROL_JSON);
     }
 

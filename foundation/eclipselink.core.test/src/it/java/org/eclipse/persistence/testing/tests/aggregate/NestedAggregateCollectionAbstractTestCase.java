@@ -24,11 +24,11 @@ import org.eclipse.persistence.testing.models.aggregate.Agent;
 import org.eclipse.persistence.testing.models.aggregate.House;
 
 public class NestedAggregateCollectionAbstractTestCase extends org.eclipse.persistence.testing.framework.AutoVerifyTestCase {
-    public Class cls;
+    public Class<?> cls;
     public boolean instantiationExceptionOccurred = false;
 
     // Must be Agent or Builder
-    public NestedAggregateCollectionAbstractTestCase(Class cls) {
+    public NestedAggregateCollectionAbstractTestCase(Class<?> cls) {
         super();
         this.cls = cls;
         setName(getName() + AgentBuilderHelper.getNameInBrackets(cls));

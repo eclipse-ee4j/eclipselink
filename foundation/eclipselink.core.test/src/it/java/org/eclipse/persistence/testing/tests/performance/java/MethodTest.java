@@ -155,7 +155,7 @@ public class MethodTest extends PerformanceComparisonTestCase {
             @Override
             public void startTest() {
                 if (method == null) {
-                    Class[] argTypes = {  };
+                    Class<?>[] argTypes = {  };
                     try {
                         method = getClass().getMethod("doTest", argTypes);
                     } catch (Exception ignore) {

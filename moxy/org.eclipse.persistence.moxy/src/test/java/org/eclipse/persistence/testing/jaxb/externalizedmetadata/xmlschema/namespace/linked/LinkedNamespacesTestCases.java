@@ -174,7 +174,7 @@ public class LinkedNamespacesTestCases {
         metadataSources.add("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlschema/namespace/linked/" + metadataVariant + "-article.json");
         metadataSources.add("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlschema/namespace/linked/" + metadataVariant + "-book.json");
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSources);
-        return JAXBContext.newInstance(new Class[] {}, properties);
+        return JAXBContext.newInstance(new Class<?>[] {}, properties);
     }
 
     private Article createArticle() {

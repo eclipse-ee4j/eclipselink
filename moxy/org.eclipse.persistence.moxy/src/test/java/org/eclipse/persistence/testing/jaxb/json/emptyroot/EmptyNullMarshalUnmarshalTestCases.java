@@ -56,8 +56,8 @@ public class EmptyNullMarshalUnmarshalTestCases extends OXTestCase{
         namespaces.put(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "xsi");
         props.put(JAXBContextProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
 
-        ctx = (JAXBContext) JAXBContextFactory.createContext(new Class[]{Root.class}, props);
-        ctxNoRoot = (JAXBContext) JAXBContextFactory.createContext(new Class[]{RootNoXmlRootElement.class}, props);
+        ctx = (JAXBContext) JAXBContextFactory.createContext(new Class<?>[]{Root.class}, props);
+        ctxNoRoot = (JAXBContext) JAXBContextFactory.createContext(new Class<?>[]{RootNoXmlRootElement.class}, props);
     }
 
     public void testJAXBElementNullValueIncludeRootTrue() throws Exception{

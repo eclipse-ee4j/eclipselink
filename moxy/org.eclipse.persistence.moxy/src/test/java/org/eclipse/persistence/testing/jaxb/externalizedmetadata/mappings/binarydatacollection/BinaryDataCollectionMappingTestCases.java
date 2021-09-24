@@ -50,7 +50,7 @@ public class BinaryDataCollectionMappingTestCases extends JAXBWithJSONTestCases 
      */
     public BinaryDataCollectionMappingTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { MyData.class });
+        setClasses(new Class<?>[] { MyData.class });
         setControlDocument(XML_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);
         setControlJSON(JSON_RESOURCE);

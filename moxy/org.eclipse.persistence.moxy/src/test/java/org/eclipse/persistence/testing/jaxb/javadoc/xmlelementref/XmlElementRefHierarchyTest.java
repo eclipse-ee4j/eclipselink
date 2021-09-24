@@ -28,7 +28,7 @@ public class XmlElementRefHierarchyTest extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[4];
+        Class<?>[] classes = new Class<?>[4];
         classes[3] = Task.class;
         classes[0] = JarTask.class;
         classes[1] = JavacTask.class;

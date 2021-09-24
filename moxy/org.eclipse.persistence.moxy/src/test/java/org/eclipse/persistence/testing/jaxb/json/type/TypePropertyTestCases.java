@@ -37,7 +37,7 @@ public class TypePropertyTestCases extends JSONTestCases {
 
     public TypePropertyTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{PersonWithType.class});
+        setClasses(new Class<?>[]{PersonWithType.class});
         setControlJSON(JSON_RESOURCE);
     }
 

@@ -49,7 +49,7 @@ public class QueryAccrossV11ProxyIndirectionTest extends AutoVerifyTestCase {
         return descriptor;
     }
 
-    public void setDescriptorV11ProxyIndirection(Class cls, String attributeName, Class proxyIndirectClass) {
+    public void setDescriptorV11ProxyIndirection(Class<?> cls, String attributeName, Class<?> proxyIndirectClass) {
         // instruct descriptor to use proxy indirection since
         // VariableOneToOneMapping maping for attribute "program"
         // in InterfaceWithoutTablesProject.java, did not set it;

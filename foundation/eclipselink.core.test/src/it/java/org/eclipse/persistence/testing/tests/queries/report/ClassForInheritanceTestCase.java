@@ -36,7 +36,7 @@ public class ClassForInheritanceTestCase extends ReportQueryTestCase {
     protected void buildExpectedResults() throws Exception {
 
         Vector projects = getSession().readAllObjects(Project.class);
-        Class projClass = null;
+        Class<?> projClass = null;
         Project proj = null;
         for (Enumeration e = projects.elements(); e.hasMoreElements(); ) {
             proj = (Project)e.nextElement();

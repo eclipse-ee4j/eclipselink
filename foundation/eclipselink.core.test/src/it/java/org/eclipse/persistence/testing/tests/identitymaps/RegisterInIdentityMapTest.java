@@ -24,12 +24,12 @@ import org.eclipse.persistence.testing.framework.*;
  * No exceptions should be thrown when registering an object in an identity map.
  */
 public class RegisterInIdentityMapTest extends TestCase {
-    protected Class identityMapClass;
-    protected Class originalIdentityMapClass;
+    protected Class<? extends IdentityMap> identityMapClass;
+    protected Class<? extends IdentityMap> originalIdentityMapClass;
     protected int originalIdentityMapSize;
     protected Vector employees;
 
-    public RegisterInIdentityMapTest(Class mapClass) {
+    public RegisterInIdentityMapTest(Class<? extends IdentityMap> mapClass) {
         identityMapClass = mapClass;
     }
 

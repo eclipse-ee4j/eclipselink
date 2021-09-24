@@ -29,7 +29,7 @@ public class SecurityOnInitializingAttributeMethodTest extends ExceptionTestSave
 
     private TransformationMapping mapping;
 
-    public SecurityOnInitializingAttributeMethodTest(Class c) {
+    public SecurityOnInitializingAttributeMethodTest(Class<?> c) {
         super("This tests security on initializing attribute method (TL-ERROR 84)", c);
     }
 

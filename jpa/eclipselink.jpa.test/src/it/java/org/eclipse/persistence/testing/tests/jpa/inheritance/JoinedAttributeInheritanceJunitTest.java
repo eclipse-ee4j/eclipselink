@@ -31,7 +31,7 @@ import org.eclipse.persistence.queries.ReadAllQuery;
 
 public class JoinedAttributeInheritanceJunitTest extends JUnitTestCase {
 
-    static protected Class[] classes = {Company.class, Vehicle.class};
+    static protected Class<?>[] classes = {Company.class, Vehicle.class};
     static protected Vector[] objectVectors = {null, null};
 
     protected DatabaseSession dbSession;

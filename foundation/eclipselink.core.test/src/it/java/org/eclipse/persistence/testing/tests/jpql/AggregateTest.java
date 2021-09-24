@@ -27,7 +27,7 @@ public class AggregateTest extends JPQLTestCase {
     private ReportQuery reportQuery;
     private Collection originalResults;
 
-    private static AggregateTest getNewTestCaseNamed(String testName, String ejbql, Class referenceClass) {
+    private static AggregateTest getNewTestCaseNamed(String testName, String ejbql, Class<?> referenceClass) {
         AggregateTest test = new AggregateTest();
 
         test.setName(testName);

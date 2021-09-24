@@ -28,11 +28,11 @@ import org.eclipse.persistence.sessions.UnitOfWork;
 
 public class DeleteAllQueryTestHelper {
 
-    public static String execute(Session mainSession, Class referenceClass, Expression selectionExpression) {
+    public static String execute(Session mainSession, Class<?> referenceClass, Expression selectionExpression) {
         return execute(mainSession, referenceClass, selectionExpression, true);
     }
 
-    public static String execute(Session mainSession, Class referenceClass, Expression selectionExpression, boolean shouldDeferExecutionInUOW) {
+    public static String execute(Session mainSession, Class<?> referenceClass, Expression selectionExpression, boolean shouldDeferExecutionInUOW) {
         return execute(mainSession, referenceClass, selectionExpression, shouldDeferExecutionInUOW, true);
     }
 
@@ -53,8 +53,8 @@ public class DeleteAllQueryTestHelper {
     //  the results are saved and after compared with DeleteAllQuery results:
     //    both inCache and inDb comparison performed;
     //    both deleted and remained objects should be the same;
-    public static String execute(Session mainSession, Class referenceClass, Expression selectionExpression, boolean shouldDeferExecutionInUOW, boolean handleChildren) {
-        Class rootClass = referenceClass;
+    public static String execute(Session mainSession, Class<?> referenceClass, Expression selectionExpression, boolean shouldDeferExecutionInUOW, boolean handleChildren) {
+        Class<?> rootClass = referenceClass;
         ClassDescriptor descriptor = mainSession.getClassDescriptor(referenceClass);
         if(descriptor.hasInheritance()) {
             ClassDescriptor parentDescriptor = descriptor;
@@ -72,8 +72,8 @@ public class DeleteAllQueryTestHelper {
         }
     }
 
-    protected static String execute(Session mainSession, Class referenceClass, Expression selectionExpression, boolean shouldDeferExecutionInUOW, boolean handleChildren,
-                                    Class rootClass) {
+    protected static String execute(Session mainSession, Class<?> referenceClass, Expression selectionExpression, boolean shouldDeferExecutionInUOW, boolean handleChildren,
+                                    Class<?> rootClass) {
         String errorMsg = "";
         clearCache(mainSession);
 
@@ -170,7 +170,7 @@ public class DeleteAllQueryTestHelper {
                 Iterator<ClassDescriptor> it = descriptor.getInheritancePolicy().getChildDescriptors().iterator();
                 while(it.hasNext()) {
                     ClassDescriptor childDescriptor = it.next();
-                    Class childReferenceClass = childDescriptor.getJavaClass();
+                    Class<?> childReferenceClass = childDescriptor.getJavaClass();
                     errorMsg += execute(mainSession, childReferenceClass, selectionExpression, shouldDeferExecutionInUOW, handleChildren, rootClass);
                 }
             }

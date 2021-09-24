@@ -27,7 +27,7 @@ public class ContainerPropertyTestCases extends JAXBWithJSONTestCases {
 
     public ContainerPropertyTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {Employee.class, Address.class, PhoneNumber.class});
+        setClasses(new Class<?>[] {Employee.class, Address.class, PhoneNumber.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

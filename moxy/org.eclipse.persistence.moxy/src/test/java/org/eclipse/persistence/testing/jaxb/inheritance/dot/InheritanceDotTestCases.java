@@ -23,7 +23,7 @@ public class InheritanceDotTestCases extends JAXBWithJSONTestCases{
 
     public InheritanceDotTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { Person.class, Employee.class });
+        setClasses(new Class<?>[] { Person.class, Employee.class });
         setControlDocument("org/eclipse/persistence/testing/jaxb/inheritance/inheritanceDot.xml");
         setControlJSON("org/eclipse/persistence/testing/jaxb/inheritance/inheritanceDot.json");
     }

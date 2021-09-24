@@ -29,7 +29,7 @@ public class XmlMixedTestCases extends JAXBTestCases { // extends JAXBWithJSONTe
 
     public XmlMixedTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {Root.class});
+        setClasses(new Class<?>[] {Root.class});
         setControlDocument(XML_RESOURCE);
         setWriteControlDocument(XML_RESOURCE_WRITE);
         //setControlJSON(JSON_RESOURCE);

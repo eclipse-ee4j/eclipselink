@@ -34,9 +34,9 @@ public class ReadAllTest extends AutoVerifyTestCase {
     protected ReadAllQuery query;
     protected int originalObjectsSize;
     protected Object objectsFromDatabase;
-    protected Class referenceClass;
+    protected Class<?> referenceClass;
 
-    public ReadAllTest(Class referenceClass, int originalObjectsSize) {
+    public ReadAllTest(Class<?> referenceClass, int originalObjectsSize) {
         setOriginalObjectsSize(originalObjectsSize);
         setReferenceClass(referenceClass);
         setName("ReadAllTest(" + referenceClass.getName() + ")");
@@ -62,7 +62,7 @@ public class ReadAllTest extends AutoVerifyTestCase {
         return query;
     }
 
-    public Class getReferenceClass() {
+    public Class<?> getReferenceClass() {
         return referenceClass;
     }
 
@@ -86,7 +86,7 @@ public class ReadAllTest extends AutoVerifyTestCase {
         this.query = query;
     }
 
-    public void setReferenceClass(Class aClass) {
+    public void setReferenceClass(Class<?> aClass) {
         referenceClass = aClass;
     }
 

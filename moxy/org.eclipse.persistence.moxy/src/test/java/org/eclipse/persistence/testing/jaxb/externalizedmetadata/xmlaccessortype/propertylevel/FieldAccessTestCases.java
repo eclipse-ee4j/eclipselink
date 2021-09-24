@@ -31,7 +31,7 @@ public class FieldAccessTestCases extends JAXBWithJSONTestCases {
 
     public FieldAccessTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Customer.class});
+        setClasses(new Class<?>[]{Customer.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

@@ -27,7 +27,7 @@ public class XmlLocationTestCases extends JAXBTestCases {
 
     public XmlLocationTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{ Data.class, SubData.class, DetailData.class, LeafData.class });
+        setClasses(new Class<?>[]{ Data.class, SubData.class, DetailData.class, LeafData.class });
         setControlDocument(XML_RESOURCE);
     }
 

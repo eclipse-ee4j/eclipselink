@@ -97,12 +97,12 @@ public class NoTextMappingErrorTests extends junit.framework.TestCase {
     // ============================================================================================
 
     private void positiveTest(String bindings) throws Exception {
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[] { Root.class }, getBindings(bindings));
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[] { Root.class }, getBindings(bindings));
     }
 
     private void negativeTest(String bindings) throws Exception {
         try {
-            JAXBContext ctx = JAXBContextFactory.createContext(new Class[] { Root.class }, getBindings(bindings));
+            JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[] { Root.class }, getBindings(bindings));
         } catch (JAXBException e) {
             if (e.getLinkedException() != null && e.getLinkedException() instanceof org.eclipse.persistence.exceptions.JAXBException) {
                 org.eclipse.persistence.exceptions.JAXBException je = (org.eclipse.persistence.exceptions.JAXBException) e.getLinkedException();

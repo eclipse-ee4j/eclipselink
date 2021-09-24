@@ -31,11 +31,11 @@ import org.eclipse.persistence.testing.models.employee.domain.Project;
 
 public class RollbackObjectsTest extends AutoVerifyTestCase {
 
-    Class domainClass;
+    Class<?> domainClass;
     AsOfClause pastTime;
     Vector pastObjects;
 
-    public RollbackObjectsTest(Class domainClass, AsOfClause pastTime) {
+    public RollbackObjectsTest(Class<?> domainClass, AsOfClause pastTime) {
         super();
         this.domainClass = domainClass;
         this.pastTime = pastTime;

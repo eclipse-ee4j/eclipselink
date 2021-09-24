@@ -41,7 +41,7 @@ public class EmployeeNamespaceCancellationTestCases extends JAXBTestCases {
         setControlDocument(XML_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);
 
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Employee.class;
         setClasses(classes);
     }

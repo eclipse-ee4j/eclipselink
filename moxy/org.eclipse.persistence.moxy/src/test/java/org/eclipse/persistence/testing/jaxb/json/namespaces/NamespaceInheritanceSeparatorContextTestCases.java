@@ -30,7 +30,7 @@ public class NamespaceInheritanceSeparatorContextTestCases extends NamespaceInhe
         super(name);
         setControlJSON(JSON_RESOURCE);
         setWriteControlJSON(JSON_WRITE_RESOURCE);
-        setClasses(new Class[]{Employee.class});
+        setClasses(new Class<?>[]{Employee.class});
     }
 
     @Override

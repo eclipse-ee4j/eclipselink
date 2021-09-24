@@ -684,7 +684,7 @@ public abstract class JUnitTestCase extends TestCase {
         return getPlatform(getPersistenceUnitName());
     }
 
-    public Platform getPlatform(Class cls) {
+    public Platform getPlatform(Class<?> cls) {
         return getPlatform(getPersistenceUnitName(), cls);
     }
 
@@ -692,7 +692,7 @@ public abstract class JUnitTestCase extends TestCase {
         return getDatabaseSession(puName).getPlatform();
     }
 
-    public static Platform getPlatform(String puName, Class cls) {
+    public static Platform getPlatform(String puName, Class<?> cls) {
         return getDatabaseSession(puName).getPlatform(cls);
     }
 

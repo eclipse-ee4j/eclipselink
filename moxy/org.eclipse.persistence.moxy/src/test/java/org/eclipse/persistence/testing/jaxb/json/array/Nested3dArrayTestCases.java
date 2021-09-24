@@ -30,7 +30,7 @@ public class Nested3dArrayTestCases extends JSONTestCases {
 
     public Nested3dArrayTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Root3DArray.class});
+        setClasses(new Class<?>[]{Root3DArray.class});
         setControlJSON(JSON_RESOURCE);
     }
 

@@ -34,8 +34,8 @@ public class JAXBElementCharacterTestCases extends JAXBElementTestCases {
     }
 
     @Override
-    public Class[] getClasses(){
-        Class[] classes = new Class[1];
+    public Class<?>[] getClasses(){
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Character.class;
         return classes;
     }

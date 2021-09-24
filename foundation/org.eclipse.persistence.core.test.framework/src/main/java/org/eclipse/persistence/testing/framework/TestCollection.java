@@ -61,6 +61,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
     /**
      * Constructs a TestSuite from the given class with the given name.
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public TestCollection(Class theClass, String name) {
         super(theClass, name);
         initialize();
@@ -70,6 +71,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
      * Constructs a TestSuite from the given class. Adds all the methods
      * starting with "test" as test cases to the suite.
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public TestCollection(final Class theClass) {
         super(theClass);
         initialize();
@@ -137,7 +139,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
 
     public final void addServerTest(TestCase theTest) {
         TestCase serverTestCase;
-        Class serverTestCaseClass;
+        Class<?> serverTestCaseClass;
         Object[] args = new Object[1];
 
         try {

@@ -46,7 +46,7 @@ public class XmlClassExtractorTestCases extends JAXBWithJSONTestCases {
      */
     public XmlClassExtractorTestCases(String name) throws Exception{
         super(name);
-        setClasses(new Class[]{Car.class, Vehicle.class, ParkingLot.class });
+        setClasses(new Class<?>[]{Car.class, Vehicle.class, ParkingLot.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }
@@ -116,7 +116,7 @@ public class XmlClassExtractorTestCases extends JAXBWithJSONTestCases {
      */
     public void testUnmarshalFailure() throws Exception{
         // create the JAXBContext for this test (metadata file is validated as well)
-        JAXBContext jaxbContextInvalid = (JAXBContext) JAXBContextFactory.createContext(new Class[]{Car.class, Vehicle.class, ParkingLot.class}, getInvalidProperties());
+        JAXBContext jaxbContextInvalid = (JAXBContext) JAXBContextFactory.createContext(new Class<?>[]{Car.class, Vehicle.class, ParkingLot.class}, getInvalidProperties());
         Unmarshaller unmarshaller = jaxbContextInvalid.createUnmarshaller();
         try {
             InputStream iDocStream = getClass().getClassLoader().getResourceAsStream(XML_RESOURCE);

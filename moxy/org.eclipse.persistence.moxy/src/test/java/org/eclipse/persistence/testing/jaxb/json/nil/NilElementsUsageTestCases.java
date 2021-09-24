@@ -26,7 +26,7 @@ public class NilElementsUsageTestCases extends JSONMarshalUnmarshalTestCases{
         super(name);
         setControlJSON(JSON_RESOURCE);
         setWriteControlJSON(JSON_RESOURCE_WRITE);
-        setClasses(new Class[]{MaskFormat.class, MaskFormatEntry.class});
+        setClasses(new Class<?>[]{MaskFormat.class, MaskFormatEntry.class});
     }
 
     @Override

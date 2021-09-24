@@ -32,7 +32,7 @@ public class InheritanceImportsTestCases extends JAXBWithJSONTestCases{
 
     public InheritanceImportsTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Child.class});
+        setClasses(new Class<?>[]{Child.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
 

@@ -39,7 +39,7 @@ public class CollectionHolderWrappersOverrideTestCases extends JAXBWithJSONTestC
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
 
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = CollectionHolderWrappersInitialized.class;
         setClasses(classes);
         jaxbMarshaller.setProperty(MarshallerProperties.JSON_MARSHAL_EMPTY_COLLECTIONS, Boolean.FALSE);

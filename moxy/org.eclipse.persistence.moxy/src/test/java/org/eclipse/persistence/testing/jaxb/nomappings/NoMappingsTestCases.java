@@ -29,7 +29,7 @@ public class NoMappingsTestCases extends JAXBWithJSONTestCases{
 
     public NoMappingsTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{SomeClass.class});
+        setClasses(new Class<?>[]{SomeClass.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);

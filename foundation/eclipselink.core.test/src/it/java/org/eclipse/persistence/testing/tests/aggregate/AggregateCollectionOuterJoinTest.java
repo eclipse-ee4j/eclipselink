@@ -27,11 +27,11 @@ import org.eclipse.persistence.testing.models.aggregate.House;
  * Bug 2847621 - Test to ensure outer joins are working with aggregate collections
  */
 public class AggregateCollectionOuterJoinTest extends AutoVerifyTestCase {
-    Class cls;
+    Class<?> cls;
     protected List objects = null;
 
     // Must be either Agent or Builder
-    public AggregateCollectionOuterJoinTest(Class cls) {
+    public AggregateCollectionOuterJoinTest(Class<?> cls) {
         super();
         this.cls = cls;
         setName(getName() + AgentBuilderHelper.getNameInBrackets(cls));

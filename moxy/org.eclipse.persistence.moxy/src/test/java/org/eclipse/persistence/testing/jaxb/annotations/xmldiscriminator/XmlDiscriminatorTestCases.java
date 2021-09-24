@@ -26,7 +26,7 @@ public class XmlDiscriminatorTestCases extends JAXBWithJSONTestCases {
     private static final String JSON_RESOURCE_WRITE = "org/eclipse/persistence/testing/jaxb/annotations/xmldiscriminator/vehicle-write.json";
     public XmlDiscriminatorTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{ Car.class, Vehicle.class });
+        setClasses(new Class<?>[]{ Car.class, Vehicle.class });
         setControlDocument(XML_RESOURCE);
         setWriteControlDocument(XML_RESOURCE_WRITE);
         setControlJSON(JSON_RESOURCE);

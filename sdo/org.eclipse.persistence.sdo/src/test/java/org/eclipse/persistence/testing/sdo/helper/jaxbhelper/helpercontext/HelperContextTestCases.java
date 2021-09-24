@@ -62,7 +62,7 @@ public class HelperContextTestCases extends SDOTestCase {
     @Override
     public void setUp() {
         try {
-            Class[] classes = new Class[1];
+            Class<?>[] classes = new Class<?>[1];
             classes[0] = Root.class;
             JAXBContext jaxbContext = JAXBContext.newInstance(classes);
             jaxbHelperContext = new JAXBHelperContext(jaxbContext);
@@ -86,19 +86,19 @@ public class HelperContextTestCases extends SDOTestCase {
 
     public void testGetClass() {
         Type rootType = jaxbHelperContext.getTypeHelper().getType("urn:helpercontext", "root");
-        Class pojoClass = jaxbHelperContext.getClass(rootType);
+        Class<?> pojoClass = jaxbHelperContext.getClass(rootType);
         assertSame(Root.class, pojoClass);
     }
 
     public void testGetClassNull() {
-        Class pojoClass = jaxbHelperContext.getClass(null);
+        Class<?> pojoClass = jaxbHelperContext.getClass(null);
         assertNull(pojoClass);
     }
 
     public void testGetClassNegative() {
         try {
             Type propertyType = jaxbHelperContext.getTypeHelper().getType("commonj.sdo", "Property");
-            Class pojoClass = jaxbHelperContext.getClass(propertyType);
+            Class<?> pojoClass = jaxbHelperContext.getClass(propertyType);
         } catch(SDOException e) {
             assertEquals(SDOException.SDO_JAXB_NO_DESCRIPTOR_FOR_TYPE, e.getErrorCode());
             return;

@@ -34,7 +34,7 @@ public class XmlElementNillablePackageLevelTestCases extends JAXBTestCases {
     public XmlElementNillablePackageLevelTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_CONTROL_RESOURCE);
-        setClasses(new Class[] { Root.class });
+        setClasses(new Class<?>[] { Root.class });
     }
 
     @Override

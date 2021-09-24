@@ -79,7 +79,7 @@ public class NoInteractionTestCases extends EISMappingTestCases {
   }
 
     @Override
-    protected Class getSourceClass(){
+    protected Class<?> getSourceClass(){
         return Employee.class;
     }
   @Override

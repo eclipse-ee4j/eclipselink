@@ -39,7 +39,7 @@ public class WrapperXmlPathTestCases extends JSONMarshalUnmarshalTestCases {
 
     public WrapperXmlPathTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {XmlPathCompany.class});
+        setClasses(new Class<?>[] {XmlPathCompany.class});
         setControlJSON(JSON);
     }
 

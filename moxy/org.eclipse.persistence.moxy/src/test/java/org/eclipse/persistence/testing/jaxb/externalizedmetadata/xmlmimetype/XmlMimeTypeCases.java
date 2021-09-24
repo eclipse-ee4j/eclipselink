@@ -44,7 +44,7 @@ public class XmlMimeTypeCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[] { AttTypes.class });
+        setClasses(new Class<?>[] { AttTypes.class });
         jaxbUnmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
 
         DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");

@@ -145,7 +145,7 @@ public class ClearQueryOptionsOnStatementTest extends AutoVerifyTestCase {
         Map statementCache = null;
         try {
             Method method = PrivilegedAccessHelper.getDeclaredMethod(DatabaseAccessor.class,
-                "getStatementCache", new Class[]{});
+                "getStatementCache", new Class<?>[]{});
             method.setAccessible(true);
             statementCache = (Map) method.invoke(accessor, new Object[] {});
         } catch (Exception nsme) {

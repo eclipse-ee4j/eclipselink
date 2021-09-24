@@ -30,7 +30,7 @@ public class JAXBIntrospectorGetElementNameTestCases extends TestCase {
 
     @Override
     public void setUp() throws Exception {
-        Class[] classesToBeBound = new Class[] { TestObject.class,
+        Class<?>[] classesToBeBound = new Class<?>[] { TestObject.class,
                 ElementDeclObject.class, ObjectFactory.class };
         jaxbContext = JAXBContextFactory.createContext(classesToBeBound, null);
         jaxbIntrospector = jaxbContext.createJAXBIntrospector();

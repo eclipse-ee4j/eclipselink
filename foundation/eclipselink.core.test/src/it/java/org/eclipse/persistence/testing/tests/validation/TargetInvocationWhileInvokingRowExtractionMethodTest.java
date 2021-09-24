@@ -48,7 +48,7 @@ public class TargetInvocationWhileInvokingRowExtractionMethodTest extends Except
         policy.preInitialize((AbstractSession)getSession());
 
         row = new DatabaseRecord();
-        Class[] parmClasses = { DataRecord.class };
+        Class<?>[] parmClasses = { DataRecord.class };
 
 
         expectedException = DescriptorException.targetInvocationWhileInvokingRowExtractionMethod(row, TargetInvocationWhileInvokingRowExtractionMethodTest.class.getDeclaredMethod("invalidMethod", parmClasses), descriptor, new Exception());

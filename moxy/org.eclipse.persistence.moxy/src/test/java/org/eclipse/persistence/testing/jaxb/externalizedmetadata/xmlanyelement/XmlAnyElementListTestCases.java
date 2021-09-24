@@ -44,7 +44,7 @@ public class XmlAnyElementListTestCases extends JAXBWithJSONTestCases{
        super(name);
        setControlDocument(XML_RESOURCE);
        setControlJSON(JSON_RESOURCE);
-       setClasses(new Class[]{EmployeeWithList.class});
+       setClasses(new Class<?>[]{EmployeeWithList.class});
 
     }
 

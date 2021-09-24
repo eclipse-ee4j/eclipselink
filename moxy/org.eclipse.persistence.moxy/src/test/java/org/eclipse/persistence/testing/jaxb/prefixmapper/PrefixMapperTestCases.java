@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,7 +24,7 @@ public class PrefixMapperTestCases extends JAXBWithJSONTestCases {
     private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/prefixmapper/employee.json";
     public PrefixMapperTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Employee.class, Person.class});
+        setClasses(new Class<?>[]{Employee.class, Person.class});
         jaxbMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, new MyPrefixMapper());
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, new MyPrefixMapper());
         setControlDocument(XML_RESOURCE);

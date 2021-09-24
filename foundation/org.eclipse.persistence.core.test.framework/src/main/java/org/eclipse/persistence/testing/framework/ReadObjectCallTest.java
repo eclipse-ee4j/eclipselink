@@ -30,7 +30,7 @@ import org.eclipse.persistence.queries.*;
 public class ReadObjectCallTest extends AutoVerifyTestCase {
     protected Object objectFromDatabase;
     protected Call call;
-    protected Class referenceClass;
+    protected Class<?> referenceClass;
 
     /**
      * This is required to allow subclassing.
@@ -39,18 +39,18 @@ public class ReadObjectCallTest extends AutoVerifyTestCase {
         setDescription("The test reads the intended object from the database through the call and checks if it was read properly");
     }
 
-    public ReadObjectCallTest(Class referenceClass, Call aCall) {
+    public ReadObjectCallTest(Class<?> referenceClass, Call aCall) {
         setReferenceClass(referenceClass);
         setCall(aCall);
         setName("ReadObjectCallTest(" + referenceClass + ")");
         setDescription("The test reads the intended object through the call, '" + referenceClass + "', from the database and checks if it was read properly");
     }
 
-    public Class getReferenceClass() {
+    public Class<?> getReferenceClass() {
         return referenceClass;
     }
 
-    public void setReferenceClass(Class referenceClass) {
+    public void setReferenceClass(Class<?> referenceClass) {
         this.referenceClass = referenceClass;
     }
 

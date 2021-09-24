@@ -27,9 +27,9 @@ import org.eclipse.persistence.testing.models.optimisticlocking.*;
 public class ChangeSetOptimisticLockingUpdateTest extends TestCase {
     protected UnitOfWork uow;
     protected Object originalObject;
-    protected Class domainClass;
+    protected Class<?> domainClass;
 
-    public ChangeSetOptimisticLockingUpdateTest(Class aClass) {
+    public ChangeSetOptimisticLockingUpdateTest(Class<?> aClass) {
 
         setName(getName() + "(" + aClass + ")");
         domainClass = aClass;

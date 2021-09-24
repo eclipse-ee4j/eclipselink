@@ -26,7 +26,7 @@ import junit.framework.TestCase;
 public class InnerClassTestCases extends TestCase {
 
     public void testCreateContext() throws Exception {
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
 
         URL[] urls = new URL[1];
         urls[0] = Thread.currentThread().getContextClassLoader().getResource("org/eclipse/persistence/testing/jaxb/classloader/innerClass.jar");

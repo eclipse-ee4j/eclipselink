@@ -31,7 +31,7 @@ public class SDOTypeInstanceClassTestCases extends SDOTestCase {
         type.setInstanceClass(null);
         type.setInstanceClassName("org.eclipse.persistence.testing.sdo.model.type.USAddress");
 
-        Class theClass = type.getInstanceClass();
+        Class<?> theClass = type.getInstanceClass();
         assertNotNull(theClass);
     }
 
@@ -41,7 +41,7 @@ public class SDOTypeInstanceClassTestCases extends SDOTestCase {
         type.setInstanceClass(null);
         type.setInstanceClassName("org.eclipse.persistence.testing.sdo.myInvalidClass");
 
-        Class theClass = type.getInstanceClass();
+        Class<?> theClass = type.getInstanceClass();
         assertNull(theClass);
     }
 

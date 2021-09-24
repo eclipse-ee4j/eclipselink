@@ -22,7 +22,7 @@ public class AttributeNSUnqualifiedTestCases extends JAXBWithJSONTestCases{
 
     public AttributeNSUnqualifiedTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{RootWithAttributeNS.class});
+        setClasses(new Class<?>[]{RootWithAttributeNS.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

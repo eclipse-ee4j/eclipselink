@@ -24,7 +24,7 @@ import org.eclipse.persistence.testing.models.optimisticlocking.SelfUpdatable;
  * the database.
  */
 public class OptimisticLockingPolicyChangedValueUpdateTest extends OptimisticLockingPolicyDeleteRowTest {
-    public OptimisticLockingPolicyChangedValueUpdateTest(Class aClass) {
+    public OptimisticLockingPolicyChangedValueUpdateTest(Class<?> aClass) {
         super(aClass);
         setDescription("This test verifies that an optimistic lock exception is thrown on update when the write lock is changed");
     }

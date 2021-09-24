@@ -31,13 +31,13 @@ public class ExceptionTestSaveSecurityManager extends ExceptionTest {
     private SecurityManager orgSecurityManager;
     private IntegrityChecker orgIntegrityChecker;
     private boolean orgDefaultUseDoPrivilegedValue;
-    private Class cls;
+    private Class<?> cls;
     private RelationalDescriptor descriptor;
 
     public ExceptionTestSaveSecurityManager() {
     }
 
-    public ExceptionTestSaveSecurityManager(String description, Class cls) {
+    public ExceptionTestSaveSecurityManager(String description, Class<?> cls) {
         super();
         if (cls != null) {
             StringBuilder sb = new StringBuilder();
@@ -51,7 +51,7 @@ public class ExceptionTestSaveSecurityManager extends ExceptionTest {
         this.cls = cls;
     }
 
-    protected Class getTestClass() {
+    protected Class<?> getTestClass() {
         return cls;
     }
 

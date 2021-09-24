@@ -34,7 +34,7 @@ public class NamespacesOnUnmarshalOnlyTestCases extends JSONMarshalUnmarshalTest
         super(name);
         setControlJSON(JSON_RESOURCE);
         setWriteControlJSON(JSON_WRITE_RESOURCE);
-        setClasses(new Class[]{Person.class});
+        setClasses(new Class<?>[]{Person.class});
     }
 
     @Override

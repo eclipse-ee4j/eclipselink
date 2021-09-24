@@ -43,7 +43,7 @@ public class XmlVariableNodeQNameNSTestCases extends JAXBWithJSONTestCases{
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);
-        setClasses(new Class[]{RootQName.class});
+        setClasses(new Class<?>[]{RootQName.class});
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("uri1", "xxx");
         namespaces.put("uri2", "yyy");

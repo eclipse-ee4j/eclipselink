@@ -34,7 +34,7 @@ public class InheritanceNoRootTestCases extends JAXBWithJSONTestCases {
 
     public InheritanceNoRootTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Person.class});
+        setClasses(new Class<?>[]{Person.class});
         setControlJSON(JSON_RESOURCE);
         setControlDocument(XML_RESOURCE);
     }

@@ -63,9 +63,9 @@ import org.w3c.dom.NodeList;
 public abstract class OXTestCase extends XMLTestCase {
     protected static XMLInputFactory XML_INPUT_FACTORY;
     protected static XMLOutputFactory XML_OUTPUT_FACTORY;
-    protected static Class staxResultClass;
+    protected static Class<?> staxResultClass;
     protected static String staxResultClassName = "javax.xml.transform.stax.StAXResult";
-    protected static Class staxSourceClass;
+    protected static Class<?> staxSourceClass;
     protected static String staxSourceClassName = "javax.xml.transform.stax.StAXSource";
     protected static Constructor staxResultStreamWriterConstructor;
     protected static Constructor staxResultEventWriterConstructor;
@@ -82,16 +82,16 @@ public abstract class OXTestCase extends XMLTestCase {
         }
         try {
             staxResultClass = PrivilegedAccessHelper.getClassForName(staxResultClassName);
-            staxResultStreamWriterConstructor = PrivilegedAccessHelper.getConstructorFor(staxResultClass, new Class[]{XMLStreamWriter.class}, true);
-            staxResultEventWriterConstructor = PrivilegedAccessHelper.getConstructorFor(staxResultClass, new Class[]{XMLEventWriter.class}, true);
+            staxResultStreamWriterConstructor = PrivilegedAccessHelper.getConstructorFor(staxResultClass, new Class<?>[]{XMLStreamWriter.class}, true);
+            staxResultEventWriterConstructor = PrivilegedAccessHelper.getConstructorFor(staxResultClass, new Class<?>[]{XMLEventWriter.class}, true);
         } catch(Exception ex) {
             staxResultClass = null;
         }
 
         try {
             staxSourceClass = PrivilegedAccessHelper.getClassForName(staxSourceClassName);
-            staxSourceStreamReaderConstructor = PrivilegedAccessHelper.getConstructorFor(staxSourceClass, new Class[]{XMLStreamReader.class}, true);
-            staxSourceEventReaderConstructor = PrivilegedAccessHelper.getConstructorFor(staxSourceClass, new Class[]{XMLEventReader.class}, true);
+            staxSourceStreamReaderConstructor = PrivilegedAccessHelper.getConstructorFor(staxSourceClass, new Class<?>[]{XMLStreamReader.class}, true);
+            staxSourceEventReaderConstructor = PrivilegedAccessHelper.getConstructorFor(staxSourceClass, new Class<?>[]{XMLEventReader.class}, true);
         } catch(Exception ex) {
             staxSourceClass = null;
         }

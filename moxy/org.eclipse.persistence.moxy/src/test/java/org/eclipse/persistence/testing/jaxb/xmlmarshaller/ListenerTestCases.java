@@ -68,7 +68,7 @@ public class ListenerTestCases extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
-        jc = JAXBContextFactory.createContext(new Class[] {ListenerRootObject.class, ListenerElementDeclObject.class, ListenerObjectFactory.class}, null);
+        jc = JAXBContextFactory.createContext(new Class<?>[] {ListenerRootObject.class, ListenerElementDeclObject.class, ListenerObjectFactory.class}, null);
     }
 
     private void testMarshalListenerElementDecl(JAXBElement<ListenerElementDeclObject> jaxbElement, Marshaller marshaller, ListenerMarshal listener) throws Exception {

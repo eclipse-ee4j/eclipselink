@@ -40,7 +40,7 @@ public class InheritanceRootCompositeCollectionOnlyTestCases extends JAXBWithJSO
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[] {RootCompositeCollectionOnly.class});
+        setClasses(new Class<?>[] {RootCompositeCollectionOnly.class});
 
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("uri1", "ns5");

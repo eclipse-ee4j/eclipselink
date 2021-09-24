@@ -28,7 +28,7 @@ public class WithoutXmlRootElementJAXBElementTestCases extends JSONMarshalUnmars
 
     public WithoutXmlRootElementJAXBElementTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {WithoutXmlRootElementRoot.class});
+        setClasses(new Class<?>[] {WithoutXmlRootElementRoot.class});
         setControlJSON(CONTROL_JSON);
     }
 

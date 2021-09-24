@@ -22,7 +22,7 @@ public class ElementEnumInvalidTypeTestCases extends JAXBWithJSONTestCases{
     MyEventHandler handler;
     public ElementEnumInvalidTypeTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {MyClass.class});
+        setClasses(new Class<?>[] {MyClass.class});
         setControlDocument("org/eclipse/persistence/testing/jaxb/eventhandler/elementEnumWrongType.xml");
         setControlJSON("org/eclipse/persistence/testing/jaxb/eventhandler/elementEnumWrongType.json");
         setWriteControlDocument("org/eclipse/persistence/testing/jaxb/eventhandler/valid.xml");

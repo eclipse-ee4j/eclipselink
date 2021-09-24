@@ -65,7 +65,7 @@ public class SchemaGenEmployeeTestCases extends TestCase {
         try {
             employeeXml = Thread.currentThread().getContextClassLoader().getResourceAsStream("org/eclipse/persistence/testing/jaxb/schemagen/employee/employee.xml");
 
-            Class[] jClasses = new Class[] { Address.class, Employee.class, PhoneNumber.class, Department.class, MyTestType.class };
+            Class<?>[] jClasses = new Class<?>[] { Address.class, Employee.class, PhoneNumber.class, Department.class, MyTestType.class };
             Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
             SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -123,7 +123,7 @@ public class SchemaGenEmployeeTestCases extends TestCase {
         }
 
         try {
-            Class[] jClasses = new Class[] { Address.class, Employee.class, PhoneNumber.class, Department.class };
+            Class<?>[] jClasses = new Class<?>[] { Address.class, Employee.class, PhoneNumber.class, Department.class };
             Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
             SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -157,7 +157,7 @@ public class SchemaGenEmployeeTestCases extends TestCase {
         }
 
         try {
-            Class[] jClasses = new Class[] { Address.class, Employee.class, PhoneNumber.class, Department.class };
+            Class<?>[] jClasses = new Class<?>[] { Address.class, Employee.class, PhoneNumber.class, Department.class };
             Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
             SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -187,7 +187,7 @@ public class SchemaGenEmployeeTestCases extends TestCase {
         }
 
         try {
-            Class[] jClasses = new Class[] { MyAbstractTestType.class, MyTestSubType.class };
+            Class<?>[] jClasses = new Class<?>[] { MyAbstractTestType.class, MyTestSubType.class };
             Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
             SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -217,7 +217,7 @@ public class SchemaGenEmployeeTestCases extends TestCase {
         }
 
         try {
-            Class[] jClasses = new Class[] { MyAbstractTestType.class, MyTestSubType.class };
+            Class<?>[] jClasses = new Class<?>[] { MyAbstractTestType.class, MyTestSubType.class };
             Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
             SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -244,7 +244,7 @@ public class SchemaGenEmployeeTestCases extends TestCase {
         testObj.subTypeInt = 66;
 
         try {
-            Class[] jClasses = new Class[] { MyAbstractTestType.class, MyTestSubType.class };
+            Class<?>[] jClasses = new Class<?>[] { MyAbstractTestType.class, MyTestSubType.class };
             JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(jClasses, null);
             Marshaller marshaller = jCtx.createMarshaller();
             FileWriter fw = new FileWriter(new File(tmpdir, src));
@@ -268,7 +268,7 @@ public class SchemaGenEmployeeTestCases extends TestCase {
         Object obj = null;
 
         try {
-            Class[] jClasses = new Class[] { MyAbstractTestType.class, MyTestSubType.class };
+            Class<?>[] jClasses = new Class<?>[] { MyAbstractTestType.class, MyTestSubType.class };
             JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(jClasses, null);
             Unmarshaller unmarshaller = jCtx.createUnmarshaller();
             obj = unmarshaller.unmarshal(new File(src));

@@ -27,7 +27,7 @@ public class XmlRootElementNotInheritedByDerivedTest extends JAXBWithJSONTestCas
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[2];
+        Class<?>[] classes = new Class<?>[2];
         classes[0] = Point3D.class;
         classes[1] = Point2D.class;
         setClasses(classes);

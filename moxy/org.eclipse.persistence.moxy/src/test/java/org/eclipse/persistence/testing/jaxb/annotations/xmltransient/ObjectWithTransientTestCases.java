@@ -26,7 +26,7 @@ public class ObjectWithTransientTestCases extends JAXBWithJSONTestCases{
 
     public ObjectWithTransientTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { ObjectWithTransient.class });
+        setClasses(new Class<?>[] { ObjectWithTransient.class });
         expectsMarshalException = true;
     }
 

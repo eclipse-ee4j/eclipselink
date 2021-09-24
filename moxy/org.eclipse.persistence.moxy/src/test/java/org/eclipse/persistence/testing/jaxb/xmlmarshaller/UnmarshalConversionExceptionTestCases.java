@@ -34,7 +34,7 @@ public class UnmarshalConversionExceptionTestCases extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
-        JAXBContext jc = JAXBContextFactory.createContext(new Class[] {UnmarshalConversionExceptionRoot.class}, null);
+        JAXBContext jc = JAXBContextFactory.createContext(new Class<?>[] {UnmarshalConversionExceptionRoot.class}, null);
         unmarshaller = jc.createUnmarshaller();
     }
 

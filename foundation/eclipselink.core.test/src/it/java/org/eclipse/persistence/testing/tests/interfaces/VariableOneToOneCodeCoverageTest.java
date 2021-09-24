@@ -180,7 +180,7 @@ class VariableOneToOneMapping2 extends VariableOneToOneMapping {
     }
 
     @Override
-    public Object getTypeForImplementor(Class implementor) {
+    public Object getTypeForImplementor(Class<?> implementor) {
         return super.getTypeForImplementor(implementor);
     }
 

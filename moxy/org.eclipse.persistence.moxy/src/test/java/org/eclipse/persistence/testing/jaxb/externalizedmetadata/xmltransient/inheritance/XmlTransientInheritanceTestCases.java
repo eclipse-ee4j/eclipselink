@@ -36,7 +36,7 @@ public class XmlTransientInheritanceTestCases extends JAXBWithJSONTestCases{
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[] { Person.class, Employee.class });
+        setClasses(new Class<?>[] { Person.class, Employee.class });
     }
 
      @Override

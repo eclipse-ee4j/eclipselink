@@ -199,7 +199,7 @@ public class DataTypesTestCases extends SDOTestCase {
     public void testBooleanMethodsExist() throws Exception {
 
         SDOType theType  = (SDOType)aHelperContext.getTypeHelper().getType("http://www.example.com", "DataTypes");
-        Class implClass = theType.getImplClass();
+        Class<?> implClass = theType.getImplClass();
         assertNotNull(implClass);
 
         Method isMethod = implClass.getMethod("isBooleanProperty");

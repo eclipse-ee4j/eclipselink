@@ -144,7 +144,7 @@ public class OptimisticLockingTestModel extends TestModel {
         suite.setName("UpdateNullValueOptimisticLockingTestSuite");
         suite.setDescription("Tests the functionality of updating fields with a null database value, with optimistic locking");
 
-        final Class[] policies = { AllFieldsLockingPolicy.class, SelectedFieldsLockingPolicy.class,
+        final Class<?>[] policies = { AllFieldsLockingPolicy.class, SelectedFieldsLockingPolicy.class,
                 ChangedFieldsLockingPolicy.class, VersionLockingPolicy.class, TimestampLockingPolicy.class };
         // done this way for test ordering
         for (int i = 0; i < policies.length; i++) {

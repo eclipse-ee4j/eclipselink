@@ -34,7 +34,7 @@ public class InheritanceRootCompositeCollectionObjectOnlyNSTestCases extends JAX
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[] {RootCompositeCollectionObjectOnly.class, BaseType.class});
+        setClasses(new Class<?>[] {RootCompositeCollectionObjectOnly.class, BaseType.class});
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "xsi");
         namespaces.put(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, "xsd");

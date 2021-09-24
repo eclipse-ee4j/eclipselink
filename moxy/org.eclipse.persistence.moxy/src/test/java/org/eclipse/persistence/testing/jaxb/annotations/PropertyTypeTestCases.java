@@ -38,7 +38,7 @@ public class PropertyTypeTestCases extends JAXBWithJSONTestCases {
 
     public PropertyTypeTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { TestObject.class });
+        setClasses(new Class<?>[] { TestObject.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         initXsiType();
@@ -71,7 +71,7 @@ public class PropertyTypeTestCases extends JAXBWithJSONTestCases {
 
     public void testPropertyTypes() throws Exception {
         JaxbClassLoader classLoader = new JaxbClassLoader(Thread.currentThread().getContextClassLoader());
-        Generator generator = new Generator(new JavaModelInputImpl(new Class[] { TestObject.class }, new JavaModelImpl(this.classLoader)));
+        Generator generator = new Generator(new JavaModelInputImpl(new Class<?>[] { TestObject.class }, new JavaModelImpl(this.classLoader)));
 
         CoreProject proj = generator.generateProject();
         TypeInfo info = generator.getAnnotationsProcessor().getTypeInfos().get("org.eclipse.persistence.testing.jaxb.annotations.TestObject");

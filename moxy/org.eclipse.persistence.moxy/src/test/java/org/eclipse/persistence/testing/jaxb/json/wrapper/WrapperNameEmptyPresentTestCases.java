@@ -38,7 +38,7 @@ public class WrapperNameEmptyPresentTestCases extends JSONMarshalUnmarshalTestCa
 
     public WrapperNameEmptyPresentTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {Company.class});
+        setClasses(new Class<?>[] {Company.class});
         setControlJSON(JSON);
     }
 

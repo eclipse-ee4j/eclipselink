@@ -38,7 +38,7 @@ public class XmlAnyElementWithEltRefsTestCases extends JAXBWithJSONTestCases{
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[]{FooImplNoAnnotations.class, Bar.class});
+        setClasses(new Class<?>[]{FooImplNoAnnotations.class, Bar.class});
 
     }
 

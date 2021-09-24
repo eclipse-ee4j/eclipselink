@@ -38,7 +38,7 @@ public class XmlValueCdnPricesTestCases extends JAXBWithJSONTestCases{
 
     public XmlValueCdnPricesTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { CDNPricesNoAnnotation.class });
+        setClasses(new Class<?>[] { CDNPricesNoAnnotation.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

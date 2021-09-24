@@ -34,7 +34,7 @@ public class OrderingMutipleTableTest extends OrderingTest {
         orderedQueryObjects = executeOrderingQuery(LargeProject.class, "budget");
     }
 
-    protected Vector executeOrderingQuery(Class class1, String orderField) {
+    protected Vector executeOrderingQuery(Class<?> class1, String orderField) {
         ReadAllQuery query = new ReadAllQuery();
         query.addAscendingOrdering(orderField);
         query.setReferenceClass(class1);

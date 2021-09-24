@@ -28,7 +28,7 @@ public class JSONAttributeOrderElementFirstTestCases extends JSONMarshalUnmarsha
         super(name);
         setControlJSON(JSON_RESOURCE);
         setWriteControlJSON(JSON_WRITE_RESOURCE);
-        setClasses(new Class[]{AddressElementAttributeOrder.class});
+        setClasses(new Class<?>[]{AddressElementAttributeOrder.class});
     }
 
     @Override

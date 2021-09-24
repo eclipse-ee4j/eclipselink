@@ -36,7 +36,7 @@ public class FooBarXsiTypeTestCases extends JAXBWithJSONTestCases {
         setControlJSON(JSON_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);
         setWriteControlJSON(JSON_WRITE_RESOURCE);
-        setClasses(new Class[] {Foo.class, Bar.class, ObjectFactory.class});
+        setClasses(new Class<?>[] {Foo.class, Bar.class, ObjectFactory.class});
     }
 
     @Override

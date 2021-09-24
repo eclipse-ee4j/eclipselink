@@ -35,7 +35,7 @@ public class GetByXPathTests extends junit.framework.TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        eCtx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { TestBean.class }, null);
+        eCtx = (JAXBContext) JAXBContextFactory.createContext(new Class<?>[] { TestBean.class }, null);
     }
 
     private TestBean getControlObject() {

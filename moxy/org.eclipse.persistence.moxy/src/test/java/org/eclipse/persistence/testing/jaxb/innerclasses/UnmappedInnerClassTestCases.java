@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ public class UnmappedInnerClassTestCases extends JAXBWithJSONTestCases {
 
     public UnmappedInnerClassTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {UnmappedInnerClassRoot.class});
+        setClasses(new Class<?>[] {UnmappedInnerClassRoot.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

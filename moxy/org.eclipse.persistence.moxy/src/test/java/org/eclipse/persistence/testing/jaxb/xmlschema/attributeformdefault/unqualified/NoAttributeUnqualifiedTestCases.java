@@ -22,7 +22,7 @@ public class NoAttributeUnqualifiedTestCases extends JAXBWithJSONTestCases{
 
     public NoAttributeUnqualifiedTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{RootNoAttributes.class});
+        setClasses(new Class<?>[]{RootNoAttributes.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

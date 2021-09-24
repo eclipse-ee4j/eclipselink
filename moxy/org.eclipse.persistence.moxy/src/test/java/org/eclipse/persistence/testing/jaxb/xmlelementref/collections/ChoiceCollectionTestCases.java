@@ -36,7 +36,7 @@ public class ChoiceCollectionTestCases extends JAXBWithJSONTestCases{
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[]{Wrapper.class};
+        Class<?>[] classes = new Class<?>[]{Wrapper.class};
         setClasses(classes);
         jaxbUnmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
 

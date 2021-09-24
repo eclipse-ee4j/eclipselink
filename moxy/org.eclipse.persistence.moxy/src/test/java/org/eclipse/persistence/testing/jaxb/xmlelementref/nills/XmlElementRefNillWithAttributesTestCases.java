@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,7 +33,7 @@ public class XmlElementRefNillWithAttributesTestCases extends JAXBTestCases {
     public XmlElementRefNillWithAttributesTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
-        Class[] classes = new Class[] {ObjectFactory.class, Employee.class};
+        Class<?>[] classes = new Class<?>[] {ObjectFactory.class, Employee.class};
         setClasses(classes);
     }
 

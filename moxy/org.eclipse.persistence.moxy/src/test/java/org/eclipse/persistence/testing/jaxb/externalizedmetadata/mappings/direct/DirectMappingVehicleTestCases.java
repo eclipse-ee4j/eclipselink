@@ -36,7 +36,7 @@ public class DirectMappingVehicleTestCases extends JAXBWithJSONTestCases{
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[]{Car.class, Truck.class});
+        setClasses(new Class<?>[]{Car.class, Truck.class});
     }
 
     @Override

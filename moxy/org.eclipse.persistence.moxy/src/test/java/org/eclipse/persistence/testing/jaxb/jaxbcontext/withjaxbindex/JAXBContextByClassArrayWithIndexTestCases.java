@@ -40,7 +40,7 @@ public class JAXBContextByClassArrayWithIndexTestCases extends JAXBWithJSONTestC
             setControlDocument(XML_RESOURCE);
             setControlJSON(JSON_RESOURCE);
             super.setUp();
-            Class[] classes = new Class[]{ClassA.class};
+            Class<?>[] classes = new Class<?>[]{ClassA.class};
             setTypes(classes);
             initXsiType();
         }

@@ -32,7 +32,7 @@ import org.w3c.dom.Node;
 public class NullSetsMapTestCases extends TestCase {
 
     public void testMarshal() throws JAXBException {
-        JAXBContext jc = JAXBContextFactory.createContext(new Class[] {NullSetsMapRoot.class}, null);
+        JAXBContext jc = JAXBContextFactory.createContext(new Class<?>[] {NullSetsMapRoot.class}, null);
 
         NullSetsMapRoot nsmr = new NullSetsMapRoot();
         nsmr.setNullSetsMap(new NullSetsMap());
@@ -42,7 +42,7 @@ public class NullSetsMapTestCases extends TestCase {
     }
 
     public void testBinderMarshal() throws Exception {
-        JAXBContext jc = JAXBContextFactory.createContext(new Class[] {NullSetsMapRoot.class}, null);
+        JAXBContext jc = JAXBContextFactory.createContext(new Class<?>[] {NullSetsMapRoot.class}, null);
 
         NullSetsMapRoot nsmr = new NullSetsMapRoot();
         nsmr.setNullSetsMap(new NullSetsMap());

@@ -31,7 +31,7 @@ public class XmlSchemaTypeDateEmptyTestCases extends JAXBWithJSONTestCases {
         setControlJSON(JSON_RESOURCE);
         setWriteControlDocument(XML_RESOURCE_WRITE);
         setWriteControlJSON(JSON_RESOURCE_WRITE);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = EmployeeDate.class;
         setClasses(classes);
     }

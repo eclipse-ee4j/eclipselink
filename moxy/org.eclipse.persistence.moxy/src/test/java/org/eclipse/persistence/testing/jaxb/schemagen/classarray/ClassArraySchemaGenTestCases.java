@@ -66,7 +66,7 @@ public class ClassArraySchemaGenTestCases extends SchemaGenTestCases {
                 fail("Additional global element Map setup failed: " + x.toString());
             }
             try {
-                Class[] classesToBeBound = new Class[]{Employee.class};
+                Class<?>[] classesToBeBound = new Class<?>[]{Employee.class};
                 generateSchema(classesToBeBound, outputResolver, additionalGlobalElements);
             } catch (Exception ex) {
                 fail("Schema generation failed unexpectedly: " + ex.toString());
@@ -128,7 +128,7 @@ public class ClassArraySchemaGenTestCases extends SchemaGenTestCases {
      * Test schema generation from multiple entities with different namespaces and verify generated schemas (by order and content).
      */
     public void testSchemaGenFromClassArrayVerifyOrder() throws Exception {
-        final Class[] inputClasses = new Class[]{SecondType.class, WithoutNamespaceType.class, RootElement.class, FourthType.class, ThirdType.class, FirstType.class};
+        final Class<?>[] inputClasses = new Class<?>[]{SecondType.class, WithoutNamespaceType.class, RootElement.class, FourthType.class, ThirdType.class, FirstType.class};
         final String[] xsdResources = new String[]{"schema1.xsd", "schema2.xsd", "schema3.xsd", "schema4.xsd", "schema5.xsd"};
 
         JAXBContext jaxbContext;

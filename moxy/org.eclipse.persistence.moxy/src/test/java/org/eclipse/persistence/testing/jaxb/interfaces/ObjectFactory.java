@@ -38,7 +38,7 @@ public class ObjectFactory {
     }
 
     private <T> T createInstance(Class<T> anInterface) {
-        return (T) Proxy.newProxyInstance(anInterface.getClassLoader(), new Class[] {anInterface}, new InterfaceInvocationHandler());
+        return (T) Proxy.newProxyInstance(anInterface.getClassLoader(), new Class<?>[] {anInterface}, new InterfaceInvocationHandler());
     }
 
     private static class InterfaceInvocationHandler implements InvocationHandler {

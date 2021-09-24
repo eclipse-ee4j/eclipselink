@@ -106,7 +106,7 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         employees = new ExpressionBuilder();
         query = new ReportQuery(Employee.class, employees);
 
-        Class[] argTypes = new Class[]{String.class, String.class};
+        Class<?>[] argTypes = new Class<?>[]{String.class, String.class};
         query.beginAddingConstructorArguments(Employee.class, argTypes);
         query.addAttribute("firstName");
         query.addAttribute("lastName");
@@ -170,7 +170,7 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         Vector reportResults = (Vector)getServerSession().executeQuery(query);
         query = new ReportQuery(Employee.class, employees);
 
-        Class[] argTypes = new Class[]{String.class, java.sql.Date.class, Integer.class};
+        Class<?>[] argTypes = new Class<?>[]{String.class, java.sql.Date.class, Integer.class};
         query.beginAddingConstructorArguments(DataHolder.class, argTypes);
         query.addAttribute("firstName");
         query.addItem("endDate", employees.get("period").get("endDate"));
@@ -199,7 +199,7 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         ExpressionBuilder employees = new ExpressionBuilder();
         ReportQuery query = new ReportQuery(Employee.class, employees);
 
-        Class[] argTypes = new Class[]{String.class, java.sql.Date.class, Integer.class};
+        Class<?>[] argTypes = new Class<?>[]{String.class, java.sql.Date.class, Integer.class};
         query.beginAddingConstructorArguments(Employee.class, argTypes);
         query.addAttribute("firstName");
         query.addItem("endDate", employees.get("period").get("endDate"));
@@ -225,7 +225,7 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         Vector reportResults = (Vector)getServerSession().executeQuery(query);
 
         query = new ReportQuery(Employee.class, employees);
-        Class[] argTypes = new Class[]{int.class};
+        Class<?>[] argTypes = new Class<?>[]{int.class};
         query.beginAddingConstructorArguments(DataHolder.class, argTypes);
         query.addAttribute("salary");
         query.endAddingToConstructorItem();

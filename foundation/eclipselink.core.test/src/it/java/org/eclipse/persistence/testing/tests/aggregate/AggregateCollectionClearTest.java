@@ -19,9 +19,9 @@ import org.eclipse.persistence.sessions.*;
 
 public class AggregateCollectionClearTest extends TransactionalTestCase {
     public Object object;
-    public Class cls;
+    public Class<?> cls;
 
-    public AggregateCollectionClearTest(Class cls) {
+    public AggregateCollectionClearTest(Class<?> cls) {
         this.cls = cls;
         setName(getName() + AgentBuilderHelper.getNameInBrackets(cls));
         setDescription("Verifies that when aggregate collections get cleared that the changes are merged.  CR 3013");

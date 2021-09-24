@@ -31,7 +31,7 @@ public class XmlPathTestCases extends JAXBWithJSONTestCases {
     private static final String JSON_SCHEMA_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlpath/xmlpathschema.json";
     public XmlPathTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {Root.class, Employee.class, Address.class, PhoneNumber.class});
+        setClasses(new Class<?>[] {Root.class, Employee.class, Address.class, PhoneNumber.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

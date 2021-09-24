@@ -22,7 +22,7 @@ public class AttributeQualifiedTestCases extends JAXBWithJSONTestCases{
 
     public AttributeQualifiedTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{RootWithAttribute.class});
+        setClasses(new Class<?>[]{RootWithAttribute.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

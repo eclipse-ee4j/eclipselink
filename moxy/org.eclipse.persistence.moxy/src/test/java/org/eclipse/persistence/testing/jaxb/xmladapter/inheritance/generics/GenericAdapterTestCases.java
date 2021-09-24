@@ -32,7 +32,7 @@ public class GenericAdapterTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[] { Customer.class };
+        Class<?>[] classes = new Class<?>[] { Customer.class };
         setClasses(classes);
 
         // Setup adapter caches

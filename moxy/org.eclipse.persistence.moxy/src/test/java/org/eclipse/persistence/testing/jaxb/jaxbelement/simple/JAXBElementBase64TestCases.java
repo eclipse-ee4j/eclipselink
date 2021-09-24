@@ -41,8 +41,8 @@ public class JAXBElementBase64TestCases  extends JAXBElementTestCases {
     }
 
     @Override
-    public Class[] getClasses(){
-        Class[] classes = new Class[1];
+    public Class<?>[] getClasses(){
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = byte[].class;
         return classes;
     }

@@ -68,7 +68,7 @@ public void addDescriptors(DatabaseSession session) {
 
     }
 
-    private boolean containsObject(Class domainClass, String identifier) {
+    private boolean containsObject(Class<?> domainClass, String identifier) {
         PopulationManager populationManager = PopulationManager.getDefaultManager();
 
         return populationManager.containsObject(domainClass, identifier);
@@ -85,7 +85,7 @@ public void createTables(DatabaseSession session)
 
     }
 
-    private Object getObject(Class domainClass, String identifier) {
+    private Object getObject(Class<?> domainClass, String identifier) {
         PopulationManager populationManager = PopulationManager.getDefaultManager();
         return populationManager.getObject(domainClass, identifier);
     }

@@ -25,7 +25,7 @@ public class XmlLocationNonTransientTestCases extends JAXBTestCases {
 
     public XmlLocationNonTransientTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{ DataNT.class, SubDataNT.class, DetailDataNT.class, LeafDataNT.class });
+        setClasses(new Class<?>[]{ DataNT.class, SubDataNT.class, DetailDataNT.class, LeafDataNT.class });
         setControlDocument(XML_RESOURCE);
     }
 

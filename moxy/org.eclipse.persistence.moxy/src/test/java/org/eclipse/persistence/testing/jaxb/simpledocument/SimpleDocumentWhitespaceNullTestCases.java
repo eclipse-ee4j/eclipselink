@@ -42,7 +42,7 @@ public class SimpleDocumentWhitespaceNullTestCases extends JAXBWithJSONTestCases
         super(name);
         setControlDocument(ELEMENT_WITH_VALUE);
         setControlJSON(JSON_ELEMENT_WITH_VALUE);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Root.class;
         setClasses(classes);
     }

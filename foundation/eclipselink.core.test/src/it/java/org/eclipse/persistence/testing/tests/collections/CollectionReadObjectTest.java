@@ -20,7 +20,7 @@ import org.eclipse.persistence.testing.models.collections.Restaurant;
 import org.eclipse.persistence.testing.framework.*;
 
 public class CollectionReadObjectTest extends org.eclipse.persistence.testing.framework.ReadObjectTest {
-    Class collectionClass;
+    Class<?> collectionClass;
 
     public CollectionReadObjectTest() {
         super();

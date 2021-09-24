@@ -28,9 +28,9 @@ import org.eclipse.persistence.testing.models.optimisticlocking.RockMusician;
  */
 public class OptimisticLockingPolicyDeleteRowTest extends AutoVerifyTestCase {
     protected Object originalObject;
-    protected Class testClass;
+    protected Class<?> testClass;
 
-    public OptimisticLockingPolicyDeleteRowTest(Class aClass) {
+    public OptimisticLockingPolicyDeleteRowTest(Class<?> aClass) {
         setDescription("This test verifies that an optimistic lock exception is thrown when underlying database row is delete");
         testClass = aClass;
     }

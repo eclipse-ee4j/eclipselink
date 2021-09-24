@@ -37,7 +37,7 @@ import junit.framework.TestSuite;
 
 public class ReportQueryAdvancedJUnitTest  extends JUnitTestCase {
 
-    static protected Class[] classes = {Employee.class, Address.class, PhoneNumber.class, Project.class};
+    static protected Class<?>[] classes = {Employee.class, Address.class, PhoneNumber.class, Project.class};
     static protected Vector[] objectVectors = {null, null, null, null};
 
     static protected EmployeePopulator populator = new EmployeePopulator();

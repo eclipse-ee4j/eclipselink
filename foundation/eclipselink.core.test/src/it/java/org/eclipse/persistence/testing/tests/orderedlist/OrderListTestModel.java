@@ -84,7 +84,7 @@ public class OrderListTestModel extends TestModel {
      * setup saves there the original state of something, sets a new state required for testing,
      * then reset brings back the saved original state.
      */
-    Map<Class, ObjectChangeTrackingPolicy> originalChangeTrackingPolicies;
+    Map<Class<?>, ObjectChangeTrackingPolicy> originalChangeTrackingPolicies;
 
     /*
      * Constants used by WhereToAdd tests.
@@ -359,7 +359,7 @@ public class OrderListTestModel extends TestModel {
         if(!isTopLevel) {
             if(changeTracking == ChangeTracking.ATTRIBUTE) {
                 // Save change policies for the all employee demo class in order to restore them at reset time.
-                Map<Class, ObjectChangePolicy> originalChangeTrackingPolicies = new HashMap<>();
+                Map<Class<?>, ObjectChangePolicy> originalChangeTrackingPolicies = new HashMap<>();
 
                 originalChangeTrackingPolicies.put(Employee.class, getSession().getDescriptor(Employee.class).getObjectChangePolicy());
                 getSession().getDescriptor(Employee.class).setObjectChangePolicy(new AttributeChangeTrackingPolicy());
@@ -387,9 +387,9 @@ public class OrderListTestModel extends TestModel {
         if(!isTopLevel) {
             // restore original change policies.
             if(originalChangeTrackingPolicies != null) {
-                Iterator<Map.Entry<Class, ObjectChangeTrackingPolicy>> it = originalChangeTrackingPolicies.entrySet().iterator();
+                Iterator<Map.Entry<Class<?>, ObjectChangeTrackingPolicy>> it = originalChangeTrackingPolicies.entrySet().iterator();
                 while(it.hasNext()) {
-                    Map.Entry<Class, ObjectChangeTrackingPolicy> entry = it.next();
+                    Map.Entry<Class<?>, ObjectChangeTrackingPolicy> entry = it.next();
                     getSession().getDescriptor(entry.getKey()).setObjectChangePolicy(entry.getValue());
                 }
                 originalChangeTrackingPolicies = null;
@@ -2185,11 +2185,11 @@ public class OrderListTestModel extends TestModel {
      * are of the expected type.
      */
     class VerifyContainerPolicyClassTest extends TestCase {
-        Class expectedClass;
+        Class<?> expectedClass;
         VerifyContainerPolicyClassTest() {
             this(NullsLastOrderedListContainerPolicy.class);
         }
-        VerifyContainerPolicyClassTest(Class expectedClass) {
+        VerifyContainerPolicyClassTest(Class<?> expectedClass) {
             super();
             this.expectedClass = expectedClass;
             setName("VerifyContainerPolicyClassTest");

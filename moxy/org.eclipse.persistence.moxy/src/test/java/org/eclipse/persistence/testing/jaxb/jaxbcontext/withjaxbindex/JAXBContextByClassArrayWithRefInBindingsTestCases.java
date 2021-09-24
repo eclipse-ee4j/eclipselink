@@ -50,7 +50,7 @@ public class JAXBContextByClassArrayWithRefInBindingsTestCases  extends JAXBWith
             setControlDocument(XML_RESOURCE);
             setControlJSON(JSON_RESOURCE);
             super.setUp();
-            Class[] classes = new Class[]{ClassA.class};
+            Class<?>[] classes = new Class<?>[]{ClassA.class};
             setTypes(classes);
         }
 

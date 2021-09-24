@@ -81,27 +81,27 @@ public class JaxbContextCreationTests extends junit.framework.TestCase {
     }
 
     public void testCreateContextWithStringClass() throws JAXBException {
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = String.class;
         JAXBContextFactory.createContext(classes, null);
     }
 
     public void testCreateContextWithIntArrayClass() throws JAXBException {
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         int[] ints = new int[1];
         classes[0] = ints.getClass();
         JAXBContextFactory.createContext(classes, null);
     }
 
     public void testCreateContextWith_ClassArray_NullClassLoader() throws JAXBException {
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         int[] ints = new int[1];
         classes[0] = ints.getClass();
         JAXBContextFactory.createContext(classes, null);
     }
 
     public void testCreateContextWith_ClassArray_Map_NullClassLoader_Map() throws JAXBException {
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         int[] ints = new int[1];
         classes[0] = ints.getClass();
         JAXBContextFactory.createContext(classes, null, null);
@@ -131,14 +131,14 @@ public class JaxbContextCreationTests extends junit.framework.TestCase {
     }
 
     public void testCreateAbstractClassWithMultiArgConstructor() throws JAXBException {
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = AbstractClassWithMultiArgConstructor.class;
         JAXBContextFactory.createContext(classes, null);
     }
 
     public void testCreateConcreteClassWithMultiArgConstructor() throws JAXBException {
         try {
-            Class[] classes = new Class[1];
+            Class<?>[] classes = new Class<?>[1];
             classes[0] = ConcreteClassWithMultiArgConstructor.class;
             JAXBContextFactory.createContext(classes, null);
         } catch(JAXBException e) {
@@ -150,7 +150,7 @@ public class JaxbContextCreationTests extends junit.framework.TestCase {
     }
 
     public void testCreateContextWithGenerics() throws JAXBException {
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = ConcreteClassWithGenerics.class;
         JAXBContextFactory.createContext(classes, null);
     }
@@ -184,7 +184,7 @@ public class JaxbContextCreationTests extends junit.framework.TestCase {
     }
 
     public void testCreateContextXmlAnyAttributeSubTypeMap() throws Exception {
-        JAXBContextFactory.createContext(new Class[]{XmlAnyAttributeSubTypeMapModel.class}, null);
+        JAXBContextFactory.createContext(new Class<?>[]{XmlAnyAttributeSubTypeMapModel.class}, null);
     }
 
     public void testJavaClassImplWildcard() throws Exception{

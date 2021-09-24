@@ -29,7 +29,7 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 public class JAXBInheritanceNSTestCases extends JAXBWithJSONTestCases {
     public JAXBInheritanceNSTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {Root.class, SubType.class});
+        setClasses(new Class<?>[] {Root.class, SubType.class});
         setControlDocument("org/eclipse/persistence/testing/jaxb/inheritance/ns/inheritanceNS.xml");
         setControlJSON("org/eclipse/persistence/testing/jaxb/inheritance/ns/inheritanceNS.json");
 

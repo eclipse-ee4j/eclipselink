@@ -27,7 +27,7 @@ public class XmlIdRefsTestCases extends JAXBWithJSONTestCases {
 
     public XmlIdRefsTestCases(String name) throws Exception {
         super(name);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Root.class;
         setClasses(classes);
         setControlDocument(XML_RESOURCE);

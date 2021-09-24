@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,7 +39,7 @@ public class XSDSchemaTypesTestCases extends JAXBWithJSONTestCases{
         setControlJSON(JSON_RESOURCE);
         setControlJSON(JSON_WRITE_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = XSDTypesHolder.class;
         setClasses(classes);
         initXsiType();

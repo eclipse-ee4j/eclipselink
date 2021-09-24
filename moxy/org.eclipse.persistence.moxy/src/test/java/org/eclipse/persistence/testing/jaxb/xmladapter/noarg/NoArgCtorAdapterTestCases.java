@@ -30,7 +30,7 @@ public class NoArgCtorAdapterTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[] {Root.class, ObjectFactory.class};
+        Class<?>[] classes = new Class<?>[] {Root.class, ObjectFactory.class};
         setClasses(classes);
     }
 

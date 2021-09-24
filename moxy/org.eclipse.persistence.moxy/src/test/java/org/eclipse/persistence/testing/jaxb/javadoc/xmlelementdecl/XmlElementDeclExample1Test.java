@@ -23,7 +23,7 @@ public class XmlElementDeclExample1Test extends JAXBTestCases{
     public XmlElementDeclExample1Test(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = ObjectFactory.class;
         setClasses(classes);
     }

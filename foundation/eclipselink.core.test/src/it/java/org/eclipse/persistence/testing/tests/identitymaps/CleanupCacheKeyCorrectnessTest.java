@@ -30,8 +30,8 @@ import org.eclipse.persistence.sessions.*;
  */
 public class CleanupCacheKeyCorrectnessTest extends TestCase {
 
-    protected Class originalIdentityMapClass;
-    protected Class newIdentityMapClass;
+    protected Class<? extends IdentityMap> originalIdentityMapClass;
+    protected Class<? extends IdentityMap> newIdentityMapClass;
     protected int originalIdentityMapSize;
     protected int newIdentityMapSize;
     protected int numberOfObjectsToCreate;

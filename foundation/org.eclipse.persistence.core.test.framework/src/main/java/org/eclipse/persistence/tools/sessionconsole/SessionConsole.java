@@ -2100,7 +2100,7 @@ public class SessionConsole extends JFrame {
             try {
                 Class<?> aCloserClass =
                     Class.forName("com.ibm.uvm.abt.edit.WindowCloser");
-                Class[] parmTypes = { java.awt.Window.class };
+                Class<?>[] parmTypes = { java.awt.Window.class };
                 Object[] parms = { aSessionInspectorFrame };
                 Constructor<?> aCtor =
                     aCloserClass.getConstructor(parmTypes);

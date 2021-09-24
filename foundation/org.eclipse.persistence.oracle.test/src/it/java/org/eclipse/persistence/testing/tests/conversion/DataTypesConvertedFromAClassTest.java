@@ -33,8 +33,8 @@ public class DataTypesConvertedFromAClassTest extends AutoVerifyTestCase {
     protected Object cm;
     protected Exception exception1;
     protected Exception exception2;
-    protected Class sourceClass;
-    protected Class targetClass;
+    protected Class<?> sourceClass;
+    protected Class<?> targetClass;
 
     public DataTypesConvertedFromAClassTest() {
         setDescription("Test getDataTypesConvertedFrom() in ConversionManager.");
@@ -51,7 +51,7 @@ public class DataTypesConvertedFromAClassTest extends AutoVerifyTestCase {
         int x;
         int y;
         Object obj;
-        Class type;
+        Class<?> type;
         CMAndPlatformWrapper wrapper = new CMAndPlatformWrapper(cm);
 
         ConversionDataObjectForSupportedTypes example = ConversionDataObjectForSupportedTypes.example();
@@ -97,15 +97,15 @@ public class DataTypesConvertedFromAClassTest extends AutoVerifyTestCase {
         return (ConversionManager)cm;
     }
 
-    protected boolean isNumber(Class aClass) {
+    protected boolean isNumber(Class<?> aClass) {
         return Number.class.isAssignableFrom(aClass);
     }
 
-    protected boolean isTimestamp(Class aClass) {
+    protected boolean isTimestamp(Class<?> aClass) {
         return (aClass == java.util.Date.class) || (aClass == Timestamp.class) || (aClass == Calendar.class);
     }
 
-    protected boolean isChar(Class aClass) {
+    protected boolean isChar(Class<?> aClass) {
         return (aClass == Character.class) || (aClass == Character[].class) || (aClass == char[].class) || (aClass == String.class) || (aClass == java.sql.Clob.class);
     }
 }

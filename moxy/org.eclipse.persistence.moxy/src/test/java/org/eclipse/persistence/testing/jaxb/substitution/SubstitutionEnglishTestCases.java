@@ -26,7 +26,7 @@ public class SubstitutionEnglishTestCases extends JAXBWithJSONTestCases{
 
     public SubstitutionEnglishTestCases(String name) throws Exception {
         super(name);
-        Class[] classes = new Class[2];
+        Class<?>[] classes = new Class<?>[2];
         classes[0] = ObjectFactory.class;
         classes[1] = Person.class;
         setClasses(classes);

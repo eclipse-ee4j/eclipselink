@@ -149,7 +149,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         employeePopulator.persistExample(session);
     }
 
-    public Vector getAttributeFromAll(String attributeName, Vector objects, Class referenceClass) {
+    public Vector getAttributeFromAll(String attributeName, Vector objects, Class<?> referenceClass) {
         ClassDescriptor descriptor = getServerSession().getClassDescriptor(referenceClass);
         DirectToFieldMapping mapping = (DirectToFieldMapping)descriptor.getMappingForAttributeName(attributeName);
 

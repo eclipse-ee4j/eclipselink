@@ -27,7 +27,7 @@ public class JSONAttributeNoXmlRootElementJAXBElementTestCases extends JAXBWithJ
 
     public JSONAttributeNoXmlRootElementJAXBElementTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{AddressNoRoot.class});
+        setClasses(new Class<?>[]{AddressNoRoot.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);

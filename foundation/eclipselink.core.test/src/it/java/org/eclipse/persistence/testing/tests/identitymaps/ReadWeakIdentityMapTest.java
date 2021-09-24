@@ -23,12 +23,12 @@ import org.eclipse.persistence.testing.framework.*;
  * Read objects into the cache, force garbage collection, see that the cache is empty.
  */
 public class ReadWeakIdentityMapTest extends TestCase {
-    protected Class identityMapClass;
-    protected Class originalIdentityMapClass;
+    protected Class<? extends IdentityMap> identityMapClass;
+    protected Class<? extends IdentityMap> originalIdentityMapClass;
     protected int originalIdentityMapSize;
     protected int querySize;
 
-    public ReadWeakIdentityMapTest(Class mapClass) {
+    public ReadWeakIdentityMapTest(Class<? extends IdentityMap> mapClass) {
         identityMapClass = mapClass;
     }
 

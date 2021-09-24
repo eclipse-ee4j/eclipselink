@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -117,7 +117,7 @@ public class PartnerLinkPopulator {
         unitOfWork.commit();
     }
 
-    protected void registerObject(Class domainClass, Object domainObject, String identifier) {
+    protected void registerObject(Class<?> domainClass, Object domainObject, String identifier) {
         populationManager.registerObject(domainClass, domainObject, identifier);
     }
 
@@ -125,7 +125,7 @@ public class PartnerLinkPopulator {
         populationManager.registerObject(domainObject, identifier);
     }
 
-    protected boolean containsObject(Class domainClass, String identifier) {
+    protected boolean containsObject(Class<?> domainClass, String identifier) {
         return populationManager.containsObject(domainClass, identifier);
     }
 
@@ -133,11 +133,11 @@ public class PartnerLinkPopulator {
         return populationManager.getAllObjects();
     }
 
-    public Vector getAllObjectsForClass(Class domainClass) {
+    public Vector getAllObjectsForClass(Class<?> domainClass) {
         return populationManager.getAllObjectsForClass(domainClass);
     }
 
-    protected Object getObject(Class domainClass, String identifier) {
+    protected Object getObject(Class<?> domainClass, String identifier) {
         return populationManager.getObject(domainClass, identifier);
     }
 

@@ -41,7 +41,7 @@ public class XmlVariableNodeObjectXPathTestCases extends JAXBWithJSONTestCases{
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[]{RootSingle.class});
+        setClasses(new Class<?>[]{RootSingle.class});
     }
 
     @Override

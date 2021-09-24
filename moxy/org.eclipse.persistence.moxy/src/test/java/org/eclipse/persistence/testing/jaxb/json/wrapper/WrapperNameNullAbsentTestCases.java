@@ -38,7 +38,7 @@ public class WrapperNameNullAbsentTestCases extends JSONMarshalUnmarshalTestCase
 
     public WrapperNameNullAbsentTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {Company.class});
+        setClasses(new Class<?>[] {Company.class});
         setControlJSON(JSON);
     }
 

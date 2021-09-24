@@ -30,7 +30,7 @@ public class XmlVariableNodeMethodSetOnlyTestCases extends JAXBWithJSONTestCases
         setControlJSON(JSON_RESOURCE);
         setWriteControlJSON(JSON_WRITE_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);
-        setClasses(new Class[]{RootSetOnly.class});
+        setClasses(new Class<?>[]{RootSetOnly.class});
     }
 
     @Override

@@ -122,7 +122,7 @@ public class DescriptorExceptionTest extends AutoVerifyTestCase {
         return project;
     }
 
-    protected static ClassDescriptor getDescriptor(Project project, Class type) {
+    protected static ClassDescriptor getDescriptor(Project project, Class<?> type) {
         ClassDescriptor desc = project.getDescriptor(type);
         if (!desc.hasReturningPolicy()) {
             desc.setReturningPolicy(new ReturningPolicy());

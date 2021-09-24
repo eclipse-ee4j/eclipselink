@@ -45,7 +45,7 @@ public class XMLAnyElementNamespaceTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Customer.class;
         setClasses(classes);
         Map<String, String> namespaces = new HashMap<String, String>();
@@ -89,7 +89,7 @@ public class XMLAnyElementNamespaceTestCases extends JAXBWithJSONTestCases {
         // Test for bug 410482
         final String XML = "<root xmlns='http://www.oracle.com'><elem attr='value'/></root>";
 
-        JAXBContext context = JAXBContextFactory.createContext(new Class[] { Root.class }, null);
+        JAXBContext context = JAXBContextFactory.createContext(new Class<?>[] { Root.class }, null);
         Unmarshaller unmarshaller = context.createUnmarshaller();
         Root root = (Root) unmarshaller.unmarshal(new StringReader(XML));
         Attr attr = root.element.getAttributeNodeNS(null, "attr");

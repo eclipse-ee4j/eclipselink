@@ -34,7 +34,7 @@ public class StringListTestCases extends JSONTestCases {
 
     public StringListTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{String.class});
+        setClasses(new Class<?>[]{String.class});
         setControlJSON(JSON_RESOURCE);
     }
 

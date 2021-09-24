@@ -22,7 +22,7 @@ public class XmlIdTest extends JAXBWithJSONTestCases {
 
     public XmlIdTest(String name) throws Exception {
         super(name);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Customer.class;
         setClasses(classes);
         setControlDocument(XML_RESOURCE);

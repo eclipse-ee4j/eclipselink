@@ -26,7 +26,7 @@ public class CharacterEscapeHandlerTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(CHAR_ESCAPE);
         setControlJSON(CHAR_ESCAPE_JSON);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Employee.class;
         setClasses(classes);
     }

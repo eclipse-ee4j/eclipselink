@@ -1008,7 +1008,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         // Tests to ensure that XSD dateTime is always unmarshalled as XMLGregorianCalendar, and never
         // as GregorianCalendar.  This can fail intermittently so is tested in a loop.
 
-        HashSet<Class> elemClasses = new HashSet<Class>();
+        HashSet<Class<?>> elemClasses = new HashSet<Class<?>>();
 
         for (int i = 0; i < 50; i++) {
             InputStream inputStream = ClassLoader.getSystemResourceAsStream(DATETIME_ARRAY);

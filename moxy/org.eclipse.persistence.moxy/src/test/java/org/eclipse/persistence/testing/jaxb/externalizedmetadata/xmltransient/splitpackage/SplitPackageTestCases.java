@@ -38,7 +38,7 @@ public class SplitPackageTestCases extends TestCase{
         InputStream bindingFileA = SplitPackageTestCases.class.getClassLoader().getResourceAsStream(BINDING_FILE_A);
         Map<String, Object> properties = new HashMap<String, Object>(1);
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, bindingFileA);
-        JAXBContext jaxbContext = JAXBContextFactory.createContext(new Class[] {Foo.class}, properties);
+        JAXBContext jaxbContext = JAXBContextFactory.createContext(new Class<?>[] {Foo.class}, properties);
     }
 
 }

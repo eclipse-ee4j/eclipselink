@@ -34,7 +34,7 @@ public class DataTypesConvertedFromAClassForOracle9Test extends DataTypesConvert
     }
 
     @Override
-    protected boolean isChar(Class aClass) {
+    protected boolean isChar(Class<?> aClass) {
         return super.isChar(aClass) || aClass == Oracle9Platform.NCHAR || aClass == Oracle9Platform.NSTRING ||
             aClass == Oracle9Platform.NCLOB;
     }

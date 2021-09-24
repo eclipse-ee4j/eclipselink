@@ -23,7 +23,7 @@ import org.eclipse.persistence.testing.models.aggregate.*;
 import org.eclipse.persistence.testing.tests.aggregate.AgentBuilderHelper;
 
 public class MemoryQueryAcrossAggregateCollectionMapping extends TestCase {
-    protected Class cls;
+    protected Class<?> cls;
     // Either Agent or Builder
     protected Object object;
     protected Customer customer;
@@ -34,7 +34,7 @@ public class MemoryQueryAcrossAggregateCollectionMapping extends TestCase {
     protected java.util.List customers;
 
     // Must be Agent or Builder
-    public MemoryQueryAcrossAggregateCollectionMapping(Class cls) {
+    public MemoryQueryAcrossAggregateCollectionMapping(Class<?> cls) {
         super();
         this.cls = cls;
         setName(getName() + AgentBuilderHelper.getNameInBrackets(cls));

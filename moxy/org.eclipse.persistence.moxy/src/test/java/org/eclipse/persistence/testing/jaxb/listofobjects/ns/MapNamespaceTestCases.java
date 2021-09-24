@@ -34,7 +34,7 @@ public class MapNamespaceTestCases extends JAXBTestCases {
 
     public MapNamespaceTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {MapObject.class});
+        setClasses(new Class<?>[] {MapObject.class});
         setControlDocument(XML_RESOURCE);
     }
 

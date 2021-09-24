@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,7 +44,7 @@ public class ContentTypeTestCases extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
-        JAXBContext jc = JAXBContextFactory.createContext(new Class[] {Root.class, RootImageStar.class, RootImageJpeg.class, RootSource.class}, null);
+        JAXBContext jc = JAXBContextFactory.createContext(new Class<?>[] {Root.class, RootImageStar.class, RootImageJpeg.class, RootSource.class}, null);
         marshaller = jc.createMarshaller();
         attachmentMarshaller = new TestAttachmentMarshaller();
         marshaller.setAttachmentMarshaller(attachmentMarshaller);

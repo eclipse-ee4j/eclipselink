@@ -45,7 +45,7 @@ public class XmlRegistryTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[]{ObjectFactory1.class});
+        setClasses(new Class<?>[]{ObjectFactory1.class});
     }
 
 

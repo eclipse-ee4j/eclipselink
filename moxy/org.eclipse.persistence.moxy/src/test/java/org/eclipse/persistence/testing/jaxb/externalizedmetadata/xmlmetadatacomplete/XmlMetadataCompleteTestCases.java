@@ -32,7 +32,7 @@ public class XmlMetadataCompleteTestCases extends ExternalizedMetadataTestCases 
     private static final String XSD_DOC_OVERRIDE_1 = PATH + "employee-override-1.xsd";
     private static final String XSD_DOC_OVERRIDE_2 = PATH + "employee-override-2.xsd";
     private static final String NSX_NAMESPACE = "http://www.example.com/xsds/real";
-    private Class[] classes;
+    private Class<?>[] classes;
 
     /**
      * This is the preferred (and only) constructor.
@@ -50,7 +50,7 @@ public class XmlMetadataCompleteTestCases extends ExternalizedMetadataTestCases 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        classes = new Class[] { Employee.class };
+        classes = new Class<?>[] { Employee.class };
     }
 
     /**

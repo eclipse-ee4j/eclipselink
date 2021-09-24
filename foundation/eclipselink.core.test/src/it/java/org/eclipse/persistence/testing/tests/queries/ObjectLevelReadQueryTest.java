@@ -197,7 +197,7 @@ public abstract class ObjectLevelReadQueryTest extends TestCase {
      * @param c Class where to search for method.
      * @return {@code [ObjectLevelReadQuery].checkForCustomQuery(AbstractSession, AbstractRecord)} method accessor.
      */
-    protected Method getCheckForCustomQueryMethod(final Class c) {
+    protected Method getCheckForCustomQueryMethod(final Class<?> c) {
         Method method;
         try {
             method = c.getDeclaredMethod(

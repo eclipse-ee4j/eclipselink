@@ -45,7 +45,7 @@ GetClassDescriptorWithNullTest extends AutoVerifyTestCase {
         Project aProject = aSession.getProject();
 
         // important to declare types as Object / Class to invoke correct methods on Session
-        Class aClass = null;
+        Class<?> aClass = null;
         Object anObject = null;
 
         /* when null is passed to Project / Session getClassDescriptor(Object) /

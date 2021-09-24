@@ -35,7 +35,7 @@ public class CollapsedStringListTestCases extends JAXBWithJSONTestCases {
         setControlJSON(JSON_RESOURCE_READ);
         setWriteControlJSON(JSON_RESOURCE_WRITE);
         setWriteControlFormattedJSON(JSON_RESOURCE_WRITE_FORMATTED);
-        setClasses(new Class[] {CollapsedStringListRoot.class});
+        setClasses(new Class<?>[] {CollapsedStringListRoot.class});
     }
 
     @Override

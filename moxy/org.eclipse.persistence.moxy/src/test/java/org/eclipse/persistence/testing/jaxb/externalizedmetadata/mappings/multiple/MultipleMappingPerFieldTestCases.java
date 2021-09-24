@@ -55,7 +55,7 @@ public class MultipleMappingPerFieldTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[]{CustomQuoteRequest.class});
+        setClasses(new Class<?>[]{CustomQuoteRequest.class});
         calendar = new GregorianCalendar(YEAR, MONTH, DAY);
         calendar.clear(Calendar.ZONE_OFFSET);
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -86,7 +86,7 @@ public class WebLogic_12_PlatformTest {
     @Test
     public void testContextHelper() {
         Assume.assumeFalse("Java version is 12 above. Test will be skipped.", JavaSEPlatform.CURRENT.getMajor() >= 12);
-        Class contextHelperClass = null;
+        Class<?> contextHelperClass = null;
         for (Class<?> declaredClass : WebLogic_12_Platform.class.getDeclaredClasses()) {
             if ("org.eclipse.persistence.platform.server.wls.WebLogic_12_Platform$ContextHelper".equals(declaredClass.getName())) {
                 contextHelperClass = declaredClass;

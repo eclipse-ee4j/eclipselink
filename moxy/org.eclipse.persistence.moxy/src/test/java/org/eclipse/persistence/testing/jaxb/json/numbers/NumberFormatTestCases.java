@@ -31,7 +31,7 @@ public class NumberFormatTestCases extends JAXBWithJSONTestCases {
 
     public NumberFormatTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{NumberHolder.class});
+        setClasses(new Class<?>[]{NumberHolder.class});
         setControlJSON(JSON_RESOURCE);
         setWriteControlJSON(JSON_RESOURCE_WRITE);
         setControlDocument(XML_RESOURCE);

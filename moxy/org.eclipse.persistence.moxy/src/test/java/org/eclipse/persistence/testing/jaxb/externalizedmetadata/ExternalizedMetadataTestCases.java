@@ -107,7 +107,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * found in the package(s) will be applied by default.
      *
      */
-    public MySchemaOutputResolver generateSchema(Class[] classes, int expectedSchemaCount) {
+    public MySchemaOutputResolver generateSchema(Class<?>[] classes, int expectedSchemaCount) {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
         try {
@@ -223,7 +223,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * @param contextPath used as key for storing eclipselink-oxm.xml file Source in properties map
      * @param iStream eclipselink-oxm.xml file as a stream
      */
-    private MySchemaOutputResolver generateSchema(Class[] classes, String contextPath, InputStream iStream, int expectedSchemaCount) {
+    private MySchemaOutputResolver generateSchema(Class<?>[] classes, String contextPath, InputStream iStream, int expectedSchemaCount) {
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put(contextPath, new StreamSource(iStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
@@ -248,12 +248,12 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * @param contextPath used as key for storing eclipselink-oxm.xml file Source in properties map
      * @param path eclipselink-oxm.xml file will be searched for on this path
      */
-    public MySchemaOutputResolver generateSchema(Class[] classes, String contextPath, String path, int expectedSchemaCount) {
+    public MySchemaOutputResolver generateSchema(Class<?>[] classes, String contextPath, String path, int expectedSchemaCount) {
         String metadataFile = path + "eclipselink-oxm.xml";
         return generateSchemaWithFileName(classes, contextPath, metadataFile, expectedSchemaCount);
     }
 
-    public void generateSchemaWithFileName(Class[] classes, String contextPath, String metadataFile, int expectedSchemaCount, MyStreamSchemaOutputResolver outputResolver) {
+    public void generateSchemaWithFileName(Class<?>[] classes, String contextPath, String metadataFile, int expectedSchemaCount, MyStreamSchemaOutputResolver outputResolver) {
         InputStream iStream = loader.getResourceAsStream(metadataFile);
         InputStream iStreamCopy = loader.getResourceAsStream(metadataFile);
         if (iStream == null) {
@@ -278,7 +278,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
         assertTrue("Expected schema generation count to be ["+expectedSchemaCount+"], but was [" + outputResolver.schemaFiles.size() + "]", outputResolver.schemaFiles.size() == expectedSchemaCount);
     }
 
-    public MySchemaOutputResolver generateSchemaWithFileName(Class[] classes, String contextPath, String metadataFile, int expectedSchemaCount) {
+    public MySchemaOutputResolver generateSchemaWithFileName(Class<?>[] classes, String contextPath, String metadataFile, int expectedSchemaCount) {
         InputStream iStream = loader.getResourceAsStream(metadataFile);
         InputStream iStreamCopy = loader.getResourceAsStream(metadataFile);
         if (iStream == null) {
@@ -371,7 +371,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * eclipselink-oxm.xml entries.
      *
      */
-    protected void generateSchema(Class[] classesToBeBound, java.util.Map properties, SchemaOutputResolver outputResolver, ClassLoader classLoader) throws Exception {
+    protected void generateSchema(Class<?>[] classesToBeBound, java.util.Map properties, SchemaOutputResolver outputResolver, ClassLoader classLoader) throws Exception {
         try {
             jaxbContext = (JAXBContext) JAXBContextFactory.createContext(classesToBeBound, properties, classLoader);
             jaxbContext.generateSchema(outputResolver);
@@ -726,7 +726,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * Convenience method that returns a newly created XMLContext based on an array of classes.
      *
      */
-    protected XMLContext createXmlContext(Class[] classes) {
+    protected XMLContext createXmlContext(Class<?>[] classes) {
         try {
             ClassLoader classLoader = new JaxbClassLoader(Thread.currentThread().getContextClassLoader());
             Generator generator = new Generator(new JavaModelInputImpl(classes, new JavaModelImpl(classLoader)));
@@ -759,7 +759,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * validated against the metadata schema.
      *
      */
-    public JAXBContext createContext(Class[] classes, String contextPath, String metadataFile) throws JAXBException {
+    public JAXBContext createContext(Class<?>[] classes, String contextPath, String metadataFile) throws JAXBException {
         // validate instance document against the metadata schema
         InputStream iStream = loader.getResourceAsStream(metadataFile);
         InputStream iStreamCopy = loader.getResourceAsStream(metadataFile);

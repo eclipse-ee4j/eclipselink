@@ -36,7 +36,7 @@ public class DirectMappingTeamTestCases extends JAXBWithJSONTestCases{
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[]{Team.class});
+        setClasses(new Class<?>[]{Team.class});
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,7 +47,7 @@ public class SessionEventTestCases extends TestCase {
      * Test expects an exception.
      */
     public void testInstantiationPolicyValidationFailure() {
-        Class[] classesToBeBound = new Class[] { Subclass.class, Superclass.class };
+        Class<?>[] classesToBeBound = new Class<?>[] { Subclass.class, Superclass.class };
 
         // ensure instantiation policy validation is enabled during descriptor initialization
         SessionEventListener eventListener = new SessionEventListener();
@@ -66,7 +66,7 @@ public class SessionEventTestCases extends TestCase {
      * initialization. Test should pass w/o any exceptions.
      */
     public void testInstantiationPolicyValidationDisabled() {
-        Class[] classesToBeBound = new Class[] { Subclass.class, Superclass.class };
+        Class<?>[] classesToBeBound = new Class<?>[] { Subclass.class, Superclass.class };
 
         // disable instantiation policy validation during descriptor initialization
         SessionEventListener eventListener = new SessionEventListener();
@@ -79,7 +79,7 @@ public class SessionEventTestCases extends TestCase {
         }
     }
 
-    protected JAXBContext setupContext(Class[] classesToBeBound, SessionEventListener sel) throws Exception {
+    protected JAXBContext setupContext(Class<?>[] classesToBeBound, SessionEventListener sel) throws Exception {
         jakarta.xml.bind.JAXBContext jaxbContext = null;
         XMLContext xmlContext = null;
         JaxbClassLoader loader = new JaxbClassLoader(Thread.currentThread().getContextClassLoader());

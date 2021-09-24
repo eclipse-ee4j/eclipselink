@@ -26,7 +26,7 @@ public class XmlRootElementNoNamespaceTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = EmployeeNoNamespace.class;
         setClasses(classes);
     }

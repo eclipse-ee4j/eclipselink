@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,7 +35,7 @@ public class ReflectionHelper {
      * @throws IllegalArgumentException If an unwrapping conversion fails.
      * @throws IllegalAccessException If the underlying field is either inaccessible or final.
      */
-    public static final void setPrivateStatic(final Class c, final String name, final Object newValue)
+    public static final void setPrivateStatic(final Class<?> c, final String name, final Object newValue)
             throws ReflectiveOperationException {
         final Field field = c.getDeclaredField(name);
         final boolean accessible = field.isAccessible();
@@ -54,7 +54,7 @@ public class ReflectionHelper {
      * @throws IllegalArgumentException If an unwrapping conversion fails.
      * @throws IllegalAccessException If the underlying field is either inaccessible or final.
      */
-    public static final <T> T getPrivateStatic(final Class c, final String name)
+    public static final <T> T getPrivateStatic(final Class<?> c, final String name)
             throws ReflectiveOperationException {
         final Field field = c.getDeclaredField(name);
         final boolean accessible = field.isAccessible();
@@ -142,7 +142,7 @@ public class ReflectionHelper {
      * @throws NoSuchMethodException     If a field with the specified name is not found.
      */
     public static final Object invokeStaticMethod(
-            final String name, final Class c, final Class<?>[] parameterTypes, final Object... args)
+            final String name, final Class<?> c, final Class<?>[] parameterTypes, final Object... args)
             throws ReflectiveOperationException {
         Method m = c.getDeclaredMethod(name, parameterTypes);
         boolean accessible = m.isAccessible();
@@ -170,7 +170,7 @@ public class ReflectionHelper {
      * @throws NoSuchMethodException     If a field with the specified name is not found.
      */
     public static final <T> T invokeStaticMethod(
-            final String name, final Class c, final Class<?>[] parameterTypes, final Class<T> returnType, final Object... args)
+            final String name, final Class<?> c, final Class<?>[] parameterTypes, final Class<T> returnType, final Object... args)
             throws ReflectiveOperationException {
         return returnType.cast(invokeStaticMethod(name, c, parameterTypes, args));
     }

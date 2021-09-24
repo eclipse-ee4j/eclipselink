@@ -34,7 +34,7 @@ public class InheritanceWithMultiplePackagesNSTestCases extends InheritanceWithM
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[] {RootComplex.class});
+        setClasses(new Class<?>[] {RootComplex.class});
 
         Map namespaces = new HashMap();
         namespaces.put(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, XMLConstants.SCHEMA_PREFIX);

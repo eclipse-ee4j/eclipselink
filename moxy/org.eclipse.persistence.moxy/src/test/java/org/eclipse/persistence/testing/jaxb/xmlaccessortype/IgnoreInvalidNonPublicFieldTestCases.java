@@ -27,7 +27,7 @@ public class IgnoreInvalidNonPublicFieldTestCases extends SchemaGenTestCases {
 
     public void testPublicMemberAccess() throws Exception {
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
-        generateSchema(new Class[]{Root.class}, outputResolver, null);
+        generateSchema(new Class<?>[]{Root.class}, outputResolver, null);
         String result = validateAgainstSchema(PATH + "root_public.xml", outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }

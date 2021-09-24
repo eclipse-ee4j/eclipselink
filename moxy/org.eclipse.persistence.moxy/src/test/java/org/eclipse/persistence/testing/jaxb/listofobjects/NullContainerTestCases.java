@@ -31,7 +31,7 @@ import org.w3c.dom.Node;
 public class NullContainerTestCases extends TestCase {
 
     public void testMarshal() throws Exception {
-        JAXBContext jc = JAXBContextFactory.createContext(new Class[] {NullContainerRoot.class}, null);
+        JAXBContext jc = JAXBContextFactory.createContext(new Class<?>[] {NullContainerRoot.class}, null);
 
         NullContainerRoot ncr = new NullContainerRoot();
 
@@ -40,7 +40,7 @@ public class NullContainerTestCases extends TestCase {
     }
 
     public void testBinderMarshal() throws Exception {
-        JAXBContext jc = JAXBContextFactory.createContext(new Class[] {NullContainerRoot.class}, null);
+        JAXBContext jc = JAXBContextFactory.createContext(new Class<?>[] {NullContainerRoot.class}, null);
 
         NullContainerRoot ncr = new NullContainerRoot();
 

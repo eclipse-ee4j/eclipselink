@@ -29,7 +29,7 @@ public class BinaryCollectionTestCases extends JSONMarshalUnmarshalTestCases {
 
     public BinaryCollectionTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {BinaryCollectionRoot.class});
+        setClasses(new Class<?>[] {BinaryCollectionRoot.class});
         setControlJSON(JSON);
     }
 

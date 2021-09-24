@@ -33,7 +33,7 @@ public class SubstitutionBindingsTestCases extends JAXBWithJSONTestCases {
 
     public SubstitutionBindingsTestCases(String name) throws Exception {
         super(name);
-        Class[] classes = new Class[2];
+        Class<?>[] classes = new Class<?>[2];
         classes[0] = Person2.class;
         classes[1] = ObjectFactory2.class;
         setClasses(classes);

@@ -64,7 +64,7 @@ public class UnitTestCase extends AutoVerifyTestCase {
     public void test() {
         String methodName = "_test" + getName();
         try {
-            Class[] args = {  };
+            Class<?>[] args = {  };
             java.lang.reflect.Method method = getContainer().getClass().getMethod(methodName, args);
             Object[] objectList = {  };
             method.invoke(getContainer(), objectList);

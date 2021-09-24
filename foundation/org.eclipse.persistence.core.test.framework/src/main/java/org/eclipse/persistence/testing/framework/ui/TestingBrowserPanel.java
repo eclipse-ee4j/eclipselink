@@ -1305,7 +1305,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
     public void setupDefaultModels() {
         Vector allModels = new Vector();
 
-        Class testModelClass;
+        Class<?> testModelClass;
 
         // Look for standard tests.
         try {

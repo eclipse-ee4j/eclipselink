@@ -26,7 +26,7 @@ public class JSONAttributeNoXmlRootElementInheritanceTestCases extends JSONMarsh
 
     public JSONAttributeNoXmlRootElementInheritanceTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{MailingAddressNoRoot.class});
+        setClasses(new Class<?>[]{MailingAddressNoRoot.class});
         setControlJSON(JSON_RESOURCE);
         jsonUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
     }

@@ -36,7 +36,7 @@ public class XmlVariableNodeNullValueTestCases extends JAXBWithJSONTestCases{
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[]{Root.class});
+        setClasses(new Class<?>[]{Root.class});
         expectsMarshalException = true;
     }
 

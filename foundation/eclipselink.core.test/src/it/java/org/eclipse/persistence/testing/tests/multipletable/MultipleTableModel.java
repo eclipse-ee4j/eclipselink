@@ -140,8 +140,8 @@ public class MultipleTableModel extends TestModel {
     }
 
     public static class ReadAllTest extends TestCase {
-        Class cls;
-        public ReadAllTest(Class cls) {
+        Class<?> cls;
+        public ReadAllTest(Class<?> cls) {
             super();
             setName(Helper.getShortClassName(cls) + "ReadAllTest");
             this.cls = cls;

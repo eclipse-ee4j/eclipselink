@@ -31,7 +31,7 @@ public class ElementRefsCollectionTestCases extends JSONMarshalUnmarshalTestCase
 
     public ElementRefsCollectionTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {ElementRefsCollectionRoot.class});
+        setClasses(new Class<?>[] {ElementRefsCollectionRoot.class});
         setControlJSON(JSON);
     }
 

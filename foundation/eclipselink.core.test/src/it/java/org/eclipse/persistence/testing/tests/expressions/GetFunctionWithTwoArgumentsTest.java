@@ -18,7 +18,7 @@ import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.expressions.*;
 
 public class GetFunctionWithTwoArgumentsTest extends ReadAllExpressionTest {
-    public GetFunctionWithTwoArgumentsTest(Class referenceClass, int originalObjectsSize) {
+    public GetFunctionWithTwoArgumentsTest(Class<?> referenceClass, int originalObjectsSize) {
         super(referenceClass, originalObjectsSize);
     }
 

@@ -53,8 +53,8 @@ public class JAXBElementDataHandlerTestCases extends JAXBElementTestCases {
     }
 
     @Override
-    public Class[] getClasses(){
-        Class[] classes = new Class[1];
+    public Class<?>[] getClasses(){
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = DataHandler.class;
         return classes;
     }

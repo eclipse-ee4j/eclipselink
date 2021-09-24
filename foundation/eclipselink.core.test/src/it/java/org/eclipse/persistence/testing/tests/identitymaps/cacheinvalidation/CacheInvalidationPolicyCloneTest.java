@@ -30,9 +30,9 @@ import org.eclipse.persistence.testing.framework.TestCase;
  */
 public class CacheInvalidationPolicyCloneTest extends TestCase {
 
-    protected Class policyClassToTest;
+    protected Class<?> policyClassToTest;
 
-    public CacheInvalidationPolicyCloneTest(Class policyClassToTest) {
+    public CacheInvalidationPolicyCloneTest(Class<?> policyClassToTest) {
         super();
         this.policyClassToTest = policyClassToTest;
         setName(getClass().getSimpleName() + " : " + policyClassToTest.getSimpleName());

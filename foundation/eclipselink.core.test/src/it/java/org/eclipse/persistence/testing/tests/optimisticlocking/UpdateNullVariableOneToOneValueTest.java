@@ -34,7 +34,7 @@ public class UpdateNullVariableOneToOneValueTest extends SwitchableOptimisticLoc
     protected Gamer original;
     protected Gamer original2;
 
-    public UpdateNullVariableOneToOneValueTest(Class optimisticLockingPolicyClass) {
+    public UpdateNullVariableOneToOneValueTest(Class<?> optimisticLockingPolicyClass) {
         super(optimisticLockingPolicyClass);
         addClassToModify(Gamer.class);
         addClassToModify(Knitting.class);

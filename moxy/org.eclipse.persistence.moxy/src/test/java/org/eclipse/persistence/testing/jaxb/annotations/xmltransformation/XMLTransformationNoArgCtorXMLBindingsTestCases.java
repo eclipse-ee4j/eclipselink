@@ -29,7 +29,7 @@ import org.w3c.dom.Document;
 public class XMLTransformationNoArgCtorXMLBindingsTestCases extends JAXBWithJSONTestCases {
     public XMLTransformationNoArgCtorXMLBindingsTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {EmployeeWithAddress.class});
+        setClasses(new Class<?>[] {EmployeeWithAddress.class});
         setControlDocument("org/eclipse/persistence/testing/jaxb/annotations/xmltransformation/employee.xml");
         setControlJSON("org/eclipse/persistence/testing/jaxb/annotations/xmltransformation/employee.json");
     }

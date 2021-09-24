@@ -32,7 +32,7 @@ public class SDOXMLHelperDatatypeByteTestCases extends SDOXMLHelperDatatypeTestC
     }
 
     @Override
-    protected Class getDatatypeJavaClass() {
+    protected Class<?> getDatatypeJavaClass() {
         return Byte.class;
     }
 

@@ -41,7 +41,7 @@ public class XMLAccessorOrderPackageInfoTestCases extends JAXBWithJSONTestCases{
     private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlaccessororder/employee-ordered.json";
     public XMLAccessorOrderPackageInfoTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Employee.class});
+        setClasses(new Class<?>[]{Employee.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
 

@@ -48,7 +48,7 @@ public class CORBAServerManagerController extends _CORBAServerManagerImplBase {
         } else {
             try {
                 Class<?> cls = Class.forName(controllerClassName);
-                Class[] parameterTypes = { org.eclipse.persistence.sessions.Session.class };
+                Class<?>[] parameterTypes = { org.eclipse.persistence.sessions.Session.class };
                 Constructor<?> constructor = cls.getConstructor(parameterTypes);
                 java.lang.Object[] params = { getSession() };
                 controller = (CORBARemoteSessionController)constructor.newInstance(params);

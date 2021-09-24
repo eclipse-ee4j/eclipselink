@@ -41,7 +41,7 @@ public class DoubleTransientTestCases extends JAXBWithJSONTestCases {
 
     public DoubleTransientTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { DoubleTransient.class });
+        setClasses(new Class<?>[] { DoubleTransient.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

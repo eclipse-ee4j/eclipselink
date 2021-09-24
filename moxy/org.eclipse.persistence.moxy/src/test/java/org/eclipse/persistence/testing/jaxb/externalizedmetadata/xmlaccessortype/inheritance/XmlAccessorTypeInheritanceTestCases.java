@@ -37,7 +37,7 @@ public class XmlAccessorTypeInheritanceTestCases extends JAXBWithJSONTestCases {
      */
     public XmlAccessorTypeInheritanceTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { A.class, B.class });
+        setClasses(new Class<?>[] { A.class, B.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

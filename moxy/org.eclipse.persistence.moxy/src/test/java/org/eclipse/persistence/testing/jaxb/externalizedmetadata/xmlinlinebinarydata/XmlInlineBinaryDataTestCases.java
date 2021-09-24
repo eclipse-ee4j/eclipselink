@@ -51,7 +51,7 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
      * Positive test.
      */
     public void testXmlInlineBinaryDataSchemaGen() throws URISyntaxException {
-        MySchemaOutputResolver outputResolver = generateSchema(new Class[] { MyData.class }, CONTEXT_PATH, PATH, 1);
+        MySchemaOutputResolver outputResolver = generateSchema(new Class<?>[] { MyData.class }, CONTEXT_PATH, PATH, 1);
         // validate schema
         URI controlSchema = Thread.currentThread().getContextClassLoader().getResource(PATH + "schema.xsd").toURI();
         compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
@@ -67,7 +67,7 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
     public void testClassLevelXmlInlineBinaryOverride() throws JAXBException {
         String metadataFile = PATH + "eclipselink-oxm-class-override.xml";
 
-        Class[] classes = new Class[] { MyDataClassAnnotation.class };
+        Class<?>[] classes = new Class<?>[] { MyDataClassAnnotation.class };
         MySchemaOutputResolver outputResolver = generateSchemaWithFileName(classes, CONTEXT_PATH, metadataFile, 1);
 
         // setup control object
@@ -132,7 +132,7 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
     public void testPropertyLevelXmlInlineBinaryOverride() throws JAXBException {
         String metadataFile = PATH + "eclipselink-oxm-property.xml";
 
-        Class[] classes = new Class[] { MyDataPropertyAnnotation.class };
+        Class<?>[] classes = new Class<?>[] { MyDataPropertyAnnotation.class };
         MySchemaOutputResolver outputResolver = generateSchemaWithFileName(classes, CONTEXT_PATH, metadataFile, 1);
 
         // setup control object
@@ -192,7 +192,7 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
     public void testClassLevelXmlInlineBinaryNoOverride() throws JAXBException {
         JAXBContext jaxbContext = null;
         try {
-            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(new Class[] { MyDataClassAnnotation.class }, null);
+            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(new Class<?>[] { MyDataClassAnnotation.class }, null);
         } catch (JAXBException e1) {
             e1.printStackTrace();
             fail("JAXBContext creation failed");
@@ -260,7 +260,7 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
     public void testPropertyLevelXmlInlineBinaryOverrideViaMetadata() throws JAXBException {
         String metadataFile = PATH + "eclipselink-oxm-property-override.xml";
 
-        Class[] classes = new Class[] { MyDataPropertyAnnotation.class };
+        Class<?>[] classes = new Class<?>[] { MyDataPropertyAnnotation.class };
         MySchemaOutputResolver outputResolver = generateSchemaWithFileName(classes, CONTEXT_PATH, metadataFile, 1);
 
         // setup control object
@@ -323,7 +323,7 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
     public void testClassLevelXmlInlineBinaryViaMetadata() throws JAXBException {
         String metadataFile = PATH + "eclipselink-oxm-class.xml";
 
-        Class[] classes = new Class[] { MyData.class };
+        Class<?>[] classes = new Class<?>[] { MyData.class };
         MySchemaOutputResolver outputResolver = generateSchemaWithFileName(classes, CONTEXT_PATH, metadataFile, 1);
 
         // setup control object
@@ -383,7 +383,7 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
     public void testPropertyLevelXmlInlineBinaryViaMetadata() throws JAXBException {
         String metadataFile = PATH + "eclipselink-oxm.xml";
 
-        Class[] classes = new Class[] { MyData.class };
+        Class<?>[] classes = new Class<?>[] { MyData.class };
         MySchemaOutputResolver outputResolver = generateSchemaWithFileName(classes, CONTEXT_PATH, metadataFile, 1);
 
         // setup control object

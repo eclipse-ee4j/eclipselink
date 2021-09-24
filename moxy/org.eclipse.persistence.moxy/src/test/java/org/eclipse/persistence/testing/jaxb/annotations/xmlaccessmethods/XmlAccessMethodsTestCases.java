@@ -26,7 +26,7 @@ public class XmlAccessMethodsTestCases extends JAXBWithJSONTestCases {
 
     public XmlAccessMethodsTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Employee.class});
+        setClasses(new Class<?>[]{Employee.class});
         setControlDocument(XML_RESOURCE);
         setWriteControlDocument(WRITE_XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);

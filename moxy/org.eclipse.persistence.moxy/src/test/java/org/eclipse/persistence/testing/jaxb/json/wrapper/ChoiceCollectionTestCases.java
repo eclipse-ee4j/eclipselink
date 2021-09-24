@@ -29,7 +29,7 @@ public class ChoiceCollectionTestCases extends JSONMarshalUnmarshalTestCases {
 
     public ChoiceCollectionTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {ChoiceCollectionRoot.class});
+        setClasses(new Class<?>[] {ChoiceCollectionRoot.class});
         setControlJSON(JSON);
     }
 

@@ -42,7 +42,7 @@ public class XmlAdapterNegativeTestCases extends TestCase {
         Map<String,Object> properties = new HashMap<String,Object>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadata);
 
-        Class<?>[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Customer.class;
         try {
             JAXBContextFactory.createContext(classes, properties);
@@ -61,7 +61,7 @@ public class XmlAdapterNegativeTestCases extends TestCase {
         Map<String,Object> properties = new HashMap<String,Object>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadata);
 
-        Class<?>[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Customer.class;
         try {
             JAXBContextFactory.createContext(classes, properties);
@@ -80,7 +80,7 @@ public class XmlAdapterNegativeTestCases extends TestCase {
         Map<String,Object> properties = new HashMap<String,Object>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadata);
 
-        Class<?>[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Customer.class;
         try {
             JAXBContextFactory.createContext(classes, properties);

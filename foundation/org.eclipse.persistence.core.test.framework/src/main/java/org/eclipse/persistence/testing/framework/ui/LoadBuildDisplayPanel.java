@@ -790,7 +790,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
 
     public void inspect(Object object) {
         try {
-            Class[] argTypes = new Class[1];
+            Class<?>[] argTypes = new Class<?>[1];
             argTypes[0] = Object.class;
             Object[] args = new Object[1];
             args[0] = object;

@@ -28,7 +28,7 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 public class InheritanceOverrideTestCases extends JAXBWithJSONTestCases {
     public InheritanceOverrideTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { Root.class, Foo.class, Superclass.class, Subclass.class });
+        setClasses(new Class<?>[] { Root.class, Foo.class, Superclass.class, Subclass.class });
         setControlDocument("org/eclipse/persistence/testing/jaxb/inheritance/override.xml");
         setControlJSON("org/eclipse/persistence/testing/jaxb/inheritance/override.json");
     }

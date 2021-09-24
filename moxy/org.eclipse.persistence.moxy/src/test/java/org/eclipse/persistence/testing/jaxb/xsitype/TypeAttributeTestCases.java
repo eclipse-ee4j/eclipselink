@@ -27,7 +27,7 @@ public class TypeAttributeTestCases extends JAXBWithJSONTestCases {
         setControlJSON(JSON_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);
         setWriteControlJSON(JSON_WRITE_RESOURCE);
-        Class[] classes = new Class[2];
+        Class<?>[] classes = new Class<?>[2];
         classes[0] = Root.class;
         classes[1] = Foo.class;
         setClasses(classes);

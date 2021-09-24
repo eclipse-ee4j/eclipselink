@@ -39,7 +39,7 @@ public abstract class SDOXMLHelperDatatypeTestCase extends SDOTestCase {
 
     // === METHODS TO OVERRIDE ==========================
 
-    protected abstract Class getDatatypeJavaClass();
+    protected abstract Class<?> getDatatypeJavaClass();
 
     protected abstract SDOType getValueType();
 

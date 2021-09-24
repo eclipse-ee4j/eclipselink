@@ -20,7 +20,7 @@ import org.eclipse.persistence.testing.framework.*;
  * Test the optimistic locking feature by changing the write lock value on the database.
  */
 public class OptimisticLockingDeleteTest extends OptimisticLockingUpdateTest {
-    public OptimisticLockingDeleteTest(Class aClass, boolean useUnitOfWork) {
+    public OptimisticLockingDeleteTest(Class<?> aClass, boolean useUnitOfWork) {
         super(aClass, useUnitOfWork);
         setDescription("This test verifies that the correct object is deleted");
     }

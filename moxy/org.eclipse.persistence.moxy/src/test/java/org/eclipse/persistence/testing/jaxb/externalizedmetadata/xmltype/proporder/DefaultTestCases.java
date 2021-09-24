@@ -35,7 +35,7 @@ public class DefaultTestCases extends JAXBWithJSONTestCases {
 
     public DefaultTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {Root.class});
+        setClasses(new Class<?>[] {Root.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

@@ -39,7 +39,7 @@ public class XmlElementsIdRefInterfaceTestCases extends JAXBWithJSONTestCases {
 
     public XmlElementsIdRefInterfaceTestCases(String name) throws Exception {
         super(name);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         //classes[1] = EmployeeWithElementsInterface.class;
         classes[0] = RootWithEmployeeInterfaces.class;
         //classes[3] = PhoneNumber.class;

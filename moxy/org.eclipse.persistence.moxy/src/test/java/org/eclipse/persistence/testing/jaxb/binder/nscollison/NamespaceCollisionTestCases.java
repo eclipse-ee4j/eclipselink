@@ -43,7 +43,7 @@ public class NamespaceCollisionTestCases extends TestCase {
         String controlSource = "org/eclipse/persistence/testing/jaxb/binder/nscollision/employee.xml";
         Document controlDocument = parser.parse(Thread.currentThread().getContextClassLoader().getResource(controlSource));
 
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{Employee.class}, null);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{Employee.class}, null);
 
         Binder<Node> binder = ctx.createBinder();
 

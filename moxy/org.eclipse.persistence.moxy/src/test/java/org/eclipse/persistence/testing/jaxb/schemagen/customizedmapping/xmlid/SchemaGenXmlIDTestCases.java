@@ -39,7 +39,7 @@ public class SchemaGenXmlIDTestCases  extends SchemaGenTestCases {
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
         boolean exception = false;
         try {
-            generateSchema(new Class[]{ MyInvalidClass.class }, outputResolver, null);
+            generateSchema(new Class<?>[]{ MyInvalidClass.class }, outputResolver, null);
         } catch (Exception ex) {
             if (ex instanceof JAXBException && ((org.eclipse.persistence.exceptions.JAXBException)((JAXBException) ex).getLinkedException()).getErrorCode() == 50016) {
                 exception = true;

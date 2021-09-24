@@ -21,7 +21,7 @@ public class ReadAllBatchTest extends ReadAllTest {
     public Exception storedException;
     public int expectedExceptionCode;
 
-    public ReadAllBatchTest(Class aClass, int numberOfObjects) {
+    public ReadAllBatchTest(Class<?> aClass, int numberOfObjects) {
         super(aClass, numberOfObjects);
         setDescription("Test that the correct exception is thrown when a batch query across a variable 1:1 mapping is attempted. Maybe this will be supported someday.");
         storedException = null;

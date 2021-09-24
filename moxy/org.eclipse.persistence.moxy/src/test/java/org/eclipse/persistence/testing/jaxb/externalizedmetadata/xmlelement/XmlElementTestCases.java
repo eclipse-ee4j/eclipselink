@@ -53,7 +53,7 @@ public class XmlElementTestCases extends JAXBWithJSONTestCases {
      */
     public XmlElementTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { Employee.class});
+        setClasses(new Class<?>[] { Employee.class});
     }
 
      @Override
@@ -114,7 +114,7 @@ public class XmlElementTestCases extends JAXBWithJSONTestCases {
         Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
-        JAXBContext jContext = (JAXBContext) JAXBContextFactory.createContext(new Class[] { Team.class }, properties, loader);
+        JAXBContext jContext = (JAXBContext) JAXBContextFactory.createContext(new Class<?>[] { Team.class }, properties, loader);
 
         MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
         jContext.generateSchema(outputResolver);

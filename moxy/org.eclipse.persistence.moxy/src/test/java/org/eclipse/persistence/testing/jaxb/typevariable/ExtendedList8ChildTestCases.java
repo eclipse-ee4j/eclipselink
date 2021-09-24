@@ -28,7 +28,7 @@ public class ExtendedList8ChildTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML);
         setControlJSON(JSON);
-        setClasses(new Class[] {ExtendedList8ChildRoot.class});
+        setClasses(new Class<?>[] {ExtendedList8ChildRoot.class});
     }
 
     @Override

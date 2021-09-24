@@ -30,13 +30,14 @@ public class AppleExtractor extends ClassExtractor {
      * field name, the value is the database value.
      */
     @Override
-    public Class extractClassFromRow(DataRecord databaseRow, Session session) {
+    @SuppressWarnings({"unchecked"})
+    public <T> Class<T> extractClassFromRow(DataRecord databaseRow, Session session) {
         if (databaseRow.containsKey("XML_MACBOOK_PRO.COLOR")) {
-            return MacBookPro.class;
+            return (Class<T>) MacBookPro.class;
         } else if (databaseRow.containsKey("XML_MACBOOK.RAM")) {
-            return MacBook.class;
+            return (Class<T>) MacBook.class;
         } else {
-            return Apple.class;
+            return (Class<T>) Apple.class;
         }
     }
 

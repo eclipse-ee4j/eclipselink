@@ -28,7 +28,7 @@ public class CMAndPlatformWrapper {
         wrappedObj = object;
     }
 
-    public List getDataTypesConvertedFrom(Class aClass) {
+    public List getDataTypesConvertedFrom(Class<?> aClass) {
         if (wrappedObj instanceof ConversionManager) {
             return ((ConversionManager)wrappedObj).getDataTypesConvertedFrom(aClass);
         } else if (wrappedObj instanceof Oracle9Platform) {
@@ -37,7 +37,7 @@ public class CMAndPlatformWrapper {
         return new Vector();
     }
 
-    public List getDataTypesConvertedTo(Class aClass) {
+    public List getDataTypesConvertedTo(Class<?> aClass) {
         if (wrappedObj instanceof ConversionManager) {
             return ((ConversionManager)wrappedObj).getDataTypesConvertedTo(aClass);
         } else if (wrappedObj instanceof Oracle9Platform) {
@@ -46,7 +46,7 @@ public class CMAndPlatformWrapper {
         return new Vector();
     }
 
-    public Object convertObject(Object object, Class aClass) {
+    public Object convertObject(Object object, Class<?> aClass) {
         if (wrappedObj instanceof ConversionManager) {
             return ((ConversionManager)wrappedObj).convertObject(object, aClass);
         } else if (wrappedObj instanceof Oracle9Platform) {

@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.identitymaps;
 
+import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 
@@ -21,7 +22,7 @@ public class MergeWithNoIdentityMap extends RegisterInIdentityMapTest {
     public Employee clone;
     public org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy lockPolicy;
 
-    public MergeWithNoIdentityMap(Class mapClass) {
+    public MergeWithNoIdentityMap(Class<? extends IdentityMap> mapClass) {
         super(mapClass);
     }
 

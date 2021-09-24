@@ -23,7 +23,7 @@ public class MultiLineStringTestCases extends JSONMarshalUnmarshalTestCases {
     public MultiLineStringTestCases(String name) throws Exception {
         super(name);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[]{MultiBean.class});
+        setClasses(new Class<?>[]{MultiBean.class});
     }
 
     @Override

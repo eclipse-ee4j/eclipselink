@@ -24,7 +24,7 @@ import org.eclipse.persistence.testing.framework.ReadObjectTest;
 public class ReadObjectExpressionTest extends ReadObjectTest {
     Expression expression;
     /** The class of the target objects to be read from the database. */
-    private Class referenceClass;
+    private Class<?> referenceClass;
 
     public ReadObjectExpressionTest(Object theOriginalObject, Expression theExpression) {
         originalObject = theOriginalObject;
@@ -34,7 +34,7 @@ public class ReadObjectExpressionTest extends ReadObjectTest {
         }
     }
 
-    public ReadObjectExpressionTest(Class theReferenceClass, Expression theExpression) {
+    public ReadObjectExpressionTest(Class<?> theReferenceClass, Expression theExpression) {
         referenceClass = theReferenceClass;
         expression = theExpression;
     }

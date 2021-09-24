@@ -57,7 +57,7 @@ public class ConfigurableUpdateChangeObjectTest extends UpdateChangeObjectTest {
         oldCacheSyncConfigValues = new Hashtable();
         Enumeration keys = cacheSyncConfigValues.keys();
         while (keys.hasMoreElements()) {
-            Class keyClass = (Class)keys.nextElement();
+            Class<?> keyClass = (Class)keys.nextElement();
             ClassDescriptor descriptor = getSession().getDescriptor(keyClass);
             if (descriptor != null) {
                 int cacheSyncType = descriptor.getCacheSynchronizationType();
@@ -93,7 +93,7 @@ public class ConfigurableUpdateChangeObjectTest extends UpdateChangeObjectTest {
         super.reset();
         Enumeration keys = oldCacheSyncConfigValues.keys();
         while (keys.hasMoreElements()) {
-            Class keyClass = (Class)keys.nextElement();
+            Class<?> keyClass = (Class)keys.nextElement();
             ClassDescriptor descriptor = getSession().getDescriptor(keyClass);
             int newCacheSyncType = (Integer) oldCacheSyncConfigValues.get(keyClass);
             descriptor.setCacheSynchronizationType(newCacheSyncType);

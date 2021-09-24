@@ -25,7 +25,7 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 public class XmlTransformationTestCases extends JAXBWithJSONTestCases {
     public XmlTransformationTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {Employee.class});
+        setClasses(new Class<?>[] {Employee.class});
         setControlDocument("org/eclipse/persistence/testing/oxm/mappings/transformation/employee1.xml");
         setControlJSON("org/eclipse/persistence/testing/oxm/mappings/transformation/employee1.json");
     }

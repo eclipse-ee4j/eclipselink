@@ -26,7 +26,7 @@ public class JSONAttributeOrderAttributeFirstTestCases extends JSONMarshalUnmars
     public JSONAttributeOrderAttributeFirstTestCases(String name) throws Exception {
         super(name);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[]{AddressElementAttributeOrder.class});
+        setClasses(new Class<?>[]{AddressElementAttributeOrder.class});
     }
 
     @Override

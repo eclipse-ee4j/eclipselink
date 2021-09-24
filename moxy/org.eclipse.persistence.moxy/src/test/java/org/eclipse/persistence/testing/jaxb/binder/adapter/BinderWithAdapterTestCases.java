@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,7 +47,7 @@ public class BinderWithAdapterTestCases  extends TestCase {
     public BinderWithAdapterTestCases(String name) throws Exception {
         super(name);
         try {
-            binder = JAXBContextFactory.createContext(new Class[] { Element.class }, null).createBinder();
+            binder = JAXBContextFactory.createContext(new Class<?>[] { Element.class }, null).createBinder();
         } catch (JAXBException x) {
             fail("Binder creation failed: " + x.getMessage());
         }

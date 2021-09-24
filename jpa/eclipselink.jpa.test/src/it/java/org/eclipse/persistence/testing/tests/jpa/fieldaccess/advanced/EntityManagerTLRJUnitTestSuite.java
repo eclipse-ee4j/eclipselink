@@ -2268,17 +2268,17 @@ public class EntityManagerTLRJUnitTestSuite extends JUnitTestCase {
             fail("addressCacheSize is wrong");
         }
 
-        Class defaultCacheType = ss.getDescriptor(Project.class).getIdentityMapClass();
+        Class<?> defaultCacheType = ss.getDescriptor(Project.class).getIdentityMapClass();
         if(! Helper.getShortClassName(defaultCacheType).equals("FullIdentityMap")) {
             fail("defaultCacheType is wrong");
         }
 
-        Class employeeCacheType = ss.getDescriptor(Employee.class).getIdentityMapClass();
+        Class<?> employeeCacheType = ss.getDescriptor(Employee.class).getIdentityMapClass();
         if(! Helper.getShortClassName(employeeCacheType).equals("WeakIdentityMap")) {
             fail("employeeCacheType is wrong");
         }
 
-        Class addressCacheType = ss.getDescriptor(Address.class).getIdentityMapClass();
+        Class<?> addressCacheType = ss.getDescriptor(Address.class).getIdentityMapClass();
         if(! Helper.getShortClassName(addressCacheType).equals("HardCacheWeakIdentityMap")) {
             fail("addressCacheType is wrong");
         }
@@ -3852,7 +3852,7 @@ public class EntityManagerTLRJUnitTestSuite extends JUnitTestCase {
     public void testUpdateAllProjects() {
         internalTestUpdateAllProjects(Project.class);
     }
-    protected void internalTestUpdateAllProjects(Class cls) {
+    protected void internalTestUpdateAllProjects(Class<?> cls) {
         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test testUpdateAll*Projects skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
@@ -3960,7 +3960,7 @@ public class EntityManagerTLRJUnitTestSuite extends JUnitTestCase {
     public void testUpdateAllProjectsWithName() {
         internalTestUpdateAllProjectsWithName(Project.class);
     }
-    protected void internalTestUpdateAllProjectsWithName(Class cls) {
+    protected void internalTestUpdateAllProjectsWithName(Class<?> cls) {
         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test testUpdateAll*ProjectsWithName skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
@@ -4042,7 +4042,7 @@ public class EntityManagerTLRJUnitTestSuite extends JUnitTestCase {
     public void testUpdateAllProjectsWithNullTeamLeader() {
         internalTestUpdateAllProjectsWithNullTeamLeader(Project.class);
     }
-    protected void internalTestUpdateAllProjectsWithNullTeamLeader(Class cls) {
+    protected void internalTestUpdateAllProjectsWithNullTeamLeader(Class<?> cls) {
         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test testUpdateAll*ProjectsWithNullTeamLeader skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");

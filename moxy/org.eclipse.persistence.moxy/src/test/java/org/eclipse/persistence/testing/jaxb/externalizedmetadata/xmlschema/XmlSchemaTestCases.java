@@ -61,7 +61,7 @@ public class XmlSchemaTestCases extends JAXBWithJSONTestCases {
         setControlDocument(XML_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[]{Employee.class});
+        setClasses(new Class<?>[]{Employee.class});
     }
 
     @Override

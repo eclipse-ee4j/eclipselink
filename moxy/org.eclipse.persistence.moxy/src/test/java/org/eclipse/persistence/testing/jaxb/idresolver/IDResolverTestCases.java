@@ -26,7 +26,7 @@ public class IDResolverTestCases extends JAXBTestCases {
 
     public IDResolverTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { Apple.class, AppleRef.class, Box.class, FruitOrder.class, Orange.class, OrangeRef.class });
+        setClasses(new Class<?>[] { Apple.class, AppleRef.class, Box.class, FruitOrder.class, Orange.class, OrangeRef.class });
         setControlDocument(XML_RESOURCE);
     }
 

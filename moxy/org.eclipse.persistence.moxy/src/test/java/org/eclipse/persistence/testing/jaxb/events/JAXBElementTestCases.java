@@ -47,7 +47,7 @@ public class JAXBElementTestCases extends TestCase {
 
         mListener = new MarshalListenerImpl();
 
-        JAXBContext context = JAXBContextFactory.createContext(new Class[] { Employee.class }, null);
+        JAXBContext context = JAXBContextFactory.createContext(new Class<?>[] { Employee.class }, null);
 
         marshaller = context.createMarshaller();
         marshaller.setListener(mListener);
@@ -113,12 +113,12 @@ public class JAXBElementTestCases extends TestCase {
     // ========================================================================
 
     private class MarshalListenerImpl extends Marshaller.Listener {
-        public List<Class> beforeClasses;
-        public List<Class> afterClasses;
+        public List<Class<?>> beforeClasses;
+        public List<Class<?>> afterClasses;
 
         public MarshalListenerImpl(){
-            beforeClasses = new ArrayList<Class>();
-            afterClasses = new ArrayList<Class>();
+            beforeClasses = new ArrayList<Class<?>>();
+            afterClasses = new ArrayList<Class<?>>();
         }
 
         @Override

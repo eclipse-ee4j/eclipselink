@@ -32,7 +32,7 @@ public class ObjectGraphBindingsTestCases extends JAXBWithJSONTestCases {
 
     public ObjectGraphBindingsTestCases(String name) throws Exception {
         super(name);
-        this.setClasses(new Class[]{Customer.class, Address.class, PhoneNumber.class});
+        this.setClasses(new Class<?>[]{Customer.class, Address.class, PhoneNumber.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);

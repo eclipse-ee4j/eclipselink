@@ -37,7 +37,7 @@ public class XMLBindingsTestCases extends JAXBWithJSONTestCases{
 
     public XMLBindingsTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{XmlBindings.class});
+        setClasses(new Class<?>[]{XmlBindings.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

@@ -154,19 +154,19 @@ public class DeleteAllQueryInheritanceJunitTest extends JUnitTestCase {
         deleteAllQueryInternal_Deferred_Children(FueledVehicle.class, exp);
     }
 
-    protected static void deleteAllQueryInternal_Deferred_Children(Class referenceClass, Expression selectionExpression) {
+    protected static void deleteAllQueryInternal_Deferred_Children(Class<?> referenceClass, Expression selectionExpression) {
         deleteAllQueryInternal(referenceClass, selectionExpression, true, true);
     }
 
-    protected static void deleteAllQueryInternal_NonDeferred_Children(Class referenceClass, Expression selectionExpression) {
+    protected static void deleteAllQueryInternal_NonDeferred_Children(Class<?> referenceClass, Expression selectionExpression) {
         deleteAllQueryInternal(referenceClass, selectionExpression, false, true);
     }
 
-    protected static void deleteAllQueryInternal_Deferred_NoChildren(Class referenceClass, Expression selectionExpression) {
+    protected static void deleteAllQueryInternal_Deferred_NoChildren(Class<?> referenceClass, Expression selectionExpression) {
         deleteAllQueryInternal(referenceClass, selectionExpression, true, false);
     }
 
-    protected static void deleteAllQueryInternal_NonDeferred_NoChildren(Class referenceClass, Expression selectionExpression) {
+    protected static void deleteAllQueryInternal_NonDeferred_NoChildren(Class<?> referenceClass, Expression selectionExpression) {
         deleteAllQueryInternal(referenceClass, selectionExpression, false, false);
     }
 
@@ -180,7 +180,7 @@ public class DeleteAllQueryInheritanceJunitTest extends JUnitTestCase {
     // and all its subclasses
     // Example: for Vehicle.class  9 DeleteAllQueries will be tested.
     // shouldHandleChildren==false means the test will be executed with the specified class only.
-    protected static void deleteAllQueryInternal(Class referenceClass, Expression selectionExpression, boolean shouldDeferExecutionInUOW, boolean handleChildren) {
+    protected static void deleteAllQueryInternal(Class<?> referenceClass, Expression selectionExpression, boolean shouldDeferExecutionInUOW, boolean handleChildren) {
         if (getServerSession().getDatasourcePlatform().isSymfoware()) {
             getServerSession().logMessage("DeleteAllQueryInheritanceJunitTest test skipped for this platform, "
                                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");

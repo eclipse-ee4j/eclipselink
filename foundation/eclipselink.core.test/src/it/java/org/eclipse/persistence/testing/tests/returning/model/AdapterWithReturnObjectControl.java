@@ -120,7 +120,7 @@ public abstract class AdapterWithReturnObjectControl implements ProjectAndDataba
 
     protected Object readObjectFromRow(Session session, ClassDescriptor desc, DataRecord row) {
         if (desc.hasInheritance()) {
-            Class newClass = desc.getInheritancePolicy().classFromRow((DatabaseRecord)row, (AbstractSession)session);
+            Class<?> newClass = desc.getInheritancePolicy().classFromRow((DatabaseRecord)row, (AbstractSession)session);
             desc = session.getClassDescriptor(newClass);
         }
         Object object = desc.getObjectBuilder().buildNewInstance();

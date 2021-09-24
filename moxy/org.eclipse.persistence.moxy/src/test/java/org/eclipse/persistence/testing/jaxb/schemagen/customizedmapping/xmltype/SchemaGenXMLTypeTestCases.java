@@ -52,7 +52,7 @@ public class SchemaGenXMLTypeTestCases extends SchemaGenTestCases {
 
         try {
             src = Thread.currentThread().getContextClassLoader().getResourceAsStream("org/eclipse/persistence/testing/jaxb/schemagen/customizedmapping/xmltype/BaseType001p.xml");
-            Class[] jClasses = new Class[] { BaseType001c.class };
+            Class<?>[] jClasses = new Class<?>[] { BaseType001c.class };
             Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
             SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -84,7 +84,7 @@ public class SchemaGenXMLTypeTestCases extends SchemaGenTestCases {
         }
 
         try {
-            Class[] jClasses = new Class[] { BaseType001c.class };
+            Class<?>[] jClasses = new Class<?>[] { BaseType001c.class };
             Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
             SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);

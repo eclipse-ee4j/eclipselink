@@ -66,7 +66,7 @@ public class NamedQueryGetQueryNoArgumentsTest extends MultiNameQueriesTestCase 
     }
 
     // end of getDescriptorNamedQuery
-    public void setDescriptorNamedQueries(Class cls) {
+    public void setDescriptorNamedQueries(Class<?> cls) {
         this.descriptor = getSession().getClassDescriptor(cls);
     }
 

@@ -33,7 +33,7 @@ public class XmlMappingSpecifiedNameTestCases  extends JAXBWithJSONTestCases {
 
     public XmlMappingSpecifiedNameTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {XmlMappingSpecifiedNameRoot.class});
+        setClasses(new Class<?>[] {XmlMappingSpecifiedNameRoot.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

@@ -70,7 +70,7 @@ public class JavaVersionTest {
             final String versionString = ReflectionHelper.<String>invokeStaticMethod(
                     "vmVersionString", JavaVersion.class, null, String.class);
             final JavaVersion version =  ReflectionHelper.<JavaVersion>invokeStaticMethod(
-                    "propertyVersionParser", JavaVersion.class, new Class[] {String.class}, JavaVersion.class, versionString);
+                    "propertyVersionParser", JavaVersion.class, new Class<?>[] {String.class}, JavaVersion.class, versionString);
         } catch (ReflectiveOperationException e) {
             fail("Exception: " + e.getMessage());
         }
@@ -90,7 +90,7 @@ public class JavaVersionTest {
             final String versionString = JavaSEPlatform.versionString(major, minor);
             try {
                 final JavaVersion javaVersion =  ReflectionHelper.<JavaVersion>invokeStaticMethod(
-                        "propertyVersionParser", JavaVersion.class, new Class[] {String.class}, JavaVersion.class, versionString);
+                        "propertyVersionParser", JavaVersion.class, new Class<?>[] {String.class}, JavaVersion.class, versionString);
                 assertNotNull("JavaVersion instance must be returned for valid platform"
                         +" version number ["+ major +","+ minor +"]", javaVersion);
                 assertTrue("Returned JavaVersion instance numbers do not match provided"
@@ -107,7 +107,7 @@ public class JavaVersionTest {
             final String versionString = JavaSEPlatform.versionString(major, minor);
             try {
                 final JavaVersion javaVersion =  ReflectionHelper.<JavaVersion>invokeStaticMethod(
-                        "propertyVersionParser", JavaVersion.class, new Class[] {String.class}, JavaVersion.class, versionString);
+                        "propertyVersionParser", JavaVersion.class, new Class<?>[] {String.class}, JavaVersion.class, versionString);
                 assertNotNull("JavaVersion instance must be returned for invalid platform"
                         +" version number ["+ major +","+ minor +"]", javaVersion);
                 assertTrue("Returned JavaVersion instance numbers do not match provided"

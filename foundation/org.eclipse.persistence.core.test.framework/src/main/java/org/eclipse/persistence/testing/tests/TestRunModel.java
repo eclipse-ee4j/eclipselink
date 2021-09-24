@@ -251,7 +251,7 @@ public class TestRunModel extends TestModel {
         TestModel model = new TestModel();
         model.setName("Oracle Tests");
         for (int index = 0; index < tests.size(); ++index) {
-            Class cls;
+            Class<?> cls;
             try {
                 cls = Class.forName((String)tests.get(index));
                 if(TestModel.class.isAssignableFrom(cls)) {
@@ -280,7 +280,7 @@ public class TestRunModel extends TestModel {
         TestModel model = new TestModel();
         model.setName("Oracle NoSQL Tests");
         for (int index = 0; index < tests.size(); ++index) {
-            Class cls;
+            Class<?> cls;
             try {
                 cls = Class.forName((String)tests.get(index));
                 if(TestModel.class.isAssignableFrom(cls)) {
@@ -308,7 +308,7 @@ public class TestRunModel extends TestModel {
         TestModel model = new TestModel();
         model.setName("NoSQL Tests");
         for (int index = 0; index < tests.size(); ++index) {
-            Class cls;
+            Class<?> cls;
             try {
                 cls = Class.forName((String)tests.get(index));
                 if(TestModel.class.isAssignableFrom(cls)) {

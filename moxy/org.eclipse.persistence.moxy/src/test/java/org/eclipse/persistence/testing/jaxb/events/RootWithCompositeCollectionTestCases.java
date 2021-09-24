@@ -41,7 +41,7 @@ public class RootWithCompositeCollectionTestCases extends JAXBWithJSONTestCases 
 
     public RootWithCompositeCollectionTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {Employee.class, Address.class, PhoneNumber.class});
+        setClasses(new Class<?>[] {Employee.class, Address.class, PhoneNumber.class});
         setControlDocument("org/eclipse/persistence/testing/jaxb/events/composite_collection.xml");
         setControlJSON("org/eclipse/persistence/testing/jaxb/events/composite_collection.json");
 

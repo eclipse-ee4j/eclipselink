@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,7 @@ public class XmlIdRefInheritanceTestCases extends JAXBWithJSONTestCases {
 
     public XmlIdRefInheritanceTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {RootNode.class});
+        setClasses(new Class<?>[] {RootNode.class});
         setControlJSON(CONTROL_JSON);
         setControlDocument(CONTROL_XML);
         jaxbMarshaller.setProperty(MarshallerProperties.JSON_MARSHAL_EMPTY_COLLECTIONS, Boolean.TRUE);

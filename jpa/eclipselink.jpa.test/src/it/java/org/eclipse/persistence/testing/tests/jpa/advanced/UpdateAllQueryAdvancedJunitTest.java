@@ -36,7 +36,7 @@ import org.eclipse.persistence.testing.framework.UpdateAllQueryTestHelper;
 
 public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
 
-    static protected Class[] classes = {Employee.class, Address.class, PhoneNumber.class, Project.class};
+    static protected Class<?>[] classes = {Employee.class, Address.class, PhoneNumber.class, Project.class};
     static protected Vector[] objectVectors = {null, null, null, null};
 
     static protected EmployeePopulator populator = new EmployeePopulator();
@@ -220,7 +220,7 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
         updateAllQueryInternal(updateQuery);
     }
 
-    protected static void updateAllQueryInternal(Class referenceClass, HashMap updateClauses, Expression selectionExpression) {
+    protected static void updateAllQueryInternal(Class<?> referenceClass, HashMap updateClauses, Expression selectionExpression) {
         if (getServerSession().getPlatform().isSymfoware()) {
             getServerSession().logMessage("UpdateAllQueryAdvancedJunitTest skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");

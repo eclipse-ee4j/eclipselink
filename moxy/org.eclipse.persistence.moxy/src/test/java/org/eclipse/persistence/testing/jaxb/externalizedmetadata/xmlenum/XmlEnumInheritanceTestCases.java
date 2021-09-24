@@ -40,7 +40,7 @@ public class XmlEnumInheritanceTestCases extends JAXBWithJSONTestCases{
      */
     public XmlEnumInheritanceTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {SubsetHolder.class });
+        setClasses(new Class<?>[] {SubsetHolder.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

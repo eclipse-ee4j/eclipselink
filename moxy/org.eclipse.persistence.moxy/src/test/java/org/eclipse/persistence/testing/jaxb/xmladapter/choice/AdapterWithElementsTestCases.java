@@ -27,7 +27,7 @@ public class AdapterWithElementsTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[] {Foo.class, BarA.class, BarB.class, BarC.class};
+        Class<?>[] classes = new Class<?>[] {Foo.class, BarA.class, BarB.class, BarC.class};
         setClasses(classes);
     }
 

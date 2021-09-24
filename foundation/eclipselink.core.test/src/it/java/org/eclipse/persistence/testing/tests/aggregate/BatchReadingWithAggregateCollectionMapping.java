@@ -22,9 +22,9 @@ import org.eclipse.persistence.testing.framework.ReadObjectTest;
 
 public class BatchReadingWithAggregateCollectionMapping extends ReadObjectTest {
 
-    Class cls;
+    Class<?> cls;
     // Must be Agent or Builder
-    public BatchReadingWithAggregateCollectionMapping(Class cls) {
+    public BatchReadingWithAggregateCollectionMapping(Class<?> cls) {
         super();
         this.cls = cls;
         setName(getName() + AgentBuilderHelper.getNameInBrackets(cls));

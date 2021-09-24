@@ -59,7 +59,7 @@ public class ConstructingDescriptorExceptionTests extends AutoVerifyTestCase {
             IndirectListContainerPolicy policy = new IndirectListContainerPolicy();
             Object object = new Object();
             DatabaseRecord row = new DatabaseRecord();
-            Class[] parmClasses = { };
+            Class<?>[] parmClasses = { };
             Method method = javaClass.getDeclaredMethod("test", parmClasses);
 
             DescriptorException descriptorException;

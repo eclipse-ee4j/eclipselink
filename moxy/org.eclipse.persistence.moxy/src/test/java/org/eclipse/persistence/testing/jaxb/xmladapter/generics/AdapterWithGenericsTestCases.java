@@ -25,7 +25,7 @@ public class AdapterWithGenericsTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[] {Root.class, B.class};
+        Class<?>[] classes = new Class<?>[] {Root.class, B.class};
         setClasses(classes);
     }
 

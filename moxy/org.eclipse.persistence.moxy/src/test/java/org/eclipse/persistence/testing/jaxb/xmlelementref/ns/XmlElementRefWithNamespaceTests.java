@@ -36,7 +36,7 @@ public class XmlElementRefWithNamespaceTests extends JAXBWithJSONTestCases {
 
     public XmlElementRefWithNamespaceTests(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{ EchoByteArray.class, ObjectFactory.class });
+        setClasses(new Class<?>[]{ EchoByteArray.class, ObjectFactory.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
 

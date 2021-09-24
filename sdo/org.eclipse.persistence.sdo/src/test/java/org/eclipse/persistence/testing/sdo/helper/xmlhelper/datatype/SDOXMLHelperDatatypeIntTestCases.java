@@ -32,7 +32,7 @@ public class SDOXMLHelperDatatypeIntTestCases extends SDOXMLHelperDatatypeTestCa
     }
 
     @Override
-    protected Class getDatatypeJavaClass() {
+    protected Class<?> getDatatypeJavaClass() {
         return Integer.class;
     }
 

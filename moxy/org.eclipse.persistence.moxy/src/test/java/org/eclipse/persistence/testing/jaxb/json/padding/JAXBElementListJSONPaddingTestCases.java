@@ -32,7 +32,7 @@ public class JAXBElementListJSONPaddingTestCases extends JSONTestCases{
 
     public JAXBElementListJSONPaddingTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Simple.class});
+        setClasses(new Class<?>[]{Simple.class});
         setControlJSON(JSON_RESOURCE);
     }
 

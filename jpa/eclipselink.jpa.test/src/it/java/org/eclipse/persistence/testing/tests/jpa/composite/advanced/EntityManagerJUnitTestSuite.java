@@ -6916,7 +6916,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public void testUpdateAllProjects() {
         internalTestUpdateAllProjects(Project.class);
     }
-    protected void internalTestUpdateAllProjects(Class cls) {
+    protected void internalTestUpdateAllProjects(Class<?> cls) {
         if (getPlatform(Project.class).isSymfoware()) {
             getDatabaseSession().logMessage("Test testUpdateAll*Projects skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
@@ -7024,7 +7024,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public void testUpdateAllProjectsWithName() {
         internalTestUpdateAllProjectsWithName(Project.class);
     }
-    protected void internalTestUpdateAllProjectsWithName(Class cls) {
+    protected void internalTestUpdateAllProjectsWithName(Class<?> cls) {
         if (getPlatform(Project.class).isSymfoware()) {
             getDatabaseSession().logMessage("Test testUpdateAll*ProjectsWithName skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
@@ -7106,7 +7106,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public void testUpdateAllProjectsWithNullTeamLeader() {
         internalTestUpdateAllProjectsWithNullTeamLeader(Project.class);
     }
-    protected void internalTestUpdateAllProjectsWithNullTeamLeader(Class cls) {
+    protected void internalTestUpdateAllProjectsWithNullTeamLeader(Class<?> cls) {
         if (getPlatform(Project.class).isSymfoware()) {
             getDatabaseSession().logMessage("Test testUpdateAll*ProjectsWithNullTeamLeader skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
@@ -7813,7 +7813,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // setup
         SessionBroker broker = getSessionBroker();
         for (int i=1; i<=3; i++ ) {
-            Class cls;
+            Class<?> cls;
             if (i == 1) {
                 // defined in member_1
                 cls = Customer.class;
@@ -10775,7 +10775,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
         // classes mapped by member persistence units
         int n = 3;
-        Class[] classes = {Address.class, Employee.class, Project.class};
+        Class<?>[] classes = {Address.class, Employee.class, Project.class};
         for (int i=0; i<n; i++) {
             ClientSession clientSession = (ClientSession)clientBroker.getSessionForClass(classes[i]);
             List<SessionEventListener> clientSessionListeners = getCompositeAndMemberListeners(clientSession);

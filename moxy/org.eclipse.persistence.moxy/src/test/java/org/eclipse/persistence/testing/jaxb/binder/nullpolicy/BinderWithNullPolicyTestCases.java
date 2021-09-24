@@ -43,7 +43,7 @@ public class BinderWithNullPolicyTestCases extends TestCase{
         String controlSource = "org/eclipse/persistence/testing/jaxb/binder/nullpolicy/absentnode.xml";
         Document controlDocument = parser.parse(Thread.currentThread().getContextClassLoader().getResource(controlSource));
 
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{EmployeeA.class}, null);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{EmployeeA.class}, null);
 
         Binder<Node> binder = ctx.createBinder();
 
@@ -63,7 +63,7 @@ public class BinderWithNullPolicyTestCases extends TestCase{
         String controlSource = "org/eclipse/persistence/testing/jaxb/binder/nullpolicy/xsinil.xml";
         Document controlDocument = parser.parse(Thread.currentThread().getContextClassLoader().getResource(controlSource));
 
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{EmployeeB.class}, null);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{EmployeeB.class}, null);
 
         Binder<Node> binder = ctx.createBinder();
 
@@ -83,7 +83,7 @@ public class BinderWithNullPolicyTestCases extends TestCase{
         String controlSource = "org/eclipse/persistence/testing/jaxb/binder/nullpolicy/nilwithvalue.xml";
         Document controlDocument = parser.parse(Thread.currentThread().getContextClassLoader().getResource(controlSource));
 
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{EmployeeB.class}, null);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{EmployeeB.class}, null);
 
         Binder<Node> binder = ctx.createBinder();
 
@@ -103,7 +103,7 @@ public class BinderWithNullPolicyTestCases extends TestCase{
         String controlSource = "org/eclipse/persistence/testing/jaxb/binder/nullpolicy/emptynode.xml";
         Document controlDocument = parser.parse(Thread.currentThread().getContextClassLoader().getResource(controlSource));
 
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{EmployeeC.class}, null);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{EmployeeC.class}, null);
 
         Binder<Node> binder = ctx.createBinder();
 

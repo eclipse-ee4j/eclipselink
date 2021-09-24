@@ -81,7 +81,7 @@ public class NoGroupingElementIndirectionArrayListTestCases extends EISMappingTe
   }
 
     @Override
-    protected Class getSourceClass(){
+    protected Class<?> getSourceClass(){
         return Employee.class;
     }
 

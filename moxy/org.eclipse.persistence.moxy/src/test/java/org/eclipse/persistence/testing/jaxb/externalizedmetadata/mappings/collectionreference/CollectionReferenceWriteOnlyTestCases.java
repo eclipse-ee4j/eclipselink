@@ -37,7 +37,7 @@ public class CollectionReferenceWriteOnlyTestCases extends JAXBWithJSONTestCases
 
     public CollectionReferenceWriteOnlyTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { Root.class });
+        setClasses(new Class<?>[] { Root.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

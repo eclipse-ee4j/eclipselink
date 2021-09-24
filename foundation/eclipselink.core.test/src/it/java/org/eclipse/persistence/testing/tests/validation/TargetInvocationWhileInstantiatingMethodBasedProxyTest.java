@@ -48,7 +48,7 @@ public class TargetInvocationWhileInstantiatingMethodBasedProxyTest extends Exce
         descriptor.setJavaClass(TargetInvocationWhileInstantiatingMethodBasedProxyTest.class);
         descriptor.addTableName("Dummy_Table");
         row = new DatabaseRecord();
-        Class[] parmClasses = { DatabaseRecord.class };
+        Class<?>[] parmClasses = { DatabaseRecord.class };
         theMethod = TargetInvocationWhileInstantiatingMethodBasedProxyTest.class.getDeclaredMethod("invalidMethod", parmClasses);
         theTransformer = new MethodBasedAttributeTransformer();
         theTransformer.setAttributeTransformationMethod(theMethod);

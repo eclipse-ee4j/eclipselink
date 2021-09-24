@@ -32,7 +32,7 @@ public class UnspecifiedTestCases extends JAXBWithJSONTestCases {
 
     public UnspecifiedTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Customer.class});
+        setClasses(new Class<?>[]{Customer.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

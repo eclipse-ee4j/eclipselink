@@ -33,7 +33,7 @@ public class UpdateNullAggregateValueTest extends SwitchableOptimisticLockingPol
     protected GamesConsole original;
     protected GamesConsole original2;
 
-    public UpdateNullAggregateValueTest(Class optimisticLockingPolicyClass) {
+    public UpdateNullAggregateValueTest(Class<?> optimisticLockingPolicyClass) {
         super(optimisticLockingPolicyClass);
         addClassToModify(GamesConsole.class);
     }

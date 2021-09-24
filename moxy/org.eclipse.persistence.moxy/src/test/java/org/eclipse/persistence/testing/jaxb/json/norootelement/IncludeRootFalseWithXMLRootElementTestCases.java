@@ -32,7 +32,7 @@ public class IncludeRootFalseWithXMLRootElementTestCases extends NoRootElementTe
         super(name);
         setControlJSON(JSON_RESOURCE_NO_ROOT);
         setWriteControlJSON(JSON_RESOURCE_TYPE);
-        setClasses(new Class[]{AddressWithRootElement.class});
+        setClasses(new Class<?>[]{AddressWithRootElement.class});
     }
 
     @Override

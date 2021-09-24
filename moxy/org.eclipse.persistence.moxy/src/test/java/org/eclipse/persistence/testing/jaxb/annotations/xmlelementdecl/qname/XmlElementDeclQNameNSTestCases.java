@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,7 @@ public class XmlElementDeclQNameNSTestCases extends JAXBWithJSONTestCases{
          setControlJSON(JSON_RESOURCE);
          setWriteControlDocument(XML_WRITE_RESOURCE);
          setWriteControlJSON(JSON_WRITE_RESOURCE);
-         setClasses(new Class[] {ObjectFactory.class});
+         setClasses(new Class<?>[] {ObjectFactory.class});
 
          Map<String, String> namespaces = new HashMap<String, String>();
          namespaces.put(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, "xsd");

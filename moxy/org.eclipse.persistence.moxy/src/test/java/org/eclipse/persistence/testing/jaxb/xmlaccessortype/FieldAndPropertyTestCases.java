@@ -34,14 +34,14 @@ public class FieldAndPropertyTestCases extends SchemaGenTestCases {
 
     public void testFieldAccess() throws Exception {
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
-        generateSchema(new Class[]{PersonField.class}, outputResolver, null);
+        generateSchema(new Class<?>[]{PersonField.class}, outputResolver, null);
         String result = validateAgainstSchema(PATH + "person_field.xml", outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
 
     public void testPropertyAccess() throws Exception {
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
-        generateSchema(new Class[]{PersonProperty.class}, outputResolver, null);
+        generateSchema(new Class<?>[]{PersonProperty.class}, outputResolver, null);
         String result = validateAgainstSchema(PATH + "person_property.xml", outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }

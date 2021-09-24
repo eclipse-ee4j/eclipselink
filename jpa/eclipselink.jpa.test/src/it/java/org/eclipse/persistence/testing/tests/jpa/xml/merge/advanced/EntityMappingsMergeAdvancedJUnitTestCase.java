@@ -62,7 +62,7 @@ public class EntityMappingsMergeAdvancedJUnitTestCase extends JUnitTestCase {
         if(!classIndicatorFieldName.equals("XML_MERGE_PROJ_TYPE")) {
             fail("Wrong classIndicatorField name '"+classIndicatorFieldName+"'");
         }
-        Class classIndicatorFieldType = classIndicatorField.getType();
+        Class<?> classIndicatorFieldType = classIndicatorField.getType();
         if(!classIndicatorFieldType.equals(String.class)) {
             fail("Wrong classIndicatorField type '"+classIndicatorFieldType.getName()+"'");
         }

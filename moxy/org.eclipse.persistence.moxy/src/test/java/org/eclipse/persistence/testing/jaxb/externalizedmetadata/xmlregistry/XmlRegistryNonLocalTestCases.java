@@ -36,7 +36,7 @@ public class XmlRegistryNonLocalTestCases extends JAXBWithJSONTestCases{
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[] { FooBar.class, ObjectFactory2.class });
+        setClasses(new Class<?>[] { FooBar.class, ObjectFactory2.class });
     }
 
     @Override

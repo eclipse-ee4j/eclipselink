@@ -18,7 +18,7 @@ import org.eclipse.persistence.expressions.*;
 
 public class ReadAllOuterJoinExpressionTest extends ReadAllExpressionTest {
 
-    public ReadAllOuterJoinExpressionTest(Class referenceClass, int originalObjectsSize) {
+    public ReadAllOuterJoinExpressionTest(Class<?> referenceClass, int originalObjectsSize) {
         super(referenceClass, originalObjectsSize);
     }
 

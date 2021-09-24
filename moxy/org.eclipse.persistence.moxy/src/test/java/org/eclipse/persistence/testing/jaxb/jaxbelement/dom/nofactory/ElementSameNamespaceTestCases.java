@@ -29,7 +29,7 @@ public class ElementSameNamespaceTestCases extends JAXBWithJSONTestCases{
 
     public ElementSameNamespaceTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{});
+        setClasses(new Class<?>[]{});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

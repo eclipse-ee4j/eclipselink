@@ -38,7 +38,7 @@ public class ReadAllExpressionTest extends org.eclipse.persistence.testing.frame
      * @param referenceClass java.lang.Class
      * @param originalObjectsSize int
      */
-    public ReadAllExpressionTest(Class referenceClass, int originalObjectsSize) {
+    public ReadAllExpressionTest(Class<?> referenceClass, int originalObjectsSize) {
         super(referenceClass, originalObjectsSize);
     }
 
@@ -85,7 +85,7 @@ public class ReadAllExpressionTest extends org.eclipse.persistence.testing.frame
         }
         if (supportedPlatforms != null) {
             for (Iterator iterator = supportedPlatforms.iterator(); iterator.hasNext();) {
-                Class platformClass = (Class)iterator.next();
+                Class<?> platformClass = (Class)iterator.next();
                 if (platformClass.isInstance(platform)) {
                     supported = true;
                 }
@@ -95,7 +95,7 @@ public class ReadAllExpressionTest extends org.eclipse.persistence.testing.frame
         }
         if (unsupportedPlatforms != null) {
             for (Iterator iterator = unsupportedPlatforms.iterator(); iterator.hasNext();) {
-                Class platformClass = (Class)iterator.next();
+                Class<?> platformClass = (Class)iterator.next();
                 if (platformClass.isInstance(platform)) {
                     notSupported = true;
                 }
@@ -166,14 +166,14 @@ public class ReadAllExpressionTest extends org.eclipse.persistence.testing.frame
         }
     }
 
-    public void addSupportedPlatform(Class platform) {
+    public void addSupportedPlatform(Class<?> platform) {
         if (supportedPlatforms == null) {
             supportedPlatforms = new Vector();
         }
         supportedPlatforms.addElement(platform);
     }
 
-    public void addUnsupportedPlatform(Class platform) {
+    public void addUnsupportedPlatform(Class<?> platform) {
         if (unsupportedPlatforms == null) {
             unsupportedPlatforms = new Vector();
         }

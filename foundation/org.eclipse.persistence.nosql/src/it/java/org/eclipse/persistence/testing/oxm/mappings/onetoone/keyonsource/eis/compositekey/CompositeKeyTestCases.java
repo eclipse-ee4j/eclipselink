@@ -83,7 +83,7 @@ public class CompositeKeyTestCases extends EISMappingTestCases {
   }
 
     @Override
-    protected Class getSourceClass(){
+    protected Class<?> getSourceClass(){
         return Team.class;
     }
 

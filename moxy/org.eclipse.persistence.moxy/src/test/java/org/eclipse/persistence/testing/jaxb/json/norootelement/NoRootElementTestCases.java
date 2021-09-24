@@ -28,7 +28,7 @@ public class NoRootElementTestCases extends JSONMarshalUnmarshalTestCases{
         super(name);
         setControlJSON(JSON_RESOURCE_WITH_ROOT);
         setWriteControlJSON(JSON_RESOURCE_NO_ROOT);
-        setClasses(new Class[]{Address.class});
+        setClasses(new Class<?>[]{Address.class});
     }
 
     @Override

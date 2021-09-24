@@ -31,7 +31,7 @@ public class CycleRecoverableTestCases extends JAXBWithJSONTestCases {
 
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[] { Company.class, EmployeePointer.class });
+        setClasses(new Class<?>[] { Company.class, EmployeePointer.class });
     }
 
     @Override

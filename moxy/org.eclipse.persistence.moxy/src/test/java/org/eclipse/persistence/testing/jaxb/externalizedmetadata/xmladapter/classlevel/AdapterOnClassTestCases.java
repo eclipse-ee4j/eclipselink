@@ -41,7 +41,7 @@ public class AdapterOnClassTestCases extends JAXBWithJSONTestCases{
 
     public AdapterOnClassTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.classlevel.MyClass.class});
+        setClasses(new Class<?>[]{org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.classlevel.MyClass.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

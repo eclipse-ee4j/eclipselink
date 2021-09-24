@@ -36,7 +36,7 @@ public class XmlPropertyTestCases extends TestCase {
 
     @Override
     public void setUp() throws Exception {
-        JAXBContext ctx = (JAXBContext)JAXBContextFactory.createContext(new Class[]{Foo.class}, null);
+        JAXBContext ctx = (JAXBContext)JAXBContextFactory.createContext(new Class<?>[]{Foo.class}, null);
         this.project = ctx.getXMLContext().getSession(0).getProject();
     }
 

@@ -28,7 +28,7 @@ public class ClassWithoutConstructor implements IndirectContainer {
     //used for TL-172 testing (work in progress)
 
     private ClassWithoutConstructor() throws java.lang.NoSuchMethodException {
-        Class[] parmClasses = { Integer.class };
+        Class<?>[] parmClasses = { Integer.class };
         ClassWithoutConstructor.class.getDeclaredMethod("invalidMethod", parmClasses);
     }
 

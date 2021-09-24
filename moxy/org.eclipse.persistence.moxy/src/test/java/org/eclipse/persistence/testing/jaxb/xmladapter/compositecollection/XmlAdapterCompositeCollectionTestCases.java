@@ -35,7 +35,7 @@ public class XmlAdapterCompositeCollectionTestCases extends JAXBWithJSONTestCase
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[2];
+        Class<?>[] classes = new Class<?>[2];
         classes[0] = MyDates.class;
         classes[1] = MyDateType.class;
         setClasses(classes);

@@ -31,7 +31,7 @@ public class XmlAttributeImportsTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[]{Person.class});
+        setClasses(new Class<?>[]{Person.class});
     }
 
     @Override

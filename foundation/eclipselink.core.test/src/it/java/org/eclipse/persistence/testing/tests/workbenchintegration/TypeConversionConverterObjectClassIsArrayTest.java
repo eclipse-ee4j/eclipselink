@@ -29,9 +29,9 @@ public class TypeConversionConverterObjectClassIsArrayTest extends ProjectClassG
 
     protected ClassDescriptor descriptor;
     protected DirectToFieldMapping mapping;
-    protected Class classType;
+    protected Class<?> classType;
 
-    public TypeConversionConverterObjectClassIsArrayTest(Class classType) {
+    public TypeConversionConverterObjectClassIsArrayTest(Class<?> classType) {
         super(new org.eclipse.persistence.testing.models.employee.relational.EmployeeProject());
         setDescription("Test addTypeConversionConverterLines method -> setObjectClassName() generates legal array code");
         setName(getName() + "[" + classType.getName() + "]");

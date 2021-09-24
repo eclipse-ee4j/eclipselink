@@ -27,8 +27,8 @@ import org.eclipse.persistence.testing.framework.TestWarningException;
 //calling getDataTypesConvertedTo() in Oracle9Platform.
 public class DataTypesConvertedToAClassForOracle9Test extends DataTypesConvertedToAClassTest {
 
-    protected Class[] convertedToClasses =
-        new Class[] { BigDecimal.class, BigInteger.class, Boolean.class, Byte.class, byte[].class, Byte[].class,
+    protected Class<?>[] convertedToClasses =
+        new Class<?>[] { BigDecimal.class, BigInteger.class, Boolean.class, Byte.class, byte[].class, Byte[].class,
                       Calendar.class, Character.class, Character[].class, char[].class, java.sql.Date.class, Double.class,
                       Float.class, Integer.class, Long.class, Number.class, Short.class, String.class, Timestamp.class,
                       Time.class, java.util.Date.class, oracle.sql.TIMESTAMP.class };
@@ -46,7 +46,7 @@ public class DataTypesConvertedToAClassForOracle9Test extends DataTypesConverted
     }
 
     @Override
-    protected boolean isChar(Class aClass) {
+    protected boolean isChar(Class<?> aClass) {
         return super.isChar(aClass) || aClass == Oracle9Platform.NCHAR || aClass == Oracle9Platform.NSTRING ||
             aClass == Oracle9Platform.NCLOB;
     }

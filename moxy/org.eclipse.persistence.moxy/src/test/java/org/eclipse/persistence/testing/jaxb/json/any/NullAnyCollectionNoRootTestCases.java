@@ -29,7 +29,7 @@ public class NullAnyCollectionNoRootTestCases extends JSONMarshalUnmarshalTestCa
 
     public NullAnyCollectionNoRootTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {Root.class});
+        setClasses(new Class<?>[] {Root.class});
         setControlJSON(JSON);
     }
 

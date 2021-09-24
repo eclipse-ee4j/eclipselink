@@ -39,7 +39,7 @@ public class AccessorTypeNoneTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[] { Company.class });
+        setClasses(new Class<?>[] { Company.class });
     }
 
     @Override

@@ -32,7 +32,7 @@ public class SDOXMLHelperDatatypeStringsTestCases extends SDOXMLHelperDatatypeTe
     }
 
     @Override
-    protected Class getDatatypeJavaClass() {
+    protected Class<?> getDatatypeJavaClass() {
         return String.class;
     }
 

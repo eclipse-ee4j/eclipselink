@@ -120,7 +120,7 @@ public class ConfigurableCacheSyncDistributedTest extends AutoVerifyTestCase {
         oldCacheSyncConfigValues = new Hashtable();
         Enumeration keys = cacheSyncConfigValues.keys();
         while (keys.hasMoreElements()) {
-            Class keyClass = (Class)keys.nextElement();
+            Class<?> keyClass = (Class)keys.nextElement();
             ClassDescriptor descriptor = getSession().getDescriptor(keyClass);
             if (descriptor != null) {
                 int cacheSyncType = descriptor.getCacheSynchronizationType();
@@ -148,7 +148,7 @@ public class ConfigurableCacheSyncDistributedTest extends AutoVerifyTestCase {
         }
         Enumeration keys = oldCacheSyncConfigValues.keys();
         while (keys.hasMoreElements()) {
-            Class keyClass = (Class)keys.nextElement();
+            Class<?> keyClass = (Class)keys.nextElement();
             ClassDescriptor descriptor = getSession().getDescriptor(keyClass);
             int newCacheSyncType = (Integer) oldCacheSyncConfigValues.get(keyClass);
             descriptor.setCacheSynchronizationType(newCacheSyncType);

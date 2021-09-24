@@ -34,7 +34,7 @@ public class XmlValueInternationalPricesTestCases extends JAXBWithJSONTestCases{
 
     public XmlValueInternationalPricesTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { InternationalPricesNoAnnotation.class });
+        setClasses(new Class<?>[] { InternationalPricesNoAnnotation.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

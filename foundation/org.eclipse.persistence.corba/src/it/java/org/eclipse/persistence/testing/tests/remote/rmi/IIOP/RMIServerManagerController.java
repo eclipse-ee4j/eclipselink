@@ -55,7 +55,7 @@ public class RMIServerManagerController extends PortableRemoteObject implements 
         } else {
             try {
                 Class<?> cls = Class.forName(controllerClassName);
-                Class[] parameterTypes = { org.eclipse.persistence.sessions.Session.class };
+                Class<?>[] parameterTypes = { org.eclipse.persistence.sessions.Session.class };
                 Constructor<?> constructor = cls.getConstructor(parameterTypes);
                 Object[] params = { getSession() };
                 controller = (RMIRemoteSessionController)constructor.newInstance(params);

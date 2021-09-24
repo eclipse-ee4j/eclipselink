@@ -55,7 +55,7 @@ public class JAXBTypedListTestCases  extends JAXBListOfObjectsTestCases {
         setControlJSON(JSON_RESOURCE);
         setWriteControlJSON(JSON_WRITE_RESOURCE);
         setWriteControlDocument(XML_RESOURCE_XSI_TYPE);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Company.class;
 
         setClasses(classes);

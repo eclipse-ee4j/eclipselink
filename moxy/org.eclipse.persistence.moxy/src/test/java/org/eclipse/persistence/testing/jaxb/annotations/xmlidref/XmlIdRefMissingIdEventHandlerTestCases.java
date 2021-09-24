@@ -28,7 +28,7 @@ public class XmlIdRefMissingIdEventHandlerTestCases extends JAXBWithJSONTestCase
 
     public XmlIdRefMissingIdEventHandlerTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Owner.class});
+        setClasses(new Class<?>[]{Owner.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         jaxbUnmarshaller.setEventHandler(new MyValidationEventHandler());

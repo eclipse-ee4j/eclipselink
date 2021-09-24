@@ -46,7 +46,7 @@ public class NonRefreshableMetadataTestCases extends TestCase {
         InputStream metadataStream = classLoader.getResourceAsStream(XML_METADATA);
         Map<String, Object> props = new HashMap<String, Object>(1);
         props.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataStream);
-        JAXBContext jc = JAXBContextFactory.createContext(new Class[] {Root.class}, props);
+        JAXBContext jc = JAXBContextFactory.createContext(new Class<?>[] {Root.class}, props);
 
         try {
             JAXBHelper.getJAXBContext(jc).refreshMetadata();

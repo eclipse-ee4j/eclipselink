@@ -37,7 +37,7 @@ public class SchemaGenXmlValueTestCases  extends SchemaGenTestCases {
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
         boolean exception = false;
         try {
-            generateSchema(new Class[]{ MyInvalidClass.class }, outputResolver, null);
+            generateSchema(new Class<?>[]{ MyInvalidClass.class }, outputResolver, null);
         } catch (Exception ex) {
             exception = true;
         }

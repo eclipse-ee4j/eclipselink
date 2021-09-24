@@ -15,6 +15,7 @@
 package org.eclipse.persistence.testing.tests.identitymaps;
 
 import org.eclipse.persistence.internal.identitymaps.HardCacheWeakIdentityMap;
+import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.expressions.*;
@@ -27,7 +28,7 @@ import org.eclipse.persistence.testing.models.employee.domain.*;
  * the end result should be the same.
  */
 public class HardCacheWeakIdentityMapTest extends TestCase {
-    protected Class originalIdentityMapClass = null;
+    protected Class<? extends IdentityMap> originalIdentityMapClass = null;
     protected int originalIdentityMapSize = 0;
     protected Employee firstEmployee = null;
     protected Employee secondEmployee = null;

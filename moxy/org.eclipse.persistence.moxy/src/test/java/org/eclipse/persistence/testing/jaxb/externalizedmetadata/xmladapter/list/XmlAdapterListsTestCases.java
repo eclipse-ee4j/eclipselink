@@ -24,7 +24,7 @@ public class XmlAdapterListsTestCases extends JAXBWithJSONTestCases{
 
     public XmlAdapterListsTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{FooWithBars.class, Bar.class});
+        setClasses(new Class<?>[]{FooWithBars.class, Bar.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }
