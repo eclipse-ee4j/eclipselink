@@ -206,7 +206,6 @@ public class BeanValidationPlugin extends Plugin {
 
     /* ######### CORE FUNCTIONALITY ######### */
     private static final String PATTERN_ANNOTATION_NOT_APPLICABLE = "Facet \"pattern\" was detected on a DOM node with non-string base type. Annotation was not generated, because it is not supported by the Bean Validation specification.";
-    //private final boolean securityEnabled = System.getSecurityManager() != null;
 
     private static final JClass ANNOTATION_VALID;
     private static final JClass ANNOTATION_NOTNULL;

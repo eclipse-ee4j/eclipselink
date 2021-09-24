@@ -82,7 +82,7 @@ public class MarshalCallback {
                 );
                 setBeforeMarshalCallback(beforeMarshal);
             } catch (NoSuchMethodException nsmex) {
-                AbstractSessionLog.getLog().logThrowable(SessionLog.FINE, nsmex);
+                // Ignore this exception
             } catch (Exception ex) {
                 throw new RuntimeException(String.format("Failed initialization of beforeMarshal method of %s class", domainClassName), ex);
             }
@@ -94,7 +94,7 @@ public class MarshalCallback {
                 );
                 setAfterMarshalCallback(afterMarshal);
             } catch (NoSuchMethodException nsmex) {
-                AbstractSessionLog.getLog().logThrowable(SessionLog.FINE, nsmex);
+                // Ignore this exception
             } catch (Exception ex) {
                 throw new RuntimeException(String.format("Failed initialization of afterMarshal method of %s class", domainClassName), ex);
             }

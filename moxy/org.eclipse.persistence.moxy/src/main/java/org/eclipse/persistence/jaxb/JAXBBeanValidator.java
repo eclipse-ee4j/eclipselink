@@ -35,7 +35,7 @@ import jakarta.validation.groups.Default;
 import org.eclipse.persistence.exceptions.BeanValidationException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
-import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 
 /**
@@ -127,7 +127,7 @@ class JAXBBeanValidator {
     private BeanValidationMode beanValidationMode = BeanValidationMode.NONE;
 
     // Local logger instance.
-    private final SessionLog log = AbstractSessionLog.getLog();
+    private final SessionLog log = new DefaultSessionLog();
 
     /**
      * Private constructor. Only to be called by factory methods.
@@ -280,7 +280,7 @@ class JAXBBeanValidator {
      */
     Set<ConstraintViolationWrapper<Object>> getConstraintViolations() {
         Set<ConstraintViolationWrapper<Object>> result = new HashSet<>(constraintViolations.size());
-        for (ConstraintViolation cv : constraintViolations) {
+        for (ConstraintViolation<Object> cv : constraintViolations) {
             result.add(new ConstraintViolationWrapper<>(cv));
         }
         return result;
@@ -384,7 +384,6 @@ class JAXBBeanValidator {
      *
      * @return BeanValidationException, containing ConstraintViolationException.
      */
-    @SuppressWarnings({"RedundantCast", "unchecked"})
     private BeanValidationException buildConstraintViolationException() {
         ConstraintViolationException cve = new ConstraintViolationException(
                 /* Do not remove the cast. */ constraintViolations);
@@ -404,7 +403,7 @@ class JAXBBeanValidator {
         Iterator<? extends ConstraintViolation<?>> iterator = constraintViolations.iterator();
         assert iterator.hasNext(); // this method is to be called only if constraints violations are not empty
         ConstraintViolation<?> cv = iterator.next();
-        Collection<ConstraintViolationInfo> violatedConstraints = new LinkedList<ConstraintViolationInfo>(){
+        Collection<ConstraintViolationInfo> violatedConstraints = new LinkedList<>() {
             @Override
             public String toString() {
                 Iterator<ConstraintViolationInfo> it = iterator();
