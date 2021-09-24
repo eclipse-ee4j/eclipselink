@@ -16,8 +16,6 @@ package org.eclipse.persistence.jaxb.compiler;
 
 import java.awt.Image;
 import java.beans.Introspector;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
@@ -35,6 +33,9 @@ import java.util.SortedSet;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
+import javax.xml.namespace.QName;
+import javax.xml.transform.Source;
+
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlMixed;
@@ -42,8 +43,6 @@ import jakarta.xml.bind.annotation.XmlTransient;
 import jakarta.xml.bind.annotation.XmlValue;
 import jakarta.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.NormalizedStringAdapter;
-import javax.xml.namespace.QName;
-import javax.xml.transform.Source;
 
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.core.descriptors.CoreDescriptor;
@@ -105,7 +104,6 @@ import org.eclipse.persistence.internal.oxm.mappings.VariableXPathObjectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.XMLContainerMapping;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.jaxb.JAXBEnumTypeConverter;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
@@ -2115,42 +2113,22 @@ public class MappingsGenerator {
                     directCollectionMapping.setAttributeAccessor(accessor);
 
                     JavaClass componentType = theType.getComponentType();
-                    try {
-                        Class declaredClass;
-                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                                try {
-                                    declaredClass = AccessController.doPrivileged(new PrivilegedClassForName(componentType.getRawName(), false, helper.getClassLoader()));
-                                } catch (PrivilegedActionException exception) {
-                                    throw JAXBException.classNotFoundException(componentType.getRawName());
-                                }
-                        } else {
-                            declaredClass = PrivilegedAccessHelper.getClassForName(componentType.getRawName(), false, helper.getClassLoader());
-                        }
-                        directCollectionMapping.setAttributeElementClass(declaredClass);
-                    } catch (ClassNotFoundException e) {
-                        throw JAXBException.classNotFoundException(componentType.getRawName());
-                    }
+                    Class<?> declaredClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                            () -> PrivilegedAccessHelper.getClassForName(componentType.getRawName(), false, helper.getClassLoader()),
+                            (ex) -> JAXBException.classNotFoundException(componentType.getRawName())
+                    );
+                    directCollectionMapping.setAttributeElementClass(declaredClass);
                 }
             } else if (helper.isCollectionType(theType)) {
                 Collection args = theType.getActualTypeArguments();
                 if (args.size() > 0) {
-                    JavaClass itemType = (JavaClass)args.iterator().next();
-                    try {
-                        Class declaredClass;
-                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                                try {
-                                    declaredClass = AccessController.doPrivileged(new PrivilegedClassForName(itemType.getRawName(), false, helper.getClassLoader()));
-                                } catch (PrivilegedActionException exception) {
-                                    throw JAXBException.classNotFoundException(itemType.getRawName());
-                                }
-                        } else {
-                            declaredClass = PrivilegedAccessHelper.getClassForName(itemType.getRawName(), false, helper.getClassLoader());
-                        }
-                        if(declaredClass != String.class){
-                            directCollectionMapping.setAttributeElementClass(declaredClass);
-                        }
-                    } catch (ClassNotFoundException e) {
-                        throw JAXBException.classNotFoundException(itemType.getRawName());
+                    JavaClass itemType = (JavaClass) args.iterator().next();
+                    Class<?> declaredClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                            () -> PrivilegedAccessHelper.getClassForName(itemType.getRawName(), false, helper.getClassLoader()),
+                            (ex) -> JAXBException.classNotFoundException(itemType.getRawName())
+                    );
+                    if (declaredClass != String.class) {
+                        directCollectionMapping.setAttributeElementClass(declaredClass);
                     }
                 }
             }
