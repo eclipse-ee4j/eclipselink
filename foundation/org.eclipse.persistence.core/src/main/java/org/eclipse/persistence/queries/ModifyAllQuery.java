@@ -39,7 +39,7 @@ public abstract class ModifyAllQuery extends ModifyQuery {
 
     private int m_cacheUsage = INVALIDATE_CACHE;
 
-    protected Class referenceClass;
+    protected Class<?> referenceClass;
     protected String referenceClassName;
 
     /** Number of modified objects */
@@ -66,7 +66,7 @@ public abstract class ModifyAllQuery extends ModifyQuery {
      * PUBLIC:
      * Create a new update all query for the class specified.
      */
-    protected ModifyAllQuery(Class referenceClass) {
+    protected ModifyAllQuery(Class<?> referenceClass) {
         this();
         setReferenceClass(referenceClass);
     }
@@ -76,7 +76,7 @@ public abstract class ModifyAllQuery extends ModifyQuery {
      * Create a new update all query for the class and the selection criteria
      * specified.
      */
-    protected ModifyAllQuery(Class referenceClass, Expression selectionCriteria) {
+    protected ModifyAllQuery(Class<?> referenceClass, Expression selectionCriteria) {
         this();
         setReferenceClass(referenceClass);
         setSelectionCriteria(selectionCriteria);
@@ -199,7 +199,7 @@ public abstract class ModifyAllQuery extends ModifyQuery {
      * Return the reference class for this query.
      */
     @Override
-    public Class getReferenceClass() {
+    public Class<?> getReferenceClass() {
         return referenceClass;
     }
 
@@ -239,7 +239,7 @@ public abstract class ModifyAllQuery extends ModifyQuery {
      * PUBLIC:
      * Set the reference class this query.
      */
-    public void setReferenceClass(Class referenceClass) {
+    public void setReferenceClass(Class<?> referenceClass) {
         if (this.referenceClass != referenceClass) {
             setIsPrepared(false);
         }

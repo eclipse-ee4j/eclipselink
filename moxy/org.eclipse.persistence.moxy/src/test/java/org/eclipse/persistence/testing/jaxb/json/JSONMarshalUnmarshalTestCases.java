@@ -41,7 +41,7 @@ public abstract class JSONMarshalUnmarshalTestCases extends JSONTestCases{
         super(name);
     }
 
-    public Class getUnmarshalClass(){
+    public Class<?> getUnmarshalClass(){
         return null;
     }
 

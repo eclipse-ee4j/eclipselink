@@ -56,7 +56,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
      * @throws ValidationException when provided type is not valid database type.
      */
     protected static final FieldTypeDefinition getFieldTypeDefinition(
-            final AbstractSession session, final Class type, final String name) {
+            final AbstractSession session, final Class<?> type, final String name) {
         final FieldTypeDefinition fieldType = type != null
                 ? session.getPlatform().getFieldTypeDefinition(type)
                 : new FieldTypeDefinition(name);
@@ -78,7 +78,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
      * @throws ValidationException when provided type is not valid database type.
      */
     protected static final FieldTypeDefinition getFieldTypeDefinition(
-            final DatabasePlatform platform, final Class type, final String name) {
+            final DatabasePlatform platform, final Class<?> type, final String name) {
         FieldTypeDefinition fieldType;
         if (type != null) { //translate Java 'type'
             fieldType = platform.getFieldTypeDefinition(type);

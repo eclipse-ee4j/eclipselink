@@ -39,7 +39,7 @@ public class Vehicle {
         return false;
     }
 
-    public static Class getClassForRow(DataRecord databaseRow) {
+    public static Class<?> getClassForRow(DataRecord databaseRow) {
         return Car.class;
     }
 }

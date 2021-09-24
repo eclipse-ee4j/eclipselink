@@ -54,7 +54,7 @@ public class MethodAttributeAccessor extends AttributeAccessor {
      * Return the return type of the method accessor.
      */
     @Override
-    public Class getAttributeClass() {
+    public Class<?> getAttributeClass() {
         if (getGetMethod() == null) {
             return null;
         }
@@ -123,7 +123,7 @@ public class MethodAttributeAccessor extends AttributeAccessor {
      * A special check is made to determine if a missing method is a result of failed weaving.
      */
     // Note: SDO overrides this method and will handle a null GetMethod
-    public Class getGetMethodReturnType() throws DescriptorException {
+    public Class<?> getGetMethodReturnType() throws DescriptorException {
         // 323403: If the getMethod is missing - check for "_persistence_*_vh" to see if weaving was expected
         if(null == getGetMethod() && null != getGetMethodName()
             && (getGetMethodName().indexOf(Helper.PERSISTENCE_FIELDNAME_PREFIX) > -1)) {
@@ -160,11 +160,11 @@ public class MethodAttributeAccessor extends AttributeAccessor {
         return setMethodName;
     }
 
-    public Class getSetMethodParameterType() {
+    public Class<?> getSetMethodParameterType() {
         return getSetMethodParameterType(0);
     }
 
-    protected Class getSetMethodParameterType(int index) {
+    protected Class<?> getSetMethodParameterType(int index) {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try {
                 return AccessController.doPrivileged(new PrivilegedGetMethodParameterTypes(getSetMethod()))[index];
@@ -177,8 +177,8 @@ public class MethodAttributeAccessor extends AttributeAccessor {
         }
     }
 
-    protected Class[] getSetMethodParameterTypes() {
-        return new Class[] {getGetMethodReturnType()};
+    protected Class<?>[] getSetMethodParameterTypes() {
+        return new Class<?>[] {getGetMethodReturnType()};
     }
 
     /**
@@ -186,7 +186,7 @@ public class MethodAttributeAccessor extends AttributeAccessor {
      * get and set method names
      */
     @Override
-    public void initializeAttributes(Class theJavaClass) throws DescriptorException {
+    public void initializeAttributes(Class<?> theJavaClass) throws DescriptorException {
         initializeAttributes(theJavaClass, null);
     }
 
@@ -194,7 +194,7 @@ public class MethodAttributeAccessor extends AttributeAccessor {
      * Set get and set method after creating these methods by using
      * get and set method names
      */
-    protected void initializeAttributes(Class theJavaClass, Class[] getParameterTypes) throws DescriptorException {
+    protected void initializeAttributes(Class<?> theJavaClass, Class<?>[] getParameterTypes) throws DescriptorException {
         if (getAttributeName() == null) {
             throw DescriptorException.attributeNameNotSpecified();
         }
@@ -291,7 +291,7 @@ public class MethodAttributeAccessor extends AttributeAccessor {
                 // cr 3737  If a null pointer was thrown because EclipseLink attempted to set a null reference into a
                 // primitive creating a primitive of value 0 to set in the object.
                 // Is this really the best place for this? is this not why we have null-value and conversion-manager?
-                Class fieldClass = getSetMethodParameterType();
+                Class<?> fieldClass = getSetMethodParameterType();
 
                 //Found when fixing Bug2910086
                 if (fieldClass.isPrimitive() && (attributeValue == null)) {

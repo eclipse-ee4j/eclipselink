@@ -32,7 +32,7 @@ public class JSONAttributeNoXmlRootElementInheritanceTestCases extends JSONMarsh
     }
 
     @Override
-    public Class getUnmarshalClass(){
+    public Class<?> getUnmarshalClass(){
         return AddressNoRoot.class;
     }
 

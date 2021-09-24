@@ -65,7 +65,7 @@ public class DevelopmentServices {
      * @exception ClassNotFoundException thrown then the IdenityMap for that class name could not be found
      */
     public void initializeIdentityMap(String className) throws ClassNotFoundException {
-        Class classToChange = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
+        Class<?> classToChange = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
         getSession().getIdentityMapAccessorInstance().initializeIdentityMap(classToChange);
     }
 
@@ -87,7 +87,7 @@ public class DevelopmentServices {
      * @exception ClassNotFoundException thrown then the IdenityMap for that class name could not be found
      */
     public void setIdentityMapForClass(String className, String identityMapClassType, int maxSize) throws ClassNotFoundException {
-        Class classToChange = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
+        Class<?> classToChange = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
         Class<IdentityMap> identityMapClass = null;
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try{
@@ -121,7 +121,7 @@ public class DevelopmentServices {
      * @exception ClassNotFoundException thrown then the IdenityMap for that class name could not be found
      */
     public void updateCacheSize(String className, int newSize) throws ClassNotFoundException {
-        Class classToChange = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
+        Class<?> classToChange = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
         getSession().getIdentityMapAccessorInstance().getIdentityMap(classToChange).updateMaxSize(newSize);
     }
 

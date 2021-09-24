@@ -300,7 +300,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
         return xmlBinaryDataMapping.getNullPolicy().getIsSetPerformedForAbsentNode();
     }
 
-    public DataHandler getDataHandlerForObjectValue(Object obj, Class classification) {
+    public DataHandler getDataHandlerForObjectValue(Object obj, Class<?> classification) {
         if (classification == DataHandler.class) {
             return (DataHandler) obj;
         }

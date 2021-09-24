@@ -57,8 +57,8 @@ public class DomHandlerConverter implements XMLConverter {
     private DomHandler domHandler;
     private XMLPlatform xmlPlatform;
     private String domHandlerClassName;
-    private Class elementClass;
-    private Class resultType;
+    private Class<?> elementClass;
+    private Class<?> resultType;
 
     public DomHandlerConverter(String domHandlerClassName) {
         this.domHandlerClassName = domHandlerClassName;
@@ -70,13 +70,13 @@ public class DomHandlerConverter implements XMLConverter {
             ConversionManager cMgr = session.getDatasourcePlatform().getConversionManager();
             Class<? extends DomHandler> domHandlerClass = PrivilegedAccessHelper.getClassForName(domHandlerClassName, true, cMgr.getLoader());
 
-            Constructor<? extends DomHandler> cons = PrivilegedAccessHelper.getDeclaredConstructorFor(domHandlerClass, new Class[]{}, true);
+            Constructor<? extends DomHandler> cons = PrivilegedAccessHelper.getDeclaredConstructorFor(domHandlerClass, new Class<?>[]{}, true);
             this.domHandler = PrivilegedAccessHelper.invokeConstructor(cons, new Object[]{});
 
-            Method createUnmarshallerMethod = PrivilegedAccessHelper.getDeclaredMethod(domHandlerClass, "createUnmarshaller", new Class[]{ValidationEventHandler.class});
+            Method createUnmarshallerMethod = PrivilegedAccessHelper.getDeclaredMethod(domHandlerClass, "createUnmarshaller", new Class<?>[]{ValidationEventHandler.class});
             resultType = PrivilegedAccessHelper.getMethodReturnType(createUnmarshallerMethod);
 
-            Method getElementMethod = PrivilegedAccessHelper.getDeclaredMethod(domHandlerClass, "getElement", new Class[]{resultType});
+            Method getElementMethod = PrivilegedAccessHelper.getDeclaredMethod(domHandlerClass, "getElement", new Class<?>[]{resultType});
             elementClass = PrivilegedAccessHelper.getMethodReturnType(getElementMethod);
 
             xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();

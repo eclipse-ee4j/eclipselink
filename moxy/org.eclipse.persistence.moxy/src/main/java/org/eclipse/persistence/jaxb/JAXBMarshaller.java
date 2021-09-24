@@ -174,7 +174,7 @@ public class JAXBMarshaller implements jakarta.xml.bind.Marshaller {
                 elt.getDeclaredType().getCanonicalName().equals("jakarta.activation.DataHandler") ||
                 elt.getDeclaredType().isEnum()) {
             // need a binary data mapping so need to wrap
-            Class generatedClass = getClassToGeneratedClasses().get(elt.getDeclaredType().getCanonicalName());
+            Class<?> generatedClass = getClassToGeneratedClasses().get(elt.getDeclaredType().getCanonicalName());
             if(!elt.getDeclaredType().isEnum()) {
                 xmlroot.setSchemaType(Constants.BASE_64_BINARY_QNAME);
             }
@@ -193,9 +193,9 @@ public class JAXBMarshaller implements jakarta.xml.bind.Marshaller {
             xmlroot.setObject(elt);
             return xmlroot;
         }
-        Map<QName, Class> qNameToGeneratedClasses = jaxbContext.getQNameToGeneratedClasses();
+        Map<QName, Class<?>> qNameToGeneratedClasses = jaxbContext.getQNameToGeneratedClasses();
         if (qNameToGeneratedClasses != null) {
-            Class theClass = qNameToGeneratedClasses.get(qname);
+            Class<?> theClass = qNameToGeneratedClasses.get(qname);
             if (theClass != null && WrappedValue.class.isAssignableFrom(theClass)) {
                 ClassDescriptor desc = xmlMarshaller.getXMLContext().getSession(theClass).getDescriptor(theClass);
                 Object newObject = desc.getInstantiationPolicy().buildNewInstance();
@@ -205,7 +205,7 @@ public class JAXBMarshaller implements jakarta.xml.bind.Marshaller {
             }
         }
 
-        Class generatedClass = null;
+        Class<?> generatedClass = null;
         if (jaxbContext.getTypeMappingInfoToGeneratedType() != null) {
             if (jaxbContext.getTypeToTypeMappingInfo() != null) {
                 if (elt.getDeclaredType() != null && elt.getDeclaredType().isArray()) {
@@ -391,8 +391,8 @@ public class JAXBMarshaller implements jakarta.xml.bind.Marshaller {
         }
     }
 
-    private Object wrapEnumeration(Object object, Class enumerationClass) {
-        Class generatedClass = this.getClassToGeneratedClasses().get(enumerationClass.getName());
+    private Object wrapEnumeration(Object object, Class<?> enumerationClass) {
+        Class<?> generatedClass = this.getClassToGeneratedClasses().get(enumerationClass.getName());
         if (generatedClass != null && WrappedValue.class.isAssignableFrom(generatedClass)) {
             ClassDescriptor desc = xmlMarshaller.getXMLContext().getSession(generatedClass).getDescriptor(generatedClass);
             Object newObject = desc.getInstantiationPolicy().buildNewInstance();
@@ -684,7 +684,7 @@ public class JAXBMarshaller implements jakarta.xml.bind.Marshaller {
 
     private Object wrapObject(Object object, JAXBElement wrapperElement, TypeMappingInfo typeMappingInfo) {
         if(jaxbContext.getTypeMappingInfoToGeneratedType().size() > 0){
-            Class generatedClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(typeMappingInfo);
+            Class<?> generatedClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(typeMappingInfo);
             if(generatedClass != null && object == null && wrapperElement != null) {
             return wrapObjectInXMLRoot(wrapperElement, null, typeMappingInfo);
             }
@@ -1027,7 +1027,7 @@ public class JAXBMarshaller implements jakarta.xml.bind.Marshaller {
         this.xmlMarshaller.setSchema(schema);
     }
 
-    private Map<String, Class> getClassToGeneratedClasses() {
+    private Map<String, Class<?>> getClassToGeneratedClasses() {
         return jaxbContext.getClassToGeneratedClasses();
     }
 

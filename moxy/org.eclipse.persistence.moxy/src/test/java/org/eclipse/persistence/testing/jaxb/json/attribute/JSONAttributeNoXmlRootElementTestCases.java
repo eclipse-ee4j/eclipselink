@@ -35,7 +35,7 @@ public class JSONAttributeNoXmlRootElementTestCases extends JAXBWithJSONTestCase
     }
 
     @Override
-    public Class getUnmarshalClass(){
+    public Class<?> getUnmarshalClass(){
         return AddressNoRoot.class;
     }
 

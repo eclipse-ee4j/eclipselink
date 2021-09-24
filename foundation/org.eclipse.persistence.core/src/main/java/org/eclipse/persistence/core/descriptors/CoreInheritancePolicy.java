@@ -56,7 +56,7 @@ public abstract class CoreInheritancePolicy<
      * INTERNAL:
      * This method is invoked only for the abstract descriptors.
      */
-    public abstract Class classFromRow(ABSTRACT_RECORD record, ABSTRACT_SESSION session);
+    public abstract Class<?> classFromRow(ABSTRACT_RECORD record, ABSTRACT_SESSION session);
 
     /**
      * INTERNAL:
@@ -101,7 +101,7 @@ public abstract class CoreInheritancePolicy<
      * PUBLIC:
      * Return the parent class.
      */
-    public abstract Class getParentClass();
+    public abstract Class<?> getParentClass();
 
     /**
      * INTERNAL:

@@ -133,7 +133,7 @@ public abstract class DistributedSession extends DatabaseSessionImpl {
      * @see DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
     @Override
-    public Object executeQuery(String queryName, Class domainClass) throws DatabaseException {
+    public Object executeQuery(String queryName, Class<?> domainClass) throws DatabaseException {
         return executeQuery(queryName, domainClass, new Vector(1));
     }
 
@@ -146,7 +146,7 @@ public abstract class DistributedSession extends DatabaseSessionImpl {
      * @see DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
     @Override
-    public Object executeQuery(String queryName, Class domainClass, Vector argumentValues) throws DatabaseException {
+    public Object executeQuery(String queryName, Class<?> domainClass, Vector argumentValues) throws DatabaseException {
         startOperationProfile(SessionProfiler.Remote, null, SessionProfiler.ALL);
         Transporter transporter = getRemoteConnection().remoteExecuteNamedQuery(queryName, domainClass, argumentValues);
         endOperationProfile(SessionProfiler.Remote, null, SessionProfiler.ALL);
@@ -206,7 +206,7 @@ public abstract class DistributedSession extends DatabaseSessionImpl {
      * Return the table descriptor specified for the class.
      */
     @Override
-    public ClassDescriptor getDescriptor(Class domainClass) {
+    public ClassDescriptor getDescriptor(Class<?> domainClass) {
         ClassDescriptor descriptor = getDescriptors().get(domainClass);
 
         // If the descriptor is null then this means that descriptor must now be read from the server.

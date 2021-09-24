@@ -105,7 +105,7 @@ public class CommitOrderDependencyNode {
             DatabaseMapping mapping = mappings.nextElement();
             if (mapping.isForeignReferenceMapping()) {
                 if (mapping.hasConstraintDependency()) {
-                    Class ownedClass;
+                    Class<?> ownedClass;
                     ClassDescriptor refDescriptor = mapping.getReferenceDescriptor();
                     if (refDescriptor == null) {
                         refDescriptor = session.getDescriptor(((ForeignReferenceMapping)mapping).getReferenceClass());
@@ -121,7 +121,7 @@ public class CommitOrderDependencyNode {
                     // I could remove duplicates here, but it's not that big a deal.
                     Helper.addAllToVector(relatedNodes, ownedNodes);
                 } else if (mapping.hasInverseConstraintDependency()) {
-                    Class ownerClass;
+                    Class<?> ownerClass;
                     ClassDescriptor refDescriptor = mapping.getReferenceDescriptor();
                     if (refDescriptor == null) {
                         refDescriptor = session.getDescriptor(((ForeignReferenceMapping)mapping).getReferenceClass());
@@ -149,7 +149,7 @@ public class CommitOrderDependencyNode {
     public void recordSpecifiedDependencies() {
         for (Enumeration constraintsEnum = getDescriptor().getConstraintDependencies().elements();
                  constraintsEnum.hasMoreElements();) {
-            Class ownedClass = (Class)constraintsEnum.nextElement();
+            Class<?> ownedClass = (Class)constraintsEnum.nextElement();
             CommitOrderDependencyNode node = getOwner().nodeFor(ownedClass);
             Vector ownedNodes = withAllSubclasses(node);
 

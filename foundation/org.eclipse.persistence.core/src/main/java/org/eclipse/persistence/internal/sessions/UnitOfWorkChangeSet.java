@@ -42,10 +42,10 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
 
     /** This is the collection of ObjectChanges held by this ChangeSet */
     // *** TODO fix transients *** */
-    protected Map<Class, Map<ObjectChangeSet, ObjectChangeSet>> objectChanges;
+    protected Map<Class<?>, Map<ObjectChangeSet, ObjectChangeSet>> objectChanges;
 
     // This collection holds the new objects which will have no real identity until inserted.
-    protected Map<Class, Map<ObjectChangeSet, ObjectChangeSet>> newObjectChangeSets;
+    protected Map<Class<?>, Map<ObjectChangeSet, ObjectChangeSet>> newObjectChangeSets;
     protected Map<Object, ObjectChangeSet> cloneToObjectChangeSet;
     protected Map<ObjectChangeSet, Object> objectChangeSetToUOWClone;
     protected Map<ObjectChangeSet, ObjectChangeSet> aggregateChangeSets;
@@ -427,7 +427,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      * INTERNAL:
      * Returns the ObjectChanges held by this ChangeSet.
      */
-    public Map<Class, Map<ObjectChangeSet, ObjectChangeSet>> getObjectChanges() {
+    public Map<Class<?>, Map<ObjectChangeSet, ObjectChangeSet>> getObjectChanges() {
         if (objectChanges == null) {
             objectChanges = new HashMap<>();
         }
@@ -690,7 +690,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      * INTERNAL:
      * This method will return a reference to the new object change set collections.
      */
-    public Map<Class, Map<ObjectChangeSet, ObjectChangeSet>> getNewObjectChangeSets() {
+    public Map<Class<?>, Map<ObjectChangeSet, ObjectChangeSet>> getNewObjectChangeSets() {
         if (this.newObjectChangeSets == null) {
             this.newObjectChangeSets = new HashMap<>();
         }

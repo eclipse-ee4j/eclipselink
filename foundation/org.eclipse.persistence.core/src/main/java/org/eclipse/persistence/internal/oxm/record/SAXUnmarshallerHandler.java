@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -200,7 +200,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                 rootQName = new XPathQName(namespaceURI, name, xmlReader.isNamespaceAware() );
             }
 
-            Class primitiveWrapperClass = null;
+            Class<?> primitiveWrapperClass = null;
             Descriptor xmlDescriptor = xmlContext.getDescriptor(rootQName);
 
             //if no match on root element look for xsi:type
@@ -262,7 +262,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                     tmpUnmarshalRecord.setXMLReader(this.getXMLReader());
                     tmpUnmarshalRecord.setAttributes(atts);
 
-                    Class classValue = xmlDescriptor.getInheritancePolicy().classFromRow(new org.eclipse.persistence.oxm.record.UnmarshalRecord(tmpUnmarshalRecord), session);
+                    Class<?> classValue = xmlDescriptor.getInheritancePolicy().classFromRow(new org.eclipse.persistence.oxm.record.UnmarshalRecord(tmpUnmarshalRecord), session);
                     if (classValue == null) {
                        // no xsi:type attribute - look for type indicator on the default root element
                        QName leafElementType = xmlDescriptor.getDefaultRootElementType();
@@ -308,7 +308,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                     this.xmlReader.setContentHandler(documentBuilder);
                     return;
                 }
-                Class unmappedContentHandlerClass = unmarshaller.getUnmappedContentHandlerClass();
+                Class<?> unmappedContentHandlerClass = unmarshaller.getUnmappedContentHandlerClass();
                 if (null == unmappedContentHandlerClass) {
                     throw XMLMarshalException.noDescriptorWithMatchingRootElement(rootQName.toString());
                 } else {

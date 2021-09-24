@@ -26,7 +26,7 @@ public interface CoreAttributeAccessor {
     /**
      * Return the class type of the attribute.
      */
-    Class getAttributeClass();
+    Class<?> getAttributeClass();
 
     /**
      * INTERNAL:
@@ -42,7 +42,7 @@ public interface CoreAttributeAccessor {
     /**
      * Allow any initialization to be performed with the descriptor class.
      */
-    void initializeAttributes(Class descriptorClass) throws DescriptorException;
+    void initializeAttributes(Class<?> descriptorClass) throws DescriptorException;
 
     boolean isInstanceVariableAttributeAccessor();
 

@@ -38,11 +38,11 @@ import org.w3c.dom.Node;
 @SuppressWarnings({"rawtypes"})
 public class CoreClassConstants {
 
-    public static final Class ABYTE = Byte[].class;
-    public static final Class APBYTE = byte[].class;
-    public static final Class APCHAR = char[].class;
-    public static final Class ASTRING = String[].class;
-    public static final Class ArrayList_class = ArrayList.class;
+    public static final Class<?> ABYTE = Byte[].class;
+    public static final Class<?> APBYTE = byte[].class;
+    public static final Class<?> APCHAR = char[].class;
+    public static final Class<?> ASTRING = String[].class;
+    public static final Class<?> ArrayList_class = ArrayList.class;
     public static final Class<BigDecimal> BIGDECIMAL = BigDecimal.class;
     public static final Class<BigInteger> BIGINTEGER = BigInteger.class;
     public static final Class<Boolean> BOOLEAN = Boolean.class;

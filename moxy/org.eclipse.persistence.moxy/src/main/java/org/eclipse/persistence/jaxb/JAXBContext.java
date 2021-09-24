@@ -370,7 +370,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
         }
     }
 
-    public void generateJsonSchema(SchemaOutputResolver outputResolver, Class rootClass) {
+    public void generateJsonSchema(SchemaOutputResolver outputResolver, Class<?> rootClass) {
         JsonSchemaGenerator generator = new JsonSchemaGenerator(this, this.contextState.properties);
         JsonSchema schema = generator.generateSchema(rootClass);
         try {
@@ -383,7 +383,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
 
     private Marshaller getJsonSchemaMarshaller() throws jakarta.xml.bind.JAXBException {
         if (this.jsonSchemaMarshaller == null) {
-            JAXBContext ctx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { JsonSchema.class }, null);
+            JAXBContext ctx = (JAXBContext) JAXBContextFactory.createContext(new Class<?>[] { JsonSchema.class }, null);
             this.jsonSchemaMarshaller = ctx.createMarshaller();
             this.jsonSchemaMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
             this.jsonSchemaMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
@@ -483,7 +483,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
      * INTERNAL:
      * Set the map containing which QName corresponds to which generated class.
      */
-    public void setQNameToGeneratedClasses(HashMap<QName, Class> qNameToClass) {
+    public void setQNameToGeneratedClasses(HashMap<QName, Class<?>> qNameToClass) {
         contextState.setQNameToGeneratedClasses(qNameToClass);
     }
 
@@ -491,7 +491,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
      * INTERNAL:
      * Get the map containing which Class (by name) corresponds to which generated class.
      */
-    public Map<String, Class> getClassToGeneratedClasses() {
+    public Map<String, Class<?>> getClassToGeneratedClasses() {
         return contextState.getClassToGeneratedClasses();
     }
 
@@ -499,7 +499,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
      * INTERNAL:
      * Set the map containing which Class (by name) corresponds to which generated class.
      */
-    public void setClassToGeneratedClasses(HashMap<String, Class> classToClass) {
+    public void setClassToGeneratedClasses(HashMap<String, Class<?>> classToClass) {
         contextState.setClassToGeneratedClasses(classToClass);
     }
 
@@ -515,7 +515,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
      * INTERNAL:
      * Get the map of which QName corresponds to which declared class.
      */
-    public Map<QName, Class> getQNamesToDeclaredClasses() {
+    public Map<QName, Class<?>> getQNamesToDeclaredClasses() {
         return contextState.getQNamesToDeclaredClasses();
     }
 
@@ -523,7 +523,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
      * INTERNAL:
      * Get the map of which QName corresponds to which generated class.
      */
-    Map<QName, Class> getQNameToGeneratedClasses() {
+    Map<QName, Class<?>> getQNameToGeneratedClasses() {
         return contextState.getQNameToGeneratedClasses();
     }
 
@@ -531,7 +531,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
      *  INTERNAL:
      *  Set the map of which QName corresponds to which declared class.
      */
-    public void setQNamesToDeclaredClasses(HashMap<QName, Class> nameToDeclaredClasses) {
+    public void setQNamesToDeclaredClasses(HashMap<QName, Class<?>> nameToDeclaredClasses) {
         contextState.setQNamesToDeclaredClasses(nameToDeclaredClasses);
     }
 
@@ -539,7 +539,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
      * INTERNAL:
      * Get the map for which array class (by name) corresponds to which generated class
      */
-    public Map<String, Class> getArrayClassesToGeneratedClasses() {
+    public Map<String, Class<?>> getArrayClassesToGeneratedClasses() {
         if (contextState.getGenerator() == null) {
             return null;
         }
@@ -550,7 +550,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
      * INTERNAL:
      * Get the map for which collection class (by Type) corresponds to which generated class
      */
-    public Map<Type, Class> getCollectionClassesToGeneratedClasses() {
+    public Map<Type, Class<?>> getCollectionClassesToGeneratedClasses() {
         if (contextState.getGenerator() == null) {
             return null;
         }
@@ -590,7 +590,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
         return contextState.getTypeToSchemaType();
     }
 
-    Map<TypeMappingInfo, Class> getTypeMappingInfoToGeneratedType() {
+    Map<TypeMappingInfo, Class<?>> getTypeMappingInfoToGeneratedType() {
         return contextState.getTypeMappingInfoToGeneratedType();
     }
 
@@ -608,9 +608,9 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
 
     static class RootLevelXmlAdapter {
         private XmlAdapter xmlAdapter;
-        private Class boundType;
+        private Class<?> boundType;
 
-        public RootLevelXmlAdapter(XmlAdapter adapter, Class boundType) {
+        public RootLevelXmlAdapter(XmlAdapter adapter, Class<?> boundType) {
             this.xmlAdapter = adapter;
             this.boundType = boundType;
         }
@@ -619,7 +619,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
             return xmlAdapter;
         }
 
-        public Class getBoundType() {
+        public Class<?> getBoundType() {
             return boundType;
         }
 
@@ -627,7 +627,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
             this.xmlAdapter = xmlAdapter;
         }
 
-        public void setBoundType(Class boundType) {
+        public void setBoundType(Class<?> boundType) {
             this.boundType = boundType;
         }
     }
@@ -714,7 +714,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
         return getXMLContext().createByXPath(parentObject, xPath, namespaceResolver, returnType);
     }
 
-    public ObjectGraph createObjectGraph(Class type) {
+    public ObjectGraph createObjectGraph(Class<?> type) {
         CoreAttributeGroup group = new CoreAttributeGroup(null, type, true);
         return new ObjectGraphImpl(group);
     }
@@ -729,7 +729,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
         }
     }
 
-    protected JAXBElement createJAXBElementFromXMLRoot(Root xmlRoot, Class declaredType) {
+    protected JAXBElement createJAXBElementFromXMLRoot(Root xmlRoot, Class<?> declaredType) {
         Object value = xmlRoot.getObject();
 
         if (value instanceof List) {
@@ -751,22 +751,22 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
 
         QName qname = new QName(xmlRoot.getNamespaceURI(), xmlRoot.getLocalName());
 
-        Map<QName, Class> qNamesToDeclaredClasses = getQNamesToDeclaredClasses();
+        Map<QName, Class<?>> qNamesToDeclaredClasses = getQNamesToDeclaredClasses();
         if (qNamesToDeclaredClasses != null && qNamesToDeclaredClasses.size() > 0) {
-            Class declaredClass = qNamesToDeclaredClasses.get(qname);
+            Class<?> declaredClass = qNamesToDeclaredClasses.get(qname);
             if (declaredClass != null) {
                 return createJAXBElement(qname, declaredClass, value);
             }
         }
 
-        Class xmlRootDeclaredType = xmlRoot.getDeclaredType();
+        Class<?> xmlRootDeclaredType = xmlRoot.getDeclaredType();
         if (xmlRootDeclaredType != null) {
             return createJAXBElement(qname, xmlRootDeclaredType, value);
         }
         return createJAXBElement(qname, declaredType, value);
     }
 
-    protected JAXBElement createJAXBElement(QName qname, Class theClass, Object value) {
+    protected JAXBElement createJAXBElement(QName qname, Class<?> theClass, Object value) {
         if (theClass == null) {
             return new JAXBElement(qname, Object.class, value);
         }
@@ -865,7 +865,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
         @Override
         protected JAXBContextState createContextState() throws jakarta.xml.bind.JAXBException {
             boolean foundMetadata = false;
-            List<Class> classes = new ArrayList<>();
+            List<Class<?>> classes = new ArrayList<>();
 
             // Check properties map for eclipselink-oxm.xml entries
             Map<String, XmlBindings> xmlBindingMap = JAXBContextFactory.getXmlBindingsFromProperties(properties, classLoader);
@@ -916,7 +916,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
                 }
             }
             if (foundMetadata) {
-                Class[] classArray = new Class[classes.size()];
+                Class<?>[] classArray = new Class<?>[classes.size()];
                 for (int i = 0; i < classes.size(); i++) {
                     classArray[i] = classes.get(i);
                 }
@@ -944,7 +944,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
          * based on method parameters.  This method is useful when JAXB is used as
          * the binding layer for a Web Service provider.
          */
-        private JAXBContextState createContextState(Class[] classesToBeBound, Map<String, XmlBindings> xmlBindings) throws jakarta.xml.bind.JAXBException {
+        private JAXBContextState createContextState(Class<?>[] classesToBeBound, Map<String, XmlBindings> xmlBindings) throws jakarta.xml.bind.JAXBException {
             JaxbClassLoader loader = PrivilegedAccessHelper.shouldUsePrivilegedAccess()
                     ? AccessController.doPrivileged(new PrivilegedAction<JaxbClassLoader>() {
                         @Override
@@ -1033,8 +1033,8 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
          * Convenience method that returns an array of Classes based on a map given XmlBindings and an
          * array of existing classes. The resulting array will not contain duplicate entries.
          */
-        private List<Class> getXmlBindingsClassesFromMap(Map<String, XmlBindings> xmlBindingMap, ClassLoader classLoader, List<Class> existingClasses) {
-            List<Class> additionalClasses = existingClasses;
+        private List<Class<?>> getXmlBindingsClassesFromMap(Map<String, XmlBindings> xmlBindingMap, ClassLoader classLoader, List<Class<?>> existingClasses) {
+            List<Class<?>> additionalClasses = existingClasses;
             // for each xmlBindings
             for (Entry<String, XmlBindings> entry : xmlBindingMap.entrySet()) {
                 additionalClasses = getXmlBindingsClasses(entry.getValue(), classLoader, additionalClasses);
@@ -1046,8 +1046,8 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
          * Convenience method that returns a list of Classes based on a given XmlBindings and an array
          * of existing classes. The resulting array will not contain duplicate entries.
          */
-        private List<Class> getXmlBindingsClasses(XmlBindings xmlBindings, ClassLoader classLoader, List<Class> existingClasses) {
-            List<Class> additionalClasses = existingClasses;
+        private List<Class<?>> getXmlBindingsClasses(XmlBindings xmlBindings, ClassLoader classLoader, List<Class<?>> existingClasses) {
+            List<Class<?>> additionalClasses = existingClasses;
             JavaTypes jTypes = xmlBindings.getJavaTypes();
             if (jTypes != null) {
                 for (JavaType javaType : jTypes.getJavaType()) {
@@ -1064,9 +1064,9 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
             return additionalClasses;
         }
 
-        private boolean isJAXB2ObjectFactory(Class objectFactoryClass, ClassLoader classLoader) {
+        private boolean isJAXB2ObjectFactory(Class<?> objectFactoryClass, ClassLoader classLoader) {
             try {
-                Class<Object> xmlRegistry = PrivilegedAccessHelper.getClassForName("jakarta.xml.bind.annotation.XmlRegistry", false, classLoader);
+                Class xmlRegistry = PrivilegedAccessHelper.getClassForName("jakarta.xml.bind.annotation.XmlRegistry", false, classLoader);
                 if (objectFactoryClass.isAnnotationPresent(xmlRegistry)) {
                     return true;
                 }
@@ -1102,7 +1102,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
                     if (type instanceof Class) {
                         return ((Class)type).getCanonicalName();
                     } else if (type instanceof GenericArrayType) {
-                        Class genericTypeClass = (Class) ((GenericArrayType) type).getGenericComponentType();
+                        Class<?> genericTypeClass = (Class) ((GenericArrayType) type).getGenericComponentType();
                         return genericTypeClass.getCanonicalName();
                     } else {
                         // assume parameterized type
@@ -1214,7 +1214,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
             for (TypeMappingInfo typeMappingInfo : typesToBeBound) {
                 Type classToLookup = typeMappingInfo.getType();
                 if (contextState.getTypeMappingInfoToGeneratedType() != null && contextState.getTypeMappingInfoToGeneratedType().size() > 0) {
-                    Class generatedClass = contextState.getTypeMappingInfoToGeneratedType().get(typeMappingInfo);
+                    Class<?> generatedClass = contextState.getTypeMappingInfoToGeneratedType().get(typeMappingInfo);
                     if (generatedClass != null) {
                         classToLookup = generatedClass;
                     }
@@ -1235,7 +1235,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
         private static TypeMappingInfo[] getXmlBindingsClasses(XmlBindings xmlBindings, ClassLoader classLoader, TypeMappingInfo[] existingTypes) {
             JavaTypes jTypes = xmlBindings.getJavaTypes();
             if (jTypes != null) {
-                List<Class> existingClasses = new ArrayList<>(existingTypes.length);
+                List<Class<?>> existingClasses = new ArrayList<>(existingTypes.length);
                 for (TypeMappingInfo typeMappingInfo : existingTypes) {
                     Type type = typeMappingInfo.getType();
                     if (type == null) {
@@ -1243,7 +1243,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
                     }
                     // ignore ParameterizedTypes
                     if (type instanceof Class) {
-                        Class cls = (Class) type;
+                        Class<?> cls = (Class) type;
                         existingClasses.add(cls);
                     }
                 }
@@ -1278,12 +1278,12 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
 
         private XMLContext xmlContext;
         private org.eclipse.persistence.jaxb.compiler.Generator generator;
-        private Map<QName, Class> qNameToGeneratedClasses;
-        private Map<String, Class> classToGeneratedClasses;
-        private Map<QName, Class> qNamesToDeclaredClasses;
+        private Map<QName, Class<?>> qNameToGeneratedClasses;
+        private Map<String, Class<?>> classToGeneratedClasses;
+        private Map<QName, Class<?>> qNamesToDeclaredClasses;
         private Map<Type, QName> typeToSchemaType;
         private TypeMappingInfo[] boundTypes;
-        private Map<TypeMappingInfo, Class> typeMappingInfoToGeneratedType;
+        private Map<TypeMappingInfo, Class<?>> typeMappingInfoToGeneratedType;
         private Map<Type, TypeMappingInfo> typeToTypeMappingInfo;
         private Map<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter> typeMappingInfoToJavaTypeAdapters;
         private Map properties;
@@ -1327,14 +1327,14 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
             }
         }
 
-        private Map<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter> createAdaptersForAdapterClasses(Map<TypeMappingInfo, Class> typeMappingInfoToAdapterClasses) {
+        private Map<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter> createAdaptersForAdapterClasses(Map<TypeMappingInfo, Class<?>> typeMappingInfoToAdapterClasses) {
             Map<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter> typeMappingInfoToAdapters = new HashMap<>();
-            for (Entry<TypeMappingInfo, Class> entry : typeMappingInfoToAdapterClasses.entrySet()) {
-                Class adapterClass = entry.getValue();
+            for (Entry<TypeMappingInfo, Class<?>> entry : typeMappingInfoToAdapterClasses.entrySet()) {
+                Class<?> adapterClass = entry.getValue();
                 if (adapterClass != null) {
                     try {
                         XmlAdapter adapter = (XmlAdapter) adapterClass.getConstructor().newInstance();
-                        Class boundType = getBoundTypeForXmlAdapterClass(adapterClass);
+                        Class<?> boundType = getBoundTypeForXmlAdapterClass(adapterClass);
                         RootLevelXmlAdapter rootLevelXmlAdapter = new RootLevelXmlAdapter(adapter, boundType);
 
                         typeMappingInfoToAdapters.put(entry.getKey(), rootLevelXmlAdapter);
@@ -1345,7 +1345,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
             return typeMappingInfoToAdapters;
         }
 
-        private Class getBoundTypeForXmlAdapterClass(Class adapterClass) {
+        private Class<?> getBoundTypeForXmlAdapterClass(Class<?> adapterClass) {
             Class<Object> boundType = Object.class;
 
             for (Method method : PrivilegedAccessHelper.getDeclaredMethods(adapterClass)) {
@@ -1374,7 +1374,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
         private void processRefClasses(List processed, Set refClasses, org.eclipse.persistence.internal.oxm.NamespaceResolver nr) {
             if (refClasses != null) {
                 for (Object refClass : refClasses) {
-                    Class nextClass = (Class) refClass;
+                    Class<?> nextClass = (Class) refClass;
                     Descriptor desc = (Descriptor) xmlContext.getSession().getProject().getDescriptor(nextClass);
                     processXMLDescriptor(processed, desc, nr);
                 }
@@ -1432,7 +1432,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
             }
         }
 
-        private Map<String, Class> getClassToGeneratedClasses() {
+        private Map<String, Class<?>> getClassToGeneratedClasses() {
             return classToGeneratedClasses;
         }
 
@@ -1451,7 +1451,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
             return typeToSchemaType;
         }
 
-        private Map<TypeMappingInfo, Class> getTypeMappingInfoToGeneratedType() {
+        private Map<TypeMappingInfo, Class<?>> getTypeMappingInfoToGeneratedType() {
             return this.typeMappingInfoToGeneratedType;
         }
 
@@ -1470,7 +1470,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
             return generator.getAnnotationsProcessor().getTypeMappingInfosToSchemaTypes();
         }
 
-        private Map<QName, Class> getQNamesToDeclaredClasses() {
+        private Map<QName, Class<?>> getQNamesToDeclaredClasses() {
             return qNamesToDeclaredClasses;
         }
 
@@ -1487,7 +1487,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
             if (type instanceof Class) {
                 name = generator.getAnnotationsProcessor().getUserDefinedSchemaTypes().get(((Class) type).getName());
                 if (name == null) {
-                    Class theClass = (Class) type;
+                    Class<?> theClass = (Class) type;
                     //Change default for byte[] to Base64 (JAXB 2.0 default)
                     if (type == CoreClassConstants.ABYTE || type == CoreClassConstants.APBYTE || type == Image.class || type == Source.class || theClass.getCanonicalName().equals("jakarta.activation.DataHandler")) {
                         name = Constants.BASE_64_BINARY_QNAME;
@@ -1503,7 +1503,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
             return name;
         }
 
-        private Map<QName, Class> getQNameToGeneratedClasses() {
+        private Map<QName, Class<?>> getQNameToGeneratedClasses() {
             return qNameToGeneratedClasses;
         }
 
@@ -1537,7 +1537,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
                             }
 
                             if (type == null && getTypeMappingInfoToGeneratedType() != null) {
-                                for (Entry<TypeMappingInfo, Class> entry : getTypeMappingInfoToGeneratedType().entrySet()) {
+                                for (Entry<TypeMappingInfo, Class<?>> entry : getTypeMappingInfoToGeneratedType().entrySet()) {
                                     if (entry.getValue().equals(javaClass)) {
                                         type = entry.getKey().getType();
                                         break;
@@ -1570,7 +1570,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
             }
         }
 
-        private void setClassToGeneratedClasses(HashMap<String, Class> classToClass) {
+        private void setClassToGeneratedClasses(HashMap<String, Class<?>> classToClass) {
             this.classToGeneratedClasses = classToClass;
         }
 
@@ -1585,11 +1585,11 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
             this.typeMappingInfoToJavaTypeAdapters = typeMappingInfoToAdapters;
         }
 
-        private void setQNamesToDeclaredClasses(HashMap<QName, Class> nameToDeclaredClasses) {
+        private void setQNamesToDeclaredClasses(HashMap<QName, Class<?>> nameToDeclaredClasses) {
             qNamesToDeclaredClasses = nameToDeclaredClasses;
         }
 
-        private void setQNameToGeneratedClasses(Map<QName, Class> qNameToClass) {
+        private void setQNameToGeneratedClasses(Map<QName, Class<?>> qNameToClass) {
             this.qNameToGeneratedClasses = qNameToClass;
         }
 
@@ -1705,7 +1705,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
 
     private static void openToCore(JavaModelInputImpl input) {
         JavaClass[] javaClasses = input.getJavaClasses();
-        Set<Class> classes = new HashSet<>();
+        Set<Class<?>> classes = new HashSet<>();
         for (JavaClass jc: javaClasses) {
             classes.add(((JavaClassImpl) jc).getJavaClass());
         }
@@ -1715,13 +1715,13 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
     //we need to open what has been opened to us either directly
     //or by jakarta.xml.bind API also to core on which we depend
     //to allow reflection access to code we use from that module
-    private static void openToCore(Collection<Class> classes) {
+    private static void openToCore(Collection<Class<?>> classes) {
         // need to open to core IF we're not eclipselink.jar
         if (NEEDS_OPEN) {
             final Module moxyModule = JAXBContext.class.getModule();
             final Module coreModule = Version.class.getModule();
-            for (Class cls : classes) {
-                Class jaxbClass = cls.isArray()
+            for (Class<?> cls : classes) {
+                Class<?> jaxbClass = cls.isArray()
                         ? cls.getComponentType() : cls;
 
                 final Module classModule = jaxbClass.getModule();

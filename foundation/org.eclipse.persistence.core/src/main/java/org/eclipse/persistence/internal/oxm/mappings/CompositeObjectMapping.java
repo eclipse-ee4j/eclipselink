@@ -49,7 +49,7 @@ public interface CompositeObjectMapping<
      * PUBLIC:
      * Returns the reference class
      */
-    Class getReferenceClass();
+    Class<?> getReferenceClass();
 
     String getReferenceClassName();
 
@@ -71,7 +71,7 @@ public interface CompositeObjectMapping<
     /**
      * This is a reference class whose instances this mapping will store in the domain objects.
      */
-    void setReferenceClass(Class aClass);
+    void setReferenceClass(Class<?> aClass);
 
     void setReferenceClassName(String aClassName);
 

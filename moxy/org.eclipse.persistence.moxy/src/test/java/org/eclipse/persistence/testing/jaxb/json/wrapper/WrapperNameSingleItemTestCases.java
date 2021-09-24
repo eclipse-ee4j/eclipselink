@@ -60,7 +60,7 @@ public class WrapperNameSingleItemTestCases extends JSONMarshalUnmarshalTestCase
     }
 
     @Override
-    public Class getUnmarshalClass() {
+    public Class<?> getUnmarshalClass() {
         return Company.class;
     }
 

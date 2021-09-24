@@ -41,11 +41,11 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
     protected DatabaseMapping mapping;
 
     /** Field type */
-    protected Class dataClass;
+    protected Class<?> dataClass;
     protected String dataClassName;
 
     /** Object type */
-    protected Class objectClass;
+    protected Class<?> objectClass;
     protected String objectClassName;
 
     /**
@@ -72,8 +72,8 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
-        Class dataClass = null;
-        Class objectClass = null;
+        Class<?> dataClass = null;
+        Class<?> objectClass = null;
         try{
             if (dataClassName != null){
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
@@ -136,7 +136,7 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
      * PUBLIC:
      * Returns the class type of the object value.
      */
-    public Class getObjectClass() {
+    public Class<?> getObjectClass() {
         return objectClass;
     }
 
@@ -155,7 +155,7 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
      * PUBLIC:
      * Returns the class type of the data value.
      */
-    public Class getDataClass() {
+    public Class<?> getDataClass() {
         return dataClass;
     }
 
@@ -174,7 +174,7 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
      * PUBLIC:
      * Set the class type of the data value.
      */
-    public void setDataClass(Class dataClass) {
+    public void setDataClass(Class<?> dataClass) {
         this.dataClass = dataClass;
     }
 
@@ -190,7 +190,7 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
      * PUBLIC:
      * Set the class type of the object value.
      */
-    public void setObjectClass(Class objectClass) {
+    public void setObjectClass(Class<?> objectClass) {
         this.objectClass = objectClass;
     }
 

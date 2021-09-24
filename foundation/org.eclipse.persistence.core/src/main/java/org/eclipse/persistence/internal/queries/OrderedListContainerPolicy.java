@@ -84,7 +84,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
      * INTERNAL:
      * Construct a new policy for the specified class.
      */
-    public OrderedListContainerPolicy(Class containerClass) {
+    public OrderedListContainerPolicy(Class<?> containerClass) {
         super(containerClass);
     }
 

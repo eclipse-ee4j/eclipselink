@@ -64,7 +64,7 @@ public class DeleteAllQuery extends ModifyAllQuery {
      * PUBLIC:
      * Create a new delete all query for the class specified.
      */
-    public DeleteAllQuery(Class referenceClass) {
+    public DeleteAllQuery(Class<?> referenceClass) {
         super(referenceClass);
     }
 
@@ -73,7 +73,7 @@ public class DeleteAllQuery extends ModifyAllQuery {
      * Create a new delete all query for the class and the selection criteria
      * specified.
      */
-    public DeleteAllQuery(Class referenceClass, Expression selectionCriteria) {
+    public DeleteAllQuery(Class<?> referenceClass, Expression selectionCriteria) {
         super(referenceClass, selectionCriteria);
     }
 

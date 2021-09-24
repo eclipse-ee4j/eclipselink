@@ -93,7 +93,7 @@ public class DatabaseException extends EclipseLinkException {
         return databaseException;
     }
 
-    public static DatabaseException configurationErrorNewInstanceIllegalAccessException(IllegalAccessException exception, Class javaClass) {
+    public static DatabaseException configurationErrorNewInstanceIllegalAccessException(IllegalAccessException exception, Class<?> javaClass) {
         Object[] args = { javaClass };
 
         DatabaseException databaseException = new DatabaseException(ExceptionMessageGenerator.buildMessage(DatabaseException.class, CONFIGURATION_ERROR_NEW_INSTANCE_ILLEGAL_ACCESS_EXCEPTION, args));
@@ -102,7 +102,7 @@ public class DatabaseException extends EclipseLinkException {
         return databaseException;
     }
 
-    public static DatabaseException configurationErrorNewInstanceInstantiationException(InstantiationException exception, Class javaClass) {
+    public static DatabaseException configurationErrorNewInstanceInstantiationException(InstantiationException exception, Class<?> javaClass) {
         Object[] args = { javaClass };
 
         DatabaseException databaseException = new DatabaseException(ExceptionMessageGenerator.buildMessage(DatabaseException.class, CONFIGURATION_ERROR_NEW_INSTANCE_INSTANTIATION_EXCEPTION, args));

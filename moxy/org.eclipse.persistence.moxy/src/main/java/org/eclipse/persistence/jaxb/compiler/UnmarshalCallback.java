@@ -42,7 +42,7 @@ import org.eclipse.persistence.internal.security.PrivilegedGetMethod;
  *  @see org.eclipse.persistence.jaxb.JAXBUnmarshaller
  */
 public class UnmarshalCallback {
-    private Class domainClass;
+    private Class<?> domainClass;
     private String domainClassName;
     private Method afterUnmarshalCallback;
     private Method beforeUnmarshalCallback;
@@ -57,7 +57,7 @@ public class UnmarshalCallback {
         return beforeUnmarshalCallback;
     }
 
-    public Class getDomainClass() {
+    public Class<?> getDomainClass() {
         return domainClass;
     }
 
@@ -80,7 +80,7 @@ public class UnmarshalCallback {
         } catch (ClassNotFoundException ex) {
             return;
         }
-        Class[] params = new Class[]{ Unmarshaller.class, Object.class };
+        Class<?>[] params = new Class<?>[]{ Unmarshaller.class, Object.class };
         if (hasBeforeUnmarshalCallback) {
             try {
                 Method beforeUnmarshal = null;
@@ -148,7 +148,7 @@ public class UnmarshalCallback {
      * the set value with Class.forName(domainClassName)
      *
      */
-    public void setDomainClass(Class clazz) {
+    public void setDomainClass(Class<?> clazz) {
         domainClass = clazz;
         setDomainClassName(clazz.getName());
     }

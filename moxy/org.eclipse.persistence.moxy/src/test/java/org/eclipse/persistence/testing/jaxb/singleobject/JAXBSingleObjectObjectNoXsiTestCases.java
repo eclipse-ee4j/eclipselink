@@ -110,7 +110,7 @@ public class JAXBSingleObjectObjectNoXsiTestCases extends JAXBWithJSONTestCases 
         return Object.class;
     }
     @Override
-    public Class getUnmarshalClass(){
+    public Class<?> getUnmarshalClass(){
         return Object.class;
     }
 

@@ -45,7 +45,7 @@ public interface DirectCollectionMapping<
      * This is optional - if left null, the elements will be added
      * to the object's collection unconverted.
      */
-    Class getAttributeElementClass();
+    Class<?> getAttributeElementClass();
 
     AbstractNullPolicy getNullPolicy();
 
@@ -68,7 +68,7 @@ public interface DirectCollectionMapping<
      * This is optional - if left null, the elements will be added
      * to the object's collection unconverted.
      */
-    void setAttributeElementClass(Class attributeElementClass);
+    void setAttributeElementClass(Class<?> attributeElementClass);
 
     /**
      * Indicates that this mapping should collapse all string values before adding them
@@ -90,7 +90,7 @@ public interface DirectCollectionMapping<
       * This is optional - if left null, the elements will be added
       * to the database row's collection unconverted.
       */
-     void setFieldElementClass(Class fieldElementClass);
+     void setFieldElementClass(Class<?> fieldElementClass);
 
     void setIsCDATA(boolean CDATA);
 

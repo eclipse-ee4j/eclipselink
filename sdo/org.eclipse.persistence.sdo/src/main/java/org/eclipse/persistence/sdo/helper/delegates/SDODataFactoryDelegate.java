@@ -51,6 +51,7 @@ public class SDODataFactoryDelegate implements SDODataFactory {
     }
 
     @Override
+    @SuppressWarnings({"rawtypes"})
     public DataObject create(Class interfaceClass) {
         if (interfaceClass == null) {
             throw new IllegalArgumentException(SDOException.cannotPerformOperationWithNullInputParameter("create", "interfaceClass"));
@@ -105,7 +106,7 @@ public class SDODataFactoryDelegate implements SDODataFactory {
             sdoType = (SDOType) sth.getWrappersHashMap().get(sdoType.getQName());
         }
 
-        Class implClass;
+        Class<?> implClass;
         try {
             implClass = sdoType.getImplClass();
             if (implClass != null) {

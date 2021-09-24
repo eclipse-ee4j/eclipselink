@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,20 +48,20 @@ public class MethodBasedFieldTransformer implements FieldTransformer {
     @Override
     public void initialize(AbstractTransformationMapping mapping) {
         this.mapping = mapping;
-        final Class javaClass = this.mapping.getDescriptor().getJavaClass();
+        final Class<?> javaClass = this.mapping.getDescriptor().getJavaClass();
         try {
             // look for the zero-argument version first
-            fieldTransformationMethod = Helper.getDeclaredMethod(javaClass, methodName, new Class[0]);
+            fieldTransformationMethod = Helper.getDeclaredMethod(javaClass, methodName, new Class<?>[0]);
         } catch (NoSuchMethodException ex) {
             try {
                 // if the zero-argument version is not there, look for the one-argument version
-                Class[] methodParameterTypes = new Class[1];
+                Class<?>[] methodParameterTypes = new Class<?>[1];
                 methodParameterTypes[0] = ClassConstants.PublicInterfaceSession_Class;
                 fieldTransformationMethod = Helper.getDeclaredMethod(javaClass, methodName, methodParameterTypes);
             } catch (NoSuchMethodException ex2) {
                 try {
                     //if the one-argument version is absent, try with sessions.Session
-                    Class[] methodParameterTypes = new Class[1];
+                    Class<?>[] methodParameterTypes = new Class<?>[1];
                     methodParameterTypes[0] = ClassConstants.SessionsSession_Class;
                     fieldTransformationMethod = Helper.getDeclaredMethod(javaClass, methodName, methodParameterTypes);
                 } catch (NoSuchMethodException exception) {
@@ -81,7 +81,7 @@ public class MethodBasedFieldTransformer implements FieldTransformer {
      * Return the Java class type of the field value.
      * This uses the method return type.
      */
-    public Class getFieldType() {
+    public Class<?> getFieldType() {
         if (this.fieldTransformationMethod != null) {
             return this.fieldTransformationMethod.getReturnType();
         }
@@ -90,7 +90,7 @@ public class MethodBasedFieldTransformer implements FieldTransformer {
 
     @Override
     public Object buildFieldValue(Object object, String fieldName, Session session) {
-        Class[] parameterTypes = null;
+        Class<?>[] parameterTypes = null;
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try{
                 parameterTypes = AccessController.doPrivileged(new PrivilegedGetMethodParameterTypes(fieldTransformationMethod));

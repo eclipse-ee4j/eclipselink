@@ -40,7 +40,7 @@ public class WithXmlRootElementJAXBElementNoRootTestCases extends JSONMarshalUnm
     }
 
     @Override
-    public Class getUnmarshalClass(){
+    public Class<?> getUnmarshalClass(){
         return WithXmlRootElementRoot.class;
     }
 

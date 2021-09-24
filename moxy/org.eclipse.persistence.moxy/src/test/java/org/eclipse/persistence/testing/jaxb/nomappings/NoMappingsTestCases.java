@@ -56,7 +56,7 @@ public class NoMappingsTestCases extends JAXBWithJSONTestCases{
     }
 
     @Override
-    public Class getUnmarshalClass(){
+    public Class<?> getUnmarshalClass(){
         return SomeClass.class;
     }
 

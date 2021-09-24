@@ -76,7 +76,7 @@ public abstract class AttributeAccessor implements CoreAttributeAccessor, Clonea
      * Return the class type of the attribute.
      */
     @Override
-    public Class getAttributeClass() {
+    public Class<?> getAttributeClass() {
         return ClassConstants.OBJECT;
     }
 
@@ -84,7 +84,7 @@ public abstract class AttributeAccessor implements CoreAttributeAccessor, Clonea
      * Allow any initialization to be performed with the descriptor class.
      */
     @Override
-    public void initializeAttributes(Class descriptorClass) throws DescriptorException {
+    public void initializeAttributes(Class<?> descriptorClass) throws DescriptorException {
         if (getAttributeName() == null) {
             throw DescriptorException.attributeNameNotSpecified();
         }

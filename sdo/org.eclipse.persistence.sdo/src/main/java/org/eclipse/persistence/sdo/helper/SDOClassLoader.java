@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,17 +36,17 @@ public class SDOClassLoader extends ClassLoader {
     }
 
     @Override
-    public Class loadClass(String className) throws ClassNotFoundException {
-        Class javaClass = generatedClasses.get(className);
+    public Class<?> loadClass(String className) throws ClassNotFoundException {
+        Class<?> javaClass = generatedClasses.get(className);
         if (javaClass != null) {
             return javaClass;
         }
         return getParent().loadClass(className);
     }
 
-    public Class loadClass(String className, SDOType type) throws ClassNotFoundException {
+    public Class<?> loadClass(String className, SDOType type) throws ClassNotFoundException {
         // To maximize performance, check the generated classes first
-        Class javaClass = generatedClasses.get(className);
+        Class<?> javaClass = generatedClasses.get(className);
         if (javaClass != null) {
             return javaClass;
         }
@@ -70,8 +70,8 @@ public class SDOClassLoader extends ClassLoader {
         return javaClass;
     }
 
-    public Class createGeneric(String className, SDOType type) {
-        Class javaClass = generatedClasses.get(className);
+    public Class<?> createGeneric(String className, SDOType type) {
+        Class<?> javaClass = generatedClasses.get(className);
         if (javaClass != null) {
             return javaClass;
         }

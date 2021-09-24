@@ -73,7 +73,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
      * not seem to like the JDBC Blob type (PostgreSQL 8.2).
      */
     @Override
-    public int getJDBCType(Class javaType) {
+    public int getJDBCType(Class<?> javaType) {
         if (javaType == ClassConstants.BLOB) {
             return Types.LONGVARBINARY;
         }

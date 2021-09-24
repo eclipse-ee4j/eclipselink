@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2013, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -130,7 +130,7 @@ public class SimpleResultSetRecord extends ResultSetRecord {
                 } else {
                     if (this.shouldUseOptimization) {
                         try {
-                            Class fieldType = field.getType();
+                            Class<?> fieldType = field.getType();
                             if (fieldType == ClassConstants.STRING) {
                                 if(platform.shouldUseGetSetNString()){
                                     value = resultSet.getNString(index + 1);
@@ -210,7 +210,7 @@ public class SimpleResultSetRecord extends ResultSetRecord {
                 } else {
                     if (this.shouldUseOptimization) {
                         try {
-                            Class fieldType = field.getType();
+                            Class<?> fieldType = field.getType();
                             if (fieldType == ClassConstants.STRING) {
                                 if(platform.shouldUseGetSetNString()){
                                     value = resultSet.getNString(index + 1);
@@ -249,7 +249,7 @@ public class SimpleResultSetRecord extends ResultSetRecord {
     protected Object getValueFromResultSet(int index, DatabaseField field) {
         if (this.shouldUseOptimization) {
             try {
-                Class fieldType = field.getType();
+                Class<?> fieldType = field.getType();
                 if (fieldType == ClassConstants.STRING) {
                     if(platform.shouldUseGetSetNString()){
                         return resultSet.getNString(index + 1);

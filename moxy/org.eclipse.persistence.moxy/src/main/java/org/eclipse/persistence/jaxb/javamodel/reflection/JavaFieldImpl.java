@@ -65,7 +65,7 @@ public class JavaFieldImpl implements JavaField {
     @Override
     public JavaAnnotation getAnnotation(JavaClass arg0) {
         if (arg0 != null && !isMetadataComplete) {
-            Class annotationClass = ((JavaClassImpl) arg0).getJavaClass();
+            Class<?> annotationClass = ((JavaClassImpl) arg0).getJavaClass();
             if (javaModelImpl.getAnnotationHelper().isAnnotationPresent(getAnnotatedElement(), annotationClass)) {
                 return new JavaAnnotationImpl(javaModelImpl.getAnnotationHelper().getAnnotation(getAnnotatedElement(), annotationClass));
             }

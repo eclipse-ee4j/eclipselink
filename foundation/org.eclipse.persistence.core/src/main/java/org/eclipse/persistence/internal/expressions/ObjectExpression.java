@@ -48,7 +48,7 @@ public abstract class ObjectExpression extends DataExpression {
     protected boolean shouldUseOuterJoin;
 
     /** Allow an expression node to be cast to a subclass or implementation class. */
-    protected Class castClass;
+    protected Class<?> castClass;
 
     /** Defines that this expression has been joined to the source expression. */
     protected Expression joinSource;
@@ -80,7 +80,7 @@ public abstract class ObjectExpression extends DataExpression {
      * </pre>
      */
     @Override
-    public Expression treat(Class castClass){
+    public Expression treat(Class<?> castClass){
         //to be used on expressionBuilders
         QueryKeyExpression clonedExpression = new TreatAsExpression(castClass, this);
         clonedExpression.shouldQueryToManyRelationship = false;
@@ -432,7 +432,7 @@ public abstract class ObjectExpression extends DataExpression {
         return result;
     }
 
-    public Class getCastClass() {
+    public Class<?> getCastClass() {
         return castClass;
     }
 
@@ -719,7 +719,7 @@ public abstract class ObjectExpression extends DataExpression {
         this.onClause = onClause;
     }
 
-    public void setCastClass(Class castClass) {
+    public void setCastClass(Class<?> castClass) {
         this.castClass = castClass;
     }
 

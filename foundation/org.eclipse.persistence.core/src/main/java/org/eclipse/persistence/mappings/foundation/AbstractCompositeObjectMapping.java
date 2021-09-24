@@ -262,7 +262,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
 
         ClassDescriptor descriptor = this.referenceDescriptor;
         if (descriptor.hasInheritance()) {
-            Class nestedElementClass = descriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
+            Class<?> nestedElementClass = descriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
             descriptor = getReferenceDescriptor(nestedElementClass, executionSession);
         }
         ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
@@ -294,7 +294,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
 
         ClassDescriptor descriptor = this.getReferenceDescriptor();
         if (descriptor.hasInheritance()) {
-            Class nestedElementClass = descriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
+            Class<?> nestedElementClass = descriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
             descriptor = this.getReferenceDescriptor(nestedElementClass, executionSession);
         }
         ObjectBuilder objectBuilder = descriptor.getObjectBuilder();

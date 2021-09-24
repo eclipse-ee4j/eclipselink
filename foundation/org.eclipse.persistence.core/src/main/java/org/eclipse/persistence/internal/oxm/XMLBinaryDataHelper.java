@@ -46,10 +46,10 @@ import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 
 public class XMLBinaryDataHelper {
     protected static XMLBinaryDataHelper binaryDataHelper;
-    public Class DATA_HANDLER;
-    public Class IMAGE;
-    public Class SOURCE;
-    public Class MULTIPART;
+    public Class<?> DATA_HANDLER;
+    public Class<?> IMAGE;
+    public Class<?> SOURCE;
+    public Class<?> MULTIPART;
 
     public XMLBinaryDataHelper() {
         if (DATA_HANDLER == null) {
@@ -76,7 +76,7 @@ public class XMLBinaryDataHelper {
         MULTIPART = jakarta.mail.internet.MimeMultipart.class;
     }
 
-    public Object convertObject(Object obj, Class classification, CoreAbstractSession session, CoreContainerPolicy cp) {
+    public Object convertObject(Object obj, Class<?> classification, CoreAbstractSession session, CoreContainerPolicy cp) {
         if( obj instanceof List && cp != null){
             List theList = (List)obj;
             Object container = cp.containerInstance(theList.size());
@@ -89,7 +89,7 @@ public class XMLBinaryDataHelper {
         return convertSingleObject(obj, classification, session);
 
     }
-    public Object convertSingleObject(Object obj, Class classification, CoreAbstractSession session) {
+    public Object convertSingleObject(Object obj, Class<?> classification, CoreAbstractSession session) {
         if (classification == DATA_HANDLER) {
             return convertObjectToDataHandler(obj, session);
         } else if (classification == IMAGE) {

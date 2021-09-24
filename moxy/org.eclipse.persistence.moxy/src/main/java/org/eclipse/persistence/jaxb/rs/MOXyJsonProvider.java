@@ -252,7 +252,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
         if(null == genericType) {
             return asSet(Object.class);
         }
-        if(genericType instanceof Class && genericType != JAXBElement.class) {
+        if(genericType instanceof Class<?> && genericType != JAXBElement.class) {
             Class<?> clazz = (Class<?>) genericType;
             if(clazz.isArray()) {
                 return getDomainClasses(clazz.getComponentType());
@@ -330,13 +330,13 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             }
 
             if(null == jaxbContext) {
-                jaxbContext = JAXBContextFactory.createContext(domainClasses.toArray(new Class[0]), null);
+                jaxbContext = JAXBContextFactory.createContext(domainClasses.toArray(new Class<?>[0]), null);
                 contextCache.put(domainClasses, jaxbContext);
                 return jaxbContext;
             } else if (jaxbContext instanceof org.eclipse.persistence.jaxb.JAXBContext) {
                 return jaxbContext;
             } else {
-                jaxbContext = JAXBContextFactory.createContext(domainClasses.toArray(new Class[0]), null);
+                jaxbContext = JAXBContextFactory.createContext(domainClasses.toArray(new Class<?>[0]), null);
                 contextCache.put(domainClasses, jaxbContext);
                 return jaxbContext;
             }
@@ -583,7 +583,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             //special case for List<JAXBElement<String>>
             //this is quick fix, MOXyJsonProvider should be refactored as stated in issue #459541
             if (domainClasses.size() == 3) {
-                Class[] domainArray = domainClasses.toArray(new Class[domainClasses.size()]);
+                Class<?>[] domainArray = domainClasses.toArray(new Class<?>[domainClasses.size()]);
                 if (JAXBElement.class.isAssignableFrom(domainArray[1]) && String.class == domainArray[2]) {
                     return true;
                 }
@@ -796,7 +796,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
         }
     }
 
-    private Object handleJAXBElement(Object element, Class domainClass, boolean wrapItemInJAXBElement) {
+    private Object handleJAXBElement(Object element, Class<?> domainClass, boolean wrapItemInJAXBElement) {
         if(wrapItemInJAXBElement) {
             if(element instanceof JAXBElement) {
                 return element;

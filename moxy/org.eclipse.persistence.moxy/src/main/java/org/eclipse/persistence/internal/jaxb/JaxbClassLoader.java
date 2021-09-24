@@ -47,12 +47,12 @@ public class JaxbClassLoader extends ClassLoader {
         this.generatedClasses = new HashMap<String, Type>();
     }
 
-    public JaxbClassLoader(ClassLoader nestedClassLoader, Class[] classes) {
+    public JaxbClassLoader(ClassLoader nestedClassLoader, Class<?>[] classes) {
         super(nestedClassLoader);
         this.generatedClasses = new HashMap();
         if(classes != null){
             for(int i=0; i<classes.length; i++){
-                Class nextClass = classes[i];
+                Class<?> nextClass = classes[i];
                 generatedClasses.put(nextClass.getName(), nextClass);
             }
         }
@@ -90,8 +90,8 @@ public class JaxbClassLoader extends ClassLoader {
     }
 
     @Override
-    public Class loadClass(String className) throws ClassNotFoundException {
-        Class javaClass = null;
+    public Class<?> loadClass(String className) throws ClassNotFoundException {
+        Class<?> javaClass = null;
         if (className.indexOf('.') == -1 &&
             (className.equals("boolean") ||
             className.equals("short") ||
@@ -123,13 +123,13 @@ public class JaxbClassLoader extends ClassLoader {
         return javaClass;
     }
 
-    public Class generateClass(String className, byte[] bytes) {
+    public Class<?> generateClass(String className, byte[] bytes) {
         Class<?> theClass = this.defineClass(className, bytes, 0, bytes.length);
         generatedClasses.put(className, theClass);
         return theClass;
     }
 
-    public void putClass(String className, Class clazz) {
+    public void putClass(String className, Class<?> clazz) {
         generatedClasses.put(className, clazz);
     }
 

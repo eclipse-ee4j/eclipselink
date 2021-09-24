@@ -105,7 +105,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     public static final String QUERY_BATCH_PARAMETER = "query-batch-parameter";
 
     /** This is used only in descriptor proxy in remote session */
-    protected Class referenceClass;
+    protected Class<?> referenceClass;
     protected String referenceClassName;
 
     /** The session is temporarily used for initialization. Once used, it is set to null */
@@ -422,7 +422,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
 
         // DirectCollection mappings don't require a reference class.
         if (getReferenceClassName() != null) {
-            Class referenceClass = null;
+            Class<?> referenceClass = null;
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
@@ -1139,7 +1139,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * PUBLIC:
      * Returns the reference class.
      */
-    public Class getReferenceClass() {
+    public Class<?> getReferenceClass() {
         return referenceClass;
     }
 
@@ -1258,7 +1258,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         super.preInitialize(session);
         // If weaving was used the mapping must be configured to use the weaved get/set methods.
         if ((this.indirectionPolicy instanceof BasicIndirectionPolicy) && ClassConstants.PersistenceWeavedLazy_Class.isAssignableFrom(getDescriptor().getJavaClass())) {
-            Class attributeType = getAttributeAccessor().getAttributeClass();
+            Class<?> attributeType = getAttributeAccessor().getAttributeClass();
             // Check that not already weaved or coded.
             if (!(ClassConstants.ValueHolderInterface_Class.isAssignableFrom(attributeType))) {
                 if (!indirectionPolicy.isWeavedObjectBasicIndirectionPolicy()){
@@ -1690,7 +1690,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * PUBLIC:
      * Set the referenced class.
      */
-    public void setReferenceClass(Class referenceClass) {
+    public void setReferenceClass(Class<?> referenceClass) {
         this.referenceClass = referenceClass;
         if (referenceClass != null) {
             setReferenceClassName(referenceClass.getName());
@@ -1971,7 +1971,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * The purpose of this is that the domain objects will not require to import the ValueHolderInterface class.
      * Refer also to transparent indirection for a transparent solution to indirection.
      */
-    public void useContainerIndirection(Class containerClass) {
+    public void useContainerIndirection(Class<?> containerClass) {
         ContainerIndirectionPolicy policy = new ContainerIndirectionPolicy();
         policy.setContainerClass(containerClass);
         setIndirectionPolicy(policy);
@@ -2119,13 +2119,13 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         }
 
         if (getAttributeAccessor() instanceof InstanceVariableAttributeAccessor) {
-            Class attributeType = ((InstanceVariableAttributeAccessor)getAttributeAccessor()).getAttributeType();
+            Class<?> attributeType = ((InstanceVariableAttributeAccessor)getAttributeAccessor()).getAttributeType();
             this.indirectionPolicy.validateDeclaredAttributeType(attributeType, session.getIntegrityChecker());
         } else if (getAttributeAccessor().isMethodAttributeAccessor()) {
             // 323148
-            Class returnType = ((MethodAttributeAccessor)getAttributeAccessor()).getGetMethodReturnType();
+            Class<?> returnType = ((MethodAttributeAccessor)getAttributeAccessor()).getGetMethodReturnType();
             this.indirectionPolicy.validateGetMethodReturnType(returnType, session.getIntegrityChecker());
-            Class parameterType = ((MethodAttributeAccessor)getAttributeAccessor()).getSetMethodParameterType();
+            Class<?> parameterType = ((MethodAttributeAccessor)getAttributeAccessor()).getSetMethodParameterType();
             this.indirectionPolicy.validateSetMethodParameterType(parameterType, session.getIntegrityChecker());
         }
     }
@@ -2390,7 +2390,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         } else {
             // must be Map of classes to Integers
             Map map = (Map)value;
-            Class cls;
+            Class<?> cls;
             if (getDescriptor().hasInheritance() && getDescriptor().getInheritancePolicy().shouldReadSubclasses()) {
                 cls = getDescriptor().getInheritancePolicy().classFromRow(row, executionSession);
             } else {

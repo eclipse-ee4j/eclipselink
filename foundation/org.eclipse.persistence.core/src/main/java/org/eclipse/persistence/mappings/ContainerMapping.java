@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,7 +46,7 @@ public interface ContainerMapping {
      * <p>The container class must implement (directly or indirectly) the
      * <code>java.util.Collection</code> interface.
      */
-    void useCollectionClass(Class concreteClass);
+    void useCollectionClass(Class<?> concreteClass);
 
     /**
      * PUBLIC:
@@ -79,7 +79,7 @@ public interface ContainerMapping {
      * <p>To facilitate resolving the method, the mapping's referenceClass
      * must set before calling this method.
      */
-    void useMapClass(Class concreteClass, String methodName);
+    void useMapClass(Class<?> concreteClass, String methodName);
 
     /**
      * PUBLIC:

@@ -20,10 +20,10 @@ import java.security.PrivilegedExceptionAction;
 public class PrivilegedGetConstructorFor<T> implements PrivilegedExceptionAction<Constructor<T>> {
 
     private final Class<T> javaClass;
-    private final Class[] args;
+    private final Class<?>[] args;
     private final boolean shouldSetAccessible;
 
-    public PrivilegedGetConstructorFor(Class<T> javaClass, Class[] args, boolean shouldSetAccessible) {
+    public PrivilegedGetConstructorFor(Class<T> javaClass, Class<?>[] args, boolean shouldSetAccessible) {
         this.javaClass = javaClass;
         this.args = args;
         this.shouldSetAccessible = shouldSetAccessible;

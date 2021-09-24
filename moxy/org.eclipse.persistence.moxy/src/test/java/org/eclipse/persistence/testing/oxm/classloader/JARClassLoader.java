@@ -79,7 +79,7 @@ protected String buildPackageName(String className) {
 /**
  * Return the class for the specified name, leaving it "unresolved".
  */
-protected Class customLoadUnresolvedClass(String className) throws ClassNotFoundException {
+protected Class<?> customLoadUnresolvedClass(String className) throws ClassNotFoundException {
     String jarFileName = (String) overridePackageNames.get(this.buildPackageName(className));
     ZipFile jarFile = this.buildJARFile(jarFileName);
 
@@ -148,8 +148,8 @@ protected void initialize(String jarFileName) {
  * Return the class for the specified name, resolving it if necessary.
  */
 @Override
-protected Class loadClass(String className, boolean resolve) throws ClassNotFoundException {
-    Class c = this.loadUnresolvedClass(className);
+protected Class<?> loadClass(String className, boolean resolve) throws ClassNotFoundException {
+    Class<?> c = this.loadUnresolvedClass(className);
     if (resolve) {
         this.resolveClass(c);
     }
@@ -172,7 +172,7 @@ protected byte[] loadData(ZipFile jarFile, ZipEntry jarEntry) throws IOException
 /**
  * Return the class for the specified name.
  */
-protected Class loadUnresolvedClass(String className) throws ClassNotFoundException {
+protected Class<?> loadUnresolvedClass(String className) throws ClassNotFoundException {
     // check whether we already loaded the class
     Class<?> c = this.findLoadedClass(className);
     if (c != null) {

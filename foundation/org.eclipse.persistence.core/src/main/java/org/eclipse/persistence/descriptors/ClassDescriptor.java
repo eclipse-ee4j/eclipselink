@@ -193,7 +193,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     protected transient String sessionName;
     protected transient Vector constraintDependencies;
     protected transient String amendmentMethodName;
-    protected transient Class amendmentClass;
+    protected transient Class<?> amendmentClass;
     protected String amendmentClassName;
     protected String alias;
     protected boolean shouldBeReadOnly;
@@ -447,7 +447,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * this defines that this descriptor has a foreign key constraint to another class and must be inserted after
      * instances of the other class.
      */
-    public void addConstraintDependencies(Class dependencies) {
+    public void addConstraintDependencies(Class<?> dependencies) {
         addConstraintDependency(dependencies);
     }
 
@@ -458,7 +458,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * this defines that this descriptor has a foreign key constraint to another class and must be inserted after
      * instances of the other class.
      */
-    public void addConstraintDependency(Class dependencies) {
+    public void addConstraintDependency(Class<?> dependencies) {
         getConstraintDependencies().add(dependencies);
     }
 
@@ -795,7 +795,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         }
 
         Method method = null;
-        Class[] argTypes = new Class[1];
+        Class<?>[] argTypes = new Class<?>[1];
 
         // BUG#2669585
         // Class argument type must be consistent, descriptor, i.e. instance may be a subclass.
@@ -1052,7 +1052,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         }
 
         if (this.isChildDescriptor()) {
-            Class parentClass = this.getInheritancePolicy().getParentClass();
+            Class<?> parentClass = this.getInheritancePolicy().getParentClass();
             if (parentClass == this.getJavaClass()) {
                 throw DescriptorException.parentClassIsSelf(this);
             }
@@ -1482,7 +1482,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * with class names to a project with classes.
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
-        Class redirectorClass = null;
+        Class<?> redirectorClass = null;
 
         if (getJavaClassName() != null){
             Class<?> descriptorClass = null;
@@ -1503,7 +1503,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         }
 
         if (getAmendmentClassName() != null) {
-            Class amendmentClass = null;
+            Class<?> amendmentClass = null;
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
@@ -1521,7 +1521,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         }
 
         if (copyPolicy == null && getCopyPolicyClassName() != null){
-            Class copyPolicyClass = null;
+            Class<?> copyPolicyClass = null;
             CopyPolicy newCopyPolicy = null;
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
@@ -1531,7 +1531,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                         throw ValidationException.classNotFoundWhileConvertingClassNames(getCopyPolicyClassName(), exception.getException());
                     }
                     try {
-                        newCopyPolicy = (CopyPolicy)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(copyPolicyClass));
+                        newCopyPolicy = (CopyPolicy)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(copyPolicyClass));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(getCopyPolicyClassName(), exception.getException());
                     }
@@ -1541,17 +1541,15 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                 }
             } catch (ClassNotFoundException exc) {
                 throw ValidationException.classNotFoundWhileConvertingClassNames(getCopyPolicyClassName(), exc);
-            } catch (IllegalAccessException ex){
+            } catch (ReflectiveOperationException ex){
                 throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(getCopyPolicyClassName(), ex);
-            } catch (InstantiationException e){
-                throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(getCopyPolicyClassName(), e);
             }
             setCopyPolicy(newCopyPolicy);
         }
 
         if (this.serializedObjectPolicy != null && this.serializedObjectPolicy instanceof SerializedObjectPolicyWrapper) {
             String serializedObjectPolicyClassName = ((SerializedObjectPolicyWrapper)this.serializedObjectPolicy).getSerializedObjectPolicyClassName();
-            Class serializedObjectPolicyClass = null;
+            Class<?> serializedObjectPolicyClass = null;
             SerializedObjectPolicy newSerializedObjectPolicy = null;
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
@@ -1561,7 +1559,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                         throw ValidationException.classNotFoundWhileConvertingClassNames(serializedObjectPolicyClassName, exception.getException());
                     }
                     try {
-                        newSerializedObjectPolicy = (SerializedObjectPolicy)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(serializedObjectPolicyClass));
+                        newSerializedObjectPolicy = (SerializedObjectPolicy)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(serializedObjectPolicyClass));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(serializedObjectPolicyClassName, exception.getException());
                     }
@@ -1590,7 +1588,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                         throw ValidationException.classNotFoundWhileConvertingClassNames(defaultQueryRedirectorClassName, exception.getException());
                     }
                     try {
-                        setDefaultQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(redirectorClass)));
+                        setDefaultQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(redirectorClass)));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(defaultQueryRedirectorClassName, exception.getException());
                     }
@@ -1615,7 +1613,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                         throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReadObjectQueryRedirectorClassName, exception.getException());
                     }
                     try {
-                        setDefaultReadObjectQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(redirectorClass)));
+                        setDefaultReadObjectQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(redirectorClass)));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReadObjectQueryRedirectorClassName, exception.getException());
                     }
@@ -1639,7 +1637,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                         throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReadAllQueryRedirectorClassName, exception.getException());
                     }
                     try {
-                        setDefaultReadAllQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(redirectorClass)));
+                        setDefaultReadAllQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(redirectorClass)));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReadAllQueryRedirectorClassName, exception.getException());
                     }
@@ -1663,7 +1661,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                         throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReportQueryRedirectorClassName, exception.getException());
                     }
                     try {
-                        setDefaultReportQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(redirectorClass)));
+                        setDefaultReportQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(redirectorClass)));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReportQueryRedirectorClassName, exception.getException());
                     }
@@ -1687,7 +1685,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                         throw ValidationException.classNotFoundWhileConvertingClassNames(defaultInsertObjectQueryRedirectorClassName, exception.getException());
                     }
                     try {
-                        setDefaultInsertObjectQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(redirectorClass)));
+                        setDefaultInsertObjectQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(redirectorClass)));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(defaultInsertObjectQueryRedirectorClassName, exception.getException());
                     }
@@ -1711,7 +1709,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                         throw ValidationException.classNotFoundWhileConvertingClassNames(defaultUpdateObjectQueryRedirectorClassName, exception.getException());
                     }
                     try {
-                        setDefaultUpdateObjectQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(redirectorClass)));
+                        setDefaultUpdateObjectQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(redirectorClass)));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(defaultUpdateObjectQueryRedirectorClassName, exception.getException());
                     }
@@ -1735,7 +1733,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                         throw ValidationException.classNotFoundWhileConvertingClassNames(defaultDeleteObjectQueryRedirectorClassName, exception.getException());
                     }
                     try {
-                        setDefaultDeleteObjectQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(redirectorClass)));
+                        setDefaultDeleteObjectQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(redirectorClass)));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(defaultDeleteObjectQueryRedirectorClassName, exception.getException());
                     }
@@ -2108,7 +2106,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * The amendment method will be called on the class before initialization to allow for it to initialize the descriptor.
      * The method must be a public static method on the class.
      */
-    public Class getAmendmentClass() {
+    public Class<?> getAmendmentClass() {
         return amendmentClass;
     }
 
@@ -2429,7 +2427,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return the class of identity map to be used by this descriptor.
      * The default is the "SoftCacheWeakIdentityMap".
      */
-    public Class getIdentityMapClass() {
+    public <T extends IdentityMap> Class<T> getIdentityMapClass() {
         return getCachePolicy().getIdentityMapClass();
     }
 
@@ -2788,7 +2786,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return the class of identity map to be used by this descriptor.
      * The default is the "SoftCacheWeakIdentityMap".
      */
-    public Class getRemoteIdentityMapClass() {
+    public <T extends IdentityMap> Class<T> getRemoteIdentityMapClass() {
         return getCachePolicy().getRemoteIdentityMapClass();
     }
 
@@ -4023,7 +4021,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             if ((getPrimaryKeyFields().size() > 1) || getObjectBuilder().isXMLObjectBuilder()) {
                 setCacheKeyType(CacheKeyType.CACHE_ID);
             } else if ((getPrimaryKeyFields().size() == 1) && (getObjectBuilder().getPrimaryKeyClassifications().size() == 1)) {
-                Class type = getObjectBuilder().getPrimaryKeyClassifications().get(0);
+                Class<?> type = getObjectBuilder().getPrimaryKeyClassifications().get(0);
                 if ((type == null) || type.isArray()) {
                     getCachePolicy().setCacheKeyType(CacheKeyType.CACHE_ID);
                 } else {
@@ -4454,7 +4452,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             }
         }
 
-        if ((getIdentityMapClass() == ClassConstants.NoIdentityMap_Class) && (getQueryManager().getDoesExistQuery().shouldCheckCacheForDoesExist())) {
+        if ((ClassConstants.NoIdentityMap_Class.equals(getIdentityMapClass())) && (getQueryManager().getDoesExistQuery().shouldCheckCacheForDoesExist())) {
             session.getIntegrityChecker().handleError(DescriptorException.identityMapNotSpecified(this));
         }
 
@@ -4569,7 +4567,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * The amendment method will be called on the class before initialization to allow for it to initialize the descriptor.
      * The method must be a public static method on the class.
      */
-    public void setAmendmentClass(Class amendmentClass) {
+    public void setAmendmentClass(Class<?> amendmentClass) {
         this.amendmentClass = amendmentClass;
     }
 
@@ -4645,7 +4643,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * As with IdentityMaps an entire class inheritance hierarchy will share the same interceptor.
      * @see org.eclipse.persistence.sessions.interceptors.CacheInterceptor
      */
-    public void setCacheInterceptorClass(Class cacheInterceptorClass) {
+    public void setCacheInterceptorClass(Class<? extends CacheInterceptor> cacheInterceptorClass) {
         getCachePolicy().setCacheInterceptorClass(cacheInterceptorClass);
     }
 
@@ -5060,7 +5058,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * descriptor should not be defined for it and relationships should be to the implementor class not the interface,
      * in this case the implementor class can add the interface through its interface policy to map queries on the interface to it.
      */
-    public void setJavaInterface(Class theJavaInterface) {
+    public void setJavaInterface(Class<?> theJavaInterface) {
         javaClass = theJavaInterface;
         descriptorIsForInterface();
     }
@@ -5246,7 +5244,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Set the class of identity map to be used by this descriptor.
      * The default is the "FullIdentityMap".
      */
-    public void setRemoteIdentityMapClass(Class theIdentityMapClass) {
+    public void setRemoteIdentityMapClass(Class<? extends IdentityMap> theIdentityMapClass) {
         getCachePolicy().setRemoteIdentityMapClass(theIdentityMapClass);
     }
 
@@ -5684,7 +5682,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using CacheIdentityMap
      */
     public boolean shouldUseCacheIdentityMap() {
-        return (getIdentityMapClass() == ClassConstants.CacheIdentityMap_Class);
+        return ClassConstants.CacheIdentityMap_Class.equals(getIdentityMapClass());
     }
 
     /**
@@ -5692,7 +5690,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using FullIdentityMap
      */
     public boolean shouldUseFullIdentityMap() {
-        return (getIdentityMapClass() == ClassConstants.FullIdentityMap_Class);
+        return ClassConstants.FullIdentityMap_Class.equals(getIdentityMapClass());
     }
 
     /**
@@ -5700,7 +5698,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using SoftIdentityMap
      */
     public boolean shouldUseSoftIdentityMap() {
-        return (getIdentityMapClass() == ClassConstants.SoftIdentityMap_Class);
+        return ClassConstants.SoftIdentityMap_Class.equals(getIdentityMapClass());
     }
 
     /**
@@ -5708,7 +5706,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using SoftIdentityMap
      */
     public boolean shouldUseRemoteSoftIdentityMap() {
-        return (getRemoteIdentityMapClass() == ClassConstants.SoftIdentityMap_Class);
+        return ClassConstants.SoftIdentityMap_Class.equals(getRemoteIdentityMapClass());
     }
 
     /**
@@ -5716,7 +5714,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using HardCacheWeakIdentityMap.
      */
     public boolean shouldUseHardCacheWeakIdentityMap() {
-        return (getIdentityMapClass() == ClassConstants.HardCacheWeakIdentityMap_Class);
+        return ClassConstants.HardCacheWeakIdentityMap_Class.equals(getIdentityMapClass());
     }
 
     /**
@@ -5724,7 +5722,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using NoIdentityMap
      */
     public boolean shouldUseNoIdentityMap() {
-        return (getIdentityMapClass() == ClassConstants.NoIdentityMap_Class);
+        return ClassConstants.NoIdentityMap_Class.equals(getIdentityMapClass());
     }
 
     /**
@@ -5751,7 +5749,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using CacheIdentityMap
      */
     public boolean shouldUseRemoteCacheIdentityMap() {
-        return (getRemoteIdentityMapClass() == ClassConstants.CacheIdentityMap_Class);
+        return ClassConstants.CacheIdentityMap_Class.equals(getRemoteIdentityMapClass());
     }
 
     /**
@@ -5759,7 +5757,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using FullIdentityMap
      */
     public boolean shouldUseRemoteFullIdentityMap() {
-        return (getRemoteIdentityMapClass() == ClassConstants.FullIdentityMap_Class);
+        return ClassConstants.FullIdentityMap_Class.equals(getRemoteIdentityMapClass());
     }
 
     /**
@@ -5767,7 +5765,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using HardCacheWeakIdentityMap
      */
     public boolean shouldUseRemoteHardCacheWeakIdentityMap() {
-        return (getRemoteIdentityMapClass() == ClassConstants.HardCacheWeakIdentityMap_Class);
+        return ClassConstants.HardCacheWeakIdentityMap_Class.equals(getRemoteIdentityMapClass());
     }
 
     /**
@@ -5775,7 +5773,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using NoIdentityMap
      */
     public boolean shouldUseRemoteNoIdentityMap() {
-        return (getRemoteIdentityMapClass() == ClassConstants.NoIdentityMap_Class);
+        return ClassConstants.NoIdentityMap_Class.equals(getRemoteIdentityMapClass());
     }
 
     /**
@@ -5783,7 +5781,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using SoftCacheWeakIdentityMap
      */
     public boolean shouldUseRemoteSoftCacheWeakIdentityMap() {
-        return (getRemoteIdentityMapClass() == ClassConstants.SoftCacheWeakIdentityMap_Class);
+        return ClassConstants.SoftCacheWeakIdentityMap_Class.equals(getRemoteIdentityMapClass());
     }
 
     /**
@@ -5791,7 +5789,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using WeakIdentityMap
      */
     public boolean shouldUseRemoteWeakIdentityMap() {
-        return (getRemoteIdentityMapClass() == ClassConstants.WeakIdentityMap_Class);
+        return ClassConstants.WeakIdentityMap_Class.equals(getRemoteIdentityMapClass());
     }
 
     /**
@@ -5799,7 +5797,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using SoftCacheWeakIdentityMap.
      */
     public boolean shouldUseSoftCacheWeakIdentityMap() {
-        return (getIdentityMapClass() == ClassConstants.SoftCacheWeakIdentityMap_Class);
+        return ClassConstants.SoftCacheWeakIdentityMap_Class.equals(getIdentityMapClass());
     }
 
     /**
@@ -5807,7 +5805,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using WeakIdentityMap
      */
     public boolean shouldUseWeakIdentityMap() {
-        return (getIdentityMapClass() == ClassConstants.WeakIdentityMap_Class);
+        return ClassConstants.WeakIdentityMap_Class.equals(getIdentityMapClass());
     }
 
     /**
@@ -5819,7 +5817,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         // Check the descriptor: if field-locking is used, cannot do
         // change tracking because field-locking requires backup clone.
         OptimisticLockingPolicy lockingPolicy = getOptimisticLockingPolicy();
-        if (lockingPolicy != null && (lockingPolicy instanceof FieldsLockingPolicy)) {
+        if (lockingPolicy instanceof FieldsLockingPolicy) {
             return false;
         }
         Vector<DatabaseMapping> mappings = getMappings();
@@ -5956,7 +5954,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * @see #useFactoryInstantiationPolicy(Class, String, String)
      * @see #useFactoryInstantiationPolicy(Object, String)
      */
-    public void useFactoryInstantiationPolicy(Class factoryClass, String methodName) {
+    public void useFactoryInstantiationPolicy(Class<?> factoryClass, String methodName) {
         getInstantiationPolicy().useFactoryInstantiationPolicy(factoryClass, methodName);
     }
 
@@ -5981,7 +5979,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * @see #useFactoryInstantiationPolicy(Object, String)
      * @see #useMethodInstantiationPolicy(String)
      */
-    public void useFactoryInstantiationPolicy(Class factoryClass, String methodName, String factoryMethodName) {
+    public void useFactoryInstantiationPolicy(Class<?> factoryClass, String methodName, String factoryMethodName) {
         getInstantiationPolicy().useFactoryInstantiationPolicy(factoryClass, methodName, factoryMethodName);
     }
 

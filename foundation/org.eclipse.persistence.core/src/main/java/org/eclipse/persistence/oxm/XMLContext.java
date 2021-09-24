@@ -319,7 +319,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * enabled.  This method will typically  be used for unmarshalling
      * when a non-shared cache is desired.
      */
-    public AbstractSession getReadSession(Class clazz) {
+    public AbstractSession getReadSession(Class<?> clazz) {
         return super.getSession(clazz);
     }
 
@@ -370,7 +370,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * Context, this method will return the first match.
      */
     @Override
-    public AbstractSession getSession(Class clazz) {
+    public AbstractSession getSession(Class<?> clazz) {
         return super.getSession(clazz);
     }
 
@@ -457,7 +457,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
         Iterator<ClassDescriptor> ormDescriptors = ormSession.getDescriptors().values().iterator();
         while(ormDescriptors.hasNext()) {
             ClassDescriptor ormDescriptor = ormDescriptors.next();
-            Class javaClass = ormDescriptor.getJavaClass();
+            Class<?> javaClass = ormDescriptor.getJavaClass();
             AbstractSession oxmSession = null;
             try {
                 oxmSession = this.getSession(javaClass);
@@ -484,7 +484,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
 
                         //check to see if we need to deal with containerAccessor
                         CoreAttributeAccessor containerAccessor = null;
-                        Class containerClass = null;
+                        Class<?> containerClass = null;
                         if(oxmMapping.isAbstractCompositeObjectMapping()) {
                             containerAccessor = ((CompositeObjectMapping)oxmMapping).getInverseReferenceMapping().getAttributeAccessor();
                             containerClass = ((CompositeObjectMapping)oxmMapping).getReferenceClass();
@@ -804,7 +804,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
          * Context, this method will return the first match.
          */
         @Override
-        protected AbstractSession getSession(Class clazz) {
+        protected AbstractSession getSession(Class<?> clazz) {
             if (null == clazz) {
                 return null;
             }
@@ -975,7 +975,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
         return null;
     }
 
-    private static ClassLoader privilegedGetClassLoaderForClass(final Class clazz) {
+    private static ClassLoader privilegedGetClassLoaderForClass(final Class<?> clazz) {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
             try {
                 return AccessController.doPrivileged(new PrivilegedGetClassLoaderForClass(clazz));

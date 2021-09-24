@@ -56,7 +56,7 @@ public abstract class Unmarshaller<
     /**
      * INTERNAL
      */
-    public abstract UnmarshalRecord createRootUnmarshalRecord(Class clazz);
+    public abstract UnmarshalRecord createRootUnmarshalRecord(Class<?> clazz);
 
     /**
      * INTERNAL
@@ -131,7 +131,7 @@ public abstract class Unmarshaller<
      * Get the class that will be instantiated to handled unmapped content
      * Class must implement the org.eclipse.persistence.oxm.unmapped.UnmappedContentHandler interface
      */
-    public abstract Class getUnmappedContentHandlerClass();
+    public abstract Class<?> getUnmappedContentHandlerClass();
 
     /**
      * INTERNAL:

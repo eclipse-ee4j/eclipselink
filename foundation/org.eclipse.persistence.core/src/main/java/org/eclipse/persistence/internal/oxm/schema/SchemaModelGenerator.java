@@ -146,7 +146,7 @@ public class SchemaModelGenerator {
                 QName qname = entry.getKey();
                 Type type = entry.getValue();
                 if (type instanceof Class) {
-                    Class tClass = (Class) type;
+                    Class<?> tClass = (Class) type;
                     String nsKey = qname.getNamespaceURI();
                     Schema schema = schemaForNamespace.get(nsKey);
 
@@ -495,7 +495,7 @@ public class SchemaModelGenerator {
      * will be returned.
      *
      */
-    protected String getSchemaTypeForElement(Field xmlField, Class attrClass, Schema workingSchema) {
+    protected String getSchemaTypeForElement(Field xmlField, Class<?> attrClass, Schema workingSchema) {
         String schemaTypeString = null;
         QName schemaType = xmlField.getSchemaType();
         if (schemaType != null) {
@@ -533,7 +533,7 @@ public class SchemaModelGenerator {
      * javaClass.  If none exists null will be returned.
      *
      */
-    protected Descriptor getDescriptorByClass(Class javaClass, List<Descriptor> descriptors) {
+    protected Descriptor getDescriptorByClass(Class<?> javaClass, List<Descriptor> descriptors) {
         for (Descriptor xDesc : descriptors) {
             if (xDesc.getJavaClass() != null && xDesc.getJavaClass() == javaClass) {
                 return xDesc;
@@ -663,7 +663,7 @@ public class SchemaModelGenerator {
         }
 
         // Handle enumerations
-        Class attributeClassification = mapping.getAttributeClassification();
+        Class<?> attributeClassification = mapping.getAttributeClassification();
         if (attributeClassification != null && Enum.class.isAssignableFrom(attributeClassification)) {
             CoreConverter converter = mapping.getConverter();
             if (converter != null && converter instanceof EnumTypeConverter) {
@@ -802,7 +802,7 @@ public class SchemaModelGenerator {
      *
      */
     protected void processXMLChoiceCollectionMapping(ChoiceCollectionMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors) {
-        Map<Field, Class> fieldToClassMap = mapping.getFieldToClassMappings();
+        Map<Field, Class<?>> fieldToClassMap = mapping.getFieldToClassMappings();
         List<XMLChoiceFieldToClassAssociation> choiceFieldToClassList = mapping.getChoiceFieldToClassAssociations();
         processChoiceMapping(fieldToClassMap, choiceFieldToClassList, seq, ct, schemaForNamespace, workingSchema, properties, descriptors, true);
     }
@@ -811,7 +811,7 @@ public class SchemaModelGenerator {
      *
      */
     protected void processXMLChoiceObjectMapping(ChoiceObjectMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors) {
-        Map<Field, Class> fieldToClassMap =mapping.getFieldToClassMappings();
+        Map<Field, Class<?>> fieldToClassMap =mapping.getFieldToClassMappings();
         List<XMLChoiceFieldToClassAssociation> choiceFieldToClassList = mapping.getChoiceFieldToClassAssociations();
         processChoiceMapping(fieldToClassMap, choiceFieldToClassList, seq, ct, schemaForNamespace, workingSchema, properties, descriptors, false);
     }
@@ -820,7 +820,7 @@ public class SchemaModelGenerator {
      * Process a given XMLChoiceMapping.
      *
      */
-    protected void processChoiceMapping(Map<Field, Class> fieldToClassMap, List<XMLChoiceFieldToClassAssociation> choiceFieldToClassList, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors, boolean isCollection) {
+    protected void processChoiceMapping(Map<Field, Class<?>> fieldToClassMap, List<XMLChoiceFieldToClassAssociation> choiceFieldToClassList, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors, boolean isCollection) {
         Choice theChoice = new Choice();
         if (isCollection) {
             theChoice.setMaxOccurs(Occurs.UNBOUNDED);

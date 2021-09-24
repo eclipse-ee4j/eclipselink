@@ -33,12 +33,12 @@ public class MapValueAttributeAccessor extends AttributeAccessor {
 
     private CoreAttributeAccessor nestedAccessor;
     private String mapClassName;
-    private Class mapClass;
+    private Class<?> mapClass;
     private CoreContainerPolicy containerPolicy;
-    private Class generatedEntryClass;
+    private Class<?> generatedEntryClass;
     private ClassLoader classLoader;
 
-    public MapValueAttributeAccessor(CoreAttributeAccessor nestedAccessor, CoreContainerPolicy cp, Class generatedEntryClass, String mapClassName, ClassLoader classLoader) {
+    public MapValueAttributeAccessor(CoreAttributeAccessor nestedAccessor, CoreContainerPolicy cp, Class<?> generatedEntryClass, String mapClassName, ClassLoader classLoader) {
         this.nestedAccessor = nestedAccessor;
         this.mapClassName = mapClassName;
         this.containerPolicy = cp;
@@ -94,7 +94,7 @@ public class MapValueAttributeAccessor extends AttributeAccessor {
     }
 
     @Override
-    public void initializeAttributes(Class theJavaClass) throws DescriptorException {
+    public void initializeAttributes(Class<?> theJavaClass) throws DescriptorException {
         nestedAccessor.initializeAttributes(theJavaClass);
 
         if(mapClassName.equals("java.util.Map")){

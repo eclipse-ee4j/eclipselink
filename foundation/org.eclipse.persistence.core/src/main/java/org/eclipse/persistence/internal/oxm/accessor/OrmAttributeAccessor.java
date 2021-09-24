@@ -112,7 +112,7 @@ public class OrmAttributeAccessor extends AttributeAccessor {
     }
 
     @Override
-    public Class getAttributeClass() {
+    public Class<?> getAttributeClass() {
         return oxmAccessor.getAttributeClass();
     }
 

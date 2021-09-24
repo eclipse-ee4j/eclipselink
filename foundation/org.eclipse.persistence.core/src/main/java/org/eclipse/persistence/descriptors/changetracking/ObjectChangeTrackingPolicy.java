@@ -168,7 +168,7 @@ public class ObjectChangeTrackingPolicy extends DeferredChangeDetectionPolicy {
     public void initialize(AbstractSession session, ClassDescriptor descriptor) {
         //3934266 If changePolicy is ObjectChangeTrackingPolicy or AttributeChangeTrackingPolicy, the class represented
         //by the descriptor must implement ChangeTracker interface.  Otherwise throw an exception.
-        Class javaClass = descriptor.getJavaClass();
+        Class<?> javaClass = descriptor.getJavaClass();
         if (!ChangeTracker.class.isAssignableFrom(javaClass)) {
             session.getIntegrityChecker().handleError(DescriptorException.needToImplementChangeTracker(descriptor));
         }

@@ -111,7 +111,7 @@ public class SchemaGenerator {
     private Map<String, PackageInfo> packageToPackageInfoMappings;
     private Map<String, SchemaTypeInfo> schemaTypeInfo;
     private Map<String, QName> userDefinedSchemaTypes;
-    private Map<String, Class> arrayClassesToGeneratedClasses;
+    private Map<String, Class<?>> arrayClassesToGeneratedClasses;
 
     private static final String JAVAX_ACTIVATION_DATAHANDLER = "jakarta.activation.DataHandler";
     private static final String JAVAX_MAIL_INTERNET_MIMEMULTIPART = "jakarta.mail.internet.MimeMultipart";
@@ -141,12 +141,12 @@ public class SchemaGenerator {
         this.facets = helper.isFacets();
     }
 
-    public void generateSchema(List<JavaClass> typeInfoClasses, Map<String, TypeInfo> typeInfo, Map<String, QName> userDefinedSchemaTypes, Map<String, PackageInfo> packageToPackageInfoMappings, Map<QName, ElementDeclaration> additionalGlobalElements, Map<String, Class> arrayClassesToGeneratedClasses, SchemaOutputResolver outputResolver) {
+    public void generateSchema(List<JavaClass> typeInfoClasses, Map<String, TypeInfo> typeInfo, Map<String, QName> userDefinedSchemaTypes, Map<String, PackageInfo> packageToPackageInfoMappings, Map<QName, ElementDeclaration> additionalGlobalElements, Map<String, Class<?>> arrayClassesToGeneratedClasses, SchemaOutputResolver outputResolver) {
         this.outputResolver = outputResolver;
         generateSchema(typeInfoClasses, typeInfo, userDefinedSchemaTypes, packageToPackageInfoMappings, additionalGlobalElements, arrayClassesToGeneratedClasses);
     }
 
-    public void generateSchema(List<JavaClass> typeInfoClasses, Map<String, TypeInfo> typeInfo, Map<String, QName> userDefinedSchemaTypes, Map<String, PackageInfo> packageToPackageInfoMappings, Map<QName, ElementDeclaration> additionalGlobalElements, Map<String, Class> arrayClassesToGeneratedClasses) {
+    public void generateSchema(List<JavaClass> typeInfoClasses, Map<String, TypeInfo> typeInfo, Map<String, QName> userDefinedSchemaTypes, Map<String, PackageInfo> packageToPackageInfoMappings, Map<QName, ElementDeclaration> additionalGlobalElements, Map<String, Class<?>> arrayClassesToGeneratedClasses) {
         this.typeInfo = typeInfo;
         this.userDefinedSchemaTypes = userDefinedSchemaTypes;
         this.packageToPackageInfoMappings = packageToPackageInfoMappings;
@@ -552,7 +552,7 @@ public class SchemaGenerator {
     public QName getSchemaTypeFor(JavaClass javaClass) {
         String className;
         if (javaClass.isArray()) {
-            Class wrapperClass = arrayClassesToGeneratedClasses.get(javaClass.getName());
+            Class<?> wrapperClass = arrayClassesToGeneratedClasses.get(javaClass.getName());
             if (null == wrapperClass) {
                 className = javaClass.getQualifiedName();
             } else {
@@ -1019,7 +1019,7 @@ public class SchemaGenerator {
      * name of the Class.
      *
      */
-    protected boolean areEquals(JavaClass src, Class tgt) {
+    protected boolean areEquals(JavaClass src, Class<?> tgt) {
         if (src == null || tgt == null) {
             return false;
         }

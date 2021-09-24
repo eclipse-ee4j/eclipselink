@@ -139,7 +139,7 @@ public class ReportQueryResult implements Serializable, Map {
 
     private Object processConstructorItem(ReportQuery query, AbstractRecord row, Vector toManyData, ConstructorReportItem constructorItem) {
         // For constructor items need to process each constructor argument.
-        Class[] constructorArgTypes = constructorItem.getConstructorArgTypes();
+        Class<?>[] constructorArgTypes = constructorItem.getConstructorArgTypes();
         int numberOfArguments = constructorItem.getReportItems().size();
         Object[] constructorArgs = new Object[numberOfArguments];
 
@@ -662,7 +662,7 @@ public class ReportQueryResult implements Serializable, Map {
      * PUBLIC:
      * If the PKs were retrieved with the attributes then this method can be used to read the real object from the database.
      */
-    public Object readObject(Class javaClass, Session session) {
+    public Object readObject(Class<?> javaClass, Session session) {
         if (getId() == null) {
             throw QueryException.reportQueryResultWithoutPKs(this);
         }

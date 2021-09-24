@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,35 +52,35 @@ public interface PlatformUnmarshaller {
 
     Object unmarshal(File file);
 
-    Object unmarshal(File file, Class clazz);
+    Object unmarshal(File file, Class<?> clazz);
 
     Object unmarshal(InputStream inputStream);
 
-    Object unmarshal(InputStream inputStream, Class clazz);
+    Object unmarshal(InputStream inputStream, Class<?> clazz);
 
     Object unmarshal(InputSource inputSource);
 
-    Object unmarshal(InputSource inputSource, Class clazz);
+    Object unmarshal(InputSource inputSource, Class<?> clazz);
 
     Object unmarshal(Node node);
 
-    Object unmarshal(Node node, Class clazz);
+    Object unmarshal(Node node, Class<?> clazz);
 
     Object unmarshal(Reader reader);
 
-    Object unmarshal(Reader reader, Class clazz);
+    Object unmarshal(Reader reader, Class<?> clazz);
 
     Object unmarshal(Source source);
 
-    Object unmarshal(Source source, Class clazz);
+    Object unmarshal(Source source, Class<?> clazz);
 
     Object unmarshal(URL url);
 
-    Object unmarshal(URL url, Class clazz);
+    Object unmarshal(URL url, Class<?> clazz);
 
     Object unmarshal(XMLReader xmlReader, InputSource inputSource);
 
-    Object unmarshal(XMLReader xmlReader, InputSource inputSource, Class clazz);
+    Object unmarshal(XMLReader xmlReader, InputSource inputSource, Class<?> clazz);
 
     void setResultAlwaysXMLRoot(boolean alwaysReturnRoot);
 

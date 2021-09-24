@@ -243,7 +243,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
         }
     }
 
-    private JAXBElement validateAndBuildJAXBElement(Object obj, Class declaredClass) throws BeanValidationException {
+    private JAXBElement validateAndBuildJAXBElement(Object obj, Class<?> declaredClass) throws BeanValidationException {
         if (beanValidator != null && beanValidator.shouldValidate(obj, beanValidationMode, prefValidatorFactory, bvNoOptimisation)) {
             beanValidator.validate(obj, beanValidationGroups);
         }
@@ -259,7 +259,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
      * prefix will be resolved, and a QName created.
      *
      */
-    private JAXBElement buildJAXBElementFromObject(Object obj, Class declaredClass) {
+    private JAXBElement buildJAXBElementFromObject(Object obj, Class<?> declaredClass) {
         // if an XMLRoot was returned, the root element != the default root
         // element of the object being marshalled to - need to create a
         // JAXBElement from the returned XMLRoot object
@@ -316,9 +316,9 @@ public class JAXBUnmarshaller implements Unmarshaller {
             throw new IllegalArgumentException();
         }
         try {
-            Class classToUnmarshalTo = getClassToUnmarshalTo(javaClass);
+            Class<?> classToUnmarshalTo = getClassToUnmarshalTo(javaClass);
             if(jaxbContext.getArrayClassesToGeneratedClasses() != null) {
-                Class generatedClass = jaxbContext.getArrayClassesToGeneratedClasses().get(javaClass.getCanonicalName());
+                Class<?> generatedClass = jaxbContext.getArrayClassesToGeneratedClasses().get(javaClass.getCanonicalName());
                 if(generatedClass != null){
                     classToUnmarshalTo = generatedClass;
                 }
@@ -346,7 +346,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
         if(null == javaClass) {
             throw new IllegalArgumentException();
         }
-        Class classToUnmarshalTo = getClassToUnmarshalTo(javaClass);
+        Class<?> classToUnmarshalTo = getClassToUnmarshalTo(javaClass);
 
         try {
             return validateAndBuildJAXBElement(xmlUnmarshaller.unmarshal(source, classToUnmarshalTo), javaClass); // json object + xml bindings
@@ -355,10 +355,10 @@ public class JAXBUnmarshaller implements Unmarshaller {
         }
     }
 
-    private JAXBElement unmarshal(Source source, Class javaClass, Class declaredType) {
-        Class classToUnmarshalTo = javaClass;
+    private JAXBElement unmarshal(Source source, Class<?> javaClass, Class<?> declaredType) {
+        Class<?> classToUnmarshalTo = javaClass;
         if(jaxbContext.getArrayClassesToGeneratedClasses() != null) {
-            Class generatedClass = jaxbContext.getArrayClassesToGeneratedClasses().get(javaClass.getCanonicalName());
+            Class<?> generatedClass = jaxbContext.getArrayClassesToGeneratedClasses().get(javaClass.getCanonicalName());
             if(generatedClass != null){
                 classToUnmarshalTo = generatedClass;
             }
@@ -378,10 +378,10 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 }
             }
 
-            Class unmarshalClass = jaxbContext.getCollectionClassesToGeneratedClasses().get(type);
+            Class<?> unmarshalClass = jaxbContext.getCollectionClassesToGeneratedClasses().get(type);
             if(unmarshalClass != null){
                 JAXBElement unmarshalled =  unmarshal(source, unmarshalClass, Object.class);
-                Class declaredClass;
+                Class<?> declaredClass;
                 if(type instanceof Class){
                     declaredClass = (Class)type;
                 }else{
@@ -404,11 +404,11 @@ public class JAXBUnmarshaller implements Unmarshaller {
      */
     public JAXBElement unmarshal(Source source, TypeMappingInfo type) throws JAXBException {
         try {
-            Class unmarshalClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(type);
+            Class<?> unmarshalClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(type);
             RootLevelXmlAdapter adapter = jaxbContext.getTypeMappingInfoToJavaTypeAdapters().get(type);
             if(unmarshalClass != null){
                 JAXBElement unmarshalled = unmarshal(source, unmarshalClass);
-                Class declaredClass = null;
+                Class<?> declaredClass = null;
                 if(type.getType() instanceof Class){
                     declaredClass = (Class)type.getType();
                 }else{
@@ -459,7 +459,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 staxReader.parse(inputSource);
                 return primitiveContentHandler.getJaxbElement();
             }
-            Class classToUnmarshalTo = getClassToUnmarshalTo(javaClass);
+            Class<?> classToUnmarshalTo = getClassToUnmarshalTo(javaClass);
             JAXBElement unmarshalled = validateAndBuildJAXBElement(xmlUnmarshaller.unmarshal(staxReader, inputSource, classToUnmarshalTo), javaClass); // xmlbindings + object (xmlelement) + "nomappings.SomeClass" + "jaxb.stax.EndEventRoot"
 
             if(classToUnmarshalTo != javaClass){
@@ -486,10 +486,10 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 }
             }
 
-            Class unmarshalClass = jaxbContext.getCollectionClassesToGeneratedClasses().get(type);
+            Class<?> unmarshalClass = jaxbContext.getCollectionClassesToGeneratedClasses().get(type);
             if(unmarshalClass != null){
                 JAXBElement unmarshalled = unmarshal(streamReader, unmarshalClass);
-                Class declaredClass = null;
+                Class<?> declaredClass = null;
                 if(type instanceof Class){
                     declaredClass = (Class)type;
                 }else{
@@ -516,8 +516,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
             Descriptor xmlDescriptor = type.getXmlDescriptor();
 
             if (type.getType() instanceof Class) {
-                Class javaClass = (Class) type.getType();
-                Class componentClass = javaClass.getComponentType();
+                Class<?> javaClass = (Class) type.getType();
+                Class<?> componentClass = javaClass.getComponentType();
                 if (javaClass.isArray() && javaClass != CoreClassConstants.APBYTE && javaClass != CoreClassConstants.ABYTE && XMLConversionManager.getDefaultJavaTypes().get(componentClass) != null) {
                     // Top-level array.  Descriptor will be for an EL-generated class, containing one DirectCollection mapping.
                     DirectCollectionMapping mapping = (DirectCollectionMapping) xmlDescriptor.getMappings().get(0);
@@ -566,7 +566,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
                         throw new JAXBException(XMLMarshalException.marshalException(ex));
                     }
                 }
-                Class declaredClass = null;
+                Class<?> declaredClass = null;
                 if(type.getType() instanceof Class){
                     declaredClass = (Class)type.getType();
                 }else{
@@ -581,14 +581,14 @@ public class JAXBUnmarshaller implements Unmarshaller {
             if(jaxbContext.getTypeMappingInfoToJavaTypeAdapters().size() >0){
                 adapter = jaxbContext.getTypeMappingInfoToJavaTypeAdapters().get(type);
             }
-            Class unmarshalClass = null;
+            Class<?> unmarshalClass = null;
             if(jaxbContext.getTypeMappingInfoToGeneratedType().size() >0){
                 unmarshalClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(type);
             }
 
             if(unmarshalClass != null){
                 JAXBElement unmarshalled = unmarshal(streamReader, unmarshalClass);
-                Class declaredClass = null;
+                Class<?> declaredClass = null;
                 if(type.getType() instanceof Class){
                     declaredClass = (Class)type.getType();
                 }else{
@@ -650,7 +650,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
             throw new IllegalArgumentException();
         }
         try {
-            Class classToUnmarshalTo = getClassToUnmarshalTo(javaClass);
+            Class<?> classToUnmarshalTo = getClassToUnmarshalTo(javaClass);
             XMLEventReaderReader staxReader = new XMLEventReaderReader(xmlUnmarshaller);
             XMLEventReaderInputSource inputSource = new XMLEventReaderInputSource(eventReader);
             JAXBElement unmarshalled =  validateAndBuildJAXBElement(xmlUnmarshaller.unmarshal(staxReader, inputSource, classToUnmarshalTo), javaClass); // json object + xml bindings
@@ -676,10 +676,10 @@ public class JAXBUnmarshaller implements Unmarshaller {
                     return unmarshal(eventReader, tmi);
                 }
             }
-            Class unmarshalClass = jaxbContext.getCollectionClassesToGeneratedClasses().get(type);
+            Class<?> unmarshalClass = jaxbContext.getCollectionClassesToGeneratedClasses().get(type);
             if(unmarshalClass != null){
                 JAXBElement unmarshalled = unmarshal(eventReader, unmarshalClass);
-                Class declaredClass = null;
+                Class<?> declaredClass = null;
                 if(type instanceof Class){
                     declaredClass = (Class)type;
                 }else{
@@ -706,11 +706,11 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 return unmarshal(eventReader, type.getType());
             }
 
-            Class unmarshalClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(type);
+            Class<?> unmarshalClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(type);
             RootLevelXmlAdapter adapter = jaxbContext.getTypeMappingInfoToJavaTypeAdapters().get(type);
             if(unmarshalClass != null){
                 JAXBElement unmarshalled = unmarshal(eventReader, unmarshalClass);
-                Class declaredClass = null;
+                Class<?> declaredClass = null;
                 if(type.getType() instanceof Class){
                     declaredClass = (Class)type.getType();
                 }else{
@@ -1099,16 +1099,16 @@ public class JAXBUnmarshaller implements Unmarshaller {
         return jaxbContext;
     }
 
-    private Class getClassToUnmarshalTo(Class originalClass) {
-        Class classToUnmarshalTo = originalClass;
+    private Class<?> getClassToUnmarshalTo(Class<?> originalClass) {
+        Class<?> classToUnmarshalTo = originalClass;
         if(jaxbContext.getArrayClassesToGeneratedClasses() != null && jaxbContext.getArrayClassesToGeneratedClasses().size() >0) {
-            Class generatedClass = jaxbContext.getArrayClassesToGeneratedClasses().get(originalClass.getCanonicalName());
+            Class<?> generatedClass = jaxbContext.getArrayClassesToGeneratedClasses().get(originalClass.getCanonicalName());
             if(generatedClass != null){
                 classToUnmarshalTo = generatedClass;
             }
         }
         if(jaxbContext.getCollectionClassesToGeneratedClasses() != null && jaxbContext.getCollectionClassesToGeneratedClasses().size() >0){
-            Class generatedClass = jaxbContext.getCollectionClassesToGeneratedClasses().get(originalClass);
+            Class<?> generatedClass = jaxbContext.getCollectionClassesToGeneratedClasses().get(originalClass);
             if(generatedClass != null){
                 classToUnmarshalTo = generatedClass;
             }
@@ -1116,7 +1116,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
         if(jaxbContext.getTypeToTypeMappingInfo() != null){
             TypeMappingInfo tmi = jaxbContext.getTypeToTypeMappingInfo().get(originalClass);
             if(tmi != null && jaxbContext.getTypeMappingInfoToGeneratedType() != null) {
-                Class generatedClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(tmi);
+                Class<?> generatedClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(tmi);
                 if(generatedClass != null){
                     classToUnmarshalTo = generatedClass;
                 }

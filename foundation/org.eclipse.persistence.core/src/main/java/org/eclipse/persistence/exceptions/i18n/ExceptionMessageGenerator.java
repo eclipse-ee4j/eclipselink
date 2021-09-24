@@ -56,7 +56,7 @@ public final class ExceptionMessageGenerator {
     /**
      * Return the message for the given exception class and error number.
      */
-    public static String buildMessage(Class exceptionClass, int errorNumber, Object[] arguments) {
+    public static String buildMessage(Class<?> exceptionClass, int errorNumber, Object[] arguments) {
         String shortClassName = Helper.getShortClassName(exceptionClass);
         String message = "";
         ResourceBundle bundle = null;

@@ -67,7 +67,7 @@ public class XMLBindingsPopulatedTestCases extends JAXBWithJSONTestCases{
     }
 
     @Override
-    public Class getUnmarshalClass(){
+    public Class<?> getUnmarshalClass(){
         return XmlBindings.class;
     }
 

@@ -418,7 +418,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * order from executeQuery(). Specifying the class type is important if
      * identically named queries are used but with different argument lists.
      */
-    public void addArgument(String argumentName, Class type) {
+    public void addArgument(String argumentName, Class<?> type) {
         addArgument(argumentName, type, false);
     }
 
@@ -427,7 +427,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * information about whether parameters are positional or named for JPQL query introspeciton
      * API
      */
-    public void addArgument(String argumentName, Class type, ParameterType parameterType) {
+    public void addArgument(String argumentName, Class<?> type, ParameterType parameterType) {
         addArgument(argumentName, type, parameterType, false);
     }
 
@@ -440,7 +440,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * If the argument can be null, and null must be treated differently in the
      * generated SQL, then nullable should be set to true.
      */
-    public void addArgument(String argumentName, Class type, boolean nullable) {
+    public void addArgument(String argumentName, Class<?> type, boolean nullable) {
         getArguments().add(argumentName);
         getArgumentTypes().add(type);
         if(type != null) {
@@ -456,7 +456,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * information about whether parameters are positional or named for JPQL query introspeciton
      * API
      */
-    public void addArgument(String argumentName, Class type, ParameterType argumentParameterType, boolean nullable) {
+    public void addArgument(String argumentName, Class<?> type, ParameterType argumentParameterType, boolean nullable) {
         addArgument(argumentName, type, nullable);
         getArgumentParameterTypes().add(argumentParameterType);
     }
@@ -1310,7 +1310,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * PUBLIC: Return the domain class associated with this query. By default
      * this is null, but should be overridden in subclasses.
      */
-    public Class getReferenceClass() {
+    public Class<?> getReferenceClass() {
         return null;
     }
 

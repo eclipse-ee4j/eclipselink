@@ -37,7 +37,7 @@ public class ClassLoaderTestCases extends TestCase {
 
     private static final String CLASS_NAME = "ClassLoaderChild";
 
-    private Class classLoaderChildClass;
+    private Class<?> classLoaderChildClass;
     private JAXBContext jaxbContext;
 
     @Override

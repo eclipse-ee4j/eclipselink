@@ -263,7 +263,7 @@ public class QueryKeyExpression extends ObjectExpression {
      * </pre>
      */
     @Override
-    public Expression treat(Class castClass){
+    public Expression treat(Class<?> castClass){
         //to be used in 'where treat(t as PerformanceTireInfo).speedRating > 100'
         QueryKeyExpression clonedExpression = new TreatAsExpression(castClass, this);
         clonedExpression.shouldQueryToManyRelationship = this.shouldQueryToManyRelationship;

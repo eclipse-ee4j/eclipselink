@@ -923,7 +923,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @return ClassDescriptor
      */
-    protected ClassDescriptor checkHierarchyForDescriptor(Class theClass){
+    protected ClassDescriptor checkHierarchyForDescriptor(Class<?> theClass){
         return getDescriptor(theClass.getSuperclass());
     }
 
@@ -1179,11 +1179,11 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         try{
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     Class<InjectionManager<T>> elim = AccessController.doPrivileged(new PrivilegedClassForName<>(InjectionManager.DEFAULT_CDI_INJECTION_MANAGER, true, getLoader()));
-                    Constructor<InjectionManager<T>> constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(elim, new Class[]{String.class}, false));
+                    Constructor<InjectionManager<T>> constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(elim, new Class<?>[]{String.class}, false));
                     return AccessController.doPrivileged(new PrivilegedInvokeConstructor<>(constructor, new Object[]{beanManager}));
             } else {
                 Class<InjectionManager<T>> elim = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(InjectionManager.DEFAULT_CDI_INJECTION_MANAGER, true, getLoader());
-                Constructor<InjectionManager<T>> constructor = PrivilegedAccessHelper.<InjectionManager<T>>getConstructorFor(elim, new Class[] {Object.class}, false);
+                Constructor<InjectionManager<T>> constructor = PrivilegedAccessHelper.<InjectionManager<T>>getConstructorFor(elim, new Class<?>[] {Object.class}, false);
                 return PrivilegedAccessHelper.<InjectionManager<T>>invokeConstructor(constructor, new Object[] {beanManager});
             }
         } catch (Exception e){
@@ -1576,7 +1576,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @see DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
     @Override
-    public Object executeQuery(String queryName, Class domainClass) throws DatabaseException {
+    public Object executeQuery(String queryName, Class<?> domainClass) throws DatabaseException {
         ClassDescriptor descriptor = getDescriptor(domainClass);
 
         if (descriptor == null) {
@@ -1601,7 +1601,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @see DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
     @Override
-    public Object executeQuery(String queryName, Class domainClass, Object arg1) throws DatabaseException {
+    public Object executeQuery(String queryName, Class<?> domainClass, Object arg1) throws DatabaseException {
         Vector<Object> argumentValues = new Vector<>();
         argumentValues.addElement(arg1);
         return executeQuery(queryName, domainClass, argumentValues);
@@ -1616,7 +1616,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @see DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
     @Override
-    public Object executeQuery(String queryName, Class domainClass, Object arg1, Object arg2) throws DatabaseException {
+    public Object executeQuery(String queryName, Class<?> domainClass, Object arg1, Object arg2) throws DatabaseException {
         Vector<Object> argumentValues = new Vector<>();
         argumentValues.addElement(arg1);
         argumentValues.addElement(arg2);
@@ -1632,7 +1632,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @see DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
     @Override
-    public Object executeQuery(String queryName, Class domainClass, Object arg1, Object arg2, Object arg3) throws DatabaseException {
+    public Object executeQuery(String queryName, Class<?> domainClass, Object arg1, Object arg2, Object arg3) throws DatabaseException {
         Vector<Object> argumentValues = new Vector<>();
         argumentValues.addElement(arg1);
         argumentValues.addElement(arg2);
@@ -1649,7 +1649,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @see DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
     @Override
-    public Object executeQuery(String queryName, Class domainClass, List argumentValues) throws DatabaseException {
+    public Object executeQuery(String queryName, Class<?> domainClass, List argumentValues) throws DatabaseException {
         if (argumentValues instanceof Vector) {
             return executeQuery(queryName, domainClass, (Vector)argumentValues);
         } else {
@@ -1665,7 +1665,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @see DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
-    public Object executeQuery(String queryName, Class domainClass, Vector argumentValues) throws DatabaseException {
+    public Object executeQuery(String queryName, Class<?> domainClass, Vector argumentValues) throws DatabaseException {
         ClassDescriptor descriptor = getDescriptor(domainClass);
 
         if (descriptor == null) {
@@ -2370,7 +2370,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * If the passed Class parameter is null, then null will be returned.
      */
     @Override
-    public ClassDescriptor getClassDescriptor(Class theClass) {
+    public ClassDescriptor getClassDescriptor(Class<?> theClass) {
         if (theClass == null) {
             return null;
         }
@@ -2409,7 +2409,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * new class. If the passed Class is null, null will be returned.
      */
     @Override
-    public ClassDescriptor getDescriptor(Class theClass) {
+    public ClassDescriptor getDescriptor(Class<?> theClass) {
         if (theClass == null) {
             return null;
         }
@@ -2444,9 +2444,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                     // This is used by EJB to find the descriptor for a stub and remote to unwrap it,
                     // and by inheritance to allow for subclasses that have no additional state to not require a descriptor.
                     if (!theClass.isInterface()) {
-                        Class[] interfaces = theClass.getInterfaces();
+                        Class<?>[] interfaces = theClass.getInterfaces();
                         for (int index = 0; index < interfaces.length; ++index) {
-                            Class interfaceClass = interfaces[index];
+                            Class<?> interfaceClass = interfaces[index];
                             descriptor = getDescriptor(interfaceClass);
                             if (descriptor != null) {
                                 getDescriptors().put(interfaceClass, descriptor);
@@ -2760,7 +2760,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Return the sequnce number from the database
      */
     @Override
-    public Number getNextSequenceNumberValue(Class domainClass) {
+    public Number getNextSequenceNumberValue(Class<?> domainClass) {
         return (Number)getSequencing().getNextValue(domainClass);
     }
 
@@ -2880,7 +2880,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * The platform is used for database specific behavior.
      */
     @Override
-    public Platform getPlatform(Class domainClass) {
+    public Platform getPlatform(Class<?> domainClass) {
         // PERF: Cache the platform.
         if (platform == null) {
             platform = getDatasourcePlatform();
@@ -3106,7 +3106,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Return the session to be used for the class.
      * Used for compatibility with the session broker.
      */
-    public AbstractSession getSessionForClass(Class domainClass) {
+    public AbstractSession getSessionForClass(Class<?> domainClass) {
         if (hasBroker()) {
             return getBroker().getSessionForClass(domainClass);
         }
@@ -3235,7 +3235,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Return true if a descriptor exists for the given class.
      */
     @Override
-    public boolean hasDescriptor(Class theClass) {
+    public boolean hasDescriptor(Class<?> theClass) {
         if (theClass == null) {
             return false;
         }
@@ -3328,7 +3328,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * Return if the class is defined as read-only.
      */
-    public boolean isClassReadOnly(Class theClass) {
+    public boolean isClassReadOnly(Class<?> theClass) {
         ClassDescriptor descriptor = getDescriptor(theClass);
         return isClassReadOnly(theClass, descriptor);
     }
@@ -3338,7 +3338,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Return if the class is defined as read-only.
      * PERF: Pass descriptor to avoid re-lookup.
      */
-    public boolean isClassReadOnly(Class theClass, ClassDescriptor descriptor) {
+    public boolean isClassReadOnly(Class<?> theClass, ClassDescriptor descriptor) {
         if ((descriptor != null) && descriptor.shouldBeReadOnly()) {
             return true;
         }
@@ -3626,7 +3626,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @see #readAllObjects(Class, Expression)
      */
     @Override
-    public Vector readAllObjects(Class domainClass) throws DatabaseException {
+    public Vector readAllObjects(Class<?> domainClass) throws DatabaseException {
         ReadAllQuery query = new ReadAllQuery();
         query.setIsExecutionClone(true);
         query.setReferenceClass(domainClass);
@@ -3643,7 +3643,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @see ReadAllQuery
      */
-    public Vector readAllObjects(Class domainClass, String sqlString) throws DatabaseException {
+    public Vector readAllObjects(Class<?> domainClass, String sqlString) throws DatabaseException {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(domainClass);
         query.setSQLString(sqlString);
@@ -3660,7 +3660,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @see Call
      */
     @Override
-    public Vector readAllObjects(Class referenceClass, Call aCall) throws DatabaseException {
+    public Vector readAllObjects(Class<?> referenceClass, Call aCall) throws DatabaseException {
         ReadAllQuery raq = new ReadAllQuery();
         raq.setReferenceClass(referenceClass);
         raq.setCall(aCall);
@@ -3676,7 +3676,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @see ReadAllQuery
      */
     @Override
-    public Vector readAllObjects(Class domainClass, Expression expression) throws DatabaseException {
+    public Vector readAllObjects(Class<?> domainClass, Expression expression) throws DatabaseException {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(domainClass);
         query.setSelectionCriteria(expression);
@@ -3694,7 +3694,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @see #readAllObjects(Class, Expression)
      */
     @Override
-    public Object readObject(Class domainClass) throws DatabaseException {
+    public Object readObject(Class<?> domainClass) throws DatabaseException {
         ReadObjectQuery query = new ReadObjectQuery();
         query.setReferenceClass(domainClass);
         query.setIsExecutionClone(true);
@@ -3711,7 +3711,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @see ReadObjectQuery
      */
-    public Object readObject(Class domainClass, String sqlString) throws DatabaseException {
+    public Object readObject(Class<?> domainClass, String sqlString) throws DatabaseException {
         ReadObjectQuery query = new ReadObjectQuery();
         query.setReferenceClass(domainClass);
         query.setSQLString(sqlString);
@@ -3729,7 +3729,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @see JPQLCall
      */
     @Override
-    public Object readObject(Class domainClass, Call aCall) throws DatabaseException {
+    public Object readObject(Class<?> domainClass, Call aCall) throws DatabaseException {
         ReadObjectQuery query = new ReadObjectQuery();
         query.setReferenceClass(domainClass);
         query.setCall(aCall);
@@ -3745,7 +3745,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @see ReadObjectQuery
      */
     @Override
-    public Object readObject(Class domainClass, Expression expression) throws DatabaseException {
+    public Object readObject(Class<?> domainClass, Expression expression) throws DatabaseException {
         ReadObjectQuery query = new ReadObjectQuery();
         query.setReferenceClass(domainClass);
         query.setSelectionCriteria(expression);

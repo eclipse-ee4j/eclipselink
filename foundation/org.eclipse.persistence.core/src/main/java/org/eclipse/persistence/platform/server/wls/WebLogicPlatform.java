@@ -135,7 +135,7 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
     protected Method getVendorConnectionMethod() {
         if ((this.vendorConnectionMethod == null) && (!getWebLogicConnectionClass().equals(void.class))) {
             try {
-                this.vendorConnectionMethod = PrivilegedAccessHelper.getDeclaredMethod(getWebLogicConnectionClass(), "getVendorConnection", new Class[0]);
+                this.vendorConnectionMethod = PrivilegedAccessHelper.getDeclaredMethod(getWebLogicConnectionClass(), "getVendorConnection", new Class<?>[0]);
             } catch (NoSuchMethodException exception) {
                 getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, exception);
             }
@@ -168,7 +168,7 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
     protected Method getClearStatementCacheMethod() {
         if ((this.clearStatementCacheMethod == null) && (!getWebLogicConnectionClass().equals(void.class))) {
             try {
-                this.clearStatementCacheMethod = PrivilegedAccessHelper.getDeclaredMethod(getWebLogicConnectionClass(), "clearStatementCache", new Class[0]);
+                this.clearStatementCacheMethod = PrivilegedAccessHelper.getDeclaredMethod(getWebLogicConnectionClass(), "clearStatementCache", new Class<?>[0]);
             } catch (NoSuchMethodException exception) {
                 getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, exception);
             }

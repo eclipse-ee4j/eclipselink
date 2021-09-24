@@ -47,7 +47,7 @@ public class EnumTypeConverter extends ObjectTypeConverter {
      * Creating an enum converter this way will create the conversion values
      * for you using ordinal or name values.
      */
-    public EnumTypeConverter(DatabaseMapping mapping, Class enumClass, boolean useOrdinalValues) {
+    public EnumTypeConverter(DatabaseMapping mapping, Class<?> enumClass, boolean useOrdinalValues) {
         super(mapping);
         m_enumClass = enumClass;
         m_enumClassName = enumClass.getName();
@@ -93,7 +93,7 @@ public class EnumTypeConverter extends ObjectTypeConverter {
         }
     }
 
-    public Class getEnumClass() {
+    public Class<?> getEnumClass() {
         return m_enumClass;
     }
 

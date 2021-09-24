@@ -127,7 +127,7 @@ public final class ServerPlatformUtils {
                 throw ServerPlatformException.serverPlatformClassNotFound(platformClass, ex);
             }
         }
-        final Class<?>[] paramTypes = (Class<?>[]) new Class[] { DatabaseSession.class };
+        final Class<?>[] paramTypes = new Class<?>[] { DatabaseSession.class };
         final Object[] params = new Object[] { session };
         ServerPlatform platform = null;
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {

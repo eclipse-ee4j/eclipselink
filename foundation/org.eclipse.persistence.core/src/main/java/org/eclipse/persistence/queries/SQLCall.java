@@ -171,7 +171,7 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
      * This method should only be used with custom SQL:
      * it sets a type to IN, OUT or INOUT parameter (prefixed with #, ### or #### in custom SQL string).
      */
-    public void setCustomSQLArgumentType(String customParameterName, Class type) {
+    public void setCustomSQLArgumentType(String customParameterName, Class<?> type) {
         DatabaseField field = new DatabaseField(customParameterName);
         field.setType(type);
         getParameters().add(field);
@@ -217,7 +217,7 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
      * The typeName is the JDBC type name, this may be required for ARRAY or STRUCT types.
      * The javaType is the java class to return instead of the ARRAY and STRUCT types if a conversion is possible.
      */
-    public void setCustomSQLArgumentType(String argumentFieldName, int type, String typeName, Class javaType) {
+    public void setCustomSQLArgumentType(String argumentFieldName, int type, String typeName, Class<?> javaType) {
         ObjectRelationalDatabaseField field = new ObjectRelationalDatabaseField(argumentFieldName);
         field.setSqlType(type);
         field.setSqlTypeName(typeName);
@@ -254,7 +254,7 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
      * The javaType is the java class to return instead of the ARRAY and STRUCT types if a conversion is possible.
      * The nestedType is a DatabaseField with type information set to match the VARRAYs object types
      */
-    public void setCustomSQLArgumentType(String argumentFieldName, int type, String typeName, Class javaType, DatabaseField nestedType) {
+    public void setCustomSQLArgumentType(String argumentFieldName, int type, String typeName, Class<?> javaType, DatabaseField nestedType) {
         ObjectRelationalDatabaseField field = new ObjectRelationalDatabaseField(argumentFieldName);
         field.setSqlType(type);
         field.setSqlTypeName(typeName);

@@ -551,7 +551,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
             }
         } else {
             if (aDescriptor.hasInheritance()) {
-                Class classValue = aDescriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
+                Class<?> classValue = aDescriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
                 if (classValue == null) {
                     // no xsi:type attribute - look for type indicator on the field
                     QName leafElementType = ((XMLField) getField()).getLeafElementType();
@@ -735,7 +735,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
     }
 
     @Override
-    protected ClassDescriptor getReferenceDescriptor(Class theClass, AbstractSession session) {
+    protected ClassDescriptor getReferenceDescriptor(Class<?> theClass, AbstractSession session) {
         if ((getReferenceDescriptor() != null) && getReferenceDescriptor().getJavaClass().equals(theClass)) {
             return getReferenceDescriptor();
         }

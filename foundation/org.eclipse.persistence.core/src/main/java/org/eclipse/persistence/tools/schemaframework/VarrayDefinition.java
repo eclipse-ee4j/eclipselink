@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,7 @@ import org.eclipse.persistence.exceptions.*;
 public class VarrayDefinition extends DatabaseObjectDefinition {
     protected int typeSize;
     protected int size;
-    protected Class type;
+    protected Class<?> type;
     protected String typeName;
 
     public VarrayDefinition() {
@@ -120,7 +120,7 @@ public class VarrayDefinition extends DatabaseObjectDefinition {
      * Return the type of the field.
      * This should be set to a java class, such as String.class, Integer.class or Date.class.
      */
-    public Class getType() {
+    public Class<?> getType() {
         return type;
     }
 
@@ -154,7 +154,7 @@ public class VarrayDefinition extends DatabaseObjectDefinition {
      * Set the type of the field.
      * This should be set to a java class, such as String.class, Integer.class or Date.class.
      */
-    public void setType(Class type) {
+    public void setType(Class<?> type) {
         this.type = type;
     }
 

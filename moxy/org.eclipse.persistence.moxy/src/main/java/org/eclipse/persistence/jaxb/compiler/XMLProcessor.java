@@ -473,7 +473,7 @@ public class XMLProcessor {
     private XMLNameTransformer getXMLNameTransformerClassFromString(String transformerClassName){
     XMLNameTransformer transformer = null;
         if(transformerClassName != null){
-           Class nameTransformerClass;
+           Class<?> nameTransformerClass;
 
              try {
                  nameTransformerClass = Class.forName(transformerClassName);

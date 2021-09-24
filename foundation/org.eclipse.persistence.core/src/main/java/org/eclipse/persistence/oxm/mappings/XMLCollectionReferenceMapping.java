@@ -221,7 +221,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
                 pks = new CacheId(new Object[0]);
                 primaryKeyMap.put(tgtXPath, pks);
             }
-            Class type = descriptor.getTypedField(tgtFld).getType();
+            Class<?> type = descriptor.getTypedField(tgtFld).getType();
             XMLConversionManager xmlConversionManager = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();
             if(usesSingleNode) {
                 for (StringTokenizer stok = new StringTokenizer((String) object); stok.hasMoreTokens();) {
@@ -361,7 +361,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      * <p>jdk1.1.x: The container class must be a subclass of Vector.
      */
     @Override
-    public void useCollectionClass(Class concreteContainerClass) {
+    public void useCollectionClass(Class<?> concreteContainerClass) {
         this.setContainerPolicy(ContainerPolicy.buildPolicyFor(concreteContainerClass));
     }
 
@@ -387,7 +387,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      * <p>The referenceClass must be set before calling this method.
      */
     @Override
-    public void useMapClass(Class concreteContainerClass, String methodName) {
+    public void useMapClass(Class<?> concreteContainerClass, String methodName) {
         // the reference class has to be specified before coming here
         if (this.getReferenceClass() == null) {
             throw DescriptorException.referenceClassNotSpecified(this);

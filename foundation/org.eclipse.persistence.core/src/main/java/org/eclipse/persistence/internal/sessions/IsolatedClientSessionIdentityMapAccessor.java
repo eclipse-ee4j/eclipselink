@@ -56,7 +56,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * The return cacheKey should be used to release the deferred lock
      */
     @Override
-    public CacheKey acquireDeferredLock(Object primaryKey, Class javaClass, ClassDescriptor descriptor, boolean isCacheCheckComplete) {
+    public CacheKey acquireDeferredLock(Object primaryKey, Class<?> javaClass, ClassDescriptor descriptor, boolean isCacheCheckComplete) {
         if (!descriptor.getCachePolicy().isSharedIsolation()) {
             return getIdentityMapManager().acquireDeferredLock(primaryKey, javaClass, descriptor, isCacheCheckComplete);
         } else {
@@ -70,7 +70,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * called with true from the merge process, if true then the refresh will not refresh the object.
      */
     @Override
-    public CacheKey acquireLock(Object primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor, boolean isCacheCheckComplete) {
+    public CacheKey acquireLock(Object primaryKey, Class<?> domainClass, boolean forMerge, ClassDescriptor descriptor, boolean isCacheCheckComplete) {
         if (!descriptor.getCachePolicy().isSharedIsolation()) {
             return getIdentityMapManager().acquireLock(primaryKey, domainClass, forMerge, descriptor, isCacheCheckComplete);
         } else {
@@ -84,7 +84,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * called with true from the merge process, if true then the refresh will not refresh the object.
      */
     @Override
-    public CacheKey acquireLockNoWait(Object primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor) {
+    public CacheKey acquireLockNoWait(Object primaryKey, Class<?> domainClass, boolean forMerge, ClassDescriptor descriptor) {
         if (!descriptor.getCachePolicy().isSharedIsolation()) {
             return getIdentityMapManager().acquireLockNoWait(primaryKey, domainClass, forMerge, descriptor);
         } else {
@@ -98,7 +98,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * called with true from the merge process, if true then the refresh will not refresh the object.
      */
     @Override
-    public CacheKey acquireLockWithWait(Object primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor, int wait) {
+    public CacheKey acquireLockWithWait(Object primaryKey, Class<?> domainClass, boolean forMerge, ClassDescriptor descriptor, int wait) {
         if (!descriptor.getCachePolicy().isSharedIsolation()) {
             return getIdentityMapManager().acquireLockWithWait(primaryKey, domainClass, forMerge, descriptor, wait);
         } else {
@@ -113,7 +113,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * the object while the read lock is held.
      */
     @Override
-    public CacheKey acquireReadLockOnCacheKey(Object primaryKey, Class domainClass, ClassDescriptor descriptor) {
+    public CacheKey acquireReadLockOnCacheKey(Object primaryKey, Class<?> domainClass, ClassDescriptor descriptor) {
         if (!descriptor.getCachePolicy().isSharedIsolation()) {
             return getIdentityMapManager().acquireReadLockOnCacheKey(primaryKey, domainClass, descriptor);
         } else {
@@ -129,7 +129,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * If no readlock can be acquired then do not wait but return null.
      */
     @Override
-    public CacheKey acquireReadLockOnCacheKeyNoWait(Object primaryKey, Class domainClass, ClassDescriptor descriptor) {
+    public CacheKey acquireReadLockOnCacheKeyNoWait(Object primaryKey, Class<?> domainClass, ClassDescriptor descriptor) {
         if (!descriptor.getCachePolicy().isSharedIsolation()) {
             return getIdentityMapManager().acquireReadLockOnCacheKeyNoWait(primaryKey, domainClass, descriptor);
         } else {
@@ -155,7 +155,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * Return if their is an object for the primary key.
      */
     @Override
-    public boolean containsObjectInIdentityMap(Object primaryKey, Class theClass, ClassDescriptor descriptor) {
+    public boolean containsObjectInIdentityMap(Object primaryKey, Class<?> theClass, ClassDescriptor descriptor) {
         if (!descriptor.getCachePolicy().isSharedIsolation()) {
             if (this.identityMapManager == null) {
                 return false;
@@ -184,7 +184,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * Only return objects that are invalid in the cache if specified.
      */
     @Override
-    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, DataRecord translationRow, int valueHolderPolicy, boolean shouldReturnInvalidatedObjects) throws QueryException {
+    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class<?> theClass, DataRecord translationRow, int valueHolderPolicy, boolean shouldReturnInvalidatedObjects) throws QueryException {
         if (!session.getDescriptor(theClass).getCachePolicy().isSharedIsolation()) {
             return getIdentityMapManager().getAllFromIdentityMap(selectionCriteria, theClass, translationRow, valueHolderPolicy, shouldReturnInvalidatedObjects);
         } else {
@@ -199,7 +199,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * @param myClass the class of the cache key to be retrieved.
      */
     @Override
-    public CacheKey getCacheKeyForObject(Object primaryKey, Class myClass, ClassDescriptor descriptor, boolean forMerge) {
+    public CacheKey getCacheKeyForObject(Object primaryKey, Class<?> myClass, ClassDescriptor descriptor, boolean forMerge) {
         if (!descriptor.getCachePolicy().isSharedIsolation()) {
             if (this.identityMapManager == null) {
                 return null;
@@ -217,7 +217,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * @param myClass the class of the cache key to be retrieved.
      */
     @Override
-    public CacheKey getCacheKeyForObjectForLock(Object primaryKey, Class myClass, ClassDescriptor descriptor) {
+    public CacheKey getCacheKeyForObjectForLock(Object primaryKey, Class<?> myClass, ClassDescriptor descriptor) {
         if (!descriptor.getCachePolicy().isSharedIsolation()) {
             if (this.identityMapManager == null) {
                 return null;
@@ -233,7 +233,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * Return the object from the identity with the primary and class.
      */
     @Override
-    public Object getFromIdentityMap(Object primaryKey, Object object, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
+    public Object getFromIdentityMap(Object primaryKey, Object object, Class<?> theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         if (!descriptor.getCachePolicy().isSharedIsolation()){
             Object cachedObject = null;
             if (this.identityMapManager != null){
@@ -249,7 +249,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
         }
     }
 
-    protected Object getAndCloneCacheKeyFromParent(Object primaryKey, Object objectToClone, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
+    protected Object getAndCloneCacheKeyFromParent(Object primaryKey, Object objectToClone, Class<?> theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         CacheKey cacheKey = null;
         if (objectToClone != null && objectToClone instanceof PersistenceEntity){
             cacheKey = ((PersistenceEntity)objectToClone)._persistence_getCacheKey();
@@ -368,7 +368,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * This avoids checking the parent cache for the unit of work.
      */
     @Override
-    public Object getFromLocalIdentityMap(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
+    public Object getFromLocalIdentityMap(Object primaryKey, Class<?> theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         return getFromIdentityMap(primaryKey, null, theClass, shouldReturnInvalidatedObjects, descriptor);
     }
 
@@ -379,7 +379,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * If the expression is too complex an exception will be thrown.
      */
     @Override
-    public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, DataRecord translationRow, int valueHolderPolicy, boolean conforming, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
+    public Object getFromIdentityMap(Expression selectionCriteria, Class<?> theClass, DataRecord translationRow, int valueHolderPolicy, boolean conforming, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         if (!descriptor.getCachePolicy().isSharedIsolation()) {
             return getIdentityMapManager().getFromIdentityMap(selectionCriteria, theClass, translationRow, valueHolderPolicy, conforming, shouldReturnInvalidatedObjects, descriptor);
         } else {
@@ -393,7 +393,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * Only return invalidated objects if requested
      */
     @Override
-    public Object getFromIdentityMapWithDeferredLock(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
+    public Object getFromIdentityMapWithDeferredLock(Object primaryKey, Class<?> theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         if (!descriptor.getCachePolicy().isSharedIsolation()) {
             if (this.identityMapManager == null) {
                 return null;
@@ -462,7 +462,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * this is used for EJB.
      */
     @Override
-    public Object getWrapper(Object primaryKey, Class theClass) {
+    public Object getWrapper(Object primaryKey, Class<?> theClass) {
         if (!session.getDescriptor(theClass).getCachePolicy().isSharedIsolation()) {
             return getIdentityMapManager().getWrapper(primaryKey, theClass);
         } else {
@@ -486,7 +486,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * Extract the write lock value from the identity map.
      */
     @Override
-    public Object getWriteLockValue(Object primaryKey, Class theClass, ClassDescriptor descriptor) {
+    public Object getWriteLockValue(Object primaryKey, Class<?> theClass, ClassDescriptor descriptor) {
         if (!descriptor.getCachePolicy().isSharedIsolation()) {
             return getIdentityMapManager().getWriteLockValue(primaryKey, theClass, descriptor);
         } else {
@@ -517,7 +517,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * are not referenced from other objects of other classes or from the application.
      */
     @Override
-    public void initializeIdentityMap(Class theClass) {
+    public void initializeIdentityMap(Class<?> theClass) {
         getSession().log(SessionLog.FINER, SessionLog.CACHE, "initialize_identitymap", theClass);
         if (!session.getDescriptor(theClass).getCachePolicy().isSharedIsolation()) {
             getIdentityMapManager().initializeIdentityMap(theClass);
@@ -531,7 +531,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * This is used to invalidate the query cache on any change.
      */
     @Override
-    public void invalidateQueryCache(Class classThatChanged) {
+    public void invalidateQueryCache(Class<?> classThatChanged) {
         if (!session.getDescriptor(classThatChanged).getCachePolicy().isSharedIsolation()) {
             getIdentityMapManager().invalidateQueryCache(classThatChanged);
         } else {
@@ -599,7 +599,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * The output of this method will be logged to this session's SessionLog at SEVERE level.
      */
     @Override
-    public void printIdentityMap(Class businessClass) {
+    public void printIdentityMap(Class<?> businessClass) {
         if (getSession().shouldLog(SessionLog.SEVERE, SessionLog.CACHE)) {
             if (!session.getDescriptor(businessClass).getCachePolicy().isSharedIsolation()) {
                 getIdentityMapManager().printIdentityMap(businessClass);
@@ -661,7 +661,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * @param shouldInvalidateOnException boolean indicates weather to invalidate the object if conform threw exception.
      */
     @Override
-    public void invalidateObjects(Expression selectionCriteria, Class theClass, DataRecord translationRow, boolean shouldInvalidateOnException) {
+    public void invalidateObjects(Expression selectionCriteria, Class<?> theClass, DataRecord translationRow, boolean shouldInvalidateOnException) {
         if (!session.getDescriptor(theClass).getCachePolicy().isSharedIsolation()) {
             getIdentityMapManager().invalidateObjects(selectionCriteria, theClass, translationRow, shouldInvalidateOnException);
         } else {
@@ -687,7 +687,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * Remove the object from the object cache.
      */
     @Override
-    public Object removeFromIdentityMap(Object key, Class theClass, ClassDescriptor descriptor, Object object) {
+    public Object removeFromIdentityMap(Object key, Class<?> theClass, ClassDescriptor descriptor, Object object) {
         Object removedObject = null;
         if (descriptor.isIsolated() || descriptor.isProtectedIsolation()) {
             removedObject = getIdentityMapManager().removeFromIdentityMap(key, theClass, descriptor, object);
@@ -713,7 +713,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * this is used for EJB.
      */
     @Override
-    public void setWrapper(Object primaryKey, Class theClass, Object wrapper) {
+    public void setWrapper(Object primaryKey, Class<?> theClass, Object wrapper) {
         if (!getSession().getDescriptor(theClass).getCachePolicy().isSharedIsolation()) {
             getIdentityMapManager().setWrapper(primaryKey, theClass, wrapper);
         } else {
@@ -726,7 +726,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * Update the write lock value in the identity map.
      */
     @Override
-    public void updateWriteLockValue(Object primaryKey, Class theClass, Object writeLockValue) {
+    public void updateWriteLockValue(Object primaryKey, Class<?> theClass, Object writeLockValue) {
         if (!getSession().getDescriptor(theClass).getCachePolicy().isSharedIsolation()) {
             getIdentityMapManager().setWriteLockValue(primaryKey, theClass, writeLockValue);
         } else {

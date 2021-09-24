@@ -42,7 +42,7 @@ import org.eclipse.persistence.internal.security.PrivilegedGetMethod;
  *  @see org.eclipse.persistence.jaxb.JAXBMarshaller
  */
 public class MarshalCallback {
-    private Class domainClass;
+    private Class<?> domainClass;
     private String domainClassName;
     private Method beforeMarshalCallback;
     private Method afterMarshalCallback;
@@ -57,7 +57,7 @@ public class MarshalCallback {
         return beforeMarshalCallback;
     }
 
-    public Class getDomainClass() {
+    public Class<?> getDomainClass() {
         return domainClass;
     }
 
@@ -80,7 +80,7 @@ public class MarshalCallback {
         } catch (ClassNotFoundException ex) {
             return;
         }
-        Class[] params = new Class[] { Marshaller.class };
+        Class<?>[] params = new Class<?>[] { Marshaller.class };
         if (hasBeforeMarshalCallback) {
             try {
                 Method beforeMarshal = null;
@@ -148,7 +148,7 @@ public class MarshalCallback {
      * the set value with Class.forName(domainClassName).
      *
      */
-    public void setDomainClass(Class clazz) {
+    public void setDomainClass(Class<?> clazz) {
         domainClass = clazz;
         setDomainClassName(clazz.getName());
     }

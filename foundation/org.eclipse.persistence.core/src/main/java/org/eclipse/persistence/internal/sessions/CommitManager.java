@@ -49,7 +49,7 @@ import org.eclipse.persistence.sessions.UnitOfWork.CommitOrderType;
  */
 public class CommitManager {
     /** Order based on mapping foreign key constraints on how to insert objects by class. */
-    protected List<Class> commitOrder;
+    protected List<Class<?>> commitOrder;
 
     /**
      * This tracks the commit state for the objects, PENDING, PRE, POST, COMPLETE.
@@ -141,22 +141,22 @@ public class CommitManager {
             // PERF: if the number of classes in the project is large this loop can be a perf issue.
             // If only one class types changed, then avoid loop.
             if ((uowChangeSet.getObjectChanges().size() + uowChangeSet.getNewObjectChangeSets().size()) <= 1) {
-                Iterator<Class> classes = uowChangeSet.getNewObjectChangeSets().keySet().iterator();
+                Iterator<Class<?>> classes = uowChangeSet.getNewObjectChangeSets().keySet().iterator();
                 if (classes.hasNext()) {
-                    Class theClass = classes.next();
+                    Class<?> theClass = classes.next();
                     commitNewObjectsForClassWithChangeSet(uowChangeSet, theClass);
                 }
                 classes = uowChangeSet.getObjectChanges().keySet().iterator();
                 if (classes.hasNext()) {
-                    Class theClass = classes.next();
+                    Class<?> theClass = classes.next();
                     commitChangedObjectsForClassWithChangeSet(uowChangeSet, theClass);
                 }
             } else {
                 // The commit order is all of the classes ordered by dependencies, this is done for deadlock avoidance.
-                List<Class> commitOrder = getCommitOrder();
+                List<Class<?>> commitOrder = getCommitOrder();
                 int size = commitOrder.size();
                 for (int index = 0; index < size; index++) {
-                    Class theClass = commitOrder.get(index);
+                    Class<?> theClass = commitOrder.get(index);
                     commitAllObjectsForClassWithChangeSet(uowChangeSet, theClass);
                 }
             }
@@ -208,7 +208,7 @@ public class CommitManager {
      * Commit all of the objects of the class type in the change set.
      * This allows for the order of the classes to be processed optimally.
      */
-    protected void commitAllObjectsForClassWithChangeSet(UnitOfWorkChangeSet uowChangeSet, Class theClass) {
+    protected void commitAllObjectsForClassWithChangeSet(UnitOfWorkChangeSet uowChangeSet, Class<?> theClass) {
         // Although new objects should be first, there is an issue that new objects get added to non-new after the insert,
         // so the object would be written twice.
         commitChangedObjectsForClassWithChangeSet(uowChangeSet, theClass);
@@ -219,7 +219,7 @@ public class CommitManager {
      * Commit all of the objects of the class type in the change set.
      * This allows for the order of the classes to be processed optimally.
      */
-    protected void commitNewObjectsForClassWithChangeSet(UnitOfWorkChangeSet uowChangeSet, Class theClass) {
+    protected void commitNewObjectsForClassWithChangeSet(UnitOfWorkChangeSet uowChangeSet, Class<?> theClass) {
         Map<ObjectChangeSet, ObjectChangeSet> newObjectChangesList = uowChangeSet.getNewObjectChangeSets().get(theClass);
         if (newObjectChangesList != null) { // may be no changes for that class type.
             AbstractSession session = getSession();
@@ -256,7 +256,7 @@ public class CommitManager {
      * Commit changed of the objects of the class type in the change set.
      * This allows for the order of the classes to be processed optimally.
      */
-    protected void commitChangedObjectsForClassWithChangeSet(UnitOfWorkChangeSet uowChangeSet, Class theClass) {
+    protected void commitChangedObjectsForClassWithChangeSet(UnitOfWorkChangeSet uowChangeSet, Class<?> theClass) {
         Map<ObjectChangeSet, ObjectChangeSet> objectChangesList = uowChangeSet.getObjectChanges().get(theClass);
         if (objectChangesList != null) {// may be no changes for that class type.
             ClassDescriptor descriptor = null;
@@ -311,9 +311,9 @@ public class CommitManager {
             if (objects.size() == 1) {
                 deleteAllObjects(objects.get(0).getClass(), objects, session);
             } else {
-                List<Class> commitOrder = getCommitOrder();
+                List<Class<?>> commitOrder = getCommitOrder();
                 for (int orderIndex = commitOrder.size() - 1; orderIndex >= 0; orderIndex--) {
-                    Class theClass = commitOrder.get(orderIndex);
+                    Class<?> theClass = commitOrder.get(orderIndex);
                     deleteAllObjects(theClass, objects, session);
                 }
             }
@@ -334,7 +334,7 @@ public class CommitManager {
     /**
      * Delete all of the objects with the matching class.
      */
-    public void deleteAllObjects(Class theClass, List objects, AbstractSession session) {
+    public void deleteAllObjects(Class<?> theClass, List objects, AbstractSession session) {
         ClassDescriptor descriptor = null;
 
         if (((UnitOfWorkImpl)session).getCommitOrder() != CommitOrderType.NONE) {// bug 331064 - Sort the delete order
@@ -369,7 +369,7 @@ public class CommitManager {
      * Sort the objects based on PK.
      */
     // bug 331064 - Sort the delete order based on PKs.
-    private List sort (Class theClass, List objects) {
+    private List sort (Class<?> theClass, List objects) {
         ClassDescriptor descriptor = session.getDescriptor(theClass);
         org.eclipse.persistence.internal.descriptors.ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
         int size = objects.size();
@@ -389,7 +389,7 @@ public class CommitManager {
      * The commit order is a vector of vectors,
      * where the first vector is all root level classes, the second is classes owned by roots and so on.
      */
-    public List<Class> getCommitOrder() {
+    public List<Class<?>> getCommitOrder() {
         if (this.commitOrder == null) {
             this.commitOrder = new ArrayList();
         }

@@ -46,7 +46,7 @@ public class CollectionContainerPolicy extends InterfaceContainerPolicy {
      * INTERNAL:
      * Construct a new policy for the specified class.
      */
-    public CollectionContainerPolicy(Class containerClass) {
+    public CollectionContainerPolicy(Class<?> containerClass) {
         super(containerClass);
     }
 
@@ -143,7 +143,7 @@ public class CollectionContainerPolicy extends InterfaceContainerPolicy {
     }
 
     @Override
-    public Class getInterfaceType() {
+    public Class<?> getInterfaceType() {
         return ClassConstants.Collection_Class;
     }
 

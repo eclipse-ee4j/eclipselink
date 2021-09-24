@@ -115,7 +115,7 @@ public class AnnotationProxy implements InvocationHandler {
         // Pass the classloader to the ConversionManager as well
         // conversionMgr.setLoader(cl);
 
-        return (A) Proxy.newProxyInstance(cl, new Class[] { annoClass }, new AnnotationProxy(components, conversionMgr));
+        return (A) Proxy.newProxyInstance(cl, new Class<?>[] { annoClass }, new AnnotationProxy(components, conversionMgr));
     }
 
     /**
@@ -169,13 +169,13 @@ public class AnnotationProxy implements InvocationHandler {
         return conversionMgr.convertObject(value, returnType);
     }
 
-    private Object handleArrayData(Class returnType, Object value) {
+    private Object handleArrayData(Class<?> returnType, Object value) {
         if (value == null) {
             return null;
         }
 
         Object[] data = (Object[]) value;
-        Class componentType = returnType.getComponentType();
+        Class<?> componentType = returnType.getComponentType();
         Object[] convertedArray = (Object[]) Array.newInstance(componentType, data.length);
 
         for (int i = 0; i < data.length; i++) {

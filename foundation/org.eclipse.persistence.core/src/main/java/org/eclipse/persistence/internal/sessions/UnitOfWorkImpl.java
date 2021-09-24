@@ -204,7 +204,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     protected Map<ReadQuery, ReadQuery> batchQueries;
 
     /** Read-only class can be used for reference data to avoid cloning when not required. */
-    protected Set<Class> readOnlyClasses;
+    protected Set<Class<?>> readOnlyClasses;
 
     /** Flag indicating that the transaction for this UOW was already begun. */
     protected boolean wasTransactionBegunPrematurely;
@@ -479,7 +479,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Cannot be called after objects have been registered in the unit of work.
      */
     @Override
-    public void addReadOnlyClass(Class theClass) throws ValidationException {
+    public void addReadOnlyClass(Class<?> theClass) throws ValidationException {
         if (!canChangeReadOnlySet()) {
             throw ValidationException.cannotModifyReadOnlyClassesSetAfterUsingUnitOfWork();
         }
@@ -504,7 +504,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     @Override
     public void addReadOnlyClasses(Collection classes) {
         for (Iterator iterator = classes.iterator(); iterator.hasNext();) {
-            Class theClass = (Class)iterator.next();
+            Class<?> theClass = (Class)iterator.next();
             addReadOnlyClass(theClass);
         }
     }
@@ -2003,7 +2003,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Return any new objects matching the expression.
      * Used for in-memory querying.
      */
-    public Vector getAllFromNewObjects(Expression selectionCriteria, Class theClass, AbstractRecord translationRow, int valueHolderPolicy) {
+    public Vector getAllFromNewObjects(Expression selectionCriteria, Class<?> theClass, AbstractRecord translationRow, int valueHolderPolicy) {
         // PERF: Avoid initialization of new objects if none.
         if (!hasNewObjects()) {
             return new Vector(1);
@@ -2533,7 +2533,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Return any new object matching the expression.
      * Used for in-memory querying.
      */
-    public Object getObjectFromNewObjects(Class theClass, Object selectionKey) {
+    public Object getObjectFromNewObjects(Class<?> theClass, Object selectionKey) {
         // PERF: Avoid initialization of new objects if none.
         if (!hasNewObjects()) {
             return null;
@@ -2563,7 +2563,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Return any new object matching the expression.
      * Used for in-memory querying.
      */
-    public Object getObjectFromNewObjects(Expression selectionCriteria, Class theClass, AbstractRecord translationRow, int valueHolderPolicy) {
+    public Object getObjectFromNewObjects(Expression selectionCriteria, Class<?> theClass, AbstractRecord translationRow, int valueHolderPolicy) {
         // PERF: Avoid initialization of new objects if none.
         if (!hasNewObjects()) {
             return null;
@@ -2770,7 +2770,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Return the platform for a particular class.
      */
     @Override
-    public Platform getPlatform(Class domainClass) {
+    public Platform getPlatform(Class<?> domainClass) {
         return this.parent.getPlatform(domainClass);
     }
 
@@ -3071,7 +3071,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @return boolean, true if the class is read-only, false otherwise.
      */
     @Override
-    public boolean isClassReadOnly(Class theClass, ClassDescriptor descriptor) {
+    public boolean isClassReadOnly(Class<?> theClass, ClassDescriptor descriptor) {
         if ((descriptor != null) && (descriptor.shouldBeReadOnly())) {
             return true;
         }
@@ -3383,7 +3383,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 //If we are merging into the shared cache acquire all required locks before merging.
                 this.parent.getIdentityMapAccessorInstance().getWriteLockManager().acquireRequiredLocks(getMergeManager(), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet());
             }
-            Set<Class> classesChanged = new HashSet<>();
+            Set<Class<?>> classesChanged = new HashSet<>();
             if (! shouldStoreBypassCache()) {
                 for (Map<ObjectChangeSet, ObjectChangeSet> objectChangesList : ((UnitOfWorkChangeSet)getUnitOfWorkChangeSet()).getObjectChanges().values()) {
                     // May be no changes for that class type.
@@ -3430,7 +3430,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
                 postMergeChanges(classesChanged);
 
-                for (Class changedClass : classesChanged) {
+                for (Class<?> changedClass : classesChanged) {
                     this.parent.getIdentityMapAccessorInstance().invalidateQueryCache(changedClass);
                 }
                 // If change propagation enabled through RemoteCommandManager then go for it
@@ -3652,7 +3652,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * This can be used to ensure that new objects are registered correctly.
      */
     @Override
-    public Object newInstance(Class theClass) {
+    public Object newInstance(Class<?> theClass) {
         //CR#2272
         logDebugMessage(theClass, "new_instance");
 
@@ -4703,7 +4703,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * It is illegal to try to send this method to a nested UnitOfWork.
      */
     @Override
-    public void removeReadOnlyClass(Class theClass) throws ValidationException {
+    public void removeReadOnlyClass(Class<?> theClass) throws ValidationException {
         if (!canChangeReadOnlySet()) {
             throw ValidationException.cannotModifyReadOnlyClassesSetAfterUsingUnitOfWork();
         }
@@ -4865,7 +4865,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @return Map to facilitate merging with conforming instances
      * returned from a query on the database.
      */
-    public Map<Object, Object> scanForConformingInstances(Expression selectionCriteria, Class referenceClass, AbstractRecord arguments, ObjectLevelReadQuery query) {
+    public Map<Object, Object> scanForConformingInstances(Expression selectionCriteria, Class<?> referenceClass, AbstractRecord arguments, ObjectLevelReadQuery query) {
         // for bug 3568141 use the painstaking shouldTriggerIndirection if set
         int policy = query.getInMemoryQueryIndirectionPolicyState();
         if (policy != InMemoryQueryIndirectionPolicy.SHOULD_TRIGGER_INDIRECTION) {
@@ -5029,7 +5029,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * This set of classes given are checked that subclasses of a read-only class are also
      * in the read-only set provided.
      */
-    public void setReadOnlyClasses(List<Class> classes) {
+    public void setReadOnlyClasses(List<Class<?>> classes) {
         if (classes.isEmpty()) {
             this.readOnlyClasses = null;
             return;
@@ -6049,7 +6049,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @param id The primary key of the object, either as a List, singleton, IdClass or an instance of the object.
      */
     @Override
-    public Object getReference(Class theClass, Object id) {
+    public Object getReference(Class<?> theClass, Object id) {
         ClassDescriptor descriptor = getDescriptor(theClass);
         if (descriptor == null || descriptor.isDescriptorTypeAggregate()) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_bean_class", new Object[] { theClass }));

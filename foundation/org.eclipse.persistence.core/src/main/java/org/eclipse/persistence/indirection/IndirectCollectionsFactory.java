@@ -35,17 +35,17 @@ public final class IndirectCollectionsFactory {
     /**
      * Class implementing {@link IndirectList}.
      */
-    public static final Class IndirectList_Class = provider.getListClass();
+    public static final Class<?> IndirectList_Class = provider.getListClass();
 
     /**
      * Class implementing {@link IndirectSet}.
      */
-    public static final Class IndirectSet_Class = provider.getSetClass();
+    public static final Class<?> IndirectSet_Class = provider.getSetClass();
 
     /**
      * Class implementing {@link IndirectMap}.
      */
-    public static final Class IndirectMap_Class = provider.getMapClass();
+    public static final Class<?> IndirectMap_Class = provider.getMapClass();
 
     private IndirectCollectionsFactory() {
         // no instance please
@@ -193,7 +193,7 @@ public final class IndirectCollectionsFactory {
          *
          * @return class implementing {@link IndirectList}
          */
-        Class getListClass();
+        Class<?> getListClass();
 
         /**
          * Construct an empty {@link IndirectList} with the specified initial capacity
@@ -228,7 +228,7 @@ public final class IndirectCollectionsFactory {
          *
          * @return class implementing {@link IndirectSet}
          */
-        Class getSetClass();
+        Class<?> getSetClass();
 
         /**
          * Construct an empty {@link IndirectSet} with the specified initial capacity
@@ -260,7 +260,7 @@ public final class IndirectCollectionsFactory {
          *
          * @return class implementing {@link IndirectMap}
          */
-        Class getMapClass();
+        Class<?> getMapClass();
 
         /**
          * Construct a new, empty {@link IndirectMap} with the specified initial
@@ -296,7 +296,7 @@ public final class IndirectCollectionsFactory {
     private static final class DefaultProvider implements IndirectCollectionsProvider {
 
         @Override
-        public Class getListClass() {
+        public Class<?> getListClass() {
             return IndirectList.class;
         }
 
@@ -311,7 +311,7 @@ public final class IndirectCollectionsFactory {
         }
 
         @Override
-        public Class getSetClass() {
+        public Class<?> getSetClass() {
             return IndirectSet.class;
         }
 
@@ -326,7 +326,7 @@ public final class IndirectCollectionsFactory {
         }
 
         @Override
-        public Class getMapClass() {
+        public Class<?> getMapClass() {
             return IndirectMap.class;
         }
 

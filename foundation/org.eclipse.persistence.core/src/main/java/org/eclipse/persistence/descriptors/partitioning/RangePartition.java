@@ -39,7 +39,7 @@ public class RangePartition  {
     protected String partitionValueTypeName;
     protected String connectionPool;
 
-    protected Class partitionValueType;
+    protected Class<?> partitionValueType;
     protected Comparable startValue;
     protected Comparable endValue;
 
@@ -121,14 +121,14 @@ public class RangePartition  {
     protected <T> T initObject(Class<T> type, String value) {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
             try {
-                Constructor<T> constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(type, new Class[] {String.class}, false));
+                Constructor<T> constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(type, new Class<?>[] {String.class}, false));
                 return AccessController.doPrivileged(new PrivilegedInvokeConstructor<>(constructor, new Object[] {value}));
             } catch (PrivilegedActionException exception) {
                 //throwInitObjectException(exception, type, value, isData);
             }
         } else {
             try {
-                Constructor<T> constructor = PrivilegedAccessHelper.getConstructorFor(type, new Class[] {String.class}, false);
+                Constructor<T> constructor = PrivilegedAccessHelper.getConstructorFor(type, new Class<?>[] {String.class}, false);
                 return PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] {value});
             } catch (Exception exception) {
                 //throwInitObjectException(exception, type, value, isData);

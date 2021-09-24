@@ -426,7 +426,7 @@ public class RemoteSessionController {
      * Extract descriptor from the session
      */
     public Transporter getDescriptor(Transporter remoteTransporter) {
-        Class theClass = (Class)remoteTransporter.getObject();
+        Class<?> theClass = (Class)remoteTransporter.getObject();
         Transporter transporter = new Transporter();
 
         try {

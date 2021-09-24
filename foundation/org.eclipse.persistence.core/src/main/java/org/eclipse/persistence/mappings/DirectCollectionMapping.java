@@ -176,7 +176,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * Referenced by MapAttributeImpl to pick up the BasicMap value parameter type
      * To specify the conversion type
      * */
-    protected transient Class attributeClassification;
+    protected transient Class<?> attributeClassification;
     protected String attributeClassificationName;
 
     /**
@@ -950,7 +950,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
 
         // Instantiate any custom converter class
         if (valueConverterClassName != null) {
-            Class valueConverterClass;
+            Class<?> valueConverterClass;
             Converter valueConverter;
 
             try {
@@ -962,7 +962,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                     }
 
                     try {
-                        valueConverter = (Converter) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(valueConverterClass));
+                        valueConverter = (Converter) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(valueConverterClass));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(valueConverterClassName, exception.getException());
                     }
@@ -1160,7 +1160,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * @since Java Persistence API 2.0
      */
     @Override
-    public Class getAttributeClassification() {
+    public Class<?> getAttributeClassification() {
         return attributeClassification;
     }
 
@@ -1326,7 +1326,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * This cannot be used with direct collection mappings.
      */
     @Override
-    public Class getReferenceClass() {
+    public Class<?> getReferenceClass() {
         return null;
     }
 
@@ -2715,7 +2715,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * @since Java Persistence API 2.0
      * Migrated from AbstractDirectMapping
      */
-    public void setAttributeClassification(Class attributeClassification) {
+    public void setAttributeClassification(Class<?> attributeClassification) {
         this.attributeClassification = attributeClassification;
     }
 
@@ -2820,7 +2820,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * has specific typing requirements such as usage of java.sql.Blob or NChar.
      * This must be called after the field name has been set.
      */
-    public void setDirectFieldClassification(Class fieldType) {
+    public void setDirectFieldClassification(Class<?> fieldType) {
         getDirectField().setType(fieldType);
     }
 
@@ -2876,7 +2876,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * This cannot be used with direct collection mappings.
      */
     @Override
-    public void setReferenceClass(Class referenceClass) {
+    public void setReferenceClass(Class<?> referenceClass) {
         return;
     }
 
@@ -3170,7 +3170,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * @see org.eclipse.persistence.mappings.DirectMapMapping
      */
     @Override
-    public void useMapClass(Class concreteClass, String methodName) {
+    public void useMapClass(Class<?> concreteClass, String methodName) {
         throw ValidationException.illegalUseOfMapInDirectCollection(this, concreteClass, methodName);
     }
 

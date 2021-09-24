@@ -38,7 +38,7 @@ import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
  * INTERNAL:
  */
 public class CascadeLockingPolicy {
-    protected Class m_parentClass;
+    protected Class<?> m_parentClass;
     protected ReadObjectQuery m_query;
     protected ClassDescriptor m_descriptor;
     protected ClassDescriptor m_parentDescriptor;

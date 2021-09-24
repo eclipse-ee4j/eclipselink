@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -445,7 +445,7 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
      * @see DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
     @Override
-    public Object executeQuery(String queryName, Class domainClass) throws DatabaseException {
+    public Object executeQuery(String queryName, Class<?> domainClass) throws DatabaseException {
         return executeQuery(queryName, domainClass, new Vector(1));
     }
 
@@ -458,7 +458,7 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
      * @see DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
     @Override
-    public Object executeQuery(String queryName, Class domainClass, Vector argumentValues) throws DatabaseException {
+    public Object executeQuery(String queryName, Class<?> domainClass, Vector argumentValues) throws DatabaseException {
         DistributedSession remoteSession = null;
         if (getParent().isRemoteSession()) {
             remoteSession = (DistributedSession)getParent();
@@ -496,7 +496,7 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
      * Return the table descriptor specified for the class.
      */
     @Override
-    public ClassDescriptor getDescriptor(Class domainClass) {
+    public ClassDescriptor getDescriptor(Class<?> domainClass) {
         return getParent().getDescriptor(domainClass);
     }
 
@@ -708,14 +708,14 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
             return;
         }
         uowChangeSet.setSession(session);
-        for (Map.Entry<Class, Map<ObjectChangeSet, ObjectChangeSet>> entry : uowChangeSet.getObjectChanges().entrySet()) {
+        for (Map.Entry<Class<?>, Map<ObjectChangeSet, ObjectChangeSet>> entry : uowChangeSet.getObjectChanges().entrySet()) {
             ClassDescriptor descriptor = getDescriptor(entry.getKey());
             for (ObjectChangeSet changeSet : entry.getValue().values()) {
                 changeSet.setDescriptor(descriptor);
                 changeSet.setClassType(entry.getKey());
             }
         }
-        for (Map.Entry<Class, Map<ObjectChangeSet, ObjectChangeSet>> entry : uowChangeSet.getNewObjectChangeSets().entrySet()) {
+        for (Map.Entry<Class<?>, Map<ObjectChangeSet, ObjectChangeSet>> entry : uowChangeSet.getNewObjectChangeSets().entrySet()) {
             ClassDescriptor descriptor = getDescriptor(entry.getKey());
             for (ObjectChangeSet changeSet : entry.getValue().values()) {
                 changeSet.setDescriptor(descriptor);

@@ -1415,7 +1415,7 @@ public class SQLSelectStatement extends SQLStatement {
         // Some queries are not on objects but for data, thus no descriptor.
         if (!builder.doesNotRepresentAnObjectInTheQuery()) {
             if (descriptor != null) {
-                Class queryClass = builder.getQueryClass();
+                Class<?> queryClass = builder.getQueryClass();
                 // GF 2333 Only change the descriptor class if:
                 //  1 - it is not set
                 //  2 - if this is an inheritance query
@@ -1612,7 +1612,7 @@ public class SQLSelectStatement extends SQLStatement {
             // CR2114; If this is data level then we don't have a descriptor.
             // We don't have a target class so we must use the root platform. PWK
             // We are not fixing the informix.
-            Class queryClass = null;
+            Class<?> queryClass = null;
             if (descriptor != null) {
                 queryClass = descriptor.getJavaClass();
             }

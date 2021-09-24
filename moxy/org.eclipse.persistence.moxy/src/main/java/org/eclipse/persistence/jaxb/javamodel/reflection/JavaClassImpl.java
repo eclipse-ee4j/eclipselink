@@ -60,20 +60,20 @@ import org.eclipse.persistence.logging.SessionLog;
 public class JavaClassImpl implements JavaClass {
 
     protected ParameterizedType jType;
-    protected Class jClass;
+    protected Class<?> jClass;
     protected JavaModelImpl javaModelImpl;
     protected boolean isMetadataComplete;
     protected JavaClass superClassOverride;
 
     protected static final String XML_REGISTRY_CLASS_NAME = "jakarta.xml.bind.annotation.XmlRegistry";
 
-    public JavaClassImpl(Class javaClass, JavaModelImpl javaModelImpl) {
+    public JavaClassImpl(Class<?> javaClass, JavaModelImpl javaModelImpl) {
         this.jClass = javaClass;
         this.javaModelImpl = javaModelImpl;
         isMetadataComplete = false;
     }
 
-    public JavaClassImpl(ParameterizedType javaType, Class javaClass, JavaModelImpl javaModelImpl) {
+    public JavaClassImpl(ParameterizedType javaType, Class<?> javaClass, JavaModelImpl javaModelImpl) {
         this.jType = javaType;
         this.jClass = javaClass;
         this.javaModelImpl = javaModelImpl;
@@ -103,7 +103,7 @@ public class JavaClassImpl implements JavaClass {
                 } else if (type instanceof Class) {
                     argCollection.add(javaModelImpl.getClass((Class) type));
                 } else if(type instanceof GenericArrayType) {
-                    Class genericTypeClass = (Class)((GenericArrayType)type).getGenericComponentType();
+                    Class<?> genericTypeClass = (Class)((GenericArrayType)type).getGenericComponentType();
                     genericTypeClass = java.lang.reflect.Array.newInstance(genericTypeClass, 0).getClass();
                     argCollection.add(javaModelImpl.getClass(genericTypeClass));
                 } else if(type instanceof TypeVariable) {
@@ -132,7 +132,7 @@ public class JavaClassImpl implements JavaClass {
     public JavaAnnotation getAnnotation(JavaClass arg0) {
         // the only annotation we will return if isMetadataComplete == true is XmlRegistry
         if (arg0 != null && (!isMetadataComplete || arg0.getQualifiedName().equals(XML_REGISTRY_CLASS_NAME))) {
-            Class annotationClass = ((JavaClassImpl) arg0).getJavaClass();
+            Class<?> annotationClass = ((JavaClassImpl) arg0).getJavaClass();
             if (javaModelImpl.getAnnotationHelper().isAnnotationPresent(getAnnotatedElement(), annotationClass)) {
                 return new JavaAnnotationImpl(this.javaModelImpl.getAnnotationHelper().getAnnotation(getAnnotatedElement(), annotationClass));
             }
@@ -155,8 +155,8 @@ public class JavaClassImpl implements JavaClass {
     @Override
     public Collection<JavaClass> getDeclaredClasses() {
         List<JavaClass> classCollection = new ArrayList<>();
-        Class[] classes = jClass.getDeclaredClasses();
-        for (Class javaClass : classes) {
+        Class<?>[] classes = jClass.getDeclaredClasses();
+        for (Class<?> javaClass : classes) {
             classCollection.add(javaModelImpl.getClass(javaClass));
         }
         return classCollection;
@@ -194,7 +194,7 @@ public class JavaClassImpl implements JavaClass {
         if (arg1 == null) {
             arg1 = new JavaClass[0];
         }
-        Class[] params = new Class[arg1.length];
+        Class<?>[] params = new Class<?>[arg1.length];
         for (int i=0; i<arg1.length; i++) {
             JavaClass jType = arg1[i];
             if (jType != null) {
@@ -223,7 +223,7 @@ public class JavaClassImpl implements JavaClass {
         if (paramTypes == null) {
             paramTypes = new JavaClass[0];
         }
-        Class[] params = new Class[paramTypes.length];
+        Class<?>[] params = new Class<?>[paramTypes.length];
         for (int i=0; i<paramTypes.length; i++) {
             JavaClass jType = paramTypes[i];
             if (jType != null) {
@@ -243,7 +243,7 @@ public class JavaClassImpl implements JavaClass {
         if (paramTypes == null) {
             paramTypes = new JavaClass[0];
         }
-        Class[] params = new Class[paramTypes.length];
+        Class<?>[] params = new Class<?>[paramTypes.length];
         for (int i=0; i<paramTypes.length; i++) {
             JavaClass jType = paramTypes[i];
             if (jType != null) {
@@ -295,7 +295,7 @@ public class JavaClassImpl implements JavaClass {
         return fieldCollection;
     }
 
-    public Class getJavaClass() {
+    public Class<?> getJavaClass() {
         return jClass;
     }
 
@@ -307,7 +307,7 @@ public class JavaClassImpl implements JavaClass {
         if (arg1 == null) {
             arg1 = new JavaClass[0];
         }
-        Class[] params = new Class[arg1.length];
+        Class<?>[] params = new Class<?>[arg1.length];
         for (int i=0; i<arg1.length; i++) {
             JavaClass jType = arg1[i];
             if (jType != null) {
@@ -347,8 +347,8 @@ public class JavaClassImpl implements JavaClass {
         if(jClass.getPackage() != null){
             return jClass.getPackage().getName();
         }else{
-            Class nonInnerClass = jClass;
-            Class enclosingClass = jClass.getEnclosingClass();
+            Class<?> nonInnerClass = jClass;
+            Class<?> enclosingClass = jClass.getEnclosingClass();
             while(enclosingClass != null){
                 nonInnerClass = enclosingClass;
                 enclosingClass = nonInnerClass.getEnclosingClass();
@@ -380,13 +380,13 @@ public class JavaClassImpl implements JavaClass {
             return this.superClassOverride;
         }
         if(jClass.isInterface()) {
-            Class[] superInterfaces = jClass.getInterfaces();
+            Class<?>[] superInterfaces = jClass.getInterfaces();
             if(superInterfaces != null) {
                 if(superInterfaces.length == 1) {
                     return javaModelImpl.getClass(superInterfaces[0]);
                 } else {
-                    Class parent = null;
-                    for(Class next:superInterfaces) {
+                    Class<?> parent = null;
+                    for(Class<?> next:superInterfaces) {
                         if(!(next.getName().startsWith("java.")
                                 || next.getName().startsWith("javax.")
                                 || next.getName().startsWith("jakarta."))) {
@@ -458,13 +458,13 @@ public class JavaClassImpl implements JavaClass {
 
     private boolean customIsAssignableFrom(JavaClass arg0) {
         JavaClassImpl jClass = (JavaClassImpl)arg0;
-        Class cls = jClass.getJavaClass();
+        Class<?> cls = jClass.getJavaClass();
 
         if(cls == this.jClass) {
             return true;
         }
-        Class[] interfaces = cls.getInterfaces();
-        for(Class nextInterface:interfaces) {
+        Class<?>[] interfaces = cls.getInterfaces();
+        for(Class<?> nextInterface:interfaces) {
             if(nextInterface == this.jClass) {
                 return true;
             }
@@ -595,7 +595,7 @@ public class JavaClassImpl implements JavaClass {
     public JavaAnnotation getDeclaredAnnotation(JavaClass arg0) {
         // the only annotation we will return if isMetadataComplete == true is XmlRegistry
         if (arg0 != null && (!isMetadataComplete || arg0.getQualifiedName().equals(XML_REGISTRY_CLASS_NAME))) {
-            Class annotationClass = ((JavaClassImpl) arg0).getJavaClass();
+            Class<?> annotationClass = ((JavaClassImpl) arg0).getJavaClass();
             Annotation[] annotations = javaModelImpl.getAnnotationHelper().getDeclaredAnnotations(getAnnotatedElement());
             for (Annotation annotation : annotations) {
                 if (annotation.annotationType().equals(annotationClass)) {

@@ -328,7 +328,7 @@ public abstract class RuntimeServices {
      * @exception ClassNotFoundException thrown then the IdentityMap for that class name could not be found
      */
     public List getObjectsInIdentityMap(String className) throws ClassNotFoundException {
-        Class classToChange = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
+        Class<?> classToChange = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
         IdentityMap map = getSession().getIdentityMapAccessorInstance().getIdentityMap(classToChange);
 
         Vector results = new Vector(map.getSize());
@@ -345,7 +345,7 @@ public abstract class RuntimeServices {
      * @exception ClassNotFoundException thrown then the IdentityMap for that class name could not be found
      */
     public Integer getNumberOfObjectsInIdentityMap(String className) throws ClassNotFoundException {
-        Class classToChange = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
+        Class<?> classToChange = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
         return getSession().getIdentityMapAccessorInstance().getIdentityMap(classToChange).getSize();
     }
 
@@ -358,7 +358,7 @@ public abstract class RuntimeServices {
      * @exception ClassNotFoundException thrown then the IdentityMap for that class name could not be found
      */
     public List getObjectsInIdentityMapSubCacheAsMap(String className) throws ClassNotFoundException {
-        Class classToChange = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
+        Class<?> classToChange = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
         IdentityMap map = getSession().getIdentityMapAccessorInstance().getIdentityMap(classToChange);
 
         //CR3855
@@ -378,7 +378,7 @@ public abstract class RuntimeServices {
     public Integer getNumberOfObjectsInIdentityMapSubCache(String className) throws ClassNotFoundException {
         //This needs to use the Session's active class loader (not implemented yet)
         Integer result = 0;
-        Class classToChange = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
+        Class<?> classToChange = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
         IdentityMap map = getSession().getIdentityMapAccessorInstance().getIdentityMap(classToChange);
         if (map.getClass().isAssignableFrom(ClassConstants.HardCacheWeakIdentityMap_Class)) {
             List subCache = ((HardCacheWeakIdentityMap)map).getReferenceCache();
@@ -447,7 +447,7 @@ public abstract class RuntimeServices {
      * @param className the fully qualified classnames identifying the identity map to initialize
      */
      public synchronized void initializeIdentityMap(String className) throws ClassNotFoundException {
-         Class registeredClass;
+         Class<?> registeredClass;
 
          //get identity map, and initialize
          registeredClass = getSession().getDatasourcePlatform().getConversionManager()
@@ -467,7 +467,7 @@ public abstract class RuntimeServices {
       *        This method will log the instance level locks in the Identity Map for the given class in the session.
       */
       public void printIdentityMapLocks(String registeredClassName) {
-          Class registeredClass = getSession().getDatasourcePlatform().getConversionManager()
+          Class<?> registeredClass = getSession().getDatasourcePlatform().getConversionManager()
               .convertObject(registeredClassName, ClassConstants.CLASS);
           getSession().getIdentityMapAccessorInstance().getIdentityMapManager().printLocks(registeredClass);
       }
@@ -839,7 +839,7 @@ public abstract class RuntimeServices {
       * INTERNAL:
       * getCacheTypeFor: Give a more UI-friendly version of the cache type
       */
-     protected String getCacheTypeFor(Class identityMapClass) {
+     protected String getCacheTypeFor(Class<?> identityMapClass) {
          if (identityMapClass == CacheIdentityMap.class) {
              return "Cache";
          } else if (identityMapClass == FullIdentityMap.class) {
@@ -1063,7 +1063,7 @@ public abstract class RuntimeServices {
      * @exception ClassNotFoundException thrown then the IdentityMap for that class name could not be found
      */
      public void printObjectsInIdentityMap(String className) throws ClassNotFoundException {
-         Class classWithMap = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
+         Class<?> classWithMap = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
          IdentityMap map = getSession().getIdentityMapAccessorInstance().getIdentityMap(classWithMap);
 
          //check if the identity map exists
@@ -1094,7 +1094,7 @@ public abstract class RuntimeServices {
      public void printAllIdentityMapTypes() {
          Vector classesRegistered = getSession().getIdentityMapAccessorInstance().getIdentityMapManager().getClassesRegistered();
          String registeredClassName;
-         Class registeredClass;
+         Class<?> registeredClass;
 
          //Check if there aren't any classes registered
          if (classesRegistered.size() == 0) {
@@ -1278,7 +1278,7 @@ public abstract class RuntimeServices {
      public synchronized void invalidateAllIdentityMaps() {
          Vector classesRegistered = getSession().getIdentityMapAccessorInstance().getIdentityMapManager().getClassesRegistered();
          String registeredClassName;
-         Class registeredClass;
+         Class<?> registeredClass;
 
          if (classesRegistered.isEmpty()) {
              ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_no_identity_maps_in_session");
@@ -1324,7 +1324,7 @@ public abstract class RuntimeServices {
      * @param recurse    Boolean indicating if we want to invalidate the children identity maps too
      */
      public synchronized void invalidateIdentityMap(String className, Boolean recurse) throws ClassNotFoundException {
-         Class registeredClass;
+         Class<?> registeredClass;
 
          //get identity map, and invalidate
          registeredClass = getSession().getDatasourcePlatform().getConversionManager()
@@ -1482,7 +1482,7 @@ public abstract class RuntimeServices {
       * @return HashMap
       */
      private Map<String, String> buildLowlevelDetailsFor(String mappedClassName) {
-         Class mappedClass = getSession().getDatasourcePlatform().getConversionManager().convertObject(mappedClassName, ClassConstants.CLASS);
+         Class<?> mappedClass = getSession().getDatasourcePlatform().getConversionManager().convertObject(mappedClassName, ClassConstants.CLASS);
          ClassDescriptor descriptor = getSession().getProject().getDescriptor(mappedClass);
 
          String cacheType = "";

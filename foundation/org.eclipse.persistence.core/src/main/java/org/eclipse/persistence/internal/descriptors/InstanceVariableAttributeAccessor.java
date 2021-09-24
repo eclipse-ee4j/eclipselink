@@ -42,7 +42,7 @@ public class InstanceVariableAttributeAccessor extends AttributeAccessor {
      * Returns the class type of the attribute.
      */
     @Override
-    public Class getAttributeClass() {
+    public Class<?> getAttributeClass() {
         if (getAttributeField() == null) {
             return null;
         }
@@ -61,7 +61,7 @@ public class InstanceVariableAttributeAccessor extends AttributeAccessor {
     /**
      * Returns the declared type of attributeField.
      */
-    public Class getAttributeType() {
+    public Class<?> getAttributeType() {
         return attributeField.getType();
     }
 
@@ -100,7 +100,7 @@ public class InstanceVariableAttributeAccessor extends AttributeAccessor {
      * instanceVariableName is converted to Field type.
      */
     @Override
-    public void initializeAttributes(Class theJavaClass) throws DescriptorException {
+    public void initializeAttributes(Class<?> theJavaClass) throws DescriptorException {
         if (getAttributeName() == null) {
             throw DescriptorException.attributeNameNotSpecified();
         }
@@ -160,7 +160,7 @@ public class InstanceVariableAttributeAccessor extends AttributeAccessor {
                 if (value == null) {
                     // cr 3737  If a null pointer was thrown because we attempted to set a null reference into a
                     // primitive create a primitive of value 0 to set in the object.
-                    Class fieldClass = getAttributeClass();
+                    Class<?> fieldClass = getAttributeClass();
                     if (org.eclipse.persistence.internal.helper.Helper.isPrimitiveWrapper(fieldClass)) {
                         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                             try {
@@ -209,7 +209,7 @@ public class InstanceVariableAttributeAccessor extends AttributeAccessor {
                 if (anObject != null) {
                     // cr 3737  If a null pointer was thrown because we attempted to set a null reference into a
                     // primitive create a primitive of value 0 to set in the object.
-                    Class fieldClass = getAttributeClass();
+                    Class<?> fieldClass = getAttributeClass();
                     if (org.eclipse.persistence.internal.helper.Helper.isPrimitiveWrapper(fieldClass) && (value == null)) {
                         if (org.eclipse.persistence.internal.helper.Helper.isPrimitiveWrapper(fieldClass)) {
                             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){

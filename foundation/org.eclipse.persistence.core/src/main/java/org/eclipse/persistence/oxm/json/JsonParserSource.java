@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,7 +47,7 @@ public final class JsonParserSource extends ExtendedSource {
     }
 
     @Override
-    public XMLReader createReader(Unmarshaller unmarshaller, Class unmarshalClass) {
+    public XMLReader createReader(Unmarshaller unmarshaller, Class<?> unmarshalClass) {
         return new JsonParserReader.JsonParserReaderBuilder(parser)
                 .setResultClass(unmarshalClass)
                 .setUnmarshaller(unmarshaller)

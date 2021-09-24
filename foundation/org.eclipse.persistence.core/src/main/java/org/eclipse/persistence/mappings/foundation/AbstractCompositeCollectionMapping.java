@@ -582,7 +582,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * <p>jdk1.1.x: The container class must be a subclass of Vector.
      */
     @Override
-    public void useCollectionClass(Class concreteContainerClass) {
+    public void useCollectionClass(Class<?> concreteContainerClass) {
         this.setContainerPolicy(ContainerPolicy.buildPolicyFor(concreteContainerClass));
     }
 
@@ -608,7 +608,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * <p>The referenceClass must be set before calling this method.
      */
     @Override
-    public void useMapClass(Class concreteContainerClass, String methodName) {
+    public void useMapClass(Class<?> concreteContainerClass, String methodName) {
         // the reference class has to be specified before coming here
         if (this.getReferenceClassName() == null) {
             throw DescriptorException.referenceClassNotSpecified(this);
@@ -681,7 +681,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
 
             ClassDescriptor descriptor = this.getReferenceDescriptor();
             if (descriptor.hasInheritance()) {
-                Class newElementClass = descriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
+                Class<?> newElementClass = descriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
                 descriptor = this.getReferenceDescriptor(newElementClass, executionSession);
             }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,7 +52,7 @@ import org.eclipse.persistence.queries.ReadQuery;
  */
 public class ExpressionBuilder extends ObjectExpression {
     protected transient AbstractSession session;
-    protected Class queryClass;
+    protected Class<?> queryClass;
     protected SQLSelectStatement statement;
     protected DatabaseTable viewTable;
     protected DatabaseTable aliasedViewTable;
@@ -75,7 +75,7 @@ public class ExpressionBuilder extends ObjectExpression {
      * This can be used for the purpose of parallel expressions.
      * This is a type of query that searches on the relationship between to un-related objects.
      */
-    public ExpressionBuilder(Class queryClass) {
+    public ExpressionBuilder(Class<?> queryClass) {
         super();
         this.queryClass = queryClass;
         this.wasQueryClassSetInternally = false;
@@ -219,7 +219,7 @@ public class ExpressionBuilder extends ObjectExpression {
     /**
      * INTERNAL:
      */
-    public Class getQueryClass() {
+    public Class<?> getQueryClass() {
         return queryClass;
     }
 
@@ -416,7 +416,7 @@ public class ExpressionBuilder extends ObjectExpression {
      * INTERNAL:
      * Set the class which this node represents.
      */
-    public void setQueryClass(Class queryClass) {
+    public void setQueryClass(Class<?> queryClass) {
         this.queryClass = queryClass;
         this.descriptor = null;
     }
@@ -425,7 +425,7 @@ public class ExpressionBuilder extends ObjectExpression {
      * INTERNAL:
      * Set the class and descriptor which this node represents.
      */
-    public void setQueryClassAndDescriptor(Class queryClass, ClassDescriptor descriptor) {
+    public void setQueryClassAndDescriptor(Class<?> queryClass, ClassDescriptor descriptor) {
         this.queryClass = queryClass;
         this.descriptor = convertToCastDescriptor(descriptor, session);
     }
@@ -523,7 +523,7 @@ public class ExpressionBuilder extends ObjectExpression {
         // The base case
         // The following special case is where there is a parallel builder
         // which has a different reference class as the primary builder.
-        Class queryClass = getQueryClass();
+        Class<?> queryClass = getQueryClass();
         if ((queryClass != null) && ((query == null) || (queryClass != query.getReferenceClass()))) {
            return convertToCastDescriptor( session.getDescriptor(queryClass), session);
         }

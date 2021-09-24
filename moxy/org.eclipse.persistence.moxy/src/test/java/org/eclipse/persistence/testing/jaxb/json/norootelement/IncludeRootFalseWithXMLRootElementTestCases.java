@@ -53,7 +53,7 @@ public class IncludeRootFalseWithXMLRootElementTestCases extends NoRootElementTe
     }
 
     @Override
-    public Class getUnmarshalClass(){
+    public Class<?> getUnmarshalClass(){
         return AddressWithRootElement.class;
     }
 

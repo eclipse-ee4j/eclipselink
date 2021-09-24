@@ -129,7 +129,7 @@ public abstract class Context<
          * may be mapped by more that one of the projects used to create the
          * Context, this method will return the first match.
          */
-        protected ABSTRACT_SESSION getSession(Class clazz) {
+        protected ABSTRACT_SESSION getSession(Class<?> clazz) {
             if (null == clazz) {
                 return null;
             }
@@ -456,7 +456,7 @@ public abstract class Context<
      * may be mapped by more that one of the projects used to create the
      * Context, this method will return the first match.
      */
-    public ABSTRACT_SESSION getSession(Class clazz) {
+    public ABSTRACT_SESSION getSession(Class<?> clazz) {
         return contextState.getSession(clazz);
     }
 

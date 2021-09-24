@@ -150,7 +150,7 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
      * Return the domain class associated with this query.
      */
     @Override
-    public Class getReferenceClass() {
+    public Class<?> getReferenceClass() {
         if (this.object == null) {
             if (this.descriptor != null) {
                 return this.descriptor.getJavaClass();
@@ -168,7 +168,7 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
      */
     @Override
     public String getReferenceClassName() {
-        Class referenceClass = getReferenceClass();
+        Class<?> referenceClass = getReferenceClass();
         if (referenceClass != null) {
             return referenceClass.getName();
         } else {

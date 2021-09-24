@@ -36,7 +36,7 @@ public class JAXBElementSimpleTestCases extends JAXBElementTestCases {
 
 
     @Override
-    public Class getUnmarshalClass(){
+    public Class<?> getUnmarshalClass(){
         return targetClass;
     }
 

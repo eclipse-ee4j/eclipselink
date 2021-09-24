@@ -40,7 +40,7 @@ public class JAXBElementDataHandlerTestCases extends JAXBElementTestCases {
 
 
     @Override
-    public Class getUnmarshalClass(){
+    public Class<?> getUnmarshalClass(){
         return DataHandler.class;
     }
 

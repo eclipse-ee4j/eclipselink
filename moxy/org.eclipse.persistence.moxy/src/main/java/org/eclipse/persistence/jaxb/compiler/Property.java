@@ -435,7 +435,7 @@ public class Property implements Cloneable {
             ParameterizedType parameterizedType = (ParameterizedType) type;
             Type rawType = parameterizedType.getRawType();
             if(rawType instanceof Class) {
-                Class rawTypeClass = (Class) rawType;
+                Class<?> rawTypeClass = (Class) rawType;
                 Type[] typeArgs = parameterizedType.getActualTypeArguments();
                 TypeVariable[] tvs = rawTypeClass.getTypeParameters();
                 if(tvs.length == typeArgs.length){
@@ -462,7 +462,7 @@ public class Property implements Cloneable {
                 return getGenericType(parameterizedType.getRawType(), argument,variableToType);
             }
         } else if(type instanceof Class) {
-            Class clazz = (Class) type;
+            Class<?> clazz = (Class) type;
             for(Type genericInterface : clazz.getGenericInterfaces()) {
                 Type genericType = getGenericType(genericInterface, argument, variableToType);
                 if(null != genericType) {

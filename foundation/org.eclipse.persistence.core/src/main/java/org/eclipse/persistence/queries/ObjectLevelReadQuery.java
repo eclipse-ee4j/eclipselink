@@ -196,16 +196,16 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     protected Boolean shouldOuterJoinSubclasses;
 
     /** Allow concrete subclasses calls to be prepared and cached for inheritance queries. */
-    protected Map<Class, DatabaseCall> concreteSubclassCalls;
+    protected Map<Class<?>, DatabaseCall> concreteSubclassCalls;
 
     /** Allow concrete subclasses queries to be prepared and cached for inheritance queries. */
-    protected Map<Class, DatabaseQuery> concreteSubclassQueries;
+    protected Map<Class<?>, DatabaseQuery> concreteSubclassQueries;
 
     /** Allow aggregate queries to be prepared and cached. */
     protected Map<DatabaseMapping, ObjectLevelReadQuery> aggregateQueries;
 
     /** Allow concrete subclasses joined mapping indexes to be prepared and cached for inheritance queries. */
-    protected Map<Class, Map<DatabaseMapping, Object>> concreteSubclassJoinedMappingIndexes;
+    protected Map<Class<?>, Map<DatabaseMapping, Object>> concreteSubclassJoinedMappingIndexes;
 
     /** Used when specifying a lock mode for the query */
     protected String lockModeType;
@@ -1579,7 +1579,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Return the reference class of the query.
      */
     @Override
-    public Class getReferenceClass() {
+    public Class<?> getReferenceClass() {
         return referenceClass;
     }
 
@@ -2660,7 +2660,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Set the reference class for the query.
      */
     @Override
-    public void setReferenceClass(Class aClass) {
+    public void setReferenceClass(Class<?> aClass) {
         if (referenceClass != aClass) {
             setIsPreparedKeepingSubclassData(false);
         }
@@ -3114,7 +3114,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Return the cache of concrete subclass calls.
      * This allow concrete subclasses calls to be prepared and cached for inheritance queries.
      */
-    public Map<Class, DatabaseCall> getConcreteSubclassCalls() {
+    public Map<Class<?>, DatabaseCall> getConcreteSubclassCalls() {
         if (concreteSubclassCalls == null) {
             concreteSubclassCalls = new ConcurrentHashMap(8);
         }
@@ -3126,7 +3126,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Return the cache of concrete subclass queries.
      * This allow concrete subclasses calls to be prepared and cached for table per class inheritance and interface queries.
      */
-    public Map<Class, DatabaseQuery> getConcreteSubclassQueries() {
+    public Map<Class<?>, DatabaseQuery> getConcreteSubclassQueries() {
         if (concreteSubclassQueries == null) {
             concreteSubclassQueries = new ConcurrentHashMap(8);
         }
@@ -3169,7 +3169,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Return the cache of concrete subclass joined mapping indexes.
      * This allow concrete subclasses calls to be prepared and cached for inheritance queries.
      */
-    public Map<Class, Map<DatabaseMapping, Object>> getConcreteSubclassJoinedMappingIndexes() {
+    public Map<Class<?>, Map<DatabaseMapping, Object>> getConcreteSubclassJoinedMappingIndexes() {
         if (concreteSubclassJoinedMappingIndexes == null) {
             concreteSubclassJoinedMappingIndexes = new ConcurrentHashMap(8);
         }

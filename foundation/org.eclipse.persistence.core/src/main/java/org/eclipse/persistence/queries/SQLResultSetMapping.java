@@ -50,7 +50,7 @@ public class SQLResultSetMapping implements Serializable{
      * Defaulting constructor. Will set the name to the result class name
      * and add an EntityResult for the result class.
      */
-    public SQLResultSetMapping(Class resultClass) {
+    public SQLResultSetMapping(Class<?> resultClass) {
         this.name = resultClass.getName();
         this.addResult(new EntityResult(resultClass));
     }

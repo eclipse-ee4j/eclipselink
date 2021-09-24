@@ -494,7 +494,7 @@ public class SDOException extends EclipseLinkException {
      * INTERNAL:
      * Exception when trying to set a property to value that is an unsupported conversion
      */
-    public static SDOException wrongValueForProperty(String typeUri, String typeName, Class valueClass) {
+    public static SDOException wrongValueForProperty(String typeUri, String typeName, Class<?> valueClass) {
         Object[] args = { typeUri, typeName, valueClass.getName() };
         SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, WRONG_VALUE_FOR_PROPERTY, args) );
         exception.setErrorCode(WRONG_VALUE_FOR_PROPERTY);
@@ -673,28 +673,28 @@ public class SDOException extends EclipseLinkException {
          return exception;
      }
 
-     public static SDOException sdoJaxbNoTypeForClass(Class clazz) {
+     public static SDOException sdoJaxbNoTypeForClass(Class<?> clazz) {
          Object[] args = {clazz.toString()};
          SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, SDO_JAXB_NO_TYPE_FOR_CLASS, args));
          exception.setErrorCode(SDO_JAXB_NO_TYPE_FOR_CLASS);
          return exception;
      }
 
-     public static SDOException sdoJaxbNoSchemaReference(Class clazz) {
+     public static SDOException sdoJaxbNoSchemaReference(Class<?> clazz) {
          Object[] args = {clazz.toString()};
          SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, SDO_JAXB_NO_SCHEMA_REFERENCE, args));
          exception.setErrorCode(SDO_JAXB_NO_SCHEMA_REFERENCE);
          return exception;
      }
 
-     public static SDOException sdoJaxbNoSchemaContext(Class clazz) {
+     public static SDOException sdoJaxbNoSchemaContext(Class<?> clazz) {
          Object[] args = {clazz.toString()};
          SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, SDO_JAXB_NO_SCHEMA_CONTEXT, args));
          exception.setErrorCode(SDO_JAXB_NO_SCHEMA_CONTEXT);
          return exception;
      }
 
-     public static SDOException sdoJaxbNoTypeForClassBySchemaContext(Class clazz, QName schemaContext) {
+     public static SDOException sdoJaxbNoTypeForClassBySchemaContext(Class<?> clazz, QName schemaContext) {
          Object[] args = {clazz.toString(), schemaContext.toString()};
          SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, SDO_JAXB_NO_TYPE_FOR_CLASS_BY_SCHEMA_CONTEXT, args));
          exception.setErrorCode(SDO_JAXB_NO_TYPE_FOR_CLASS_BY_SCHEMA_CONTEXT);

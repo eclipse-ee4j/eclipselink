@@ -41,7 +41,7 @@ public class WithoutXmlRootElementArrayTestCases extends JSONMarshalUnmarshalTes
     }
 
     @Override
-    public Class getUnmarshalClass(){
+    public Class<?> getUnmarshalClass(){
         return WithoutXmlRootElementRoot.class;
     }
 

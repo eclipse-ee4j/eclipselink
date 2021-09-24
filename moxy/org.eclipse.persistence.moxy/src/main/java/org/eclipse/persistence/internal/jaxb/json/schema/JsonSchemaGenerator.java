@@ -73,7 +73,7 @@ public class JsonSchemaGenerator {
     JsonSchema schema;
     Map contextProperties;
     String attributePrefix;
-    Class rootClass;
+    Class<?> rootClass;
     boolean namespaceAware;
     NamespaceResolver resolver;
     String NAMESPACE_SEPARATOR = ".";
@@ -113,13 +113,13 @@ public class JsonSchemaGenerator {
         }
     }
 
-    public JsonSchema generateSchema(Class rootClass) {
+    public JsonSchema generateSchema(Class<?> rootClass) {
         this.rootClass = rootClass;
         schema = new JsonSchema();
         schema.setTitle(rootClass.getName());
 
         if(rootClass.isEnum()) {
-            Class generatedWrapper = jaxbContext.getClassToGeneratedClasses().get(rootClass.getName());
+            Class<?> generatedWrapper = jaxbContext.getClassToGeneratedClasses().get(rootClass.getName());
             if(generatedWrapper != null) {
                 rootClass = generatedWrapper;
             } else {
@@ -144,14 +144,14 @@ public class JsonSchemaGenerator {
         if(rootClass.isArray() || isCollection(rootClass)) {
             schema.setType(JsonType.ARRAY);
             schema.setItems(new Property());
-            Class<Object> itemType = Object.class;
+            Class<?> itemType = Object.class;
 
             if(rootClass.isArray()) {
                 itemType = rootClass.getComponentType();
             } else {
                 Type pType = rootClass.getGenericSuperclass();
                 if(pType instanceof ParameterizedType) {
-                    itemType = (Class)((ParameterizedType)pType).getActualTypeArguments()[0];
+                    itemType = (Class<?>)((ParameterizedType)pType).getActualTypeArguments()[0];
                 }
             }
             rootType = getJsonTypeForJavaType(itemType);
@@ -330,7 +330,7 @@ public class JsonSchemaGenerator {
                 if(directMapping.getValueConverter() instanceof JAXBEnumTypeConverter) {
                     return JsonType.ENUMTYPE;
                 }
-                Class type = directMapping.getAttributeElementClass();
+                Class<?> type = directMapping.getAttributeElementClass();
                 if(type == null) {
                     type = CoreClassConstants.STRING;
                 }
@@ -452,7 +452,7 @@ public class JsonSchemaGenerator {
                     String propertyName = getNameForFragment(frag);
 
                     XMLField targetField = (XMLField) mapping.getSourceToTargetKeyFieldAssociations().get(nextField);
-                    Class<String> type = CoreClassConstants.STRING;
+                    Class<?> type = CoreClassConstants.STRING;
                     if(reference != null) {
                         type = getTypeForTargetField(targetField, reference);
                     }
@@ -530,7 +530,7 @@ public class JsonSchemaGenerator {
                 if(enumeration != null) {
                     nestedProperty.getItem().setEnumeration(enumeration);
                 }
-                Class type = mapping.getAttributeElementClass();
+                Class<?> type = mapping.getAttributeElementClass();
                 if(type == null) {
                     type = CoreClassConstants.STRING;
                 }
@@ -625,7 +625,7 @@ public class JsonSchemaGenerator {
                     XPathFragment frag = nextField.getXPathFragment();
                     String propName = getNameForFragment(frag);
                     XMLField targetField = (XMLField) mapping.getSourceToTargetKeyFieldAssociations().get(nextField);
-                    Class<String> type = CoreClassConstants.STRING;
+                    Class<?> type = CoreClassConstants.STRING;
                     if(reference != null) {
                         type = getTypeForTargetField(targetField, reference);
                     }
@@ -807,7 +807,7 @@ public class JsonSchemaGenerator {
         return referenceName;
     }
 
-    private Class getTypeForTargetField(XMLField targetField, XMLDescriptor reference) {
+    private Class<?> getTypeForTargetField(XMLField targetField, XMLDescriptor reference) {
         for(DatabaseMapping next: reference.getMappings()) {
             if(next.isDirectToFieldMapping()) {
                 DirectMapping directMapping = (DirectMapping)next;
@@ -819,7 +819,7 @@ public class JsonSchemaGenerator {
         return null;
     }
 
-    private JsonType getJsonTypeForJavaType(Class attributeClassification) {
+    private JsonType getJsonTypeForJavaType(Class<?> attributeClassification) {
         if(attributeClassification.isEnum()) {
             return JsonType.ENUMTYPE;
         }
@@ -920,7 +920,7 @@ public class JsonSchemaGenerator {
         return this.xopIncludeProp;
     }
 
-    private boolean isCollection(Class type) {
+    private boolean isCollection(Class<?> type) {
         if (CoreClassConstants.Collection_Class.isAssignableFrom(type)
                 || CoreClassConstants.List_Class.isAssignableFrom(type)
                 || CoreClassConstants.Set_Class.isAssignableFrom(type)) {

@@ -109,7 +109,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
      * INTERNAL:
      * Construct a new policy for the specified class.
      */
-    public MappedKeyMapContainerPolicy(Class containerClass) {
+    public MappedKeyMapContainerPolicy(Class<?> containerClass) {
         super(containerClass);
     }
 

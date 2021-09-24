@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,7 +57,7 @@ public class AnyMappingContentHandler extends DeferredContentHandler {
      @Override
     protected void processComplexElement() throws SAXException {
          getParent().unmappedContent();
-         Class unmappedContentHandlerClass = getParent().getUnmarshaller().getUnmappedContentHandlerClass();
+         Class<?> unmappedContentHandlerClass = getParent().getUnmarshaller().getUnmappedContentHandlerClass();
          UnmappedContentHandler unmappedContentHandler;
          if (null == unmappedContentHandlerClass) {
              unmappedContentHandler = UnmarshalRecord.DEFAULT_UNMAPPED_CONTENT_HANDLER;

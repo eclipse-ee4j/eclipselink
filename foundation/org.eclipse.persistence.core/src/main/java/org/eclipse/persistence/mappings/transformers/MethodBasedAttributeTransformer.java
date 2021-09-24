@@ -73,23 +73,23 @@ public class MethodBasedAttributeTransformer implements AttributeTransformer {
     @Override
     public void initialize(AbstractTransformationMapping mapping) {
         this.mapping = mapping;
-        final Class javaClass = this.mapping.getDescriptor().getJavaClass();
+        final Class<?> javaClass = this.mapping.getDescriptor().getJavaClass();
         try {
             // look for the one-argument version with Record first
-            Class[] parameterTypes = new Class[1];
+            Class<?>[] parameterTypes = new Class<?>[1];
             parameterTypes[0] = ClassConstants.Record_Class;
             attributeTransformationMethod = Helper.getDeclaredMethod(javaClass, methodName, parameterTypes);
         } catch (NoSuchMethodException ex) {
             try {
                 // if the one-argument version is not there, look for the two-argument version
-                Class[] parameterTypes = new Class[2];
+                Class<?>[] parameterTypes = new Class<?>[2];
                 parameterTypes[0] = ClassConstants.Record_Class;
                 parameterTypes[1] = ClassConstants.PublicInterfaceSession_Class;
                 attributeTransformationMethod = Helper.getDeclaredMethod(javaClass, methodName, parameterTypes);
             } catch (NoSuchMethodException ex2) {
                 try {
                     //now look for the 2 argument version using Record and sessions Session
-                    Class[] parameterTypes = new Class[2];
+                    Class<?>[] parameterTypes = new Class<?>[2];
                     parameterTypes[0] = ClassConstants.Record_Class;
                     parameterTypes[1] = ClassConstants.SessionsSession_Class;
                     attributeTransformationMethod = Helper.getDeclaredMethod(javaClass, methodName, parameterTypes);
@@ -115,7 +115,7 @@ public class MethodBasedAttributeTransformer implements AttributeTransformer {
      */
     @Override
     public Object buildAttributeValue(DataRecord dataRecord, Object object, Session session) {
-        Class[] parameterTypes = null;
+        Class<?>[] parameterTypes = null;
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try{
                 parameterTypes = AccessController.doPrivileged(new PrivilegedGetMethodParameterTypes(attributeTransformationMethod));

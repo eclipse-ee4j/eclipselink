@@ -36,7 +36,7 @@ public class TypeDefinition extends DatabaseObjectDefinition {
      * Add the field to the type, default sizes are used.
      * @param type is the Java class type coresponding to the database type.
      */
-    public void addField(String fieldName, Class type) {
+    public void addField(String fieldName, Class<?> type) {
         this.addField(new FieldDefinition(fieldName, type));
     }
 
@@ -45,7 +45,7 @@ public class TypeDefinition extends DatabaseObjectDefinition {
      * Add the field to the type.
      * @param type is the Java class type coresponding to the database type.
      */
-    public void addField(String fieldName, Class type, int fieldSize) {
+    public void addField(String fieldName, Class<?> type, int fieldSize) {
         this.addField(new FieldDefinition(fieldName, type, fieldSize));
     }
 
@@ -54,7 +54,7 @@ public class TypeDefinition extends DatabaseObjectDefinition {
      * Add the field to the type.
      * @param type is the Java class type coresponding to the database type.
      */
-    public void addField(String fieldName, Class type, int fieldSize, int fieldSubSize) {
+    public void addField(String fieldName, Class<?> type, int fieldSize, int fieldSubSize) {
         this.addField(new FieldDefinition(fieldName, type, fieldSize, fieldSubSize));
     }
 

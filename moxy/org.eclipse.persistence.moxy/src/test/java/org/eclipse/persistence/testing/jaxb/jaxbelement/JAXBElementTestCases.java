@@ -41,7 +41,7 @@ public class JAXBElementTestCases extends JAXBWithJSONTestCases {
     protected final static String CONTROL_PERSON_NAME = "Joe Smith";
     protected final static String CONTROL_NAMESPACE_URI = "test";
     protected String resourceName;
-    protected Class target;
+    protected Class<?> target;
 
     public JAXBElementTestCases(String name) throws Exception {
         super(name);
@@ -68,7 +68,7 @@ public class JAXBElementTestCases extends JAXBWithJSONTestCases {
         resourceName = xmlResource;
     }
 
-    protected void setTargetClass(Class targetCls) {
+    protected void setTargetClass(Class<?> targetCls) {
         target = targetCls;
     }
 

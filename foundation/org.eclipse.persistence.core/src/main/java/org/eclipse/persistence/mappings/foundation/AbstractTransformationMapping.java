@@ -556,7 +556,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
         super.convertClassNamesToClasses(classLoader);
 
         if (attributeTransformerClassName != null) {
-            Class attributeTransformerClass = null;
+            Class<?> attributeTransformerClass = null;
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     try {
@@ -581,7 +581,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
                 if (transformerClassName == null) {
                     return;
                 }
-                Class transformerClass = null;
+                Class<?> transformerClass = null;
                 try {
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                         try {
@@ -658,7 +658,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * Return the attribute transformer's class.
      * This is used to map to XML.
      */
-    public Class getAttributeTransformerClass() {
+    public Class<?> getAttributeTransformerClass() {
         if ((this.attributeTransformer == null) || (this.attributeTransformer instanceof MethodBasedAttributeTransformer)) {
             return null;
         }
@@ -670,7 +670,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * Set the attribute transformer's class.
      * This is used to map from XML.
      */
-    public void setAttributeTransformerClass(Class attributeTransformerClass) {
+    public void setAttributeTransformerClass(Class<?> attributeTransformerClass) {
         if (attributeTransformerClass == null) {
             return;
         }
@@ -678,7 +678,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
             Object instance = null;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
-                    instance = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(attributeTransformerClass));
+                    instance = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(attributeTransformerClass));
                 } catch (PrivilegedActionException ex) {
                     throw (Exception)ex.getCause();
                 }
@@ -1369,7 +1369,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * This allows for the reading of the target from the database to be delayed until accessed.
      * This defaults to true and is strongly suggested as it give a huge performance gain.
      */
-    public void useContainerIndirection(Class containerClass) {
+    public void useContainerIndirection(Class<?> containerClass) {
         ContainerIndirectionPolicy policy = new ContainerIndirectionPolicy();
         policy.setContainerClass(containerClass);
         setIndirectionPolicy(policy);
@@ -1412,14 +1412,14 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
         }
 
         if (getAttributeAccessor() instanceof InstanceVariableAttributeAccessor) {
-            Class attributeType = ((InstanceVariableAttributeAccessor)getAttributeAccessor()).getAttributeType();
+            Class<?> attributeType = ((InstanceVariableAttributeAccessor)getAttributeAccessor()).getAttributeType();
             this.indirectionPolicy.validateDeclaredAttributeType(attributeType, session.getIntegrityChecker());
         } else if (getAttributeAccessor().isMethodAttributeAccessor()) {
             // 323403
-            Class returnType = ((MethodAttributeAccessor)getAttributeAccessor()).getGetMethodReturnType();
+            Class<?> returnType = ((MethodAttributeAccessor)getAttributeAccessor()).getGetMethodReturnType();
             this.indirectionPolicy.validateGetMethodReturnType(returnType, session.getIntegrityChecker());
 
-            Class parameterType = ((MethodAttributeAccessor)getAttributeAccessor()).getSetMethodParameterType();
+            Class<?> parameterType = ((MethodAttributeAccessor)getAttributeAccessor()).getSetMethodParameterType();
             this.indirectionPolicy.validateSetMethodParameterType(parameterType, session.getIntegrityChecker());
         }
     }

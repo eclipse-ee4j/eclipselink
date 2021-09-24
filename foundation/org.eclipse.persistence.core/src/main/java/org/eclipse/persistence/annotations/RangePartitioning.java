@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -66,7 +66,7 @@ public @interface RangePartitioning {
     RangePartition[] partitions();
 
     /** The type of the start and end values. */
-    Class partitionValueType() default String.class;
+    Class<?> partitionValueType() default String.class;
 
     /**
      * Defines if queries that do not contain the partition field should be sent

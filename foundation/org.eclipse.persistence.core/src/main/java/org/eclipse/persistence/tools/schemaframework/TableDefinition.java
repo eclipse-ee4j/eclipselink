@@ -82,7 +82,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * Add the field to the table, default sizes are used.
      * @param type is the Java class type corresponding to the database type.
      */
-    public void addField(String fieldName, Class type) {
+    public void addField(String fieldName, Class<?> type) {
         this.addField(new FieldDefinition(fieldName, type));
     }
 
@@ -91,7 +91,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * Add the field to the table.
      * @param type is the Java class type corresponding to the database type.
      */
-    public void addField(String fieldName, Class type, int fieldSize) {
+    public void addField(String fieldName, Class<?> type, int fieldSize) {
         this.addField(new FieldDefinition(fieldName, type, fieldSize));
     }
 
@@ -100,7 +100,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * Add the field to the table.
      * @param type is the Java class type corresponding to the database type.
      */
-    public void addField(String fieldName, Class type, int fieldSize, int fieldSubSize) {
+    public void addField(String fieldName, Class<?> type, int fieldSize, int fieldSubSize) {
         this.addField(new FieldDefinition(fieldName, type, fieldSize, fieldSubSize));
     }
 
@@ -209,7 +209,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * The field must be of number type and cannot have a subsize.
      * @param type is the Java class type corresponding to the database type.
      */
-    public void addIdentityField(String fieldName, Class type) {
+    public void addIdentityField(String fieldName, Class<?> type) {
         FieldDefinition fieldDef = new FieldDefinition(fieldName, type);
         fieldDef.setIsIdentity(true);
         fieldDef.setIsPrimaryKey(true);
@@ -223,7 +223,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * The field must be of number type and cannot have a subsize.
      * @param type is the Java class type corresponding to the database type.
      */
-    public void addIdentityField(String fieldName, Class type, int fieldSize) {
+    public void addIdentityField(String fieldName, Class<?> type, int fieldSize) {
         FieldDefinition fieldDef = new FieldDefinition(fieldName, type, fieldSize);
         fieldDef.setIsIdentity(true);
         fieldDef.setIsPrimaryKey(true);
@@ -236,7 +236,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * This field is set as part of the primary key.
      * @param type is the Java class type corresponding to the database type.
      */
-    public void addPrimaryKeyField(String fieldName, Class type) {
+    public void addPrimaryKeyField(String fieldName, Class<?> type) {
         FieldDefinition fieldDef = new FieldDefinition(fieldName, type);
         fieldDef.setIsPrimaryKey(true);
         addField(fieldDef);
@@ -248,7 +248,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * This field is set as part of the primary key.
      * @param type is the Java class type corresponding to the database type.
      */
-    public void addPrimaryKeyField(String fieldName, Class type, int fieldSize) {
+    public void addPrimaryKeyField(String fieldName, Class<?> type, int fieldSize) {
         FieldDefinition fieldDef = new FieldDefinition(fieldName, type, fieldSize);
         fieldDef.setIsPrimaryKey(true);
         addField(fieldDef);

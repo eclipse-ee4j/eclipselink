@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -204,7 +204,7 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
         ConversionManager conversionManager = (ConversionManager) session.getDatasourcePlatform().getConversionManager();
         QName typeQName = unmarshalRecord.getTypeQName();
         if (typeQName != null) {
-            Class typeClass = xmlField.getJavaClass(typeQName, conversionManager);
+            Class<?> typeClass = xmlField.getJavaClass(typeQName, conversionManager);
             value = conversionManager.convertObject(value, typeClass, typeQName);
         } else {
             value = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, conversionManager, unmarshalRecord);

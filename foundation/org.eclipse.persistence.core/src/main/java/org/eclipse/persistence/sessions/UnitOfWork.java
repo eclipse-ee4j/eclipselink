@@ -73,7 +73,7 @@ public interface UnitOfWork extends Session {
      * Adds the given Java class to the receiver's set of read-only classes.
      * Cannot be called after objects have been registered in the unit of work.
      */
-    void addReadOnlyClass(Class theClass);
+    void addReadOnlyClass(Class<?> theClass);
 
     /**
      * PUBLIC:
@@ -306,7 +306,7 @@ public interface UnitOfWork extends Session {
      *
      * @return true if the class is read-only, false otherwise.
      */
-    boolean isClassReadOnly(Class theClass);
+    boolean isClassReadOnly(Class<?> theClass);
 
     /**
      * ADVANCED:
@@ -358,7 +358,7 @@ public interface UnitOfWork extends Session {
      * Return a new instance of the class registered in this unit of work.
      * This can be used to ensure that new objects are registered correctly.
      */
-    Object newInstance(Class theClass);
+    Object newInstance(Class<?> theClass);
 
     /**
      * ADVANCED:
@@ -490,7 +490,7 @@ public interface UnitOfWork extends Session {
      * Removes a Class from the receiver's set of read-only classes.
      * It is illegal to try to send this method to a nested UnitOfWork.
      */
-    void removeReadOnlyClass(Class theClass);
+    void removeReadOnlyClass(Class<?> theClass);
 
     /**
      * PUBLIC:
@@ -694,7 +694,7 @@ public interface UnitOfWork extends Session {
      * The instance will be lazy when it does not exist in the cache, and supports fetch groups.
      * @param primaryKey - The primary key of the object, either as a List, singleton, IdClass or an instance of the object.
      */
-    Object getReference(Class theClass, Object primaryKey);
+    Object getReference(Class<?> theClass, Object primaryKey);
 
     /**
      * ADVANCED:

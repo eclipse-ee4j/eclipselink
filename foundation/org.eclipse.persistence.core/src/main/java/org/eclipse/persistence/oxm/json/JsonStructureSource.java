@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,7 +50,7 @@ public class JsonStructureSource extends ExtendedSource {
     }
 
     @Override
-    public XMLReader createReader(Unmarshaller unmarshaller, Class unmarshalClass) {
+    public XMLReader createReader(Unmarshaller unmarshaller, Class<?> unmarshalClass) {
         JsonStructureReader reader = new JsonStructureReader(unmarshaller, unmarshalClass);
         reader.setJsonStructure(getJsonStructure());
         return reader;

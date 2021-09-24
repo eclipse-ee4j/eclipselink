@@ -2279,7 +2279,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * <code>java.util.Collection</code> interface.
      */
     @Override
-    public void useCollectionClass(Class concreteClass) {
+    public void useCollectionClass(Class<?> concreteClass) {
         ContainerPolicy policy = ContainerPolicy.buildPolicyFor(concreteClass, hasOrderBy() || listOrderField != null);
         setContainerPolicy(policy);
     }
@@ -2291,7 +2291,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * <p>The container class must implement (directly or indirectly) the
      * <code>java.util.SortedSet</code> interface.
      */
-    public void useSortedSetClass(Class concreteClass, Comparator comparator) {
+    public void useSortedSetClass(Class<?> concreteClass, Comparator comparator) {
         try {
             SortedCollectionContainerPolicy policy = (SortedCollectionContainerPolicy)ContainerPolicy.buildPolicyFor(concreteClass);
             policy.setComparator(comparator);
@@ -2359,7 +2359,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * must set before calling this method.
      */
     @Override
-    public void useMapClass(Class concreteClass, String keyName) {
+    public void useMapClass(Class<?> concreteClass, String keyName) {
         // the reference class has to be specified before coming here
         if (getReferenceClassName() == null) {
             throw DescriptorException.referenceClassNotSpecified(this);
@@ -2380,7 +2380,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * <p> The container class must implement (directly or indirectly) the
      * <code>java.util.Map</code> interface.
      */
-    public void useMapClass(Class concreteClass) {
+    public void useMapClass(Class<?> concreteClass) {
         useMapClass(concreteClass, null);
     }
 
@@ -2483,14 +2483,14 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         this.indirectionPolicy.validateContainerPolicy(session.getIntegrityChecker());
 
         if (getAttributeAccessor() instanceof InstanceVariableAttributeAccessor) {
-            Class attributeType = ((InstanceVariableAttributeAccessor)getAttributeAccessor()).getAttributeType();
+            Class<?> attributeType = ((InstanceVariableAttributeAccessor)getAttributeAccessor()).getAttributeType();
             this.indirectionPolicy.validateDeclaredAttributeTypeForCollection(attributeType, session.getIntegrityChecker());
         } else if (getAttributeAccessor().isMethodAttributeAccessor()) {
             // 323403
-            Class returnType = ((MethodAttributeAccessor)getAttributeAccessor()).getGetMethodReturnType();
+            Class<?> returnType = ((MethodAttributeAccessor)getAttributeAccessor()).getGetMethodReturnType();
             this.indirectionPolicy.validateGetMethodReturnTypeForCollection(returnType, session.getIntegrityChecker());
 
-            Class parameterType = ((MethodAttributeAccessor)getAttributeAccessor()).getSetMethodParameterType();
+            Class<?> parameterType = ((MethodAttributeAccessor)getAttributeAccessor()).getSetMethodParameterType();
             this.indirectionPolicy.validateSetMethodParameterTypeForCollection(parameterType, session.getIntegrityChecker());
         }
     }

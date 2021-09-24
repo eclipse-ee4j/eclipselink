@@ -431,7 +431,7 @@ public abstract class Expression implements Serializable, Cloneable {
      *     SQL: LPROJ.PROJ_ID (+)= PROJ.PROJ_ID AND L_PROJ.BUDGET = 1000 AND PROJ.TYPE = "L"
      * </pre></blockquote>
      */
-    public Expression treat(Class castClass) {
+    public Expression treat(Class<?> castClass) {
         return this;
     }
 
@@ -4115,7 +4115,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is a case where a fast operation in java does not translate to an
      * equally fast operation in SQL, requiring a correlated subselect.
      */
-    public Expression size(Class returnType) {
+    public Expression size(Class<?> returnType) {
         if (((BaseExpression)this).getBaseExpression() == null){
             return SubSelectExpression.createSubSelectExpressionForCount(this, this, null, returnType);
         }

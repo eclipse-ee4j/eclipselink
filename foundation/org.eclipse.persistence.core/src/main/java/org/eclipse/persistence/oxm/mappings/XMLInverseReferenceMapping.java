@@ -253,7 +253,7 @@ public class XMLInverseReferenceMapping extends AggregateMapping implements Inve
     }
 
     @Override
-    public void useCollectionClass(Class concreteClass) {
+    public void useCollectionClass(Class<?> concreteClass) {
         this.containerPolicy = new CollectionContainerPolicy(concreteClass);
     }
 
@@ -268,7 +268,7 @@ public class XMLInverseReferenceMapping extends AggregateMapping implements Inve
     }
 
     @Override
-    public void useMapClass(Class concreteClass, String methodName) {
+    public void useMapClass(Class<?> concreteClass, String methodName) {
         this.containerPolicy = new MapContainerPolicy(concreteClass);
     }
 

@@ -53,9 +53,9 @@ import org.eclipse.persistence.sessions.Session;
 public class ObjectTypeConverter implements Converter, ClassNameConversionRequired {
     // String type names and values set from JPA processing.
     protected String converterName;
-    protected Class dataType;
+    protected Class<?> dataType;
     protected String dataTypeName;
-    protected Class objectType;
+    protected Class<?> objectType;
     protected String objectTypeName;
     protected Map<String, String> conversionValueStrings;
     protected Map<String, String> addToAttributeOnlyConversionValueStrings;
@@ -65,7 +65,7 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
     protected Map attributeToFieldValues;
     protected transient Object defaultAttributeValue;
     protected String defaultAttributeValueString;
-    protected transient Class fieldClassification;
+    protected transient Class<?> fieldClassification;
     protected transient String fieldClassificationName;
 
     /**
@@ -193,7 +193,7 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
     /**
      * Load the given class name with the given loader.
      */
-    protected Class loadClass(String className, ClassLoader classLoader) {
+    protected Class<?> loadClass(String className, ClassLoader classLoader) {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
@@ -278,7 +278,7 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
      * INTERNAL:
      * Get the type of the field value to allow conversion from the database.
      */
-    public Class getFieldClassification() {
+    public Class<?> getFieldClassification() {
         return fieldClassification;
     }
 
@@ -295,7 +295,7 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
      * This is used to convert the row value to a consistent java value.
      * By default this is null which means unknown.
      */
-    public Class getFieldClassification(DatabaseField fieldToClassify) {
+    public Class<?> getFieldClassification(DatabaseField fieldToClassify) {
         return getFieldClassification();
     }
 
@@ -390,7 +390,7 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
         if (getFieldToAttributeValues().isEmpty()) {
             return;
         }
-        Class type = null;
+        Class<?> type = null;
         Iterator fieldValuesEnum = getFieldToAttributeValues().keySet().iterator();
         while (fieldValuesEnum.hasNext() && (type == null)) {
             Object value = fieldValuesEnum.next();
@@ -415,17 +415,17 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
      * INTERNAL:
      * Used to initialize string based conversion values set from JPA processing.
      */
-    private Object initObject(Class type, String value, boolean isData) {
+    private Object initObject(Class<?> type, String value, boolean isData) {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
             try {
-                Constructor<Class<?>> constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<Class<?>>(type, new Class[] {String.class}, false));
-                return AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] {value}));
+                Constructor<?> constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(type, new Class<?>[] {String.class}, false));
+                return AccessController.doPrivileged(new PrivilegedInvokeConstructor<>(constructor, new Object[] {value}));
             } catch (PrivilegedActionException exception) {
                 throwInitObjectException(exception, type, value, isData);
             }
         } else {
             try {
-                Constructor constructor = PrivilegedAccessHelper.getConstructorFor(type, new Class[] {String.class}, false);
+                Constructor<?> constructor = PrivilegedAccessHelper.getConstructorFor(type, new Class<?>[] {String.class}, false);
                 return PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] {value});
             } catch (Exception exception) {
                 throwInitObjectException(exception, type, value, isData);
@@ -493,7 +493,7 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
      * INTERNAL:
      * Set the type of the field value to allow conversion from the database.
      */
-    public void setFieldClassification(Class fieldClassification) {
+    public void setFieldClassification(Class<?> fieldClassification) {
         this.fieldClassification = fieldClassification;
     }
 
@@ -537,7 +537,7 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
     /**
      * INTERNAL:
      */
-    protected void throwInitObjectException(Exception exception, Class type, String value, boolean isData) {
+    protected void throwInitObjectException(Exception exception, Class<?> type, String value, boolean isData) {
         if (isData) {
             throw ValidationException.errorInstantiatingConversionValueData(converterName, value, type, exception);
         } else {

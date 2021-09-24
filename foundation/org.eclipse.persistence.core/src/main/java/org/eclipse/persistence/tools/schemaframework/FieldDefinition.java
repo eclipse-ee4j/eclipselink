@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,7 +43,7 @@ public class FieldDefinition implements Serializable, Cloneable {
      * Java type class for the field.
      * Particular database type is generated based on platform from this.
      */
-    protected Class type;
+    protected Class<?> type;
     /**
      * Generic database type name for the field, which can be used instead of the Java class 'type'.
      * This is translated to a particular database type based on platform.
@@ -80,7 +80,7 @@ public class FieldDefinition implements Serializable, Cloneable {
         this.isUnique = false;
     }
 
-    public FieldDefinition(String name, Class type) {
+    public FieldDefinition(String name, Class<?> type) {
         this.name = name;
         this.type = type;
         this.size = 0;
@@ -91,14 +91,14 @@ public class FieldDefinition implements Serializable, Cloneable {
         isUnique = false;
     }
 
-    public FieldDefinition(String name, Class type, int size) {
+    public FieldDefinition(String name, Class<?> type, int size) {
         this();
         this.name = name;
         this.type = type;
         this.size = size;
     }
 
-    public FieldDefinition(String name, Class type, int size, int subSize) {
+    public FieldDefinition(String name, Class<?> type, int size, int subSize) {
         this();
         this.name = name;
         this.type = type;
@@ -286,7 +286,7 @@ public class FieldDefinition implements Serializable, Cloneable {
      * Return the type of the field.
      * This should be set to a java class, such as String.class, Integer.class or Date.class.
      */
-    public Class getType() {
+    public Class<?> getType() {
         return type;
     }
 
@@ -430,7 +430,7 @@ public class FieldDefinition implements Serializable, Cloneable {
      * Set the type of the field.
      * This should be set to a java class, such as String.class, Integer.class or Date.class.
      */
-    public void setType(Class type) {
+    public void setType(Class<?> type) {
         this.type = type;
     }
 

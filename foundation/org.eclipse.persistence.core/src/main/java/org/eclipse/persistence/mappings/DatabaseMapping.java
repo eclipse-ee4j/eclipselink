@@ -557,7 +557,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
                 List<String> valuePair = getUnconvertedProperties().get(propertyName);
                 String value = valuePair.get(0);
                 String valueTypeName = valuePair.get(1);
-                Class valueType = null;
+                Class<?> valueType = null;
 
                 // Have to initialize the valueType now
                 try {
@@ -817,7 +817,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * @return TODO
      */
     @Override
-    public Class getAttributeClassification() {
+    public Class<?> getAttributeClassification() {
         return null;
     }
 
@@ -904,7 +904,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * This is used to convert the row value to a consistent java value.
      * By default this is unknown.
      */
-    public Class getFieldClassification(DatabaseField fieldToClassify) {
+    public Class<?> getFieldClassification(DatabaseField fieldToClassify) {
         return null;
     }
 

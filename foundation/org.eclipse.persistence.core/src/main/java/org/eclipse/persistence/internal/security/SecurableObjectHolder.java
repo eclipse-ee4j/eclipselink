@@ -86,7 +86,7 @@ public class SecurableObjectHolder {
 
         try {
             ConversionManager cm = ConversionManager.getDefaultManager();
-            Class securableClass = cm.convertObject(m_securableClassName, Class.class);
+            Class<?> securableClass = cm.convertObject(m_securableClassName, Class.class);
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
                     m_securableObject = (Securable)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(securableClass));

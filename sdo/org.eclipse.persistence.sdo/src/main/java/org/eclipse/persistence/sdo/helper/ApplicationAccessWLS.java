@@ -144,14 +144,14 @@ public class ApplicationAccessWLS {
         try {
             // Get component invocation manager
             final Class<Object> cicManagerClass = PrivilegedAccessHelper.getClassForName(CIC_MANAGER_CLASS_NAME);
-            final Method getInstance = PrivilegedAccessHelper.getDeclaredMethod(cicManagerClass, "getInstance", new Class[]{});
+            final Method getInstance = PrivilegedAccessHelper.getDeclaredMethod(cicManagerClass, "getInstance", new Class<?>[]{});
             cicManagerInstance = PrivilegedAccessHelper.invokeMethod(getInstance, cicManagerClass);
 
             // Get component invocation context
-            getCurrentCicMethod = PrivilegedAccessHelper.getMethod(cicManagerClass, "getCurrentComponentInvocationContext", new Class[]{}, true);
+            getCurrentCicMethod = PrivilegedAccessHelper.getMethod(cicManagerClass, "getCurrentComponentInvocationContext", new Class<?>[]{}, true);
 
             final Class<Object> cicClass = PrivilegedAccessHelper.getClassForName(CIC_CLASS_NAME);
-            getApplicationIdMethod = PrivilegedAccessHelper.getDeclaredMethod(cicClass, "getApplicationId", new Class[]{});
+            getApplicationIdMethod = PrivilegedAccessHelper.getDeclaredMethod(cicClass, "getApplicationId", new Class<?>[]{});
 
             return true;
         } catch (ClassNotFoundException|NoSuchMethodException|InvocationTargetException|IllegalAccessException e) {
@@ -166,10 +166,10 @@ public class ApplicationAccessWLS {
     protected boolean initUsingApplicationAccess() {
         try {
             final Class<Object> applicationAccessClass = PrivilegedAccessHelper.getClassForName("weblogic.application.ApplicationAccess");
-            final Method getApplicationAccessMethod = PrivilegedAccessHelper.getDeclaredMethod(applicationAccessClass, "getApplicationAccess", new Class[]{});
+            final Method getApplicationAccessMethod = PrivilegedAccessHelper.getDeclaredMethod(applicationAccessClass, "getApplicationAccess", new Class<?>[]{});
             applicationAccessInstance = PrivilegedAccessHelper.invokeMethod(getApplicationAccessMethod, applicationAccessClass);
 
-            final Class[] methodParameterTypes = new Class[]{ClassLoader.class};
+            final Class<?>[] methodParameterTypes = new Class<?>[]{ClassLoader.class};
             getApplicationNameMethod = PrivilegedAccessHelper.getMethod(applicationAccessClass, "getApplicationName", methodParameterTypes, true);
             getApplicationVersionMethod = PrivilegedAccessHelper.getMethod(applicationAccessClass, "getApplicationVersion", methodParameterTypes, true);
 

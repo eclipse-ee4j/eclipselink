@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -195,7 +195,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     }
 
     @Override
-    public Object unmarshal(File file, Class clazz) {
+    public Object unmarshal(File file, Class<?> clazz) {
         if(!xmlUnmarshaller.isApplicationXML()){
             throw XMLMarshalException.unsupportedMediaTypeForPlatform();
         }
@@ -216,7 +216,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     }
 
     @Override
-    public Object unmarshal(InputStream inputStream, Class clazz) {
+    public Object unmarshal(InputStream inputStream, Class<?> clazz) {
         return unmarshal(new InputSource(inputStream), clazz);
     }
 
@@ -226,7 +226,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     }
 
     @Override
-    public Object unmarshal(InputSource inputSource, Class clazz) {
+    public Object unmarshal(InputSource inputSource, Class<?> clazz) {
         if(!xmlUnmarshaller.isApplicationXML()){
             throw XMLMarshalException.unsupportedMediaTypeForPlatform();
         }
@@ -247,7 +247,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     }
 
     @Override
-    public Object unmarshal(Node node, Class clazz) {
+    public Object unmarshal(Node node, Class<?> clazz) {
         if(!xmlUnmarshaller.isApplicationXML()){
             throw XMLMarshalException.unsupportedMediaTypeForPlatform();
         }
@@ -273,7 +273,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     }
 
     @Override
-    public Object unmarshal(Reader reader, Class clazz) {
+    public Object unmarshal(Reader reader, Class<?> clazz) {
         return unmarshal(new InputSource(reader), clazz);
     }
 
@@ -283,7 +283,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     }
 
     @Override
-    public Object unmarshal(Source source, Class clazz) {
+    public Object unmarshal(Source source, Class<?> clazz) {
         if(!xmlUnmarshaller.isApplicationXML()){
             throw XMLMarshalException.unsupportedMediaTypeForPlatform();
         }
@@ -304,7 +304,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     }
 
     @Override
-    public Object unmarshal(URL url, Class clazz) {
+    public Object unmarshal(URL url, Class<?> clazz) {
         if(!xmlUnmarshaller.isApplicationXML()){
             throw XMLMarshalException.unsupportedMediaTypeForPlatform();
         }
@@ -325,7 +325,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     }
 
     @Override
-    public Object unmarshal(XMLReader xmlReader, InputSource inputSource, Class clazz) {
+    public Object unmarshal(XMLReader xmlReader, InputSource inputSource, Class<?> clazz) {
         if(!xmlUnmarshaller.isApplicationXML()){
             throw XMLMarshalException.unsupportedMediaTypeForPlatform();
         }
@@ -361,7 +361,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     /**
      * INTERNAL: Convert the Oracle XMLDocument to the reference-class.
      */
-    public Object xmlToObject(DOMRecord xmlRow, Class referenceClass) throws XMLMarshalException {
+    public Object xmlToObject(DOMRecord xmlRow, Class<?> referenceClass) throws XMLMarshalException {
         try{
             //Try to get the Encoding and Version from DOM3 APIs if available
             String xmlEncoding = "UTF-8";

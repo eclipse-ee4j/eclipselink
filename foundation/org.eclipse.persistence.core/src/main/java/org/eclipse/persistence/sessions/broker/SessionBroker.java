@@ -47,7 +47,7 @@ import org.eclipse.persistence.internal.sessions.*;
  */
 public class SessionBroker extends DatabaseSessionImpl {
     protected SessionBroker parent;
-    protected Map<Class, String> sessionNamesByClass;
+    protected Map<Class<?>, String> sessionNamesByClass;
     protected Map<String, AbstractSession> sessionsByName;
     protected Sequencing sequencing;
     protected boolean shouldUseDescriptorAliases;
@@ -422,7 +422,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * Return the platform for a particular class.
      */
     @Override
-    public Platform getPlatform(Class domainClass) {
+    public Platform getPlatform(Class<?> domainClass) {
         if (domainClass == null) {
             return super.getDatasourcePlatform();
         }
@@ -479,7 +479,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * Return the session to be used for the class.
      */
     @Override
-    public AbstractSession getSessionForClass(Class domainClass) throws ValidationException {
+    public AbstractSession getSessionForClass(Class<?> domainClass) throws ValidationException {
         if (domainClass == null) {
             // CR2114; we don't have a session name. Return us.
             return this;
@@ -514,7 +514,7 @@ public class SessionBroker extends DatabaseSessionImpl {
             return getSessionForName(query.getSessionName());
         }
 
-        Class queryClass;
+        Class<?> queryClass;
         if (query.getDescriptor() != null) {
             queryClass = query.getDescriptor().getJavaClass();
         } else {
@@ -530,7 +530,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * INTERNAL:
      * Return sessions indexed by class, each class can only have one default session.
      */
-    protected Map<Class, String> getSessionNamesByClass() {
+    protected Map<Class<?>, String> getSessionNamesByClass() {
         return sessionNamesByClass;
     }
 

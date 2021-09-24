@@ -95,7 +95,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * PUBLIC:
      * Add a type indicator conversion to this mapping.
      */
-    public void addClassIndicator(Class implementer, Object typeIndicator) {
+    public void addClassIndicator(Class<?> implementer, Object typeIndicator) {
         if (typeIndicator == null) {
             typeIndicator = Helper.NULL_VALUE;
         }
@@ -313,7 +313,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * This is used to convert the row value to a consistent java value.
      */
     @Override
-    public Class getFieldClassification(DatabaseField fieldToClassify) {
+    public Class<?> getFieldClassification(DatabaseField fieldToClassify) {
         if ((getTypeField() != null) && (fieldToClassify.equals(getTypeField()))) {
             return getTypeField().getType();
         }
@@ -417,7 +417,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * INTERNAL:
      * Return the type for a specified implementor
      */
-    protected Object getTypeForImplementor(Class implementor) {
+    protected Object getTypeForImplementor(Class<?> implementor) {
         Object type = getTypeIndicatorTranslation().get(implementor);
         if (type == Helper.NULL_VALUE) {
             type = null;
@@ -471,7 +471,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
             Map.Entry entry = (Map.Entry)iterator.next();
             String referenceClassName = (String)entry.getKey();
             Object indicator = entry.getValue();
-            Class referenceClass = null;
+            Class<?> referenceClass = null;
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     try {
@@ -580,7 +580,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
         if (getTypeIndicatorTranslation().isEmpty()) {
             return;
         }
-        Class type = null;
+        Class<?> type = null;
         for (Iterator typeValuesEnum = getTypeIndicatorTranslation().values().iterator();
                  typeValuesEnum.hasNext() && (type == null);) {
             Object value = typeValuesEnum.next();
@@ -788,7 +788,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
             if (row.get(getTypeField()) == null) {
                 return getIndirectionPolicy().nullValueFromRow();
             }
-            Class implementerClass = (Class)getImplementorForType(row.get(getTypeField()), executionSession);
+            Class<?> implementerClass = (Class)getImplementorForType(row.get(getTypeField()), executionSession);
             ReadObjectQuery query = (ReadObjectQuery)getSelectionQuery().clone();
             query.setReferenceClass(implementerClass);
             query.setSelectionCriteria(getSelectionCriteria());

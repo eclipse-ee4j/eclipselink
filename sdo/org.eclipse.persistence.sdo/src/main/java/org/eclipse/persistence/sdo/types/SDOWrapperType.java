@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -69,7 +69,7 @@ public class SDOWrapperType extends SDOType implements Type {
     }
 
     public SDOWrapperType(Type aPropertyType, String aTypeName, SDOTypeHelper aSDOTypeHelper, QName aSchemaType, Class<? extends SDODataObject> implClass) {
-        this(aPropertyType, aTypeName, aSDOTypeHelper, new QName[] { aSchemaType }, new Class[] { implClass });
+        this(aPropertyType, aTypeName, aSDOTypeHelper, new QName[] { aSchemaType }, (Class<? extends SDODataObject>[]) new Class<?>[] { implClass });
     }
 
     public SDOWrapperType(Type aPropertyType, String aTypeName, SDOTypeHelper aSDOTypeHelper, QName[] schemaTypes) {

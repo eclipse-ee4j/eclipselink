@@ -257,7 +257,7 @@ public final class JsonParserReader extends XMLReaderAdapter {
     public static final class JsonParserReaderBuilder {
         private final JsonParser parser;
         private Unmarshaller um;
-        private Class resultClass;
+        private Class<?> resultClass;
 
         public JsonParserReaderBuilder(JsonParser parser) {
             this.parser = parser;
@@ -268,7 +268,7 @@ public final class JsonParserReader extends XMLReaderAdapter {
             return this;
         }
 
-        public JsonParserReaderBuilder setResultClass(Class resultClass) {
+        public JsonParserReaderBuilder setResultClass(Class<?> resultClass) {
             this.resultClass = resultClass;
             return this;
         }

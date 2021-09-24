@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,7 +46,7 @@ import org.xml.sax.Attributes;
 public class XMLChoiceObjectMappingNodeValue extends MappingNodeValue {
 
     private NodeValue choiceElementNodeValue;
-    private Map<Class, NodeValue> choiceElementNodeValues;
+    private Map<Class<?>, NodeValue> choiceElementNodeValues;
     private ChoiceObjectMapping xmlChoiceMapping;
     //The first node value of the choice will be registered as a null capable value. If any
     //of the choice elements get hit, this needs to be removed as a null value.
@@ -68,7 +68,7 @@ public class XMLChoiceObjectMappingNodeValue extends MappingNodeValue {
         Mapping xmlMapping = (Mapping) xmlChoiceMapping.getChoiceElementMappings().get(xmlField);
         choiceElementNodeValue = getNodeValueForMapping(xmlMapping);
         //check for mappings to other classes with the same field
-        for(Entry<Class, Mapping> entry: ((Map<Class, Mapping>)xmlChoiceMapping.getChoiceElementMappingsByClass()).entrySet()) {
+        for(Entry<Class<?>, Mapping> entry: ((Map<Class<?>, Mapping>)xmlChoiceMapping.getChoiceElementMappingsByClass()).entrySet()) {
             Field field = (Field) xmlChoiceMapping.getClassToFieldMappings().get(entry.getKey());
             if(field != null && field.equals(this.xmlField)) {
                 Mapping mappingForClass = entry.getValue();
@@ -113,7 +113,7 @@ public class XMLChoiceObjectMappingNodeValue extends MappingNodeValue {
 
     @Override
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
-        Class valueClass = null;
+        Class<?> valueClass = null;
         if (value instanceof Root) {
             Root root = (Root)value;
             for(CoreField next: (List<CoreField>) this.xmlChoiceMapping.getFields()) {
@@ -143,7 +143,7 @@ public class XMLChoiceObjectMappingNodeValue extends MappingNodeValue {
                 valueClass = value.getClass();
             }
             Field fieldForClass = null;
-            Class theClass = valueClass;
+            Class<?> theClass = valueClass;
             while(theClass != null) {
                 fieldForClass = (Field) xmlChoiceMapping.getClassToFieldMappings().get(valueClass);
                 if(fieldForClass != null) {

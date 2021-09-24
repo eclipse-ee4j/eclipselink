@@ -208,14 +208,14 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
 
     @Override
     public void addNamedInOutputArgument(String procedureParameterName, String inArgumentFieldName,
-        String outArgumentFieldName, int type, String typeName, Class classType) {
+        String outArgumentFieldName, int type, String typeName, Class<?> classType) {
         arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, INOUT,
             getDatabaseTypeForCode(type)));
     }
 
     @Override
     public void addNamedInOutputArgument(String procedureParameterName, String inArgumentFieldName,
-        String outArgumentFieldName, int type, String typeName, Class javaType,
+        String outArgumentFieldName, int type, String typeName, Class<?> javaType,
         DatabaseField nestedType) {
         arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, INOUT,
             getDatabaseTypeForCode(type)));
@@ -260,14 +260,14 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
 
     @Override
     public void addNamedOutputArgument(String procedureParameterName, String argumentFieldName,
-        int jdbcType, String typeName, Class javaType) {
+        int jdbcType, String typeName, Class<?> javaType) {
         arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, OUT,
             getDatabaseTypeForCode(jdbcType)));
     }
 
     @Override
     public void addNamedOutputArgument(String procedureParameterName, String argumentFieldName,
-        int jdbcType, String typeName, Class javaType, DatabaseField nestedType) {
+        int jdbcType, String typeName, Class<?> javaType, DatabaseField nestedType) {
         arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, OUT,
             getDatabaseTypeForCode(jdbcType)));
     }
@@ -315,19 +315,19 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
 
     @Override
     public void addNamedInOutputArgument(String procedureParameterName, String argumentFieldName,
-        Class type) {
+        Class<?> type) {
         throw QueryException.addArgumentsNotSupported("named IN OUT arguments without DatabaseType classification");
     }
 
     @Override
     public void addNamedInOutputArgument(String procedureParameterName, String inArgumentFieldName,
-        String outArgumentFieldName, Class type) {
+        String outArgumentFieldName, Class<?> type) {
         throw QueryException.addArgumentsNotSupported("named IN OUT arguments without DatabaseType classification");
     }
 
     @Override
     public void addNamedInOutputArgumentValue(String procedureParameterName,
-        Object inArgumentValue, String outArgumentFieldName, Class type) {
+        Object inArgumentValue, String outArgumentFieldName, Class<?> type) {
         throw QueryException.addArgumentsNotSupported("named IN OUT argument values without DatabaseType classification");
     }
 
@@ -343,7 +343,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
 
     @Override
     public void addNamedOutputArgument(String procedureParameterName, String argumentFieldName,
-        Class type) {
+        Class<?> type) {
         throw QueryException.addArgumentsNotSupported("named OUT arguments without DatabaseType classification");
     }
 
@@ -354,7 +354,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
 
     // unlikely we will EVER support unnamed parameters
     @Override
-    public void addUnamedArgument(String argumentFieldName, Class type) {
+    public void addUnamedArgument(String argumentFieldName, Class<?> type) {
         throw QueryException.unnamedArgumentsNotSupported();
     }
 
@@ -385,25 +385,25 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
     }
 
     @Override
-    public void addUnamedInOutputArgument(String argumentFieldName, Class type) {
+    public void addUnamedInOutputArgument(String argumentFieldName, Class<?> type) {
         throw QueryException.unnamedArgumentsNotSupported();
     }
 
     @Override
     public void addUnamedInOutputArgument(String inArgumentFieldName, String outArgumentFieldName,
-        Class type) {
+        Class<?> type) {
         throw QueryException.unnamedArgumentsNotSupported();
     }
 
     @Override
     public void addUnamedInOutputArgument(String inArgumentFieldName, String outArgumentFieldName,
-        int type, String typeName, Class collection, DatabaseField nestedType) {
+        int type, String typeName, Class<?> collection, DatabaseField nestedType) {
         throw QueryException.unnamedArgumentsNotSupported();
     }
 
     @Override
     public void addUnamedInOutputArgument(String inArgumentFieldName, String outArgumentFieldName,
-        int type, String typeName, Class collection) {
+        int type, String typeName, Class<?> collection) {
         throw QueryException.unnamedArgumentsNotSupported();
     }
 
@@ -426,24 +426,24 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
 
     @Override
     public void addUnamedInOutputArgumentValue(Object inArgumentValue, String outArgumentFieldName,
-        Class type) {
+        Class<?> type) {
         throw QueryException.unnamedArgumentsNotSupported();
     }
 
     @Override
-    public void addUnamedOutputArgument(String argumentFieldName, Class type) {
-        throw QueryException.unnamedArgumentsNotSupported();
-    }
-
-    @Override
-    public void addUnamedOutputArgument(String argumentFieldName, int jdbcType, String typeName,
-        Class javaType, DatabaseField nestedType) {
+    public void addUnamedOutputArgument(String argumentFieldName, Class<?> type) {
         throw QueryException.unnamedArgumentsNotSupported();
     }
 
     @Override
     public void addUnamedOutputArgument(String argumentFieldName, int jdbcType, String typeName,
-        Class javaType) {
+        Class<?> javaType, DatabaseField nestedType) {
+        throw QueryException.unnamedArgumentsNotSupported();
+    }
+
+    @Override
+    public void addUnamedOutputArgument(String argumentFieldName, int jdbcType, String typeName,
+        Class<?> javaType) {
         throw QueryException.unnamedArgumentsNotSupported();
     }
 

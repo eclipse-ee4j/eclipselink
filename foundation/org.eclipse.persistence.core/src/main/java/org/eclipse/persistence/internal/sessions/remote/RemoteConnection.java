@@ -129,7 +129,7 @@ public abstract class RemoteConnection implements java.io.Serializable {
     /**
      * Get descriptor
      */
-    public abstract ClassDescriptor getDescriptor(Class domainClass);
+    public abstract ClassDescriptor getDescriptor(Class<?> domainClass);
 
     /**
      * Get descriptor
@@ -175,7 +175,7 @@ public abstract class RemoteConnection implements java.io.Serializable {
     /**
      * Execute query remotely.
      */
-    public abstract Transporter remoteExecuteNamedQuery(String name, Class javaClass, Vector arguments);
+    public abstract Transporter remoteExecuteNamedQuery(String name, Class<?> javaClass, Vector arguments);
 
     /**
      * Rollback a transaction on the database.

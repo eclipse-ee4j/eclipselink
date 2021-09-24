@@ -35,7 +35,7 @@ public class Root {
     protected String schemaLocation;
     protected String noNamespaceSchemaLocation;
     protected QName schemaType;
-    protected Class declaredType;
+    protected Class<?> declaredType;
     protected boolean nil;
 
     /**
@@ -209,7 +209,7 @@ public class Root {
      *
      * @param type The declared type of this XMLRoot object.
      */
-    public void setDeclaredType(Class type) {
+    public void setDeclaredType(Class<?> type) {
         this.declaredType = type;
     }
 
@@ -220,7 +220,7 @@ public class Root {
      *
      * @return the declared type
      */
-    public Class getDeclaredType() {
+    public Class<?> getDeclaredType() {
         return this.declaredType;
     }
 

@@ -264,7 +264,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
         ArrayList schemaTypes = xmlField.getSchemaTypes();
         QName schemaType = null;
         QName nextQName;
-        Class javaClass;
+        Class<?> javaClass;
         for (int i = 0; i < schemaTypes.size(); i++) {
             nextQName = (QName) (xmlField).getSchemaTypes().get(i);
             try {

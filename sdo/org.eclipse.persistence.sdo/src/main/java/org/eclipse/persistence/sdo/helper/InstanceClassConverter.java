@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,7 @@ import org.eclipse.persistence.sessions.Session;
  * Used when the javaClass open content property is set.
  */
 public class InstanceClassConverter implements Converter {
-    private Class customClass;
+    private Class<?> customClass;
 
     public InstanceClassConverter() {
     }
@@ -59,7 +59,7 @@ public class InstanceClassConverter implements Converter {
     @Override
     public Object convertDataValueToObjectValue(Object dataValue, Session session) {
         if (dataValue != null) {
-            Class[] params = new Class[1];
+            Class<?>[] params = new Class<?>[1];
             params[0] = String.class;
             Constructor ctor = null;
             try {
@@ -101,11 +101,11 @@ public class InstanceClassConverter implements Converter {
     public void initialize(DatabaseMapping mapping, Session session) {
     }
 
-    public void setCustomClass(Class customClass) {
+    public void setCustomClass(Class<?> customClass) {
         this.customClass = customClass;
     }
 
-    public Class getCustomClass() {
+    public Class<?> getCustomClass() {
         return customClass;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,7 +61,7 @@ public class UpdateAllQuery extends ModifyAllQuery {
      * Constructs an update all query for the Class type specified.
      * @param referenceClass Class
      */
-    public UpdateAllQuery(Class referenceClass) {
+    public UpdateAllQuery(Class<?> referenceClass) {
         super(referenceClass);
     }
 
@@ -71,7 +71,7 @@ public class UpdateAllQuery extends ModifyAllQuery {
      * @param referenceClass Class type to be considered
      * @param selectionCriteria Expression
      */
-    public UpdateAllQuery(Class referenceClass, Expression selectionCriteria) {
+    public UpdateAllQuery(Class<?> referenceClass, Expression selectionCriteria) {
         super(referenceClass, selectionCriteria);
     }
 
@@ -83,7 +83,7 @@ public class UpdateAllQuery extends ModifyAllQuery {
      * @param referenceClass Class type to be considered
      * @param expressionBuilder ExpressionBuilder
      */
-    public UpdateAllQuery(Class referenceClass, ExpressionBuilder expressionBuilder) {
+    public UpdateAllQuery(Class<?> referenceClass, ExpressionBuilder expressionBuilder) {
         super(referenceClass);
         this.defaultBuilder = expressionBuilder;
     }
@@ -192,7 +192,7 @@ public class UpdateAllQuery extends ModifyAllQuery {
     protected void prepare() throws QueryException {
         super.prepare();// will tell the query mechanism to prepare itself as well.
 
-        Class referenceClass = getReferenceClass();
+        Class<?> referenceClass = getReferenceClass();
 
         // Check the reference class, must be set
         if (referenceClass == null) {

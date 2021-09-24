@@ -20,7 +20,7 @@ import org.eclipse.persistence.sessions.Session;
 
 public class MyClassExtractor extends ClassExtractor {
     @Override
-    public Class extractClassFromRow(DataRecord databaseRow, Session session) {
+    public Class<?> extractClassFromRow(DataRecord databaseRow, Session session) {
         return Car.class;
     }
 }

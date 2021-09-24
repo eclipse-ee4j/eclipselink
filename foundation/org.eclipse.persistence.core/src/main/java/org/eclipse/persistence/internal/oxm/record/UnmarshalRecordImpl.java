@@ -552,7 +552,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         return;
         }
     CoreInheritancePolicy inheritancePolicy = xmlDescriptor.getInheritancePolicy();
-    Class classValue = treeObjectBuilder.classFromRow(this, session);
+    Class<?> classValue = treeObjectBuilder.classFromRow(this, session);
      if (classValue == null) {
              // no xsi:type attribute - look for type indicator on the default root element
              QName leafElementType = xmlDescriptor.getDefaultRootElementType();
@@ -1050,7 +1050,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
             }
             return;
         }
-        Class unmappedContentHandlerClass = unmarshaller.getUnmappedContentHandlerClass();
+        Class<?> unmappedContentHandlerClass = unmarshaller.getUnmappedContentHandlerClass();
         UnmappedContentHandler unmappedContentHandler;
         if (null == unmappedContentHandlerClass) {
             unmappedContentHandler = DEFAULT_UNMAPPED_CONTENT_HANDLER;

@@ -62,7 +62,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         if (xmlDescriptor.hasInheritance()) {
             unmarshalRecord.setAttributes(atts);
             CoreAbstractSession session = unmarshalRecord.getSession();
-            Class classValue = ((ObjectBuilder)xmlDescriptor.getObjectBuilder()).classFromRow(unmarshalRecord, session);
+            Class<?> classValue = ((ObjectBuilder)xmlDescriptor.getObjectBuilder()).classFromRow(unmarshalRecord, session);
             if (classValue == null) {
                 // no xsi:type attribute - look for type indicator on the default root element
                 XPathQName leafElementType = unmarshalRecord.getLeafElementType();
@@ -268,7 +268,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
                 if(qname.equals(Constants.QNAME_QNAME)) {
                     value = conversionManager.buildQNameFromString((String)value, unmarshalRecord);
                 } else {
-                    Class theClass = getClassForQName(qname, conversionManager);
+                    Class<?> theClass = getClassForQName(qname, conversionManager);
                     if (theClass != null) {
                         value = conversionManager.convertObject(value, theClass, qname);
                     }
@@ -279,7 +279,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         }
     }
 
-    protected Class getClassForQName(QName qname, ConversionManager conversionManager){
+    protected Class<?> getClassForQName(QName qname, ConversionManager conversionManager){
         CoreField field = getMapping().getField();
         if(field != null){
             return ((Field)field).getJavaClass(qname, conversionManager);

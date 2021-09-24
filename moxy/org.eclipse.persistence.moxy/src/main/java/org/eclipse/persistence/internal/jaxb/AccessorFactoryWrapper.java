@@ -43,14 +43,14 @@ public class AccessorFactoryWrapper {
         this.accessorFactory = factory;
         Class<? extends Object> accessorClass = factory.getClass();
         try {
-            createPropertyAccessorMethod = PrivilegedAccessHelper.getDeclaredMethod(accessorClass, ACCESSOR_FACTORY_CREATE_PROPERTY_ACCESSOR, new Class[]{Class.class, Method.class, Method.class});
-            createFieldAccessorMethod = PrivilegedAccessHelper.getDeclaredMethod(accessorClass, ACCESSOR_FACTORY_CREATE_FIELD_ACCESSOR, new Class[]{Class.class, Field.class, boolean.class});
+            createPropertyAccessorMethod = PrivilegedAccessHelper.getDeclaredMethod(accessorClass, ACCESSOR_FACTORY_CREATE_PROPERTY_ACCESSOR, new Class<?>[]{Class.class, Method.class, Method.class});
+            createFieldAccessorMethod = PrivilegedAccessHelper.getDeclaredMethod(accessorClass, ACCESSOR_FACTORY_CREATE_FIELD_ACCESSOR, new Class<?>[]{Class.class, Field.class, boolean.class});
         } catch(Exception ex) {
             throw JAXBException.invalidAccessorFactory(accessorClass, ex);
         }
     }
 
-    public Object createFieldAccessor(Class beanClass, Field field, boolean isReadOnly) {
+    public Object createFieldAccessor(Class<?> beanClass, Field field, boolean isReadOnly) {
         try {
             return PrivilegedAccessHelper.invokeMethod(createFieldAccessorMethod, accessorFactory, new Object[]{beanClass, field, isReadOnly});
         } catch(Exception ex) {
@@ -58,7 +58,7 @@ public class AccessorFactoryWrapper {
         }
     }
 
-    public Object createPropertyAccessor(Class beanClass, Method getMethod, Method setMethod) {
+    public Object createPropertyAccessor(Class<?> beanClass, Method getMethod, Method setMethod) {
         try {
             return PrivilegedAccessHelper.invokeMethod(createPropertyAccessorMethod, accessorFactory, new Object[]{beanClass, getMethod, setMethod});
         } catch(Exception ex) {

@@ -1023,7 +1023,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         }
 
         assertEquals("dateTime was not consistently unmarshalled as XMLGregorianCalendar " + elemClasses, 1, elemClasses.size());
-        Class elemClass = (Class) elemClasses.toArray()[0];
+        Class<?> elemClass = (Class) elemClasses.toArray()[0];
         boolean isXmlGregorianCalendar = ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(elemClass);
         assertTrue("dateTime was not unmarshalled as XMLGregorianCalendar", isXmlGregorianCalendar);
     }

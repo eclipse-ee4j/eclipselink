@@ -288,7 +288,7 @@ public class ReferenceMapping extends ObjectReferenceMapping {
      * This is a reference class whose instances this mapping will store in the domain objects.
      */
     @Override
-    public void setReferenceClass(Class referenceClass) {
+    public void setReferenceClass(Class<?> referenceClass) {
         this.referenceClass = referenceClass;
     }
 

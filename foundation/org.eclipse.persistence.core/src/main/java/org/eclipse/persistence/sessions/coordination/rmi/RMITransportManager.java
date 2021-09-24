@@ -156,7 +156,7 @@ public class RMITransportManager extends TransportManager {
                     try {
                         constructor = PrivilegedAccessHelper.getConstructorFor(
                             Class.forName("org.eclipse.persistence.internal.sessions.coordination.rmi.iiop.RMIRemoteCommandConnectionImpl"),
-                            new Class[] {RemoteCommandManager.class}, false);
+                            new Class<?>[] {RemoteCommandManager.class}, false);
                     } catch (ReflectiveOperationException e) {
                         throw RemoteCommandManagerException.errorInitCorba("javax.rmi.PortableRemoteObject", e);
                     }
@@ -296,7 +296,7 @@ public class RMITransportManager extends TransportManager {
     public void setIsRMIOverIIOP(boolean b) {
         if (b) {
             try {
-                narrow = PrivilegedAccessHelper.getDeclaredMethod(Class.forName("javax.rmi.PortableRemoteObject"), "narrow", new Class[] {Object.class, Class.class});
+                narrow = PrivilegedAccessHelper.getDeclaredMethod(Class.forName("javax.rmi.PortableRemoteObject"), "narrow", new Class<?>[] {Object.class, Class.class});
             } catch (ReflectiveOperationException e) {
                 // TODO Auto-generated catch block
                 throw RemoteCommandManagerException.errorInitCorba("javax.rmi.PortableRemoteObject", e);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,7 +51,7 @@ public @interface VariableOneToOne {
      * not specified it will be inferred from the type of the object being
      * referenced.
      */
-    Class targetInterface() default void.class;
+    Class<?> targetInterface() default void.class;
 
     /**
      * (Optional) The operations that must be cascaded to the target of the

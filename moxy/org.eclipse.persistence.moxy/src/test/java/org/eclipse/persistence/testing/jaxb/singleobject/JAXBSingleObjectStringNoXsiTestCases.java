@@ -116,7 +116,7 @@ public class JAXBSingleObjectStringNoXsiTestCases extends JAXBWithJSONTestCases 
     }
 
     @Override
-    public Class getUnmarshalClass() {
+    public Class<?> getUnmarshalClass() {
         return String.class;
     }
 

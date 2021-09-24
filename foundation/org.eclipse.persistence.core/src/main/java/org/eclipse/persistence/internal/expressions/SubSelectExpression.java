@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,7 +42,7 @@ public class SubSelectExpression extends BaseExpression {
     protected ReportQuery subQuery;
 
     protected String attribute;
-    protected Class returnType;
+    protected Class<?> returnType;
     protected Expression criteriaBase;
 
     public SubSelectExpression() {
@@ -94,7 +94,7 @@ public class SubSelectExpression extends BaseExpression {
     protected void initializeCountSubQuery(){
         if (criteriaBase != null && (subQuery.getItems() == null || subQuery.getItems().isEmpty())){
             if (baseExpression.getSession() != null && ((ObjectExpression)baseExpression).getDescriptor() != null){
-                Class sourceClass = ((ObjectExpression)baseExpression).getDescriptor().getJavaClass();
+                Class<?> sourceClass = ((ObjectExpression)baseExpression).getDescriptor().getJavaClass();
                 ClassDescriptor descriptor = baseExpression.getSession().getDescriptor(sourceClass);
                 if (descriptor != null){
                     DatabaseMapping mapping = descriptor.getMappingForAttributeName(attribute);
@@ -476,7 +476,7 @@ public class SubSelectExpression extends BaseExpression {
      * This factory method is used to build a subselect that will do a count.
      * It will count the number of items in baseExpression.anyOf(attribute).
      */
-    public static SubSelectExpression createSubSelectExpressionForCount(Expression outerQueryBaseExpression, Expression outerQueryCriteria, String attribute, Class returnType){
+    public static SubSelectExpression createSubSelectExpressionForCount(Expression outerQueryBaseExpression, Expression outerQueryCriteria, String attribute, Class<?> returnType){
         SubSelectExpression expression = new SubSelectExpression();
         expression.setBaseExpression(outerQueryBaseExpression);
         expression.attribute = attribute;

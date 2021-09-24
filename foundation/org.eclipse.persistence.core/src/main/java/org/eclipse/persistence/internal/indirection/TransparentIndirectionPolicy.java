@@ -295,7 +295,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * INTERNAL:
      *    Return the container class for the mapping.
      */
-    protected Class getContainerClass() {
+    protected Class<?> getContainerClass() {
         return this.getContainerPolicy().getContainerClass();
     }
 

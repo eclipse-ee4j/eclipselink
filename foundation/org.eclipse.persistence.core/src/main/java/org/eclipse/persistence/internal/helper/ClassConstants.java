@@ -106,9 +106,9 @@ public final class ClassConstants extends CoreClassConstants {
     public static final Class<FunctionExpression> FunctionExpression_Class = FunctionExpression.class;
     public static final Class<ArgumentListFunctionExpression> ArgumentListFunctionExpression_Class = ArgumentListFunctionExpression.class;
     public static final Class<IndirectContainer> IndirectContainer_Class = IndirectContainer.class;
-    public static final Class<IndirectList> IndirectList_Class = IndirectCollectionsFactory.IndirectList_Class;
-    public static final Class<IndirectSet> IndirectSet_Class = IndirectCollectionsFactory.IndirectSet_Class;
-    public static final Class<IndirectMap> IndirectMap_Class = IndirectCollectionsFactory.IndirectMap_Class;
+    public static final Class<IndirectList> IndirectList_Class = (Class<IndirectList>) IndirectCollectionsFactory.IndirectList_Class;
+    public static final Class<IndirectSet> IndirectSet_Class = (Class<IndirectSet>) IndirectCollectionsFactory.IndirectSet_Class;
+    public static final Class<IndirectMap> IndirectMap_Class = (Class<IndirectMap>) IndirectCollectionsFactory.IndirectMap_Class;
     public static final Class<LogicalExpression> LogicalExpression_Class = LogicalExpression.class;
     public static final Class<DatabaseSessionImpl> PublicInterfaceDatabaseSession_Class = DatabaseSessionImpl.class;
     public static final Class<PerformanceProfiler> PerformanceProfiler_Class = PerformanceProfiler.class;
@@ -139,8 +139,8 @@ public final class ClassConstants extends CoreClassConstants {
     public static final Class<FetchGroupTracker> FetchGroupTracker_class = FetchGroupTracker.class;
 
     // Moved from ConversionManager
-    public static final Class AOBJECT = Object[].class;
-    public static final Class ACHAR = Character[].class;
+    public static final Class<?> AOBJECT = Object[].class;
+    public static final Class<?> ACHAR = Character[].class;
     public static final Class<LocalDate> TIME_LDATE = LocalDate.class;
     public static final Class<LocalTime> TIME_LTIME = LocalTime.class;
     public static final Class<LocalDateTime> TIME_LDATETIME = LocalDateTime.class;

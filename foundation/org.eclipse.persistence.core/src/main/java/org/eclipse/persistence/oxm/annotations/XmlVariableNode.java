@@ -39,7 +39,7 @@ public @interface XmlVariableNode {
     /**
      * The class being referenced
      */
-    Class type() default DEFAULT.class;
+    Class<?> type() default DEFAULT.class;
 
     /**
      * Used in {@link XmlVariableNode#type()} to

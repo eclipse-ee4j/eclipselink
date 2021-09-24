@@ -138,7 +138,7 @@ public class FullIdentityMap extends AbstractIdentityMap {
      * Recurse = true will include subclasses of myClass in the count.
      */
     @Override
-    public int getSize(Class myClass, boolean recurse) {
+    public int getSize(Class<?> myClass, boolean recurse) {
         int count = 0;
         Iterator<CacheKey> keys = this.cacheKeys.values().iterator();
 

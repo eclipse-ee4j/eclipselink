@@ -69,7 +69,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
     protected String keyName;
 
     protected String elementClassName;
-    protected Class elementClass;
+    protected Class<?> elementClass;
     protected transient Field keyField;
     protected transient Method keyMethod;
 
@@ -85,7 +85,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * INTERNAL:
      * Construct a new policy for the specified class.
      */
-    public MapContainerPolicy(Class containerClass) {
+    public MapContainerPolicy(Class<?> containerClass) {
         super(containerClass);
     }
 
@@ -349,7 +349,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
         }
 
         try {
-            Class elementClass = null;
+            Class<?> elementClass = null;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
                     elementClass = AccessController.doPrivileged(new PrivilegedClassForName<>(elementClassName, true, classLoader));
@@ -424,7 +424,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * INTERNAL:
      * Returns the element class which defines the map key.
      */
-    public Class getElementClass() {
+    public Class<?> getElementClass() {
         return elementClass;
     }
 
@@ -440,7 +440,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * INTERNAL:
      */
     @Override
-    public Class getInterfaceType() {
+    public Class<?> getInterfaceType() {
         return ClassConstants.Map_Class;
     }
 
@@ -767,7 +767,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * INTERNAL:
      * Sets the element class which defines the method.
      */
-    public void setElementClass(Class elementClass) {
+    public void setElementClass(Class<?> elementClass) {
         if (elementClass != null) {
             elementClassName = elementClass.getName();
         }
@@ -806,7 +806,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * built in code.
      */
     @Override
-    public void setKeyName(String keyName, Class elementClass) {
+    public void setKeyName(String keyName, Class<?> elementClass) {
         // The key name and class name must be held as the policy is used
         // directly from the mapping.
         this.keyName = keyName;
@@ -826,7 +826,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * INTERNAL:
      * Sets the Method to be used to generate the key in a Map type container class.
      */
-    public void setKeyMethod(String keyMethodName, Class elementClass) {
+    public void setKeyMethod(String keyMethodName, Class<?> elementClass) {
         this.setKeyName(keyMethodName, elementClass);
     }
 

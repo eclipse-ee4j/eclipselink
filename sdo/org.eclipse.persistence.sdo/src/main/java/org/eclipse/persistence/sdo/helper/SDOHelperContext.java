@@ -150,7 +150,7 @@ public class SDOHelperContext implements HelperContext {
     private static final String WLS_APPLICATION_VERSION = "ApplicationVersion";
     private static final String WLS_APPLICATION_NAME_GET_METHOD_NAME = "getApplicationName";
     private static final String WLS_ACTIVE_VERSION_STATE = "ActiveVersionState";
-    private static final Class[] WLS_PARAMETER_TYPES = {};
+    private static final Class<?>[] WLS_PARAMETER_TYPES = {};
 
     // For WebSphere
     private static final String WAS_NEWLINE = "\n";
@@ -1459,14 +1459,14 @@ public class SDOHelperContext implements HelperContext {
         public ReflectionHelperContextResolver(Object target) {
             this.target = target;
             try {
-                this.method = findMethod(target.getClass(), "getHelperContext", new Class[]{String.class, ClassLoader.class});
+                this.method = findMethod(target.getClass(), "getHelperContext", new Class<?>[]{String.class, ClassLoader.class});
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, e.getMessage(), e);
                 throw new IllegalStateException(e);
             }
         }
 
-        private Method findMethod(Class clazz, String methodName, Class[] params) throws java.security.PrivilegedActionException, NoSuchMethodException {
+        private Method findMethod(Class<?> clazz, String methodName, Class<?>[] params) throws java.security.PrivilegedActionException, NoSuchMethodException {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess())
                 return AccessController.doPrivileged(new PrivilegedGetMethod(clazz, methodName, params, true));
             return PrivilegedAccessHelper.getMethod(clazz, methodName, params, true);

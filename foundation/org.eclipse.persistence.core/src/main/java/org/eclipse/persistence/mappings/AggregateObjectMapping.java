@@ -437,7 +437,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         boolean refreshing = true;
         if (targetObject != null){
             if (descriptor.hasInheritance()) {
-                Class newAggregateClass = descriptor.getInheritancePolicy().classFromRow(databaseRow, executionSession);
+                Class<?> newAggregateClass = descriptor.getInheritancePolicy().classFromRow(databaseRow, executionSession);
                 descriptor = getReferenceDescriptor(newAggregateClass, executionSession);
                 aggregate = getMatchingAttributeValueFromObject(databaseRow, targetObject, executionSession, descriptor);
                 if ((aggregate != null) && (aggregate.getClass() != newAggregateClass)) {
@@ -1196,7 +1196,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * The classification type for the attribute this mapping represents
      */
     @Override
-    public Class getAttributeClassification() {
+    public Class<?> getAttributeClassification() {
         return getReferenceClass();
     }
 
@@ -1206,7 +1206,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * This is used to convert the row value to a consistent Java value.
      */
     @Override
-    public Class getFieldClassification(DatabaseField fieldToClassify) {
+    public Class<?> getFieldClassification(DatabaseField fieldToClassify) {
         DatabaseMapping mapping = getReferenceDescriptor().getObjectBuilder().getMappingForField(fieldToClassify);
         if (mapping == null) {
             return null;// Means that the mapping is read-only
@@ -1285,7 +1285,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * Since aggregate object mappings clone their descriptors, for inheritance the correct child clone must be found.
      */
     @Override
-    public ClassDescriptor getReferenceDescriptor(Class theClass, AbstractSession session) {
+    public ClassDescriptor getReferenceDescriptor(Class<?> theClass, AbstractSession session) {
         if (this.referenceDescriptor.getJavaClass() == theClass) {
             return this.referenceDescriptor;
         }

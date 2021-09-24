@@ -159,7 +159,7 @@ public class CommitOrderCalculator {
         return orderedDescriptors;
     }
 
-    public CommitOrderDependencyNode nodeFor(Class c) {
+    public CommitOrderDependencyNode nodeFor(Class<?> c) {
         for (Enumeration<CommitOrderDependencyNode> e = nodes.elements(); e.hasMoreElements();) {
             CommitOrderDependencyNode n = e.nextElement();
             if (n.getDescriptor().getJavaClass() == c) {

@@ -77,7 +77,7 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
      * The class of the factory. The factory is instantiated by either invoking this class's default
      * (zero-argument) constructor or the factoryMethod specified below.
      */
-    protected Class factoryClass;
+    protected Class<?> factoryClass;
     protected String factoryClassName;
 
     /**
@@ -224,16 +224,16 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
     /**
      * Build and return the default (zero-argument) constructor for the specified class.
      */
-    protected Constructor buildDefaultConstructorFor(Class javaClass) throws DescriptorException {
+    protected Constructor buildDefaultConstructorFor(Class<?> javaClass) throws DescriptorException {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    return AccessController.doPrivileged(new PrivilegedGetDeclaredConstructorFor(javaClass, new Class[0], true));
+                    return AccessController.doPrivileged(new PrivilegedGetDeclaredConstructorFor(javaClass, new Class<?>[0], true));
                 } catch (PrivilegedActionException exception) {
                     throw DescriptorException.noSuchMethodWhileInitializingInstantiationPolicy(javaClass.getName() + ".<Default Constructor>", getDescriptor(), exception.getException());
                 }
             } else {
-                return PrivilegedAccessHelper.getDeclaredConstructorFor(javaClass, new Class[0], true);
+                return PrivilegedAccessHelper.getDeclaredConstructorFor(javaClass, new Class<?>[0], true);
             }
         } catch (NoSuchMethodException exception) {
             throw DescriptorException.noSuchMethodWhileInitializingInstantiationPolicy(javaClass.getName() + ".<Default Constructor>", getDescriptor(), exception);
@@ -252,7 +252,7 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
         return factory;
     }
 
-    public Class getFactoryClass() {
+    public Class<?> getFactoryClass() {
         return factoryClass;
     }
 
@@ -357,7 +357,7 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
      * Build and return the factory, using the specified static method.
      */
     protected Object buildFactoryUsingStaticMethod() throws DescriptorException {
-        Method factoryMethod = this.buildMethod(this.getFactoryClass(), this.getFactoryMethodName(), new Class[0]);
+        Method factoryMethod = this.buildMethod(this.getFactoryClass(), this.getFactoryMethodName(), new Class<?>[0]);
 
         try {
             // it should be static and zero-argument...
@@ -391,7 +391,7 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
      * It is either a static on the descriptor class, or it is a non-static on the factory.
      */
     protected void initializeMethod() throws DescriptorException {
-        Class tempClass;
+        Class<?> tempClass;
         if (this.getFactory() != null) {
             tempClass = this.getFactory().getClass();
         } else if (this.getFactoryClass() == null) {
@@ -399,13 +399,13 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
         } else {
             tempClass = this.getFactoryClass();
         }
-        this.setMethod(this.buildMethod(tempClass, this.getMethodName(), new Class[0]));
+        this.setMethod(this.buildMethod(tempClass, this.getMethodName(), new Class<?>[0]));
     }
 
     /**
      * Build the specified method.
      */
-    protected Method buildMethod(Class methodClass, String methodName, Class[] methodParameterTypes) throws DescriptorException {
+    protected Method buildMethod(Class<?> methodClass, String methodName, Class<?>[] methodParameterTypes) throws DescriptorException {
         try {
             return Helper.getDeclaredMethod(methodClass, methodName, methodParameterTypes);
         } catch (NoSuchMethodException exception) {
@@ -438,7 +438,7 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
         this.factory = factory;
     }
 
-    protected void setFactoryClass(Class factoryClass) {
+    protected void setFactoryClass(Class<?> factoryClass) {
         this.factoryClass = factoryClass;
     }
 
@@ -464,7 +464,7 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
         if (factoryClassName == null){
             return;
         }
-        Class factoryClass = null;
+        Class<?> factoryClass = null;
         try{
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
@@ -501,7 +501,7 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
         setFactoryMethodName(null);
     }
 
-    public void useFactoryInstantiationPolicy(Class factoryClass, String methodName) {
+    public void useFactoryInstantiationPolicy(Class<?> factoryClass, String methodName) {
         setMethodName(methodName);
         setFactory(null);
         setFactoryClass(factoryClass);
@@ -509,7 +509,7 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
         setFactoryMethodName(null);
     }
 
-    public void useFactoryInstantiationPolicy(Class factoryClass, String methodName, String factoryMethodName) {
+    public void useFactoryInstantiationPolicy(Class<?> factoryClass, String methodName, String factoryMethodName) {
         setMethodName(methodName);
         setFactory(null);
         setFactoryClass(factoryClass);

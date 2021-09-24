@@ -55,7 +55,7 @@ public class NullAnyCollectionNoRootTestCases extends JSONMarshalUnmarshalTestCa
     }
 
     @Override
-    public Class getUnmarshalClass() {
+    public Class<?> getUnmarshalClass() {
         return Root.class;
     }
 

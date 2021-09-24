@@ -109,7 +109,7 @@ public class JAXBSingleObjectIntegerNoXsiTestCases extends JAXBWithJSONTestCases
     }
 
     @Override
-    public Class getUnmarshalClass() {
+    public Class<?> getUnmarshalClass() {
         return Integer.class;
     }
 

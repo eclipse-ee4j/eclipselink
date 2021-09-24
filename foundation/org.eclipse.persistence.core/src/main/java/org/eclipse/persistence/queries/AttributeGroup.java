@@ -60,7 +60,7 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
      * INTERNAL:
      * This constructer is to only be used by EclipseLink internally
      */
-    public AttributeGroup(String name, Class type, boolean isValidated) {
+    public AttributeGroup(String name, Class<?> type, boolean isValidated) {
         this(name);
         this.type = type;
         this.isValidated = isValidated;

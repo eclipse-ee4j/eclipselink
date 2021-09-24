@@ -48,7 +48,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 public abstract class ObjectBuildingQuery extends ReadQuery {
 
     /** The class of the target objects to be read from the database. */
-    protected Class referenceClass;
+    protected Class<?> referenceClass;
     protected String referenceClassName;
 
     /** Allows for the resulting objects to be refresh with the data from the database. */
@@ -144,7 +144,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
-        Class referenceClass = null;
+        Class<?> referenceClass = null;
         try{
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
@@ -335,7 +335,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * Return the reference class of the query.
      */
     @Override
-    public Class getReferenceClass() {
+    public Class<?> getReferenceClass() {
         return referenceClass;
     }
 
@@ -585,7 +585,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * REQUIRED:
      * Set the reference class for the query.
      */
-    public void setReferenceClass(Class aClass) {
+    public void setReferenceClass(Class<?> aClass) {
         referenceClass = aClass;
         setIsPrepared(false);
     }

@@ -109,7 +109,7 @@ public class XMLBinder {
         }
     }
 
-    public XMLRoot unmarshal(org.w3c.dom.Node node, Class javaClass) {
+    public XMLRoot unmarshal(org.w3c.dom.Node node, Class<?> javaClass) {
         validateNode(node);
         reader.setDocPresPolicy(documentPreservationPolicy);
         return buildXMLRootFromObject(saxUnmarshaller.unmarshal(reader, node, javaClass));
