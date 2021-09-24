@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,6 @@ package org.eclipse.persistence.internal.jaxb;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
-import java.security.AccessController;
 import java.util.HashMap;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
@@ -29,9 +28,6 @@ import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.mappings.BinaryDataMapping;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
-import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
-import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
@@ -42,21 +38,20 @@ import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.sessions.Session;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
-
 /**
  * Converter that wraps an XmlAdapter.
  *
  * @see javax.xml.bind.annotation.adapters.XmlAdapter
  */
 public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.converters.XMLConverterAdapter {
-    protected Class boundType = Object.class;
-    protected Class valueType = Object.class;
-    protected Class xmlAdapterClass;
+    protected Class<?> boundType = Object.class;
+    protected Class<?> valueType = Object.class;
+    protected Class<? extends XmlAdapter<?,?>> xmlAdapterClass;
     protected String xmlAdapterClassName;
-    protected XmlAdapter xmlAdapter;
+    protected XmlAdapter<?,?> xmlAdapter;
     protected QName schemaType;
     protected DatabaseMapping mapping;
-    protected CoreConverter nestedConverter;
+    protected CoreConverter<DatabaseMapping, Session> nestedConverter;
 
     /**
      * The default constructor.  This constructor should be used
@@ -72,8 +67,9 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
      *
      * @param xmlAdapterClass
      */
-    public XMLJavaTypeConverter(Class xmlAdapterClass) {
-        setXmlAdapterClass(xmlAdapterClass);
+    @SuppressWarnings("unchecked")
+    public XMLJavaTypeConverter(Class<?> xmlAdapterClass) {
+        setXmlAdapterClass((Class<XmlAdapter<?,?>>) xmlAdapterClass);
     }
 
     /**
@@ -96,9 +92,10 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
      * @param xmlAdapterClass
      * @param schemaType
      */
-    public XMLJavaTypeConverter(Class xmlAdapterClass, QName schemaType) {
+    @SuppressWarnings("unchecked")
+    public XMLJavaTypeConverter(Class<?> xmlAdapterClass, QName schemaType) {
         setSchemaType(schemaType);
-        setXmlAdapterClass(xmlAdapterClass);
+        setXmlAdapterClass((Class<XmlAdapter<?,?>>) xmlAdapterClass);
     }
 
     /**
@@ -121,11 +118,13 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
      */
     public Object convertDataValueToObjectValue(Object dataValue, Session session, XMLUnmarshaller unmarshaller) {
         try {
-            XmlAdapter adapter = this.xmlAdapter;
+            XmlAdapter<?, ?> adapter = this.xmlAdapter;
             if (unmarshaller != null) {
-                HashMap adapters = (HashMap) unmarshaller.getProperty(JAXBUnmarshaller.XML_JAVATYPE_ADAPTERS);
+                @SuppressWarnings("unchecked")
+                HashMap<Class<XmlAdapter<?,?>>, XmlAdapter<?, ?>> adapters
+                        = (HashMap<Class<XmlAdapter<?,?>>, XmlAdapter<?, ?>>) unmarshaller.getProperty(JAXBUnmarshaller.XML_JAVATYPE_ADAPTERS);
                 if (adapters != null) {
-                    XmlAdapter runtimeAdapter = (XmlAdapter) adapters.get(this.xmlAdapterClass);
+                    XmlAdapter<?, ?> runtimeAdapter = adapters.get(this.xmlAdapterClass);
                     if (runtimeAdapter != null) {
                         adapter = runtimeAdapter;
                     }
@@ -148,7 +147,8 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
                     }
                 }
             }
-            return adapter.unmarshal(toConvert);
+            //noinspection unchecked
+            return ((XmlAdapter<Object, ?>)adapter).unmarshal(toConvert);
         } catch (Exception ex) {
             if(unmarshaller == null || unmarshaller.getErrorHandler() == null){
                 throw ConversionException.couldNotBeConverted(dataValue, boundType, ex);
@@ -167,17 +167,20 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
      */
     public Object convertObjectValueToDataValue(Object objectValue, Session session, XMLMarshaller marshaller) {
         try {
-            XmlAdapter adapter = this.xmlAdapter;
+            XmlAdapter<?, ?> adapter = this.xmlAdapter;
             if (marshaller != null) {
-                HashMap adapters = (HashMap) marshaller.getProperty(JAXBMarshaller.XML_JAVATYPE_ADAPTERS);
+                @SuppressWarnings("unchecked")
+                HashMap<Class<XmlAdapter<?,?>>, XmlAdapter<?,?>> adapters
+                        = (HashMap<Class<XmlAdapter<?,?>>, XmlAdapter<?,?>>) marshaller.getProperty(JAXBMarshaller.XML_JAVATYPE_ADAPTERS);
                 if (adapters != null) {
-                    XmlAdapter runtimeAdapter = (XmlAdapter) adapters.get(this.xmlAdapterClass);
+                    XmlAdapter<?,?> runtimeAdapter = adapters.get(this.xmlAdapterClass);
                     if (runtimeAdapter != null) {
                         adapter = runtimeAdapter;
                     }
                 }
             }
-            Object dataValue = adapter.marshal(objectValue);
+            @SuppressWarnings("unchecked")
+            Object dataValue = ((XmlAdapter<?, Object>) adapter).marshal(objectValue);
             if(nestedConverter != null) {
                 dataValue = nestedConverter.convertObjectValueToDataValue(dataValue, session);
             }
@@ -207,7 +210,7 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
      *
      * @return xmlAdapterClass
      */
-    public Class getXmlAdapterClass() {
+    public Class<? extends XmlAdapter<?,?>> getXmlAdapterClass() {
         return xmlAdapterClass;
     }
 
@@ -236,15 +239,10 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
         // if the adapter class is null, try the adapter class name
         ClassLoader loader = session.getDatasourceLogin().getDatasourcePlatform().getConversionManager().getLoader();
         if (xmlAdapterClass == null) {
-            try {
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    xmlAdapterClass = AccessController.doPrivileged(new PrivilegedClassForName(getXmlAdapterClassName(), true, loader));
-                } else {
-                    xmlAdapterClass = PrivilegedAccessHelper.getClassForName(getXmlAdapterClassName(), true, loader);
-                }
-            } catch (Exception e) {
-                throw JAXBException.adapterClassNotLoaded(getXmlAdapterClassName(), e);
-            }
+            xmlAdapterClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> PrivilegedAccessHelper.getClassForName(getXmlAdapterClassName(), true, loader),
+                    (ex) -> JAXBException.adapterClassNotLoaded(getXmlAdapterClassName(), ex)
+            );
         }
 
         // validate adapter class extends javax.xml.bind.annotation.adapters.XmlAdapter
@@ -253,29 +251,23 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
         }
 
         setBoundTypeAndValueTypeInCaseOfGenericXmlAdapter();
-
         try {
-        try {
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    xmlAdapter = (XmlAdapter) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(getXmlAdapterClass()));
-                } else {
-                    xmlAdapter = (XmlAdapter) PrivilegedAccessHelper.newInstanceFromClass(getXmlAdapterClass());
-                }
+            try {
+                xmlAdapter = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                        () -> PrivilegedAccessHelper.newInstanceFromClass(getXmlAdapterClass())
+                );
             } catch (IllegalAccessException e) {
-                Constructor ctor = null;
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                        ctor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(xmlAdapterClass, new Class[0], true));
-                } else {
-                    ctor = PrivilegedAccessHelper.getDeclaredConstructorFor(xmlAdapterClass, new Class[0], true);
-                }
-                xmlAdapter = (XmlAdapter) PrivilegedAccessHelper.invokeConstructor(ctor, new Object[0]);
+                Constructor<? extends XmlAdapter<?,?>> ctor = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                        () -> PrivilegedAccessHelper.getDeclaredConstructorFor(xmlAdapterClass, new Class<?>[0], true)
+                );
+                xmlAdapter = PrivilegedAccessHelper.invokeConstructor(ctor, new Object[0]);
             }
         } catch (Exception ex) {
             throw JAXBException.adapterClassCouldNotBeInstantiated(getXmlAdapterClassName(), ex);
         }
-        if(nestedConverter != null) {
-            if(nestedConverter instanceof ObjectTypeConverter) {
-                ((ObjectTypeConverter)nestedConverter).convertClassNamesToClasses(loader);
+        if (nestedConverter != null) {
+            if (nestedConverter instanceof ObjectTypeConverter) {
+                ((ObjectTypeConverter) nestedConverter).convertClassNamesToClasses(loader);
             }
             nestedConverter.initialize(mapping, session);
         }
@@ -320,7 +312,7 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
      *
      * @param xmlAdapterClass
      */
-    public void setXmlAdapterClass(Class xmlAdapterClass) {
+    public void setXmlAdapterClass(Class<? extends XmlAdapter<?,?>> xmlAdapterClass) {
         this.xmlAdapterClass = xmlAdapterClass;
     }
 
@@ -336,7 +328,7 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
     /**
      * Get the nested converter to that is used in conjunction with the adapter.
      */
-    public CoreConverter getNestedConverter() {
+    public CoreConverter<DatabaseMapping, Session> getNestedConverter() {
         return nestedConverter;
     }
 
@@ -345,7 +337,7 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
      * the nested converter is invoked after the adapter. On umarshal it is invoked before.
      * Primarily used to support enumerations with adapters.
      */
-    public void setNestedConverter(CoreConverter nestedConverter) {
+    public void setNestedConverter(CoreConverter<DatabaseMapping, Session> nestedConverter) {
         this.nestedConverter = nestedConverter;
     }
 }

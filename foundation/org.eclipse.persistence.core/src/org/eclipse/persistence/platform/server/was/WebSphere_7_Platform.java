@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -90,13 +90,13 @@ public class WebSphere_7_Platform extends WebSphere_6_1_Platform implements JMXE
                 log = AccessController.doPrivileged(new PrivilegedExceptionAction<SessionLog>() {
                     @Override
                     public SessionLog run() throws Exception {
-                        Class<?> cls = PrivilegedAccessHelper.getClassForName(SERVER_LOG_CLASS);
+                        Class<SessionLog> cls = PrivilegedAccessHelper.getClassForName(SERVER_LOG_CLASS);
                         Constructor<SessionLog> ctor = PrivilegedAccessHelper.getConstructorFor(cls, null, false);
                         return ctor.newInstance();
                     }
                 });
             } else {
-                Class<?> cls = PrivilegedAccessHelper.getClassForName(SERVER_LOG_CLASS);
+                Class<SessionLog> cls = PrivilegedAccessHelper.getClassForName(SERVER_LOG_CLASS);
                 Constructor<SessionLog> ctor = PrivilegedAccessHelper.getConstructorFor(cls, null, false);
                 log = ctor.newInstance();
             }

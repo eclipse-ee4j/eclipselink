@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +20,7 @@ import javax.xml.bind.ValidationEventHandler;
 import javax.xml.bind.ValidationException;
 import javax.xml.bind.Validator;
 import javax.xml.bind.helpers.DefaultValidationEventHandler;
+
 import org.eclipse.persistence.oxm.XMLValidator;
 
 /**
@@ -49,6 +50,7 @@ public class JAXBValidator implements Validator {
      * @return true if a valid root object, false otherwise
      * @throws JAXBException
      */
+    @Override
     public boolean validateRoot(Object rootObject) throws JAXBException {
         if (rootObject == null) {
             throw new IllegalArgumentException();
@@ -68,6 +70,7 @@ public class JAXBValidator implements Validator {
      * @return true if a valid object, false otherwise
      * @throws JAXBException
      */
+    @Override
     public boolean validate(Object object) throws JAXBException {
         if (object == null) {
             throw new IllegalArgumentException();
@@ -80,6 +83,7 @@ public class JAXBValidator implements Validator {
         }
     }
 
+    @Override
     public void setEventHandler(ValidationEventHandler newValidationEventHandler) throws JAXBException {
         if (null == newValidationEventHandler) {
             validationEventHandler = new DefaultValidationEventHandler();
@@ -89,10 +93,12 @@ public class JAXBValidator implements Validator {
         xmlValidator.setErrorHandler(new JAXBErrorHandler(validationEventHandler));
     }
 
+    @Override
     public ValidationEventHandler getEventHandler() throws JAXBException {
         return validationEventHandler;
     }
 
+    @Override
     public void setProperty(String key, Object value) throws PropertyException {
         if (key == null) {
             throw new IllegalArgumentException();
@@ -100,6 +106,7 @@ public class JAXBValidator implements Validator {
         throw new PropertyException(key, value);
     }
 
+    @Override
     public Object getProperty(String key) throws PropertyException {
         if (key == null) {
             throw new IllegalArgumentException();
