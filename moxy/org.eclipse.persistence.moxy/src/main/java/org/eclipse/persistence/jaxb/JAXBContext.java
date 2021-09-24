@@ -16,8 +16,6 @@
 //     Dmitry Kornilov - 2.6.1 - BeanValidationHelper refactoring
 package org.eclipse.persistence.jaxb;
 
-import static org.eclipse.persistence.jaxb.javamodel.Helper.getQualifiedJavaTypeName;
-
 import java.awt.Image;
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -26,13 +24,12 @@ import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +39,11 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.xml.namespace.QName;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.transform.Source;
+
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.PropertyException;
@@ -49,13 +51,8 @@ import jakarta.xml.bind.SchemaOutputResolver;
 import jakarta.xml.bind.ValidationEvent;
 import jakarta.xml.bind.ValidationEventHandler;
 import jakarta.xml.bind.annotation.adapters.XmlAdapter;
-import java.util.HashSet;
-import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.transform.Source;
-import org.eclipse.persistence.Version;
 
+import org.eclipse.persistence.Version;
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.core.sessions.CoreProject;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -109,6 +106,8 @@ import org.eclipse.persistence.oxm.platform.SAXPlatform;
 import org.eclipse.persistence.oxm.platform.XMLPlatform;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.SessionEventListener;
+
+import static org.eclipse.persistence.jaxb.javamodel.Helper.getQualifiedJavaTypeName;
 
 /**
  * <p><b>Purpose:</b>Provide a EclipseLink implementation of the JAXBContext interface.</p>
@@ -945,14 +944,9 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
          * the binding layer for a Web Service provider.
          */
         private JAXBContextState createContextState(Class<?>[] classesToBeBound, Map<String, XmlBindings> xmlBindings) throws jakarta.xml.bind.JAXBException {
-            JaxbClassLoader loader = PrivilegedAccessHelper.shouldUsePrivilegedAccess()
-                    ? AccessController.doPrivileged(new PrivilegedAction<JaxbClassLoader>() {
-                        @Override
-                        public JaxbClassLoader run() {
-                            return new JaxbClassLoader(classLoader, classesToBeBound);
-                        }
-                    })
-                    : new JaxbClassLoader(classLoader, classesToBeBound);
+            JaxbClassLoader loader = PrivilegedAccessHelper.callDoPrivileged(
+                    () -> new JaxbClassLoader(classLoader, classesToBeBound)
+            );
             String defaultTargetNamespace = null;
             AnnotationHelper annotationHelper = null;
             boolean enableXmlAccessorFactory = false;
@@ -1143,14 +1137,9 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
 
             final TypeMappingInfo[] types = typesToBeBound;
 
-            JaxbClassLoader loader = PrivilegedAccessHelper.shouldUsePrivilegedAccess()
-                    ? AccessController.doPrivileged(new PrivilegedAction<JaxbClassLoader>() {
-                        @Override
-                        public JaxbClassLoader run() {
-                            return new JaxbClassLoader(classLoader, types);
-                        }
-                    })
-                    : new JaxbClassLoader(classLoader, types);
+            JaxbClassLoader loader = PrivilegedAccessHelper.callDoPrivileged(
+                    () -> new JaxbClassLoader(classLoader, types)
+            );
             JavaModelImpl jModel;
             if (annotationHelper != null) {
                 jModel = new JavaModelImpl(loader, annotationHelper);

@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Vector;
 
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
@@ -31,7 +33,6 @@ import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
 import org.eclipse.persistence.internal.jpa.rs.weaving.PersistenceWeavedRest;
 import org.eclipse.persistence.internal.jpa.rs.weaving.RestAdapterClassWriter;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jaxb.DefaultXMLNameTransformer;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.util.xmladapters.RelationshipLinkAdapter;
@@ -328,7 +329,8 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                         xmlChoiceMapping.addChoiceElement(compositeMapping.getXPath(), Link.class);
                         xmlChoiceMapping.addChoiceElement(compositeMapping.getXPath(), refDesc.getJavaClass());
 
-                        xmlChoiceMapping.setConverter(new XMLJavaTypeConverter(Class.forName(adapterClassName, true, cl)));
+                        xmlChoiceMapping.setConverter(new XMLJavaTypeConverter(
+                                (Class<? extends XmlAdapter<?,?>>) Class.forName(adapterClassName, true, cl)));
                         jaxbDescriptor.removeMappingForAttributeName(jaxbMapping.getAttributeName());
                         jaxbDescriptor.addMapping(xmlChoiceMapping);
 
@@ -343,7 +345,8 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                         xmlChoiceMapping.addChoiceElement(compositeMapping.getXPath(), refDesc.getJavaClass());
 
                         xmlChoiceMapping.setContainerPolicy(jaxbMapping.getContainerPolicy());
-                        xmlChoiceMapping.setConverter(new XMLJavaTypeConverter(Class.forName(adapterClassName, true, cl)));
+                        xmlChoiceMapping.setConverter(new XMLJavaTypeConverter(
+                                (Class<? extends XmlAdapter<?,?>>) Class.forName(adapterClassName, true, cl)));
                         jaxbDescriptor.removeMappingForAttributeName(jaxbMapping.getAttributeName());
                         jaxbDescriptor.addMapping(xmlChoiceMapping);
                     }
