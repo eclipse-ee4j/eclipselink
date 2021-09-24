@@ -5706,7 +5706,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using SoftIdentityMap
      */
     public boolean shouldUseRemoteSoftIdentityMap() {
-        return ClassConstants.SoftIdentityMap_Class.equals(getIdentityMapClass());
+        return ClassConstants.SoftIdentityMap_Class.equals(getRemoteIdentityMapClass());
     }
 
     /**
@@ -5749,7 +5749,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using CacheIdentityMap
      */
     public boolean shouldUseRemoteCacheIdentityMap() {
-        return ClassConstants.CacheIdentityMap_Class.equals(getIdentityMapClass());
+        return ClassConstants.CacheIdentityMap_Class.equals(getRemoteIdentityMapClass());
     }
 
     /**
@@ -5757,7 +5757,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using FullIdentityMap
      */
     public boolean shouldUseRemoteFullIdentityMap() {
-        return ClassConstants.FullIdentityMap_Class.equals(getIdentityMapClass());
+        return ClassConstants.FullIdentityMap_Class.equals(getRemoteIdentityMapClass());
     }
 
     /**
@@ -5765,7 +5765,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using HardCacheWeakIdentityMap
      */
     public boolean shouldUseRemoteHardCacheWeakIdentityMap() {
-        return ClassConstants.HardCacheWeakIdentityMap_Class.equals(getIdentityMapClass());
+        return ClassConstants.HardCacheWeakIdentityMap_Class.equals(getRemoteIdentityMapClass());
     }
 
     /**
@@ -5773,7 +5773,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using NoIdentityMap
      */
     public boolean shouldUseRemoteNoIdentityMap() {
-        return ClassConstants.NoIdentityMap_Class.equals(getIdentityMapClass());
+        return ClassConstants.NoIdentityMap_Class.equals(getRemoteIdentityMapClass());
     }
 
     /**
@@ -5781,7 +5781,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using SoftCacheWeakIdentityMap
      */
     public boolean shouldUseRemoteSoftCacheWeakIdentityMap() {
-        return ClassConstants.SoftCacheWeakIdentityMap_Class.equals(getIdentityMapClass());
+        return ClassConstants.SoftCacheWeakIdentityMap_Class.equals(getRemoteIdentityMapClass());
     }
 
     /**
@@ -5789,7 +5789,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using WeakIdentityMap
      */
     public boolean shouldUseRemoteWeakIdentityMap() {
-        return ClassConstants.WeakIdentityMap_Class.equals(getIdentityMapClass());
+        return ClassConstants.WeakIdentityMap_Class.equals(getRemoteIdentityMapClass());
     }
 
     /**
