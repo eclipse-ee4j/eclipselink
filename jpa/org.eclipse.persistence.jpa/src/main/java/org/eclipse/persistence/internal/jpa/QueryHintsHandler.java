@@ -2088,7 +2088,7 @@ public class QueryHintsHandler {
         @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isReadAllQuery()) {
-                Class collectionClass = null;
+                Class<?> collectionClass = null;
                 if (valueToApply instanceof String) {
                     collectionClass = loadClass((String)valueToApply, query, loader);
                 } else {

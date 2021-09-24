@@ -237,7 +237,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
             }
 
             if (pkMappings.size() == 1) {
-                Class aClass = pkMappings.get(0).getAttributeClassification(); // null for OneToOneMapping
+                Class<?> aClass = pkMappings.get(0).getAttributeClassification(); // null for OneToOneMapping
                 // lookup class in our types map
                 return this.getMetamodel().getType(aClass);
             }
@@ -337,7 +337,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
             return false;
         } else {
             // Optional: Verify the mapping on the each field and whether it is an IdClass
-            Class pkClass = null;
+            Class<?> pkClass = null;
             if(this.getDescriptor().hasCMPPolicy()) {
                 pkClass = this.getDescriptor().getCMPPolicy().getPKClass();
                 if(null == pkClass) {

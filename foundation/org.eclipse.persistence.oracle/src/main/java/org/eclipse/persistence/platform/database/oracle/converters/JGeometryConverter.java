@@ -58,7 +58,7 @@ public class JGeometryConverter implements StructConverter {
     }
 
     @Override
-    public Class getJavaType() {
+    public Class<?> getJavaType() {
         return JGEOMETRY_CLASS;
     }
 

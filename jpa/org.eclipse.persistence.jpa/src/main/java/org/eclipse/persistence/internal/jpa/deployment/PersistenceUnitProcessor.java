@@ -593,8 +593,8 @@ public class PersistenceUnitProcessor {
     /**
      * Load the given class name with the given class loader.
      */
-    public static Class loadClass(String className, ClassLoader loader, boolean throwExceptionIfNotFound, MetadataProject project) {
-        Class candidateClass = null;
+    public static Class<?> loadClass(String className, ClassLoader loader, boolean throwExceptionIfNotFound, MetadataProject project) {
+        Class<?> candidateClass = null;
 
         try {
             candidateClass = loader.loadClass(className);

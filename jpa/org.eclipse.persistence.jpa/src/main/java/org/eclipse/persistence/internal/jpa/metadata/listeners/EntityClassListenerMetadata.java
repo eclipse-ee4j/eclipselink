@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -80,7 +80,7 @@ public class EntityClassListenerMetadata extends EntityListenerMetadata {
      */
     public void process(List<MappedSuperclassAccessor> mappedSuperclasses, ClassLoader loader) {
         // Create the listener.
-        Class accessorClass = getClass(m_accessor.getJavaClass(), loader);
+        Class<?> accessorClass = getClass(m_accessor.getJavaClass(), loader);
         m_listener = new EntityClassListener(accessorClass);
 
         // Process the callback methods as defined in XML or annotations on the
@@ -94,7 +94,7 @@ public class EntityClassListenerMetadata extends EntityListenerMetadata {
         // on the mapped superclasses if not excluded second.
         if (! m_descriptor.excludeSuperclassListeners()) {
             for (MappedSuperclassAccessor mappedSuperclass : mappedSuperclasses) {
-                Class superClass = getClass(mappedSuperclass.getJavaClass(), loader);
+                Class<?> superClass = getClass(mappedSuperclass.getJavaClass(), loader);
                 // Init callback methods as specified in XML for each mapped
                 // superclass before processing.
                 initCallbackMethods(mappedSuperclass);

@@ -74,7 +74,7 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
             this.elementType = getMetamodel().getType(elementDesc.getJavaClass());
         } else {
             // See CollectionContainerPolicy
-            Class attributeClass = null;
+            Class<?> attributeClass = null;
             // TODO: handle AggregateCollectionMapping and verify isAbstractDirectMapping
             if(mapping.isDirectCollectionMapping() || mapping.isAbstractCompositeDirectCollectionMapping()
                     || mapping.isDirectCollectionMapping()) {
@@ -123,7 +123,7 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
                 attributeClass = Object.class;
                 AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_attribute_class_type_is_null", this);
             }
-            this.elementType = getMetamodel().getType(attributeClass);
+            this.elementType = (Type<V>) getMetamodel().getType(attributeClass);
         }
     }
 

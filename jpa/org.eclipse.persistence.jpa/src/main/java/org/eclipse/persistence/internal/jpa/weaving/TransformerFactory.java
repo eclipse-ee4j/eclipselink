@@ -252,10 +252,10 @@ public class TransformerFactory {
         return canWeaveChangeTracking;
     }
 
-    protected boolean wasChangeTrackingAlreadyWeaved(Class clz){
-        Class[] interfaces = clz.getInterfaces();
+    protected boolean wasChangeTrackingAlreadyWeaved(Class<?> clz){
+        Class<?>[] interfaces = clz.getInterfaces();
         for (int i = 0; i < interfaces.length; i++) {
-            Class c = interfaces[i];
+            Class<?> c = interfaces[i];
             if (c.getName().equals(PersistenceWeavedChangeTracking.class.getName())){
                 return true;
             }

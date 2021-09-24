@@ -118,7 +118,7 @@ public abstract class ORMetadata {
     private String m_xmlElement;
 
     // Lookup of classname to Class to resolve primitive classes
-    private static final Map<String, Class> primitiveClasses = Collections.unmodifiableMap(getPrimitiveClassesMap());
+    private static final Map<String, Class<?>> primitiveClasses = Collections.unmodifiableMap(getPrimitiveClassesMap());
 
     // Lookup of boxed types of primitive classes.
     private static final Map<String, String> boxedTypes = Collections.unmodifiableMap(getBoxedTypesMap());
@@ -277,7 +277,7 @@ public abstract class ORMetadata {
      * from XML.
      */
     protected String getFullyQualifiedClassName(String className) {
-        Class primitiveClass = getPrimitiveClassForName(className);
+        Class<?> primitiveClass = getPrimitiveClassForName(className);
 
         if (primitiveClass == null) {
             if (loadedFromXML()) {
@@ -313,10 +313,10 @@ public abstract class ORMetadata {
      * temp loader, see getJavaClassName instead which will provide a valid
      * string class name that can be initialized at runtime instead.
      */
-    protected Class getJavaClass(MetadataClass metadataClass) {
+    protected Class<?> getJavaClass(MetadataClass metadataClass) {
         String className = metadataClass.getName();
 
-        Class primitiveClass = getPrimitiveClassForName(className);
+        Class<?> primitiveClass = getPrimitiveClassForName(className);
 
         if (primitiveClass == null) {
             String convertedClassName = className;
@@ -346,7 +346,7 @@ public abstract class ORMetadata {
     public String getJavaClassName(MetadataClass metadataClass) {
         String className = metadataClass.getName();
 
-        Class primitiveClass = getPrimitiveClassForName(className);
+        Class<?> primitiveClass = getPrimitiveClassForName(className);
 
         if (primitiveClass == null) {
             String convertedClassName = className;
@@ -384,7 +384,7 @@ public abstract class ORMetadata {
      * INTERNAL:
      * Return the MetadataClass for the class.
      */
-    public MetadataClass getMetadataClass(Class javaClass) {
+    public MetadataClass getMetadataClass(Class<?> javaClass) {
         if (javaClass == null) {
             return null;
         }
@@ -437,7 +437,7 @@ public abstract class ORMetadata {
     /**
      * INTERNAL:
      */
-    protected Class getPrimitiveClassForName(String className){
+    protected Class<?> getPrimitiveClassForName(String className){
         return (className == null) ? void.class : primitiveClasses.get(className);
     }
 
@@ -881,8 +881,8 @@ public abstract class ORMetadata {
         }
     }
 
-    private static Map<String, Class> getPrimitiveClassesMap() {
-        Map<String, Class> mappings = new HashMap<>(28);
+    private static Map<String, Class<?>> getPrimitiveClassesMap() {
+        Map<String, Class<?>> mappings = new HashMap<>(28);
         mappings.put("", void.class);
         mappings.put("void", void.class);
         mappings.put("Boolean", Boolean.class);

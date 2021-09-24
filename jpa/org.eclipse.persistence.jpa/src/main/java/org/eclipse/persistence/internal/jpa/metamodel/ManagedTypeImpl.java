@@ -708,13 +708,13 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      * @param aReturnCollectionType - the plural return type
      * @throws IllegalArgumentException if either type is wrong
      */
-    private void verifyAttributeTypeAndReturnType(Attribute anAttribute, Class attributeElementType, CollectionType aReturnCollectionType) {
+    private void verifyAttributeTypeAndReturnType(Attribute anAttribute, Class<?> attributeElementType, CollectionType aReturnCollectionType) {
         // Check for plural or singular attribute
         if(anAttribute.isCollection()) {
             // check for CollectionAttribute
             if(((PluralAttribute)anAttribute).getCollectionType().equals(aReturnCollectionType)) {
                 // check that the java class is correct (use BindableJavaType not elementType.getJavaType()
-                Class aBindableJavaClass = ((PluralAttribute)anAttribute).getBindableJavaType();
+                Class<?> aBindableJavaClass = ((PluralAttribute)anAttribute).getBindableJavaType();
                 if(attributeElementType != aBindableJavaClass) {
                     throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
                         "metamodel_managed_type_attribute_type_incorrect",
@@ -919,7 +919,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      * @param targetPrimitiveOrWrapperClass (the type we are verifying against)
      * @param actualPrimitiveOrWrapperClass (the type that may be the autoboxed or primitive equal
      */
-    private boolean isAutoboxedType(Class targetPrimitiveOrWrapperClass, Class actualPrimitiveOrWrapperClass) {
+    private boolean isAutoboxedType(Class<?> targetPrimitiveOrWrapperClass, Class<?> actualPrimitiveOrWrapperClass) {
         BasicTypeHelperImpl typeHelper = BasicTypeHelperImpl.getInstance();
         if ((targetPrimitiveOrWrapperClass == null) || (actualPrimitiveOrWrapperClass == null)) {
             return false;
@@ -1178,7 +1178,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                      * Handle lazy Collections and Lists and the fact that both return an IndirectList policy.
                      * We check the type on the attributeField of the attributeAccessor on the mapping
                      */
-                    Class aType = null;
+                    Class<?> aType = null;
                     // 325699: AttributeAccessor is subclassed by both IntanceVariableAttributeAccessor (JPA) and ValuesAccessor (Dynamic JPA)
                     if(colMapping.getAttributeAccessor() instanceof ValuesAccessor) {
                         member = new ListAttributeImpl(this, colMapping);
@@ -1335,7 +1335,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      * Get the elementType directly from the class using a reflective method call
      * directly on the containing java class associated with this managedType.
      */
-    protected Class getTypeClassFromAttributeOrMethodLevelAccessor(DatabaseMapping mapping) {
+    protected Class<?> getTypeClassFromAttributeOrMethodLevelAccessor(DatabaseMapping mapping) {
         /**
          * In this block we have the following scenario:
          * 1) The access type is "method" or "field"
@@ -1345,7 +1345,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
          */
         // Type may be null when no getMethod exists for the class for a ManyToMany mapping
         // Here we check the returnType on the declared method on the class directly
-        Class aType = null;
+        Class<?> aType = null;
         Field aField = null;
         String getMethodName = null;
         //boolean isFieldLevelAccess = false;

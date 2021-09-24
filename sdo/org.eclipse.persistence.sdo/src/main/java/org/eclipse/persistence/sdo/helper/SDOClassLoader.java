@@ -24,7 +24,7 @@ import org.eclipse.persistence.sdo.SDOType;
  */
 public class SDOClassLoader extends ClassLoader {
 
-    private Map<String, Class> generatedClasses;
+    private Map<String, Class<?>> generatedClasses;
 
     // hold the context containing all helpers so that we can preserve inter-helper relationships
     private HelperContext aHelperContext;

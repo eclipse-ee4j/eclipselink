@@ -1804,7 +1804,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
             keyMapping = processDirectMapKeyClass(mappedKeyMapAccessor);
         }
 
-        Class containerClass;
+        Class<?> containerClass;
         if (mapping instanceof ForeignReferenceMapping) {
             if (usesIndirection()) {
                 containerClass = ClassConstants.IndirectMap_Class;

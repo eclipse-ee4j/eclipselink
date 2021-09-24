@@ -298,7 +298,7 @@ public class RMIConnection extends RemoteConnection {
      * Return the table descriptor specified for the class.
      */
     @Override
-    public ClassDescriptor getDescriptor(Class domainClass) {
+    public ClassDescriptor getDescriptor(Class<?> domainClass) {
         try {
             Transporter transporter = getRemoteSessionController().getDescriptor(new Transporter(domainClass));
             if (!transporter.wasOperationSuccessful()) {
@@ -434,7 +434,7 @@ public class RMIConnection extends RemoteConnection {
      * Execute query remotely.
      */
     @Override
-    public Transporter remoteExecuteNamedQuery(String name, Class javaClass, Vector arguments) {
+    public Transporter remoteExecuteNamedQuery(String name, Class<?> javaClass, Vector arguments) {
         try {
             Transporter transporter = getRemoteSessionController().executeNamedQuery(new Transporter(name), new Transporter(javaClass), new Transporter(arguments));
             transporter.expand(this.session);

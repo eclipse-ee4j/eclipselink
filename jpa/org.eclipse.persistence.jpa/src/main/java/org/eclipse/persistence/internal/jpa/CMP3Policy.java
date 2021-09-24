@@ -79,7 +79,7 @@ public class CMP3Policy extends CMPPolicy {
     protected String pkClassName;
 
     // Stores the class version of the PKClass
-    protected Class pkClass = null;
+    protected Class<?> pkClass = null;
 
     public CMP3Policy() {
         super();
@@ -134,7 +134,7 @@ public class CMP3Policy extends CMPPolicy {
     public void convertClassNamesToClasses(ClassLoader classLoader){
         if(getPKClassName() != null){
             try{
-                Class aPKClass = null;
+                Class<?> aPKClass = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
                         aPKClass = AccessController.doPrivileged(new PrivilegedClassForName<>(getPKClassName(), true, classLoader));
@@ -173,14 +173,14 @@ public class CMP3Policy extends CMPPolicy {
      * Return the java Class representing the primary key class name
      */
     @Override
-    public Class getPKClass() {
+    public Class<?> getPKClass() {
         return this.pkClass;
     }
 
     /**
      * ADVANCED:
      */
-    public void setPKClass(Class pkClass) {
+    public void setPKClass(Class<?> pkClass) {
         this.pkClass = pkClass;
     }
 
@@ -274,7 +274,7 @@ public class CMP3Policy extends CMPPolicy {
      * INTERNAL:
      * @return the field from the class with name equal to fieldName.
      */
-    protected Field getField(Class cls, String fieldName) throws NoSuchFieldException {
+    protected Field getField(Class<?> cls, String fieldName) throws NoSuchFieldException {
         Field keyField = null;
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try {
@@ -346,7 +346,7 @@ public class CMP3Policy extends CMPPolicy {
      * these fields may have been loaded with the wrong loader (thank you Kirk).
      * If the key is compound, we also have to look up the fields for the key.
      */
-    protected KeyElementAccessor[] initializePrimaryKeyFields(Class keyClass, AbstractSession session) {
+    protected KeyElementAccessor[] initializePrimaryKeyFields(Class<?> keyClass, AbstractSession session) {
         KeyElementAccessor[] pkAttributes = null;
         ClassDescriptor aDescriptor = this.getDescriptor();
 
@@ -371,7 +371,7 @@ public class CMP3Policy extends CMPPolicy {
             Exception noSuchElementException = null;
 
             // Set the current key class ...
-            Class currentKeyClass = keyClass;
+            Class<?> currentKeyClass = keyClass;
 
             // We always start by looking at the writable mappings first. Our preference is to use the
             // writable mappings unless a derived id mapping is specified in which case we'll want to use
@@ -482,22 +482,22 @@ public class CMP3Policy extends CMPPolicy {
                                     Method getMethod = null;
                                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                                         try {
-                                            getMethod = AccessController.doPrivileged(new PrivilegedGetMethod(currentKeyClass, getMethodName, new Class[] {}, true));
+                                            getMethod = AccessController.doPrivileged(new PrivilegedGetMethod(currentKeyClass, getMethodName, new Class<?>[] {}, true));
                                         } catch (PrivilegedActionException exception) {
                                             throw (NoSuchMethodException)exception.getException();
                                         }
                                     } else {
-                                        getMethod = PrivilegedAccessHelper.getMethod(currentKeyClass, getMethodName, new Class[] {}, true);
+                                        getMethod = PrivilegedAccessHelper.getMethod(currentKeyClass, getMethodName, new Class<?>[] {}, true);
                                     }
                                     Method setMethod = null;
                                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                                         try {
-                                            setMethod = AccessController.doPrivileged(new PrivilegedGetMethod(currentKeyClass, setMethodName, new Class[] {getMethod.getReturnType()}, true));
+                                            setMethod = AccessController.doPrivileged(new PrivilegedGetMethod(currentKeyClass, setMethodName, new Class<?>[] {getMethod.getReturnType()}, true));
                                         } catch (PrivilegedActionException exception) {
                                             throw (NoSuchMethodException)exception.getException();
                                         }
                                     } else {
-                                        setMethod = PrivilegedAccessHelper.getMethod(currentKeyClass, setMethodName, new Class[] {getMethod.getReturnType()}, true);
+                                        setMethod = PrivilegedAccessHelper.getMethod(currentKeyClass, setMethodName, new Class<?>[] {getMethod.getReturnType()}, true);
                                     }
                                     pkAttributes[i] = new PropertyAccessor(this, getMethod, setMethod, fieldName, field, mapping, currentKeyClass != keyClass);
                                     this.fieldToAccessorMap.put(field, pkAttributes[i]);

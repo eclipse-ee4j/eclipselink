@@ -555,7 +555,7 @@ public class MetadataAsmFactory extends MetadataFactory {
                 if (reflectClass.getSuperclass() != null) {
                     metadataClass.setSuperclassName(reflectClass.getSuperclass().getName());
                 }
-                for (Class reflectInterface : reflectClass.getInterfaces()) {
+                for (Class<?> reflectInterface : reflectClass.getInterfaces()) {
                     metadataClass.addInterface(reflectInterface.getName());
                 }
             } catch (Exception failed) {

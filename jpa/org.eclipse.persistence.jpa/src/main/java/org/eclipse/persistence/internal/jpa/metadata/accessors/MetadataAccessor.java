@@ -301,7 +301,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * JPA annotations should be referenced only by name as to not introduce a
      * compile dependency.
      */
-    public MetadataAnnotation getAnnotation(Class annotation) {
+    public MetadataAnnotation getAnnotation(Class<?> annotation) {
        return getAnnotation(annotation.getName());
     }
 

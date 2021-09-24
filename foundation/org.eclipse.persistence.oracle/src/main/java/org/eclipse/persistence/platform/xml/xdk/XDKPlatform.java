@@ -67,7 +67,7 @@ public class XDKPlatform implements XMLPlatform {
     public XDKPlatform() {
         super();
         try {
-            Class[] argTypes = { URL.class };
+            Class<?>[] argTypes = { URL.class };
             buildSchemaMethod = Helper.getDeclaredMethod(XSDBuilder.class, "build", argTypes);
         } catch (NoSuchMethodException e) {
         }

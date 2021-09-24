@@ -348,7 +348,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
                 }
             }
         }else{
-            Class clazz = ((SingularAttribute)attribute).getBindableJavaType();
+            Class<Y> clazz = ((SingularAttribute)attribute).getBindableJavaType();
             if (((SingularAttribute)attribute).getType().getPersistenceType().equals(PersistenceType.BASIC)){
                 return new PathImpl<Y>(this, this.metamodel, clazz, this.currentNode.get(attribute.getName()), (Bindable)attribute);
             }else{

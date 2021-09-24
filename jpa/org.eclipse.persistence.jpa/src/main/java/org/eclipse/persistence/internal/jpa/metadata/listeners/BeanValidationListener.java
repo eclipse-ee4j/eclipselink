@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,13 +53,13 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
  */
 public class BeanValidationListener extends DescriptorEventAdapter {
     private final ValidatorFactory validatorFactory;
-    private final Class[] groupPrePersit;
-    private final Class[] groupPreUpdate;
-    private final Class[] groupPreRemove;
-    private static final Class[] groupDefault = new Class[]{Default.class};
+    private final Class<?>[] groupPrePersit;
+    private final Class<?>[] groupPreUpdate;
+    private final Class<?>[] groupPreRemove;
+    private static final Class<?>[] groupDefault = new Class<?>[]{Default.class};
     private final Map<ClassDescriptor, Validator> validatorMap;
 
-    public BeanValidationListener(ValidatorFactory validatorFactory, Class[] groupPrePersit, Class[] groupPreUpdate, Class[] groupPreRemove) {
+    public BeanValidationListener(ValidatorFactory validatorFactory, Class<?>[] groupPrePersit, Class<?>[] groupPreUpdate, Class<?>[] groupPreRemove) {
         this.validatorFactory = validatorFactory;
         //For prePersit and preUpdate, default the group to validation group Default if user has not specified one
         this.groupPrePersit = groupPrePersit != null ? groupPrePersit : groupDefault;
@@ -109,7 +109,7 @@ public class BeanValidationListener extends DescriptorEventAdapter {
         }
     }
 
-    private void validateOnCallbackEvent(DescriptorEvent event, String callbackEventName, Class[] validationGroup) {
+    private void validateOnCallbackEvent(DescriptorEvent event, String callbackEventName, Class<?>[] validationGroup) {
         Object source = event.getSource();
         Validator validator = getValidator(event);
         boolean isBeanConstrained = isBeanConstrained(source, validator);
@@ -166,7 +166,7 @@ public class BeanValidationListener extends DescriptorEventAdapter {
         }
     }
 
-    private Set<ConstraintViolation<Object>> validate(final Object source, final Class[] validationGroup, final Validator validator) {
+    private Set<ConstraintViolation<Object>> validate(final Object source, final Class<?>[] validationGroup, final Validator validator) {
         // If Java Security is enabled, surround this call with a doPrivileged block.
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
             return AccessController.doPrivileged(new PrivilegedAction<Set<ConstraintViolation<Object>>>() {

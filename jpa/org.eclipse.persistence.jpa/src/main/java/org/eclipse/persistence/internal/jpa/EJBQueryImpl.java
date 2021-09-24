@@ -201,7 +201,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     /**
      * Build a ReadAllQuery from a class and sql string.
      */
-    public static DatabaseQuery buildSQLDatabaseQuery(Class resultClass, String sqlString, ClassLoader classLoader, AbstractSession session) {
+    public static DatabaseQuery buildSQLDatabaseQuery(Class<?> resultClass, String sqlString, ClassLoader classLoader, AbstractSession session) {
         return buildSQLDatabaseQuery(resultClass, sqlString, null, classLoader, session);
     }
 
@@ -211,7 +211,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @param hints
      *            a list of hints to be applied to the query.
      */
-    public static DatabaseQuery buildSQLDatabaseQuery(Class resultClass, String sqlString, Map<String, Object> hints, ClassLoader classLoader, AbstractSession session) {
+    public static DatabaseQuery buildSQLDatabaseQuery(Class<?> resultClass, String sqlString, Map<String, Object> hints, ClassLoader classLoader, AbstractSession session) {
         ReadAllQuery query = new ReadAllQuery(resultClass);
         query.setCall(((DatasourcePlatform)session.getPlatform(resultClass)).buildNativeCall(sqlString));
         query.setIsUserDefined(true);
@@ -314,7 +314,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         DatabaseQuery query = getDatabaseQueryInternal();
         try {
             if (query.isReadAllQuery()) {
-                Class containerClass = ((ReadAllQuery) getDatabaseQueryInternal()).getContainerPolicy().getContainerClass();
+                Class<?> containerClass = ((ReadAllQuery) getDatabaseQueryInternal()).getContainerPolicy().getContainerClass();
                 if (!Helper.classImplementsInterface(containerClass, ClassConstants.Collection_Class)) {
                     throw QueryException.invalidContainerClass(containerClass, ClassConstants.Collection_Class);
                 }
@@ -360,7 +360,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
             // not the right type
             if (getDatabaseQueryInternal() instanceof ReadAllQuery) {
                 if (!((ReadAllQuery) getDatabaseQueryInternal()).getContainerPolicy().isCursorPolicy()) {
-                    Class containerClass = ((ReadAllQuery) getDatabaseQueryInternal()).getContainerPolicy().getContainerClass();
+                    Class<?> containerClass = ((ReadAllQuery) getDatabaseQueryInternal()).getContainerPolicy().getContainerClass();
                     throw QueryException.invalidContainerClass(containerClass, Cursor.class);
                 }
             } else if (getDatabaseQueryInternal() instanceof ReadObjectQuery) {

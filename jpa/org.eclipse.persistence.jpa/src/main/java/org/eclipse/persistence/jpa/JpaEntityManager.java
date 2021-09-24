@@ -71,21 +71,21 @@ public interface JpaEntityManager extends jakarta.persistence.EntityManager, Aut
      * Return null if either not a session broker or cls is not mapped.
      * Session broker implement composite persistence unit.
      */
-    AbstractSession getMemberDatabaseSession(Class cls);
+    AbstractSession getMemberDatabaseSession(Class<?> cls);
 
     /**
      * Return the member ServerSession that maps cls in session broker.
      * Return null if either not a session broker or cls is not mapped.
      * Session broker implement composite persistence unit.
      */
-    ServerSession getMemberServerSession(Class cls);
+    ServerSession getMemberServerSession(Class<?> cls);
 
     /**
      * Return the name of member session that maps cls.
      * Return null if either not a session broker or cls is not mapped.
      * Session broker implement composite persistence unit.
      */
-    String getMemberSessionName(Class cls);
+    String getMemberSessionName(Class<?> cls);
 
     /**
      * Indicates whether the underlying session is a session broker.
@@ -107,7 +107,7 @@ public interface JpaEntityManager extends jakarta.persistence.EntityManager, Aut
     /**
      * This method is used to create a query using a EclipseLink Expression for the entity class.
      */
-    jakarta.persistence.Query createQuery(Expression expression, Class entityClass);
+    jakarta.persistence.Query createQuery(Expression expression, Class<?> entityClass);
 
     /**
      * This method is used to create a query using a EclipseLink DatabaseQuery.
@@ -122,7 +122,7 @@ public interface JpaEntityManager extends jakarta.persistence.EntityManager, Aut
     /**
      * This method is used to create a query using a EclipseLink Call for the entity class.
      */
-    jakarta.persistence.Query createQuery(Call call, Class entityClass);
+    jakarta.persistence.Query createQuery(Call call, Class<?> entityClass);
 
     /**
      * This method is used to create a query using query by example.
@@ -132,12 +132,12 @@ public interface JpaEntityManager extends jakarta.persistence.EntityManager, Aut
     /**
      * This method will create a query object that wraps a EclipseLink Named Query.
      */
-    jakarta.persistence.Query createDescriptorNamedQuery(String queryName, Class descriptorClass);
+    jakarta.persistence.Query createDescriptorNamedQuery(String queryName, Class<?> descriptorClass);
 
     /**
      * This method will create a query object that wraps a EclipseLink Named Query.
      */
-    jakarta.persistence.Query createDescriptorNamedQuery(String queryName, Class descriptorClass, List argumentTypes);
+    jakarta.persistence.Query createDescriptorNamedQuery(String queryName, Class<?> descriptorClass, List argumentTypes);
 
     /**
      * This method will load the passed entity or collection of entities using the passed AttributeGroup.

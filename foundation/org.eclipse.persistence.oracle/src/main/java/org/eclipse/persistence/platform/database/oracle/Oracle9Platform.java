@@ -286,7 +286,7 @@ public class Oracle9Platform extends Oracle8Platform {
      */
     @Override
     public boolean shouldUseCustomModifyForCall(DatabaseField field) {
-        Class type = field.getType();
+        Class<?> type = field.getType();
         if ((type != null) && isOracle9Specific(type)) {
             return true;
         }
@@ -676,7 +676,7 @@ public class Oracle9Platform extends Oracle8Platform {
      * Return if the type is a special oracle type.
      * bug 3325122 - just checking against the 4 classes is faster than isAssignableFrom MWN.
      */
-    protected boolean isOracle9Specific(Class type) {
+    protected boolean isOracle9Specific(Class<?> type) {
         return (type == NCHAR) || (type == NSTRING) || (type == NCLOB) || (type == XMLTYPE);
     }
 
@@ -685,7 +685,7 @@ public class Oracle9Platform extends Oracle8Platform {
      * Used in write LOB method only to identify a CLOB.
      */
     @Override
-    protected boolean isClob(Class type) {
+    protected boolean isClob(Class<?> type) {
         return NCLOB.equals(type) || super.isClob(type);
     }
 
@@ -698,7 +698,7 @@ public class Oracle9Platform extends Oracle8Platform {
      */
     @Override
     public Object getCustomModifyValueForCall(Call call, Object value, DatabaseField field, boolean shouldBind) {
-        Class type = field.getType();
+        Class<?> type = field.getType();
         if ((type != null) && isOracle9Specific(type)) {
             if(value == null) {
                 return null;
@@ -721,7 +721,7 @@ public class Oracle9Platform extends Oracle8Platform {
         return super.getCustomModifyValueForCall(call, value, field, shouldBind);
     }
 
-    protected List buildFromStringCharVec(Class javaClass) {
+    protected List buildFromStringCharVec(Class<?> javaClass) {
         List<Class<?>> vec = getConversionManager().getDataTypesConvertedFrom(javaClass);
         vec.add(NCHAR);
         vec.add(NSTRING);
@@ -809,7 +809,7 @@ public class Oracle9Platform extends Oracle8Platform {
      * The Oracle driver does not like the OPAQUE type so VARCHAR must be used.
      */
     @Override
-    public int getJDBCType(Class javaType) {
+    public int getJDBCType(Class<?> javaType) {
         if (javaType == XMLTYPE) {
             //return OracleTypes.OPAQUE;
             // VARCHAR seems to work...
@@ -886,11 +886,11 @@ public class Oracle9Platform extends Oracle8Platform {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     Class<XMLTypeFactory> xmlTypeFactoryClass = AccessController.doPrivileged(new PrivilegedClassForName<>(className, true, this.getClass().getClassLoader()));
-                    Constructor<XMLTypeFactory> xmlTypeFactoryConstructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(xmlTypeFactoryClass, new Class[0], true));
+                    Constructor<XMLTypeFactory> xmlTypeFactoryConstructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(xmlTypeFactoryClass, new Class<?>[0], true));
                     xmlTypeFactory = AccessController.doPrivileged(new PrivilegedInvokeConstructor<>(xmlTypeFactoryConstructor, new Object[0]));
                 }else{
                     Class<XMLTypeFactory> xmlTypeFactoryClass = PrivilegedAccessHelper.getClassForName(className, true, this.getClass().getClassLoader());
-                    Constructor<XMLTypeFactory> xmlTypeFactoryConstructor = PrivilegedAccessHelper.getConstructorFor(xmlTypeFactoryClass, new Class[0], true);
+                    Constructor<XMLTypeFactory> xmlTypeFactoryConstructor = PrivilegedAccessHelper.getConstructorFor(xmlTypeFactoryClass, new Class<?>[0], true);
                     xmlTypeFactory = PrivilegedAccessHelper.invokeConstructor(xmlTypeFactoryConstructor, new Object[0]);
                 }
             } catch (Exception e) {

@@ -284,7 +284,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
             }
             if (item.getGroups() != null && ! item.getGroups().isEmpty()) {
                 for (AttributeGroup subGroup : item.getGroups().values()) {
-                    Class type = subGroup.getType();
+                    Class<?> type = subGroup.getType();
                     if (type == null) {
                         type = CoreClassConstants.OBJECT;
                     }
@@ -301,7 +301,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
             }
             if (item.getKeyGroups() != null && ! item.getKeyGroups().isEmpty()) {
                 for (AttributeGroup subGroup : item.getKeyGroups().values()) {
-                    Class type = subGroup.getType();
+                    Class<?> type = subGroup.getType();
                     if (type == null) {
                         type = CoreClassConstants.OBJECT;
                     }

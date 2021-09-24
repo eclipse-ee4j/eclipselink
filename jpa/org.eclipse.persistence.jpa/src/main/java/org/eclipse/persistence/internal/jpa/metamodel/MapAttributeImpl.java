@@ -207,7 +207,7 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, Map<K, V>,
      * Default to the PK of the owning descriptor when no MapKey or MapKey:name attribute is specified.
      * Prerequisites: policy on the mapping is of type MappedKeyMapPolicy
      */
-    private Class getOwningPKTypeWhenMapKeyAnnotationMissingOrDefaulted(MappedKeyMapContainerPolicy policy) {
+    private Class<?> getOwningPKTypeWhenMapKeyAnnotationMissingOrDefaulted(MappedKeyMapContainerPolicy policy) {
         Class<?> javaClass = null;;
         MapKeyMapping mapKeyMapping = policy.getKeyMapping();
         ClassDescriptor descriptor = ((DatabaseMapping)mapKeyMapping).getDescriptor();
@@ -238,6 +238,7 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, Map<K, V>,
      *  @return Java type
      */
     @Override
+    @SuppressWarnings({"rawtypes"})
     public Class getJavaType() {
         return Map.class;
     }

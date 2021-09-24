@@ -53,11 +53,11 @@ public interface BeanValidationInitializationHelper {
                 // We could obtain a validator factory => Bean Validation API is available at runtime. It is ok to cast now
                 ValidatorFactory beanValidatorFactory = validatorFactory;
 
-                Class[] groupPrePersit = translateValidationGroups(
+                Class<?>[] groupPrePersit = translateValidationGroups(
                         (String) puProperties.get(PersistenceUnitProperties.VALIDATION_GROUP_PRE_PERSIST), appClassLoader) ;
-                Class[] groupPreUpdate = translateValidationGroups(
+                Class<?>[] groupPreUpdate = translateValidationGroups(
                         (String) puProperties.get(PersistenceUnitProperties.VALIDATION_GROUP_PRE_UPDATE), appClassLoader);
-                Class[] groupPreRemove = translateValidationGroups(
+                Class<?>[] groupPreRemove = translateValidationGroups(
                         (String) puProperties.get(PersistenceUnitProperties.VALIDATION_GROUP_PRE_REMOVE), appClassLoader);
 
                 BeanValidationListener validationListener =
@@ -95,11 +95,11 @@ public interface BeanValidationInitializationHelper {
          * @return Array of classes corresponding to classnames in given <code>validationGroups</code>.
          *         <code>null</code> if given <code>validationGroups</code> is null or empty
          */
-        private Class[] translateValidationGroups(String validationGroups, ClassLoader appClassLoader) {
-            Class[] validationGroupsClasses = null;
+        private Class<?>[] translateValidationGroups(String validationGroups, ClassLoader appClassLoader) {
+            Class<?>[] validationGroupsClasses = null;
             if(validationGroups != null && validationGroups.length() != 0 ) {
                 String[] validationGroupClassNames = validationGroups.split(",");
-                validationGroupsClasses = new Class[validationGroupClassNames.length];
+                validationGroupsClasses = new Class<?>[validationGroupClassNames.length];
                 for(int i = 0; i < validationGroupClassNames.length; i++) {
                     String validationGroupClassName = validationGroupClassNames[i];
                     try {
@@ -121,8 +121,8 @@ public interface BeanValidationInitializationHelper {
          * @param classLoader ClassLoader to be used for loading the class
          * @return Loaded Class
          */
-        private Class loadClass(String className, ClassLoader classLoader) throws PrivilegedActionException, ClassNotFoundException {
-            Class loadedClass = null;
+        private Class<?> loadClass(String className, ClassLoader classLoader) throws PrivilegedActionException, ClassNotFoundException {
+            Class<?> loadedClass = null;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 loadedClass = AccessController.doPrivileged(
                         new PrivilegedClassForName<>(className, true, classLoader));

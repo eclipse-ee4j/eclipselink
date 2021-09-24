@@ -74,7 +74,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
     protected SingularAttributeImpl(ManagedTypeImpl<X> managedType, DatabaseMapping mapping, boolean validationEnabled) {
         super(managedType, mapping);
         // Case: Handle primitive or java lang type (non-Entity) targets
-        Class attributeClass = mapping.getAttributeClassification();
+        Class<?> attributeClass = mapping.getAttributeClassification();
         /**
          * Case: Handle Entity targets
          * Process supported mappings by assigning their elementType.
@@ -122,7 +122,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
             attributeClass = MetamodelImpl.DEFAULT_ELEMENT_TYPE_FOR_UNSUPPORTED_MAPPINGS;
             AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_attribute_class_type_is_null", this);
         }
-        elementType = getMetamodel().getType(attributeClass);
+        elementType = (Type<T>) getMetamodel().getType(attributeClass);
     }
 
     /**
@@ -201,19 +201,20 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
      *  @return Java type
      */
     @Override
+    @SuppressWarnings({"unchecked"})
     public Class<T> getJavaType() {
         if(null == elementType) {
-            Class aJavaType = getMapping().getAttributeClassification();
+            Class<?> aJavaType = getMapping().getAttributeClassification();
             if(null == aJavaType) {
                 aJavaType = getMapping().getField().getType();
                 if(null == aJavaType) {
                     // lookup the attribute on the containing class
-                    Class containingClass = getMapping().getDescriptor().getJavaClass();
+                    Class<?> containingClass = getMapping().getDescriptor().getJavaClass();
                     Field aField = null;
                     try {
                         aField = containingClass.getDeclaredField(getMapping().getAttributeName());
                         aJavaType = aField.getType();
-                        return aJavaType;
+                        return (Class<T>) aJavaType;
                     } catch (NoSuchFieldException nsfe) {
                         // This exception will be warned about below
                         if(null == aJavaType) {
@@ -223,7 +224,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
                     }
                 }
             }
-            return aJavaType;
+            return (Class<T>) aJavaType;
         } else {
             return this.elementType.getJavaType();
         }

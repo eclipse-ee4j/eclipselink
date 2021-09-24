@@ -219,7 +219,7 @@ public class TestOracleLOBLocatorFeature {
     }
     
     @SuppressWarnings("rawtypes")
-    protected Matcher getExceptionChainMatcher(final Class t) {
+    protected Matcher getExceptionChainMatcher(final Class<?> t) {
         return new BaseMatcher() {
             final protected Class<?> expected = t;
 

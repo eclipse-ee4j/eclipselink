@@ -215,6 +215,7 @@ import org.eclipse.persistence.internal.helper.ConcurrencyUtil;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.JPAClassLoaderHolder;
 import org.eclipse.persistence.internal.helper.JPAConversionManager;
+import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.internal.jpa.deployment.BeanValidationInitializationHelper;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
@@ -880,7 +881,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         for (ClassDescriptor descriptor: session.getProject().getDescriptors().values()) {
             //process customizers:
             if (descriptor.getDescriptorCustomizerClassName() != null) {
-                Class listenerClass = findClass(descriptor.getDescriptorCustomizerClassName(), realClassLoader);
+                Class<?> listenerClass = findClass(descriptor.getDescriptorCustomizerClassName(), realClassLoader);
                 DescriptorCustomizer customizer = (DescriptorCustomizer) buildObjectForClass(listenerClass, DescriptorCustomizer.class);
                 try {
                     customizer.customize(descriptor);
@@ -1029,7 +1030,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         // originalServerPlatform is always non-null - Session's constructor sets serverPlatform to NoServerPlatform
         final ServerPlatform originalServerPlatform = session.getServerPlatform();
         final String originalServerPlatformClassName = originalServerPlatform.getClass().getName();
-        final Class originalServerPlatformTransCtrlClass = originalServerPlatform.getExternalTransactionControllerClass();
+        final Class<?> originalServerPlatformTransCtrlClass = originalServerPlatform.getExternalTransactionControllerClass();
         final String originalServerPlatformTransCtrlClassName = originalServerPlatformTransCtrlClass != null
                 ? originalServerPlatform.getExternalTransactionControllerClass().getName() : null;
 
@@ -1043,10 +1044,10 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         // the new serverPlatform
         ServerPlatform serverPlatform = null;
         // New platform - create the new instance and set it.
-        Class cls = findClassForProperty(serverPlatformClassName, PersistenceUnitProperties.TARGET_SERVER, loader);
+        Class<?> cls = findClassForProperty(serverPlatformClassName, PersistenceUnitProperties.TARGET_SERVER, loader);
         boolean isTargetServerTransCtrl = false;
         try {
-            Constructor constructor = cls.getConstructor(org.eclipse.persistence.sessions.DatabaseSession.class);
+            Constructor<?> constructor = cls.getConstructor(org.eclipse.persistence.sessions.DatabaseSession.class);
             serverPlatform = (ServerPlatform)constructor.newInstance(new Object[]{session});
         } catch (Exception ex) {
             if(ExternalTransactionController.class.isAssignableFrom(cls)) {
@@ -1059,12 +1060,12 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     if (cls.equals(originalCustomServerPlatform.getExternalTransactionControllerClass())) {
                         // externalTransactionController classes are the same - nothing to do
                     } else {
-                        originalCustomServerPlatform.setExternalTransactionControllerClass(cls);
+                        originalCustomServerPlatform.setExternalTransactionControllerClass((Class<? extends ExternalTransactionController>) cls);
                     }
                 } else {
                     // originalServerPlatform is not custom - need a new one.
                     serverPlatform = new CustomServerPlatform(getDatabaseSession());
-                    serverPlatform.setExternalTransactionControllerClass(cls);
+                    serverPlatform.setExternalTransactionControllerClass((Class<? extends ExternalTransactionController>) cls);
                 }
                 isTargetServerTransCtrl = true;
              } else {
@@ -1101,7 +1102,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      */
     private static void updateJTAControllerInPlatform(
             final ServerPlatform serverPlatform, final String jtaControllerClassName, final ClassLoader loader) {
-        Class jtaCls = findClassForProperty(jtaControllerClassName, PersistenceUnitProperties.JTA_CONTROLLER, loader);
+        Class<? extends ExternalTransactionController> jtaCls = (Class<? extends ExternalTransactionController>) findClassForProperty(jtaControllerClassName, PersistenceUnitProperties.JTA_CONTROLLER, loader);
         serverPlatform.setExternalTransactionControllerClass(jtaCls);
     }
 
@@ -1121,7 +1122,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
 
         String callbackClassName = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.PARTITIONING_CALLBACK, m, this.session);
         if (callbackClassName != null) {
-            Class cls = findClassForProperty(callbackClassName, PersistenceUnitProperties.PARTITIONING_CALLBACK, loader);
+            Class<?> cls = findClassForProperty(callbackClassName, PersistenceUnitProperties.PARTITIONING_CALLBACK, loader);
             DataPartitioningCallback callback = null;
             try {
                 Constructor constructor = cls.getConstructor();
@@ -1154,7 +1155,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         throw ValidationException.invalidValueForProperty(url, PersistenceUnitProperties.REMOTE_URL, exception);
                     }
                 } else {
-                    Class cls = findClassForProperty(protocol, PersistenceUnitProperties.REMOTE_PROTOCOL, loader);
+                    Class<?> cls = findClassForProperty(protocol, PersistenceUnitProperties.REMOTE_PROTOCOL, loader);
                     try {
                         Constructor constructor = cls.getConstructor();
                         connection = (RemoteConnection)constructor.newInstance();
@@ -1216,7 +1217,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             if (listenerClassName.equalsIgnoreCase("DCN") || listenerClassName.equalsIgnoreCase("QCN")) {
                 listenerClassName = "org.eclipse.persistence.platform.database.oracle.dcn.OracleChangeNotificationListener";
             }
-            Class cls = findClassForProperty(listenerClassName, PersistenceUnitProperties.DATABASE_EVENT_LISTENER, loader);
+            Class<?> cls = findClassForProperty(listenerClassName, PersistenceUnitProperties.DATABASE_EVENT_LISTENER, loader);
             DatabaseEventListener listener = null;
             try {
                 Constructor constructor = cls.getConstructor();
@@ -1249,7 +1250,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 sessionLog = serverPlatform.getServerLog();
             } else if (!currentLog.getClass().getName().equals(loggerClassName)) {
                 // Logger class was specified and it's not what's already there.
-                Class sessionLogClass = findClassForProperty(loggerClassName, PersistenceUnitProperties.LOGGING_LOGGER, loader);
+                Class<?> sessionLogClass = findClassForProperty(loggerClassName, PersistenceUnitProperties.LOGGING_LOGGER, loader);
                 try {
                     singletonLog = (SessionLog)sessionLogClass.getConstructor().newInstance();
                     sessionLog = (SessionLog)sessionLogClass.getConstructor().newInstance();
@@ -1342,7 +1343,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
 
             // New profiler - create the new instance and set it.
             try {
-                Class newProfilerClass = findClassForProperty(newProfilerClassName, PersistenceUnitProperties.PROFILER, loader);
+                Class<?> newProfilerClass = findClassForProperty(newProfilerClassName, PersistenceUnitProperties.PROFILER, loader);
 
                 SessionProfiler sessionProfiler = (SessionProfiler)buildObjectForClass(newProfilerClass, SessionProfiler.class);
 
@@ -1362,7 +1363,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     }
 
 
-    protected static Class findClass(String className, ClassLoader loader) throws ClassNotFoundException, PrivilegedActionException {
+    protected static Class<?> findClass(String className, ClassLoader loader) throws ClassNotFoundException, PrivilegedActionException {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
             return AccessController.doPrivileged(new PrivilegedClassForName<>(className, true, loader));
         } else {
@@ -1370,7 +1371,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         }
     }
 
-    protected static Class findClassForProperty(String className, String propertyName, ClassLoader loader) {
+    protected static Class<?> findClassForProperty(String className, String propertyName, ClassLoader loader) {
         ClassLoader eclipselinkLoader = EntityManagerSetupImpl.class.getClassLoader();
         boolean multipleLoaders = eclipselinkLoader != loader;
         if (multipleLoaders) {
@@ -1380,7 +1381,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         }
     }
 
-    private static Class findClassForPropertyInternal(String clsName, String propName, ClassLoader... loaders) {
+    private static Class<?> findClassForPropertyInternal(String clsName, String propName, ClassLoader... loaders) {
         RuntimeException e = null;
         for (ClassLoader loader : loaders) {
             try {
@@ -1404,7 +1405,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         List<StructConverter> structConverters = new ArrayList<StructConverter>();
         if (session.getProject().getStructConverters() != null) {
             for (String converter: session.getProject().getStructConverters()) {
-                Class clazz = null;
+                Class<?> clazz = null;
                 try {
                     clazz = findClass(converter, realClassLoader);
                 } catch (PrivilegedActionException exception) {
@@ -1477,7 +1478,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     /**
      * This method will be used to validate the specified class and return it's instance.
      */
-    protected static Object buildObjectForClass(Class clazz, Class mustBeImplementedInterface) throws IllegalAccessException, PrivilegedActionException,InstantiationException {
+    protected static Object buildObjectForClass(Class<?> clazz, Class<?> mustBeImplementedInterface) throws IllegalAccessException, PrivilegedActionException,InstantiationException {
         if(clazz!=null && Helper.classImplementsInterface(clazz,mustBeImplementedInterface)){
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 return AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(clazz));
@@ -1511,7 +1512,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         String defaultTypeName = (String)typeMap.remove(PersistenceUnitProperties.DEFAULT);
         if (defaultTypeName != null) {
             // Always use the EclipseLink class loader, otherwise can have loader/redeployment issues.
-            Class defaultType = findClassForProperty(defaultTypeName, PersistenceUnitProperties.CACHE_TYPE_DEFAULT, getClass().getClassLoader());
+            Class<? extends IdentityMap> defaultType = (Class<? extends IdentityMap>) findClassForProperty(defaultTypeName, PersistenceUnitProperties.CACHE_TYPE_DEFAULT, getClass().getClassLoader());
             session.getProject().setDefaultIdentityMapClass(defaultType);
         }
 
@@ -1550,7 +1551,8 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     typeName = (String)typeMap.remove(name);
                 }
                 if (typeName != null) {
-                    Class type = findClassForProperty(typeName, PersistenceUnitProperties.CACHE_TYPE_ + name, getClass().getClassLoader());
+                    @SuppressWarnings({"unchecked"})
+                    Class<? extends IdentityMap> type = (Class<? extends IdentityMap>) findClassForProperty(typeName, PersistenceUnitProperties.CACHE_TYPE_ + name, getClass().getClassLoader());
                     descriptor.setIdentityMapClass(type);
                 }
 
@@ -2232,7 +2234,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     property = PersistenceUnitProperties.COORDINATION_PROTOCOL;
                     value = "org.eclipse.persistence.sessions.coordination.jgroups.JGroupsTransportManager";
                     // Avoid compile and runtime dependency.
-                    Class transportClass = findClassForProperty(value, PersistenceUnitProperties.COORDINATION_PROTOCOL, loader);
+                    Class<?> transportClass = findClassForProperty(value, PersistenceUnitProperties.COORDINATION_PROTOCOL, loader);
                     TransportManager transport = (TransportManager)transportClass.getConstructor().newInstance();
                     rcm.setTransportManager(transport);
                     String config = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_JGROUPS_CONFIG, m, this.session);
@@ -2300,14 +2302,14 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 } else {
                     property = PersistenceUnitProperties.COORDINATION_PROTOCOL;
                     value = protocol;
-                    Class transportClass = findClassForProperty(protocol, PersistenceUnitProperties.COORDINATION_PROTOCOL, loader);
+                    Class<?> transportClass = findClassForProperty(protocol, PersistenceUnitProperties.COORDINATION_PROTOCOL, loader);
                     rcm.setTransportManager((TransportManager)transportClass.getConstructor().newInstance());
                 }
                 String serializer = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_SERIALIZER, m, this.session);
                 if (serializer != null) {
                     property = PersistenceUnitProperties.COORDINATION_SERIALIZER;
                     value = serializer;
-                    Class transportClass = findClassForProperty(serializer, PersistenceUnitProperties.COORDINATION_SERIALIZER, loader);
+                    Class<?> transportClass = findClassForProperty(serializer, PersistenceUnitProperties.COORDINATION_SERIALIZER, loader);
                     rcm.setSerializer((Serializer)transportClass.getConstructor().newInstance());
                 }
 
@@ -2365,7 +2367,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         if (serializer != null) {
             if (serializer.length() > 0) {
                 try {
-                    Class transportClass = findClassForProperty(serializer, PersistenceUnitProperties.SERIALIZER, loader);
+                    Class<?> transportClass = findClassForProperty(serializer, PersistenceUnitProperties.SERIALIZER, loader);
                     this.session.setSerializer((Serializer)transportClass.getConstructor().newInstance());
                 } catch (Exception exception) {
                     this.session.handleException(ValidationException.invalidValueForProperty(serializer, PersistenceUnitProperties.SERIALIZER, exception));
@@ -2405,7 +2407,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 session.getProject().setMultitenantPolicy(policy);
             } else {
                 //assume it is a class with default constructor implementing existing interface
-                Class cls = findClassForProperty(tenantStrategy, PersistenceUnitProperties.MULTITENANT_STRATEGY, loader);
+                Class<?> cls = findClassForProperty(tenantStrategy, PersistenceUnitProperties.MULTITENANT_STRATEGY, loader);
                 MultitenantPolicy policy = null;
                 try {
                     Constructor constructor = cls.getConstructor();
@@ -2467,7 +2469,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         if (connectorValue instanceof Connector) {
             login.setConnector((Connector)connectorValue);
         } else if (connectorValue instanceof String) {
-            Class cls = null;
+            Class<?> cls = null;
             // Try both class loaders.
             try {
                 cls = findClassForProperty((String)connectorValue, connectorProperty, this.persistenceUnitInfo.getClassLoader());
@@ -2958,7 +2960,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             return;
         }
         if (customizer instanceof String) {
-            Class sessionCustomizerClass = findClassForProperty((String) customizer, PersistenceUnitProperties.SESSION_CUSTOMIZER, loader);
+            Class<?> sessionCustomizerClass = findClassForProperty((String) customizer, PersistenceUnitProperties.SESSION_CUSTOMIZER, loader);
             try {
                 sessionCustomizer = (SessionCustomizer) sessionCustomizerClass.getConstructor().newInstance();
             } catch (Exception ex) {
@@ -3032,14 +3034,14 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             ClassDescriptor descriptor = session.getDescriptorForAlias(name);
             if (descriptor == null) {
                 try {
-                    Class javaClass = findClass(name, loader);
+                    Class<?> javaClass = findClass(name, loader);
                     descriptor = session.getDescriptor(javaClass);
                 } catch (Exception ex) {
                     throw EntityManagerSetupException.failedWhileProcessingProperty(PersistenceUnitProperties.DESCRIPTOR_CUSTOMIZER_ + name, customizerClassName, ex);
                 }
             }
             if (descriptor != null) {
-                Class customizerClass = findClassForProperty(customizerClassName, PersistenceUnitProperties.DESCRIPTOR_CUSTOMIZER_ + name, loader);
+                Class<?> customizerClass = findClassForProperty(customizerClassName, PersistenceUnitProperties.DESCRIPTOR_CUSTOMIZER_ + name, loader);
                 try {
                     DescriptorCustomizer customizer = (DescriptorCustomizer)customizerClass.getConstructor().newInstance();
                     customizer.customize(descriptor);
@@ -3177,7 +3179,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         //Set event listener if it has been specified.
         String sessionEventListenerClassName = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.SESSION_EVENT_LISTENER_CLASS, m, session);
         if(sessionEventListenerClassName!=null){
-            Class sessionEventListenerClass = findClassForProperty(sessionEventListenerClassName,PersistenceUnitProperties.SESSION_EVENT_LISTENER_CLASS, loader);
+            Class<?> sessionEventListenerClass = findClassForProperty(sessionEventListenerClassName,PersistenceUnitProperties.SESSION_EVENT_LISTENER_CLASS, loader);
             try {
                 SessionEventListener sessionEventListener = (SessionEventListener)buildObjectForClass(sessionEventListenerClass, SessionEventListener.class);
                 if(sessionEventListener!=null){
@@ -3203,7 +3205,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         //Set exception handler if it was specified.
         String exceptionHandlerClassName = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.EXCEPTION_HANDLER_CLASS, m, session);
         if(exceptionHandlerClassName!=null){
-            Class exceptionHandlerClass = findClassForProperty(exceptionHandlerClassName,PersistenceUnitProperties.EXCEPTION_HANDLER_CLASS, loader);
+            Class<?> exceptionHandlerClass = findClassForProperty(exceptionHandlerClassName,PersistenceUnitProperties.EXCEPTION_HANDLER_CLASS, loader);
             try {
                 ExceptionHandler exceptionHandler = (ExceptionHandler)buildObjectForClass(exceptionHandlerClass, ExceptionHandler.class);
                 if (exceptionHandler!=null){
@@ -3244,7 +3246,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                  if (batchWritingSettingString.equalsIgnoreCase("ExaLogic")) {
                      batchWritingSettingString = "oracle.toplink.exalogic.batch.DynamicParameterizedBatchWritingMechanism";
                  }
-                 Class cls = findClassForProperty(batchWritingSettingString, PersistenceUnitProperties.BATCH_WRITING, loader);
+                 Class<?> cls = findClassForProperty(batchWritingSettingString, PersistenceUnitProperties.BATCH_WRITING, loader);
                  BatchWritingMechanism mechanism = null;
                  try {
                      Constructor constructor = cls.getConstructor();
@@ -3283,7 +3285,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 if (repository.equalsIgnoreCase("XML")) {
                     processor.setMetadataSource(new XMLMetadataSource());
                 } else {
-                    Class transportClass = findClassForProperty(repository, PersistenceUnitProperties.METADATA_SOURCE, loader);
+                    Class<?> transportClass = findClassForProperty(repository, PersistenceUnitProperties.METADATA_SOURCE, loader);
                     try {
                         processor.setMetadataSource((MetadataSource)transportClass.getConstructor().newInstance());
                     } catch (Exception invalid) {
@@ -3309,7 +3311,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 if (tuning.equalsIgnoreCase("ExaLogic")) {
                     tuning = "oracle.toplink.exalogic.tuning.ExaLogicTuner";
                 }
-                Class tunerClass = findClassForProperty(tuning, PersistenceUnitProperties.TUNING, loader);
+                Class<?> tunerClass = findClassForProperty(tuning, PersistenceUnitProperties.TUNING, loader);
                 try {
                     tuner = (SessionTuner)tunerClass.getConstructor().newInstance();
                 } catch (Exception invalid) {
@@ -3415,7 +3417,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 if (accessorType.equalsIgnoreCase("java-serialization")) {
                     projectCacheAccessor = new FileBasedProjectCache();
                 } else {
-                    Class transportClass = findClassForProperty(accessorType, PersistenceUnitProperties.PROJECT_CACHE, loader);
+                    Class<?> transportClass = findClassForProperty(accessorType, PersistenceUnitProperties.PROJECT_CACHE, loader);
                     try {
                         projectCacheAccessor = (ProjectCache)transportClass.getConstructor().newInstance();
                     } catch (Exception invalid) {
@@ -3977,7 +3979,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             // environment where these classes are not available.
             // To guard against some vms that eagerly resolve, reflectively load class to prevent any static reference to it
             String helperClassName = "org.eclipse.persistence.internal.jpa.deployment.BeanValidationInitializationHelper$BeanValidationInitializationHelperImpl";
-            Class helperClass;
+            Class<?> helperClass;
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     try {
@@ -4080,7 +4082,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             boolean classInitialized = false;
             String className = MetadataHelper.getQualifiedCanonicalName(manType.getJavaType().getName(), getSession());
             try {
-                Class clazz = this.getSession().getDatasourcePlatform().convertObject(className, ClassConstants.CLASS);
+                Class<?> clazz = this.getSession().getDatasourcePlatform().convertObject(className, ClassConstants.CLASS);
                 classInitialized=true;
                 this.getSession().log(SessionLog.FINER, SessionLog.METAMODEL, "metamodel_canonical_model_class_found", className);
                 String fieldName = "";
@@ -4263,7 +4265,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             boolean classInitialized = false;
             String className = MetadataHelper.getQualifiedCanonicalName(((ManagedTypeImpl)manType).getJavaTypeName(), getSession());
             try {
-                Class clazz = this.getSession().getDatasourcePlatform().convertObject(className, ClassConstants.CLASS);
+                Class<?> clazz = this.getSession().getDatasourcePlatform().convertObject(className, ClassConstants.CLASS);
                 classInitialized=true;
                 this.getSession().log(SessionLog.FINER, SessionLog.METAMODEL, "metamodel_canonical_model_class_found", className);
                 Field[] fields = null;

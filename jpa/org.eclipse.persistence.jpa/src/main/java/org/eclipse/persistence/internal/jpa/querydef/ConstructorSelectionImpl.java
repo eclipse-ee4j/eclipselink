@@ -37,9 +37,9 @@ import org.eclipse.persistence.queries.ConstructorReportItem;
 public class ConstructorSelectionImpl extends CompoundSelectionImpl {
 
     protected transient Constructor constructor;
-    protected Class[] constructorArgTypes;
+    protected Class<?>[] constructorArgTypes;
 
-    public ConstructorSelectionImpl(Class javaType, Selection[] subSelections) {
+    public ConstructorSelectionImpl(Class<?> javaType, Selection[] subSelections) {
         super(javaType, subSelections, true);//need to validate selection items
     }
 
@@ -79,7 +79,7 @@ public class ConstructorSelectionImpl extends CompoundSelectionImpl {
      * INTERNAL:
      * Set the constructorArgTypes.
      */
-    public void setConstructorArgTypes(Class[] constructorArgTypes){
+    public void setConstructorArgTypes(Class<?>[] constructorArgTypes){
         this.constructorArgTypes = constructorArgTypes;
     }
 }
