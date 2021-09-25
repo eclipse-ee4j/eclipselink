@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -123,6 +124,26 @@ public class TransformerFactory {
             if (descriptor != null) {
                 return;
             }
+        }
+
+        // If the superclass declares more mappings than there are unmapped mappings still to process, this superclass has shadowed attributes
+        if(mappedSuperclassDescriptor != null && unMappedAttributes.size() < mappedSuperclassDescriptor.getMappings().size()) {
+            List<DatabaseMapping> hiddenMappings = new ArrayList<DatabaseMapping>();
+            for(DatabaseMapping mapping : mappedSuperclassDescriptor.getMappings()) {
+                boolean contains = false;
+                String name = mapping.getAttributeName();
+                for(DatabaseMapping newmapping : unMappedAttributes) {
+                    if(name.equals(newmapping.getAttributeName())) {
+                        contains = true;
+                        break;
+                    }
+                }
+                // If the super has a mapping that wasn't processed by the subclasses, add it to be processed
+                if(!contains) {
+                    hiddenMappings.add(mapping);
+                }
+            }
+            unMappedAttributes.addAll(hiddenMappings);
         }
 
         boolean weaveValueHolders = canWeaveValueHolders(superClz, unMappedAttributes);
@@ -266,11 +287,11 @@ public class TransformerFactory {
     /**
      * Determine if value holders are required to be weaved into the class.
      */
-    protected boolean canWeaveValueHolders(MetadataClass clz, List mappings) {
+    protected boolean canWeaveValueHolders(MetadataClass clz, List<DatabaseMapping> mappings) {
         // we intend to change to fetch=LAZY 1:1 attributes to ValueHolders
         boolean weaveValueHolders = false;
-        for (Iterator iterator = mappings.iterator(); iterator.hasNext();) {
-            DatabaseMapping mapping = (DatabaseMapping)iterator.next();
+        for (Iterator<DatabaseMapping> iterator = mappings.iterator(); iterator.hasNext();) {
+            DatabaseMapping mapping = iterator.next();
             String attributeName = mapping.getAttributeName();
             if (mapping.isForeignReferenceMapping()) {
                 ForeignReferenceMapping foreignReferenceMapping = (ForeignReferenceMapping)mapping;
