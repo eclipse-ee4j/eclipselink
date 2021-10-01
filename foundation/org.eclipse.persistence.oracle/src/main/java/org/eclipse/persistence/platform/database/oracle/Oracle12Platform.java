@@ -183,6 +183,18 @@ public class Oracle12Platform extends Oracle11Platform {
                 attributes[index] = row.get(field);
             }
         }
-        return super.createStruct(structTypeName, attributes, session, connection);
+        return createStruct(structTypeName, attributes, connection);
+    }
+
+    /**
+     * Create java.sql.Struct from given parameters.
+     * @param structTypeName - the SQL type name of the SQL structured type that this Struct object maps to.
+     * @param attributes - the attributes that populate the returned object
+     * @param connection - DB connection
+     * @return Struct
+     */
+    @Override
+    public Struct createStruct(String structTypeName, Object[] attributes, Connection connection) throws SQLException {
+        return connection.createStruct(structTypeName, attributes);
     }
 }
