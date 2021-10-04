@@ -550,6 +550,10 @@
                 <sysproperty key="useLogging" value="false"/>
                 <sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
                 <sysproperty key="parser" value="${parser}"/>
+                <!-- Properties tested in MOXySystemPropertiesTestCase -->
+                <sysproperty key="eclipselink.moxy.unit.jaxb.MOXySystemPropertiesTestCase.true_value" value="true"/>
+                <sysproperty key="eclipselink.moxy.unit.jaxb.MOXySystemPropertiesTestCase.false_value" value="false"/>
+                <sysproperty key="eclipselink.moxy.unit.jaxb.MOXySystemPropertiesTestCase.string_value" value="STRING"/>
                 <syspropertyset refid="parser.properties"/>
                 <batchtest todir="${report.dir}/jaxb">
                     <fileset dir="${src.dir}">

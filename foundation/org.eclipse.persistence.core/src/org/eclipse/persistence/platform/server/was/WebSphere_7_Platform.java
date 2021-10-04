@@ -90,14 +90,14 @@ public class WebSphere_7_Platform extends WebSphere_6_1_Platform implements JMXE
                 log = AccessController.doPrivileged(new PrivilegedExceptionAction<SessionLog>() {
                     @Override
                     public SessionLog run() throws Exception {
-                        Class<SessionLog> cls = PrivilegedAccessHelper.getClassForName(SERVER_LOG_CLASS);
-                        Constructor<SessionLog> ctor = PrivilegedAccessHelper.getConstructorFor(cls, null, false);
+                        Class<? extends SessionLog> cls = PrivilegedAccessHelper.getClassForName(SERVER_LOG_CLASS);
+                        Constructor<? extends SessionLog> ctor = PrivilegedAccessHelper.getConstructorFor(cls, null, false);
                         return ctor.newInstance();
                     }
                 });
             } else {
-                Class<SessionLog> cls = PrivilegedAccessHelper.getClassForName(SERVER_LOG_CLASS);
-                Constructor<SessionLog> ctor = PrivilegedAccessHelper.getConstructorFor(cls, null, false);
+                Class<? extends SessionLog> cls = PrivilegedAccessHelper.getClassForName(SERVER_LOG_CLASS);
+                Constructor<? extends SessionLog> ctor = PrivilegedAccessHelper.getConstructorFor(cls, null, false);
                 log = ctor.newInstance();
             }
 
