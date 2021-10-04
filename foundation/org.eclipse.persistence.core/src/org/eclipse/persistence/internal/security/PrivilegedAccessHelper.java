@@ -245,6 +245,7 @@ public class PrivilegedAccessHelper {
 
     /**
      * Execute a java Class.forName().  Wrap the call in a doPrivileged block if necessary.
+     * @param className
      */
     @SuppressWarnings({"unchecked"})
     public static <T> Class<T> getClassForName(final String className) throws ClassNotFoundException {
@@ -296,6 +297,7 @@ public class PrivilegedAccessHelper {
      * @param javaClass The class to get the Constructor for
      * @param args An array of classes representing the argument types of the constructor
      * @param shouldSetAccessible whether or not to call the setAccessible API
+     * @throws java.lang.NoSuchMethodException
      */
     @SuppressWarnings({"unchecked"})
     public static <T> Constructor<T> getConstructorFor(final Class<T> javaClass, final Class<?>[] args, final boolean shouldSetAccessible) throws NoSuchMethodException {
@@ -347,6 +349,7 @@ public class PrivilegedAccessHelper {
      * @param javaClass The class to get the Constructor for
      * @param args An array of classes representing the argument types of the constructor
      * @param shouldSetAccessible whether or not to call the setAccessible API
+     * @throws java.lang.NoSuchMethodException
      */
     public static <T> Constructor<T> getDeclaredConstructorFor(final Class<T> javaClass, final Class<?>[] args, final boolean shouldSetAccessible) throws NoSuchMethodException {
         Constructor<T> result = javaClass.getDeclaredConstructor(args);
@@ -363,6 +366,7 @@ public class PrivilegedAccessHelper {
      * @param javaClass The class to get the field from
      * @param fieldName The name of the field
      * @param shouldSetAccessible whether or not to call the setAccessible API
+     * @throws java.lang.NoSuchFieldException
      */
     public static Field getField(final Class<?> javaClass, final String fieldName, final boolean shouldSetAccessible) throws NoSuchFieldException {
         Field field = findDeclaredField(javaClass, fieldName);
@@ -379,6 +383,7 @@ public class PrivilegedAccessHelper {
      * @param javaClass The class to get the field from
      * @param fieldName The name of the field
      * @param shouldSetAccessible whether or not to call the setAccessible API
+     * @throws java.lang.NoSuchFieldException
      */
     public static Field getDeclaredField(final Class<?> javaClass, final String fieldName, final boolean shouldSetAccessible) throws NoSuchFieldException {
         Field field = javaClass.getDeclaredField(fieldName);
@@ -409,9 +414,9 @@ public class PrivilegedAccessHelper {
      * Return a method on a given class with the given method name and parameter
      * types. This call will NOT traverse the superclasses. Wrap the call in
      * doPrivileged if necessary.
-     * @param clazz the class to get the method from
+     * @param method the class to get the method from
      * @param methodName the name of the method to get
-     * @param methodParameterTypes a list of classes representing the classes of the
+     * @param methodParameters a list of classes representing the classes of the
      *  parameters of the method.
      */
     public static Method getDeclaredMethod(final Class<?> clazz, final String methodName, final Class<?>[] methodParameterTypes) throws NoSuchMethodException {
@@ -428,6 +433,7 @@ public class PrivilegedAccessHelper {
      * @param methodName The name of the method to get
      * @param methodParameterTypes A list of classes representing the classes of the parameters of the mthod
      * @param shouldSetAccessible whether or not to call the setAccessible API
+     * @throws java.lang.NoSuchMethodException
      */
     public static Method getMethod(final Class<?> javaClass, final String methodName, final Class<?>[] methodParameterTypes, final boolean shouldSetAccessible) throws NoSuchMethodException {
         Method method = findMethod(javaClass, methodName, methodParameterTypes);
@@ -447,6 +453,7 @@ public class PrivilegedAccessHelper {
      * @param methodName The name of the method to get
      * @param methodParameterTypes A list of classes representing the classes of the parameters of the method
      * @param shouldSetAccessible whether or not to call the setAccessible API
+     * @throws java.lang.NoSuchMethodException
      */
     public static Method getPublicMethod(final Class<?> javaClass, final String methodName, final Class<?>[] methodParameterTypes, final boolean shouldSetAccessible) throws NoSuchMethodException {
         // Return the (public) method - will traverse superclass(es) if necessary
@@ -468,6 +475,7 @@ public class PrivilegedAccessHelper {
 
     /**
      * Get the return type for a given method. Wrap the call in doPrivileged if necessary.
+     * @param field
      */
     @SuppressWarnings({"unchecked"})
     public static <T> Class<T> getFieldType(final Field field) {
@@ -482,8 +490,8 @@ public class PrivilegedAccessHelper {
      */
     private static boolean isIllegalProperty(final String key) {
         return key == null || !(legalPropertiesSet.contains(key) || key.startsWith("eclipselink.")
-                || key.startsWith("jakarta.persistence.") || key.startsWith("org.eclipse.persistence.")
-                || key.startsWith("persistence.") || key.startsWith("javax.xml.") || key.startsWith("jakarta.xml."));
+                || key.startsWith("javax.persistence.") || key.startsWith("org.eclipse.persistence.")
+                || key.startsWith("persistence.") || key.startsWith("javax.xml."));
     }
 
     /**
@@ -506,7 +514,7 @@ public class PrivilegedAccessHelper {
      *         does not exist.
      * @since 2.6.2
      */
-    public static String getSystemProperty(final String key) {
+    public static final String getSystemProperty(final String key) {
         if (isIllegalProperty(key)) {
             throw new IllegalArgumentException(
                     ExceptionLocalization.buildMessage("unexpect_argument", new Object[] {key}));
@@ -527,7 +535,7 @@ public class PrivilegedAccessHelper {
      *         does not exist.
      * @since 2.6.2
      */
-    public static String getSystemProperty(final String key, final String def) {
+    public static final String getSystemProperty(final String key, final String def) {
         if (isIllegalProperty(key)) {
             throw new IllegalArgumentException(
                     ExceptionLocalization.buildMessage("unexpect_argument", new Object[] {key}));
@@ -549,7 +557,7 @@ public class PrivilegedAccessHelper {
      *         {@code false} otherwise.
      * @since 2.6.3
      */
-    public static boolean getSystemPropertyBoolean(final String key, final boolean def) {
+    public static final boolean getSystemPropertyBoolean(final String key, final boolean def) {
         return TRUE_STRING.equalsIgnoreCase(
                 getSystemProperty(key, def ? TRUE_STRING : ""));
     }
@@ -559,7 +567,7 @@ public class PrivilegedAccessHelper {
      * Get the line separator character.
      * @return The {@link String} containing the platform-appropriate characters for line separator.
      */
-    public static String getLineSeparator() {
+    public static final String getLineSeparator() {
         return getSystemProperty("line.separator");
     }
 
@@ -573,6 +581,7 @@ public class PrivilegedAccessHelper {
 
     /**
      * Get the return type for a given method. Wrap the call in doPrivileged if necessary.
+     * @param method
      */
     @SuppressWarnings({"unchecked"})
     public static <T> Class<T> getMethodReturnType(final Method method) {
@@ -610,7 +619,7 @@ public class PrivilegedAccessHelper {
      * parameters. Wrap in a doPrivileged block if necessary.
      */
     public static <T> T invokeMethod(final Method method, final Object object) throws IllegalAccessException, InvocationTargetException {
-        return invokeMethod(method, object, null);
+        return invokeMethod(method, object, (Object[]) null);
     }
 
     /**
