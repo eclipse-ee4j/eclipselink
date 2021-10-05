@@ -21,6 +21,7 @@ import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper.PrivilegedExceptionCallable;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.sessions.Session;
@@ -51,6 +52,28 @@ public class JAXBEnumTypeConverter extends ObjectTypeConverter {
         m_usesOrdinalValues = usesOrdinalValues;
     }
 
+    // PrivilegedAccessHelper.getClassForName caller for PrivilegedAccessHelper.callDoPrivilegedWithException
+    private static final class CallGetClassForName implements PrivilegedExceptionCallable<Class<?>> {
+
+        private final ClassLoader classLoader;
+        private final String m_enumClassName;
+
+        private CallGetClassForName(final ClassLoader classLoader, final String m_enumClassName) {
+            this.classLoader = classLoader;
+            this.m_enumClassName = m_enumClassName;
+        }
+
+        @Override
+        public Class<?> call() throws Exception {
+            return org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(m_enumClassName, true, classLoader);
+        }
+    }
+
+    // Handle exception in PrivilegedAccessHelper.callDoPrivilegedWithException
+    private ValidationException getClassForNameException(final Exception ex) {
+        return ValidationException.classNotFoundWhileConvertingClassNames(m_enumClassName, ex);
+    }
+
     /**
      * INTERNAL:
      * Convert all the class-name-based settings in this converter to actual
@@ -58,10 +81,11 @@ public class JAXBEnumTypeConverter extends ObjectTypeConverter {
      * that has been built with class names to a project with classes.
      * @param classLoader
      */
-    public void convertClassNamesToClasses(ClassLoader classLoader){
+    public void convertClassNamesToClasses(ClassLoader classLoader) {
+        CallGetClassForName callGetClassForName = new CallGetClassForName(classLoader, m_enumClassName);
         m_enumClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
-                () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(m_enumClassName, true, classLoader),
-                (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(m_enumClassName, ex)
+                callGetClassForName,
+                this::getClassForNameException
         );
     }
 

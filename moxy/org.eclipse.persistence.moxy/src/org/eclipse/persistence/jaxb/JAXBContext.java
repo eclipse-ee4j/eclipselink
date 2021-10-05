@@ -864,8 +864,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         // statement PrivilegedAccessHelper.callDoPrivileged
         private static final class CreateJaxbClassLoader implements PrivilegedCallable<JaxbClassLoader> {
 
-            private ClassLoader classLoader;
-            private Class<?>[] types;
+            private final ClassLoader classLoader;
+            private final Class<?>[] types;
 
             private CreateJaxbClassLoader(final ClassLoader classLoader, final Class<?>[] types) {
                 this.classLoader = classLoader;
@@ -1125,7 +1125,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         // statement PrivilegedAccessHelper.callDoPrivileged
         private static final class CreateJaxbClassLoader implements PrivilegedCallable<JaxbClassLoader> {
 
-            private ClassLoader classLoader;
+            private final ClassLoader classLoader;
             private TypeMappingInfo[] types;
 
             private CreateJaxbClassLoader(final ClassLoader classLoader, final TypeMappingInfo[] types) {
