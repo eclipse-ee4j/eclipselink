@@ -166,6 +166,12 @@ protected byte[] loadData(ZipFile jarFile, ZipEntry jarEntry) throws IOException
 
     return buffer;
 }
+
+// Get this class instance
+private final ClassLoader getThisClass() {
+    return PrivilegedAccessHelper.getClassLoaderForClass(this.getClass());
+}
+
 /**
  * Return the class for the specified name.
  */
@@ -180,7 +186,7 @@ protected Class loadUnresolvedClass(String className) throws ClassNotFoundExcept
         return this.customLoadUnresolvedClass(className);
     } else {
         final ClassLoader cl = PrivilegedAccessHelper.callDoPrivileged(
-                () -> PrivilegedAccessHelper.getClassLoaderForClass(this.getClass())
+                this::getThisClass
         );
         if (cl == null) {
             // this should only occur under jdk1.1.x
@@ -190,6 +196,7 @@ protected Class loadUnresolvedClass(String className) throws ClassNotFoundExcept
         }
     }
 }
+
 /**
  * Return whether the specified class should be custom loaded.
  * If it is a member of one of the override packages, it should be

@@ -49,17 +49,22 @@ public class MultiArgInstantiationPolicy extends InstantiationPolicy {
         defaultValues = values;
     }
 
+    // Handle Class.forName() wrapper exception
+    private ValidationException invokeGetClassForNameException(final Exception ex) {
+        return ValidationException.classNotFoundWhileConvertingClassNames(factoryClassName, ex);
+    }
+
     @Override
     public void convertClassNamesToClasses(ClassLoader loader) {
         super.convertClassNamesToClasses(loader);
         if(parameterTypes == null) {
             if(parameterTypeNames != null) {
-                Class[] values = new Class[parameterTypeNames.length];
+                Class<?>[] values = new Class[parameterTypeNames.length];
                 for(int i = 0; i < values.length; i++) {
                     final String parameterTypeName = parameterTypeNames[i];
                     values[i] = PrivilegedAccessHelper.callDoPrivilegedWithException(
                             () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(parameterTypeName, true, loader),
-                            (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(factoryClassName, ex)
+                            this::invokeGetClassForNameException
                     );
                  }
                 this.parameterTypes = values;
@@ -83,24 +88,32 @@ public class MultiArgInstantiationPolicy extends InstantiationPolicy {
         }
     }
 
+    // Invoke factory method
+    private Object invokeFactoryMethod() throws Exception {
+        return PrivilegedAccessHelper.invokeMethod(getMethod(), getFactory(), this.defaultValues);
+    }
+
+    // Handle factory method invocation exception
+    @SuppressWarnings("unchecked")
+    private <E extends Exception> E invokeFactoryMethodException(final Exception ex) {
+        if (ex instanceof IllegalAccessException) {
+            return (E) DescriptorException.illegalAccessWhileMethodInstantiation(getMethod().toString(), this.getDescriptor(), ex);
+        } else if (ex instanceof InvocationTargetException) {
+            return (E) DescriptorException.targetInvocationWhileMethodInstantiation(getMethod().toString(), this.getDescriptor(), ex);
+        } else if (ex instanceof NullPointerException) {
+            return (E) DescriptorException.nullPointerWhileMethodInstantiation(this.getMethod().toString(), this.getDescriptor(), ex);
+        }
+        return (E) new RuntimeException("Unexpected exception from MultiArgInstantiationPolicy.buildNewInstanceUsingFactory()", ex);
+    }
+
     /**
      * Build and return a new instance, using the factory.
      * The factory can be null, in which case the method is a static method defined by the descriptor class.
      */
     protected Object buildNewInstanceUsingFactory() throws DescriptorException {
         return PrivilegedAccessHelper.callDoPrivilegedWithException(
-                () -> PrivilegedAccessHelper.invokeMethod(getMethod(), getFactory(), this.defaultValues),
-                (ex) -> {
-                    if (ex instanceof IllegalAccessException) {
-                        return DescriptorException.illegalAccessWhileMethodInstantiation(getMethod().toString(), this.getDescriptor(), ex);
-                    } else if (ex instanceof InvocationTargetException) {
-                        return DescriptorException.targetInvocationWhileMethodInstantiation(getMethod().toString(), this.getDescriptor(), ex);
-                    } else if (ex instanceof NullPointerException) {
-                        return DescriptorException.nullPointerWhileMethodInstantiation(this.getMethod().toString(), this.getDescriptor(), ex);
-                    } else {
-                        return new RuntimeException("Unexpected exception from MultiArgInstantiationPolicy.buildNewInstanceUsingFactory()", ex);
-                    }
-                }
+                this::invokeFactoryMethod,
+                this::invokeFactoryMethodException
         );
     }
 
