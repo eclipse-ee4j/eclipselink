@@ -16,8 +16,6 @@ package org.eclipse.persistence.core.queries;
 
 import java.io.Serializable;
 import java.io.StringWriter;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,7 +29,6 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.core.queries.CoreAttributeConverter;
 import org.eclipse.persistence.internal.helper.StringHelper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 
 /**
  * INTERNAL
@@ -312,20 +309,11 @@ public class CoreAttributeGroup<
      * with class names to a project with classes.
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
-        if (this.type == null){
-            try{
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        this.type = AccessController.doPrivileged(new PrivilegedClassForName<>(this.typeName, true, classLoader));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(this.typeName, exception.getException());
-                    }
-                } else {
-                    this.type = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(this.typeName, true, classLoader);
-                }
-            } catch (ClassNotFoundException exc){
-                throw ValidationException.classNotFoundWhileConvertingClassNames(this.typeName, exc);
-            }
+        if (this.type == null) {
+            this.type = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(this.typeName, true, classLoader),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(this.typeName, ex)
+            );
             if (this.items != null){
                 for (ATTRIBUTE_ITEM item : this.items.values()){
                     item.convertClassNamesToClasses(classLoader);

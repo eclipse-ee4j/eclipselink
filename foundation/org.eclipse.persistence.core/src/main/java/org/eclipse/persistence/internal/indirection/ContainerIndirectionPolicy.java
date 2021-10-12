@@ -15,8 +15,6 @@
 package org.eclipse.persistence.internal.indirection;
 
 import java.lang.reflect.Constructor;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.indirection.IndirectContainer;
@@ -26,8 +24,6 @@ import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
-import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -74,22 +70,18 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
     /**
      * Build a container with the initialized constructor.
      */
-    protected IndirectContainer buildContainer(ValueHolderInterface<?> valueHolder) {
+    protected IndirectContainer buildContainer(final ValueHolderInterface<?> valueHolder) {
         try {
             IndirectContainer container = null;
             if (getContainerConstructor().getParameterTypes().length == 0) {
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    container = (IndirectContainer)AccessController.doPrivileged(new PrivilegedInvokeConstructor<>(getContainerConstructor(), new Object[0]));
-                }else{
-                    container = (IndirectContainer)PrivilegedAccessHelper.invokeConstructor(getContainerConstructor(), new Object[0]);
-                }
+                container = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                        () -> (IndirectContainer)PrivilegedAccessHelper.invokeConstructor(getContainerConstructor(), new Object[0])
+                );
                 container.setValueHolder(valueHolder);
             } else {
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    container = (IndirectContainer)AccessController.doPrivileged(new PrivilegedInvokeConstructor<>(getContainerConstructor(), new Object[] { valueHolder }));
-                }else{
-                    container = (IndirectContainer)PrivilegedAccessHelper.invokeConstructor(getContainerConstructor(), new Object[] { valueHolder });
-                }
+                container = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                        () -> (IndirectContainer)PrivilegedAccessHelper.invokeConstructor(getContainerConstructor(), new Object[] { valueHolder })
+                );
             }
             return container;
         } catch (Exception exception) {
@@ -225,40 +217,31 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
 
         // Try to find constructor which takes a ValueHolderInterface
         try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try{
-                    this.containerConstructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(getContainerClass(), new Class<?>[] { ClassConstants.ValueHolderInterface_Class }, false));
-                }catch (PrivilegedActionException ex){
-                    if (ex.getCause() instanceof NoSuchMethodException){
-                        throw (NoSuchMethodException) ex.getCause();
-                    }
-                    throw (RuntimeException)ex.getCause();
-                }
-            }else{
-                this.containerConstructor = PrivilegedAccessHelper.getConstructorFor(getContainerClass(), new Class<?>[] { ClassConstants.ValueHolderInterface_Class }, false);
-            }
+            this.containerConstructor = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> PrivilegedAccessHelper.getConstructorFor(getContainerClass(), new Class<?>[] { ClassConstants.ValueHolderInterface_Class }, false)
+            );
             return;
-        } catch (NoSuchMethodException nsme) {// DO NOTHING, exception thrown at end
+        // DO NOTHING, exception thrown at end
+        } catch (NoSuchMethodException nsme) {
+        // This indicates unexpected problem in the code
+        } catch (Exception ex) {
+            throw new RuntimeException(String.format(
+                    "Invocation of %s constructior failed", getContainerClass().getName()), ex);
         }
 
         // Try to find the default constructor
         try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try{
-                    this.containerConstructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(getContainerClass(), new Class<?>[0], false));
-                }catch (PrivilegedActionException ex){
-                    if (ex.getCause() instanceof NoSuchMethodException){
-                        throw (NoSuchMethodException) ex.getCause();
-                    }
-                    throw (RuntimeException)ex.getCause();
-                }
-            }else{
-                this.containerConstructor = PrivilegedAccessHelper.getConstructorFor(getContainerClass(), new Class<?>[0], false);
-            }
+            this.containerConstructor = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> PrivilegedAccessHelper.getConstructorFor(getContainerClass(), new Class<?>[0], false)
+            );
             return;
-        } catch (NoSuchMethodException nsme) {// DO NOTHING, exception thrown at end
+        // DO NOTHING, exception thrown at end
+        } catch (NoSuchMethodException nsme) {
+        // This indicates unexpected problem in the code
+        } catch (Exception ex) {
+            throw new RuntimeException(String.format(
+                    "Invocation of %s constructior failed", getContainerClass().getName()), ex);
         }
-
         // If no constructor is found then we throw an initialization exception
         throw DescriptorException.noConstructorIndirectionContainerClass(this, containerClass);
     }

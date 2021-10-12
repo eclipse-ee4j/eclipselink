@@ -19,8 +19,6 @@ package org.eclipse.persistence.descriptors;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -31,7 +29,6 @@ import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.SessionProfiler;
 
@@ -243,30 +240,24 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
             }
 
             // Now that I have the method, I need to invoke it
-            try {
-                Object[] runtimeParameters = new Object[1];
-                runtimeParameters[0] = event;
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        AccessController.doPrivileged(new PrivilegedMethodInvoker(eventMethod, event.getSource(), runtimeParameters));
-                    } catch (PrivilegedActionException exception) {
-                        Exception throwableException = exception.getException();
-                        if (throwableException instanceof IllegalAccessException) {
-                            throw DescriptorException.illegalAccessWhileEventExecution(eventMethod.getName(), getDescriptor(), throwableException);
-                        } else {
-                            throw DescriptorException.targetInvocationWhileEventExecution(eventMethod.getName(), getDescriptor(), throwableException);
+            Object[] runtimeParameters = new Object[1];
+            runtimeParameters[0] = event;
+            PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> PrivilegedAccessHelper.invokeMethod(eventMethod, event.getSource(), runtimeParameters),
+                    (ex) -> {
+                        if (ex instanceof IllegalAccessException) {
+                            return DescriptorException.illegalAccessWhileEventExecution(eventMethod.getName(), getDescriptor(), ex);
                         }
+                        if (ex instanceof IllegalArgumentException) {
+                            return DescriptorException.illegalArgumentWhileObsoleteEventExecute(eventMethod.getName(), getDescriptor(), ex);
+                        }
+                        if (ex instanceof InvocationTargetException) {
+                            return DescriptorException.targetInvocationWhileEventExecution(eventMethod.getName(), getDescriptor(), ex);
+                        }
+                        return new RuntimeException(String.format("Invocation of %s method failed", eventMethod.getName()), ex);
                     }
-                } else {
-                    PrivilegedAccessHelper.invokeMethod(eventMethod, event.getSource(), runtimeParameters);
-                }
-            } catch (IllegalAccessException exception) {
-                throw DescriptorException.illegalAccessWhileEventExecution(eventMethod.getName(), getDescriptor(), exception);
-            } catch (IllegalArgumentException exception) {
-                throw DescriptorException.illegalArgumentWhileObsoleteEventExecute(eventMethod.getName(), getDescriptor(), exception);
-            } catch (InvocationTargetException exception) {
-                throw DescriptorException.targetInvocationWhileEventExecution(eventMethod.getName(), getDescriptor(), exception);
-            }
+            );
+
         } finally {
             event.getSession().endOperationProfile(SessionProfiler.DescriptorEvent);
         }

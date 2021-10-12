@@ -15,6 +15,21 @@
 //     IBM - ConcurrencyUtil call of ThreadMXBean.getThreadInfo() needs doPriv
 package org.eclipse.persistence.internal.helper;
 
+import java.io.StringWriter;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.internal.helper.type.CacheKeyToThreadRelationships;
 import org.eclipse.persistence.internal.helper.type.ConcurrencyManagerState;
@@ -23,18 +38,8 @@ import org.eclipse.persistence.internal.helper.type.ReadLockAcquisitionMetadata;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.localization.TraceLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetSystemProperty;
-import org.eclipse.persistence.internal.security.PrivilegedGetThreadInfo;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
-
-import java.io.StringWriter;
-import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadInfo;
-import java.lang.management.ThreadMXBean;
-import java.security.AccessController;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class ConcurrencyUtil {
 
@@ -893,18 +898,13 @@ public class ConcurrencyUtil {
     public String enrichGenerateThreadDumpForCurrentThread() {
         final Thread currentThread = Thread.currentThread();
         final long currentThreadId = currentThread.getId();
-
         try {
             // (a) search for the stack trace of the current
             final StringWriter writer = new StringWriter();
-            ThreadInfo[] threadInfos = null;
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                threadInfos = AccessController.doPrivileged(new PrivilegedGetThreadInfo(new long[] { currentThreadId }, 700));
-            } else {
-                final ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
-                threadInfos = threadMXBean.getThreadInfo(new long[] { currentThreadId }, 700);
-            }
-            
+            final ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+            final ThreadInfo[] threadInfos = PrivilegedAccessHelper.callDoPrivileged(
+                    () -> threadMXBean.getThreadInfo(new long[] { currentThreadId }, 700)
+            );
             for (ThreadInfo threadInfo : threadInfos) {
                 enrichGenerateThreadDumpForThreadInfo(writer, threadInfo);
             }
@@ -929,15 +929,10 @@ public class ConcurrencyUtil {
     private String enrichGenerateThreadDump() {
         try {
             final StringWriter writer = new StringWriter();
-            
-            ThreadInfo[] threadInfos = null;
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                threadInfos = AccessController.doPrivileged(new PrivilegedGetThreadInfo(700));
-            } else {
-                final ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
-                threadInfos = threadMXBean.getThreadInfo(threadMXBean.getAllThreadIds(), 700);
-            }
-            
+            final ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+            final ThreadInfo[] threadInfos = PrivilegedAccessHelper.callDoPrivileged(
+                    () -> threadMXBean.getThreadInfo(threadMXBean.getAllThreadIds(), 700)
+            );
             for (ThreadInfo threadInfo : threadInfos) {
                 enrichGenerateThreadDumpForThreadInfo(writer, threadInfo);
             }
@@ -1648,9 +1643,9 @@ public class ConcurrencyUtil {
     }
 
     private int getIntProperty(final String key, final int defaultValue) {
-        String value = (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) ?
-                AccessController.doPrivileged(new PrivilegedGetSystemProperty(key, String.valueOf(defaultValue)))
-                : System.getProperty(key, String.valueOf(defaultValue));
+        final String value = PrivilegedAccessHelper.callDoPrivileged(
+                () -> System.getProperty(key, String.valueOf(defaultValue))
+        );
         if (value != null) {
             try {
                 return Integer.parseInt(value.trim());
@@ -1662,9 +1657,9 @@ public class ConcurrencyUtil {
     }
 
     private long getLongProperty(final String key, final long defaultValue) {
-        String value = (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) ?
-                AccessController.doPrivileged(new PrivilegedGetSystemProperty(key, String.valueOf(defaultValue)))
-                : System.getProperty(key, String.valueOf(defaultValue));
+        final String value = PrivilegedAccessHelper.callDoPrivileged(
+                () -> System.getProperty(key, String.valueOf(defaultValue))
+        );
         if (value != null) {
             try {
                 return Long.parseLong(value.trim());
@@ -1676,9 +1671,9 @@ public class ConcurrencyUtil {
     }
 
     private boolean getBooleanProperty(final String key, final boolean defaultValue) {
-        String value = (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) ?
-                AccessController.doPrivileged(new PrivilegedGetSystemProperty(key, String.valueOf(defaultValue)))
-                : System.getProperty(key, String.valueOf(defaultValue));
+        final String value = PrivilegedAccessHelper.callDoPrivileged(
+                () -> System.getProperty(key, String.valueOf(defaultValue))
+        );
         if (value != null) {
             try {
                 return Boolean.parseBoolean(value.trim());

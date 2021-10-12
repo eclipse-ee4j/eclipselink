@@ -14,12 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.descriptors;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
-import org.eclipse.persistence.mappings.transformers.*;
+import org.eclipse.persistence.mappings.transformers.FieldTransformer;
 
 /**
  * INTERNAL:
@@ -65,16 +61,9 @@ public class TransformerBasedFieldTransformation extends FieldTransformation {
     @Override
     public FieldTransformer buildTransformer() throws Exception {
         if (transformer == null) {
-            Class<?> transformerClass = getTransformerClass();
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try{
-                    transformer = (FieldTransformer)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(transformerClass));
-                }catch (PrivilegedActionException ex){
-                    throw (Exception)ex.getCause();
-                }
-            }else{
-                transformer = (FieldTransformer)PrivilegedAccessHelper.newInstanceFromClass(transformerClass);
-            }
+            transformer = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> (FieldTransformer) PrivilegedAccessHelper.newInstanceFromClass(getTransformerClass())
+            );
         }
         return transformer;
     }

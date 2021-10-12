@@ -17,8 +17,6 @@ package org.eclipse.persistence.internal.indirection;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.exceptions.DescriptorException;
@@ -26,7 +24,6 @@ import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.indirection.WeavedAttributeValueHolderInterface;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
 /**
@@ -173,26 +170,22 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
         Object[] parameters = new Object[1];
         parameters[0] = attributeValue;
         try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                try {
-                    AccessController.doPrivileged(new PrivilegedMethodInvoker<>(getSetMethod(), target, parameters));
-                } catch (PrivilegedActionException exception) {
-                    Exception throwableException = exception.getException();
-                    if (throwableException instanceof IllegalAccessException) {
-                        throw DescriptorException.illegalAccessWhileSettingValueThruMethodAccessor(setMethod.getName(), attributeValue, throwableException);
-                    } else {
-                        throw DescriptorException.targetInvocationWhileSettingValueThruMethodAccessor(setMethod.getName(), attributeValue, throwableException);
-                     }
-                }
-            } else {
-                PrivilegedAccessHelper.invokeMethod(getSetMethod(), target, parameters);
-            }
-        } catch (IllegalAccessException exception) {
-            throw DescriptorException.illegalAccessWhileSettingValueThruMethodAccessor(setMethod.getName(), attributeValue, exception);
-        } catch (IllegalArgumentException exception) {
-              throw DescriptorException.illegalArgumentWhileSettingValueThruMethodAccessor(setMethod.getName(), attributeValue, exception);
-        } catch (InvocationTargetException exception) {
-            throw DescriptorException.targetInvocationWhileSettingValueThruMethodAccessor(setMethod.getName(), attributeValue, exception);
+            PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> PrivilegedAccessHelper.invokeMethod(getSetMethod(), target, parameters),
+                    (ex) -> {
+                        if (ex instanceof IllegalAccessException) {
+                            return DescriptorException.illegalAccessWhileSettingValueThruMethodAccessor(setMethod.getName(), attributeValue, ex);
+                        } else if (ex instanceof IllegalArgumentException) {
+                            return DescriptorException.illegalArgumentWhileSettingValueThruMethodAccessor(setMethod.getName(), attributeValue, ex);
+                        } else if (ex instanceof InvocationTargetException) {
+                            return DescriptorException.targetInvocationWhileSettingValueThruMethodAccessor(setMethod.getName(), attributeValue, ex);
+                        }
+                        // This indicates unexpected problem in the code
+                        return new RuntimeException(String.format(
+                                "Invocation of %s setter method failed", setMethod.getName()), ex);
+
+                    }
+            );
         } finally {
             if (!trackChanges && trackedObject != null) {
                 trackedObject._persistence_setPropertyChangeListener(listener);
