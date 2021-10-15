@@ -101,7 +101,7 @@ public class EmployeeProject extends Project {
         empCodeMapping.setXPath("@empCode");
         descriptor.addMapping(empCodeMapping);
 
-        URL schemaURL = ClassLoader.getSystemResource("org/eclipse/persistence/testing/oxm/jaxb/Employee.xsd");
+        URL schemaURL = ClassLoader.getSystemResource("org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee.xsd");
         XMLSchemaURLReference schemaRef = new XMLSchemaURLReference(schemaURL);
         schemaRef.setType(XMLSchemaReference.ELEMENT);
         schemaRef.setSchemaContext("/employee");
@@ -148,7 +148,7 @@ public class EmployeeProject extends Project {
         zipCodeMapping.setXPath("zip-code/text()");
         descriptor.addMapping(zipCodeMapping);
 
-        URL schemaURL = ClassLoader.getSystemResource("org/eclipse/persistence/testing/oxm/jaxb/Employee.xsd");
+        URL schemaURL = ClassLoader.getSystemResource("org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee.xsd");
         XMLSchemaURLReference schemaRef = new XMLSchemaURLReference(schemaURL);
         schemaRef.setType(XMLSchemaReference.COMPLEX_TYPE);
         schemaRef.setSchemaContext("/address-type");
@@ -177,7 +177,7 @@ public class EmployeeProject extends Project {
         poboxMapping.setXPath("po-box/text()");
         descriptor.addMapping(poboxMapping);
 
-        URL schemaURL = ClassLoader.getSystemResource("org/eclipse/persistence/testing/oxm/jaxb/Employee.xsd");
+        URL schemaURL = ClassLoader.getSystemResource("org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee.xsd");
         XMLSchemaURLReference schemaRef = new XMLSchemaURLReference(schemaURL);
         schemaRef.setType(XMLSchemaReference.COMPLEX_TYPE);
         schemaRef.setSchemaContext("/po-box-address-type");
@@ -197,7 +197,7 @@ public class EmployeeProject extends Project {
         numberMapping.setXPath("text()");
         descriptor.addMapping(numberMapping);
 
-        URL schemaURL = ClassLoader.getSystemResource("org/eclipse/persistence/testing/oxm/jaxb/Employee.xsd");
+        URL schemaURL = ClassLoader.getSystemResource("org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee.xsd");
         XMLSchemaURLReference schemaRef = new XMLSchemaURLReference(schemaURL);
         schemaRef.setType(XMLSchemaReference.SIMPLE_TYPE);
         schemaRef.setSchemaContext("/phone-type");
@@ -218,7 +218,7 @@ public class EmployeeProject extends Project {
         numberMapping.setXPath("text()");
         descriptor.addMapping(numberMapping);
 
-        URL schemaURL = ClassLoader.getSystemResource("org/eclipse/persistence/testing/oxm/jaxb/Employee.xsd");
+        URL schemaURL = ClassLoader.getSystemResource("org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee.xsd");
         XMLSchemaURLReference schemaRef = new XMLSchemaURLReference(schemaURL);
         schemaRef.setType(XMLSchemaReference.ELEMENT);
         schemaRef.setSchemaContext("/employee/badge-id");
@@ -239,7 +239,7 @@ public class EmployeeProject extends Project {
         titleMapping.setXPath("title/text()");
         descriptor.addMapping(titleMapping);
 
-        URL schemaURL = ClassLoader.getSystemResource("org/eclipse/persistence/testing/oxm/jaxb/Employee.xsd");
+        URL schemaURL = ClassLoader.getSystemResource("org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee.xsd");
         XMLSchemaURLReference schemaRef = new XMLSchemaURLReference(schemaURL);
         schemaRef.setType(XMLSchemaReference.ELEMENT);
         schemaRef.setSchemaContext("/employee/job");
@@ -260,7 +260,7 @@ public class EmployeeProject extends Project {
         titleMapping.setXPath("title/text()");
         descriptor.addMapping(titleMapping);
 
-        URL schemaURL = ClassLoader.getSystemResource("org/eclipse/persistence/testing/oxm/jaxb/Employee.xsd");
+        URL schemaURL = ClassLoader.getSystemResource("org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee.xsd");
         XMLSchemaURLReference schemaRef = new XMLSchemaURLReference(schemaURL);
         schemaRef.setType(XMLSchemaReference.ELEMENT);
         schemaRef.setSchemaContext("/employee/job2");

@@ -25,7 +25,7 @@ import org.w3c.dom.Document;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 
 public class MarshallerFragmentTestCases extends OXTestCase {
-    protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/jaxb/Employee.xml";
+    protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee.xml";
     protected final static String CONTROL_EMPLOYEE_NAME = "Jane Doe";
     protected Marshaller marshaller;
     protected Employee controlObject;

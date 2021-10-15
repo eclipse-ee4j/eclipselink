@@ -34,10 +34,10 @@ import org.eclipse.persistence.testing.jaxb.xmlmarshaller.Phone;
 import org.eclipse.persistence.testing.oxm.xmlmarshaller.Car;
 
 public class ValidatorTestCases extends TestCase {
-    private final static String CONTROL_XML_FILE_NAME = "org/eclipse/persistence/testing/oxm/jaxb/Employee_WithAddresses.xml";
-    private final static String CONTROL_XML_ADDRESS_FAIL = "org/eclipse/persistence/testing/oxm/jaxb/Employee_WithAddresses_Fail.xml";
-    private final static String CONTROL_XML_INHERITANCE_FILE_NAME = "org/eclipse/persistence/testing/oxm/jaxb/Employee_WithPOBoxAddress.xml";
-    private final static String CONTROL_JOB_FILE_NAME = "org/eclipse/persistence/testing/oxm/jaxb/Job_Empty.xml";
+    private final static String CONTROL_XML_FILE_NAME = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee_WithAddresses.xml";
+    private final static String CONTROL_XML_ADDRESS_FAIL = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee_WithAddresses_Fail.xml";
+    private final static String CONTROL_XML_INHERITANCE_FILE_NAME = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee_WithPOBoxAddress.xml";
+    private final static String CONTROL_JOB_FILE_NAME = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Job_Empty.xml";
     private JAXBContext jaxbContext;
     private JAXBValidator validator;
     private Unmarshaller unmarshaller;

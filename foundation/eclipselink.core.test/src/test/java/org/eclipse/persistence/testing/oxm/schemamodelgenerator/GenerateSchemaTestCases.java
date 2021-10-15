@@ -41,7 +41,7 @@ import org.eclipse.persistence.oxm.platform.SAXPlatform;
 import org.eclipse.persistence.oxm.platform.XMLPlatform;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.jaxb.JAXBXMLComparer;
+import org.eclipse.persistence.testing.oxm.OXMXMLComparer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -55,7 +55,7 @@ import junit.framework.TestCase;
 public class GenerateSchemaTestCases extends TestCase {
     protected SchemaModelGenerator sg;
     protected DocumentBuilder parser;
-    protected JAXBXMLComparer comparer;
+    protected OXMXMLComparer comparer;
     protected static final String TMP_DIR = System.getenv("T_WORK") == null
             ? System.getProperty("java.io.tmpdir") : System.getenv("T_WORK");
 
@@ -66,7 +66,7 @@ public class GenerateSchemaTestCases extends TestCase {
         builderFactory.setIgnoringElementContentWhitespace(true);
         builderFactory.setNamespaceAware(true);
         parser = builderFactory.newDocumentBuilder();
-        comparer = new JAXBXMLComparer();
+        comparer = new OXMXMLComparer();
     }
 
     /**

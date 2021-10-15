@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,15 +17,11 @@ package org.eclipse.persistence.testing.oxm.converter;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.eclipse.persistence.testing.oxm.converter.jaxbenum.JAXBEnumTypeConverterTestCases;
-import org.eclipse.persistence.testing.oxm.converter.typesafeenum.TypeSafeEnumConverterTestCases;
 
 public class ConverterTestSuite extends TestCase {
     public static Test suite() {
-        TestSuite suite = new TestSuite("Object Type Converter");
+        TestSuite suite = new TestSuite("OXM Object Type Converter");
         suite.addTestSuite(ObjectTypeConverterTestCases.class);
-        suite.addTestSuite(TypeSafeEnumConverterTestCases.class);
-        suite.addTestSuite(JAXBEnumTypeConverterTestCases.class);
         return suite;
     }
 }

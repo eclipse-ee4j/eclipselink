@@ -48,7 +48,7 @@ public class EmployeeInvalidTypeProject extends Project {
         numberMapping.setXPath("text()");
         descriptor.addMapping(numberMapping);
 
-        URL schemaURL = ClassLoader.getSystemResource("org/eclipse/persistence/testing/oxm/jaxb/Employee.xsd");
+        URL schemaURL = ClassLoader.getSystemResource("org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee.xsd");
         XMLSchemaURLReference schemaRef = new XMLSchemaURLReference(schemaURL);
         schemaRef.setType(4);
         schemaRef.setSchemaContext("/phone-type");

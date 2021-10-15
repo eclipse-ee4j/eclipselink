@@ -12,7 +12,7 @@
 
 -->
 
-<employee xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://127.0.0.1:8888/org/eclipse/persistence/testing/oxm/jaxb/Employee.xsd">
+<employee xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://127.0.0.1:8888/org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee.xsd">
     <salary>45000</salary>
     <id>12</id>
 </employee>

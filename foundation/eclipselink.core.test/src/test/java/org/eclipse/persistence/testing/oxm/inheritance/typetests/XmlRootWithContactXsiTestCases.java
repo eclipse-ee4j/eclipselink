@@ -15,14 +15,8 @@
 package org.eclipse.persistence.testing.oxm.inheritance.typetests;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import org.eclipse.persistence.internal.oxm.record.namespaces.MapNamespacePrefixMapper;
-import org.eclipse.persistence.jaxb.MarshallerProperties;
-import org.eclipse.persistence.oxm.NamespacePrefixMapper;
-import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 

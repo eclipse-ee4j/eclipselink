@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,7 +13,7 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 
-package org.eclipse.persistence.testing.oxm.converter.jaxbenum;
+package org.eclipse.persistence.testing.jaxb.converter.jaxbenum;
 
 import junit.textui.TestRunner;
 
@@ -22,8 +22,8 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
-import org.eclipse.persistence.testing.oxm.converter.typesafeenum.Employee;
-import org.eclipse.persistence.testing.oxm.converter.typesafeenum.TypeSafeEnumConverterProject;
+import org.eclipse.persistence.testing.jaxb.converter.typesafeenum.Employee;
+import org.eclipse.persistence.testing.jaxb.converter.typesafeenum.TypeSafeEnumConverterProject;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 import org.w3c.dom.Document;
 

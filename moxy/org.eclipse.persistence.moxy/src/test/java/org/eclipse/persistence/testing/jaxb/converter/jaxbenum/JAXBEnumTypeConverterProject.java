@@ -12,16 +12,16 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-package org.eclipse.persistence.testing.oxm.converter.jaxbenum;
+package org.eclipse.persistence.testing.jaxb.converter.jaxbenum;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.jaxb.JAXBEnumTypeConverter;
-import org.eclipse.persistence.jaxb.JAXBTypesafeEnumConverter;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.oxm.converter.typesafeenum.Employee;
-import org.eclipse.persistence.testing.oxm.converter.typesafeenum.MyTypeSafeEnumClass;
+import org.eclipse.persistence.testing.jaxb.converter.typesafeenum.Employee;
+import org.eclipse.persistence.testing.jaxb.converter.typesafeenum.MyTypeSafeEnumClass;
+
 public class JAXBEnumTypeConverterProject extends Project {
     public JAXBEnumTypeConverterProject() {
         super();

@@ -12,14 +12,14 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-package org.eclipse.persistence.testing.oxm.converter.typesafeenum;
+package org.eclipse.persistence.testing.jaxb.converter.typesafeenum;
 
 import org.eclipse.persistence.exceptions.IntegrityException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
 public class TypeSafeEnumConverterTestCases extends XMLMappingTestCases {
-    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/converter/typesafeenum/typesafeenum.xml";
+    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/converter/typesafeenum/typesafeenum.xml";
 
     public TypeSafeEnumConverterTestCases(String name) throws Exception {
         super(name);

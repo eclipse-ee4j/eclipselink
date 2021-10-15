@@ -12,7 +12,7 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-package org.eclipse.persistence.testing.oxm.converter.typesafeenum;
+package org.eclipse.persistence.testing.jaxb.converter.typesafeenum;
 
 import java.util.HashMap;
 import java.util.Map;
