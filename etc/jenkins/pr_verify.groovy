@@ -137,6 +137,15 @@ spec:
                         }
                     }
                 }
+                stage('OXM LRG') {
+                    steps {
+                        container('el-build') {
+                            sh """
+                                mvn -B -V verify -pl :org.eclipse.persistence.core -P test-core-lrg
+                            """
+                        }
+                    }
+                }
                 stage('MOXy LRG') {
                     steps {
                         container('el-build') {

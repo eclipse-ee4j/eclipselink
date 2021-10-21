@@ -89,7 +89,7 @@
         <!--Other modules-->
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.core.test</artifactId>
+            <artifactId>org.eclipse.persistence.core</artifactId>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
@@ -155,16 +155,11 @@
                     <execution>
                         <id>default-testCompile</id>
                         <configuration>
-                            <!-- TODO: move OXM tests to o.e.p.core -->
                             <compilerArgs>
                                 <arg>--add-exports</arg>
-                                <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.documentpreservation=org.eclipse.persistence.moxy.test</arg>
-                                <arg>--add-exports</arg>
-                                <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.record.deferred=org.eclipse.persistence.moxy.test</arg>
+                                <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.conversion=org.eclipse.persistence.moxy.test</arg>
                                 <arg>--add-exports</arg>
                                 <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.schema=org.eclipse.persistence.moxy.test</arg>
-                                <arg>--add-exports</arg>
-                                <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.conversion=org.eclipse.persistence.moxy.test</arg>
                                 <arg>--add-exports</arg>
                                 <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.schema.model=org.eclipse.persistence.moxy.test</arg>
                             </compilerArgs>

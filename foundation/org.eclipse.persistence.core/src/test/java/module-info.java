@@ -10,7 +10,8 @@
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
 
-open module org.eclipse.persistence.moxy.test {
+
+open module org.eclipse.persistence.core.test {
 
     requires java.compiler;
     requires java.logging;
@@ -18,13 +19,16 @@ open module org.eclipse.persistence.moxy.test {
 
     requires jakarta.mail;
     requires jakarta.json;
-    requires jakarta.ws.rs;
-    
-    requires com.sun.xml.bind;
-    requires com.sun.tools.xjc;
+    requires jakarta.xml.bind;
     requires org.eclipse.persistence.asm;
     requires org.eclipse.persistence.core;
-    requires org.eclipse.persistence.moxy;
-    requires org.eclipse.persistence.core.test;
     requires junit;
+
+    exports org.eclipse.persistence.testing.oxm;
+    exports org.eclipse.persistence.testing.oxm.classloader;
+    exports org.eclipse.persistence.testing.oxm.mappings;
+    exports org.eclipse.persistence.testing.oxm.mappings.choice;
+    exports org.eclipse.persistence.testing.oxm.xmlconversionmanager;
+    exports org.eclipse.persistence.testing.oxm.xmlmarshaller;
+    exports org.eclipse.persistence.testing.oxm.xmlroot;
 }

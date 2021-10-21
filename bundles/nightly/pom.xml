@@ -181,7 +181,7 @@
                                 </fileSet>
                                 <fileSet>
                                     <sourceFile>
-                                        ../../foundation/eclipselink.core.test/target/${project.build.testReports.subdirectory}/${project.build.testReports.summaryFile}.html
+                                        ../../foundation/org.eclipse.persistence.core/target/${project.build.testReports.subdirectory}/${project.build.testReports.summaryFile}.html
                                     </sourceFile>
                                     <destinationFile>
                                         ${project.build.directory}${nightlyDir}/Eclipse/eclipselink-oxm-lrg${nightlyVersion}.html
