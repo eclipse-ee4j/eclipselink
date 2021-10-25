@@ -37,7 +37,7 @@ import org.xml.sax.InputSource;
 
 public class UnmarshallerNullTestCases extends OXTestCase {
 
-    static String DOUBLE_ERROR_XML = "org/eclipse/persistence/testing/oxm/jaxb/Employee_TwoError.xml";
+    static String DOUBLE_ERROR_XML = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee_TwoError.xml";
 
     private JAXBUnmarshaller unmarshaller;
 

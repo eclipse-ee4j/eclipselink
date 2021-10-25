@@ -42,7 +42,7 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 
 public class MarshallerTestCases extends OXTestCase {
-    private final static String CONTROL_XML_FILE_NAME = "org/eclipse/persistence/testing/oxm/jaxb/Employee.xml";
+    private final static String CONTROL_XML_FILE_NAME = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee.xml";
     private final static String CONTROL_EMPLOYEE_NAME = "Jane Doe";
     private JAXBContext jaxbContext;
     private Marshaller marshaller;

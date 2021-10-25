@@ -45,7 +45,7 @@ public class UnmarshallerTestCases extends TestCase  {
     private static final String SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
     private static final String XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
 
-    private final static String CONTROL_XML_FILE_NAME = "org/eclipse/persistence/testing/oxm/jaxb/Employee.xml";
+    private final static String CONTROL_XML_FILE_NAME = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee.xml";
     private final static String CONTROL_EMPLOYEE_NAME = "Jane Doe";
 
     private JAXBContext jaxbContext;

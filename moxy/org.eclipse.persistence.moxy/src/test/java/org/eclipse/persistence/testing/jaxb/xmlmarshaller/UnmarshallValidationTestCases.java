@@ -34,10 +34,10 @@ import org.eclipse.persistence.testing.jaxb.xmlmarshaller.JAXBSAXTestSuite;
 public class UnmarshallValidationTestCases extends TestCase {
 
     static String INVALID_CONTEXT_PATH = "org.eclipse.persistence.testing.oxm.jaxb.invalidtype";
-    static String SINGLE_ERROR_XML = "org/eclipse/persistence/testing/oxm/jaxb/Employee_OneError.xml";
-    static String DOUBLE_ERROR_XML = "org/eclipse/persistence/testing/oxm/jaxb/Employee_TwoError.xml";
-    static String SINGLE_WARNING_XML = "org/eclipse/persistence/testing/oxm/jaxb/Employee_OneWarning.xml";
-    static String SINGLE_FATAL_ERROR_XML = "org/eclipse/persistence/testing/oxm/jaxb/Employee_OneFatalError.xml";
+    static String SINGLE_ERROR_XML = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee_OneError.xml";
+    static String DOUBLE_ERROR_XML = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee_TwoError.xml";
+    static String SINGLE_WARNING_XML = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee_OneWarning.xml";
+    static String SINGLE_FATAL_ERROR_XML = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee_OneFatalError.xml";
 
     static boolean test1passed;
     private JAXBUnmarshaller unmarshaller;

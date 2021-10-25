@@ -35,12 +35,6 @@
 
         <test-skip-moxy-jaxb-srg>${skipTests}</test-skip-moxy-jaxb-srg>
         <test-skip-moxy-jaxb>true</test-skip-moxy-jaxb>
-        <test-skip-moxy-oxm-srg>${skipTests}</test-skip-moxy-oxm-srg>
-        <test-skip-moxy-oxm>true</test-skip-moxy-oxm>
-        <test-skip-moxy-oxm-dom>true</test-skip-moxy-oxm-dom>
-        <test-skip-moxy-oxm-deploymentxml>true</test-skip-moxy-oxm-deploymentxml>
-        <test-skip-moxy-oxm-deploymentxml-tl>true</test-skip-moxy-oxm-deploymentxml-tl>
-        <test-skip-moxy-oxm-docpres>true</test-skip-moxy-oxm-docpres>
     </properties>
 
     <dependencies>
@@ -90,6 +84,13 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!--Other modules-->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.core</artifactId>
+            <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <!--APIs and other libs used in test classes-->
@@ -154,16 +155,11 @@
                     <execution>
                         <id>default-testCompile</id>
                         <configuration>
-                            <!-- TODO: move OXM tests to o.e.p.core -->
                             <compilerArgs>
                                 <arg>--add-exports</arg>
-                                <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.documentpreservation=org.eclipse.persistence.moxy.test</arg>
-                                <arg>--add-exports</arg>
-                                <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.record.deferred=org.eclipse.persistence.moxy.test</arg>
+                                <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.conversion=org.eclipse.persistence.moxy.test</arg>
                                 <arg>--add-exports</arg>
                                 <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.schema=org.eclipse.persistence.moxy.test</arg>
-                                <arg>--add-exports</arg>
-                                <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.conversion=org.eclipse.persistence.moxy.test</arg>
                                 <arg>--add-exports</arg>
                                 <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.schema.model=org.eclipse.persistence.moxy.test</arg>
                             </compilerArgs>
@@ -288,230 +284,6 @@
                                 <include>org.eclipse.persistence.testing.moxy.unit.**.*NonDefaultTestCase</include>
                                 <include>org.eclipse.persistence.testing.jaxb.**.*NonDefaultTestCase</include>
                             </includes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>test-moxy-oxm-srg</id>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <skipTests>${test-skip-moxy-oxm-srg}</skipTests>
-                            <reportNameSuffix>test-moxy-oxm-srg</reportNameSuffix>
-                            <forkCount>1</forkCount>
-                            <reuseForks>false</reuseForks>
-                            <includes>
-                                <include>org.eclipse.persistence.testing.oxm.OXMSRGTestSuite</include>
-                            </includes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>test-moxy-oxm</id>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <skipTests>${test-skip-moxy-oxm}</skipTests>
-                            <reportNameSuffix>test-moxy-oxm</reportNameSuffix>
-                            <forkCount>1</forkCount>
-                            <reuseForks>false</reuseForks>
-                            <includes>
-                                <include>*.ContainerAccessorTestSuite</include>
-                                <include>*.*MappingTestSuite</include>
-                                <include>*.RootElementTestSuite</include>
-                                <include>*.InheritanceTestSuite</include>
-                                <include>*.XMLMarshalTestCases</include>
-                                <include>*.XMLMarshalFragmentTestCases</include>
-                                <include>*.XMLUnmarshalTestCases</include>
-                                <include>*.XMLMarshallerValidationModeTestCases</include>
-                                <include>*.*amespaceTestSuite</include>
-                                <include>*.ClassLoaderTestCases</include>
-                                <include>*.MappingClassLoaderTestCases</include>
-                                <include>org.eclipse.persistence.testing.oxm.mappings.directcollection.nillable.DirectCollectionMappingNillableTestSuite</include>
-                                <include>org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.compositekey.CompositeKeyTestCases</include>
-                            </includes>
-                            <excludes>
-                                <exclude>*.MappingTestSuite</exclude>
-                                <exclude>*.OneTo*TestSuite</exclude>
-                                <exclude>*.DeploymentXMLMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.jaxb.*</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.DocPresMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.anyobjectandanycollection.XMLAnyObjectAndAnyCollectionMappingTestSuite</exclude>
-                                <exclude>*.SAXMappingTestSuite</exclude>
-                            </excludes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>test-moxy-oxm-dom</id>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <skipTests>${test-skip-moxy-oxm-dom}</skipTests>
-                            <reportNameSuffix>test-moxy-oxm-dom</reportNameSuffix>
-                            <systemPropertyVariables>
-                                <platformType>DOM</platformType>
-                                <metadataType>JAVA</metadataType>
-                            </systemPropertyVariables>
-                            <forkCount>1</forkCount>
-                            <reuseForks>false</reuseForks>
-                            <includes>
-                                <include>**.*TestSuite</include>
-                                <include>**.ClassLoaderTestCases</include>
-                                <include>**.MappingClassLoaderTestCases</include>
-                                <include>**.advancedxpath.**.*TestCases</include>
-                            </includes>
-                            <excludes>
-                                <exclude>**.OXTestSuite</exclude>
-                                <exclude>**.OXMSRGTestSuite</exclude>
-                                <exclude>**.DeploymentXMLOXTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.jaxb.**.*</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.MappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.DeploymentXMLMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.DocPresMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.SAXMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.anyobjectandanycollection.XMLAnyObjectAndAnyCollectionMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.keybased.compositekeyclass.CompositeKeyClassMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.sequenced.SequencedMappingTestSuite</exclude>
-                                <!--TODO move to the assembly module. Needs eclipselink.zip file-->
-                                <exclude>org.eclipse.persistence.testing.jaxb.installer.InstallerTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.jaxb.installer.JaxbCompilerTestCase</exclude>
-                            </excludes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>test-moxy-oxm-deploymentxml</id>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <skipTests>${test-skip-moxy-oxm-deploymentxml}</skipTests>
-                            <reportNameSuffix>test-moxy-oxm-deploymentxml</reportNameSuffix>
-                            <systemPropertyVariables>
-                                <platformType>DOM</platformType>
-                                <metadataType>XML_ECLIPSELINK</metadataType>
-                            </systemPropertyVariables>
-                            <forkCount>1</forkCount>
-                            <reuseForks>false</reuseForks>
-                            <includes>
-                                <include>**.DocumentPreservationTestSuite</include>
-                                <include>**.RootElementTestSuite</include>
-                                <include>**.XMLRootTestSuite</include>
-                                <include>**.XMLMarshalTestCases</include>
-                                <include>**.XMLMarshalFragmentTestCases</include>
-                                <include>**.XMLUnmarshalTestCases</include>
-                                <include>**.ReadOnlyTestSuite</include>
-                                <include>**.InheritanceTestSuite</include>
-                                <include>**.ConverterTestSuite</include>
-                                <include>**.*MappingTestSuite</include>
-                                <include>**.ClassLoaderTestCases</include>
-                                <include>**.MappingClassLoaderTestCases</include>
-                                <include>**.*amespaceTestSuite</include>
-                            </includes>
-                            <excludes>
-                                <exclude>org.eclipse.persistence.testing.jaxb.**.*</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.MappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.DeploymentXMLMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.DocPresMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.SAXMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.anyobjectandanycollection.XMLAnyObjectAndAnyCollectionMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.choice.XMLChoiceMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.choicecollection.XMLChoiceCollectionMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.choicecollection.converter.ConverterTestCases</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.sequenced.SequencedMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.directtofield.converter.DirectToFieldConverterTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.converter.CompositeObjectSelfConverterTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.keybased.compositekeyclass.CompositeKeyClassMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.containeracessor.ContainerAccessorTestSuite</exclude>
-                            </excludes>
-                        </configuration>
-                    </execution>
-                    <!--Oracle ToLink specific test-->
-                    <execution>
-                        <id>test-moxy-oxm-deploymentxml-tl</id>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <skipTests>${test-skip-moxy-oxm-deploymentxml-tl}</skipTests>
-                            <reportNameSuffix>test-moxy-oxm-deploymentxml-tl</reportNameSuffix>
-                            <systemPropertyVariables>
-                                <platformType>DOM</platformType>
-                                <metadataType>XML_TOPLINK</metadataType>
-                            </systemPropertyVariables>
-                            <forkCount>1</forkCount>
-                            <reuseForks>false</reuseForks>
-                            <includes>
-                                <include>**.DocumentPreservationTestSuite</include>
-                                <include>**.RootElementTestSuite</include>
-                                <include>**.XMLRootTestSuite</include>
-                                <include>**.XMLMarshalTestCases</include>
-                                <include>**.XMLMarshalFragmentTestCases</include>
-                                <include>**.XMLUnmarshalTestCases</include>
-                                <include>**.ReadOnlyTestSuite</include>
-                                <include>**.InheritanceTestSuite</include>
-                                <include>**.ConverterTestSuite</include>
-                                <include>**.*MappingTestSuite</include>
-                                <include>**.ClassLoaderTestCases</include>
-                                <include>**.MappingClassLoaderTestCases</include>
-                                <include>**.*amespaceTestSuite</include>
-                            </includes>
-                            <excludes>
-                                <exclude>org.eclipse.persistence.testing.jaxb.**.*</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.MappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.DeploymentXMLMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.DocPresMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.SAXMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.anyobjectandanycollection.XMLAnyObjectAndAnyCollectionMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.binarydata.XMLBinaryDataMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.XMLBinaryDataCollectionMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.choice.XMLChoiceMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.choicecollection.XMLChoiceCollectionMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.sequenced.SequencedMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.converter.CompositeObjectSelfConverterTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.keybased.compositekeyclass.CompositeKeyClassMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.containeracessor.ContainerAccessorTestSuite</exclude>
-                            </excludes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>test-moxy-oxm-docpres</id>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <skipTests>${test-skip-moxy-oxm-docpres}</skipTests>
-                            <reportNameSuffix>test-moxy-oxm-docpres</reportNameSuffix>
-                            <systemPropertyVariables>
-                                <platformType>DOC_PRES</platformType>
-                                <metadataType>JAVA</metadataType>
-                            </systemPropertyVariables>
-                            <forkCount>1</forkCount>
-                            <reuseForks>false</reuseForks>
-                            <includes>
-                                <include>**.*TestSuite</include>
-                                <include>**.ClassLoaderTestCases</include>
-                                <include>**.MappingClassLoaderTestCases</include>
-                            </includes>
-                            <excludes>
-                                <exclude>**.ReadOnlyTestSuite</exclude>
-                                <exclude>**.OXTestSuite</exclude>
-                                <exclude>**.OXMSRGTestSuite</exclude>
-                                <exclude>**.OneTo*TestSuite</exclude>
-                                <exclude>**.DeploymentXMLOXTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.jaxb.**.*</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.MappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.DeploymentXMLMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.DocPresMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.SAXMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.anyobjectandanycollection.XMLAnyObjectAndAnyCollectionMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.keybased.KeyBasedMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.keybased.compositekeyclass.CompositeKeyClassMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.sequenced.SequencedMappingTestSuite</exclude>
-                                <!--TODO move to the assembly module. Needs eclipselink.zip file-->
-                                <exclude>org.eclipse.persistence.testing.jaxb.installer.InstallerTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.jaxb.installer.JaxbCompilerTestCase</exclude>
-                            </excludes>
                         </configuration>
                     </execution>
                 </executions>
@@ -665,38 +437,26 @@
             <id>test-srg</id>
             <properties>
                 <test-skip-moxy-jaxb-srg>false</test-skip-moxy-jaxb-srg>
-                <test-skip-moxy-oxm-srg>false</test-skip-moxy-oxm-srg>
             </properties>
         </profile>
         <profile>
             <id>test-lrg</id>
             <properties>
                 <test-skip-moxy-jaxb-srg>true</test-skip-moxy-jaxb-srg>
-                <test-skip-moxy-oxm-srg>true</test-skip-moxy-oxm-srg>
                 <test-skip-moxy-jaxb>false</test-skip-moxy-jaxb>
-                <test-skip-moxy-oxm>false</test-skip-moxy-oxm>
-                <test-skip-moxy-oxm-dom>false</test-skip-moxy-oxm-dom>
-                <test-skip-moxy-oxm-deploymentxml>false</test-skip-moxy-oxm-deploymentxml>
-                <test-skip-moxy-oxm-docpres>false</test-skip-moxy-oxm-docpres>
             </properties>
         </profile>
         <profile>
             <id>test-moxy-srg</id>
             <properties>
                 <test-skip-moxy-jaxb-srg>false</test-skip-moxy-jaxb-srg>
-                <test-skip-moxy-oxm-srg>false</test-skip-moxy-oxm-srg>
             </properties>
         </profile>
         <profile>
             <id>test-moxy-lrg</id>
             <properties>
                 <test-skip-moxy-jaxb-srg>true</test-skip-moxy-jaxb-srg>
-                <test-skip-moxy-oxm-srg>true</test-skip-moxy-oxm-srg>
                 <test-skip-moxy-jaxb>false</test-skip-moxy-jaxb>
-                <test-skip-moxy-oxm>false</test-skip-moxy-oxm>
-                <test-skip-moxy-oxm-dom>false</test-skip-moxy-oxm-dom>
-                <test-skip-moxy-oxm-deploymentxml>false</test-skip-moxy-oxm-deploymentxml>
-                <test-skip-moxy-oxm-docpres>false</test-skip-moxy-oxm-docpres>
             </properties>
         </profile>
         <profile>
@@ -709,42 +469,6 @@
             <id>test-moxy-jaxb</id>
             <properties>
                 <test-skip-moxy-jaxb>false</test-skip-moxy-jaxb>
-            </properties>
-        </profile>
-        <profile>
-            <id>test-moxy-oxm-srg</id>
-            <properties>
-                <test-skip-moxy-oxm-srg>false</test-skip-moxy-oxm-srg>
-            </properties>
-        </profile>
-        <profile>
-            <id>test-moxy-oxm</id>
-            <properties>
-                <test-skip-moxy-oxm>false</test-skip-moxy-oxm>
-            </properties>
-        </profile>
-        <profile>
-            <id>test-moxy-oxm-dom</id>
-            <properties>
-                <test-skip-moxy-oxm-dom>false</test-skip-moxy-oxm-dom>
-            </properties>
-        </profile>
-        <profile>
-            <id>test-moxy-oxm-deploymentxml</id>
-            <properties>
-                <test-skip-moxy-oxm-deploymentxml>false</test-skip-moxy-oxm-deploymentxml>
-            </properties>
-        </profile>
-        <profile>
-            <id>test-moxy-oxm-deploymentxml-tl</id>
-            <properties>
-                <test-skip-moxy-oxm-deploymentxml-tl>false</test-skip-moxy-oxm-deploymentxml-tl>
-            </properties>
-        </profile>
-        <profile>
-            <id>test-moxy-oxm-docpres</id>
-            <properties>
-                <test-skip-moxy-oxm-docpres>false</test-skip-moxy-oxm-docpres>
             </properties>
         </profile>
     </profiles>

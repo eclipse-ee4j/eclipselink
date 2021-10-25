@@ -46,8 +46,8 @@ import org.xml.sax.XMLReader;
 
 public class UnmarshalSchemaValidationTestCases extends OXTestCase {
 
-    static String SCHEMA = "org/eclipse/persistence/testing/oxm/jaxb/Employee.xsd";
-    static String DOUBLE_ERROR_XML = "org/eclipse/persistence/testing/oxm/jaxb/Employee_TwoError.xml";
+    static String SCHEMA = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee.xsd";
+    static String DOUBLE_ERROR_XML = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee_TwoError.xml";
 
     private JAXBUnmarshaller unmarshaller;
 

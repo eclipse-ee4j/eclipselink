@@ -40,7 +40,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class MarshalSchemaValidationTestCases extends OXTestCase {
 
-    static String SCHEMA = "org/eclipse/persistence/testing/oxm/jaxb/Employee.xsd";
+    static String SCHEMA = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee.xsd";
 
     private JAXBMarshaller marshaller;
     private Employee employee;

@@ -34,7 +34,7 @@ public class MarshallerEncodingTest extends OXTestCase {
     private final static int CONTROL_EMPLOYEE_ID = 123;
     private final static String CONTROL_EMAIL_ADDRESS_USER_ID = "jane.doe";
     private final static String CONTROL_EMAIL_ADDRESS_DOMAIN = "example.com";
-    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/jaxb/Employee.xml";
+    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee.xml";
     private Object controlObject;
     private DocumentBuilder parser;
     private String encoding;

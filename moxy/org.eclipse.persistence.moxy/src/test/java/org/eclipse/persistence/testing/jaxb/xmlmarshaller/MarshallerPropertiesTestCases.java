@@ -31,10 +31,10 @@ import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases.FakeSchema;
 
 public class MarshallerPropertiesTestCases extends OXTestCase {
-    private final static String CONTROL_NO_NAMESPACE_XML = "org/eclipse/persistence/testing/oxm/jaxb/Employee_NoNamespaceSchema.xml";
-    private final static String CONTROL_NAMESPACE_XML = "org/eclipse/persistence/testing/oxm/jaxb/Employee_NamespaceSchema.xml";
-    private final static String CONTROL_BOTH = "org/eclipse/persistence/testing/oxm/jaxb/Employee_BothNamespaceAttr.xml";
-    private final static String CONTROL_NONE = "org/eclipse/persistence/testing/oxm/jaxb/Employee_NoSchemaLocation.xml";
+    private final static String CONTROL_NO_NAMESPACE_XML = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee_NoNamespaceSchema.xml";
+    private final static String CONTROL_NAMESPACE_XML = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee_NamespaceSchema.xml";
+    private final static String CONTROL_BOTH = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee_BothNamespaceAttr.xml";
+    private final static String CONTROL_NONE = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee_NoSchemaLocation.xml";
     private Marshaller marshaller;
     private DocumentBuilder parser;
     private String contextPath;
