@@ -24,7 +24,6 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
-import java.security.AccessController;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -56,8 +55,6 @@ import org.eclipse.persistence.internal.helper.WriteLockManager;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.localization.TraceLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
-import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -67,6 +64,7 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.sessions.SessionProfiler;
+import org.eclipse.persistence.sessions.interceptors.CacheInterceptor;
 
 /**
  * <p><b>Purpose</b>: Maintain identity maps for domain classes mapped with EclipseLink.
@@ -375,7 +373,8 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * INTERNAL:
      * Return a new empty identity map of the class type.
      */
-    protected IdentityMap buildNewIdentityMap(Class identityMapClass, int size, ClassDescriptor descriptor, boolean isIsolated) throws DescriptorException {
+    protected <T extends IdentityMap> IdentityMap buildNewIdentityMap(
+            final Class<T> identityMapClass, final int size, final ClassDescriptor descriptor, final boolean isIsolated) throws DescriptorException {
         if ((descriptor == null) || (descriptor.getCachePolicy().getCacheInterceptorClass() == null)) {
             // PERF: Avoid reflection.
             if (identityMapClass == ClassConstants.SoftCacheWeakIdentityMap_Class) {
@@ -392,31 +391,27 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 return new CacheIdentityMap(size, descriptor, this.session, isIsolated);
             }
         }
-        try {
-            Class[] parameters = new Class[]{ClassConstants.PINT, ClassDescriptor.class, AbstractSession.class, boolean.class};
-            Object[] values = new Object[]{Integer.valueOf(size), descriptor, this.session, isIsolated};
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                Constructor constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(identityMapClass, parameters, false));
-                IdentityMap map = (IdentityMap)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, values));
-                if ((descriptor != null) && (descriptor.getCachePolicy().getCacheInterceptorClass() != null)) {
-                    constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(descriptor.getCacheInterceptorClass(), new Class[] { IdentityMap.class, AbstractSession.class }, false));
-                    Object params[] = new Object[]{map, this.session};
-                    map = (IdentityMap)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, params));
-                }
-                return map;
-            } else {
-                Constructor constructor = PrivilegedAccessHelper.getConstructorFor(identityMapClass, parameters, false);
-                IdentityMap map = (IdentityMap)PrivilegedAccessHelper.invokeConstructor(constructor, values);
-                if ((descriptor != null) && (descriptor.getCacheInterceptorClass() != null)) {
-                    constructor = PrivilegedAccessHelper.getConstructorFor(descriptor.getCacheInterceptorClass(), new Class[] { IdentityMap.class, AbstractSession.class }, false);
-                    Object params[] = new Object[]{map, this.session};
-                    map = (IdentityMap)PrivilegedAccessHelper.invokeConstructor(constructor, params);
-                }
-                return map;
-            }
-        } catch (Exception exception) {
-            throw DescriptorException.invalidIdentityMap(descriptor, exception);
+        final Class<?>[] parameters = new Class<?>[]{ClassConstants.PINT, ClassDescriptor.class, AbstractSession.class, boolean.class};
+        final Object[] values = new Object[]{size, descriptor, this.session, isIsolated};
+        IdentityMap map = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                () -> {
+                    final Constructor<T> constructor = PrivilegedAccessHelper.<T>getConstructorFor(identityMapClass, parameters, false);
+                    return PrivilegedAccessHelper.<T>invokeConstructor(constructor, values);
+                },
+                (ex) -> DescriptorException.invalidIdentityMap(descriptor, ex)
+        );
+        if ((descriptor != null) && (descriptor.getCacheInterceptorClass() != null)) {
+            final Object params[] = new Object[]{map, this.session};
+            map = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> {
+                        final Constructor<? extends CacheInterceptor> interceptor = PrivilegedAccessHelper.getConstructorFor(
+                                descriptor.getCacheInterceptorClass(), new Class<?>[]{IdentityMap.class, AbstractSession.class}, false);
+                        return PrivilegedAccessHelper.invokeConstructor(interceptor, params);
+                    },
+                    (ex) -> DescriptorException.invalidIdentityMap(descriptor, ex)
+            );
         }
+        return map;
     }
 
     /**

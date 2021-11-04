@@ -16,8 +16,17 @@ package org.eclipse.persistence.internal.helper;
 
 import java.io.Serializable;
 import java.io.StringWriter;
-import java.security.AccessController;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -28,7 +37,6 @@ import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.internal.localization.TraceLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetSystemProperty;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 
@@ -842,9 +850,7 @@ public class ConcurrencyManager implements Serializable {
     }
 
     private static String getPropertyRecordStackOnLock() {
-        return (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) ?
-                AccessController.doPrivileged(new PrivilegedGetSystemProperty(SystemProperties.RECORD_STACK_ON_LOCK))
-                : System.getProperty(SystemProperties.RECORD_STACK_ON_LOCK);
+        return PrivilegedAccessHelper.callDoPrivileged(() -> System.getProperty(SystemProperties.RECORD_STACK_ON_LOCK));
     }
 
     /**

@@ -15,27 +15,26 @@
 package org.eclipse.persistence.internal.indirection;
 
 import java.lang.reflect.Proxy;
-import java.security.AccessController;
+import java.util.Map;
 
-import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
-import org.eclipse.persistence.internal.identitymaps.CacheKey;
-
-import java.util.*;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.sessions.MergeManager;
-import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.IntegrityChecker;
 import org.eclipse.persistence.indirection.ValueHolder;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
-import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.MergeManager;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.sessions.remote.ObjectDescriptor;
+import org.eclipse.persistence.internal.sessions.remote.RemoteSessionController;
+import org.eclipse.persistence.internal.sessions.remote.RemoteUnitOfWork;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
-import org.eclipse.persistence.internal.sessions.remote.*;
 
 /**
  * <H2>ProxyIndirectionPolicy</H2>
@@ -151,25 +150,19 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
     @Override
     public Object valueFromBatchQuery(ReadQuery batchQuery, AbstractRecord row, ObjectLevelReadQuery originalQuery, CacheKey parentCacheKey) {
         Object object;
-
         try {
             // Need an instance of the implementing class
-            ClassDescriptor d = originalQuery.getDescriptor();
-            if (d.isDescriptorForInterface()) {
-                d = originalQuery.getDescriptor().getInterfacePolicy().getChildDescriptors().get(0);
-            }
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                object = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(d.getJavaClass()));
-            }else{
-                object = PrivilegedAccessHelper.newInstanceFromClass(d.getJavaClass());
-            }
+            final ClassDescriptor cd = originalQuery.getDescriptor().isDescriptorForInterface() ?
+                    originalQuery.getDescriptor().getInterfacePolicy().getChildDescriptors().get(0) : originalQuery.getDescriptor();
+            object = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> PrivilegedAccessHelper.newInstanceFromClass(cd.getJavaClass())
+            );
         } catch (Exception e) {
             //org.eclipse.persistence.internal.helper.Helper.toDo("*** Should probably throw some sort of TopLink exception here. ***");
             e.printStackTrace();
             return null;
         }
-        ValueHolderInterface valueHolder = new BatchValueHolder(batchQuery, row, this.getForeignReferenceMapping(), originalQuery, parentCacheKey);
-
+        ValueHolderInterface<?> valueHolder = new BatchValueHolder(batchQuery, row, this.getForeignReferenceMapping(), originalQuery, parentCacheKey);
         return ProxyIndirectionHandler.newProxyInstance(object.getClass(), targetInterfaces, valueHolder);
     }
 

@@ -16,8 +16,6 @@
 //       - 354678: Temp classloader is still being used during metadata processing
 package org.eclipse.persistence.descriptors.partitioning;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +26,6 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -84,21 +81,11 @@ public class ValuePartitioningPolicy extends FieldPartitioningPolicy {
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader) {
         if (partitionValueType == null && partitionValueTypeName != null) {
-            try {
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        partitionValueType = AccessController.doPrivileged(new PrivilegedClassForName(partitionValueTypeName, true, classLoader));
-                    } catch (PrivilegedActionException e) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(partitionValueTypeName, e.getException());
-                    }
-                } else {
-                    partitionValueType = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(partitionValueTypeName, true, classLoader);
-                }
-            } catch (Exception exception) {
-                throw ValidationException.classNotFoundWhileConvertingClassNames(partitionValueTypeName, exception);
-            }
+            partitionValueType = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> PrivilegedAccessHelper.getClassForName(partitionValueTypeName, true, classLoader),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(partitionValueTypeName, ex)
+            );
         }
-
         // Once we know we have a partition value type we can convert our partition names.
         if (partitionValueType != null) {
             for (String valueName : this.partitionNames.keySet()) {

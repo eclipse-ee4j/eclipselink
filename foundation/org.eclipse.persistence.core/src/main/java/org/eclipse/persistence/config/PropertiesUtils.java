@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2015 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -21,14 +21,11 @@
 package org.eclipse.persistence.config;
 
 import java.lang.reflect.Method;
-import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetMethods;
-import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 
 /**
  * A static utility class that handles parsing a String
@@ -138,17 +135,15 @@ public class PropertiesUtils {
     }
 
     private static Method[] getMethods(Class<?> cls) {
-        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            return AccessController.doPrivileged(new PrivilegedGetMethods(cls));
-        }
-        return PrivilegedAccessHelper.getMethods(cls);
+        return PrivilegedAccessHelper.callDoPrivileged(
+                () -> PrivilegedAccessHelper.getMethods(cls)
+        );
     }
 
     private static Object invokeMethod(Method method, Object instance, Object... params) throws Exception {
-        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            return AccessController.doPrivileged(new PrivilegedMethodInvoker(method, instance, params));
-        }
-        return method.invoke(instance, params);
+        return PrivilegedAccessHelper.callDoPrivilegedWithException(
+                () -> PrivilegedAccessHelper.invokeMethod(method, instance, params)
+        );
     }
 
     private static class MethodMatch {

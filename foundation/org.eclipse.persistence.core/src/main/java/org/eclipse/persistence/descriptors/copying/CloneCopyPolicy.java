@@ -14,18 +14,16 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.descriptors.copying;
 
-import java.lang.reflect.*;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
+import java.lang.reflect.Method;
 
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.queries.ObjectBuildingQuery;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.UnitOfWork;
 
 /**
  * <p><b>Purpose</b>: Allows a clone of an object to be created with a method that returns
@@ -62,27 +60,17 @@ public class CloneCopyPolicy extends AbstractCopyPolicy {
         if (this.getMethodName() == null) {
             return getDescriptor().getObjectBuilder().buildNewInstance();
         }
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    return AccessController.doPrivileged(new PrivilegedMethodInvoker(this.getMethod(), domainObject, new Object[0]));
-                } catch (PrivilegedActionException exception) {
-                    Exception throwableException = exception.getException();
-                    if (throwableException instanceof IllegalAccessException) {
-                        throw DescriptorException.illegalAccessWhileCloning(domainObject, this.getMethodName(), this.getDescriptor(), throwableException);
-                    } else {
-                        throw DescriptorException.targetInvocationWhileCloning(domainObject, this.getMethodName(), this.getDescriptor(), throwableException);
-
+        return PrivilegedAccessHelper.callDoPrivilegedWithException(
+                () -> PrivilegedAccessHelper.invokeMethod(this.getMethod(), domainObject, new Object[0]),
+                (ex) -> {
+                    if (ex instanceof IllegalAccessException) {
+                        return DescriptorException.illegalAccessWhileCloning(
+                                domainObject, this.getMethodName(), this.getDescriptor(), ex);
                     }
+                    return DescriptorException.targetInvocationWhileCloning(
+                            domainObject, this.getMethodName(), this.getDescriptor(), ex);
                 }
-            } else {
-                return PrivilegedAccessHelper.invokeMethod(this.getMethod(), domainObject, new Object[0]);
-            }
-        } catch (IllegalAccessException exception) {
-            throw DescriptorException.illegalAccessWhileCloning(domainObject, this.getMethodName(), this.getDescriptor(), exception);
-        } catch (InvocationTargetException exception) {
-            throw DescriptorException.targetInvocationWhileCloning(domainObject, this.getMethodName(), this.getDescriptor(), exception);
-        }
+        );
     }
 
     /**
@@ -94,28 +82,15 @@ public class CloneCopyPolicy extends AbstractCopyPolicy {
             //not implemented to perform special operations.
             return this.buildClone(domainObject, session);
         }
-
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    return AccessController.doPrivileged(new PrivilegedMethodInvoker(this.getWorkingCopyMethod(), domainObject, new Object[0]));
-                } catch (PrivilegedActionException exception) {
-                    Exception throwableException = exception.getException();
-                    if (throwableException instanceof IllegalAccessException) {
-                        throw DescriptorException.illegalAccessWhileCloning(domainObject, this.getMethodName(), this.getDescriptor(), throwableException);
-                    } else {
-                        throw DescriptorException.targetInvocationWhileCloning(domainObject, this.getMethodName(), this.getDescriptor(), throwableException);
+        return PrivilegedAccessHelper.callDoPrivilegedWithException(
+                () -> PrivilegedAccessHelper.invokeMethod(this.getWorkingCopyMethod(), domainObject, new Object[0]),
+                (ex) -> {
+                    if (ex instanceof IllegalAccessException) {
+                        return DescriptorException.illegalAccessWhileCloning(domainObject, this.getMethodName(), this.getDescriptor(), ex);
                     }
+                    return DescriptorException.targetInvocationWhileCloning(domainObject, this.getMethodName(), this.getDescriptor(), ex);
                 }
-            } else {
-                return PrivilegedAccessHelper.invokeMethod(this.getWorkingCopyMethod(), domainObject, new Object[0]);
-            }
-
-        } catch (IllegalAccessException exception) {
-            throw DescriptorException.illegalAccessWhileCloning(domainObject, this.getMethodName(), this.getDescriptor(), exception);
-        } catch (InvocationTargetException exception) {
-            throw DescriptorException.targetInvocationWhileCloning(domainObject, this.getMethodName(), this.getDescriptor(), exception);
-        }
+        );
     }
 
     /**
