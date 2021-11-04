@@ -24,7 +24,6 @@
 package org.eclipse.persistence.descriptors;
 
 import java.io.Serializable;
-import java.security.AccessController;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,7 +35,6 @@ import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
@@ -506,18 +504,12 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
      * Return a new instance of the class provided.
      */
     public Object getClassInstance(Class<?> cls) {
-        if (cls != null){
-            try {
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    return AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(cls));
-                } else {
-                    return org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(cls);
-                }
-            } catch (Exception e) {
-                throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(cls.getName(), e);
-            }
+        if (cls != null) {
+            return PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> PrivilegedAccessHelper.newInstanceFromClass(cls),
+                    (ex) -> ValidationException.reflectiveExceptionWhileCreatingClassInstance(cls.getName(), ex)
+            );
         }
-
         return null;
     }
 

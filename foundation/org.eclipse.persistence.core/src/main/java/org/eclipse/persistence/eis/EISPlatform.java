@@ -14,8 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.eis;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.*;
 import java.io.*;
 import java.lang.reflect.*;
@@ -31,8 +29,6 @@ import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.expressions.SQLStatement;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetMethod;
-import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
@@ -280,38 +276,20 @@ public class EISPlatform extends DatasourcePlatform {
             Class<?>[] argumentTypes = new Class<?>[1];
             argumentTypes[0] = Element.class;
             try {
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    domMethod = AccessController.doPrivileged(new PrivilegedGetMethod(record.getClass(), "setDom", argumentTypes, false));
-                }else{
-                    domMethod = PrivilegedAccessHelper.getMethod(record.getClass(), "setDom", argumentTypes, false);
-                }
+                domMethod = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                        () -> PrivilegedAccessHelper.getMethod(record.getClass(), "setDom", argumentTypes, false)
+                );
             } catch (Exception notFound) {
-                try {
-                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                        domMethod = AccessController.doPrivileged(new PrivilegedGetMethod(record.getClass(), "setDOM", argumentTypes, false));
-                    }else{
-                        domMethod = PrivilegedAccessHelper.getMethod(record.getClass(), "setDOM", argumentTypes, false);
-                    }
-                } catch (Exception cantFind) {
-                    throw new EISException(cantFind);
-                }
+                domMethod = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                        () -> PrivilegedAccessHelper.getMethod(record.getClass(), "setDOM", argumentTypes, false),
+                        EISException::new
+                );
             }
         }
-        try {
-            Object[] arguments = new Object[1];
-            arguments[0] = dom;
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try{
-                    AccessController.doPrivileged(new PrivilegedMethodInvoker<>(domMethod, record, arguments));
-                }catch (PrivilegedActionException ex){
-                    throw (Exception)ex.getCause();
-                }
-            }else{
-                PrivilegedAccessHelper.invokeMethod(domMethod, record, arguments);
-            }
-        } catch (Exception error) {
-            throw new EISException(error);
-        }
+        PrivilegedAccessHelper.callDoPrivilegedWithException(
+                () -> PrivilegedAccessHelper.invokeMethod(domMethod, record, new Object[] {dom}),
+                EISException::new
+        );
     }
 
     /**

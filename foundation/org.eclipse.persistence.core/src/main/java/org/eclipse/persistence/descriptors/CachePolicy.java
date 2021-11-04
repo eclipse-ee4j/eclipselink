@@ -17,8 +17,6 @@
 package org.eclipse.persistence.descriptors;
 
 import java.io.Serializable;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -38,7 +36,6 @@ import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
@@ -356,20 +353,11 @@ public class CachePolicy implements Cloneable, Serializable {
      * with class names to a project with classes.
      */
     public void convertClassNamesToClasses(ClassLoader classLoader) {
-        try {
-            if (this.cacheInterceptorClass == null && this.cacheInterceptorClassName != null){
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        this.cacheInterceptorClass = AccessController.doPrivileged(new PrivilegedClassForName<>(this.cacheInterceptorClassName, true, classLoader));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(this.cacheInterceptorClassName, exception.getException());
-                   }
-                } else {
-                    this.cacheInterceptorClass = PrivilegedAccessHelper.getClassForName(this.cacheInterceptorClassName, true, classLoader);
-                }
-            }
-        } catch (ClassNotFoundException exc){
-            throw ValidationException.classNotFoundWhileConvertingClassNames(this.cacheInterceptorClassName, exc);
+        if (this.cacheInterceptorClass == null && this.cacheInterceptorClassName != null) {
+            this.cacheInterceptorClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> PrivilegedAccessHelper.getClassForName(this.cacheInterceptorClassName, true, classLoader),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(this.cacheInterceptorClassName, ex)
+            );
         }
     }
 

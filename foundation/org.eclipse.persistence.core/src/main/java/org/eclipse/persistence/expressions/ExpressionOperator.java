@@ -22,8 +22,6 @@ package org.eclipse.persistence.expressions;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -46,7 +44,6 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.JavaPlatform;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 
 /**
  * <p>
@@ -1971,21 +1968,11 @@ public class ExpressionOperator implements Serializable {
             return new LogicalExpression();
         }
         try {
-            Expression node = null;
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    node = (Expression)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(getNodeClass()));
-                } catch (PrivilegedActionException exception) {
-                    return null;
-                }
-            } else {
-                node = (Expression)PrivilegedAccessHelper.newInstanceFromClass(getNodeClass());
-            }
-            return node;
-        } catch (InstantiationException exception) {
-            throw new InternalError(exception.toString());
-        } catch (IllegalAccessException exception) {
-            throw new InternalError(exception.toString());
+            return (Expression) PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> PrivilegedAccessHelper.newInstanceFromClass(getNodeClass())
+            );
+        } catch (Exception ex) {
+            throw new InternalError(ex.toString());
         }
     }
 

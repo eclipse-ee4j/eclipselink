@@ -44,8 +44,6 @@ package org.eclipse.persistence.descriptors;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -104,9 +102,6 @@ import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
-import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
-import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedChangeTracking;
@@ -815,15 +810,11 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         Object[] args = new Object[1];
         args[0] = this;
 
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                AccessController.doPrivileged(new PrivilegedMethodInvoker(method, null, args));
-            } else {
-                PrivilegedAccessHelper.invokeMethod(method, null, args);
-            }
-        } catch (Exception exception) {
-            throw DescriptorException.errorOccuredInAmendmentMethod(getAmendmentClass(), getAmendmentMethodName(), exception, this);
-        }
+        final Method lambdaMethod = method;
+        PrivilegedAccessHelper.callDoPrivilegedWithException(
+                () -> PrivilegedAccessHelper.invokeMethod(lambdaMethod, null, args),
+                (ex) -> DescriptorException.errorOccuredInAmendmentMethod(getAmendmentClass(), getAmendmentMethodName(), ex, this)
+        );
     }
 
     /**
@@ -1481,273 +1472,128 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
      */
-    public void convertClassNamesToClasses(ClassLoader classLoader){
-        Class<?> redirectorClass = null;
+    public void convertClassNamesToClasses(ClassLoader classLoader) {
+        //Class<?> redirectorClass = null;
 
-        if (getJavaClassName() != null){
-            Class<?> descriptorClass = null;
-            try{
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        descriptorClass = AccessController.doPrivileged(new PrivilegedClassForName<>(getJavaClassName(), true, classLoader));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(getJavaClassName(), exception.getException());
-                    }
-                } else {
-                    descriptorClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getJavaClassName(), true, classLoader);
-                }
-            } catch (ClassNotFoundException exc){
-                throw ValidationException.classNotFoundWhileConvertingClassNames(getJavaClassName(), exc);
-            }
+        if (getJavaClassName() != null) {
+            final Class<?> descriptorClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getJavaClassName(), true, classLoader),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(getJavaClassName(), ex)
+            );
             setJavaClass(descriptorClass);
         }
 
         if (getAmendmentClassName() != null) {
-            Class<?> amendmentClass = null;
-            try{
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        amendmentClass = AccessController.doPrivileged(new PrivilegedClassForName<>(getAmendmentClassName(), true, classLoader));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(getAmendmentClassName(), exception.getException());
-                    }
-                } else {
-                    amendmentClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getAmendmentClassName(), true, classLoader);
-                }
-            } catch (ClassNotFoundException exc){
-                throw ValidationException.classNotFoundWhileConvertingClassNames(getAmendmentClassName(), exc);
-            }
+            final Class<?> amendmentClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getAmendmentClassName(), true, classLoader),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(getAmendmentClassName(), ex)
+            );
             setAmendmentClass(amendmentClass);
         }
 
-        if (copyPolicy == null && getCopyPolicyClassName() != null){
-            Class<?> copyPolicyClass = null;
-            CopyPolicy newCopyPolicy = null;
-            try{
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        copyPolicyClass = AccessController.doPrivileged(new PrivilegedClassForName<>(getCopyPolicyClassName(), true, classLoader));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(getCopyPolicyClassName(), exception.getException());
-                    }
-                    try {
-                        newCopyPolicy = (CopyPolicy)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(copyPolicyClass));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(getCopyPolicyClassName(), exception.getException());
-                    }
-                } else {
-                    copyPolicyClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getCopyPolicyClassName(), true, classLoader);
-                    newCopyPolicy = (CopyPolicy)org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(copyPolicyClass);
-                }
-            } catch (ClassNotFoundException exc) {
-                throw ValidationException.classNotFoundWhileConvertingClassNames(getCopyPolicyClassName(), exc);
-            } catch (ReflectiveOperationException ex){
-                throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(getCopyPolicyClassName(), ex);
-            }
+        if (copyPolicy == null && getCopyPolicyClassName() != null) {
+            final Class<?> copyPolicyClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getCopyPolicyClassName(), true, classLoader),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(getCopyPolicyClassName(), ex)
+            );
+            final CopyPolicy newCopyPolicy = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> (CopyPolicy) org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(copyPolicyClass),
+                    (ex) -> ValidationException.reflectiveExceptionWhileCreatingClassInstance(getCopyPolicyClassName(), ex)
+            );
             setCopyPolicy(newCopyPolicy);
         }
 
         if (this.serializedObjectPolicy != null && this.serializedObjectPolicy instanceof SerializedObjectPolicyWrapper) {
-            String serializedObjectPolicyClassName = ((SerializedObjectPolicyWrapper)this.serializedObjectPolicy).getSerializedObjectPolicyClassName();
-            Class<?> serializedObjectPolicyClass = null;
-            SerializedObjectPolicy newSerializedObjectPolicy = null;
-            try{
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        serializedObjectPolicyClass = AccessController.doPrivileged(new PrivilegedClassForName<>(serializedObjectPolicyClassName, true, classLoader));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(serializedObjectPolicyClassName, exception.getException());
-                    }
-                    try {
-                        newSerializedObjectPolicy = (SerializedObjectPolicy)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(serializedObjectPolicyClass));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(serializedObjectPolicyClassName, exception.getException());
-                    }
-                } else {
-                    serializedObjectPolicyClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(serializedObjectPolicyClassName, true, classLoader);
-                    newSerializedObjectPolicy = (SerializedObjectPolicy)org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(serializedObjectPolicyClass);
-                }
-            } catch (ClassNotFoundException exc) {
-                throw ValidationException.classNotFoundWhileConvertingClassNames(serializedObjectPolicyClassName, exc);
-            } catch (IllegalAccessException ex){
-                throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(serializedObjectPolicyClassName, ex);
-            } catch (InstantiationException e){
-                throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(serializedObjectPolicyClassName, e);
-            }
+            final String serializedObjectPolicyClassName = ((SerializedObjectPolicyWrapper)this.serializedObjectPolicy).getSerializedObjectPolicyClassName();
+            final Class<?> serializedObjectPolicyClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(serializedObjectPolicyClassName, true, classLoader),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(serializedObjectPolicyClassName, ex)
+            );
+            final SerializedObjectPolicy newSerializedObjectPolicy = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> (SerializedObjectPolicy)org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(serializedObjectPolicyClass),
+                    (ex) -> ValidationException.reflectiveExceptionWhileCreatingClassInstance(serializedObjectPolicyClassName, ex)
+            );
             newSerializedObjectPolicy.setField(this.serializedObjectPolicy.getField());
             setSerializedObjectPolicy(newSerializedObjectPolicy);
         }
 
         //Create and set default QueryRedirector instances
-        if (this.defaultQueryRedirectorClassName != null){
-            try{
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName<>(defaultQueryRedirectorClassName, true, classLoader));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultQueryRedirectorClassName, exception.getException());
-                    }
-                    try {
-                        setDefaultQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(redirectorClass)));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultQueryRedirectorClassName, exception.getException());
-                    }
-                } else {
-                    redirectorClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultQueryRedirectorClassName, true, classLoader);
-                    setDefaultQueryRedirector((QueryRedirector) org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass));
-                }
-            } catch (ClassNotFoundException exc) {
-                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultQueryRedirectorClassName, exc);
-            } catch (Exception e) {
-                // Catches IllegalAccessException and InstantiationException
-                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultQueryRedirectorClassName, e);
-            }
+        if (this.defaultQueryRedirectorClassName != null) {
+            final Class<?> redirectorClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultQueryRedirectorClassName, true, classLoader),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(defaultQueryRedirectorClassName, ex)
+            );
+            setDefaultQueryRedirector((QueryRedirector) PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(defaultQueryRedirectorClassName, ex)
+            ));
         }
 
-        if (this.defaultReadObjectQueryRedirectorClassName != null){
-            try{
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName<>(defaultReadObjectQueryRedirectorClassName, true, classLoader));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReadObjectQueryRedirectorClassName, exception.getException());
-                    }
-                    try {
-                        setDefaultReadObjectQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(redirectorClass)));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReadObjectQueryRedirectorClassName, exception.getException());
-                    }
-                } else {
-                    redirectorClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultReadObjectQueryRedirectorClassName, true, classLoader);
-                    setDefaultReadObjectQueryRedirector((QueryRedirector) org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass));
-                }
-            } catch (ClassNotFoundException exc) {
-                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReadObjectQueryRedirectorClassName, exc);
-            } catch (Exception e) {
-                // Catches IllegalAccessException and InstantiationException
-                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReadObjectQueryRedirectorClassName, e);
-            }
+        if (this.defaultReadObjectQueryRedirectorClassName != null) {
+            final Class<?> redirectorClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultReadObjectQueryRedirectorClassName, true, classLoader),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(defaultReadObjectQueryRedirectorClassName, ex)
+            );
+            setDefaultReadObjectQueryRedirector((QueryRedirector) PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(defaultReadObjectQueryRedirectorClassName, ex)
+            ));
         }
-        if (this.defaultReadAllQueryRedirectorClassName != null){
-            try{
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName<>(defaultReadAllQueryRedirectorClassName, true, classLoader));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReadAllQueryRedirectorClassName, exception.getException());
-                    }
-                    try {
-                        setDefaultReadAllQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(redirectorClass)));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReadAllQueryRedirectorClassName, exception.getException());
-                    }
-                } else {
-                    redirectorClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultReadAllQueryRedirectorClassName, true, classLoader);
-                    setDefaultReadAllQueryRedirector((QueryRedirector) org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass));
-                }
-            } catch (ClassNotFoundException exc) {
-                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReadAllQueryRedirectorClassName, exc);
-            } catch (Exception e) {
-                // Catches IllegalAccessException and InstantiationException
-                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReadAllQueryRedirectorClassName, e);
-            }
+        if (this.defaultReadAllQueryRedirectorClassName != null) {
+            final Class<?> redirectorClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultReadAllQueryRedirectorClassName, true, classLoader),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(defaultReadAllQueryRedirectorClassName, ex)
+            );
+            setDefaultReadAllQueryRedirector((QueryRedirector) PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(defaultReadAllQueryRedirectorClassName, ex)
+            ));
         }
-        if (this.defaultReportQueryRedirectorClassName != null){
-            try{
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName<>(defaultReportQueryRedirectorClassName, true, classLoader));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReportQueryRedirectorClassName, exception.getException());
-                    }
-                    try {
-                        setDefaultReportQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(redirectorClass)));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReportQueryRedirectorClassName, exception.getException());
-                    }
-                } else {
-                    redirectorClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultReportQueryRedirectorClassName, true, classLoader);
-                    setDefaultReportQueryRedirector((QueryRedirector) org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass));
-                }
-            } catch (ClassNotFoundException exc) {
-                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReportQueryRedirectorClassName, exc);
-            } catch (Exception e) {
-                // Catches IllegalAccessException and InstantiationException
-                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReportQueryRedirectorClassName, e);
-            }
+
+        if (this.defaultReportQueryRedirectorClassName != null) {
+            final Class<?> redirectorClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultReportQueryRedirectorClassName, true, classLoader),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(defaultReportQueryRedirectorClassName, ex)
+            );
+            setDefaultReportQueryRedirector((QueryRedirector) PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(defaultReportQueryRedirectorClassName, ex)
+            ));
         }
-        if (this.defaultInsertObjectQueryRedirectorClassName != null){
-            try{
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName<>(defaultInsertObjectQueryRedirectorClassName, true, classLoader));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultInsertObjectQueryRedirectorClassName, exception.getException());
-                    }
-                    try {
-                        setDefaultInsertObjectQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(redirectorClass)));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultInsertObjectQueryRedirectorClassName, exception.getException());
-                    }
-                } else {
-                    redirectorClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultInsertObjectQueryRedirectorClassName, true, classLoader);
-                    setDefaultInsertObjectQueryRedirector((QueryRedirector) org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass));
-                }
-            } catch (ClassNotFoundException exc) {
-                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultInsertObjectQueryRedirectorClassName, exc);
-            } catch (Exception e) {
-                // Catches IllegalAccessException and InstantiationException
-                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultInsertObjectQueryRedirectorClassName, e);
-            }
+
+        if (this.defaultInsertObjectQueryRedirectorClassName != null) {
+            final Class<?> redirectorClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultInsertObjectQueryRedirectorClassName, true, classLoader),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(defaultInsertObjectQueryRedirectorClassName, ex)
+            );
+            setDefaultInsertObjectQueryRedirector((QueryRedirector) PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(defaultInsertObjectQueryRedirectorClassName, ex)
+            ));
         }
-        if (this.defaultUpdateObjectQueryRedirectorClassName != null){
-            try{
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName<>(defaultUpdateObjectQueryRedirectorClassName, true, classLoader));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultUpdateObjectQueryRedirectorClassName, exception.getException());
-                    }
-                    try {
-                        setDefaultUpdateObjectQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(redirectorClass)));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultUpdateObjectQueryRedirectorClassName, exception.getException());
-                    }
-                } else {
-                    redirectorClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultUpdateObjectQueryRedirectorClassName, true, classLoader);
-                    setDefaultUpdateObjectQueryRedirector((QueryRedirector) org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass));
-                }
-            } catch (ClassNotFoundException exc) {
-                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultUpdateObjectQueryRedirectorClassName, exc);
-            } catch (Exception e) {
-                // Catches IllegalAccessException and InstantiationException
-                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultUpdateObjectQueryRedirectorClassName, e);
-            }
+
+        if (this.defaultUpdateObjectQueryRedirectorClassName != null) {
+            final Class<?> redirectorClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultUpdateObjectQueryRedirectorClassName, true, classLoader),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(defaultUpdateObjectQueryRedirectorClassName, ex)
+            );
+            setDefaultUpdateObjectQueryRedirector((QueryRedirector) PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(defaultUpdateObjectQueryRedirectorClassName, ex)
+            ));
         }
-        if (this.defaultDeleteObjectQueryRedirectorClassName != null){
-            try{
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName<>(defaultDeleteObjectQueryRedirectorClassName, true, classLoader));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultDeleteObjectQueryRedirectorClassName, exception.getException());
-                    }
-                    try {
-                        setDefaultDeleteObjectQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(redirectorClass)));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultDeleteObjectQueryRedirectorClassName, exception.getException());
-                    }
-                } else {
-                    redirectorClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultDeleteObjectQueryRedirectorClassName, true, classLoader);
-                    setDefaultDeleteObjectQueryRedirector((QueryRedirector) org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass));
-                }
-            } catch (ClassNotFoundException exc) {
-                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultDeleteObjectQueryRedirectorClassName, exc);
-            } catch (Exception e) {
-                // Catches IllegalAccessException and InstantiationException
-                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultDeleteObjectQueryRedirectorClassName, e);
-            }
+
+        if (this.defaultDeleteObjectQueryRedirectorClassName != null) {
+            final Class<?> redirectorClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultDeleteObjectQueryRedirectorClassName, true, classLoader),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(defaultDeleteObjectQueryRedirectorClassName, ex)
+            );
+            setDefaultDeleteObjectQueryRedirector((QueryRedirector) PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(defaultDeleteObjectQueryRedirectorClassName, ex)
+            ));
         }
+
         Iterator<DatabaseMapping> mappings = getMappings().iterator();
         while (mappings.hasNext()){
             mappings.next().convertClassNamesToClasses(classLoader);
@@ -1780,21 +1626,11 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
 
                 if (valueTypeName != null) {
                     // Have to initialize the valueType now
-                    try {
-                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                            try {
-                                valueType = AccessController.doPrivileged(new PrivilegedClassForName<>(valueTypeName, true, classLoader));
-                            } catch (PrivilegedActionException exception) {
-                                throw ValidationException.classNotFoundWhileConvertingClassNames(valueTypeName, exception.getException());
-                            }
-                        } else {
-                            valueType = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(valueTypeName, true, classLoader);
-                        }
-                    } catch (ClassNotFoundException exc){
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(valueTypeName, exc);
-                    }
+                    valueType = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                            () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(valueTypeName, true, classLoader),
+                            (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(valueTypeName, ex)
+                    );
                 }
-
                 // Add the converted property. If the value type is the same
                 // as the source (value) type, no conversion is made.
                 getProperties().put(propertyName, ConversionManager.getDefaultManager().convertObject(value, valueType));

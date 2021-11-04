@@ -22,28 +22,43 @@
 //       - 371950: Metadata caching
 package org.eclipse.persistence.descriptors;
 
-import java.io.*;
-import java.lang.reflect.*;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.util.*;
+import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 import org.eclipse.persistence.core.descriptors.CoreInheritancePolicy;
 import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
-import org.eclipse.persistence.internal.expressions.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.queries.*;
+import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.queries.ExpressionQueryMechanism;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
-import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.remote.*;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.Association;
+import org.eclipse.persistence.mappings.TypedAssociation;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
 
 /**
  * <p><b>Purpose</b>: Allows customization of an object's inheritance.
@@ -436,20 +451,10 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
         // Initialize the class extractor name.
         if (classExtractorName != null) {
             Class<ClassExtractor> classExtractorClass = convertClassNameToClass(classExtractorName, classLoader);
-
-            try {
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    try {
-                        setClassExtractor( AccessController.<ClassExtractor>doPrivileged(new PrivilegedNewInstanceFromClass<>(classExtractorClass)));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(classExtractorName, exception.getException());
-                    }
-                } else {
-                    setClassExtractor(PrivilegedAccessHelper.<ClassExtractor>newInstanceFromClass(classExtractorClass));
-                }
-            } catch (ReflectiveOperationException ex) {
-                throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(classExtractorName, ex);
-            }
+            setClassExtractor(PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> PrivilegedAccessHelper.<ClassExtractor>newInstanceFromClass(classExtractorClass),
+                    (ex) -> ValidationException.reflectiveExceptionWhileCreatingClassInstance(classExtractorName, ex)
+            ));
         }
     }
 
@@ -458,19 +463,10 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * Convert the given className to an actual class.
      */
     protected <T> Class<T> convertClassNameToClass(String className, ClassLoader classLoader) {
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    return AccessController.<Class<T>>doPrivileged(new PrivilegedClassForName<>(className, true, classLoader));
-                } catch (PrivilegedActionException exception) {
-                    throw ValidationException.classNotFoundWhileConvertingClassNames(className, (Exception)exception.getCause());
-                }
-            } else {
-                return PrivilegedAccessHelper.<T>getClassForName(className, true, classLoader);
-            }
-        } catch (ClassNotFoundException exc){
-            throw ValidationException.classNotFoundWhileConvertingClassNames(className, exc);
-        }
+        return PrivilegedAccessHelper.callDoPrivilegedWithException(
+                () -> PrivilegedAccessHelper.<T>getClassForName(className, true, classLoader),
+                (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(className, ex)
+        );
     }
 
     /**

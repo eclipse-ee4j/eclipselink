@@ -20,14 +20,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.SessionLog;
 
 
@@ -175,17 +174,14 @@ public class DBPlatformHelper {
      * Open resourceName as input stream inside doPriviledged block
      */
     private static InputStream openResourceInputStream(final String resourceName, final ClassLoader classLoader) {
-        return AccessController.doPrivileged(
-            new PrivilegedAction<InputStream>() {
-                @Override
-                public InputStream run() {
+        return PrivilegedAccessHelper.callDoPrivileged(
+                () -> {
                     if (classLoader != null) {
                         return classLoader.getResourceAsStream(resourceName);
                     } else {
                         return ClassLoader.getSystemResourceAsStream(resourceName);
                     }
                 }
-            }
         );
     }
 

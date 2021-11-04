@@ -18,8 +18,6 @@ import java.beans.PropertyChangeListener;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -36,8 +34,6 @@ import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChan
 import org.eclipse.persistence.internal.indirection.UnitOfWorkQueryValueHolder;
 import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetMethod;
-import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
@@ -314,42 +310,21 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
      */
     protected Set<E> cloneDelegate() {
         Method cloneMethod;
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    cloneMethod = AccessController.doPrivileged(new PrivilegedGetMethod(this.getDelegate().getClass(), "clone", null, false));
-                } catch (PrivilegedActionException exception) {
-                    throw QueryException.cloneMethodRequired();
-                }
-            } else {
-                cloneMethod = PrivilegedAccessHelper.getMethod(this.getDelegate().getClass(), "clone", null, false);
-            }
-        } catch (NoSuchMethodException ex) {
-            throw QueryException.cloneMethodRequired();
-        }
-
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    return AccessController.doPrivileged(new PrivilegedMethodInvoker<>(cloneMethod, this.getDelegate(), null));
-                } catch (PrivilegedActionException exception) {
-                    Exception throwableException = exception.getException();
-                    if (throwableException instanceof IllegalAccessException) {
-                        throw QueryException.cloneMethodInaccessible();
-                    } else if (throwableException instanceof InvocationTargetException) {
-                        throw QueryException.cloneMethodThrowException(((InvocationTargetException)throwableException).getTargetException());
-                    } else {
-                        throw QueryException.cloneMethodThrowException(throwableException);
+        cloneMethod = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                () -> PrivilegedAccessHelper.getMethod(this.getDelegate().getClass(), "clone", null, false),
+                (ex) -> QueryException.cloneMethodRequired()
+        );
+        return PrivilegedAccessHelper.callDoPrivilegedWithException(
+                () -> PrivilegedAccessHelper.invokeMethod(cloneMethod, this.getDelegate(), null),
+                (ex) -> {
+                    if (ex instanceof IllegalAccessException) {
+                        return QueryException.cloneMethodInaccessible();
+                    } else if (ex instanceof InvocationTargetException) {
+                        return QueryException.cloneMethodThrowException(ex);
                     }
+                    return new RuntimeException(String.format("Method %s invocation failed", cloneMethod.getName()), ex);
                 }
-            } else {
-                return PrivilegedAccessHelper.invokeMethod(cloneMethod, this.getDelegate(), null);
-            }
-        } catch (IllegalAccessException ex1) {
-            throw QueryException.cloneMethodInaccessible();
-        } catch (InvocationTargetException ex2) {
-            throw QueryException.cloneMethodThrowException(ex2.getTargetException());
-        }
+        );
     }
 
     /**

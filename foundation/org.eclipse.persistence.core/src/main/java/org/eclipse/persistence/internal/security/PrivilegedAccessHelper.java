@@ -123,6 +123,16 @@ public class PrivilegedAccessHelper {
 
     /**
      * INTERNAL
+     * A task that does not return any result and may throw an exception.
+     * Implementors define a single {@code accept()} method with no arguments.
+     */
+    @FunctionalInterface
+    public interface PrivilegedExceptionConsumer {
+       void accept() throws Exception;
+    }
+
+    /**
+     * INTERNAL
      * Specific {@code Exception} supplier for {@link PrivilegedExceptionCallable}.
      *
      * @param <E> specific {@link Exception} type
@@ -134,6 +144,17 @@ public class PrivilegedAccessHelper {
 
     /**
      * INTERNAL
+     * Specific {@code Throwable} supplier for {@link PrivilegedExceptionCallable}.
+     *
+     * @param <T> specific {@link Throwable} type
+     */
+    @FunctionalInterface
+    public interface CallableThrowableSupplier<T extends Throwable> {
+        T get(Throwable t);
+    }
+
+    /**
+     * INTERNAL
      * Executes provided {@link PrivilegedCallable} task using {@link AccessController#doPrivileged(PrivilegedAction)}
      * when privileged access is enabled.
      *
@@ -141,7 +162,7 @@ public class PrivilegedAccessHelper {
      * @param task task to execute
      */
     @SuppressWarnings("removal")
-    public static <T> T callDoPrivileged(PrivilegedCallable<T> task) {
+    public static <T> T callDoPrivileged(final PrivilegedCallable<T> task) {
         if (shouldUsePrivilegedAccess()) {
             return AccessController.doPrivileged((PrivilegedAction<T>) task::call);
         } else {
@@ -158,7 +179,7 @@ public class PrivilegedAccessHelper {
      * @param task task to execute
      */
     @SuppressWarnings("removal")
-    public static <T> T callDoPrivilegedWithException(PrivilegedExceptionCallable<T> task) throws Exception {
+    public static <T> T callDoPrivilegedWithException(final PrivilegedExceptionCallable<T> task) throws Exception {
         if (shouldUsePrivilegedAccess()) {
             try {
                 return AccessController.doPrivileged((PrivilegedExceptionAction<T>) task::call);
@@ -176,6 +197,54 @@ public class PrivilegedAccessHelper {
      * INTERNAL
      * Executes provided {@link PrivilegedExceptionCallable} task using {@link AccessController#doPrivileged(PrivilegedExceptionAction)}
      * when privileged access is enabled.
+     *
+     * @param <T> {@link PrivilegedExceptionCallable} return type
+     * @param task task to execute
+     */
+    @SuppressWarnings("removal")
+    public static <T> T callDoPrivilegedWithThrowable(final PrivilegedExceptionCallable<T> task) throws Throwable {
+        if (shouldUsePrivilegedAccess()) {
+            try {
+                return AccessController.doPrivileged((PrivilegedExceptionAction<T>) task::call);
+                // AccessController.doPrivileged wraps Exception instances with PrivilegedActionException. Let's unwrap them
+                // to provide the same exception output as original callable without AccessController.doPrivileged
+            } catch (PrivilegedActionException pae) {
+                throw pae.getException();
+            }
+        } else {
+            return task.call();
+        }
+    }
+
+    /**
+     * INTERNAL
+     * Executes provided {@link PrivilegedExceptionConsumer} task using {@link AccessController#doPrivileged(PrivilegedExceptionAction)}
+     * when privileged access is enabled.
+     *
+     * @param task task to execute
+     */
+    @SuppressWarnings("removal")
+    public static void callDoPrivilegedWithException(final PrivilegedExceptionConsumer task) throws Exception {
+        if (shouldUsePrivilegedAccess()) {
+            try {
+                AccessController.doPrivileged((PrivilegedExceptionAction<Void>) () -> {
+                    task.accept();
+                    return null;
+                });
+                // AccessController.doPrivileged wraps Exception instances with PrivilegedActionException. Let's unwrap them
+                // to provide the same exception output as original callable without AccessController.doPrivileged
+            } catch (PrivilegedActionException pae) {
+                throw pae.getException();
+            }
+        } else {
+            task.accept();
+        }
+    }
+
+    /**
+     * INTERNAL
+     * Executes provided {@link PrivilegedExceptionCallable} task using {@link AccessController#doPrivileged(PrivilegedExceptionAction)}
+     * when privileged access is enabled.
      * If {@link Exception} is thrown from task, it will be processed by provided {@link CallableExceptionSupplier}.
      *
      * @param <T> {@link PrivilegedExceptionCallable} return type
@@ -185,9 +254,50 @@ public class PrivilegedAccessHelper {
      */
     @SuppressWarnings("removal")
     public static <T,E extends Exception> T callDoPrivilegedWithException(
-            PrivilegedExceptionCallable<T> task, CallableExceptionSupplier<E> exception) throws E {
+            final PrivilegedExceptionCallable<T> task, final CallableExceptionSupplier<E> exception) throws E {
         try {
             return callDoPrivilegedWithException(task);
+        } catch (Exception e) {
+            throw exception.get(e);
+        }
+    }
+
+    /**
+     * INTERNAL
+     * Executes provided {@link PrivilegedExceptionCallable} task using {@link AccessController#doPrivileged(PrivilegedExceptionAction)}
+     * when privileged access is enabled.
+     * If {@link Throwable} is thrown from task, it will be processed by provided {@link CallableThrowableSupplier}.
+     *
+     * @param <T> {@link PrivilegedExceptionCallable} return type
+     * @param <E> specific {@link Throwable} type
+     * @param task task to execute
+     * @param throwable specific {@link Throwable} supplier
+     */
+    @SuppressWarnings("removal")
+    public static <T,E extends Throwable> T callDoPrivilegedWithThrowable(
+            final PrivilegedExceptionCallable<T> task, final CallableThrowableSupplier<E> throwable) throws E {
+        try {
+            return callDoPrivilegedWithThrowable(task);
+        } catch (Throwable e) {
+            throw throwable.get(e);
+        }
+    }
+
+    /**
+     * INTERNAL
+     * Executes provided {@link PrivilegedExceptionConsumer} task using {@link AccessController#doPrivileged(PrivilegedExceptionAction)}
+     * when privileged access is enabled.
+     * If {@link Exception} is thrown from task, it will be processed by provided {@link CallableExceptionSupplier}.
+     *
+     * @param <E> specific {@link Exception} type
+     * @param task task to execute
+     * @param exception specific {@link Exception} supplier
+     */
+    @SuppressWarnings("removal")
+    public static <E extends Exception> void callDoPrivilegedWithException(
+            final PrivilegedExceptionConsumer task, final CallableExceptionSupplier<E> exception) throws E {
+        try {
+            callDoPrivilegedWithException(task);
         } catch (Exception e) {
             throw exception.get(e);
         }
