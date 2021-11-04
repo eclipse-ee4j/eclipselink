@@ -22,19 +22,16 @@
 package org.eclipse.persistence.internal.helper;
 
 //javase imports
+
 import java.io.Serializable;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 
-import static java.lang.Integer.MIN_VALUE;
-
-//EclipseLink imports
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+
+import static java.lang.Integer.MIN_VALUE;
 
 /**
  * INTERNAL:
@@ -197,19 +194,10 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
      */
     public void convertClassNamesToClasses(ClassLoader classLoader) {
         if (type == null && typeName != null) {
-            try {
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        type = AccessController.doPrivileged(new PrivilegedClassForName(typeName, true, classLoader));
-                    } catch (PrivilegedActionException e) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(typeName, e.getException());
-                    }
-                } else {
-                    type = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(typeName, true, classLoader);
-                }
-            } catch (Exception exception) {
-                throw ValidationException.classNotFoundWhileConvertingClassNames(typeName, exception);
-            }
+            type = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> PrivilegedAccessHelper.getClassForName(typeName, true, classLoader),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(typeName, ex)
+            );
         }
     }
 

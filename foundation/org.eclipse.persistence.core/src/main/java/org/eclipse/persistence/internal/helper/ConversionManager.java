@@ -26,8 +26,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.SQLException;
@@ -42,14 +40,11 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Vector;
 
-
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.core.helper.CoreConversionManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetClassLoaderForClass;
-import org.eclipse.persistence.internal.security.PrivilegedGetContextClassLoader;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 
@@ -1145,29 +1140,16 @@ public class ConversionManager extends CoreConversionManager implements Serializ
     @Override
     public ClassLoader getLoader() {
         if (shouldUseClassLoaderFromCurrentThread()) {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    return AccessController.doPrivileged(new PrivilegedGetContextClassLoader(Thread.currentThread()));
-                } catch (PrivilegedActionException exception) {
-                    // should not be thrown
-                }
-            } else {
-                return PrivilegedAccessHelper.getContextClassLoader(Thread.currentThread());
-            }
+            return PrivilegedAccessHelper.callDoPrivileged(
+                    () -> PrivilegedAccessHelper.getContextClassLoader(Thread.currentThread())
+            );
         }
         if (loader == null) {
             if (defaultLoader == null) {
                 //CR 2621
-                ClassLoader loader = null;
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try{
-                        loader = AccessController.doPrivileged(new PrivilegedGetClassLoaderForClass(ClassConstants.ConversionManager_Class));
-                    } catch (PrivilegedActionException exc){
-                        // will not be thrown
-                    }
-                } else {
-                    loader = PrivilegedAccessHelper.getClassLoaderForClass(ClassConstants.ConversionManager_Class);
-                }
+                final ClassLoader loader = PrivilegedAccessHelper.callDoPrivileged(
+                        () -> PrivilegedAccessHelper.getClassLoaderForClass(ClassConstants.ConversionManager_Class)
+                );
                 setLoader(loader);
             } else {
                 setLoader(getDefaultLoader());

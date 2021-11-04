@@ -16,18 +16,14 @@ package org.eclipse.persistence.internal.indirection;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.lang.reflect.InvocationTargetException;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 
+import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetClassLoaderForClass;
-import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
-import org.eclipse.persistence.exceptions.QueryException;
 
 /**
  * <H2>ProxyIndirectionHandler</H2>
@@ -72,7 +68,7 @@ public class ProxyIndirectionHandler implements InvocationHandler, Serializable 
      * Handle the method calls on the proxy object.
      */
     @Override
-    public Object invoke(Object proxy, Method m, Object[] args) throws Throwable {
+    public Object invoke(final Object proxy, final Method m, final Object[] args) throws Throwable {
         Object result = null;
 
         try {
@@ -81,13 +77,10 @@ public class ProxyIndirectionHandler implements InvocationHandler, Serializable 
                     if (valueHolder.getValue() == null) {
                         result = "null";
                     } else {
-                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                            String toString = (String)AccessController.doPrivileged(new PrivilegedMethodInvoker(m, valueHolder.getValue(), args));
-                            result = "{ " + toString + " }";
-                        }else{
-                            String toString = (String)PrivilegedAccessHelper.invokeMethod(m, valueHolder.getValue(), args);
-                            result = "{ " + toString + " }";
-                        }
+                        final String toString = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                                () -> PrivilegedAccessHelper.invokeMethod(m, valueHolder.getValue(), args)
+                        );
+                        result = "{ " + toString + " }";
                     }
                 } else {
                     result = "{ IndirectProxy: not instantiated }";
@@ -101,11 +94,9 @@ public class ProxyIndirectionHandler implements InvocationHandler, Serializable 
                 if (value == null) {
                     throw ValidationException.nullUnderlyingValueHolderValue(m.getName());
                 } else {
-                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                        result = AccessController.doPrivileged(new PrivilegedMethodInvoker(m, value, args));
-                    }else{
-                        result = PrivilegedAccessHelper.invokeMethod(m, value, args);
-                    }
+                    result = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                            () -> PrivilegedAccessHelper.invokeMethod(m, value, args)
+                    );
                 }
             }
         } catch (InvocationTargetException e) {
@@ -126,17 +117,10 @@ public class ProxyIndirectionHandler implements InvocationHandler, Serializable 
      *
      * Utility method to create a new proxy object.
      */
-    public static Object newProxyInstance(Class anInterface, Class[] interfaces, ValueHolderInterface valueHolder) {
-        ClassLoader classLoader = null;
-        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-            try{
-                classLoader = AccessController.doPrivileged(new PrivilegedGetClassLoaderForClass(anInterface));
-            }catch (PrivilegedActionException ex){
-                throw (RuntimeException) ex.getCause();
-            }
-        }else{
-            classLoader = PrivilegedAccessHelper.getClassLoaderForClass(anInterface);
-        }
+    public static <T> Object newProxyInstance(final Class<?> anInterface, final Class<?>[] interfaces, final ValueHolderInterface<T> valueHolder) {
+        final ClassLoader classLoader = PrivilegedAccessHelper.callDoPrivileged(
+                () -> PrivilegedAccessHelper.getClassLoaderForClass(anInterface)
+        );
         return Proxy.newProxyInstance(classLoader, interfaces, new ProxyIndirectionHandler(valueHolder));
     }
 

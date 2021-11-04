@@ -15,8 +15,6 @@
 package org.eclipse.persistence.descriptors;
 
 import java.io.Serializable;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -28,7 +26,6 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.ComplexQueryResult;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
@@ -175,24 +172,14 @@ public class InterfacePolicy implements Serializable, Cloneable {
      * It will also convert referenced classes to the versions of the classes from the classLoader.
      */
     public void convertClassNamesToClasses(ClassLoader classLoader) {
-        List<Class> newParentInterfaces = new ArrayList(2);
-        for (Iterator iterator = getParentInterfaceNames().iterator(); iterator.hasNext(); ) {
-            String interfaceName = (String)iterator.next();
-            Class interfaceClass = null;
-            try {
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        interfaceClass = AccessController.doPrivileged(new PrivilegedClassForName(interfaceName, true, classLoader));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(interfaceName, exception.getException());
-                    }
-                } else {
-                    interfaceClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(interfaceName, true, classLoader);
-                }
-            } catch (ClassNotFoundException exc){
-                throw ValidationException.classNotFoundWhileConvertingClassNames(interfaceName, exc);
-            }
-            newParentInterfaces.add(interfaceClass);
+        List<Class> newParentInterfaces = new ArrayList<>(2);
+        for (Iterator<String> iterator = getParentInterfaceNames().iterator(); iterator.hasNext(); ) {
+            String interfaceName = iterator.next();
+            Class<?> interfaceClass = null;
+            newParentInterfaces.add(PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> PrivilegedAccessHelper.getClassForName(interfaceName, true, classLoader),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(interfaceName, ex)
+            ));
         }
         this.parentInterfaces = newParentInterfaces;
     }
