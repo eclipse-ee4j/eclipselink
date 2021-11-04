@@ -506,7 +506,7 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
     public Object getClassInstance(Class<?> cls) {
         if (cls != null) {
             return PrivilegedAccessHelper.callDoPrivilegedWithException(
-                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(cls),
+                    () -> PrivilegedAccessHelper.newInstanceFromClass(cls),
                     (ex) -> ValidationException.reflectiveExceptionWhileCreatingClassInstance(cls.getName(), ex)
             );
         }

@@ -178,7 +178,7 @@ public class InterfacePolicy implements Serializable, Cloneable {
             String interfaceName = iterator.next();
             Class<?> interfaceClass = null;
             newParentInterfaces.add(PrivilegedAccessHelper.callDoPrivilegedWithException(
-                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(interfaceName, true, classLoader),
+                    () -> PrivilegedAccessHelper.getClassForName(interfaceName, true, classLoader),
                     (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(interfaceName, ex)
             ));
         }

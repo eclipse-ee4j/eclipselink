@@ -311,7 +311,7 @@ public class CoreAttributeGroup<
     public void convertClassNamesToClasses(ClassLoader classLoader){
         if (this.type == null) {
             this.type = PrivilegedAccessHelper.callDoPrivilegedWithException(
-                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(this.typeName, true, classLoader),
+                    () -> PrivilegedAccessHelper.getClassForName(this.typeName, true, classLoader),
                     (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(this.typeName, ex)
             );
             if (this.items != null){

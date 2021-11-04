@@ -82,7 +82,7 @@ public class ValuePartitioningPolicy extends FieldPartitioningPolicy {
     public void convertClassNamesToClasses(ClassLoader classLoader) {
         if (partitionValueType == null && partitionValueTypeName != null) {
             partitionValueType = PrivilegedAccessHelper.callDoPrivilegedWithException(
-                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(partitionValueTypeName, true, classLoader),
+                    () -> PrivilegedAccessHelper.getClassForName(partitionValueTypeName, true, classLoader),
                     (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(partitionValueTypeName, ex)
             );
         }
