@@ -168,7 +168,7 @@
             criterion="[2.0.0,9.0.0)" property="antlr.lib" includepath="true"
         />
         <selectbundle basename="${asm}" directory="${nosql_test.build.location}/${nosql_test.2.common.plugins.dir}" separator="_"
-            criterion="[2.0.0,9.1.0)" property="asm.lib" includepath="true"
+            criterion="[2.0.0,10.0)" property="asm.lib" includepath="true"
         />
         <selectbundle basename="org.eclipse.persistence.jpa" directory="${nosql_test.build.location}/${nosql_test.2.common.plugins.dir}" separator="_"
             criterion="[2.0.0,9.0.0)" property="oep.jpa.lib" includepath="true"

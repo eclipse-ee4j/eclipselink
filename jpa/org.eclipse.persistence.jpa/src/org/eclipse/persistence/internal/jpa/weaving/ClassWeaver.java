@@ -29,6 +29,8 @@ import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Type;
 
+import org.eclipse.persistence.internal.libraries.asm.EclipseLinkClassVisitor;
+
 /**
  * INTERNAL: Weaves classes to allow them to support EclipseLink indirection.
  * Classes are weaved to add a variable of type ValueHolderInterface for each
@@ -39,7 +41,7 @@ import org.eclipse.persistence.internal.libraries.asm.Type;
  * @see org.eclipse.persistence.internal.weaving.MethodWeaver
  */
 
-public class ClassWeaver extends ClassVisitor implements Opcodes {
+public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
 
     // PersistenceWeaved
     public static final String PERSISTENCE_WEAVED_SHORT_SIGNATURE = "org/eclipse/persistence/internal/weaving/PersistenceWeaved";
@@ -213,7 +215,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
     }
 
     public ClassWeaver(ClassVisitor classWriter, ClassDetails classDetails) {
-        super(ASM9, classWriter);
+        super(classWriter);
         this.classDetails = classDetails;
     }
 

@@ -22,6 +22,8 @@ import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Type;
 
+import org.eclipse.persistence.internal.libraries.asm.EclipseLinkMethodVisitor;
+
 /**
  * Processes all the methods of a class to weave in persistence code such as,
  * lazy value holder, change tracking and fetch groups.
@@ -32,7 +34,7 @@ import org.eclipse.persistence.internal.libraries.asm.Type;
  * 
  */
 
-public class MethodWeaver extends MethodVisitor implements Opcodes {
+public class MethodWeaver extends EclipseLinkMethodVisitor implements Opcodes {
 
     protected ClassWeaver tcw;
     protected String methodName;
@@ -42,7 +44,7 @@ public class MethodWeaver extends MethodVisitor implements Opcodes {
     protected boolean methodStarted = false;
         
     public MethodWeaver(ClassWeaver tcw, String methodName, String methodDescriptor, MethodVisitor mv) {        
-        super(ASM9, mv);
+        super(mv);
         this.tcw = tcw;
         this.methodName = methodName;
         this.methodDescriptor = methodDescriptor;
