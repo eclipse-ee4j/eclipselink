@@ -5,7 +5,7 @@
     <name>EclipseLink ASM Dependency</name>
     <groupId>org.eclipse.persistence</groupId>
     <artifactId>asmcompdep</artifactId>
-    <version>9.1.1</version>
+    <version>9.2.0</version>
     <packaging>pom</packaging>
 
     <repositories>
@@ -27,7 +27,7 @@
         <tycho.version>1.3.0</tycho.version>
         
         <!-- DEPENDENCY Versions -->
-        <eclipselink.asm.version>9.1.1</eclipselink.asm.version>
+        <eclipselink.asm.version>9.2.0</eclipselink.asm.version>
     </properties>
 
     <build>
@@ -36,6 +36,16 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>3.1.1</version>
+                <executions>
+                    <execution>
+                        <id>pull-from-maven-central</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>resolve</goal>
+                            <goal>sources</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>
