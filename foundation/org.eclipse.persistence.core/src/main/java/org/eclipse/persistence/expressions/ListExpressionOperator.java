@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,6 +14,8 @@
 // Contributors:
 //     tware - initial API and implementation from for JPA 2.0 criteria API
 package org.eclipse.persistence.expressions;
+
+import java.util.List;
 
 import org.eclipse.persistence.internal.helper.Helper;
 
@@ -39,7 +42,6 @@ public class ListExpressionOperator extends ExpressionOperator {
     protected String[] startStrings = null;
     protected String[] separators = null;
     protected String[] terminationStrings = null;
-    protected int numberOfItems = 0;
     protected boolean isComplete = false;
 
     @Override
@@ -61,33 +63,48 @@ public class ListExpressionOperator extends ExpressionOperator {
      */
     @Override
     public String[] getDatabaseStrings() {
-        databaseStrings = new String[numberOfItems + 1];
+        return getDatabaseStrings(0);
+    }
+
+    /**
+     * Returns an array of Strings that expects a query argument between each String in the array to form the Expression.
+     * The array is built from the defined startStrings, separators, and terminationStrings.
+     * Start strings and termination strings take precedence over separator strings.
+     * 
+     * The first defined start string will be added to the array.
+     * All subsequent start strings are optional, meaning they will only be added to the array if there are argument spaces available.
+     * 
+     * The defined set of separator strings will be repeated, as a complete set, as long as there are argument spaces available.
+     * 
+     * The last defined termination string will be added to the array.
+     * All antecedent termination strings are optional, meaning they will only be added to the array if there are argument spaces available.
+     */
+    @Override
+    public String[] getDatabaseStrings(int arguments) {
         int i = 0;
-        while (i < startStrings.length){
-            databaseStrings[i] = startStrings[i];
+        String[] databaseStrings = new String[(arguments == 0) ? 2 : arguments + 1];
+
+        int start = (arguments < (startStrings.length)) ? databaseStrings.length - 1 : startStrings.length;
+        for (int j = 0; j < start; j++) {
+            databaseStrings[i] = startStrings[j];
             i++;
         }
-        while  (i < numberOfItems - (terminationStrings.length - 1)){
-            for (int j=0;j<separators.length;j++){
-                databaseStrings[i] = separators[j];
+
+        // '- 1' to save a spot for the guaranteed 1 terminator
+        int separ = ((databaseStrings.length - start - 1) / separators.length);
+        for (int j = 0; j < separ; j++) {
+            for (int k = 0; k < separators.length; k++) {
+                databaseStrings[i] = separators[k];
                 i++;
             }
         }
-        while (i <= numberOfItems){
-            for (int j=0;j<terminationStrings.length;j++){
-                databaseStrings[i] = terminationStrings[j];
-                    i++;
-            }
+
+        int termi = databaseStrings.length - (start + (separ * separators.length));
+        for (int j = (terminationStrings.length - termi); j < terminationStrings.length; j++) {
+            databaseStrings[i] = terminationStrings[j];
+            i++;
         }
         return databaseStrings;
-    }
-
-    public int getNumberOfItems(){
-        return numberOfItems;
-    }
-
-    public void setNumberOfItems(int numberOfItems){
-        this.numberOfItems = numberOfItems;
     }
 
     public String[] getStartStrings() {
@@ -126,10 +143,6 @@ public class ListExpressionOperator extends ExpressionOperator {
         this.terminationStrings = terminationStrings;
     }
 
-    public void incrementNumberOfItems(){
-        numberOfItems++;
-    }
-
     public void setIsComplete(boolean isComplete){
         this.isComplete = isComplete;
     }
@@ -138,6 +151,4 @@ public class ListExpressionOperator extends ExpressionOperator {
     public boolean isComplete() {
         return isComplete;
     }
-
-
 }

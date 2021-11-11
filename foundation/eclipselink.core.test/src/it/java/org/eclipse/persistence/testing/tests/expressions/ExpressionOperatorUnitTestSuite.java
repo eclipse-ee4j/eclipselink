@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -84,6 +85,158 @@ public class ExpressionOperatorUnitTestSuite extends ExpressionTestSuite {
         }
     }
 
+    public void _testDefaultCaseOperatorDatabaseStringsTest() {
+        ExpressionOperator caseOp = ExpressionOperator.caseStatement();
+
+        String[] databaseStrings = caseOp.getDatabaseStrings(0);
+        String[] expectedStrings = new String[] {"CASE ", " END"};
+        if(!(Arrays.equals(expectedStrings, databaseStrings))) {
+            throw new TestErrorException("Expected " + Arrays.toString(expectedStrings) + 
+                    " but was " + Arrays.toString(databaseStrings));
+        }
+
+        databaseStrings = caseOp.getDatabaseStrings(1);
+        expectedStrings = new String[] {"CASE ", " END"};
+        if(!(Arrays.equals(expectedStrings, databaseStrings))) {
+            throw new TestErrorException("Expected " + Arrays.toString(expectedStrings) + 
+                    " but was " + Arrays.toString(databaseStrings));
+        }
+
+        databaseStrings = caseOp.getDatabaseStrings(2);
+        expectedStrings = new String[] {"CASE ", " ELSE ", " END"};
+        if(!(Arrays.equals(expectedStrings, databaseStrings))) {
+            throw new TestErrorException("Expected " + Arrays.toString(expectedStrings) + 
+                    " but was " + Arrays.toString(databaseStrings));
+        }
+
+        databaseStrings = caseOp.getDatabaseStrings(3);
+        expectedStrings = new String[] {"CASE ", " WHEN ", " THEN ", " END"};
+        if(!(Arrays.equals(expectedStrings, databaseStrings))) {
+            throw new TestErrorException("Expected " + Arrays.toString(expectedStrings) + 
+                    " but was " + Arrays.toString(databaseStrings));
+        }
+
+        databaseStrings = caseOp.getDatabaseStrings(4);
+        expectedStrings = new String[] {"CASE ", " WHEN ", " THEN ", " ELSE ", " END"};
+        if(!(Arrays.equals(expectedStrings, databaseStrings))) {
+            throw new TestErrorException("Expected " + Arrays.toString(expectedStrings) + 
+                    " but was " + Arrays.toString(databaseStrings));
+        }
+
+        databaseStrings = caseOp.getDatabaseStrings(5);
+        expectedStrings = new String[] {"CASE ", " WHEN ", " THEN ", " WHEN ", " THEN ", " END"};
+        if(!(Arrays.equals(expectedStrings, databaseStrings))) {
+            throw new TestErrorException("Expected " + Arrays.toString(expectedStrings) + 
+                    " but was " + Arrays.toString(databaseStrings));
+        }
+
+        databaseStrings = caseOp.getDatabaseStrings(6);
+        expectedStrings = new String[] {"CASE ", " WHEN ", " THEN ", " WHEN ", " THEN ", " ELSE ", " END"};
+        if(!(Arrays.equals(expectedStrings, databaseStrings))) {
+            throw new TestErrorException("Expected " + Arrays.toString(expectedStrings) + 
+                    " but was " + Arrays.toString(databaseStrings));
+        }
+    }
+
+    public void _testDefaultCaseConditionOperatorDatabaseStringsTest() {
+        ExpressionOperator caseConditionOp = ExpressionOperator.caseConditionStatement();
+
+        String[] databaseStrings = caseConditionOp.getDatabaseStrings(0);
+        String[] expectedStrings = new String[] {"CASE WHEN ", " END "};
+        if(!(Arrays.equals(expectedStrings, databaseStrings))) {
+            throw new TestErrorException("Expected " + Arrays.toString(expectedStrings) + 
+                    " but was " + Arrays.toString(databaseStrings));
+        }
+
+        databaseStrings = caseConditionOp.getDatabaseStrings(1);
+        expectedStrings = new String[] {"CASE WHEN ", " END "};
+        if(!(Arrays.equals(expectedStrings, databaseStrings))) {
+            throw new TestErrorException("Expected " + Arrays.toString(expectedStrings) + 
+                    " but was " + Arrays.toString(databaseStrings));
+        }
+
+        databaseStrings = caseConditionOp.getDatabaseStrings(2);
+        expectedStrings = new String[] {"CASE WHEN ", " THEN ", " END "};
+        if(!(Arrays.equals(expectedStrings, databaseStrings))) {
+            throw new TestErrorException("Expected " + Arrays.toString(expectedStrings) + 
+                    " but was " + Arrays.toString(databaseStrings));
+        }
+
+        databaseStrings = caseConditionOp.getDatabaseStrings(3);
+        expectedStrings = new String[] {"CASE WHEN ", " THEN ", " ELSE ", " END "};
+        if(!(Arrays.equals(expectedStrings, databaseStrings))) {
+            throw new TestErrorException("Expected " + Arrays.toString(expectedStrings) + 
+                    " but was " + Arrays.toString(databaseStrings));
+        }
+
+        databaseStrings = caseConditionOp.getDatabaseStrings(4);
+        expectedStrings = new String[] {"CASE WHEN ", " THEN ", " WHEN ", " THEN ", " END "};
+        if(!(Arrays.equals(expectedStrings, databaseStrings))) {
+            throw new TestErrorException("Expected " + Arrays.toString(expectedStrings) + 
+                    " but was " + Arrays.toString(databaseStrings));
+        }
+
+        databaseStrings = caseConditionOp.getDatabaseStrings(5);
+        expectedStrings = new String[] {"CASE WHEN ", " THEN ", " WHEN ", " THEN ", " ELSE ", " END "};
+        if(!(Arrays.equals(expectedStrings, databaseStrings))) {
+            throw new TestErrorException("Expected " + Arrays.toString(expectedStrings) + 
+                    " but was " + Arrays.toString(databaseStrings));
+        }
+
+        databaseStrings = caseConditionOp.getDatabaseStrings(6);
+        expectedStrings = new String[] {"CASE WHEN ", " THEN ", " WHEN ", " THEN ", " WHEN ", " THEN ", " END "};
+        if(!(Arrays.equals(expectedStrings, databaseStrings))) {
+            throw new TestErrorException("Expected " + Arrays.toString(expectedStrings) + 
+                    " but was " + Arrays.toString(databaseStrings));
+        }
+    }
+
+    public void _testDefaultCoalesceOperatorDatabaseStringsTest() {
+        ExpressionOperator coalesceOp = ExpressionOperator.coalesce();
+
+        String[] databaseStrings = coalesceOp.getDatabaseStrings(0);
+        String[] expectedStrings = new String[] {"COALESCE(", ")"};
+        if(!(Arrays.equals(expectedStrings, databaseStrings))) {
+            throw new TestErrorException("Expected " + Arrays.toString(expectedStrings) + 
+                    " but was " + Arrays.toString(databaseStrings));
+        }
+
+        databaseStrings = coalesceOp.getDatabaseStrings(1);
+        expectedStrings = new String[] {"COALESCE(", ")"};
+        if(!(Arrays.equals(expectedStrings, databaseStrings))) {
+            throw new TestErrorException("Expected " + Arrays.toString(expectedStrings) + 
+                    " but was " + Arrays.toString(databaseStrings));
+        }
+
+        databaseStrings = coalesceOp.getDatabaseStrings(2);
+        expectedStrings = new String[] {"COALESCE(", ", ", ")"};
+        if(!(Arrays.equals(expectedStrings, databaseStrings))) {
+            throw new TestErrorException("Expected " + Arrays.toString(expectedStrings) + 
+                    " but was " + Arrays.toString(databaseStrings));
+        }
+
+        databaseStrings = coalesceOp.getDatabaseStrings(3);
+        expectedStrings = new String[] {"COALESCE(", ", ", ", ", ")"};
+        if(!(Arrays.equals(expectedStrings, databaseStrings))) {
+            throw new TestErrorException("Expected " + Arrays.toString(expectedStrings) + 
+                    " but was " + Arrays.toString(databaseStrings));
+        }
+
+        databaseStrings = coalesceOp.getDatabaseStrings(4);
+        expectedStrings = new String[] {"COALESCE(", ", ", ", ", ", ", ")"};
+        if(!(Arrays.equals(expectedStrings, databaseStrings))) {
+            throw new TestErrorException("Expected " + Arrays.toString(expectedStrings) + 
+                    " but was " + Arrays.toString(databaseStrings));
+        }
+
+        databaseStrings = coalesceOp.getDatabaseStrings(5);
+        expectedStrings = new String[] {"COALESCE(", ", ", ", ", ", ", ", ", ")"};
+        if(!(Arrays.equals(expectedStrings, databaseStrings))) {
+            throw new TestErrorException("Expected " + Arrays.toString(expectedStrings) + 
+                    " but was " + Arrays.toString(databaseStrings));
+        }
+    }
+
     @Override
     public void addTests() {
         setManager(PopulationManager.getDefaultManager());
@@ -95,5 +248,9 @@ public class ExpressionOperatorUnitTestSuite extends ExpressionTestSuite {
         addTest(new UnitTestCase("IsComparisonOperatorTest"));
         addTest(new UnitTestCase("IsFunctionOperatorTest"));
         addTest(new UnitTestCase("IsLogicalOperatorTest"));
+
+        addTest(new UnitTestCase("DefaultCaseOperatorDatabaseStringsTest"));
+        addTest(new UnitTestCase("DefaultCaseConditionOperatorDatabaseStringsTest"));
+        addTest(new UnitTestCase("DefaultCoalesceOperatorDatabaseStringsTest"));
     }
 }

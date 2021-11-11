@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,7 +57,6 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
             super.addChild(argument);
         }
         setBaseExpression(getChildren().firstElement());
-        ((ListExpressionOperator)operator).incrementNumberOfItems();
     }
 
     /**
@@ -86,7 +86,6 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
     public void setOperator(ExpressionOperator theOperator) {
         assert(theOperator instanceof ListExpressionOperator);
         super.setOperator(theOperator);
-        ((ListExpressionOperator)theOperator).setNumberOfItems(0);
     }
 
     /**
@@ -104,7 +103,6 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
 
     @Override
     protected void postCopyIn(Map alreadyDone) {
-        ((ListExpressionOperator)operator).setNumberOfItems(0);
         Boolean hasLastChildCopy = hasLastChild;
         hasLastChild = null;
         super.postCopyIn(alreadyDone);
@@ -117,7 +115,6 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
     @Override
     public void initializePlatformOperator(DatabasePlatform platform) {
         super.initializePlatformOperator(platform);
-        ((ListExpressionOperator)platformOperator).setNumberOfItems(((ListExpressionOperator)operator).getNumberOfItems());
     }
 
 
