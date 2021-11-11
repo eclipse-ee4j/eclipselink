@@ -82,6 +82,8 @@ import org.eclipse.persistence.testing.models.jpa.metamodel.Designer;
 import org.eclipse.persistence.testing.models.jpa.metamodel.EmbeddedPK;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Enclosure;
 import org.eclipse.persistence.testing.models.jpa.metamodel.EnclosureIdClassPK;
+import org.eclipse.persistence.testing.models.jpa.metamodel.FooBar;
+import org.eclipse.persistence.testing.models.jpa.metamodel.FooBarId;
 import org.eclipse.persistence.testing.models.jpa.metamodel.GalacticPosition;
 import org.eclipse.persistence.testing.models.jpa.metamodel.HardwareDesigner;
 import org.eclipse.persistence.testing.models.jpa.metamodel.MSRootPropertyAccess;
@@ -125,9 +127,9 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
  */
 public class MetamodelMetamodelTest extends MetamodelTest {
 
-    public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 150;//6;
+    public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 158;//6;
     // Note: Since BasicTypes are lazy - loaded into the metamodel-types Map - this test must preceed any test that verifies all BasicType objects like "testIdentifiableType_getIdType_Method"
-    public static final int METAMODEL_ALL_TYPES = 52;
+    public static final int METAMODEL_ALL_TYPES = 56;
     public static final int METAMODEL_MANUFACTURER_DECLARED_TYPES = 28;
     // Get # of processor cores (hard cores + hyperthreaded cores)
     public static final int numberProcessingUnits = Runtime.getRuntime().availableProcessors();
@@ -202,6 +204,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getVersion_Method"));
             suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getDeclaredId_Method"));
             suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getId_Method"));
+            suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getId_with_EmbeddedId_Method"));
             suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getDeclaredId_normal_execution_attribute_is_declared"));
             suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getDeclaredId_variant_execution_attribute_is_declared_above"));
             suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getDeclaredId_variant_execution_attribute_is_not_declared_at_all"));
@@ -1691,6 +1694,42 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             // declared and valid
             MappedSuperclassTypeImpl<Person> msPerson1_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
             assertNotNull(msPerson1_.getId(Integer.class));
+        } catch (IllegalArgumentException iae) {
+            iae.printStackTrace();
+            expectedIAExceptionThrown = true;
+        } finally {
+            cleanup(em);
+            assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+        }
+    }
+
+    public void testIdentifiableType_getId_with_EmbeddedId_Method() {
+        EntityManager em = null;
+        boolean expectedIAExceptionThrown = false;
+        try {
+            em = privateTestSetup();
+            assertNotNull(em);
+            Metamodel metamodel = em.getMetamodel();
+            assertNotNull(metamodel);
+            EntityType<FooBar> fooBarEntityType = metamodel.entity(FooBar.class);
+            assertNotNull(fooBarEntityType);
+            assertTrue(fooBarEntityType.hasSingleIdAttribute());
+
+            // Actual Test Case
+            /**
+             *  Return the attribute that corresponds to the id attribute of
+             *  the entity or mapped superclass.
+             *  @param type  the type of the represented id attribute
+             *  @return id attribute
+             *  @throws IllegalArgumentException if id attribute of the given
+             *          type is not present in the identifiable type or if
+             *          the identifiable type has an id class
+             */
+            //<Y> SingularAttribute<? super X, Y> getId(Class<Y> type);
+
+            SingularAttribute<? super FooBar, FooBarId> fooBarId = fooBarEntityType.getId(FooBarId.class);
+            //FooBarId declared by @EmbeddedId
+            assertNotNull(fooBarId);
         } catch (IllegalArgumentException iae) {
             iae.printStackTrace();
             expectedIAExceptionThrown = true;
