@@ -11,7 +11,7 @@
  */
 
 // Contributors:
-//     Oracle - initial API and implementation from Oracle TopLink
+//     Oracle - initial API and implementation from Oracle
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
 import jakarta.persistence.EmbeddedId;
