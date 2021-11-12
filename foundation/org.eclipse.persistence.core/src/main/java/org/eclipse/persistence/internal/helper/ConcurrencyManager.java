@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -93,6 +94,11 @@ public class ConcurrencyManager implements Serializable {
     private static final Set<Thread> THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS = ConcurrentHashMap.newKeySet();
     private static final Map<Thread, String> THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS_BUILD_OBJECT_COMPLETE_GOES_NOWHERE = new ConcurrentHashMap<>();
 
+    private static final String ACQUIRE_METHOD_NAME = ConcurrencyManager.class.getName() + ".acquire(...)";
+    private static final String ACQUIRE_READ_LOCK_METHOD_NAME = ConcurrencyManager.class.getName() + ".acquireReadLock(...)";
+    private static final String ACQUIRE_WITH_WAIT_METHOD_NAME = ConcurrencyManager.class.getName() + ".acquireWithWait(...)";
+    private static final String ACQUIRE_DEFERRED_LOCK_METHOD_NAME = ConcurrencyManager.class.getName() + ".acquireDeferredLock(...)";
+
     /**
      * Initialize the newly allocated instance of this class.
      * Set the depth to zero.
@@ -130,8 +136,7 @@ public class ConcurrencyManager implements Serializable {
         // is just storing debug metadata that we can use when we detect the system is frozen in a dead lock
         final boolean currentThreadWillEnterTheWhileWait = ((this.activeThread != null) || (this.numberOfReaders.get() > 0)) && (this.activeThread != currentThread);
         if(currentThreadWillEnterTheWhileWait) {
-            StackTraceElement stackTraceElement = currentThread.getStackTrace()[1];
-            putThreadAsWaitingToAcquireLockForWriting(currentThread, stackTraceElement.getClassName() + "." + stackTraceElement.getMethodName() + "(...)");
+            putThreadAsWaitingToAcquireLockForWriting(currentThread, ACQUIRE_METHOD_NAME);
         }
         while (((this.activeThread != null) || (this.numberOfReaders.get() > 0)) && (this.activeThread != Thread.currentThread())) {
             // This must be in a while as multiple threads may be released, or another thread may rush the acquire after one is released.
@@ -209,8 +214,7 @@ public class ConcurrencyManager implements Serializable {
             return true;
         } else {
             try {
-                StackTraceElement stackTraceElement = currentThread.getStackTrace()[1];
-                putThreadAsWaitingToAcquireLockForWriting(currentThread, stackTraceElement.getClassName() + "." + stackTraceElement.getMethodName() + "(...)");
+                putThreadAsWaitingToAcquireLockForWriting(currentThread, ACQUIRE_WITH_WAIT_METHOD_NAME);
                 wait(wait);
             } catch (InterruptedException e) {
                 return false;
@@ -259,8 +263,7 @@ public class ConcurrencyManager implements Serializable {
             final long whileStartTimeMillis = System.currentTimeMillis();
             final boolean currentThreadWillEnterTheWhileWait = this.numberOfReaders.get() != 0;
             if(currentThreadWillEnterTheWhileWait) {
-                StackTraceElement stackTraceElement = currentThread.getStackTrace()[1];
-                putThreadAsWaitingToAcquireLockForWriting(currentThread, stackTraceElement.getClassName() + "." + stackTraceElement.getMethodName() + "(...)");
+                putThreadAsWaitingToAcquireLockForWriting(currentThread, ACQUIRE_DEFERRED_LOCK_METHOD_NAME);
             }
             while (this.numberOfReaders.get() != 0) {
                 // There are readers of this object, wait until they are done before determining if
@@ -336,8 +339,7 @@ public class ConcurrencyManager implements Serializable {
         ReadLockManager readLockManager = getReadLockManager(currentThread);
         final boolean currentThreadWillEnterTheWhileWait = (this.activeThread != null) && (this.activeThread != currentThread);
         if (currentThreadWillEnterTheWhileWait) {
-            StackTraceElement stackTraceElement = currentThread.getStackTrace()[1];
-            putThreadAsWaitingToAcquireLockForReading(currentThread, stackTraceElement.getClassName() + "." + stackTraceElement.getMethodName() + "(...)");
+            putThreadAsWaitingToAcquireLockForReading(currentThread, ACQUIRE_READ_LOCK_METHOD_NAME);
         }
         // Cannot check for starving writers as will lead to deadlocks.
         while ((this.activeThread != null) && (this.activeThread != Thread.currentThread())) {
