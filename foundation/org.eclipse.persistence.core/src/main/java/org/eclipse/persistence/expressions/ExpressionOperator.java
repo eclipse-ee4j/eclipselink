@@ -56,7 +56,10 @@ public class ExpressionOperator implements Serializable {
     static final long serialVersionUID = -7066100204792043980L;
     protected int selector;
     protected String name;
-    protected String[] databaseStrings;
+
+    // ListExpressionOperator uses its own start/separator/terminator strings
+    private String[] databaseStrings;
+
     protected boolean isPrefix = false;
     protected boolean isRepeating = false;
     protected Class<?> nodeClass;
@@ -317,7 +320,7 @@ public class ExpressionOperator implements Serializable {
         }
         ExpressionOperator operator = (ExpressionOperator) object;
         if (getSelector() == 0) {
-            return Arrays.equals(getDatabaseStrings(), operator.getDatabaseStrings());
+            return Arrays.equals(getDatabaseStrings(0), operator.getDatabaseStrings(0));
         } else {
             return getSelector() == operator.getSelector();
         }
@@ -1226,6 +1229,13 @@ public class ExpressionOperator implements Serializable {
      * INTERNAL:
      */
     public String[] getDatabaseStrings() {
+        return databaseStrings;
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public String[] getDatabaseStrings(int arguments) {
         return databaseStrings;
     }
 
@@ -2166,16 +2176,11 @@ public class ExpressionOperator implements Serializable {
         if (printer.getPlatform().isDynamicSQLRequiredForFunctions() && !isBindingSupported()) {
             printer.getCall().setUsesBinding(false);
         }
+
         int dbStringIndex = 0;
-        try {
-            if (isPrefix()) {
-                printer.getWriter().write(getDatabaseStrings()[0]);
-                dbStringIndex = 1;
-            } else {
-                dbStringIndex = 0;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (isPrefix()) {
+            printer.printString(getDatabaseStrings()[0]);
+            dbStringIndex = 1;
         }
 
         if (argumentIndices == null) {
@@ -2185,6 +2190,7 @@ public class ExpressionOperator implements Serializable {
             }
         }
 
+        String[] dbStrings = getDatabaseStrings(items.size());
         for (final int index : argumentIndices) {
             Expression item = (Expression)items.get(index);
             if ((this.selector == Ref) || ((this.selector == Deref) && (item.isObjectExpression()))) {
@@ -2195,8 +2201,8 @@ public class ExpressionOperator implements Serializable {
             } else {
                 item.printSQL(printer);
             }
-            if (dbStringIndex < getDatabaseStrings().length) {
-                printer.printString(getDatabaseStrings()[dbStringIndex++]);
+            if (dbStringIndex < dbStrings.length) {
+                printer.printString(dbStrings[dbStringIndex++]);
             }
         }
     }
@@ -2225,12 +2231,11 @@ public class ExpressionOperator implements Serializable {
         if (printer.getPlatform().isDynamicSQLRequiredForFunctions() && !isBindingSupported()) {
             printer.getCall().setUsesBinding(false);
         }
-        int dbStringIndex;
+
+        int dbStringIndex = 0;
         if (isPrefix()) {
             printer.printString(getDatabaseStrings()[0]);
             dbStringIndex = 1;
-        } else {
-            dbStringIndex = 0;
         }
 
         first.printSQL(printer);
@@ -2996,11 +3001,12 @@ public class ExpressionOperator implements Serializable {
      */
     @Override
     public String toString() {
-        if ((getDatabaseStrings() == null) || (getDatabaseStrings().length == 0)) {
+        String[] dbStrings = getDatabaseStrings();
+        if ((dbStrings == null) || (dbStrings.length == 0)) {
             //CR#... Print a useful name for the missing platform operator.
             return "platform operator - " + getPlatformOperatorName(this.selector);
         } else {
-            return "operator " + Arrays.asList(getDatabaseStrings());
+            return "operator " + Arrays.asList(dbStrings);
         }
     }
 

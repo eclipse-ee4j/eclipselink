@@ -28,6 +28,7 @@ import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.ParameterExpression;
 import jakarta.persistence.criteria.Root;
 
+import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
@@ -35,6 +36,7 @@ import org.eclipse.persistence.jpa.test.framework.Property;
 import org.eclipse.persistence.jpa.test.query.model.Dto01;
 import org.eclipse.persistence.jpa.test.query.model.EntityTbl01;
 import org.eclipse.persistence.jpa.test.query.model.EntityTbl01_;
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,6 +48,32 @@ public class TestQueryCase {
     private EntityManagerFactory emf;
 
     private static boolean POPULATED = false;
+
+    @Test
+    public void testDefaultCaseConditionOperatorDatabaseStrings() {
+        ExpressionOperator caseConditionOp = ExpressionOperator.caseConditionStatement();
+
+        String[] databaseStrings = caseConditionOp.getDatabaseStrings(0);
+        Assert.assertArrayEquals(new String[] {"CASE WHEN ", " END "}, databaseStrings);
+
+        databaseStrings = caseConditionOp.getDatabaseStrings(1);
+        Assert.assertArrayEquals(new String[] {"CASE WHEN ", " END "}, databaseStrings);
+
+        databaseStrings = caseConditionOp.getDatabaseStrings(2);
+        Assert.assertArrayEquals(new String[] {"CASE WHEN ", " THEN ", " END "}, databaseStrings);
+
+        databaseStrings = caseConditionOp.getDatabaseStrings(3);
+        Assert.assertArrayEquals(new String[] {"CASE WHEN ", " THEN ", " ELSE ", " END "}, databaseStrings);
+
+        databaseStrings = caseConditionOp.getDatabaseStrings(4);
+        Assert.assertArrayEquals(new String[] {"CASE WHEN ", " THEN ", " WHEN ", " THEN ", " END "}, databaseStrings);
+
+        databaseStrings = caseConditionOp.getDatabaseStrings(5);
+        Assert.assertArrayEquals(new String[] {"CASE WHEN ", " THEN ", " WHEN ", " THEN ", " ELSE ", " END "}, databaseStrings);
+
+        databaseStrings = caseConditionOp.getDatabaseStrings(6);
+        Assert.assertArrayEquals(new String[] {"CASE WHEN ", " THEN ", " WHEN ", " THEN ", " WHEN ", " THEN ", " END "}, databaseStrings);
+    }
 
     @Test
     public void testQuery_JPQL_Case_Literals_1() {
