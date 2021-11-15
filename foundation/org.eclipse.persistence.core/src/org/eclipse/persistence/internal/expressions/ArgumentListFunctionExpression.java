@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -102,10 +103,19 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
         operator.printCollection(getChildren(), printer);
     }
 
-
     @Override
     protected void postCopyIn(Map alreadyDone) {
-        ((ListExpressionOperator)operator).setNumberOfItems(0);
+        /*
+         * Bug 463042: All ArgumentListFunctionExpression instances store the same operator reference.
+         * Unfortunately, ListExpressionOperator.numberOfItems stores state. If multiple ArgumentListFunctionExpression
+         * are run concurrently, then the ListExpressionOperator.numberOfItems state shared by all instances
+         * becomes inconsistent. A solution is to make sure each ArgumentListFunctionExpression has a unique operator
+         * reference.
+         */
+        final ListExpressionOperator originalOperator = ((ListExpressionOperator) this.operator);
+        this.operator = new ListExpressionOperator();
+        originalOperator.copyTo(this.operator);
+
         Boolean hasLastChildCopy = hasLastChild;
         hasLastChild = null;
         super.postCopyIn(alreadyDone);
