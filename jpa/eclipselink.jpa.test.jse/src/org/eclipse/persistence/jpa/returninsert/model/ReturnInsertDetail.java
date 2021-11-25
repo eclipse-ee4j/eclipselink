@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@
 package org.eclipse.persistence.jpa.returninsert.model;
 
 import org.eclipse.persistence.annotations.ReturnInsert;
+import org.eclipse.persistence.annotations.ReturnUpdate;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -42,6 +43,13 @@ public class ReturnInsertDetail extends ReturnInsertDetailParent implements Seri
 
 	@Embedded
 	private ReturnInsertDetailEmbedded returnInsertDetailEmbedded;
+
+	@Column(name = "COL6")
+	private String col6;
+
+	@ReturnUpdate
+	@Column(name = "COL6_VIRTUAL", insertable = false)
+	private String col6Virtual;
 
 	@OneToOne(cascade = { CascadeType.MERGE, CascadeType.PERSIST })
 	@JoinColumns({
@@ -76,6 +84,22 @@ public class ReturnInsertDetail extends ReturnInsertDetailParent implements Seri
 
 	public void setReturnInsertDetailEmbedded(ReturnInsertDetailEmbedded returnInsertDetailEmbedded) {
 		this.returnInsertDetailEmbedded = returnInsertDetailEmbedded;
+	}
+
+	public String getCol6() {
+		return col6;
+	}
+
+	public void setCol6(String col6) {
+		this.col6 = col6;
+	}
+
+	public String getCol6Virtual() {
+		return col6Virtual;
+	}
+
+	public void setCol6Virtual(String col6Virtual) {
+		this.col6Virtual = col6Virtual;
 	}
 
 	public ReturnInsertMaster getReturnInsertMaster() {
