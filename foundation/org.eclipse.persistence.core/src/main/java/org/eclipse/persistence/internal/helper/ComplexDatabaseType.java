@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -189,17 +189,17 @@ public abstract class ComplexDatabaseType implements DatabaseType, Cloneable {
 
     @Override
     public void buildBeginBlock(StringBuilder sb, PLSQLargument arg, PLSQLStoredProcedureCall call) {
-        String sql2PlName = call.getSQL2PlName(this);
-        if (sql2PlName == null) {
+        String conversionRoutine = ((this.getTypeName().equals(this.getCompatibleType()))) ? call.getPl2SQLName(this) : call.getSQL2PlName(this);
+        if (conversionRoutine == null) {
             // TODO exception
-            throw new NullPointerException("no SQL2Pl conversion routine for " + typeName);
+            throw new NullPointerException("no SQL2Pl or Pl2SQL conversion routine for " + typeName);
         }
         String target = databaseTypeHelper.buildTarget(arg);
         String compat = databaseTypeHelper.buildCompatible(arg);
         sb.append("  ");
         sb.append(target);
         sb.append(" := ");
-        sb.append(sql2PlName);
+        sb.append(conversionRoutine);
         sb.append("(");
         sb.append(compat);
         sb.append(");");

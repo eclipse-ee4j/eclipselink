@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -339,7 +339,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
                 fields[index] = row.get(field);
             }
 
-            structure = session.getPlatform().createStruct(getStructureName(), fields, session, connection);
+            structure = session.getPlatform().createStruct(getStructureName(), fields, row, getOrderedFields(), session, connection);
         } catch (java.sql.SQLException exception) {
             throw DatabaseException.sqlException(exception, session, false);
         } finally {
