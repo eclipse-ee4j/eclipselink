@@ -788,12 +788,12 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         updateStatement.setTranslationRow(getTranslationRow());
         if (getDescriptor().hasReturningPolicies() && getDescriptor().getReturnFieldsToGenerateUpdate() != null) {
             List<DatabaseField> returnFieldsForTable = new ArrayList<>();
-            for (DatabaseField item: getDescriptor().getReturnFieldsToGenerateInsert()) {
+            for (DatabaseField item: getDescriptor().getReturnFieldsToGenerateUpdate()) {
                 if (table.equals(item.getTable())) {
                     returnFieldsForTable.add(item);
                 }
                 if (!returnFieldsForTable.isEmpty()) {
-                    updateStatement.setReturnFields(getDescriptor().getReturnFieldsToGenerateInsert());
+                    updateStatement.setReturnFields(getDescriptor().getReturnFieldsToGenerateUpdate());
                 }
             }
         }
