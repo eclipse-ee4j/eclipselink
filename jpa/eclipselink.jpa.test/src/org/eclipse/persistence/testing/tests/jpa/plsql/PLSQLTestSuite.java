@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@
 package org.eclipse.persistence.testing.tests.jpa.plsql;
 
 import java.math.BigDecimal;
+import java.util.Base64;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -36,6 +37,8 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.plsql.Address;
 import org.eclipse.persistence.testing.models.jpa.plsql.Employee;
+import org.eclipse.persistence.testing.models.jpa.plsql.InnerObjBlob;
+import org.eclipse.persistence.testing.models.jpa.plsql.OuterObjBlob;
 import org.eclipse.persistence.testing.models.jpa.plsql.Phone;
 
 public class PLSQLTestSuite extends JUnitTestCase {
@@ -49,7 +52,9 @@ public class PLSQLTestSuite extends JUnitTestCase {
         suite.addTest(new PLSQLTestSuite("testTableOut"));
         suite.addTest(new PLSQLTestSuite("testEmpRecordInOut"));
         suite.addTest(new PLSQLTestSuite("testConsultant"));
-         suite.addTest(new PLSQLTestSuite("testOracleTypeProcessing"));
+        suite.addTest(new PLSQLTestSuite("testOracleTypeProcessing"));
+        suite.addTest(new PLSQLTestSuite("testBlobInStruct"));
+        suite.addTest(new PLSQLTestSuite("testStructInStruct"));
        return suite;
     }
 
@@ -136,6 +141,12 @@ public class PLSQLTestSuite extends JUnitTestCase {
 
         // Types
         try {
+            session.executeNonSelectingSQL("DROP TYPE PLSQL_P_PLSQL_INNER_BLOB_REC FORCE");
+        } catch (Exception ignore) {}
+        try {
+            session.executeNonSelectingSQL("DROP TYPE PLSQL_P_PLSQL_OUTER_STRUCT_REC FORCE");
+        } catch (Exception ignore) {}
+        try {
             session.executeNonSelectingSQL("DROP TYPE PLSQL_P_PLSQL_EMP_REC FORCE");
         } catch (Exception ignore) {}
         try {
@@ -151,6 +162,10 @@ public class PLSQLTestSuite extends JUnitTestCase {
         session.executeNonSelectingSQL("CREATE OR REPLACE TYPE PLSQL_P_PLSQL_PHONE_LIST AS VARRAY(30) OF PLSQL_P_PLSQL_PHONE_REC");
         session.executeNonSelectingSQL("CREATE OR REPLACE TYPE PLSQL_P_PLSQL_EMP_REC AS OBJECT ("
                 + "EMP_ID NUMBER(10), NAME VARCHAR2(30), ACTIVE NUMBER(1), ADDRESS PLSQL_P_PLSQL_ADDRESS_REC, PHONES PLSQL_P_PLSQL_PHONE_LIST)");
+        session.executeNonSelectingSQL("CREATE OR REPLACE TYPE PLSQL_P_PLSQL_INNER_BLOB_REC AS OBJECT ("
+                + "BLOB_ID NUMBER(10), BLOB_CONTENT BLOB, CLOB_CONTENT CLOB)");
+        session.executeNonSelectingSQL("CREATE OR REPLACE TYPE PLSQL_P_PLSQL_OUTER_STRUCT_REC AS OBJECT ("
+                + "STRUCT_ID NUMBER(10), STRUCT_CONTENT PLSQL_P_PLSQL_INNER_BLOB_REC)");
         session.executeNonSelectingSQL("CREATE OR REPLACE TYPE PLSQL_P_PLSQL_CITY_LIST AS VARRAY(255) OF VARCHAR2(100)");
         session.executeNonSelectingSQL("CREATE OR REPLACE TYPE PLSQL_P_PLSQL_ADDRESS_LIST AS VARRAY(255) OF PLSQL_P_PLSQL_ADDRESS_REC");
         session.executeNonSelectingSQL("CREATE OR REPLACE TYPE PLSQL_P_PLSQL_EMP_LIST AS VARRAY(255) OF PLSQL_P_PLSQL_EMP_REC");
@@ -178,6 +193,8 @@ public class PLSQLTestSuite extends JUnitTestCase {
                     + "PROCEDURE PLSQL_EMP_INOUT(P_EMP IN OUT PLSQL_EMP_REC, P_CITY IN OUT VARCHAR2); \n"
                     + "PROCEDURE PLSQL_ADDRESS_CUR_OUT(P_ADDRESS OUT PLSQL_ADDRESS_CUR); \n"
                     + "PROCEDURE PLSQL_ADDRESS_REC_CUR_OUT(P_ADDRESS OUT PLSQL_ADDRESS_REC_CUR); \n"
+                    + "FUNCTION PLSQL_BLOB_REC_IN(P_BLOB_REC IN PLSQL_P_PLSQL_INNER_BLOB_REC, P_CITY IN VARCHAR2) RETURN VARCHAR2; \n"
+                    + "FUNCTION PLSQL_STRUCT_INSTRUCT_REC_IN(P_BLOB_REC IN PLSQL_P_PLSQL_INNER_BLOB_REC, P_STRUCT_REC IN PLSQL_P_PLSQL_OUTER_STRUCT_REC, P_CITY IN VARCHAR2) RETURN VARCHAR2; \n"
                     + "END PLSQL_P; \n");
         session.executeNonSelectingSQL("CREATE OR REPLACE PACKAGE BODY PLSQL_P AS \n"
                     + "PROCEDURE PLSQL_CITY_LIST_IN(P_CITY_LIST IN PLSQL_CITY_LIST, P_CITY IN VARCHAR2) AS \n"
@@ -238,7 +255,16 @@ public class PLSQLTestSuite extends JUnitTestCase {
                         + "BEGIN \n"
                         + "OPEN P_ADDRESS FOR SELECT * FROM PLSQL_ADDRESS; \n"
                         + "END PLSQL_ADDRESS_REC_CUR_OUT; \n"
-                    + "END PLSQL_P; \n");
+                    + "FUNCTION PLSQL_BLOB_REC_IN(P_BLOB_REC IN PLSQL_P_PLSQL_INNER_BLOB_REC, P_CITY IN VARCHAR2) RETURN VARCHAR2 IS \n"
+                        + "BEGIN \n"
+                        + "RETURN P_CITY || TO_CHAR(P_BLOB_REC.BLOB_ID) || TO_CHAR(DBMS_LOB.GETLENGTH(P_BLOB_REC.BLOB_CONTENT)) || TO_CHAR(P_BLOB_REC.CLOB_CONTENT); \n"
+                        + "END PLSQL_BLOB_REC_IN; \n"
+                    + "FUNCTION PLSQL_STRUCT_INSTRUCT_REC_IN(P_BLOB_REC IN PLSQL_P_PLSQL_INNER_BLOB_REC, P_STRUCT_REC IN PLSQL_P_PLSQL_OUTER_STRUCT_REC, P_CITY IN VARCHAR2) RETURN VARCHAR2 IS \n"
+                        + "BEGIN \n"
+                        + "RETURN P_CITY || TO_CHAR(P_BLOB_REC.BLOB_ID) || TO_CHAR(DBMS_LOB.GETLENGTH(P_BLOB_REC.BLOB_CONTENT)) || TO_CHAR(P_STRUCT_REC.STRUCT_ID) || TO_CHAR(DBMS_LOB.GETLENGTH(P_STRUCT_REC.STRUCT_CONTENT.BLOB_CONTENT)) || TO_CHAR(P_BLOB_REC.CLOB_CONTENT); \n"
+                        + "END PLSQL_STRUCT_INSTRUCT_REC_IN; \n"
+                + "END PLSQL_P; \n"
+        );
         session.executeNonSelectingSQL("CREATE TABLE PLSQL_CONSULTANT ("
                 + "EMP_ID NUMBER(10), NAME VARCHAR2(30), ACTIVE NUMBER(1), ADDRESS PLSQL_P_PLSQL_ADDRESS_REC, PHONES PLSQL_P_PLSQL_PHONE_LIST, PRIMARY KEY (EMP_ID))");
     }
@@ -462,6 +488,55 @@ public class PLSQLTestSuite extends JUnitTestCase {
             }
             assertTrue("IN arg P_IN was not processed", foundINArg);
             assertTrue("OUT arg P_OUT was not processed", foundOUTArg);
+        } finally {
+            closeEntityManagerAndTransaction(em);
+        }
+    }
+
+    /**
+     * Test Blob data-type in Struct (SQL Object type) which is passed/used as stored procedure/function parameter.
+     */
+    public void testBlobInStruct() {
+        if (!getServerSession().getPlatform().isOracle()) {
+            return;
+        }
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            Query query = em.createNamedQuery("PLSQL_BLOB_REC_IN");
+            InnerObjBlob innerObjBlob = new InnerObjBlob(1, Base64.getDecoder().decode("AQI="), "abcd");
+            query.setParameter("P_CITY", "Prague");
+            query.setParameter("P_BLOB_REC", innerObjBlob);
+            Object result = query.getSingleResult();
+            if (!"Prague12abcd".equals(result.toString())) {
+                fail("Incorrect result.");
+            }
+        } finally {
+            closeEntityManagerAndTransaction(em);
+        }
+    }
+
+
+    /**
+     * Test Struct (SQL Object type) with Blob data-type in Struct (SQL Object type) which is passed/used as stored procedure/function parameter.
+     */
+    public void testStructInStruct() {
+        if (!getServerSession().getPlatform().isOracle()) {
+            return;
+        }
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            Query query = em.createNamedQuery("PLSQL_STRUCT_INSTRUCT_REC_IN");
+            InnerObjBlob innerObjBlob = new InnerObjBlob(1, Base64.getDecoder().decode("AQI="), "abcd");
+            OuterObjBlob outerObjBlob = new OuterObjBlob(33, innerObjBlob);
+            query.setParameter("P_CITY", "Prague");
+            query.setParameter("P_BLOB_REC", innerObjBlob);
+            query.setParameter("P_STRUCT_REC", outerObjBlob);
+            Object result = query.getSingleResult();
+            if (!"Prague1233abcd".equals(result.toString())) {
+                fail("Incorrect result.");
+            }
         } finally {
             closeEntityManagerAndTransaction(em);
         }

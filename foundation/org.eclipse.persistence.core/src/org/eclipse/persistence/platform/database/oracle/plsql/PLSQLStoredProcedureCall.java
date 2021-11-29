@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -641,12 +641,12 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      * must be added in inverse order to resolve dependencies.
      */
     protected void addNestedFunctionsForArgument(List functions, PLSQLargument argument,
-                DatabaseType databaseType, Set<DatabaseType> processed) {
+                                                 DatabaseType databaseType, Set<DatabaseType> processed) {
         if ((databaseType == null)
-              || !databaseType.isComplexDatabaseType()
-              || databaseType.isJDBCType()
-              || argument.cursorOutput
-              || processed.contains(databaseType)) {
+                || !databaseType.isComplexDatabaseType()
+                || databaseType.isJDBCType()
+                || argument.cursorOutput
+                || processed.contains(databaseType)) {
             return;
         }
         ComplexDatabaseType type = (ComplexDatabaseType)databaseType;
@@ -670,20 +670,26 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         if (info == null) {
             info = generateNestedFunction(type, isNestedTable);
         }
-        if (argument.direction == IN) {
-            if (!functions.contains(info.sql2PlConv)) {
-                functions.add(info.sql2PlConv);
-            }
-        } else if (argument.direction == INOUT) {
-            if (!functions.contains(info.sql2PlConv)) {
-                functions.add(info.sql2PlConv);
-            }
+        if (type.getTypeName().equals(type.getCompatibleType())) {
             if (!functions.contains(info.pl2SqlConv)) {
                 functions.add(info.pl2SqlConv);
             }
-        } else if (argument.direction == OUT) {
-            if (!functions.contains(info.pl2SqlConv)) {
-                functions.add(info.pl2SqlConv);
+        } else {
+            if (argument.direction == IN) {
+                if (!functions.contains(info.sql2PlConv)) {
+                    functions.add(info.sql2PlConv);
+                }
+            } else if (argument.direction == INOUT) {
+                if (!functions.contains(info.sql2PlConv)) {
+                    functions.add(info.sql2PlConv);
+                }
+                if (!functions.contains(info.pl2SqlConv)) {
+                    functions.add(info.pl2SqlConv);
+                }
+            } else if (argument.direction == OUT) {
+                if (!functions.contains(info.pl2SqlConv)) {
+                    functions.add(info.pl2SqlConv);
+                }
             }
         }
     }
