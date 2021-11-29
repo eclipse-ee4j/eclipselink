@@ -26,6 +26,7 @@
 //     08/06/2010-2.2 mobrien 322018 - reduce protected instance variables to private to enforce encapsulation
 package org.eclipse.persistence.internal.jpa.metamodel;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -196,6 +197,8 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
                     "metamodel_identifiable_id_attribute_is_incorrect_idclass",
                     new Object[] { this }));
         } else {
+            List<String> anAttributesMsg = new ArrayList<>();
+            List<String> anAttributesJavaTypeMsg = new ArrayList<>();
             // verify single id attribute type
             for(SingularAttribute<? super X, ?> anAttribute : idAttributes) {
                 // Verify type is correct - relax restriction on null and Object.class (from same classLoader)
@@ -203,10 +206,14 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
                         type.getCanonicalName().equals(anAttribute.getJavaType().getCanonicalName())) {
                     idAttribute = (SingularAttribute<? super X, Y>) anAttribute;
                 } else {
-                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
-                        "metamodel_identifiable_id_attribute_type_incorrect",
-                        new Object[] { anAttribute, this, type, anAttribute.getJavaType() }));
+                    anAttributesMsg.add(anAttribute.toString());
+                    anAttributesJavaTypeMsg.add(anAttribute.getJavaType().toString());
                 }
+            }
+            if (idAttribute == null) {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                        "metamodel_identifiable_id_attribute_type_incorrect",
+                        new Object[] { anAttributesMsg, this, type, anAttributesJavaTypeMsg }));
             }
         }
         return idAttribute;
