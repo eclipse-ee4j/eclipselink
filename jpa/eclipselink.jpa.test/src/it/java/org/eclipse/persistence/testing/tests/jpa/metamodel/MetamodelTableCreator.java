@@ -98,6 +98,9 @@ DROP TABLE CMP3_MM_COMPUTER
         addTableDefinition(buildCMP3_MM_BOARD_SEQTable());
         addTableDefinition(buildCMP3_MM_PERSON_SEQTable());
         addTableDefinition(buildCMP3_MM_MANUF_CMP3_MM_MANUFTable());
+        addTableDefinition(buildCMP3_MM_BARTable());
+        addTableDefinition(buildCMP3_MM_FOOTable());
+        addTableDefinition(buildCMP3_MM_FOOBARTable());
     }
 
 
@@ -2355,5 +2358,65 @@ DROP TABLE CMP3_MM_COMPUTER
         return table;
     }
 
+    public static TableDefinition buildCMP3_MM_BARTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_MM_BAR");
+
+        FieldDefinition field = new FieldDefinition();
+        field.setName("ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        table.addField(field);
+
+        return table;
+    }
+
+    public static TableDefinition buildCMP3_MM_FOOTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_MM_FOO");
+
+        FieldDefinition field = new FieldDefinition();
+        field.setName("ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        table.addField(field);
+
+        return table;
+    }
+
+    public static TableDefinition buildCMP3_MM_FOOBARTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_MM_FOOBAR");
+
+        FieldDefinition field = new FieldDefinition();
+        field.setName("bar_id");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        table.addField(field);
+
+        FieldDefinition field2 = new FieldDefinition();
+        field2.setName("foo_id");
+        field2.setTypeName("NUMERIC");
+        field2.setSize(15);
+        field2.setShouldAllowNull(false);
+        field2.setIsPrimaryKey(true);
+        field2.setUnique(false);
+        field2.setIsIdentity(true);
+        table.addField(field2);
+
+        return table;
+    }
 }
 
