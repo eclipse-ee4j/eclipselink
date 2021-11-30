@@ -14,8 +14,8 @@
 //     Oracle - initial API and implementation from Oracle
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.Objects;
 
