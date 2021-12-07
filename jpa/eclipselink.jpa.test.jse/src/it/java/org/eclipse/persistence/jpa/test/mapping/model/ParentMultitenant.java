@@ -34,7 +34,7 @@ import java.util.List;
 @Table(name = "parent")
 @Cacheable(false)
 @Multitenant(MultitenantType.TABLE_PER_TENANT)
-@TenantTableDiscriminator(type = TenantTableDiscriminatorType.SCHEMA)
+@TenantTableDiscriminator(type = TenantTableDiscriminatorType.PREFIX)
 public class ParentMultitenant implements Serializable {
 
     @Id

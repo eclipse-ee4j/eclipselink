@@ -20,13 +20,9 @@ import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.mapping.model.ChildMultitenant;
 import org.eclipse.persistence.jpa.test.mapping.model.ParentMultitenant;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -37,6 +33,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * Test for the fix issue #1161
@@ -55,21 +54,47 @@ public class TestMultitenantOneToMany {
     public void setup() {
         EntityManager em = emf.createEntityManager();
         try {
+            try {
+                em.getTransaction().begin();
+                em.createNativeQuery("DROP TABLE tenant1_children").executeUpdate();
+                em.getTransaction().commit();
+            } catch (Exception ignore) {
+            }
+            try {
+                em.getTransaction().begin();
+                em.createNativeQuery("DROP TABLE tenant2_children").executeUpdate();
+                em.getTransaction().commit();
+            } catch (Exception ignore) {
+            }
+            try {
+                em.getTransaction().begin();
+                em.createNativeQuery("DROP TABLE tenant1_parent").executeUpdate();
+                em.getTransaction().commit();
+            } catch (Exception ignore) {
+            }
+            try {
+                em.getTransaction().begin();
+                em.createNativeQuery("DROP TABLE tenant2_parent").executeUpdate();
+                em.getTransaction().commit();
+            } catch (Exception ignore) {
+            }
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
             em.getTransaction().begin();
-            em.createNativeQuery("CREATE SCHEMA tenant_1").executeUpdate();
-            em.createNativeQuery("CREATE SCHEMA tenant_2").executeUpdate();
-            em.createNativeQuery("CREATE TABLE tenant_1.parent(id bigint primary key)").executeUpdate();
-            em.createNativeQuery("CREATE TABLE tenant_2.parent(id bigint primary key)").executeUpdate();
-            em.createNativeQuery("CREATE TABLE tenant_1.children(id bigint NOT NULL, parent_id bigint, PRIMARY KEY " +
-                    "(id), CONSTRAINT parent_fkey FOREIGN KEY (parent_id) REFERENCES tenant_1.parent (id))")
+            em.createNativeQuery("CREATE TABLE tenant1_parent(id integer primary key)").executeUpdate();
+            em.createNativeQuery("CREATE TABLE tenant2_parent(id integer primary key)").executeUpdate();
+            em.createNativeQuery("CREATE TABLE tenant1_children(id integer NOT NULL, parent_id integer, PRIMARY KEY " +
+                            "(id), CONSTRAINT tenant1_parent_fkey FOREIGN KEY (parent_id) REFERENCES tenant1_parent (id))")
                     .executeUpdate();
-            em.createNativeQuery("CREATE TABLE tenant_2.children(id bigint NOT NULL, parent_id bigint, PRIMARY KEY " +
-                    "(id), CONSTRAINT parent_fkey FOREIGN KEY (parent_id) REFERENCES tenant_2.parent (id))")
+            em.createNativeQuery("CREATE TABLE tenant2_children(id integer NOT NULL, parent_id integer, PRIMARY KEY " +
+                            "(id), CONSTRAINT tenant2_parent_fkey FOREIGN KEY (parent_id) REFERENCES tenant2_parent (id))")
                     .executeUpdate();
-            em.createNativeQuery("INSERT INTO tenant_1.parent(id) VALUES(1)").executeUpdate();
-            em.createNativeQuery("INSERT INTO tenant_2.parent(id) VALUES(2)").executeUpdate();
-            em.createNativeQuery("INSERT INTO tenant_1.children(id, parent_id) VALUES(10, 1)").executeUpdate();
-            em.createNativeQuery("INSERT INTO tenant_2.children(id, parent_id) VALUES(11, 2)").executeUpdate();
+
+            em.createNativeQuery("INSERT INTO tenant1_parent(id) VALUES(1)").executeUpdate();
+            em.createNativeQuery("INSERT INTO tenant2_parent(id) VALUES(2)").executeUpdate();
+            em.createNativeQuery("INSERT INTO tenant1_children(id, parent_id) VALUES(10, 1)").executeUpdate();
+            em.createNativeQuery("INSERT INTO tenant2_children(id, parent_id) VALUES(11, 2)").executeUpdate();
             em.getTransaction().commit();
         } finally {
             if (em.getTransaction().isActive()) {
@@ -89,8 +114,8 @@ public class TestMultitenantOneToMany {
         try {
             ExecutorService es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
             for (int i = 1; i <= 10000; i++) {
-                parent1Results.add(es.submit(() -> load("tenant_1", 1L)));
-                parent2Results.add(es.submit(() -> load("tenant_2", 2L)));
+                parent1Results.add(es.submit(() -> load("tenant1", 1L)));
+                parent2Results.add(es.submit(() -> load("tenant2", 2L)));
             }
             es.shutdown();
             awaitTermination = es.awaitTermination(10, TimeUnit.MINUTES);
@@ -128,7 +153,5 @@ public class TestMultitenantOneToMany {
         List<ChildMultitenant> children = parent.getChildren();
         em.close();
         return parent;
-
     }
-
 }
