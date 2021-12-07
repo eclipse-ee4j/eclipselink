@@ -39,7 +39,7 @@ import static org.junit.Assert.fail;
 
 /**
  * Test for the fix issue #1161
- * Multitenancy schema discriminator with OneToMany relationships - Wrong tenant reference leading to QueryException
+ * Multitenancy prefix discriminator with OneToMany relationships - Wrong tenant reference leading to QueryException
  */
 @RunWith(EmfRunner.class)
 public class TestMultitenantOneToMany {
@@ -107,7 +107,7 @@ public class TestMultitenantOneToMany {
     }
 
     @Test
-    public void testMultitenancySchemaDescriminatorWithOneToMany() {
+    public void testMultitenancyPrefixDescriminatorWithOneToMany() {
         boolean awaitTermination = false;
         List<Future<ParentMultitenant>> parent1Results = new ArrayList<>();
         List<Future<ParentMultitenant>> parent2Results = new ArrayList<>();
