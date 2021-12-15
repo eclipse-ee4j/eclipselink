@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -59,8 +59,8 @@ public class OSGITestHelper {
                 mavenBundle().groupId("com.fasterxml").artifactId("classmate").version("1.1.0"),
                 mavenBundle().groupId("javax.el").artifactId("javax.el-api").version("3.0.0"),
                 mavenBundle().groupId("org.jboss.logging").artifactId("jboss-logging").version("3.2.1.Final"),
-                mavenBundle().groupId("org.apache.logging.log4j").artifactId("log4j-api").version("2.3"),
-                mavenBundle().groupId("org.apache.logging.log4j").artifactId("log4j-core").version("2.3"),
+                mavenBundle().groupId("org.apache.logging.log4j").artifactId("log4j-api").version("2.16.0"),
+                mavenBundle().groupId("org.apache.logging.log4j").artifactId("log4j-core").version("2.16.0"),
 
                 // JAXB API
                 bundle("file:" + PLUGINS_DIR + JAXB_API_JAR),
