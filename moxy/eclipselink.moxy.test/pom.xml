@@ -31,7 +31,7 @@
         <!-- CQ #3571 -->
         <hibernate.version>6.1.0.Final</hibernate.version>
         <jaxb.version>2.3.2</jaxb.version>
-        <log4j.version>2.13.0</log4j.version>
+        <log4j.version>2.16.0</log4j.version>
         <!-- CQ #21139, 21140 -->
         <logback.version>1.3.0-alpha5</logback.version>
         <url.version>2.6.7</url.version>
