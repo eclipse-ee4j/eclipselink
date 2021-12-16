@@ -18,6 +18,7 @@ open module org.eclipse.persistence.moxy.test {
 
     requires jakarta.mail;
     requires jakarta.json;
+    requires jakarta.validation;
     requires jakarta.ws.rs;
     
     requires com.sun.xml.bind;
