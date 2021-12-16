@@ -180,17 +180,17 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.oracle.ojdbc</groupId>
+            <groupId>com.oracle.database.xml</groupId>
             <artifactId>xmlparserv2</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.oracle.ojdbc</groupId>
+            <groupId>com.oracle.database.xml</groupId>
             <artifactId>xdb</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.oracle.ojdbc</groupId>
+            <groupId>com.oracle.database.nls</groupId>
             <artifactId>orai18n</artifactId>
             <scope>test</scope>
         </dependency>

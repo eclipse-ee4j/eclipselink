@@ -105,13 +105,6 @@ public class JMSSetupHelper extends BroadcastSetupHelper {
     @Override
     protected Object[] internalCreateFactory() throws Exception {
         updateDbSettings();
-        if (oracleDataSource != null) {
-            try {
-                oracleDataSource.close();
-            } catch (java.sql.SQLException ex) {
-                // ignore
-            }
-        }
         createInDb();
 
         oracleDataSource = new oracle.jdbc.pool.OracleDataSource();
@@ -146,12 +139,7 @@ public class JMSSetupHelper extends BroadcastSetupHelper {
             destroyInDb();
         } catch (java.sql.SQLException ex) {
         } finally {
-            try {
-                oracleDataSource.close();
-            } catch (java.sql.SQLException ex) {
-            } finally {
-                oracleDataSource = null;
-            }
+            oracleDataSource = null;
         }
     }
 

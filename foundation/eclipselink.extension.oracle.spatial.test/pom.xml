@@ -55,7 +55,7 @@
         <!--Oracle proprietary dependencies-->
         <!--JDBC driver dependencies-->
         <dependency>
-            <groupId>com.oracle.ojdbc</groupId>
+            <groupId>com.oracle.database.jdbc</groupId>
             <artifactId>ojdbc8</artifactId>
             <scope>test</scope>
         </dependency>
