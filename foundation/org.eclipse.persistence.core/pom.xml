@@ -127,6 +127,11 @@
             <artifactId>parsson</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.angus</groupId>
+            <artifactId>angus-activation</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
