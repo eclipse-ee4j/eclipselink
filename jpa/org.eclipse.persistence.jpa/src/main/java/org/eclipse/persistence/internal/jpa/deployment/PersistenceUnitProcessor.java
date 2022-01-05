@@ -753,7 +753,7 @@ public class PersistenceUnitProcessor {
             // archive, and file is the URL of that archive. Since
             // the innermost archive has to be a JAR (according to JPA Spec),
             // this case is handled by the previous branch.
-            return rootEntry.equals(WEBINF_CLASSES_STR);
+            return rootEntry.equals(WEBINF_CLASSES_STR) || rootEntry.isEmpty();
         } else {
             return false;
         }
