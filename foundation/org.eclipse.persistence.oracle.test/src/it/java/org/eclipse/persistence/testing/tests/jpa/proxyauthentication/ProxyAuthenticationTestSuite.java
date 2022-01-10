@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,8 +27,9 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import oracle.jdbc.OracleConnection;
-import oracle.jdbc.pool.OracleDataSource;
 
+import oracle.ucp.jdbc.PoolDataSource;
+import oracle.ucp.jdbc.PoolDataSourceFactory;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
 import org.eclipse.persistence.internal.sessions.ExclusiveIsolatedClientSession;
@@ -61,7 +62,7 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
     // indicates whether EclusiveIsolatedClientSession should be used.
     boolean shoulUseExclusiveIsolatedSession;
     // datasource created in external connection pooling case.
-    OracleDataSource dataSource;
+    PoolDataSource dataSource;
 
     // writeUser is set by an event risen by ModifyQuery.
     private static String writeUser;
@@ -171,27 +172,17 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
         // the test has customized the factory - it should be closed.
         closeEntityManagerFactory();
         // close the data source if it has been created
-        if(dataSource != null) {
-            try {
-                dataSource.close();
-            } catch (SQLException ex) {
-                throw new RuntimeException("Exception thrown while closing OracleDataSource:\n", ex);
-            } finally {
-                dataSource = null;
-            }
-        }
+        dataSource = null;
     }
 
     // create a data source using the supplied connection string
     void createDataSource(String connectionString) {
         try {
-            dataSource = new OracleDataSource();
-            Properties props = new Properties();
-            // the pool using just one connection would cause deadlock in case of a connection leak - good for the test.
-            props.setProperty("MinLimit", "1");
-            props.setProperty("MaxLimit", "1");
-            props.setProperty("InitialLimit", "1");
-            dataSource.setConnectionCacheProperties(props);
+            dataSource = PoolDataSourceFactory.getPoolDataSource();
+            dataSource.setConnectionFactoryClassName("oracle.jdbc.pool.OracleDataSource");
+            dataSource.setMinPoolSize(1);
+            dataSource.setMaxPoolSize(1);
+            dataSource.setInitialPoolSize(1);
             dataSource.setURL(connectionString);
         } catch (SQLException ex) {
             throw new RuntimeException("Failed to create OracleDataSource with " + connectionString + ".\n", ex);
