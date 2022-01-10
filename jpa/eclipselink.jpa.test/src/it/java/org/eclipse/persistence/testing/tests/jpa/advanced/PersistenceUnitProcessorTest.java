@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -79,6 +79,21 @@ public class PersistenceUnitProcessorTest extends JUnitTestCase {
         );
     }
 
+    private static void checkPURootCustomWithCustomDescriptorLocation(
+            String inputScheme,
+            String inputFile,
+            String expectedOutput,
+            String descriptorLocation
+    ) throws Exception {
+        assertEquals(
+                expectedOutput,
+                PersistenceUnitProcessor.computePURootURL(
+                        new URL(inputScheme, "", -1, inputFile, dummyHandler),
+                        descriptorLocation
+                ).toString()
+        );
+    }
+
     private static void checkPURootFailsCustom(
         String inputScheme,
         String inputFile
@@ -117,6 +132,15 @@ public class PersistenceUnitProcessorTest extends JUnitTestCase {
         checkPURootCustom(
             "zip", "/foo/bar.war!/WEB-INF/classes/META-INF/persistence.xml",
             "jar:file:/foo/bar.war!/WEB-INF/classes/"
+        );
+
+        // WAR files have a special location available.
+        // Simulate event when custom persistence descriptor file name is used and specified e.g.
+        // System.setProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, "WEB-INF/classes/META-INF/my-persistence.xml");
+        checkPURootCustomWithCustomDescriptorLocation(
+                "zip", "/foo/bar.war!/WEB-INF/classes/META-INF/my-persistence.xml",
+                "file:/foo/bar.war",
+                "WEB-INF/classes/META-INF/my-persistence.xml"
         );
 
         // Same as the previous one, but not a WAR!

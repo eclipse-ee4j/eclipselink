@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -756,7 +756,7 @@ public class PersistenceUnitProcessor {
             // archive, and file is the URL of that archive. Since
             // the innermost archive has to be a JAR (according to JPA Spec),
             // this case is handled by the previous branch.
-            return rootEntry.equals(WEBINF_CLASSES_STR);
+            return rootEntry.equals(WEBINF_CLASSES_STR) || rootEntry.isEmpty();
         } else {
             return false;
         }
