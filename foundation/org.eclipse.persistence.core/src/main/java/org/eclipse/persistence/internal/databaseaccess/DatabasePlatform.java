@@ -32,9 +32,12 @@
 //       - 540929 : 'jdbc.sql-cast' property does not copy
 //     12/06/2018 - Will Dazey
 //       - 542491: Add new 'eclipselink.jdbc.force-bind-parameters' property to force enable binding
+//     13/01/2022-4.0.0 Tomas Kraus
+//       - 1391: JSON support in JPA
 package org.eclipse.persistence.internal.databaseaccess;
 
 // javase imports
+
 import java.io.ByteArrayInputStream;
 import java.io.CharArrayReader;
 import java.io.IOException;
@@ -63,7 +66,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.Vector;
 
-// EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -271,6 +273,10 @@ public class DatabasePlatform extends DatasourcePlatform {
     protected Boolean useJDBCStoredProcedureSyntax;
     protected String driverName;
 
+    // DatabaseJsonPlatform has lazy initialization
+    /** JSON support for ResultSet data retrieval. */
+    private volatile DatabaseJsonPlatform jsonPlatform;
+
     /**
      * Creates an instance of default database platform.
      */
@@ -299,6 +305,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         this.endDelimiter = "\"";
         this.useJDBCStoredProcedureSyntax = null;
         this.storedProcedureTerminationToken = ";";
+        this.jsonPlatform = null;
     }
 
     /**
@@ -772,6 +779,8 @@ public class DatabasePlatform extends DatasourcePlatform {
         fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIME"));
         fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
         fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIME"));
+        // Mapping for JSON type.
+        getJsonPlatform().updateFieldTypes(fieldTypeMapping);
 
         return fieldTypeMapping;
     }
@@ -3812,6 +3821,25 @@ public class DatabasePlatform extends DatasourcePlatform {
             return true;
         } catch (Exception notFound) {
             return false;
+        }
+    }
+
+    // Eager initialization in constructor causes CORBA Extension tests to fail.
+    /**
+     * Get JSON support extension instance.
+     * This instance is initialized lazily with 1st JSON support request.
+     *
+     * @return JSON support extension instance
+     */
+    public DatabaseJsonPlatform getJsonPlatform() {
+        if (jsonPlatform != null) {
+            return jsonPlatform;
+        }
+        synchronized (this) {
+            if (jsonPlatform == null) {
+                jsonPlatform = JsonPlatformManager.getInstance().createPlatform(this.getClass());
+            }
+            return jsonPlatform;
         }
     }
 

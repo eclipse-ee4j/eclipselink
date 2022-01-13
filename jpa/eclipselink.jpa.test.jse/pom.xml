@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,6 +57,11 @@
             <artifactId>weld-se-core</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.parsson</groupId>
+            <artifactId>parsson</artifactId>
+            <scope>test</scope>
+        </dependency>
         <!--Other modules-->
         <!--EclipseLink JPA-->
         <dependency>
@@ -64,6 +69,19 @@
             <artifactId>org.eclipse.persistence.jpa</artifactId>
             <scope>test</scope>
         </dependency>
+        <!--EclipseLink JSON Extension-->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.json</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!--EclipseLink PgSQL Extension-->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.pgsql</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <!--EclipseLink EclipseLink JPA Model Generator-->
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
@@ -116,6 +134,11 @@
                     <dependency>
                         <groupId>org.eclipse.persistence</groupId>
                         <artifactId>org.eclipse.persistence.jpa</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.eclipse.persistence</groupId>
+                        <artifactId>org.eclipse.persistence.json</artifactId>
                         <version>${project.version}</version>
                     </dependency>
                     <dependency>
@@ -217,5 +240,16 @@
                 <test-skip-jpa-jse>false</test-skip-jpa-jse>
             </properties>
         </profile>
+        <profile>
+            <id>oracle</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.eclipse.persistence</groupId>
+                    <artifactId>org.eclipse.persistence.oracle</artifactId>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
     </profiles>
+
 </project>

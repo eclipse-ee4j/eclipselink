@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,9 +18,9 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
 
-    <name>EclipseLink Oracle Extension</name>
+    <name>EclipseLink JSON Extension</name>
     <groupId>org.eclipse.persistence</groupId>
-    <artifactId>org.eclipse.persistence.oracle</artifactId>
+    <artifactId>org.eclipse.persistence.json</artifactId>
     <packaging>jar</packaging>
 
     <parent>
@@ -35,43 +35,6 @@
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.json</artifactId>
-        </dependency>
-        <!--Other libraries dependencies-->
-        <!--Oracle proprietary dependencies-->
-        <!--JDBC driver dependencies-->
-        <dependency>
-            <groupId>com.oracle.database.jdbc</groupId>
-            <artifactId>ojdbc8</artifactId>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>com.oracle.database.xml</groupId>
-            <artifactId>xmlparserv2</artifactId>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>com.oracle.database.jdbc</groupId>
-            <artifactId>ucp</artifactId>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>com.oracle.database.xml</groupId>
-            <artifactId>xdb</artifactId>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>com.oracle.database.observability</groupId>
-            <artifactId>dms</artifactId>
-            <scope>provided</scope>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>jakarta.persistence</groupId>
@@ -98,7 +61,7 @@
                         <configuration>
                             <compilerArgs>
                                 <arg>--add-reads</arg>
-                                <arg>org.eclipse.persistence.oracle=ALL-UNNAMED</arg>
+                                <arg>org.eclipse.persistence.json=ALL-UNNAMED</arg>
                             </compilerArgs>
                         </configuration>
                     </execution>
@@ -115,7 +78,7 @@
                         </goals>
                         <configuration>
                             <instructions>
-                                <Fragment-Host>org.eclipse.persistence.core</Fragment-Host>
+                                <Fragment-Host>org.eclipse.persistence.json</Fragment-Host>
                                 <Export-Package>*</Export-Package>
                             </instructions>
                         </configuration>
@@ -126,7 +89,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
-                    <additionalOptions>--add-reads org.eclipse.persistence.oracle=ALL-UNNAMED</additionalOptions>
+                    <additionalOptions>--add-reads org.eclipse.persistence.json=ALL-UNNAMED</additionalOptions>
                 </configuration>
             </plugin>
         </plugins>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -26,10 +26,11 @@
 //       - 389090: JPA 2.1 DDL Generation Support
 //     02/19/2015 - Rick Curtis
 //       - 458877 : Add national character support
+//     13/01/2022-4.0.0 Tomas Kraus
+//       - 1391: JSON support in JPA
 package org.eclipse.persistence.internal.databaseaccess;
 
 // javase imports
-import static org.eclipse.persistence.internal.helper.DatabaseField.NULL_SQL_TYPE;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -68,13 +69,14 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ArrayRecord;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
-// EclipseLink imports
 import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.SessionProfiler;
+
+import static org.eclipse.persistence.internal.helper.DatabaseField.NULL_SQL_TYPE;
 
 /**
  * INTERNAL:
@@ -1354,7 +1356,12 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 value = Helper.rightTrimString((String) value);
             }
             return value;
-        }else if (type == Types.VARCHAR || type == Types.CHAR || type == Types.NVARCHAR || type == Types.NCHAR) {
+            // } else if (fieldType == JsonValue.class || fieldType == JsonObject.class || fieldType == JsonArray.class) {
+            // - workaround without jakarta.json dependency
+        } else if (fieldType != null && fieldType.getName().contains("json")) {
+            // JSON types have platform specific ResultSet handlers.
+            return platform.getJsonPlatform().getJsonDataFromResultSet(resultSet, columnNumber, Object.class);
+        } else if (type == Types.VARCHAR || type == Types.CHAR || type == Types.NVARCHAR || type == Types.NCHAR) {
             // CUSTOM PATCH for oracle drivers because they don't respond to getObject() when using scrolling result sets.
             // Chars may require blanks to be trimmed.
             value = resultSet.getString(columnNumber);
