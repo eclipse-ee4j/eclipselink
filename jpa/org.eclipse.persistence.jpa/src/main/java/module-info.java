@@ -19,6 +19,7 @@ module org.eclipse.persistence.jpa {
     requires org.eclipse.persistence.jpa.jpql;
 
     requires transitive jakarta.persistence;
+    requires transitive jakarta.json;
 
     requires static jakarta.transaction;
     requires static jakarta.validation;

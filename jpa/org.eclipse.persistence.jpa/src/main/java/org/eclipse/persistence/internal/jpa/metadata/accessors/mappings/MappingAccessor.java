@@ -97,14 +97,9 @@
 //       - 437760: AttributeOverride with no column name defined doesn't work.
 //     07/01/2014-2.5.3 Rick Curtis
 //       - 375101: Date and Calendar should not require @Temporal.
+//     13/01/2022-4.0.0 Tomas Kraus
+//       - 1391: JSON support in JPA
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
-
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.EL_ACCESS_VIRTUAL;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_FIELD;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_PROPERTY;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERT;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERTS;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_FETCH_EAGER;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -112,6 +107,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import jakarta.json.JsonValue;
 
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.JoinFetchType;
@@ -149,6 +146,7 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.ClassInstanceMet
 import org.eclipse.persistence.internal.jpa.metadata.converters.ConvertMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.EnumeratedMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.JSONMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.JsonValueMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.KryoMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.LobMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.SerializedMetadata;
@@ -173,6 +171,13 @@ import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
 import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
+
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.EL_ACCESS_VIRTUAL;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_FIELD;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_PROPERTY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERT;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERTS;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_FETCH_EAGER;
 
 /**
  * INTERNAL:
@@ -1419,10 +1424,30 @@ public abstract class MappingAccessor extends MetadataAccessor {
 
     /**
      * INTERNAL:
+     * Return true if this represents a JSON type mapping.
+     */
+    protected boolean isJson(MetadataClass referenceClass, boolean isForMapKey) {
+        return isValidJsonType(referenceClass);
+    }
+
+    /**
+     * INTERNAL:
      * Return true if this accessor represents a transient mapping.
      */
     public boolean isTransient() {
         return false;
+    }
+
+    /**
+     * INTERNAL:
+     * Check whether given class is valid for JsonMapping.
+     *
+     * @param cls class to validate
+     * @return Value of {@code true} if the given class is valid for JsonMapping
+     *         or {@code false} otherwise
+     */
+    protected boolean isValidJsonType(MetadataClass cls) {
+        return cls.extendsInterface(JsonValue.class);
     }
 
     /**
@@ -1863,6 +1888,8 @@ public abstract class MappingAccessor extends MetadataAccessor {
                 processTemporal(getTemporal(isForMapKey), mapping, referenceClass, isForMapKey);
             } else if (isUUID(referenceClass, isForMapKey)) {
                 processUUID(mapping, referenceClass, isForMapKey);
+            } else if (isJson(referenceClass, isForMapKey)) {
+                processJson(mapping, referenceClass, isForMapKey);
             } else if (isSerialized(referenceClass, isForMapKey)) {
                 processSerialized(mapping, referenceClass, isForMapKey);
             }
@@ -1905,7 +1932,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         List<String> sourceFields = new ArrayList<String>();
         List<String> targetFields = new ArrayList<String>();
         DatabaseTable targetTable = null;
-        
+
         // Build our fk->pk associations.
         for (JoinColumnMetadata joinColumn : joinColumns) {
             // Look up the primary key field from the referenced column name.
@@ -2036,6 +2063,15 @@ public abstract class MappingAccessor extends MetadataAccessor {
         if (hasReturnUpdate()) {
             getLogger().logWarningMessage(MetadataLogger.IGNORE_RETURN_UPDATE_ANNOTATION, getAnnotatedElement());
         }
+    }
+
+    /**
+     * INTERNAL:
+     * Process JSON value attribute for classes that extend JsonValue interface.
+     * Set JsonTypeConverter on the mapping.
+     */
+    protected void processJson(DatabaseMapping mapping, MetadataClass referenceClass, boolean isForMapKey) {
+        new JsonValueMetadata().process(mapping, this, referenceClass, isForMapKey);
     }
 
     /**

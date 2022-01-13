@@ -17,6 +17,8 @@
 //       - 445546: NullPointerException thrown when an Array of Bytes contains null values
 //     05/11/2020-2.7.0 Jody Grassel
 //       - 538296: Wrong month is returned if OffsetDateTime is used in JPA 2.2 code
+//     13/01/2022-4.0.0 Tomas Kraus
+//       - 1391: JSON support in JPA
 package org.eclipse.persistence.internal.helper;
 
 import java.io.ByteArrayOutputStream;
@@ -170,8 +172,10 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                 return null;
             }
         }
-
-        if ((sourceObject.getClass() == javaClass) || (javaClass == null) || (javaClass == ClassConstants.OBJECT) || (javaClass == ClassConstants.BLOB) || (javaClass == ClassConstants.CLOB)) {
+        if (sourceObject.getClass() == javaClass || javaClass == null || javaClass == ClassConstants.OBJECT
+                || javaClass == ClassConstants.BLOB || javaClass == ClassConstants.CLOB
+                // JSON has its own default converter registered. Direct jakarta.json class reference can't be used in core.
+                || javaClass.getName().contains("json")) {
             return (T) sourceObject;
         }
 

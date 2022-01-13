@@ -256,8 +256,13 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "wrap_convert_exception", "An exception occurred while calling {0} on converter class {1} with value {2}"},
                                            { "ora_pessimistic_locking_with_rownum", "Pessimistic locking with query row limits is not supported."},
                                            { "bean_validation_constraint_violated", "One or more Bean Validation constraints were violated while executing Automatic Bean Validation on callback event: {0} for class: {1}. Please refer to the embedded constraint violations for details."},
-                                           { "unsupported_classfile_version", "The {0} class was compiled with an unsupported JDK. Report this error to the EclipseLink open source project."}
-
+                                           { "unsupported_classfile_version", "The {0} class was compiled with an unsupported JDK. Report this error to the EclipseLink open source project."},
+                                           { "json_pgsql_missing_class_on_classpath", "Missing {0} on classpath."},
+                                           { "json_pgsql_jsonvalue_to_database_type", "JSON value to database type conversion failed."},
+                                           { "json_pgsql_pgobject_conversion", "Database PGobject conversion failed."},
+                                           { "json_pgsql_unknown_type", "Unknown JSON type returned from database."},
+                                           { "json_ora21c_jsonvalue_to_oraclevalue", "Could not convert JsonValue to OracleJsonValue."},
+                                           { "json_ora21c_resultset_to_jsonvalue", "Could not convert JDBC ResultSet type to JsonValue."}
                                         };
     /**
      * Return the lookup table.
