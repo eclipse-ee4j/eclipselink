@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -97,6 +97,8 @@
 //       - 437760: AttributeOverride with no column name defined doesn't work.
 //     07/01/2014-2.5.3 Rick Curtis
 //       - 375101: Date and Calendar should not require @Temporal.
+//     13/01/2022-4.0.0 Tomas Kraus
+//       - 1391: JSON support in JPA
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.EL_ACCESS_VIRTUAL;
@@ -112,6 +114,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import jakarta.json.JsonValue;
 
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.JoinFetchType;
@@ -149,6 +153,7 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.ClassInstanceMet
 import org.eclipse.persistence.internal.jpa.metadata.converters.ConvertMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.EnumeratedMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.JSONMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.JsonValueMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.KryoMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.LobMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.SerializedMetadata;
@@ -1410,10 +1415,30 @@ public abstract class MappingAccessor extends MetadataAccessor {
 
     /**
      * INTERNAL:
+     * Return true if this represents a temporal type mapping.
+     */
+    protected boolean isJson(MetadataClass referenceClass, boolean isForMapKey) {
+        return isValidJsonType(referenceClass);
+    }
+
+    /**
+     * INTERNAL:
      * Return true if this accessor represents a transient mapping.
      */
     public boolean isTransient() {
         return false;
+    }
+
+    /**
+     * INTERNAL:
+     * Check whether given class is valid for JsonMapping.
+     *
+     * @param cls class to validate
+     * @return Value of {@code true} if the given class is valid for JsonMapping
+     *         or {@code false} otherwise
+     */
+    protected boolean isValidJsonType(MetadataClass cls) {
+        return cls.extendsClass(JsonValue.class);
     }
 
     /**
@@ -1852,6 +1877,8 @@ public abstract class MappingAccessor extends MetadataAccessor {
                 processLob(getLob(isForMapKey), mapping, referenceClass, isForMapKey);
             } else if (isTemporal(referenceClass, isForMapKey)) {
                 processTemporal(getTemporal(isForMapKey), mapping, referenceClass, isForMapKey);
+            } else if (isJson(referenceClass, isForMapKey)) {
+                processJson(mapping, referenceClass, isForMapKey);
             } else if (isSerialized(referenceClass, isForMapKey)) {
                 processSerialized(mapping, referenceClass, isForMapKey);
             }
@@ -2025,6 +2052,16 @@ public abstract class MappingAccessor extends MetadataAccessor {
         if (hasReturnUpdate()) {
             getLogger().logWarningMessage(MetadataLogger.IGNORE_RETURN_UPDATE_ANNOTATION, getAnnotatedElement());
         }
+    }
+
+    /**
+     * INTERNAL:
+     * Process a potential serializable attribute. If the class implements
+     * the Serializable interface then set a SerializedObjectConverter on
+     * the mapping.
+     */
+    protected void processJson(DatabaseMapping mapping, MetadataClass referenceClass, boolean isForMapKey) {
+        new JsonValueMetadata().process(mapping, this, referenceClass, isForMapKey);
     }
 
     /**
