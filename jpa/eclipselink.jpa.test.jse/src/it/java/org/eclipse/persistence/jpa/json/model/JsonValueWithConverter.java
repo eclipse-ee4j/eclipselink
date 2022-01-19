@@ -15,26 +15,28 @@
 package org.eclipse.persistence.jpa.json.model;
 
 import jakarta.json.JsonValue;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
 /**
- * JSON value entity class.
+ * JSON value entity class with custom converter.
  */
 @Entity
-public class JsonEntity {
+public class JsonValueWithConverter {
 
     @Id
     private long id;
 
+    @Convert(converter=JsonTestConverter.class)
     private JsonValue value;
 
-    public JsonEntity() {
+    public JsonValueWithConverter() {
         this.id = 0;
         this.value = null;
     }
 
-    public JsonEntity(final long id, final JsonValue value) {
+    public JsonValueWithConverter(final long id, final JsonValue value) {
         this.id = id;
         this.value = value;
     }

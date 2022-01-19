@@ -14,27 +14,27 @@
 //     13/01/2022-4.0.0 Tomas Kraus - 1391: JSON support in JPA
 package org.eclipse.persistence.jpa.json.model;
 
-import jakarta.json.JsonValue;
+import jakarta.json.JsonObject;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
 /**
- * JSON value entity class.
+ * JSON object entity class.
  */
 @Entity
-public class JsonEntity {
+public class JsonObjectEntity {
 
     @Id
     private long id;
 
-    private JsonValue value;
+    private JsonObject value;
 
-    public JsonEntity() {
+    public JsonObjectEntity() {
         this.id = 0;
         this.value = null;
     }
 
-    public JsonEntity(final long id, final JsonValue value) {
+    public JsonObjectEntity(final long id, final JsonObject value) {
         this.id = id;
         this.value = value;
     }
@@ -47,11 +47,11 @@ public class JsonEntity {
         this.id = id;
     }
 
-    public JsonValue getValue() {
+    public JsonObject getValue() {
         return value;
     }
 
-    public void setValue(final JsonValue value) {
+    public void setValue(final JsonObject value) {
         this.value = value;
     }
 

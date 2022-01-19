@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2021 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -17,6 +17,8 @@
 //       - 445546: NullPointerException thrown when an Array of Bytes contains null values
 //     05/11/2020-2.7.0 Jody Grassel
 //       - 538296: Wrong month is returned if OffsetDateTime is used in JPA 2.2 code
+//     13/01/2022-4.0.0 Tomas Kraus
+//       - 1391: JSON support in JPA
 package org.eclipse.persistence.internal.helper;
 
 import java.io.ByteArrayOutputStream;
@@ -169,8 +171,10 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                 return null;
             }
         }
-
-        if ((sourceObject.getClass() == javaClass) || (javaClass == null) || (javaClass == ClassConstants.OBJECT) || (javaClass == ClassConstants.BLOB) || (javaClass == ClassConstants.CLOB)) {
+        if (sourceObject.getClass() == javaClass || javaClass == null || javaClass == ClassConstants.OBJECT
+                || javaClass == ClassConstants.BLOB || javaClass == ClassConstants.CLOB
+                // JSON has its own default converter registered
+                || javaClass == ClassConstants.JSON_VALUE || javaClass == ClassConstants.JSON_ARRAY || javaClass == ClassConstants.JSON_OBJECT) {
             return (T) sourceObject;
         }
 

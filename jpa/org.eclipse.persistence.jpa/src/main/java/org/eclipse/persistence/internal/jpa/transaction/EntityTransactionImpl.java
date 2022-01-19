@@ -159,6 +159,7 @@ public class EntityTransactionImpl implements jakarta.persistence.EntityTransact
             } else if (exception instanceof org.eclipse.persistence.exceptions.OptimisticLockException) {
                 throw new RollbackException(new jakarta.persistence.OptimisticLockException(exception));
             } else {
+                exception.printStackTrace();
                 throw new RollbackException(exception);
             }
         } finally {

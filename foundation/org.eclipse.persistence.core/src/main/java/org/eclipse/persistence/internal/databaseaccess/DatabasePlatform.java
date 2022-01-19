@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -32,12 +32,15 @@
 //       - 540929 : 'jdbc.sql-cast' property does not copy
 //     12/06/2018 - Will Dazey
 //       - 542491: Add new 'eclipselink.jdbc.force-bind-parameters' property to force enable binding
+//     13/01/2022-4.0.0 Tomas Kraus
+//       - 1391: JSON support in JPA
 package org.eclipse.persistence.internal.databaseaccess;
 
 // javase imports
 import java.io.ByteArrayInputStream;
 import java.io.CharArrayReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.math.BigDecimal;
@@ -62,7 +65,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-// EclipseLink imports
+import jakarta.json.Json;
+import jakarta.json.JsonReader;
+import jakarta.json.JsonValue;
+import jakarta.json.JsonWriter;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -3765,6 +3772,49 @@ public class DatabasePlatform extends DatasourcePlatform {
         } catch (Exception notFound) {
             return false;
         }
+    }
+
+    // Common JSON types support:
+    // Stores JsonValue instances as VARCHAR.
+    /**
+     * INTERNAL:
+     * Convert JSON value field to classification type.
+     *
+     * @param <T> classification type
+     * @param jsonValue source JSON value field
+     * @return converted classification type
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T convertJsonValueToDataValue(final JsonValue jsonValue) {
+        final StringWriter sw = new StringWriter(128);
+        try (final JsonWriter jw = Json.createWriter(sw)) {
+            jw.write(jsonValue);
+        }
+        return (T) sw.toString();
+    }
+
+    /**
+     * Convert classification type to JSON value field.
+     *
+     * @param jdbcValue source classification type value from JDBC
+     * @return converted JSON field value
+     */
+    public JsonValue convertDataValueToJsonValue(Object jdbcValue) {
+        try (final JsonReader jr = Json.createReader(new StringReader((String)jdbcValue))) {
+            return jr.readValue();
+        }
+    }
+
+    /**
+     * Retrieve JSON data from JDBC ResultSet.
+     *
+     * @param resultSet source JDBC ResultSet
+     * @param columnNumber index of column in JDBC ResultSet
+     * @return JSON data from JDBC ResultSet
+     * @throws SQLException if data could not be retrieved
+     */
+    public Object getJsonDataFromResultSet(ResultSet resultSet, int columnNumber) throws SQLException {
+        return resultSet.getObject(columnNumber);
     }
 
 }

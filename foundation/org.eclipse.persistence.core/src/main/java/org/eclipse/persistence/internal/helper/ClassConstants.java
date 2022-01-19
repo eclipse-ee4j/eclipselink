@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,6 +12,8 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
+//     13/01/2022-4.0.0 Tomas Kraus
+//       - 1391: JSON support in JPA
 package org.eclipse.persistence.internal.helper;
 
 import java.beans.PropertyChangeEvent;
@@ -26,6 +28,10 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.util.*;
+
+import jakarta.json.JsonArray;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonValue;
 
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
@@ -157,6 +163,10 @@ public final class ClassConstants extends CoreClassConstants {
     //XML Classes
     public static final Class<Document> DOCUMENT = Document.class;
 
+    // JSON Classes
+    public static final Class<JsonValue> JSON_VALUE = JsonValue.class;
+    public static final Class<JsonArray> JSON_ARRAY = JsonArray.class;
+    public static final Class<JsonObject> JSON_OBJECT = JsonObject.class;
 
     private ClassConstants() {
         //no instance please

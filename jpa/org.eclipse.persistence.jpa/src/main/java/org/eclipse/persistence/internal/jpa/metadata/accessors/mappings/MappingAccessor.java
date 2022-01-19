@@ -1415,7 +1415,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
 
     /**
      * INTERNAL:
-     * Return true if this represents a temporal type mapping.
+     * Return true if this represents a JSON type mapping.
      */
     protected boolean isJson(MetadataClass referenceClass, boolean isForMapKey) {
         return isValidJsonType(referenceClass);
@@ -1438,7 +1438,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      *         or {@code false} otherwise
      */
     protected boolean isValidJsonType(MetadataClass cls) {
-        return cls.extendsClass(JsonValue.class);
+        return cls.extendsInterface(JsonValue.class);
     }
 
     /**
@@ -2056,9 +2056,8 @@ public abstract class MappingAccessor extends MetadataAccessor {
 
     /**
      * INTERNAL:
-     * Process a potential serializable attribute. If the class implements
-     * the Serializable interface then set a SerializedObjectConverter on
-     * the mapping.
+     * Process JSON value attribute for classes that extend JsonValue interface.
+     * Set JsonTypeConverter on the mapping.
      */
     protected void processJson(DatabaseMapping mapping, MetadataClass referenceClass, boolean isForMapKey) {
         new JsonValueMetadata().process(mapping, this, referenceClass, isForMapKey);

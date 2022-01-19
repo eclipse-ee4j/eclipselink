@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,6 +35,7 @@ public class OSGITestHelper {
     private static final String JAXB_API_JAR = System.getProperty("jaxb-api.jar", "jakarta.xml.bind-api.jar");
     private static final String JAXB_OSGI = System.getProperty("jaxb-osgi.jar", "jaxb-xjc.jar");
     private static final String JAXRS_JAR = System.getProperty("jaxrs.jar", "jakarta.ws.rs-api.jar");
+    private static final String JSON_API_JAR = System.getProperty("json-api.jar", "jakarta.json-api.jar");
     private static final String ASM_JAR = System.getProperty("asm.jar", "org.eclipse.persistence.asm.jar");
 
     public static Option[] getDefaultOptions() {
@@ -54,6 +55,9 @@ public class OSGITestHelper {
                 // JAX-RS API
                 bundle("file:" + PLUGINS_DIR + JAXRS_JAR),
 
+                // JSON API
+                bundle("file:" + PLUGINS_DIR + JSON_API_JAR),
+
                 // EclipseLink bundles
                 bundle("file:" + PLUGINS_DIR + "org.eclipse.persistence.moxy.jar"),
                 bundle("file:" + PLUGINS_DIR + "org.eclipse.persistence.core.jar"),
@@ -71,6 +75,9 @@ public class OSGITestHelper {
 
                 // JAX-RS API
                 bundle("file:" + PLUGINS_DIR + JAXRS_JAR),
+
+                // JSON API
+                bundle("file:" + PLUGINS_DIR + JSON_API_JAR),
 
                 // EclipseLink bundles
                 bundle("file:" + PLUGINS_DIR + "org.eclipse.persistence.moxy.jar"),
