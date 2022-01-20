@@ -34,8 +34,8 @@ import java.util.Map;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.spi.ClassTransformer;
 import jakarta.persistence.spi.PersistenceUnitInfo;
-
 import jakarta.persistence.spi.TransformerException;
+
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.EntityManagerSetupException;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
