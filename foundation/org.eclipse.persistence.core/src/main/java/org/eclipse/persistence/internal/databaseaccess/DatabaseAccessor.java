@@ -1360,7 +1360,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             }
             return value;
         } else if (fieldType == JsonValue.class || fieldType == JsonObject.class || fieldType == JsonArray.class) {
-            // JSON types have platform specific result set handlers.
+            // JSON types have platform specific ResultSet handlers.
             return platform.getJsonDataFromResultSet(resultSet, columnNumber);
         } else if (type == Types.VARCHAR || type == Types.CHAR || type == Types.NVARCHAR || type == Types.NCHAR) {
             // CUSTOM PATCH for oracle drivers because they don't respond to getObject() when using scrolling result sets.

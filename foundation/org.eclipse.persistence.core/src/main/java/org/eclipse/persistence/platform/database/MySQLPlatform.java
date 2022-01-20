@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -196,6 +196,11 @@ public class MySQLPlatform extends DatabasePlatform {
         fieldTypeMapping.put(char[].class, new FieldTypeDefinition("LONGTEXT", false));
         fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("LONGBLOB", false));
         fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("LONGTEXT", false));
+
+        // Mapping for JSON type set in JsonTypeConverter#initialize. Default size set to handle large JSON values.
+        fieldTypeMapping.put(jakarta.json.JsonObject.class, new FieldTypeDefinition("JSON"));
+        fieldTypeMapping.put(jakarta.json.JsonArray.class, new FieldTypeDefinition("JSON"));
+        fieldTypeMapping.put(jakarta.json.JsonValue.class, new FieldTypeDefinition("JSON"));
 
         fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
         FieldTypeDefinition fd = new FieldTypeDefinition("TIME");

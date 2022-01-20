@@ -14,6 +14,9 @@
 //     13/01/2022-4.0.0 Tomas Kraus - 1391: JSON support in JPA
 package org.eclipse.persistence.mappings.converters;
 
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -81,7 +84,15 @@ public class JsonTypeConverter implements Converter {
     public void initialize(DatabaseMapping mapping, Session session) {
         if (mapping.isDirectToFieldMapping()) {
             if (((AbstractDirectMapping)mapping).getFieldClassification() == null) {
-                ((AbstractDirectMapping)mapping).setFieldClassification(JsonValue.class);
+                final AbstractDirectMapping directMapping = AbstractDirectMapping.class.cast(mapping);
+                final Class<?> attributeClassification = mapping.getAttributeClassification();
+                if (attributeClassification.isInstance(JsonObject.class)) {
+                    directMapping.setFieldClassification(JsonObject.class);
+                } else if (attributeClassification.isInstance(JsonArray.class)) {
+                    directMapping.setFieldClassification(JsonArray.class);
+                } else {
+                    ((AbstractDirectMapping) mapping).setFieldClassification(JsonValue.class);
+                }
             }
         }
     }

@@ -771,6 +771,10 @@ public class DatabasePlatform extends DatasourcePlatform {
         fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIME"));
         fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
         fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIME"));
+        // Mapping for JSON type set in JsonTypeConverter#initialize. Default size set to handle large JSON values.
+        fieldTypeMapping.put(jakarta.json.JsonObject.class, new FieldTypeDefinition("VARCHAR", 512));
+        fieldTypeMapping.put(jakarta.json.JsonArray.class, new FieldTypeDefinition("VARCHAR", 512));
+        fieldTypeMapping.put(jakarta.json.JsonValue.class, new FieldTypeDefinition("VARCHAR", 512));
 
         return fieldTypeMapping;
     }
@@ -3814,7 +3818,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * @throws SQLException if data could not be retrieved
      */
     public Object getJsonDataFromResultSet(ResultSet resultSet, int columnNumber) throws SQLException {
-        return resultSet.getObject(columnNumber);
+        return resultSet.getString(columnNumber);
     }
 
 }
