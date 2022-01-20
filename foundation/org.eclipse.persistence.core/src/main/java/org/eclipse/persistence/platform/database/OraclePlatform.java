@@ -951,7 +951,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     protected String MAX_ROW = "WHERE ROWNUM <= ";
     protected String MIN_ROW = ") WHERE rnum > ";
     // Bug #453208
-    protected String LOCK_START_PREFIX_AND = " AND (";
+    protected String LOCK_START_PREFIX = " AND (";
     protected String LOCK_START_PREFIX_WHERE = " WHERE (";
     protected String LOCK_START_SUFFIX = ") IN (";
     protected String LOCK_END = " FOR UPDATE";
@@ -1107,7 +1107,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         if (statement.getWhereClause() == null) {
             printer.printString(LOCK_START_PREFIX_WHERE);
         } else {
-            printer.printString(LOCK_START_PREFIX_AND);
+            printer.printString(LOCK_START_PREFIX);
         }
 
         Iterator<DatabaseField> iterator = statement.getQuery().getDescriptor().getPrimaryKeyFields().iterator();

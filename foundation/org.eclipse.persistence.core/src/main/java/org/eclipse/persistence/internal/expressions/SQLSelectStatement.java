@@ -1722,9 +1722,9 @@ public class SQLSelectStatement extends SQLStatement {
     /**
      * Print the SQL representation of the statement on a stream.
      */
-    public Vector printSQL(ExpressionSQLPrinter printer) {
+    public Vector<DatabaseField> printSQL(ExpressionSQLPrinter printer) {
         try {
-            Vector selectFields = null;
+            Vector<DatabaseField> selectFields = null;
             selectFields = printSQLSelect(printer);
             printSQLWhereKeyWord(printer);
             printSQLWhereClause(printer);
@@ -1740,8 +1740,8 @@ public class SQLSelectStatement extends SQLStatement {
         }
     }
 
-    public Vector printSQLSelect(ExpressionSQLPrinter printer) throws IOException {
-        Vector selectFields = null;
+    public Vector<DatabaseField> printSQLSelect(ExpressionSQLPrinter printer) throws IOException {
+        Vector<DatabaseField> selectFields = null;
         printer.setRequiresDistinct(shouldDistinctBeUsed());
 
         if (hasUnionExpressions()) {
