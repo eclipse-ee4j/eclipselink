@@ -35,6 +35,7 @@ import jakarta.persistence.PersistenceException;
 import jakarta.persistence.spi.ClassTransformer;
 import jakarta.persistence.spi.PersistenceUnitInfo;
 
+import jakarta.persistence.spi.TransformerException;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.EntityManagerSetupException;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
@@ -255,7 +256,11 @@ public class JavaSECMPInitializer extends JPAInitializer {
                         Class<?> classBeingRedefined,
                         ProtectionDomain protectionDomain,
                         byte[] classfileBuffer) throws IllegalClassFormatException {
-                    return transformer.transform(loader, className, classBeingRedefined, protectionDomain, classfileBuffer);
+                    try {
+                        return transformer.transform(loader, className, classBeingRedefined, protectionDomain, classfileBuffer);
+                    } catch (TransformerException e) {
+                        throw new IllegalClassFormatException(e.getMessage());
+                    }
                 }
             });
         } else if (transformer == null) {
