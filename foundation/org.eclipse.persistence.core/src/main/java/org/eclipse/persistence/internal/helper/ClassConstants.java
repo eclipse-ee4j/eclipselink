@@ -27,23 +27,26 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
-import java.util.*;
-
-import jakarta.json.JsonArray;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonValue;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.descriptors.changetracking.MapChangeEvent;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.indirection.IndirectCollectionsFactory;
 import org.eclipse.persistence.indirection.IndirectContainer;
 import org.eclipse.persistence.indirection.IndirectList;
 import org.eclipse.persistence.indirection.IndirectMap;
 import org.eclipse.persistence.indirection.IndirectSet;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.indirection.WeavedAttributeValueHolderInterface;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.expressions.ArgumentListFunctionExpression;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
@@ -57,6 +60,8 @@ import org.eclipse.persistence.internal.identitymaps.SoftCacheWeakIdentityMap;
 import org.eclipse.persistence.internal.identitymaps.SoftIdentityMap;
 import org.eclipse.persistence.internal.identitymaps.WeakIdentityMap;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedLazy;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
 import org.eclipse.persistence.queries.CursoredStream;
@@ -69,11 +74,6 @@ import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.tools.profiler.PerformanceProfiler;
 import org.w3c.dom.Document;
-
-import org.eclipse.persistence.indirection.IndirectCollectionsFactory;
-import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
-import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * INTERNAL:
@@ -162,11 +162,6 @@ public final class ClassConstants extends CoreClassConstants {
 
     //XML Classes
     public static final Class<Document> DOCUMENT = Document.class;
-
-    // JSON Classes
-    public static final Class<JsonValue> JSON_VALUE = JsonValue.class;
-    public static final Class<JsonArray> JSON_ARRAY = JsonArray.class;
-    public static final Class<JsonObject> JSON_OBJECT = JsonObject.class;
 
     private ClassConstants() {
         //no instance please
