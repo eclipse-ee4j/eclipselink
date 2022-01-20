@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
-import java.lang.instrument.IllegalClassFormatException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -29,6 +28,8 @@ import java.net.URLClassLoader;
 import java.util.Iterator;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
+
+import jakarta.persistence.spi.TransformerException;
 
 import org.eclipse.persistence.exceptions.StaticWeaveException;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -318,7 +319,7 @@ public class StaticWeaveProcessor {
                         } else {
                             swoh.addEntry(entryInputStream, newEntry);
                         }
-                    } catch (IllegalClassFormatException e) {
+                    } catch (TransformerException e) {
                         AbstractSessionLog.getLog().logThrowable(AbstractSessionLog.WARNING, AbstractSessionLog.WEAVER, e);
                         // Anything went wrong, we need log a warning message, copy the entry to the target and
                         // process next entry.

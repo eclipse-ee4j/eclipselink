@@ -18,7 +18,6 @@ package org.eclipse.persistence.tools.weaving.jpa;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.lang.instrument.IllegalClassFormatException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -29,6 +28,7 @@ import java.util.Map;
 import java.util.zip.ZipException;
 
 import jakarta.persistence.spi.ClassTransformer;
+import jakarta.persistence.spi.TransformerException;
 
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
 import org.eclipse.persistence.internal.jpa.StaticWeaveInfo;
@@ -82,7 +82,7 @@ public class StaticWeaveClassTransformer {
      * The method performs weaving function on the given class.
      * @return the converted(woven) class
      */
-    public byte[] transform(String originalClassName, Class<?> originalClass, byte[] originalClassBytes)throws IllegalClassFormatException{
+    public byte[] transform(String originalClassName, Class<?> originalClass, byte[] originalClassBytes)throws TransformerException {
         byte[] newClassBytes = null;
         for(ClassTransformer transformer : classTransformers){
             newClassBytes=transformer.transform(aClassLoader, originalClassName, originalClass, null, originalClassBytes);
