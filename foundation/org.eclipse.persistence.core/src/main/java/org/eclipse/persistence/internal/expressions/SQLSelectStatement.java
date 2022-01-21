@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1725,66 +1725,99 @@ public class SQLSelectStatement extends SQLStatement {
     public Vector<DatabaseField> printSQL(ExpressionSQLPrinter printer) {
         try {
             Vector<DatabaseField> selectFields = null;
-            printer.setRequiresDistinct(shouldDistinctBeUsed());
-
-            if (hasUnionExpressions()) {
-                // Ensure union order using brackets.
-                int size = getUnionExpressions().size();
-                for (int index = 0; index < size; index++) {
-                    printer.printString("(");
-                }
-            }
-            printer.printString("SELECT ");
-
-            if (getHintString() != null) {
-                printer.printString(getHintString());
-                printer.printString(" ");
-            }
-
-            if (shouldDistinctBeUsed()) {
-                printer.printString("DISTINCT ");
-            }
-
-            selectFields = writeFieldsIn(printer);
-            //fix bug:6070214: turn off unique field aliases after fields are written
-            setUseUniqueFieldAliases(false);
-
-            appendFromClauseToWriter(printer);
-
-            if (!(getWhereClause() == null)) {
-                printer.printString(" WHERE ");
-                printer.printExpression(getWhereClause());
-            }
-
-            if (hasHierarchicalQueryExpressions()) {
-                appendHierarchicalQueryClauseToWriter(printer);
-            }
-
-            if (hasGroupByExpressions()) {
-                appendGroupByClauseToWriter(printer);
-            }
-            if (hasHavingExpression()) {
-                //appendHavingClauseToWriter(printer);
-                printer.printString(" HAVING ");
-                printer.printExpression(getHavingExpression());
-            }
-
-            if (hasOrderByExpressions()) {
-                appendOrderClauseToWriter(printer);
-            }
-
-            if(printer.getPlatform().shouldPrintLockingClauseAfterWhereClause() && printer.getPlatform().shouldPrintForUpdateClause()) {
-                // For pessimistic locking.
-                appendForUpdateClause(printer);
-            }
-
-            if (hasUnionExpressions()) {
-                appendUnionClauseToWriter(printer);
-            }
-
+            selectFields = printSQLSelect(printer);
+            printSQLWhereKeyWord(printer);
+            printSQLWhereClause(printer);
+            printSQLHierarchicalQueryClause(printer);
+            printSQLGroupByClause(printer);
+            printSQLHavingClause(printer);
+            printSQLOrderByClause(printer);
+            printSQLForUpdateClause(printer);
+            printSQLUnionClause(printer);
             return selectFields;
         } catch (IOException exception) {
             throw ValidationException.fileError(exception);
+        }
+    }
+
+    public Vector<DatabaseField> printSQLSelect(ExpressionSQLPrinter printer) throws IOException {
+        Vector<DatabaseField> selectFields = null;
+        printer.setRequiresDistinct(shouldDistinctBeUsed());
+
+        if (hasUnionExpressions()) {
+            // Ensure union order using brackets.
+            int size = getUnionExpressions().size();
+            for (int index = 0; index < size; index++) {
+                printer.printString("(");
+            }
+        }
+        printer.printString("SELECT ");
+
+        if (getHintString() != null) {
+            printer.printString(getHintString());
+            printer.printString(" ");
+        }
+
+        if (shouldDistinctBeUsed()) {
+            printer.printString("DISTINCT ");
+        }
+
+        selectFields = writeFieldsIn(printer);
+        //fix bug:6070214: turn off unique field aliases after fields are written
+        setUseUniqueFieldAliases(false);
+
+        appendFromClauseToWriter(printer);
+        return selectFields;
+    }
+
+    public void printSQLWhereKeyWord(ExpressionSQLPrinter printer) throws IOException {
+        if (!(getWhereClause() == null)) {
+            printer.printString(" WHERE ");
+        }
+    }
+
+    public void printSQLWhereClause(ExpressionSQLPrinter printer) throws IOException {
+        if (!(getWhereClause() == null)) {
+            printer.printExpression(getWhereClause());
+        }
+    }
+
+    public void printSQLHierarchicalQueryClause(ExpressionSQLPrinter printer) throws IOException {
+        if (hasHierarchicalQueryExpressions()) {
+            appendHierarchicalQueryClauseToWriter(printer);
+        }
+    }
+
+    public void printSQLGroupByClause(ExpressionSQLPrinter printer) throws IOException {
+        if (hasGroupByExpressions()) {
+            appendGroupByClauseToWriter(printer);
+        }
+    }
+
+    public void printSQLHavingClause(ExpressionSQLPrinter printer) throws IOException {
+        if (hasHavingExpression()) {
+            //appendHavingClauseToWriter(printer);
+            printer.printString(" HAVING ");
+            printer.printExpression(getHavingExpression());
+        }
+    }
+
+    public void printSQLOrderByClause(ExpressionSQLPrinter printer) throws IOException {
+        if (hasOrderByExpressions()) {
+            appendOrderClauseToWriter(printer);
+        }
+    }
+
+    public void printSQLForUpdateClause(ExpressionSQLPrinter printer) throws IOException {
+        if(printer.getPlatform().shouldPrintLockingClauseAfterWhereClause() && printer.getPlatform().shouldPrintForUpdateClause()) {
+            // For pessimistic locking.
+            appendForUpdateClause(printer);
+        }
+    }
+
+    public void printSQLUnionClause(ExpressionSQLPrinter printer) throws IOException {
+        if (hasUnionExpressions()) {
+            appendUnionClauseToWriter(printer);
         }
     }
 
