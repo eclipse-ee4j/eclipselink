@@ -319,14 +319,10 @@ public class StaticWeaveProcessor {
                         } else {
                             swoh.addEntry(entryInputStream, newEntry);
                         }
-                    } catch (TransformerException e) {
+                    } catch (Throwable e) {
                         AbstractSessionLog.getLog().logThrowable(AbstractSessionLog.WARNING, AbstractSessionLog.WEAVER, e);
                         // Anything went wrong, we need log a warning message, copy the entry to the target and
                         // process next entry.
-                        swoh.addEntry(entryInputStream, newEntry);
-                        continue;
-                    } catch (ClassNotFoundException e) {
-                        AbstractSessionLog.getLog().logThrowable(AbstractSessionLog.WARNING, AbstractSessionLog.WEAVER, e);
                         swoh.addEntry(entryInputStream, newEntry);
                         continue;
                     } finally {
