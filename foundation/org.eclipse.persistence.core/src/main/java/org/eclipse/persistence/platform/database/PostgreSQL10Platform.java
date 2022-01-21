@@ -37,15 +37,24 @@ public class PostgreSQL10Platform extends PostgreSQLPlatform {
     private static final class PgObjectAccessor {
 
         /** Holds {@code PGobject} class reference. */
-        private static final Class<?> PG_OBJECT_CLASS = initPgObjectClass();
+        private static volatile Class<?> PG_OBJECT_CLASS = null;
 
         // Initialize PGobject class reference when this class is available on classpath.
         // Set null on any failure.
-        private static Class<?> initPgObjectClass() {
-            try {
-                return Class.forName("org.postgresql.util.PGobject");
-            } catch (Throwable e) {
-                return null;
+        private static Class<?> getAccessor() {
+            if (PG_OBJECT_CLASS != null) {
+                return PG_OBJECT_CLASS;
+            } else {
+                synchronized(PgObjectAccessor.class) {
+                    if (PG_OBJECT_CLASS == null) {
+                        try {
+                            PG_OBJECT_CLASS = Class.forName("org.postgresql.util.PGobject");
+                        } catch (Throwable e) {
+                            return null;
+                        }
+                    }
+                }
+                return PG_OBJECT_CLASS;
             }
         }
 
