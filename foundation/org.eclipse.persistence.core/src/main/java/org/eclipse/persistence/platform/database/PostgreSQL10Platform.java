@@ -14,21 +14,10 @@
 //     13/01/2022-4.0.0 Tomas Kraus - 1391: JSON support in JPA
 package org.eclipse.persistence.platform.database;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.sql.CallableStatement;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.Map;
 
-import jakarta.json.JsonValue;
-import jakarta.persistence.PersistenceException;
-
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * <p>
@@ -41,14 +30,24 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  */
 public class PostgreSQL10Platform extends PostgreSQLPlatform {
 
-    private static final Class<?> PG_OBJECT_CLASS = initPgObjectClass();
+    /**
+     * Grants access to {@code org.postgresql.util.PGobject} class without adding dependency.
+     * Inner static class also grants thread safe lazy initialization.
+     */
+    private static final class PgObjectAccessor {
 
-    private static Class<?> initPgObjectClass() {
-        try {
-            return Class.forName("org.postgresql.util.PGobject");
-        } catch (ClassNotFoundException e) {
-            return null;
+        /** Holds {@code PGobject} class reference. */
+        private static final Class<?> PG_OBJECT_CLASS = initPgObjectClass();
+
+        // Initialize PGobject class reference when this class is available on classpath.
+        private static Class<?> initPgObjectClass() {
+            try {
+                return Class.forName("org.postgresql.util.PGobject");
+            } catch (ClassNotFoundException e) {
+                return null;
+            }
         }
+
     }
 
     /**
@@ -78,121 +77,121 @@ public class PostgreSQL10Platform extends PostgreSQLPlatform {
         return fieldTypeMapping;
     }
 
-    /**
-     * INTERNAL
-     * Set the parameter in the JDBC statement at the given index.
-     * This support a wide range of different parameter types, and is heavily optimized for common types.
-     * Handles Postgres specific PGobject instances.
-     *
-     * @param parameter the parameter to set
-     * @param statement target {@code PreparedStatement} instance
-     * @param index index of the parameter in the statement
-     * @param session current database session
-     */
-    @Override
-    public void setParameterValueInDatabaseCall(
-            final Object parameter, final PreparedStatement statement,
-            final int index, final AbstractSession session
-    ) throws SQLException {
-        if (PG_OBJECT_CLASS == null) {
-            throw new PersistenceException("Class org.postgresql.util.PGobject was not found");
-        }
-        if (PG_OBJECT_CLASS.isInstance(parameter)) {
-            statement.setObject(index, parameter);
-        } else {
-            super.setParameterValueInDatabaseCall(parameter, statement, index, session);
-        }
-    }
-
-    /**
-     * INTERNAL
-     * Set the parameter in the JDBC statement at the given index.
-     * This support a wide range of different parameter types, and is heavily optimized for common types.
-     * Handles Postgres specific PGobject instances.
-     *
-     * @param parameter the parameter to set
-     * @param statement target {@code CallableStatement} instance
-     * @param name name of the parameter in the statement
-     * @param session current database session
-     */
-    @Override
-    public void setParameterValueInDatabaseCall(
-            Object parameter, CallableStatement statement, String name, AbstractSession session
-    ) throws SQLException {
-        if (PG_OBJECT_CLASS == null) {
-            throw new PersistenceException("Class org.postgresql.util.PGobject was not found");
-        }
-        if (PG_OBJECT_CLASS.isInstance(parameter)) {
-            statement.setObject(name, parameter);
-        } else {
-            super.setParameterValueInDatabaseCall(parameter, statement, name, session);
-        }
-    }
-
-    // Postgres specific JSON types support:
-    // Stores JsonValue instances as JSONB.
-    /**
-     * INTERNAL:
-     * Convert JSON value field to JDBC statement type.
-     * Postgres JSON storage type is {@code JSONB} and target Java type is {@code PGobject}.
-     *
-     * @param <T> classification type
-     * @param jsonValue source JSON value field
-     * @return converted JDBC statement type
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T> T convertJsonValueToDataValue(final JsonValue jsonValue) throws PersistenceException {
-        if (PG_OBJECT_CLASS == null) {
-            throw new PersistenceException("Class org.postgresql.util.PGobject was not found");
-        }
-        final String jsonAsString = super.convertJsonValueToDataValue(jsonValue);
-        // Following code is called trough reflection to avoid org.postgresql.util.PGobject dependency
-        //        PGobject pgObject = new PGobject();
-        //        pgObject.setValue(jsonAsString); //json string
-        //        pgObject.setType("jsonb");
-        try {
-            Constructor<?> pgConstructor = PG_OBJECT_CLASS.getConstructor();
-            Object pgObject = pgConstructor.newInstance();
-            Method setValue = PG_OBJECT_CLASS.getDeclaredMethod("setValue", String.class);
-            Method setType = PG_OBJECT_CLASS.getDeclaredMethod("setType", String.class);
-            setValue.invoke(pgObject, jsonAsString);
-            setType.invoke(pgObject, "jsonb");
-            return (T) pgObject;
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new PersistenceException("JSON value to database type conversion failed.", e);
-        }
-    }
-
-    /**
-     * Retrieve JSON data from JDBC {@code ResultSet}.
-     * JSON data retrieved from Postgres JDBC {@code ResultSet} are returned as {@code PGobject} instance.
-     * It must be converted to {@code String} first to be accepted by common {@code JsonTypeConverter}.
-     *
-     * @param resultSet source JDBC {@code ResultSet}
-     * @param columnNumber index of column in JDBC {@code ResultSet}
-     * @return JSON data from JDBC {@code ResultSet} as {@code String} to be parsed by common {@code JsonTypeConverter}
-     * @throws SQLException if data could not be retrieved
-     */
-    @Override
-    public Object getJsonDataFromResultSet(ResultSet resultSet, int columnNumber) throws SQLException {
-        if (PG_OBJECT_CLASS == null) {
-            throw new PersistenceException("Class org.postgresql.util.PGobject was not found");
-        }
-        final Object rawData = resultSet.getObject(columnNumber);
-        if (PG_OBJECT_CLASS.isInstance(rawData)) {
-            // Following code is called trough reflection to avoid org.postgresql.util.PGobject dependency
-            //        ((PGobject)rawData).getValue();
-            try {
-                Method getValue = PG_OBJECT_CLASS.getDeclaredMethod("getValue");
-                return String.class.cast(getValue.invoke(rawData));
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                throw new PersistenceException("Database PGobject conversion failed.", e);
-            }
-        } else if (rawData instanceof String) {
-            return String.class.cast(rawData);
-        }
-        throw new PersistenceException("Unknown JSON type returned from database");
-    }
+//    /**
+//     * INTERNAL
+//     * Set the parameter in the JDBC statement at the given index.
+//     * This support a wide range of different parameter types, and is heavily optimized for common types.
+//     * Handles Postgres specific PGobject instances.
+//     *
+//     * @param parameter the parameter to set
+//     * @param statement target {@code PreparedStatement} instance
+//     * @param index index of the parameter in the statement
+//     * @param session current database session
+//     */
+//    @Override
+//    public void setParameterValueInDatabaseCall(
+//            final Object parameter, final PreparedStatement statement,
+//            final int index, final AbstractSession session
+//    ) throws SQLException {
+//        if (PG_OBJECT_CLASS == null) {
+//            throw new PersistenceException("Class org.postgresql.util.PGobject was not found");
+//        }
+//        if (PG_OBJECT_CLASS.isInstance(parameter)) {
+//            statement.setObject(index, parameter);
+//        } else {
+//            super.setParameterValueInDatabaseCall(parameter, statement, index, session);
+//        }
+//    }
+//
+//    /**
+//     * INTERNAL
+//     * Set the parameter in the JDBC statement at the given index.
+//     * This support a wide range of different parameter types, and is heavily optimized for common types.
+//     * Handles Postgres specific PGobject instances.
+//     *
+//     * @param parameter the parameter to set
+//     * @param statement target {@code CallableStatement} instance
+//     * @param name name of the parameter in the statement
+//     * @param session current database session
+//     */
+//    @Override
+//    public void setParameterValueInDatabaseCall(
+//            Object parameter, CallableStatement statement, String name, AbstractSession session
+//    ) throws SQLException {
+//        if (PG_OBJECT_CLASS == null) {
+//            throw new PersistenceException("Class org.postgresql.util.PGobject was not found");
+//        }
+//        if (PG_OBJECT_CLASS.isInstance(parameter)) {
+//            statement.setObject(name, parameter);
+//        } else {
+//            super.setParameterValueInDatabaseCall(parameter, statement, name, session);
+//        }
+//    }
+//
+//    // Postgres specific JSON types support:
+//    // Stores JsonValue instances as JSONB.
+//    /**
+//     * INTERNAL:
+//     * Convert JSON value field to JDBC statement type.
+//     * Postgres JSON storage type is {@code JSONB} and target Java type is {@code PGobject}.
+//     *
+//     * @param <T> classification type
+//     * @param jsonValue source JSON value field
+//     * @return converted JDBC statement type
+//     */
+//    @Override
+//    @SuppressWarnings("unchecked")
+//    public <T> T convertJsonValueToDataValue(final JsonValue jsonValue) throws PersistenceException {
+//        if (PG_OBJECT_CLASS == null) {
+//            throw new PersistenceException("Class org.postgresql.util.PGobject was not found");
+//        }
+//        final String jsonAsString = super.convertJsonValueToDataValue(jsonValue);
+//        // Following code is called trough reflection to avoid org.postgresql.util.PGobject dependency
+//        //        PGobject pgObject = new PGobject();
+//        //        pgObject.setValue(jsonAsString); //json string
+//        //        pgObject.setType("jsonb");
+//        try {
+//            Constructor<?> pgConstructor = PG_OBJECT_CLASS.getConstructor();
+//            Object pgObject = pgConstructor.newInstance();
+//            Method setValue = PG_OBJECT_CLASS.getDeclaredMethod("setValue", String.class);
+//            Method setType = PG_OBJECT_CLASS.getDeclaredMethod("setType", String.class);
+//            setValue.invoke(pgObject, jsonAsString);
+//            setType.invoke(pgObject, "jsonb");
+//            return (T) pgObject;
+//        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+//            throw new PersistenceException("JSON value to database type conversion failed.", e);
+//        }
+//    }
+//
+//    /**
+//     * Retrieve JSON data from JDBC {@code ResultSet}.
+//     * JSON data retrieved from Postgres JDBC {@code ResultSet} are returned as {@code PGobject} instance.
+//     * It must be converted to {@code String} first to be accepted by common {@code JsonTypeConverter}.
+//     *
+//     * @param resultSet source JDBC {@code ResultSet}
+//     * @param columnNumber index of column in JDBC {@code ResultSet}
+//     * @return JSON data from JDBC {@code ResultSet} as {@code String} to be parsed by common {@code JsonTypeConverter}
+//     * @throws SQLException if data could not be retrieved
+//     */
+//    @Override
+//    public Object getJsonDataFromResultSet(ResultSet resultSet, int columnNumber) throws SQLException {
+//        if (PG_OBJECT_CLASS == null) {
+//            throw new PersistenceException("Class org.postgresql.util.PGobject was not found");
+//        }
+//        final Object rawData = resultSet.getObject(columnNumber);
+//        if (PG_OBJECT_CLASS.isInstance(rawData)) {
+//            // Following code is called trough reflection to avoid org.postgresql.util.PGobject dependency
+//            //        ((PGobject)rawData).getValue();
+//            try {
+//                Method getValue = PG_OBJECT_CLASS.getDeclaredMethod("getValue");
+//                return String.class.cast(getValue.invoke(rawData));
+//            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+//                throw new PersistenceException("Database PGobject conversion failed.", e);
+//            }
+//        } else if (rawData instanceof String) {
+//            return String.class.cast(rawData);
+//        }
+//        throw new PersistenceException("Unknown JSON type returned from database");
+//    }
 
 }
