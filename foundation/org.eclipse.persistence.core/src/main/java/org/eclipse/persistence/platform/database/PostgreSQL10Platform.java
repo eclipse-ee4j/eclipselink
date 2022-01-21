@@ -31,36 +31,6 @@ import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 public class PostgreSQL10Platform extends PostgreSQLPlatform {
 
     /**
-     * Grants access to {@code org.postgresql.util.PGobject} class without adding dependency.
-     * Inner static class also grants thread safe lazy initialization.
-     */
-    private static final class PgObjectAccessor {
-
-        /** Holds {@code PGobject} class reference. */
-        private static volatile Class<?> PG_OBJECT_CLASS = null;
-
-        // Initialize PGobject class reference when this class is available on classpath.
-        // Set null on any failure.
-        private static Class<?> getAccessor() {
-            if (PG_OBJECT_CLASS != null) {
-                return PG_OBJECT_CLASS;
-            } else {
-                synchronized(PgObjectAccessor.class) {
-                    if (PG_OBJECT_CLASS == null) {
-                        try {
-                            PG_OBJECT_CLASS = Class.forName("org.postgresql.util.PGobject");
-                        } catch (Throwable e) {
-                            return null;
-                        }
-                    }
-                }
-                return PG_OBJECT_CLASS;
-            }
-        }
-
-    }
-
-    /**
      * Build the mapping of database types to class types for the schema framework.
      *
      * @return database types to class types {@code Map} for the schema framework
@@ -103,6 +73,7 @@ public class PostgreSQL10Platform extends PostgreSQLPlatform {
 //            final Object parameter, final PreparedStatement statement,
 //            final int index, final AbstractSession session
 //    ) throws SQLException {
+//        Class<?> pgClass = Class.forName("org.postgresql.util.PGobject");
 //        if (PG_OBJECT_CLASS == null) {
 //            throw new PersistenceException("Class org.postgresql.util.PGobject was not found");
 //        }
