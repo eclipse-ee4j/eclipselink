@@ -29,8 +29,6 @@ import java.util.Iterator;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 
-import jakarta.persistence.spi.TransformerException;
-
 import org.eclipse.persistence.exceptions.StaticWeaveException;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.deployment.ArchiveFactoryImpl;
