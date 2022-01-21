@@ -3782,11 +3782,12 @@ public class DatabasePlatform extends DatasourcePlatform {
     // Stores JsonValue instances as VARCHAR.
     /**
      * INTERNAL:
-     * Convert JSON value field to classification type.
+     * Convert JSON value field to JDBC statement type.
+     * Common JSON storage type is {@code VARCHAR} so target Java type is {@code String}.
      *
      * @param <T> classification type
      * @param jsonValue source JSON value field
-     * @return converted classification type
+     * @return converted JDBC statement type
      */
     @SuppressWarnings("unchecked")
     public <T> T convertJsonValueToDataValue(final JsonValue jsonValue) {
@@ -3798,7 +3799,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
-     * Convert classification type to JSON value field.
+     * Convert JDBC {@code ResultSet} type to JSON value field.
      *
      * @param jdbcValue source classification type value from JDBC
      * @return converted JSON field value
@@ -3810,11 +3811,11 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
-     * Retrieve JSON data from JDBC ResultSet.
+     * Retrieve JSON data from JDBC {@code ResultSet}.
      *
-     * @param resultSet source JDBC ResultSet
-     * @param columnNumber index of column in JDBC ResultSet
-     * @return JSON data from JDBC ResultSet
+     * @param resultSet source JDBC {@code ResultSet}
+     * @param columnNumber index of column in JDBC {@code ResultSet}
+     * @return JSON data from JDBC {@code ResultSet} as {@code String} to be parsed by {@code JsonTypeConverter}
      * @throws SQLException if data could not be retrieved
      */
     public Object getJsonDataFromResultSet(ResultSet resultSet, int columnNumber) throws SQLException {
