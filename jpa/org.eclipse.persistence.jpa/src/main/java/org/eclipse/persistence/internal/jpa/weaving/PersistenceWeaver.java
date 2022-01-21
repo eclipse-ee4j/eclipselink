@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,11 +17,11 @@
 package org.eclipse.persistence.internal.jpa.weaving;
 
 // J2SE imports
-import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
 import java.util.Map;
 
 import jakarta.persistence.spi.ClassTransformer;
+import jakarta.persistence.spi.TransformerException;
 
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -91,7 +91,7 @@ public class PersistenceWeaver implements ClassTransformer {
     @Override
     public byte[] transform(final ClassLoader loader, final String className,
             final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain,
-            final byte[] classfileBuffer) throws IllegalClassFormatException {
+            final byte[] classfileBuffer) throws TransformerException {
         final SessionLog log = AbstractSessionLog.getLog();
         // PERF: Is finest logging on weaving turned on?
         final boolean shouldLogFinest = log.shouldLog(SessionLog.FINEST, SessionLog.WEAVER);

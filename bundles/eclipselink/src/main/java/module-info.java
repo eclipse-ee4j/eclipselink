@@ -13,6 +13,7 @@
 module eclipselink {
 
     requires transitive java.desktop;
+    requires transitive java.instrument;
     requires transitive java.management;
     requires transitive java.naming;
     requires transitive java.rmi;
