@@ -30,6 +30,26 @@ import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
  */
 public class PostgreSQL10Platform extends PostgreSQLPlatform {
 
+    // Initialize PGobject class.
+    private static Class<?> initPgClass() {
+        try {
+            return Class.forName("org.postgresql.util.PGobject");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    // PGobject class instance used for reflection access.
+    private final Class<?> pgObjectClass;
+
+    /**
+     * Crerates an instance of Postgres 10 platform.
+     */
+    public PostgreSQL10Platform() {
+        pgObjectClass = initPgClass();
+    }
+
     /**
      * Build the mapping of database types to class types for the schema framework.
      *
@@ -56,6 +76,8 @@ public class PostgreSQL10Platform extends PostgreSQLPlatform {
         fieldTypeMapping.put(jakarta.json.JsonValue.class, new FieldTypeDefinition("JSONB"));
         return fieldTypeMapping;
     }
+
+
 
 //    /**
 //     * INTERNAL
