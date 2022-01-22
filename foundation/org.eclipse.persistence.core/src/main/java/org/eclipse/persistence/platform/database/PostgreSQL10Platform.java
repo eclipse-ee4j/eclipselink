@@ -14,10 +14,16 @@
 //     13/01/2022-4.0.0 Tomas Kraus - 1391: JSON support in JPA
 package org.eclipse.persistence.platform.database;
 
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.Map;
 
+import jakarta.persistence.PersistenceException;
+
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * <p>
@@ -47,7 +53,7 @@ public class PostgreSQL10Platform extends PostgreSQLPlatform {
      * Crerates an instance of Postgres 10 platform.
      */
     public PostgreSQL10Platform() {
-        pgObjectClass = initPgClass();
+        pgObjectClass = null;//initPgClass();
     }
 
     /**
@@ -77,60 +83,57 @@ public class PostgreSQL10Platform extends PostgreSQLPlatform {
         return fieldTypeMapping;
     }
 
+    /**
+     * INTERNAL
+     * Set the parameter in the JDBC statement at the given index.
+     * This support a wide range of different parameter types, and is heavily optimized for common types.
+     * Handles Postgres specific PGobject instances.
+     *
+     * @param parameter the parameter to set
+     * @param statement target {@code PreparedStatement} instance
+     * @param index index of the parameter in the statement
+     * @param session current database session
+     */
+    @Override
+    public void setParameterValueInDatabaseCall(
+            final Object parameter, final PreparedStatement statement,
+            final int index, final AbstractSession session
+    ) throws SQLException {
+        if (pgObjectClass == null) {
+            throw new PersistenceException("Class org.postgresql.util.PGobject was not found");
+        }
+        if (pgObjectClass.isInstance(parameter)) {
+            statement.setObject(index, parameter);
+        } else {
+            super.setParameterValueInDatabaseCall(parameter, statement, index, session);
+        }
+    }
 
+    /**
+     * INTERNAL
+     * Set the parameter in the JDBC statement at the given index.
+     * This support a wide range of different parameter types, and is heavily optimized for common types.
+     * Handles Postgres specific PGobject instances.
+     *
+     * @param parameter the parameter to set
+     * @param statement target {@code CallableStatement} instance
+     * @param name name of the parameter in the statement
+     * @param session current database session
+     */
+    @Override
+    public void setParameterValueInDatabaseCall(
+            Object parameter, CallableStatement statement, String name, AbstractSession session
+    ) throws SQLException {
+        if (pgObjectClass == null) {
+            throw new PersistenceException("Class org.postgresql.util.PGobject was not found");
+        }
+        if (pgObjectClass.isInstance(parameter)) {
+            statement.setObject(name, parameter);
+        } else {
+            super.setParameterValueInDatabaseCall(parameter, statement, name, session);
+        }
+    }
 
-//    /**
-//     * INTERNAL
-//     * Set the parameter in the JDBC statement at the given index.
-//     * This support a wide range of different parameter types, and is heavily optimized for common types.
-//     * Handles Postgres specific PGobject instances.
-//     *
-//     * @param parameter the parameter to set
-//     * @param statement target {@code PreparedStatement} instance
-//     * @param index index of the parameter in the statement
-//     * @param session current database session
-//     */
-//    @Override
-//    public void setParameterValueInDatabaseCall(
-//            final Object parameter, final PreparedStatement statement,
-//            final int index, final AbstractSession session
-//    ) throws SQLException {
-//        Class<?> pgClass = Class.forName("org.postgresql.util.PGobject");
-//        if (PG_OBJECT_CLASS == null) {
-//            throw new PersistenceException("Class org.postgresql.util.PGobject was not found");
-//        }
-//        if (PG_OBJECT_CLASS.isInstance(parameter)) {
-//            statement.setObject(index, parameter);
-//        } else {
-//            super.setParameterValueInDatabaseCall(parameter, statement, index, session);
-//        }
-//    }
-//
-//    /**
-//     * INTERNAL
-//     * Set the parameter in the JDBC statement at the given index.
-//     * This support a wide range of different parameter types, and is heavily optimized for common types.
-//     * Handles Postgres specific PGobject instances.
-//     *
-//     * @param parameter the parameter to set
-//     * @param statement target {@code CallableStatement} instance
-//     * @param name name of the parameter in the statement
-//     * @param session current database session
-//     */
-//    @Override
-//    public void setParameterValueInDatabaseCall(
-//            Object parameter, CallableStatement statement, String name, AbstractSession session
-//    ) throws SQLException {
-//        if (PG_OBJECT_CLASS == null) {
-//            throw new PersistenceException("Class org.postgresql.util.PGobject was not found");
-//        }
-//        if (PG_OBJECT_CLASS.isInstance(parameter)) {
-//            statement.setObject(name, parameter);
-//        } else {
-//            super.setParameterValueInDatabaseCall(parameter, statement, name, session);
-//        }
-//    }
-//
 //    // Postgres specific JSON types support:
 //    // Stores JsonValue instances as JSONB.
 //    /**
