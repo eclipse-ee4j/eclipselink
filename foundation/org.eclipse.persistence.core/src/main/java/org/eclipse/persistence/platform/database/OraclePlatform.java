@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
@@ -958,13 +959,15 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     protected String MIN_ROW = ") WHERE rnum > ";
     // Bug #453208
     protected String LOCK_START_PREFIX = " AND (";
+    protected String LOCK_START_PREFIX_WHERE = " WHERE (";
     protected String LOCK_START_SUFFIX = ") IN (";
-    protected String LOCK_END = ") FOR UPDATE";
+    protected String LOCK_END = " FOR UPDATE";
     protected String SELECT_ID_PREFIX = "SELECT ";
     protected String SELECT_ID_SUFFIX = " FROM (SELECT ";
     protected String FROM_ID = ", ROWNUM rnum  FROM (";
     protected String END_FROM_ID = ") ";
     protected String ORDER_BY_ID = " ORDER BY ";
+    protected String BRACKET_END = " ) ";
 
     /**
      * INTERNAL:
@@ -995,7 +998,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
                     // Workaround can exist for this specific case
                     Vector fields = new Vector();
                     statement.enableFieldAliasesCaching();
-                    String queryString = printOmittingForUpdate(statement, printer, fields);
+                    String queryString = printOmittingOrderByForUpdateUnion(statement, printer, fields);
                     duplicateCallParameters(call);
                     call.setFields(fields);
 
@@ -1030,6 +1033,13 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
                     printer.printParameter(DatabaseCall.MAXROW_FIELD);
                     printer.printString(MIN_ROW);
                     printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
+                    printer.printString(BRACKET_END);
+                    try {
+                        statement.printSQLOrderByClause(printer);
+                        statement.printSQLUnionClause(printer);
+                    } catch (IOException exception) {
+                        throw ValidationException.fileError(exception);
+                    }
                     printer.printString(LOCK_END);
                 } else {
                     throw new UnsupportedOperationException(ExceptionLocalization.buildMessage("ora_pessimistic_locking_with_rownum"));
@@ -1064,23 +1074,34 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     @SuppressWarnings("unchecked")
     // Bug #453208 - Duplicate call parameters since the query is performed twice
     private void duplicateCallParameters(DatabaseCall call) {
-        ArrayList newParameterList = new ArrayList(call.getParameters());
+        List newParameterList = new ArrayList(call.getParameters());
         newParameterList.addAll(call.getParameters());
         call.setParameters(newParameterList);
-        ArrayList<Integer> newParameterTypesList = new ArrayList(call.getParameterTypes());
+        List<Integer> newParameterTypesList = new ArrayList<>(call.getParameterTypes());
         newParameterTypesList.addAll(call.getParameterTypes());
         call.setParameterTypes(newParameterTypesList);
     }
 
     @SuppressWarnings("unchecked")
-    private String printOmittingForUpdate(SQLSelectStatement statement, ExpressionSQLPrinter printer, Vector fields) {
+    private String printOmittingOrderByForUpdateUnion(SQLSelectStatement statement, ExpressionSQLPrinter printer, Vector fields) {
         boolean originalShouldPrintForUpdate = this.shouldPrintForUpdateClause;
         Writer originalWriter = printer.getWriter();
+        Vector selectFields = null;
 
         this.shouldPrintForUpdateClause = false;
         printer.setWriter(new StringWriter());
 
-        fields.addAll(statement.printSQL(printer));
+        try {
+            selectFields = statement.printSQLSelect(printer);
+            statement.printSQLWhereKeyWord(printer);
+            statement.printSQLWhereClause(printer);
+            statement.printSQLHierarchicalQueryClause(printer);
+            statement.printSQLGroupByClause(printer);
+            statement.printSQLHavingClause(printer);
+        } catch (IOException exception) {
+            throw ValidationException.fileError(exception);
+        }
+        fields.addAll(selectFields);
         String query = printer.getWriter().toString();
 
         this.shouldPrintForUpdateClause = originalShouldPrintForUpdate;
@@ -1090,7 +1111,11 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     private void printLockStartWithPrimaryKeyFields(SQLSelectStatement statement, ExpressionSQLPrinter printer) {
-        printer.printString(LOCK_START_PREFIX);
+        if (statement.getWhereClause() == null) {
+            printer.printString(LOCK_START_PREFIX_WHERE);
+        } else {
+            printer.printString(LOCK_START_PREFIX);
+        }
 
         Iterator<DatabaseField> iterator = statement.getQuery().getDescriptor().getPrimaryKeyFields().iterator();
         while (iterator.hasNext()) {
