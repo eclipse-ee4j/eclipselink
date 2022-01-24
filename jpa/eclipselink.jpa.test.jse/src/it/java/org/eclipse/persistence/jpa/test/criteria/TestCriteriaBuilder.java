@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2018, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -21,6 +21,7 @@ import java.util.List;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.LockModeType;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CompoundSelection;
@@ -42,9 +43,12 @@ import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
-import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(EmfRunner.class)
 public class TestCriteriaBuilder {
@@ -52,14 +56,8 @@ public class TestCriteriaBuilder {
     @Emf(createTables = DDLGen.DROP_CREATE, classes = { L1.class, L2.class, CriteriaCar.class })
     private EntityManagerFactory emf;
 
-    /**
-     * Merging ElementCollections on Oracle fails when EclipseLink generates 
-     * a DELETE SQL statement with a WHERE clause containing a CLOB.
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void testCriteriaCompoundSelectionModel() throws Exception {
+    @Before
+    public void setup() {
         //Populate the database
         EntityManager em = emf.createEntityManager();
         try {
@@ -70,10 +68,10 @@ public class TestCriteriaBuilder {
             L1 l1 = new L1(1, "L1-1", l2);
             L1 l1_2 = new L1(2, "L1-2", l2_2);
 
-            em.persist(l2);
-            em.persist(l2_2);
-            em.persist(l1);
-            em.persist(l1_2);
+            em.merge(l2);
+            em.merge(l2_2);
+            em.merge(l1);
+            em.merge(l1_2);
 
             em.getTransaction().commit();
             em.clear();
@@ -85,8 +83,16 @@ public class TestCriteriaBuilder {
                 em.close();
             }
         }
+    }
 
-        em = emf.createEntityManager();
+    /**
+     * Merging ElementCollections on Oracle fails when EclipseLink generates
+     * a DELETE SQL statement with a WHERE clause containing a CLOB.
+     *
+     */
+    @Test
+    public void testCriteriaCompoundSelectionModel() throws Exception {
+        EntityManager em = emf.createEntityManager();
         try {
             //Test CriteriaBuilder
             final CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -101,7 +107,7 @@ public class TestCriteriaBuilder {
             List<L1Model> l1List = q.getResultList();
             if (l1List != null && !l1List.isEmpty()) {
                 for (L1Model l1m : l1List) {
-                    Assert.assertNotNull(l1m.getL2());
+                    assertNotNull(l1m.getL2());
                 }
             }
         } finally {
@@ -196,6 +202,35 @@ public class TestCriteriaBuilder {
             query.setParameter("stringValue", "TEST");
             query.setParameter("idValue", "ID1");
             query.getResultList();
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testCriteriaBuilder_WhereOrderByResultLimitPesimisticWriteClause() throws Exception {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            //"SELECT OBJECT(l1) FROM L1 l1 WHERE l1.id > 0 ORDER BY l1.id FOR UPDATE"
+            //with row limit firstResult=1 maxResults=10
+            final CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+            final CriteriaQuery<L1> criteriaQuery = criteriaBuilder.createQuery(L1.class);
+            Root<L1> root = criteriaQuery.from(L1.class);
+            criteriaQuery.where(criteriaBuilder.greaterThan(root.get("id"), 0));
+            criteriaQuery.orderBy(criteriaBuilder.asc(root.get(L1_.id)));
+            final TypedQuery<L1> query = em.createQuery(criteriaQuery);
+            query.setFirstResult(1);
+            query.setMaxResults(10);
+            query.setLockMode(LockModeType.PESSIMISTIC_WRITE);
+            final List<L1> results = query.getResultList();
+            assertNotNull(results);
+            assertEquals(1, results.size());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
