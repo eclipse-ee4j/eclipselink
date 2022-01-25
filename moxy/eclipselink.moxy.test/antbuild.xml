@@ -315,6 +315,7 @@
         <run_oxm_dom_tests runpathref="oxm.run.path"/>
         <run_oxm_deploymentxml_tests runpathref="oxm.run.path"/>
         <run_oxm_docpres_tests runpathref="oxm.run.path"/>
+        <run_oxm_non_default_system_properties runpathref="oxm.run.path"/>
     </target>
     <target name="compile-and-run-jaxb-tests" depends="compile-tests" description="build and run moxy (oxm) tests">
         <run_jaxb_tests runpathref="jaxb.run.path"/>
@@ -324,6 +325,7 @@
         <run_oxm_dom_tests runpathref="oxm.run.path"/>
         <run_oxm_deploymentxml_tests runpathref="oxm.run.path"/>
         <run_oxm_docpres_tests runpathref="oxm.run.path"/>
+        <run_oxm_non_default_system_properties runpathref="oxm.run.path"/>
     </target>
     <target name="compile-and-run-oxm-deploymentxml-tl-tests" depends="compile-tests" description="build and run moxy (oxm) tl deployment xml tests">
         <run_oxm_deploymentxml_tl_tests runpathref="oxm.run.path"/>
@@ -400,6 +402,7 @@
         <run_oxm_dom_tests runpathref="oxm.run.against.jar.path"/>
         <run_oxm_deploymentxml_tests runpathref="oxm.run.against.jar.path"/>
         <run_oxm_docpres_tests runpathref="oxm.run.against.jar.path"/>
+        <run_oxm_non_default_system_properties runpathref="oxm.run.against.jar.path"/>
     </target>
     <target name="compile-and-run-srg-tests-against-jar" depends="compile-tests-against-jar" description="build and run moxy srg tests against eclipselink.jar">
         <run_jaxb_srg_tests runpathref="jaxb.run.against.jar.path"/>
@@ -413,6 +416,7 @@
         <run_oxm_dom_tests runpathref="oxm.run.against.jar.path"/>
         <run_oxm_deploymentxml_tests runpathref="oxm.run.against.jar.path"/>
         <run_oxm_docpres_tests runpathref="oxm.run.against.jar.path"/>
+        <run_oxm_non_default_system_properties runpathref="oxm.run.against.jar.path"/>
     </target>
 
     <!-- JUnit report targets -->
@@ -612,6 +616,8 @@
                 <batchtest todir="${report.dir}/srg/oxm/default">
                     <fileset dir="${src.dir}">
                         <include name="org/eclipse/persistence/testing/oxm/OXMSRGTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/systemproperties/OXMSystemPropertiesNonDefaultTestCases.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/systemproperties/DateAndTimeNonDefaultTestCases.java"/>
                     </fileset>
                     <formatter type="xml"/>
                 </batchtest>
@@ -660,6 +666,9 @@
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/DocPresMappingTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/anyobjectandanycollection/XMLAnyObjectAndAnyCollectionMappingTestSuite.java"/>
                         <exclude name="**/SAXMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/systemproperties/OXMSystemPropertiesNonDefaultTestCases.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/systemproperties/DateAndTimeNonDefaultTestCases.java"/>
+                        <include name="org/eclipse/persistence/testing/oxm/systemproperties/OXMSystemPropertiesTestCases.java"/>
                         <include name="org/eclipse/persistence/testing/oxm/mappings/directcollection/nillable/DirectCollectionMappingNillableTestSuite.java"/>
                         <include name="org/eclipse/persistence/testing/oxm/mappings/keybased/multipletargets/compositekey/CompositeKeyTestCases.java"/>
                     </fileset>
@@ -713,6 +722,8 @@
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/choicecollection/XMLChoiceCollectionMappingTestSuite.java"/>
                         -->
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/sequenced/SequencedMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/systemproperties/OXMSystemPropertiesNonDefaultTestCases.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/systemproperties/DateAndTimeNonDefaultTestCases.java"/>
                     </fileset>
                     <formatter type="xml"/>
                 </batchtest>
@@ -776,6 +787,8 @@
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/compositeobject/self/converter/CompositeObjectSelfConverterTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/keybased/compositekeyclass/CompositeKeyClassMappingTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/containeracessor/ContainerAccessorTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/systemproperties/OXMSystemPropertiesNonDefaultTestCases.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/systemproperties/DateAndTimeNonDefaultTestCases.java"/>
                     </fileset>
                     <formatter type="xml"/>
                 </batchtest>
@@ -835,6 +848,8 @@
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/compositeobject/self/converter/CompositeObjectSelfConverterTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/keybased/compositekeyclass/CompositeKeyClassMappingTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/containeracessor/ContainerAccessorTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/systemproperties/OXMSystemPropertiesNonDefaultTestCases.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/systemproperties/DateAndTimeNonDefaultTestCases.java"/>
                     </fileset>
                     <formatter type="xml"/>
                 </batchtest>
@@ -888,6 +903,8 @@
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/choicecollection/XMLChoiceCollectionMappingTestSuite.java"/>
                         -->
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/sequenced/SequencedMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/systemproperties/OXMSystemPropertiesNonDefaultTestCases.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/systemproperties/DateAndTimeNonDefaultTestCases.java"/>
                     </fileset>
                     <formatter type="xml"/>
                 </batchtest>
@@ -899,6 +916,41 @@
                 <condition>
                     <and>
                         <isset property="junit.failed.oxm_docpres"/>
+                        <istrue value="${test.fail.fast}"/>
+                    </and>
+                </condition>
+            </fail>
+        </sequential>
+    </macrodef>
+    <macrodef name="run_oxm_non_default_system_properties">
+        <attribute name="runpathref"/>
+        <sequential>
+            <delete dir="${report.dir}/oxm/nondefault" includeEmptyDirs="true" failonerror="false"/>
+            <mkdir dir="${report.dir}/oxm/nondefault"/>
+            <junit failureproperty="junit.failed.oxm_nondefault" printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
+                <jvmarg value="-ea"/>
+                <sysproperty key="useLogging" value="false"/>
+                <sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
+                <sysproperty key="org.eclipse.persistence.json.type-compatibility" value="true"/>
+                <sysproperty key="org.eclipse.persistence.json.use-xsd-types-prefix" value="true"/>
+                <sysproperty key="org.eclipse.persistence.xml.time.suffix" value=".0"/>
+                <sysproperty key="parser" value="${parser}"/>
+                <syspropertyset refid="parser.properties"/>
+                <batchtest todir="${report.dir}/oxm/nondefault">
+                    <fileset dir="${src.dir}">
+                        <include name="org/eclipse/persistence/testing/oxm/systemproperties/OXMSystemPropertiesNonDefaultTestCases.java"/>
+                        <include name="org/eclipse/persistence/testing/oxm/systemproperties/DateAndTimeNonDefaultTestCases.java"/>
+                    </fileset>
+                    <formatter type="xml"/>
+                </batchtest>
+                <classpath>
+                    <path refid="@{runpathref}"/>
+                </classpath>
+            </junit>
+            <fail message="TESTS FAILED !">
+                <condition>
+                    <and>
+                        <isset property="junit.failed.nondefault"/>
                         <istrue value="${test.fail.fast}"/>
                     </and>
                 </condition>
