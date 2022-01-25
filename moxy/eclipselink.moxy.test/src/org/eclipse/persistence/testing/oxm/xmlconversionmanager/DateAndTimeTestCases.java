@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -82,6 +82,7 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     // XML Conversion Manager
     private XMLConversionManager xcm;
+    protected String controlXmlConversionTimeSuffix = "";
 
     public DateAndTimeTestCases(String name) {
         super(name);
@@ -148,7 +149,7 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testUtilDateToString_default_0ms() {
         java.util.Date utilDate = new java.util.Date(CONTROL_DATE_TIME_0MS);
-        String control = "1975-02-21T07:47:15"+TIMEZONE_OFFSET;
+        String control = "1975-02-21T07:47:15" + controlXmlConversionTimeSuffix + TIMEZONE_OFFSET;
         String test = (String)xcm.convertObject(utilDate, String.class);
         this.assertEquals(control, test);
     }
@@ -237,7 +238,7 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testUtilDateToString_dateTime_0ms() {
         java.util.Date utilDate = new java.util.Date(CONTROL_DATE_TIME_0MS);
-        String control = "1975-02-21T07:47:15"+TIMEZONE_OFFSET;
+        String control = "1975-02-21T07:47:15" + controlXmlConversionTimeSuffix + TIMEZONE_OFFSET;
         String test = (String)xcm.convertObject(utilDate, String.class, XMLConstants.DATE_TIME_QNAME);
         this.assertEquals(control, test);
     }
@@ -272,7 +273,7 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testUtilDateToString_time_0ms() {
         java.util.Date utilDate = new java.util.Date(CONTROL_DATE_TIME_0MS);
-        String control = "07:47:15"+TIMEZONE_OFFSET;
+        String control = "07:47:15" + controlXmlConversionTimeSuffix + TIMEZONE_OFFSET;
         String test = (String)xcm.convertObject(utilDate, String.class, XMLConstants.TIME_QNAME);
         this.assertEquals(control, test);
     }
@@ -374,7 +375,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         xmlConversionManager.setTimeZoneQualified(true);
         java.util.Date utilDate = (java.util.Date) xmlConversionManager.convertObject(CONTROL_DST_INPUT_DATE_TIME, java.util.Date.class);
         String testString = (String) xmlConversionManager.convertObject(utilDate, String.class);
-        this.assertEquals("2003-08-29T03:00:00-04:00", testString);
+        assertEquals("2003-08-29T03:00:00" + controlXmlConversionTimeSuffix + "-04:00", testString);
     }
 
     public void testUtilDateToString_dateTime_dstTimeZone() {
@@ -383,7 +384,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         xmlConversionManager.setTimeZoneQualified(true);
         java.util.Date utilDate = (java.util.Date) xmlConversionManager.convertObject(CONTROL_DST_INPUT_DATE_TIME, java.util.Date.class);
         String testString = (String) xmlConversionManager.convertObject(utilDate, String.class, XMLConstants.DATE_TIME_QNAME);
-        this.assertEquals("2003-08-29T03:00:00-04:00", testString);
+        assertEquals("2003-08-29T03:00:00" + controlXmlConversionTimeSuffix + "-04:00", testString);
     }
 
     public void testUtilDateToString_time_dstTimeZone() {
@@ -392,7 +393,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         xmlConversionManager.setTimeZoneQualified(true);
         java.util.Date utilDate = (java.util.Date) xmlConversionManager.convertObject(CONTROL_DST_INPUT_DATE_TIME, java.util.Date.class);
         String testString = (String) xmlConversionManager.convertObject(utilDate, String.class, XMLConstants.TIME_QNAME);
-        this.assertEquals("03:00:00-04:00", testString);
+        assertEquals("03:00:00" + controlXmlConversionTimeSuffix + "-04:00", testString);
     }
 
     public void testStringToUtilDate_default_null() {
@@ -878,7 +879,7 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testSqlDateToString_dateTime_0ms() {
         java.sql.Date sqlDate = new java.sql.Date(CONTROL_DATE_TIME_0MS);
-        String control = "1975-02-21T07:47:15"+TIMEZONE_OFFSET;
+        String control = "1975-02-21T07:47:15" + controlXmlConversionTimeSuffix + TIMEZONE_OFFSET;
         String test = (String)xcm.convertObject(sqlDate, String.class, XMLConstants.DATE_TIME_QNAME);
         this.assertEquals(control, test);
     }
@@ -913,7 +914,7 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testSqlDateToString_time_0ms() {
         java.sql.Date sqlDate = new java.sql.Date(CONTROL_DATE_TIME_0MS);
-        String control = "07:47:15"+TIMEZONE_OFFSET;
+        String control = "07:47:15" + controlXmlConversionTimeSuffix + TIMEZONE_OFFSET;
         String test = (String)xcm.convertObject(sqlDate, String.class, XMLConstants.TIME_QNAME);
         this.assertEquals(control, test);
     }
@@ -1015,7 +1016,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         xmlConversionManager.setTimeZoneQualified(true);
         java.sql.Date sqlDate = (java.sql.Date) xmlConversionManager.convertObject(CONTROL_DST_INPUT_DATE_TIME, java.sql.Date.class, XMLConstants.DATE_TIME_QNAME);
         String testString = (String) xmlConversionManager.convertObject(sqlDate, String.class, XMLConstants.DATE_TIME_QNAME);
-        this.assertEquals("2003-08-29T03:00:00-04:00", testString);
+        assertEquals("2003-08-29T03:00:00" + controlXmlConversionTimeSuffix + "-04:00", testString);
     }
 
     public void testSqlDateToString_time_dstTimeZone() {
@@ -1024,7 +1025,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         xmlConversionManager.setTimeZoneQualified(true);
         java.sql.Date sqlDate = (java.sql.Date) xmlConversionManager.convertObject(CONTROL_DST_INPUT_DATE_TIME, java.sql.Date.class, XMLConstants.DATE_TIME_QNAME);
         String testString = (String) xmlConversionManager.convertObject(sqlDate, String.class, XMLConstants.TIME_QNAME);
-        this.assertEquals("03:00:00-04:00", testString);
+        assertEquals("03:00:00" + controlXmlConversionTimeSuffix + "-04:00", testString);
     }
 
     public void testStringToSqlDate_default_null() {
@@ -1415,7 +1416,7 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testSqlTimeToString_default() {
         java.sql.Time sqlTime = new java.sql.Time(CONTROL_TIME_0MS);
-        String control = "07:47:15"+TIMEZONE_OFFSET;
+        String control = "07:47:15" + controlXmlConversionTimeSuffix + TIMEZONE_OFFSET;
         String test = (String)xcm.convertObject(sqlTime, String.class);
         boolean passed = control.equals(test) || control.equals(test.replace("+01:00", "Z"));
         this.assertTrue(passed);
@@ -1423,7 +1424,7 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testSqlTimeToString_default_0ms() {
         java.sql.Time sqlTime = new java.sql.Time(CONTROL_TIME_0MS);
-        String control = "07:47:15"+TIMEZONE_OFFSET;
+        String control = "07:47:15" + controlXmlConversionTimeSuffix + TIMEZONE_OFFSET;
         String test = (String)xcm.convertObject(sqlTime, String.class);
         this.assertEquals(control, test);
     }
@@ -1481,14 +1482,14 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testSqlTimeToString_dateTime() {
         java.sql.Time sqlTime = new java.sql.Time(CONTROL_DATE_TIME_0MS);
-        String control = "1975-02-21T07:47:15"+TIMEZONE_OFFSET;
+        String control = "1975-02-21T07:47:15" + controlXmlConversionTimeSuffix + TIMEZONE_OFFSET;
         String test = (String)xcm.convertObject(sqlTime, String.class, XMLConstants.DATE_TIME_QNAME);
         this.assertEquals(control, test);
     }
 
     public void testSqlTimeToString_dateTime_0ms() {
         java.sql.Time sqlTime = new java.sql.Time(CONTROL_DATE_TIME_0MS);
-        String control = "1975-02-21T07:47:15"+TIMEZONE_OFFSET;
+        String control = "1975-02-21T07:47:15" + controlXmlConversionTimeSuffix + TIMEZONE_OFFSET;
         String test = (String)xcm.convertObject(sqlTime, String.class, XMLConstants.DATE_TIME_QNAME);
         this.assertEquals(control, test);
     }
@@ -1523,14 +1524,14 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testSqlTimeToString_time() {
         java.sql.Time sqlTime = new java.sql.Time(CONTROL_DATE_TIME_0MS);
-        String control = "07:47:15"+TIMEZONE_OFFSET;
+        String control = "07:47:15" + controlXmlConversionTimeSuffix + TIMEZONE_OFFSET;
         String test = (String)xcm.convertObject(sqlTime, String.class, XMLConstants.TIME_QNAME);
         this.assertEquals(control, test);
     }
 
     public void testSqlTimeToString_time_0ms() {
         java.sql.Time sqlTime = new java.sql.Time(CONTROL_DATE_TIME_0MS);
-        String control = "07:47:15"+TIMEZONE_OFFSET;
+        String control = "07:47:15" + controlXmlConversionTimeSuffix + TIMEZONE_OFFSET;
         String test = (String)xcm.convertObject(sqlTime, String.class, XMLConstants.TIME_QNAME);
         this.assertEquals(control, test);
     }
@@ -1632,7 +1633,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         xmlConversionManager.setTimeZoneQualified(true);
         java.sql.Time sqlTime = (java.sql.Time) xmlConversionManager.convertObject(CONTROL_DST_INPUT_DATE_TIME, java.sql.Time.class, XMLConstants.DATE_TIME_QNAME);
         String testString = (String) xmlConversionManager.convertObject(sqlTime, String.class);
-        this.assertEquals("03:00:00-04:00", testString);
+        assertEquals("03:00:00" + controlXmlConversionTimeSuffix + "-04:00", testString);
     }
 
     public void testSqlTimeToString_dateTime_dstTimeZone() {
@@ -1641,7 +1642,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         xmlConversionManager.setTimeZoneQualified(true);
         java.sql.Time sqlTime = (java.sql.Time) xmlConversionManager.convertObject(CONTROL_DST_INPUT_DATE_TIME, java.sql.Time.class, XMLConstants.DATE_TIME_QNAME);
         String testString = (String) xmlConversionManager.convertObject(sqlTime, String.class, XMLConstants.DATE_TIME_QNAME);
-        this.assertEquals("2003-08-29T03:00:00-04:00", testString);
+        assertEquals("2003-08-29T03:00:00" + controlXmlConversionTimeSuffix + "-04:00", testString);
     }
 
     public void testSqlTimeToString_time_dstTimeZone() {
@@ -1650,7 +1651,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         xmlConversionManager.setTimeZoneQualified(true);
         java.sql.Time sqlTime = (java.sql.Time) xmlConversionManager.convertObject(CONTROL_DST_INPUT_DATE_TIME, java.sql.Time.class, XMLConstants.DATE_TIME_QNAME);
         String testString = (String) xmlConversionManager.convertObject(sqlTime, String.class, XMLConstants.TIME_QNAME);
-        this.assertEquals("03:00:00-04:00", testString);
+        assertEquals("03:00:00" + controlXmlConversionTimeSuffix + "-04:00", testString);
     }
 
     public void testStringToSqlTime_default_null() {
@@ -2069,7 +2070,7 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testTimestampToString_default_0ms() {
         java.sql.Timestamp timestamp = new java.sql.Timestamp(CONTROL_DATE_TIME_0MS);
-        String control = "1975-02-21T07:47:15"+TIMEZONE_OFFSET;
+        String control = "1975-02-21T07:47:15" + controlXmlConversionTimeSuffix + TIMEZONE_OFFSET;
         String test = (String)xcm.convertObject(timestamp, String.class);
         this.assertEquals(control, test);
     }
@@ -2126,7 +2127,7 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testTimestampToString_dateTime_0ms() {
         java.sql.Timestamp timestamp = new java.sql.Timestamp(CONTROL_DATE_TIME_0MS);
-        String control = "1975-02-21T07:47:15"+TIMEZONE_OFFSET;
+        String control = "1975-02-21T07:47:15" + controlXmlConversionTimeSuffix + TIMEZONE_OFFSET;
         String test = (String)xcm.convertObject(timestamp, String.class, XMLConstants.DATE_TIME_QNAME);
         this.assertEquals(control, test);
     }
@@ -2213,7 +2214,7 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testTimestampToString_time_0ms() {
         java.sql.Timestamp timestamp = new java.sql.Timestamp(CONTROL_DATE_TIME_0MS);
-        String control = "07:47:15"+TIMEZONE_OFFSET;
+        String control = "07:47:15" + controlXmlConversionTimeSuffix + TIMEZONE_OFFSET;
         String test = (String)xcm.convertObject(timestamp, String.class, XMLConstants.TIME_QNAME);
         this.assertEquals(control, test);
     }
@@ -2323,7 +2324,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         xmlConversionManager.setTimeZoneQualified(true);
         java.sql.Timestamp sqlTimestamp = (java.sql.Timestamp) xmlConversionManager.convertObject(CONTROL_DST_INPUT_DATE_TIME, java.sql.Timestamp.class, XMLConstants.DATE_TIME_QNAME);
         String testString = (String) xmlConversionManager.convertObject(sqlTimestamp, String.class);
-        this.assertEquals("2003-08-29T03:00:00-04:00", testString);
+        assertEquals("2003-08-29T03:00:00" + controlXmlConversionTimeSuffix + "-04:00", testString);
     }
 
     public void testSqlTimestampToString_dateTime_dstTimeZone() {
@@ -2332,7 +2333,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         xmlConversionManager.setTimeZoneQualified(true);
         java.sql.Timestamp sqlTimestamp = (java.sql.Timestamp) xmlConversionManager.convertObject(CONTROL_DST_INPUT_DATE_TIME, java.sql.Timestamp.class, XMLConstants.DATE_TIME_QNAME);
         String testString = (String) xmlConversionManager.convertObject(sqlTimestamp, String.class, XMLConstants.DATE_TIME_QNAME);
-        this.assertEquals("2003-08-29T03:00:00-04:00", testString);
+        assertEquals("2003-08-29T03:00:00" + controlXmlConversionTimeSuffix + "-04:00", testString);
     }
 
     public void testSqlTimestampToString_time_dstTimeZone() {
@@ -2341,7 +2342,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         xmlConversionManager.setTimeZoneQualified(true);
         java.sql.Timestamp sqlTimestamp = (java.sql.Timestamp) xmlConversionManager.convertObject(CONTROL_DST_INPUT_DATE_TIME, java.sql.Timestamp.class, XMLConstants.DATE_TIME_QNAME);
         String testString = (String) xmlConversionManager.convertObject(sqlTimestamp, String.class, XMLConstants.TIME_QNAME);
-        this.assertEquals("03:00:00-04:00", testString);
+        assertEquals("03:00:00" + controlXmlConversionTimeSuffix + "-04:00", testString);
     }
 
     public void testStringToTimestamp_default_null() {
@@ -3680,7 +3681,7 @@ public class DateAndTimeTestCases extends OXTestCase {
     }
     
     public void testPostADDateToSQLDate_DateTime() {
-        String control = "0001-01-01T00:00:00" + TIMEZONE_OFFSET;
+        String control = "0001-01-01T00:00:00" + controlXmlConversionTimeSuffix + TIMEZONE_OFFSET;
         String input = "0001-01-01";
         java.sql.Date sqlDate = java.sql.Date.valueOf(input);
         String test = (String)xcm.convertObject(sqlDate, String.class, XMLConstants.DATE_TIME_QNAME);
@@ -3689,7 +3690,7 @@ public class DateAndTimeTestCases extends OXTestCase {
     
     // java.sql.Timestamp -> String tests
     public void testPostADDateTimeToSQLTimestamp() {
-        String control = "0001-01-01T01:01:01" + TIMEZONE_OFFSET;
+        String control = "0001-01-01T01:01:01" + controlXmlConversionTimeSuffix + TIMEZONE_OFFSET;
         String input = "0001-01-01 01:01:01";
         java.sql.Timestamp sqlTimestamp = java.sql.Timestamp.valueOf(input);
         String test = (String)xcm.convertObject(sqlTimestamp, String.class);
@@ -3762,7 +3763,7 @@ public class DateAndTimeTestCases extends OXTestCase {
     
     // java.util.Date -> String tests
     public void testPostADDateTimeToUtilDate() {
-        String control = "0001-01-01T00:00:00" + TIMEZONE_OFFSET;
+        String control = "0001-01-01T00:00:00" + controlXmlConversionTimeSuffix + TIMEZONE_OFFSET;
         
         Calendar cal = Calendar.getInstance();
         cal.clear();
@@ -3828,7 +3829,7 @@ public class DateAndTimeTestCases extends OXTestCase {
     // java.sql.Time -> String tests
     public void testTimeToSQLTime() {
         String input = "00:00:00";
-        String control = input + TIMEZONE_OFFSET;
+        String control = input + controlXmlConversionTimeSuffix + TIMEZONE_OFFSET;
         
         java.sql.Time sqlTime = java.sql.Time.valueOf(input);
         
@@ -3838,7 +3839,7 @@ public class DateAndTimeTestCases extends OXTestCase {
     
     public void testTimeToSQLTime_TIME() {
         String input = "00:00:00";
-        String control = input + TIMEZONE_OFFSET;
+        String control = input + controlXmlConversionTimeSuffix + TIMEZONE_OFFSET;
         
         java.sql.Time sqlTime = java.sql.Time.valueOf(input);
         
