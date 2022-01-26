@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -291,6 +291,10 @@
                             <includes>
                                 <include>org.eclipse.persistence.testing.oxm.OXMSRGTestSuite</include>
                             </includes>
+                            <excludes>
+                                <exclude>org.eclipse.persistence.testing.oxm.systemproperties.OXMSystemPropertiesNonDefaultTestCases</exclude>
+                                <exclude>org.eclipse.persistence.testing.oxm.systemproperties.DateAndTimeNonDefaultTestCases</exclude>
+                            </excludes>
                         </configuration>
                     </execution>
                     <execution>
@@ -317,6 +321,7 @@
                                 <include>*.MappingClassLoaderTestCases</include>
                                 <include>org.eclipse.persistence.testing.oxm.mappings.directcollection.nillable.DirectCollectionMappingNillableTestSuite</include>
                                 <include>org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.compositekey.CompositeKeyTestCases</include>
+                                <include>org.eclipse.persistence.testing.oxm.systemproperties.OXMSystemPropertiesTestCases</include>
                             </includes>
                             <excludes>
                                 <exclude>*.MappingTestSuite</exclude>
@@ -326,6 +331,8 @@
                                 <exclude>org.eclipse.persistence.testing.oxm.mappings.DocPresMappingTestSuite</exclude>
                                 <exclude>org.eclipse.persistence.testing.oxm.mappings.anyobjectandanycollection.XMLAnyObjectAndAnyCollectionMappingTestSuite</exclude>
                                 <exclude>*.SAXMappingTestSuite</exclude>
+                                <exclude>org.eclipse.persistence.testing.oxm.systemproperties.OXMSystemPropertiesNonDefaultTestCases</exclude>
+                                <exclude>org.eclipse.persistence.testing.oxm.systemproperties.DateAndTimeNonDefaultTestCases</exclude>
                             </excludes>
                         </configuration>
                     </execution>
@@ -361,6 +368,8 @@
                                 <exclude>org.eclipse.persistence.testing.oxm.mappings.anyobjectandanycollection.XMLAnyObjectAndAnyCollectionMappingTestSuite</exclude>
                                 <exclude>org.eclipse.persistence.testing.oxm.mappings.keybased.compositekeyclass.CompositeKeyClassMappingTestSuite</exclude>
                                 <exclude>org.eclipse.persistence.testing.oxm.mappings.sequenced.SequencedMappingTestSuite</exclude>
+                                <exclude>org.eclipse.persistence.testing.oxm.systemproperties.OXMSystemPropertiesNonDefaultTestCases</exclude>
+                                <exclude>org.eclipse.persistence.testing.oxm.systemproperties.DateAndTimeNonDefaultTestCases</exclude>
                                 <!--TODO move to the assembly module. Needs eclipselink.zip file-->
                                 <exclude>org.eclipse.persistence.testing.jaxb.installer.InstallerTestSuite</exclude>
                                 <exclude>org.eclipse.persistence.testing.jaxb.installer.JaxbCompilerTestCase</exclude>
@@ -411,6 +420,8 @@
                                 <exclude>org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.converter.CompositeObjectSelfConverterTestSuite</exclude>
                                 <exclude>org.eclipse.persistence.testing.oxm.mappings.keybased.compositekeyclass.CompositeKeyClassMappingTestSuite</exclude>
                                 <exclude>org.eclipse.persistence.testing.oxm.mappings.containeracessor.ContainerAccessorTestSuite</exclude>
+                                <exclude>org.eclipse.persistence.testing.oxm.systemproperties.OXMSystemPropertiesNonDefaultTestCases</exclude>
+                                <exclude>org.eclipse.persistence.testing.oxm.systemproperties.DateAndTimeNonDefaultTestCases</exclude>
                             </excludes>
                         </configuration>
                     </execution>
@@ -459,6 +470,8 @@
                                 <exclude>org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.converter.CompositeObjectSelfConverterTestSuite</exclude>
                                 <exclude>org.eclipse.persistence.testing.oxm.mappings.keybased.compositekeyclass.CompositeKeyClassMappingTestSuite</exclude>
                                 <exclude>org.eclipse.persistence.testing.oxm.mappings.containeracessor.ContainerAccessorTestSuite</exclude>
+                                <exclude>org.eclipse.persistence.testing.oxm.systemproperties.OXMSystemPropertiesNonDefaultTestCases</exclude>
+                                <exclude>org.eclipse.persistence.testing.oxm.systemproperties.DateAndTimeNonDefaultTestCases</exclude>
                             </excludes>
                         </configuration>
                     </execution>
@@ -496,10 +509,35 @@
                                 <exclude>org.eclipse.persistence.testing.oxm.mappings.keybased.KeyBasedMappingTestSuite</exclude>
                                 <exclude>org.eclipse.persistence.testing.oxm.mappings.keybased.compositekeyclass.CompositeKeyClassMappingTestSuite</exclude>
                                 <exclude>org.eclipse.persistence.testing.oxm.mappings.sequenced.SequencedMappingTestSuite</exclude>
+                                <exclude>org.eclipse.persistence.testing.oxm.systemproperties.OXMSystemPropertiesNonDefaultTestCases</exclude>
+                                <exclude>org.eclipse.persistence.testing.oxm.systemproperties.DateAndTimeNonDefaultTestCases</exclude>
                                 <!--TODO move to the assembly module. Needs eclipselink.zip file-->
                                 <exclude>org.eclipse.persistence.testing.jaxb.installer.InstallerTestSuite</exclude>
                                 <exclude>org.eclipse.persistence.testing.jaxb.installer.JaxbCompilerTestCase</exclude>
                             </excludes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>test-moxy-oxm-non-default-system-properties</id>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <skipTests>${test-skip-moxy-oxm}</skipTests>
+                            <reportNameSuffix>test-moxy-oxm-non-default-system-properties</reportNameSuffix>
+                            <forkCount>1</forkCount>
+                            <reuseForks>false</reuseForks>
+                            <systemPropertyVariables>
+                                <org.eclipse.persistence.json.type-compatibility>true</org.eclipse.persistence.json.type-compatibility>
+                                <org.eclipse.persistence.json.use-xsd-types-prefix>true</org.eclipse.persistence.json.use-xsd-types-prefix>
+                                <org.eclipse.persistence.json.type-attribute-name>jsonTestType</org.eclipse.persistence.json.type-attribute-name>
+                                <org.eclipse.persistence.json.disable-nested-array-name>true</org.eclipse.persistence.json.disable-nested-array-name>
+                                <org.eclipse.persistence.xml.time.suffix>.0</org.eclipse.persistence.xml.time.suffix>
+                            </systemPropertyVariables>
+                            <includes>
+                                <include>org.eclipse.persistence.testing.oxm.systemproperties.OXMSystemPropertiesNonDefaultTestCases</include>
+                                <include>org.eclipse.persistence.testing.oxm.systemproperties.DateAndTimeNonDefaultTestCases</include>
+                            </includes>
                         </configuration>
                     </execution>
                 </executions>
