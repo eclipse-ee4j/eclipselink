@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -1156,7 +1156,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
                 milliStr = '.' + milliStr;
                 result = pre + milliStr + post;
             } else {
-                result = pre + post;
+                result = pre + OXMSystemProperties.xmlConversionTimeSuffix + post;
             }
         }
         return result;
@@ -1886,7 +1886,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     private String appendNanos(String string, Timestamp ts) {
         StringBuilder strBldr = new StringBuilder(string);
         int nanos = ts.getNanos();
-        strBldr.append(nanos==0 ? "" : '.' + Helper.buildZeroPrefixAndTruncTrailZeros(nanos, TOTAL_NS_DIGITS)).toString();
+        strBldr.append(nanos==0 ? OXMSystemProperties.xmlConversionTimeSuffix : '.' + Helper.buildZeroPrefixAndTruncTrailZeros(nanos, TOTAL_NS_DIGITS));
         return strBldr.toString();
     }
 
@@ -1905,7 +1905,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
             // adjust for negative time values, i.e. before Epoch
             msns = msns + 1000;
         }
-        strBldr.append(msns==0 ? "" : '.' + Helper.buildZeroPrefixAndTruncTrailZeros(msns, TOTAL_MS_DIGITS)).toString();
+        strBldr.append(msns==0 ? OXMSystemProperties.xmlConversionTimeSuffix : '.' + Helper.buildZeroPrefixAndTruncTrailZeros(msns, TOTAL_MS_DIGITS));
         return strBldr.toString();
     }
 
