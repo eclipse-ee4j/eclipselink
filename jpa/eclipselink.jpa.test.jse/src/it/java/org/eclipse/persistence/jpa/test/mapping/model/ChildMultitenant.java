@@ -31,7 +31,7 @@ import java.io.Serializable;
 @Entity
 @Table(name = "children")
 @Multitenant(MultitenantType.TABLE_PER_TENANT)
-@TenantTableDiscriminator(type = TenantTableDiscriminatorType.PREFIX)
+@TenantTableDiscriminator(type = TenantTableDiscriminatorType.SCHEMA)
 public class ChildMultitenant implements Serializable {
 
     @Id
