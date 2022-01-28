@@ -17,6 +17,7 @@ package org.eclipse.persistence.exceptions;
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sessions.DataRecord;
@@ -211,7 +212,7 @@ public class DatabaseException extends EclipseLinkException {
             } else {
                 writer.write("000");
             }
-            if (getCall() != null) {
+            if (getCall() != null && session.shouldLog(SessionLog.FINE, SessionLog.SQL)) {
                 writer.write(cr());
                 writer.write(getIndentationString());
                 writer.write(ExceptionMessageGenerator.getHeader("CallHeader"));
