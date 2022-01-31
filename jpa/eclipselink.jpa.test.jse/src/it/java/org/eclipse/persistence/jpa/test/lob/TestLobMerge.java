@@ -41,11 +41,6 @@ public class TestLobMerge {
     @Emf(createTables = DDLGen.DROP_CREATE, classes = { CollectedEntity.class, ParentEntity.class })
     private EntityManagerFactory emf;
 
-    /**
-     * Merging ElementCollections on Oracle fails when EclipseLink generates 
-     * a DELETE SQL statement with a WHERE clause containing a CLOB.
-     *
-     */
     @Test
     public void testLobMerge() throws Exception {
         //Test for Oracle only

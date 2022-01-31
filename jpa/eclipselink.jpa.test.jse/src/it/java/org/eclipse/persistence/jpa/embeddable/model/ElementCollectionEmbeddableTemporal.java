@@ -13,6 +13,7 @@ package org.eclipse.persistence.jpa.embeddable.model;
 
 import java.util.Date;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -21,6 +22,7 @@ import jakarta.persistence.TemporalType;
 public class ElementCollectionEmbeddableTemporal {
 
     @Temporal(value = TemporalType.DATE)
+    @Column(name = "TEMPORALVALUE", columnDefinition = "DATE")
     private Date temporalValue;
 
     public ElementCollectionEmbeddableTemporal() { }

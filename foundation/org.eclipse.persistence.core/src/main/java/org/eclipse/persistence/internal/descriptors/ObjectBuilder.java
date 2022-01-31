@@ -3035,7 +3035,11 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         if(null != primaryKeyFields) {
             for (int index = 0; index < primaryKeyFields.size(); index++) {
                 DatabaseField primaryKeyField = primaryKeyFields.get(index);
-                subExpression = ((DatasourcePlatform)session.getDatasourcePlatform()).createExpressionFor(primaryKeyField, builder);
+                String fieldClassificationClassName = null;
+                if (this.getBaseMappingForField(primaryKeyField) instanceof AbstractDirectMapping) {
+                    fieldClassificationClassName = ((AbstractDirectMapping)this.getBaseMappingForField(primaryKeyField)).getFieldClassificationClassName();
+                }
+                subExpression = ((DatasourcePlatform)session.getDatasourcePlatform()).createExpressionFor(primaryKeyField, builder, fieldClassificationClassName);
 
                 if (expression == null) {
                     expression = subExpression;

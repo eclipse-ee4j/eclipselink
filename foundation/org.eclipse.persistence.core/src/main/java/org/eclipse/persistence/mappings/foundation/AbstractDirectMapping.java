@@ -1361,4 +1361,12 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
             databaseRow.add(getField(), null);
         }
     }
+
+    /**
+     * INTERNAL:
+     * Get fieldClassificationClassName. Value usually exist for fields with some kind of embedded converter like <code>@Lob</code> or <code>@Temporal</code>.
+     */
+    public String getFieldClassificationClassName() {
+        return this.fieldClassificationClassName;
+    }
 }
