@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -1362,5 +1362,13 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
         if (isUpdatable() && ! isReadOnly()) {
             databaseRow.add(getField(), null);
         }
+    }
+
+    /**
+     * INTERNAL:
+     * Get fieldClassificationClassName. Value usually exist for fields with some kind of embedded converter like <code>@Lob</code> or <code>@Temporal</code>.
+     */
+    public String getFieldClassificationClassName() {
+        return this.fieldClassificationClassName;
     }
 }

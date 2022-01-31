@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -3029,12 +3029,16 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         Expression subExp1;
         Expression subExp2;
         Expression subExpression;
-        List primaryKeyFields = this.descriptor.getPrimaryKeyFields();
+        List<DatabaseField> primaryKeyFields = this.descriptor.getPrimaryKeyFields();
 
         if(null != primaryKeyFields) {
             for (int index = 0; index < primaryKeyFields.size(); index++) {
-                DatabaseField primaryKeyField = (DatabaseField)primaryKeyFields.get(index);
-                subExpression = ((DatasourcePlatform)session.getDatasourcePlatform()).createExpressionFor(primaryKeyField, builder);
+                DatabaseField primaryKeyField = primaryKeyFields.get(index);
+                String fieldClassificationClassName = null;
+                if (this.getBaseMappingForField(primaryKeyField) instanceof AbstractDirectMapping) {
+                    fieldClassificationClassName = ((AbstractDirectMapping)this.getBaseMappingForField(primaryKeyField)).getFieldClassificationClassName();
+                }
+                subExpression = ((DatasourcePlatform)session.getDatasourcePlatform()).createExpressionFor(primaryKeyField, builder, fieldClassificationClassName);
 
                 if (expression == null) {
                     expression = subExpression;
