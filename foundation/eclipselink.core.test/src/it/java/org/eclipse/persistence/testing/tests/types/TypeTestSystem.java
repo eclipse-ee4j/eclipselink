@@ -34,6 +34,7 @@ public class TypeTestSystem extends TestSystem {
         schemaManager.replaceObject(NumericTester.tableDefinition(session));
         schemaManager.replaceObject(CLOBTester.tableDefinition(session));
         schemaManager.replaceObject(BLOBTester.tableDefinition(session));
+        schemaManager.replaceObject(UUIDTester.tableDefinition(session));
     }
 
     @Override

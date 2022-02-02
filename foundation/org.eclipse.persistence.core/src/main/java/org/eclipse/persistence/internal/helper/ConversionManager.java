@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2021 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.eclipse.persistence.config.SystemProperties;
@@ -231,6 +232,8 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                 return (T) convertObjectToClass(sourceObject);
             } else if(javaClass == ClassConstants.URL_Class) {
                 return (T) convertObjectToUrl(sourceObject);
+            } else if(javaClass == ClassConstants.UUID) {
+                return (T) convertObjectToUUID(sourceObject);
             }
         } catch (ConversionException ce) {
             throw ce;
@@ -1060,6 +1063,25 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             }
         } else {
             throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.URL_Class);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Build a valid instance of java.util.UUID from the given source object.
+     * @param sourceObject    Valid instance of java.util.UUID, or String
+     */
+    protected UUID convertObjectToUUID(Object sourceObject) throws ConversionException {
+        if(sourceObject.getClass() == ClassConstants.UUID) {
+            return (UUID) sourceObject;
+        } else if (sourceObject.getClass() == ClassConstants.STRING) {
+            try {
+                return UUID.fromString((String) sourceObject);
+            } catch(Exception e) {
+                throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.UUID, e);
+            }
+        } else {
+            throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.UUID);
         }
     }
 

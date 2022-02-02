@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -60,6 +60,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.Vector;
 
 // EclipseLink imports
@@ -2607,6 +2608,8 @@ public class DatabasePlatform extends DatasourcePlatform {
             StructConverter converter = typeConverters.get(parameter.getClass());
             parameter = converter.convertToStruct(parameter, getConnection(session, statement.getConnection()));
             statement.setObject(index, parameter);
+        } else if (parameter instanceof UUID) {
+            statement.setString(index, convertObject(parameter, ClassConstants.STRING));
         } else {
             statement.setObject(index, parameter);
         }
