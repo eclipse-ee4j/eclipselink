@@ -37,7 +37,7 @@ public class UUIDSequence extends Sequence {
         if (query != null) {
             return writeSession.executeQuery(query);
         } else {
-            return UUID.randomUUID().toString().toUpperCase();
+            return UUID.randomUUID().toString();
         }
     }
 
