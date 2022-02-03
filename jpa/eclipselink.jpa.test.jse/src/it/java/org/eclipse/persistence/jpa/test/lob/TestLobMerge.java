@@ -56,7 +56,7 @@ public class TestLobMerge {
                     Arrays.asList(new CollectedEntity[] {
                             new CollectedEntity("label1", "content1"),
                             new CollectedEntity("label2", "content2"),
-                            new CollectedEntity("label3", "content3")));
+                            new CollectedEntity("label3", "content3") }));
 
             final ParentEntity pdo = new ParentEntity(9, Collections.unmodifiableSet(col1));
             em.getTransaction().begin();
