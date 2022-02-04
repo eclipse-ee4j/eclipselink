@@ -2699,13 +2699,13 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         if ((getName() != null) && (!getName().equals(""))) {
             nameString = "name=\"" + getName() + "\" ";
         }
-
-        if (isOccurException() && session.shouldLog(SessionLog.FINE, SessionLog.SQL)) {
-            if (isSQLCallQuery()) {
-                queryString = "sql=\"" + getSQLString() + "\"";
-            } else if (isJPQLCallQuery()) {
-                queryString = "jpql=\"" + getJPQLString() + "\"";
-            }
+        if (isOccurException() && !session.shouldLog(SessionLog.FINE, SessionLog.SQL)) {
+            return getClass().getSimpleName() + "(" + nameString + referenceClassString + ")";
+        }
+        if (isSQLCallQuery()) {
+            queryString = "sql=\"" + getSQLString() + "\"";
+        } else if (isJPQLCallQuery()) {
+            queryString = "jpql=\"" + getJPQLString() + "\"";
         }
         return getClass().getSimpleName() + "(" + nameString + referenceClassString + queryString + ")";
     }
