@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -19,6 +19,9 @@ package org.eclipse.persistence.internal.jpa.querydef;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -1321,7 +1324,129 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         return new FunctionExpressionImpl(this.metamodel, ClassConstants.DOUBLE, ExpressionMath.sqrt(((InternalSelection)x).getCurrentNode()), buildList(x), "sqrt");
     }
 
-    // typecasts:
+    /**
+     * Create an expression that returns the sign of its argument, that is, {@code 1} if its argument is
+     * positive, {@code -1} if its argument is negative, or {@code 0} if its argument is exactly zero.
+     *
+     * @param x expression
+     * @return sign
+     */
+    @Override
+    public Expression<Integer> sign(Expression<? extends Number> x) {
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.INTEGER,
+                ExpressionMath.sign(((InternalSelection)x).getCurrentNode()), buildList(x), "sign");
+    }
+
+    /**
+     * Create an expression that returns the ceiling of its argument, that is, the smallest integer greater than
+     * or equal to its argument.
+     *
+     * @param x expression
+     * @return ceiling
+     */
+    @Override
+    public <N extends Number> Expression<N> ceiling(Expression<N> x) {
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.NUMBER,
+                ExpressionMath.ceil(((InternalSelection)x).getCurrentNode()), buildList(x), "ceiling");
+    }
+
+    /**
+     * Create an expression that returns the floor of its argument, that is, the largest integer smaller than
+     * or equal to its argument.
+     *
+     * @param x expression
+     * @return floor
+     */
+    @Override
+    public <N extends Number> Expression<N> floor(Expression<N> x) {
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.NUMBER,
+                ExpressionMath.floor(((InternalSelection)x).getCurrentNode()), buildList(x), "floor");
+    }
+
+    /**
+     * Create an expression that returns the exponential of its argument, that is, Euler's number <i>e</i>
+     * raised to the power of its argument.
+     *
+     * @param x expression
+     * @return exponential
+     */
+    @Override
+    public Expression<Double> exp(Expression<? extends Number> x) {
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.DOUBLE,
+                ExpressionMath.exp(((InternalSelection)x).getCurrentNode()), buildList(x), "exp");
+    }
+    /**
+     * Create an expression that returns the natural logarithm of its argument.
+     *
+     * @param x expression
+     * @return natural logarithm
+     */
+    @Override
+    public Expression<Double> ln(Expression<? extends Number> x) {
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.DOUBLE,
+                ExpressionMath.ln(((InternalSelection)x).getCurrentNode()), buildList(x), "ln");
+    }
+
+    /**
+     * Create an expression that returns the first argument raised to the power of its second argument.
+     *
+     * @param x base
+     * @param y exponent
+     * @return the base raised to the power of the exponent
+     */
+    @Override
+    public Expression<Double> power(Expression<? extends Number> x, Expression<? extends Number> y) {
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.DOUBLE,
+                ExpressionMath.power(((InternalSelection)x).getCurrentNode(),
+                ((InternalSelection)y).getCurrentNode()), buildList(x,y), "power");
+    }
+
+    /**
+     * Create an expression that returns the first argument raised to the power of its second argument.
+     *
+     * @param x base
+     * @param y exponent
+     * @return the base raised to the power of the exponent
+     */
+    @Override
+    public Expression<Double> power(Expression<? extends Number> x, Number y) {
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.DOUBLE,
+                ExpressionMath.power(((InternalSelection)x).getCurrentNode(), y),
+                buildList(x, internalLiteral(y)), "power");
+    }
+
+    /**
+     * Create an expression that returns the first argument rounded to the number of decimal places given by the
+     * second argument.
+     *
+     * @param x base
+     * @param n number of decimal places
+     * @return the rounded value
+     */
+    @Override
+    public <T extends Number> Expression<T> round(Expression<T> x, Integer n) {
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.NUMBER,
+                ExpressionMath.round(((InternalSelection)x).getCurrentNode(), n),
+                buildList(x, internalLiteral(n)), "round");
+    }
+
+    // This came with API modifications branch and shall be removed.
+    @Override
+    public Expression<LocalDate> localDate() {
+        return null;
+    }
+
+    @Override
+    public Expression<LocalDateTime> localDateTime() {
+        return null;
+    }
+
+    @Override
+    public Expression<LocalTime> localTime() {
+        return null;
+    }
+
+// typecasts:
     /**
      * Typecast.
      *
