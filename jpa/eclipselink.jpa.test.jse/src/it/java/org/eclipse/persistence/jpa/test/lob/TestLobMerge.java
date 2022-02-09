@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2018, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -41,12 +41,6 @@ public class TestLobMerge {
     @Emf(createTables = DDLGen.DROP_CREATE, classes = { CollectedEntity.class, ParentEntity.class })
     private EntityManagerFactory emf;
 
-    /**
-     * Merging ElementCollections on Oracle fails when EclipseLink generates 
-     * a DELETE SQL statement with a WHERE clause containing a CLOB.
-     * 
-     * @throws Exception
-     */
     @Test
     public void testLobMerge() throws Exception {
         //Test for Oracle only
@@ -59,7 +53,7 @@ public class TestLobMerge {
         EntityManager em = emf.createEntityManager();
         try {
             final Set<CollectedEntity> col1 = new HashSet<CollectedEntity>(
-                    Arrays.asList(new CollectedEntity[] { 
+                    Arrays.asList(new CollectedEntity[] {
                             new CollectedEntity("label1", "content1"),
                             new CollectedEntity("label2", "content2"),
                             new CollectedEntity("label3", "content3") }));
@@ -70,7 +64,7 @@ public class TestLobMerge {
             em.getTransaction().commit();
 
             final Set<CollectedEntity> col2 = new HashSet<CollectedEntity>(
-                    Arrays.asList(new CollectedEntity[] { 
+                    Arrays.asList(new CollectedEntity[] {
                             new CollectedEntity("label1", "content1"),
                             new CollectedEntity("label2", "content2") }));
             final ParentEntity newEntity = new ParentEntity(pdo.getId(), col2);

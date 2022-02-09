@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -1064,7 +1064,7 @@ public class DatasourcePlatform implements Platform {
      * Override this method if the platform needs to use a custom function based on the DatabaseField
      * @return An expression for the given field set equal to a parameter matching the field
      */
-    public Expression createExpressionFor(DatabaseField field, Expression builder) {
+    public Expression createExpressionFor(DatabaseField field, Expression builder, String fieldClassificationClassName) {
         Expression subExp1 = builder.getField(field);
         Expression subExp2 = builder.getParameter(field);
         return subExp1.equal(subExp2);
