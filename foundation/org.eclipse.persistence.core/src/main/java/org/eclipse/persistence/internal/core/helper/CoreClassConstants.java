@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -77,6 +78,7 @@ public class CoreClassConstants {
     public static final Class<String> STRING = String.class;
     public static final Class<Time> TIME = Time.class;
     public static final Class<Timestamp> TIMESTAMP = Timestamp.class;
+    public static final Class<UUID> UUID = UUID.class;
     public static final Class<URL> URL_Class = URL.class;
     public static final Class<java.util.Date> UTILDATE = java.util.Date.class;
     public static final Class<XMLGregorianCalendar> XML_GREGORIAN_CALENDAR = XMLGregorianCalendar.class;

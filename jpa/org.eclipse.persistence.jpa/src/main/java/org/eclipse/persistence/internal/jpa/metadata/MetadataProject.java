@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -195,6 +195,7 @@ public class MetadataProject {
     public static final String DEFAULT_TABLE_GENERATOR = "SEQ_GEN_TABLE";
     public static final String DEFAULT_SEQUENCE_GENERATOR = "SEQ_GEN_SEQUENCE";
     public static final String DEFAULT_IDENTITY_GENERATOR = "SEQ_GEN_IDENTITY";
+    public static final String DEFAULT_UUID_GENERATOR = "SEQ_GEN_UUID";
 
     // Boolean to specify if we should weave fetch groups.
     private boolean m_isWeavingFetchGroupsEnabled;
@@ -1761,6 +1762,10 @@ public class MetadataProject {
 
             if (! sequences.containsKey(DEFAULT_IDENTITY_GENERATOR)) {
                 sequences.put(DEFAULT_IDENTITY_GENERATOR, new SequenceGeneratorMetadata(DEFAULT_IDENTITY_GENERATOR, 1, getPersistenceUnitDefaultCatalog(), getPersistenceUnitDefaultSchema(), true).process(m_logger));
+            }
+
+            if (! sequences.containsKey(DEFAULT_UUID_GENERATOR)) {
+                sequences.put(DEFAULT_UUID_GENERATOR, new UuidGeneratorMetadata().process(m_logger));
             }
 
             // Use a temporary sequence generator to build a qualifier to set on

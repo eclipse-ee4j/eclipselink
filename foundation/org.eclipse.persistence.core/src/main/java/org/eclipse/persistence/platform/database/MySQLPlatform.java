@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -838,4 +838,18 @@ public class MySQLPlatform extends DatabasePlatform {
         }
     }
 
+    /**
+     * INTERNAL:
+     * This method returns the query to select the UUID
+     * from the server for MySQL.
+     */
+    @Override
+    public ValueReadQuery getUUIDQuery() {
+        if (uuidQuery == null) {
+            uuidQuery = new ValueReadQuery();
+            uuidQuery.setSQLString("SELECT UUID()");
+            uuidQuery.setAllowNativeSQLQuery(true);
+        }
+        return uuidQuery;
+    }
 }

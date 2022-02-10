@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -86,6 +86,13 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
      */
     ValueReadQuery getTimestampQuery();
 
+    /**
+     * This method can be overridden by subclasses to return a
+     * query that will return the UUID from the server.
+     * return null if UUID generation is not available at the server.
+     */
+    ValueReadQuery getUUIDQuery();
+
     boolean isH2();
 
     boolean isAccess();
@@ -152,6 +159,11 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
      * See: getTimestampFromServer
      */
     void setTimestampQuery(ValueReadQuery tsQuery);
+
+    /**
+     * Can override the default query for returning a UUID from the server.
+     */
+    void setUUIDQuery(ValueReadQuery uuidQuery);
 
     /**
      * Add the parameter.

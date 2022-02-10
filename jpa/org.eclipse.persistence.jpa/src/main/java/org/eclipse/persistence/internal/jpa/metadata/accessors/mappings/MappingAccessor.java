@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -153,6 +153,7 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.KryoMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.LobMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.SerializedMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.UUIDMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.XMLMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.MapKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
@@ -1410,6 +1411,14 @@ public abstract class MappingAccessor extends MetadataAccessor {
 
     /**
      * INTERNAL:
+     * Return true if this represents a UUID type mapping.
+     */
+    protected boolean isUUID(MetadataClass referenceClass, boolean isForMapKey) {
+        return UUIDMetadata.isValidUUIDType(referenceClass);
+    }
+
+    /**
+     * INTERNAL:
      * Return true if this accessor represents a transient mapping.
      */
     public boolean isTransient() {
@@ -1852,6 +1861,8 @@ public abstract class MappingAccessor extends MetadataAccessor {
                 processLob(getLob(isForMapKey), mapping, referenceClass, isForMapKey);
             } else if (isTemporal(referenceClass, isForMapKey)) {
                 processTemporal(getTemporal(isForMapKey), mapping, referenceClass, isForMapKey);
+            } else if (isUUID(referenceClass, isForMapKey)) {
+                processUUID(mapping, referenceClass, isForMapKey);
             } else if (isSerialized(referenceClass, isForMapKey)) {
                 processSerialized(mapping, referenceClass, isForMapKey);
             }
@@ -2066,6 +2077,14 @@ public abstract class MappingAccessor extends MetadataAccessor {
         }
 
         temporal.process(mapping, this, referenceClass, isForMapKey);
+    }
+
+    /**
+     * INTERNAL:
+     * Process a UUID attribute.
+     */
+    protected void processUUID(DatabaseMapping mapping, MetadataClass referenceClass, boolean isForMapKey) {
+        new UUIDMetadata().process(mapping, this, referenceClass, isForMapKey);
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -196,5 +196,20 @@ public class Oracle12Platform extends Oracle11Platform {
     @Override
     public Struct createStruct(String structTypeName, Object[] attributes, Connection connection) throws SQLException {
         return connection.createStruct(structTypeName, attributes);
+    }
+
+    /**
+     * INTERNAL:
+     * This method returns the query to select the UUID
+     * from the server for Oracle.
+     */
+    @Override
+    public ValueReadQuery getUUIDQuery() {
+        if (uuidQuery == null) {
+            uuidQuery = new ValueReadQuery();
+            uuidQuery.setSQLString("SELECT LOWER(REGEXP_REPLACE(RAWTOHEX(SYS_GUID()), '([A-F0-9]{8})([A-F0-9]{4})([A-F0-9]{4})([A-F0-9]{4})([A-F0-9]{12})', '\\1-\\2-\\3-\\4-\\5')) AS uuid FROM dual");
+            uuidQuery.setAllowNativeSQLQuery(true);
+        }
+        return uuidQuery;
     }
 }
