@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,8 @@ Contributors:
       - 337323: Multi-tenant with shared schema support (part 1)
     02/13/2013-2.5 Guy Pelletier
       - 397772: JPA 2.1 Entity Graph Support (XML support)
+    02/10/2022-4.0 Oracle
+      - JPA 3.1 UUID Support
 -->
 
 <!-- Java Persistence API object-relational mapping file schema -->
@@ -39,11 +41,11 @@ Contributors:
   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
   elementFormDefault="qualified"
   attributeFormDefault="unqualified"
-  version="3.0">
+  version="3.1">
 
   <xsd:annotation>
     <xsd:documentation>
-      @(#)eclipselink_orm_3_0.xsd 3.0  ##DATE##
+      @(#)eclipselink_orm_3_1.xsd 3.1  ##DATE##
     </xsd:documentation>
   </xsd:annotation>
 
@@ -64,8 +66,8 @@ Contributors:
        <entity-mappings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.eclipse.org/eclipselink/xsds/persistence/orm
-       eclipselink_orm_3_0.xsd
-       version="3.0">
+       eclipselink_orm_3_1.xsd
+       version="3.1">
        ...
        </entity-mappings>
 
@@ -2769,7 +2771,7 @@ Contributors:
     <xsd:annotation>
       <xsd:documentation>
 
-        public enum GenerationType { TABLE, SEQUENCE, IDENTITY, AUTO };
+        public enum GenerationType { TABLE, SEQUENCE, IDENTITY, UUID, AUTO };
 
       </xsd:documentation>
     </xsd:annotation>
@@ -2777,6 +2779,7 @@ Contributors:
       <xsd:enumeration value="TABLE"/>
       <xsd:enumeration value="SEQUENCE"/>
       <xsd:enumeration value="IDENTITY"/>
+      <xsd:enumeration value="UUID"/>
       <xsd:enumeration value="AUTO"/>
     </xsd:restriction>
   </xsd:simpleType>
