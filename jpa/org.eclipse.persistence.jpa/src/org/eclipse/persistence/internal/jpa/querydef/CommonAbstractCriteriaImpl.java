@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +22,7 @@ import java.util.Set;
 
 import javax.persistence.criteria.CommonAbstractCriteria;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -172,6 +174,10 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
 
     protected void findRootAndParameters(Expression<?> predicate) {
         ((InternalSelection) predicate).findRootAndParameters(this);
+    }
+
+    protected void findRootAndParameters(Order order) {
+        ((OrderImpl) order).findRootAndParameters(this);
     }
 
     protected abstract org.eclipse.persistence.expressions.Expression getBaseExpression();

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -364,6 +364,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     public CriteriaQuery<T> orderBy(Order... o) {
         this.orderBy = new ArrayList();
         for (Order order : o) {
+            findRootAndParameters(order);
             this.orderBy.add(order);
         }
         return this;
@@ -383,6 +384,9 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      */
     @Override
     public CriteriaQuery<T> orderBy(List<Order> o) {
+        for (Order order : o) {
+            findRootAndParameters(order);
+        }
         this.orderBy = o;
         return this;
     }
