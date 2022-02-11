@@ -49,4 +49,10 @@ public class OrderImpl implements Order, Serializable{
         return new OrderImpl(this.expression, false);
     }
 
+    public void findRootAndParameters(CommonAbstractCriteriaImpl query) {
+        if(expression != null) {
+            ((InternalSelection)expression).findRootAndParameters(query);
+        }
+    }
+
 }

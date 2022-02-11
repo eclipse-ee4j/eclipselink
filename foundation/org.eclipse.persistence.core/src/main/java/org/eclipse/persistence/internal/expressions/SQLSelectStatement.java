@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -762,6 +763,13 @@ public class SQLSelectStatement extends SQLStatement {
 
         for (Iterator<Expression> expressionsEnum = getOrderByExpressions().iterator(); expressionsEnum.hasNext();) {
             Expression expression = expressionsEnum.next();
+
+            if(!printer.getPlatform().supportsOrderByParameters()) {
+                if(expression.isParameterExpression() || expression.isConstantExpression()) {
+                    printer.getCall().setUsesBinding(false);
+                }
+            }
+
             expression.printSQL(printer);
 
             if (expressionsEnum.hasNext()) {
