@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -64,88 +64,37 @@ public class TestProcessor {
 
     @Test
     public void testProc() throws Exception {
-        TestFO entity = new TestFO("org.Sample",
-                "package org; import jakarta.persistence.Entity; @Entity public class Sample { public  Sample() {} public int getX() {return 1;} interface A {}}");
-        TestFO nonSC = new TestFO("some.IF",
-                "package some; public class IF { public IF() {}}");
-        TestFO nonAnn = new TestFO("custom.Ann",
-                "package custom; public @interface Ann { }");
-        TestFO nonExt = new TestFO("external.Cls",
-                "package external; public class Cls { public Cls(){}}");
-        TestFO nonEntity = new TestFO("org.NotE",
-                "package org; import jakarta.persistence.Entity; public class NotE extends some.IF { public  NotE() {} @custom.Ann public external.Cls getW() {return new Object();}}");
-        TestFO generated8 = new TestFO("org.Gen8",
-                "package org; import jakarta.annotation.Generated; @Generated(\"com.example.Generator\") public class Gen8 { public  Gen8() {} public int getY() {return 42;}}");
-        TestFO generated9 = new TestFO("org.Gen9",
-                "package org; @javax.annotation.processing.Generated(\"com.example.Generator\") public class Gen9 { public  Gen9() {} public int getZ() {return 9*42;}}");
-
-        Result result = runProject("testProc",
-                getJavacOptions("-Aeclipselink.logging.level.processor=OFF"),
-                Arrays.asList(entity, nonSC, nonAnn, nonExt, nonEntity, generated8, generated9));
-
-        File outputFile = new File(result.srcOut, "org/Sample_.java");
-        Assert.assertTrue("Model file not generated", outputFile.exists());
-        Assert.assertTrue(Files.lines(outputFile.toPath()).anyMatch(s -> s.contains("@StaticMetamodel(Sample.class)")));
+        testProc("testProc3030", PXML30, OXML30);
+        testProc("testProc3031", PXML30, OXML31);
     }
 
     @Test
     public void testGenerateComment() throws Exception {
-        TestFO entity = new TestFO("org.Sample",
-                "package org; import jakarta.persistence.Entity; @Entity public class Sample { public  Sample() {} public int getX() {return 1;} interface A {}}");
-
-        Result result = runProject("testGenerateComment",
-            getJavacOptions("-A" + CanonicalModelProperties.CANONICAL_MODEL_GENERATE_COMMENTS + "=false",
-                    "-Aeclipselink.logging.level.processor=OFF"),
-            Arrays.asList(entity));
-
-        File outputFile = new File(result.srcOut, "org/Sample_.java");
-        Assert.assertTrue("Model file not generated", outputFile.exists());
-        Assert.assertTrue(Files.lines(outputFile.toPath()).noneMatch(s -> s.contains("comments=")));
-        Assert.assertTrue("Compilation failed", result.success);
+        testGenerateComment("testGenerateComment3030", PXML30, OXML30);
+        testGenerateComment("testGenerateComment3031", PXML30, OXML31);
     }
 
     @Test
     public void testGenerate() throws Exception {
-        TestFO entity = new TestFO("org.Sample",
-                "package org; import jakarta.persistence.Entity; @Entity public class Sample { public  Sample() {} public int getX() {return 1;} interface A {}}");
-
-        Result result = runProject("testGenerate",
-            getJavacOptions("-A" + CanonicalModelProperties.CANONICAL_MODEL_GENERATE_GENERATED + "=false",
-                    "-Aeclipselink.logging.level.processor=OFF"),
-            Arrays.asList(entity));
-
-        File outputFile = new File(result.srcOut, "org/Sample_.java");
-        Assert.assertTrue("Model file not generated", outputFile.exists());
-        Assert.assertTrue(Files.lines(outputFile.toPath()).noneMatch(s -> s.contains("Generated")));
-        Assert.assertTrue("Compilation failed", result.success);
+        testGenerate("testGenerate3030", PXML30, OXML30);
+        testGenerate("testGenerate3031", PXML30, OXML31);
     }
 
     @Test
     public void testTypeUse() throws Exception {
-        TestFO entity = new TestFO("org.Ent",
-                "package org; @jakarta.persistence.Entity public class Ent { @org.ann.NotNull private byte[] bytes;}");
-        TestFO ann = new TestFO("org.ann.NotNull",
-                "package org.ann; @java.lang.annotation.Target(java.lang.annotation.ElementType.TYPE_USE) public @interface NotNull {}");
-
-        Result result = runProject("testTypeUse",
-            getJavacOptions("-Aeclipselink.logging.level.processor=OFF"),
-            Arrays.asList(entity, ann));
-
-        File outputFile = new File(result.srcOut, "org/Ent_.java");
-        Assert.assertTrue("Model file not generated", outputFile.exists());
-        Assert.assertTrue(Files.lines(outputFile.toPath()).noneMatch(s -> s.contains("NotNull")));
-        Assert.assertTrue("Compilation failed", result.success);
+        testTypeUse("testTypeUse3030", PXML30, OXML30);
+        testTypeUse("testTypeUse3031", PXML30, OXML31);
     }
 
     @Test
     public void testProcessorLoggingOffFromCmdLine() throws Exception {
-        verifyLogging("testProcessorLoggingOffFromCmdLine", PXML, false,
+        verifyLogging("testProcessorLoggingOffFromCmdLine", PXML30, false,
                 "-Aeclipselink.logging.level.processor=OFF");
     }
 
     @Test
     public void testGlobalLoggingOffFromCmdLine() throws Exception {
-        verifyLogging("testGlobalLoggingOffFromCmdLine", PXML, false,
+        verifyLogging("testGlobalLoggingOffFromCmdLine", PXML30, false,
                 "-Aeclipselink.logging.level=OFF");
     }
 
@@ -167,13 +116,13 @@ public class TestProcessor {
 
     @Test
     public void testProcessorLoggingFinestFromCmdLine() throws Exception {
-        verifyLogging("testProcessorLoggingFinestFromCmdLine", PXML, true,
+        verifyLogging("testProcessorLoggingFinestFromCmdLine", PXML30, true,
                 "-Aeclipselink.logging.level.processor=FINEST");
     }
 
     @Test
     public void testGlobalLoggingFinestFromCmdLine() throws Exception {
-        verifyLogging("testGlobalLoggingFinestFromCmdLine", PXML, true,
+        verifyLogging("testGlobalLoggingFinestFromCmdLine", PXML30, true,
                 "-Aeclipselink.logging.level=FINEST");
     }
 
@@ -189,6 +138,77 @@ public class TestProcessor {
         final String pu = buildPU("testGlobalLoggingFinestFromPU",
                 new Property("eclipselink.logging.level", "FINEST"));
         verifyLogging("testGlobalLoggingFinestFromPU", pu, true);
+    }
+
+    private void testProc(String name, String pxml, String oxml) throws Exception {
+        TestFO entity = new TestFO("org.Sample",
+                "package org; import jakarta.persistence.Entity; @Entity public class Sample { public  Sample() {} public int getX() {return 1;} interface A {}}");
+        TestFO nonSC = new TestFO("some.IF",
+                "package some; public class IF { public IF() {}}");
+        TestFO nonAnn = new TestFO("custom.Ann",
+                "package custom; public @interface Ann { }");
+        TestFO nonExt = new TestFO("external.Cls",
+                "package external; public class Cls { public Cls(){}}");
+        TestFO nonEntity = new TestFO("org.NotE",
+                "package org; import jakarta.persistence.Entity; public class NotE extends some.IF { public  NotE() {} @custom.Ann public external.Cls getW() {return new Object();}}");
+        TestFO generated8 = new TestFO("org.Gen8",
+                "package org; import jakarta.annotation.Generated; @Generated(\"com.example.Generator\") public class Gen8 { public  Gen8() {} public int getY() {return 42;}}");
+        TestFO generated9 = new TestFO("org.Gen9",
+                "package org; @javax.annotation.processing.Generated(\"com.example.Generator\") public class Gen9 { public  Gen9() {} public int getZ() {return 9*42;}}");
+
+        Result result = runProject(name,
+                getJavacOptions("-Aeclipselink.logging.level.processor=OFF"),
+                Arrays.asList(entity, nonSC, nonAnn, nonExt, nonEntity, generated8, generated9), pxml, oxml);
+
+        File outputFile = new File(result.srcOut, "org/Sample_.java");
+        Assert.assertTrue("Model file not generated", outputFile.exists());
+        Assert.assertTrue(Files.lines(outputFile.toPath()).anyMatch(s -> s.contains("@StaticMetamodel(Sample.class)")));
+    }
+
+    private void testGenerateComment(String name, String pxml, String oxml) throws Exception {
+        TestFO entity = new TestFO("org.Sample",
+                "package org; import jakarta.persistence.Entity; @Entity public class Sample { public  Sample() {} public int getX() {return 1;} interface A {}}");
+
+        Result result = runProject(name,
+                getJavacOptions("-A" + CanonicalModelProperties.CANONICAL_MODEL_GENERATE_COMMENTS + "=false",
+                        "-Aeclipselink.logging.level.processor=OFF"),
+                Arrays.asList(entity), pxml, oxml);
+
+        File outputFile = new File(result.srcOut, "org/Sample_.java");
+        Assert.assertTrue("Model file not generated", outputFile.exists());
+        Assert.assertTrue(Files.lines(outputFile.toPath()).noneMatch(s -> s.contains("comments=")));
+        Assert.assertTrue("Compilation failed", result.success);
+    }
+
+    private void testGenerate(String name, String pxml, String oxml) throws Exception {
+        TestFO entity = new TestFO("org.Sample",
+                "package org; import jakarta.persistence.Entity; @Entity public class Sample { public  Sample() {} public int getX() {return 1;} interface A {}}");
+
+        Result result = runProject(name,
+                getJavacOptions("-A" + CanonicalModelProperties.CANONICAL_MODEL_GENERATE_GENERATED + "=false",
+                        "-Aeclipselink.logging.level.processor=OFF"),
+                Arrays.asList(entity), pxml, oxml);
+
+        File outputFile = new File(result.srcOut, "org/Sample_.java");
+        Assert.assertTrue("Model file not generated", outputFile.exists());
+        Assert.assertTrue(Files.lines(outputFile.toPath()).noneMatch(s -> s.contains("Generated")));
+        Assert.assertTrue("Compilation failed", result.success);
+    }
+
+    public void testTypeUse(String name, String pxml, String oxml) throws Exception {
+        TestFO entity = new TestFO("org.Ent",
+                "package org; @jakarta.persistence.Entity public class Ent { @org.ann.NotNull private byte[] bytes;}");
+        TestFO ann = new TestFO("org.ann.NotNull",
+                "package org.ann; @java.lang.annotation.Target(java.lang.annotation.ElementType.TYPE_USE) public @interface NotNull {}");
+
+        Result result = runProject(name,
+                getJavacOptions("-Aeclipselink.logging.level.processor=OFF"),
+                Arrays.asList(entity, ann), pxml, oxml);
+
+        File outputFile = new File(result.srcOut, "org/Ent_.java");
+        Assert.assertTrue("Model file not generated", outputFile.exists());
+        Assert.assertTrue(Files.lines(outputFile.toPath()).noneMatch(s -> s.contains("NotNull")));
+        Assert.assertTrue("Compilation failed", result.success);
     }
 
     private List<String> getJavacOptions(String... opts) {
@@ -253,7 +273,7 @@ public class TestProcessor {
         }
     }
 
-    private Result runProject(String name, List<String> options, List<JavaFileObject> sources) throws Exception {
+    private Result runProject(String name, List<String> options, List<JavaFileObject> sources, String pxmlStr, String oxmlStr) throws Exception {
                 File runDir = new File(System.getProperty("run.dir"), name);
         File srcOut = new File(runDir, "src");
         srcOut.mkdirs();
@@ -262,13 +282,13 @@ public class TestProcessor {
         File pxml = new File(cpDir, "META-INF/persistence.xml");
         pxml.getParentFile().mkdirs();
         try (BufferedWriter writer = Files.newBufferedWriter(pxml.toPath(), StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE)) {
-            writer.write(PXML, 0, PXML.length());
+            writer.write(pxmlStr, 0, pxmlStr.length());
         } catch (IOException x) {
             throw x;
         }
         File oxml = new File(cpDir, "META-INF/orm.xml");
         try (BufferedWriter writer = Files.newBufferedWriter(oxml.toPath(), StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE)) {
-            writer.write(OXML, 0, OXML.length());
+            writer.write(oxmlStr, 0, oxmlStr.length());
         } catch (IOException x) {
             throw x;
         }
@@ -322,7 +342,7 @@ public class TestProcessor {
         }
     }
 
-    private static final String PXML = "<persistence xmlns=\"https://jakarta.ee/xml/ns/persistence\"\n" +
+    private static final String PXML30 = "<persistence xmlns=\"https://jakarta.ee/xml/ns/persistence\"\n" +
             "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
             "  xsi:schemaLocation=\"https://jakarta.ee/xml/ns/persistence\n" +
             "    https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd\"\n" +
@@ -335,10 +355,16 @@ public class TestProcessor {
             "     </persistence-unit>\n" +
             "</persistence>";
 
-    private static final String OXML = "<entity-mappings xmlns=\"https://jakarta.ee/xml/ns/persistence/orm\"\n" +
+    private static final String OXML30 = "<entity-mappings xmlns=\"https://jakarta.ee/xml/ns/persistence/orm\"\n" +
 "             xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
 "             xsi:schemaLocation=\"https://jakarta.ee/xml/ns/persistence/orm https://jakarta.ee/xml/ns/persistence/orm/orm_3_0.xsd\"\n" +
 "             version=\"3.0\">" +
+            "</entity-mappings>";
+
+    private static final String OXML31 = "<entity-mappings xmlns=\"https://jakarta.ee/xml/ns/persistence/orm\"\n" +
+            "             xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+            "             xsi:schemaLocation=\"https://jakarta.ee/xml/ns/persistence/orm https://jakarta.ee/xml/ns/persistence/orm/orm_3_1.xsd\"\n" +
+            "             version=\"3.1\">" +
             "</entity-mappings>";
 
     private static final String PXML_LOG_BEG =
