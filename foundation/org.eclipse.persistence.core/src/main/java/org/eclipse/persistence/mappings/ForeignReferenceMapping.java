@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -576,6 +576,9 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                 if (size != rowsSize) {
                     // If only fetching a page, need to make sure the row we want is in the page.
                     startIndex = parentRows.indexOf(sourceRow);
+                }
+                if (startIndex == -1) {
+                    return null;
                 }
                 List foreignKeyValues = new ArrayList(size);
                 Set foreignKeys = new HashSet(size);
