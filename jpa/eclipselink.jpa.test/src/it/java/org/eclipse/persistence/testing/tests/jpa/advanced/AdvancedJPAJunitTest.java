@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -51,6 +51,7 @@ import jakarta.persistence.CacheStoreMode;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.Attribute.PersistentAttributeType;
 import jakarta.persistence.metamodel.Bindable.BindableType;
@@ -285,6 +286,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testEmployeeToProjectWithBatchFetchTypeInReverseIteration"));
         suite.addTest(new AdvancedJPAJunitTest("testEmployeeToProjectWithBatchFetchTypeInCustomIteration"));
         suite.addTest(new AdvancedJPAJunitTest("testEmployeeToProjectWithBatchFetchTypeInRandomIteration"));
+        suite.addTest(new AdvancedJPAJunitTest("testEmployeeToProjectWithBatchFetchTypeWithSmallFetchSize"));
 
         if (!isJPA10()) {
             // These tests use JPA 2.0 entity manager API
@@ -3707,6 +3709,72 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             ((ReadAllQuery) query.getDatabaseQuery()).addBatchReadAttribute("projects");
             ((ReadAllQuery) query.getDatabaseQuery()).setBatchFetchType(BatchFetchType.IN);
             ((ReadAllQuery) query.getDatabaseQuery()).setBatchFetchSize(99);
+            List<Employee> employees = query.getResultList();
+
+            // Trigger the bug
+            Collections.shuffle(employees);
+
+            int count = 0;
+            try {
+                for (Employee employee : employees) {
+                    for (Project project : employee.getProjects()) {
+                        count++;
+                    }
+                }
+                Assert.assertEquals("Project objects received are not as many as expected", 2000, count);
+            } catch (ArrayIndexOutOfBoundsException x) {
+                Assert.fail(Helper.printStackTraceToString(x));
+            }
+        } finally {
+            // Clean up
+            beginTransaction(em);
+            for (Employee employee : employeesToRemove) {
+                employee = em.merge(employee);
+                for (Project project : employee.getProjects()) {
+                    em.remove(em.merge(project));
+                }
+                em.remove(employee);
+            }
+            commitTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+
+    /**
+     * Bug 1148 (GitHub)
+     * Test batch fetch with small fetch size
+     */
+    public void testEmployeeToProjectWithBatchFetchTypeWithSmallFetchSize() {
+        final String lastName = "testRandomEmployeeToProject";
+
+        // Set up
+        Set<Employee> employeesToRemove = new HashSet<>();
+        Set<Integer> employeeIds = new HashSet<>();
+        EntityManager em = createEntityManager();
+        for (int i = 0; i < 100; i++) {
+            beginTransaction(em);
+            Employee employee = new Employee();
+            employee.setLastName(lastName);
+            employeesToRemove.add(employee);
+            em.persist(employee);
+            employeeIds.add(employee.getId());
+            for (int j = 0; j < 20; j++) {
+                Project project = new Project();
+                employee.addProject(project);
+                em.persist(project);
+            }
+            commitTransaction(em);
+        }
+
+        JpaEntityManager jpaEntityManager = (JpaEntityManager) em.getDelegate();
+        jpaEntityManager.getUnitOfWork().getIdentityMapAccessor().initializeAllIdentityMaps();
+        try {
+            String jpql = "SELECT employee FROM Employee employee WHERE employee.id IN :ids";
+            TypedQuery<Employee> query = em.createQuery(jpql, Employee.class)
+                    .setParameter("ids", employeeIds)
+                    .setHint(QueryHints.BATCH_TYPE, BatchFetchType.IN)
+                    .setHint(QueryHints.BATCH, "employee.projects.properties")
+                    .setHint(QueryHints.BATCH_SIZE, 3);
             List<Employee> employees = query.getResultList();
 
             // Trigger the bug
