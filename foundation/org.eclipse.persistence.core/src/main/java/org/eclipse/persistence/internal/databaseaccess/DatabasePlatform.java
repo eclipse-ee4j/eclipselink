@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -2419,6 +2419,15 @@ public class DatabasePlatform extends DatasourcePlatform {
 
     public boolean supportsStoredFunctions() {
         return false;
+    }
+
+    /**
+     * Used to determine if the platform supports untyped parameters, as ordinal variables, within the Order By clause
+     * <p>
+     * On by default. Only platforms without support added should disable this configuration.
+     */
+    public boolean supportsOrderByParameters() {
+        return true;
     }
 
     public boolean supportsDeleteOnCascade() {
