@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -716,8 +716,15 @@ public class SQLSelectStatement extends SQLStatement {
 
         printer.getWriter().write(" ORDER BY ");
 
-        for (Iterator expressionsEnum = getOrderByExpressions().iterator(); expressionsEnum.hasNext();) {
-            Expression expression = (Expression)expressionsEnum.next();
+        for (Iterator<Expression> expressionsEnum = getOrderByExpressions().iterator(); expressionsEnum.hasNext();) {
+            Expression expression = expressionsEnum.next();
+
+            if(!printer.getPlatform().supportsOrderByParameters()) {
+                if(expression.isParameterExpression()) {
+                    printer.getCall().setUsesBinding(false);
+                }
+            }
+
             expression.printSQL(printer);
 
             if (expressionsEnum.hasNext()) {
