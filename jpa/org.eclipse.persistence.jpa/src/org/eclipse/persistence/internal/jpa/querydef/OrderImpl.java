@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,6 +45,12 @@ public class OrderImpl implements Order, Serializable{
 
     public Order reverse() {
         return new OrderImpl(this.expression, false);
+    }
+
+    public void findRootAndParameters(CommonAbstractCriteriaImpl query) {
+        if(expression != null) {
+            ((InternalSelection)expression).findRootAndParameters(query);
+        }
     }
 
 }
