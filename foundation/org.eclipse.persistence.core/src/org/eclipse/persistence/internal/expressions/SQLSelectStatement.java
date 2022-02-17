@@ -720,7 +720,7 @@ public class SQLSelectStatement extends SQLStatement {
             Expression expression = expressionsEnum.next();
 
             if(!printer.getPlatform().supportsOrderByParameters()) {
-                if(expression.isParameterExpression()) {
+                if(expression.isParameterExpression() || expression.isConstantExpression()) {
                     printer.getCall().setUsesBinding(false);
                 }
             }

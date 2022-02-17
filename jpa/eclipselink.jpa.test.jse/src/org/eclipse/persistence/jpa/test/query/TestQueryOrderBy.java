@@ -40,10 +40,16 @@ public class TestQueryOrderBy {
             properties = { @Property(name="eclipselink.logging.level", value="FINE")})
     private EntityManagerFactory emf;
 
+    @Emf(name = "BindLiteralsPersistenceUnit", classes = { EntityTbl01.class }, 
+            properties = { 
+                    @Property(name="eclipselink.target-database-properties", value="shouldBindLiterals=true"), 
+                    @Property(name="eclipselink.logging.level", value="FINE")})
+    private EntityManagerFactory emf2;
+
     private static boolean POPULATED = false;
 
     @Test
-    public void testQueryHavingLiterals1() {
+    public void testQueryOrderByLiterals1() {
         if (emf == null)
             return;
 
@@ -54,9 +60,17 @@ public class TestQueryOrderBy {
 
         try {
             TypedQuery<Integer> query = em.createQuery(""
-                    + "SELECT t.itemInteger1 FROM EntityTbl01 t ORDER BY 1 ASC", Integer.class);
+                    + "SELECT t.itemInteger1 FROM EntityTbl01 t ORDER BY 1", Integer.class);
 
             List<Integer> dto01 = query.getResultList();
+            assertNotNull(dto01);
+            assertEquals(4, dto01.size());
+            assertEquals(new Integer(29), dto01.get(1));
+
+            query = em.createQuery(""
+                    + "SELECT t.itemInteger1 FROM EntityTbl01 t ORDER BY 1 ASC", Integer.class);
+
+            dto01 = query.getResultList();
             assertNotNull(dto01);
             assertEquals(4, dto01.size());
             assertEquals(new Integer(29), dto01.get(1));
@@ -85,7 +99,57 @@ public class TestQueryOrderBy {
     }
 
     @Test
-    public void testQueryHavingParameters1() {
+    public void testQueryOrderByLiterals2() {
+        if (emf2 == null)
+            return;
+
+        if(!POPULATED) 
+            populate();
+
+        EntityManager em = emf2.createEntityManager();
+
+        try {
+            TypedQuery<Integer> query = em.createQuery(""
+                    + "SELECT t.itemInteger1 FROM EntityTbl01 t ORDER BY 1", Integer.class);
+
+            List<Integer> dto01 = query.getResultList();
+            assertNotNull(dto01);
+            assertEquals(4, dto01.size());
+            assertEquals(new Integer(29), dto01.get(1));
+
+            query = em.createQuery(""
+                    + "SELECT t.itemInteger1 FROM EntityTbl01 t ORDER BY 1 ASC", Integer.class);
+
+            dto01 = query.getResultList();
+            assertNotNull(dto01);
+            assertEquals(4, dto01.size());
+            assertEquals(new Integer(29), dto01.get(1));
+
+            // equivalent CriteriaBuilder
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Integer> cquery = cb.createQuery(Integer.class);
+            Root<EntityTbl01> root = cquery.from(EntityTbl01.class);
+            cquery.multiselect(root.get(EntityTbl01_.itemInteger1));
+
+            cquery.orderBy(cb.asc(cb.literal(1)));
+
+            query = em.createQuery(cquery);
+            dto01 = query.getResultList();
+            assertNotNull(dto01);
+            assertEquals(4, dto01.size());
+            assertEquals(new Integer(29), dto01.get(1));
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testQueryOrderByParameters1() {
         if (emf == null)
             return;
 
@@ -96,10 +160,19 @@ public class TestQueryOrderBy {
 
         try {
             TypedQuery<Integer> query = em.createQuery(""
-                    + "SELECT t.itemInteger1 FROM EntityTbl01 t ORDER BY ?1 ASC", Integer.class);
+                    + "SELECT t.itemInteger1 FROM EntityTbl01 t ORDER BY ?1", Integer.class);
             query.setParameter(1, 1);
 
             List<Integer> dto01 = query.getResultList();
+            assertNotNull(dto01);
+            assertEquals(4, dto01.size());
+            assertEquals(new Integer(29), dto01.get(1));
+
+            query = em.createQuery(""
+                    + "SELECT t.itemInteger1 FROM EntityTbl01 t ORDER BY ?1 ASC", Integer.class);
+            query.setParameter(1, 1);
+
+            dto01 = query.getResultList();
             assertNotNull(dto01);
             assertEquals(4, dto01.size());
             assertEquals(new Integer(29), dto01.get(1));
