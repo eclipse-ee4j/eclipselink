@@ -412,6 +412,10 @@ public abstract class AbstractBaseTest {
         Assert.assertTrue(string, condition);
     }
 
+    protected static void verifyEquals(Object expected, Object actual, String msg) {
+        Assert.assertEquals(msg, expected, actual);
+    }
+
     protected final void flop(final String msg) {
         Assert.fail(msg);
     }
