@@ -1099,7 +1099,7 @@ public class StoredProcedureCall extends DatabaseCall {
                     session = getQuery().getSession();
                 }
                 List<String> procedureArgs = getProcedureArgumentNames();
-                boolean indexBased = procedureArgs.size() == 0 || procedureArgs.get(0) == null || session.getProject().namingIntoIndexed();
+                boolean indexBased = isIndexBased(procedureArgs, session);
                 Collection<String> parameters = new ArrayList<>();
                 for (int index = 0; index < getParameters().size(); index++) {
                     if (indexBased) {
@@ -1114,5 +1114,14 @@ public class StoredProcedureCall extends DatabaseCall {
         } else {
             return getSQLString();
         }
+    }
+
+	private boolean isIndexBased(List<String> procedureArgs, AbstractSession session) {
+    	boolean hasNoArgs = procedureArgs.size() == 0 || procedureArgs.get(0) == null;
+    	boolean isNamingIntoIndexed = false;
+    	if (session != null && session.getProject() != null) {
+    		isNamingIntoIndexed = session.getProject().namingIntoIndexed();
+    	}
+    	return hasNoArgs || isNamingIntoIndexed;
     }
 }
