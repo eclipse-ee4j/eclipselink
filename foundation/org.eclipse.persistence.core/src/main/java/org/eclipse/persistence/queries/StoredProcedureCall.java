@@ -1116,12 +1116,12 @@ public class StoredProcedureCall extends DatabaseCall {
         }
     }
 
-	private boolean isIndexBased(List<String> procedureArgs, AbstractSession session) {
-    	boolean hasNoArgs = procedureArgs.size() == 0 || procedureArgs.get(0) == null;
-    	boolean isNamingIntoIndexed = false;
-    	if (session != null && session.getProject() != null) {
-    		isNamingIntoIndexed = session.getProject().namingIntoIndexed();
-    	}
-    	return hasNoArgs || isNamingIntoIndexed;
+    private boolean isIndexBased(List<String> procedureArgs, AbstractSession session) {
+        boolean hasNoArgs = procedureArgs.size() == 0 || procedureArgs.get(0) == null;
+        boolean isNamingIntoIndexed = false;
+        if (session != null && session.getProject() != null) {
+            isNamingIntoIndexed = session.getProject().namingIntoIndexed();
+        }
+        return hasNoArgs || isNamingIntoIndexed;
     }
 }
