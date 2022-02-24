@@ -183,8 +183,9 @@
         <annotation.version>2.1.0</annotation.version>
         <cdi.version>4.0.0</cdi.version>
         <ejb.version>4.0.0</ejb.version>
-        <el-api.version>5.0.0</el-api.version>
-        <el.version>5.0.0-M1</el.version>
+        <!-- there's no version of hibernate-validator working with new EL APIs available yet -->
+<!--        <el-api.version>5.0.0</el-api.version>-->
+        <el.version>4.0.2</el.version>
         <glassfish.version>7.0.0-M1</glassfish.version>
         <jaxwsrt.version>4.0.0-M3</jaxwsrt.version>
         <jaxb.version>4.0.0-M3</jaxb.version>
@@ -865,11 +866,11 @@
                 <version>${hamcrest.version}</version>
             </dependency>
             <!--APIs and other libs used in test classes-->
-            <dependency>
-                <groupId>jakarta.el</groupId>
-                <artifactId>jakarta.el-api</artifactId>
-                <version>${el-api.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>jakarta.el</groupId>-->
+<!--                <artifactId>jakarta.el-api</artifactId>-->
+<!--                <version>${el-api.version}</version>-->
+<!--            </dependency>-->
             <dependency>
                 <groupId>org.jboss.weld.se</groupId>
                 <artifactId>weld-se-core</artifactId>
