@@ -109,6 +109,14 @@
             <groupId>jakarta.enterprise</groupId>
             <artifactId>jakarta.enterprise.cdi-api</artifactId>
             <scope>test</scope>
+            <exclusions>
+                <!-- do not bring in 5.0.0 yet,
+                     it does not work with hibernate-validator -->
+                <exclusion>
+                    <groupId>jakarta.el</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!--Hibernate validator and it's dependencies-->
         <dependency>

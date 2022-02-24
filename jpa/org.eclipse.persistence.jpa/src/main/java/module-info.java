@@ -23,6 +23,7 @@ module org.eclipse.persistence.jpa {
     requires static jakarta.transaction;
     requires static jakarta.validation;
     requires static jakarta.xml.bind;
+    requires static jakarta.cdi;
 
     exports org.eclipse.persistence.jpa;
     exports org.eclipse.persistence.jpa.config;
