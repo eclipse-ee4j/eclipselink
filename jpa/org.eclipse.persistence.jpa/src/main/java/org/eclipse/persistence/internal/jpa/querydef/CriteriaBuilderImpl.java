@@ -1430,22 +1430,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
                 buildList(x, internalLiteral(n)), "round");
     }
 
-    // This came with API modifications branch and shall be removed.
-    @Override
-    public Expression<LocalDate> localDate() {
-        return null;
-    }
-
-    @Override
-    public Expression<LocalDateTime> localDateTime() {
-        return null;
-    }
-
-    @Override
-    public Expression<LocalTime> localTime() {
-        return null;
-    }
-
 // typecasts:
     /**
      * Typecast.
@@ -2331,6 +2315,39 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     }
 
     /**
+     * Create expression to return current local date.
+     *
+     * @return expression for current date
+     */
+    @Override
+    public Expression<java.time.LocalDate> localDate() {
+        // TODO: Implement
+        throw new UnsupportedOperationException("Local date expression is not implemented yet");
+    }
+
+    /**
+     * Create expression to return current local datetime.
+     *
+     * @return expression for current timestamp
+     */
+    @Override
+    public Expression<java.time.LocalDateTime> localDateTime() {
+        // TODO: Implement
+        throw new UnsupportedOperationException("Local datetime expression is not implemented yet");
+    }
+
+    /**
+     * Create expression to return current local time.
+     *
+     * @return expression for current time
+     */
+    @Override
+    public Expression<java.time.LocalTime> localTime() {
+        // TODO: Implement
+        throw new UnsupportedOperationException("Local time expression is not implemented yet");
+    }
+
+    /**
      * Create predicate to test whether given expression is contained in a list
      * of values.
      *
@@ -2730,6 +2747,49 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
             ((FunctionExpression)currentNode).addChild(conditionExp);
             Expression<C> conditionLiteral = internalLiteral(condition);
             this.expressions.add(conditionLiteral);
+
+            org.eclipse.persistence.expressions.Expression resultExp = ((InternalSelection)result).getCurrentNode();
+            resultExp = org.eclipse.persistence.expressions.Expression.from(resultExp, currentNode);
+            ((FunctionExpression)currentNode).addChild(resultExp);
+            this.expressions.add(result);
+
+            setJavaType((Class<R>) result.getJavaType());
+            return this;
+        }
+
+        /**
+         * Add a when/then clause to the case expression.
+         * @param condition  "when" condition
+         * @param result  "then" result value
+         * @return simple case expression
+         */
+        @Override
+        public SimpleCase<C, R> when(Expression<? extends C> condition, R result) {
+            org.eclipse.persistence.expressions.Expression conditionExp = org.eclipse.persistence.expressions.Expression.from(condition, new ExpressionBuilder());
+            ((FunctionExpression)currentNode).addChild(conditionExp);
+            this.expressions.add(condition);
+
+            org.eclipse.persistence.expressions.Expression resultExp = ((InternalSelection)result).getCurrentNode();
+            resultExp = org.eclipse.persistence.expressions.Expression.from(resultExp, currentNode);
+            ((FunctionExpression)currentNode).addChild(resultExp);
+            Expression<R> resultLiteral = internalLiteral(result);
+            this.expressions.add(resultLiteral);
+
+            setJavaType((Class<R>) resultLiteral.getJavaType());
+            return this;
+        }
+
+        /**
+         * Add a when/then clause to the case expression.
+         * @param condition  "when" condition
+         * @param result  "then" result expression
+         * @return simple case expression
+         */
+        @Override
+        public SimpleCase<C, R> when(Expression<? extends C> condition, Expression<? extends R> result) {
+            org.eclipse.persistence.expressions.Expression conditionExp = org.eclipse.persistence.expressions.Expression.from(condition, new ExpressionBuilder());
+            ((FunctionExpression)currentNode).addChild(conditionExp);
+            this.expressions.add(condition);
 
             org.eclipse.persistence.expressions.Expression resultExp = ((InternalSelection)result).getCurrentNode();
             resultExp = org.eclipse.persistence.expressions.Expression.from(resultExp, currentNode);
