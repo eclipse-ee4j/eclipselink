@@ -19,6 +19,8 @@
 //       - 522312: Add the eclipselink.sequencing.start-sequence-at-nextval property
 //     02/20/2018-2.7 Will Dazey
 //       - 529602: Added support for CLOBs in DELETE statements for Oracle
+//     02/01/2022: Tomas Kraus
+//       - Issue 1442: Implement New JPA API 3.1.0 Features
 package org.eclipse.persistence.internal.databaseaccess;
 
 import java.io.IOException;
@@ -470,6 +472,9 @@ public class DatasourcePlatform implements Platform {
         addOperator(ExpressionOperator.today());
         addOperator(ExpressionOperator.currentDate());
         addOperator(ExpressionOperator.currentTime());
+        addOperator(ExpressionOperator.localDateTime());
+        addOperator(ExpressionOperator.localTime());
+        addOperator(ExpressionOperator.localDate());
         addOperator(ExpressionOperator.extract());
 
         // Math

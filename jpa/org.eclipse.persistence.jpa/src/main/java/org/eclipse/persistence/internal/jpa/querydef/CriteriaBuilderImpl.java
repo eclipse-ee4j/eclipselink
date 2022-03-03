@@ -13,15 +13,13 @@
 
 // Contributors:
 //     Gordon Yorke - Initial development
-//
+//     02/01/2022: Tomas Kraus
+//       - Issue 1442: Implement New JPA API 3.1.0 Features
 package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -2315,36 +2313,33 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     }
 
     /**
-     * Create expression to return current local date.
+     * Create expression to return local datetime.
      *
-     * @return expression for current date
-     */
-    @Override
-    public Expression<java.time.LocalDate> localDate() {
-        // TODO: Implement
-        throw new UnsupportedOperationException("Local date expression is not implemented yet");
-    }
-
-    /**
-     * Create expression to return current local datetime.
-     *
-     * @return expression for current timestamp
+     * @return expression for local timestamp
      */
     @Override
     public Expression<java.time.LocalDateTime> localDateTime() {
-        // TODO: Implement
-        throw new UnsupportedOperationException("Local datetime expression is not implemented yet");
+        return new ExpressionImpl(metamodel, ClassConstants.LOCAL_DATETIME, new ExpressionBuilder().localDateTime());
     }
 
     /**
-     * Create expression to return current local time.
+     * Create expression to return local date.
      *
-     * @return expression for current time
+     * @return expression for local date
+     */
+    @Override
+    public Expression<java.time.LocalDate> localDate() {
+        return new ExpressionImpl(metamodel, ClassConstants.LOCAL_DATE, new ExpressionBuilder().localDate());
+    }
+
+    /**
+     * Create expression to return local time.
+     *
+     * @return expression for local time
      */
     @Override
     public Expression<java.time.LocalTime> localTime() {
-        // TODO: Implement
-        throw new UnsupportedOperationException("Local time expression is not implemented yet");
+        return new ExpressionImpl(metamodel, ClassConstants.LOCAL_TIME, new ExpressionBuilder().localTime());
     }
 
     /**
@@ -2765,12 +2760,12 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
          */
         @Override
         public SimpleCase<C, R> when(Expression<? extends C> condition, R result) {
-            org.eclipse.persistence.expressions.Expression conditionExp = org.eclipse.persistence.expressions.Expression.from(condition, new ExpressionBuilder());
+            org.eclipse.persistence.expressions.Expression conditionExp = ((InternalSelection)condition).getCurrentNode();
+            conditionExp = org.eclipse.persistence.expressions.Expression.from(conditionExp, currentNode);
             ((FunctionExpression)currentNode).addChild(conditionExp);
             this.expressions.add(condition);
 
-            org.eclipse.persistence.expressions.Expression resultExp = ((InternalSelection)result).getCurrentNode();
-            resultExp = org.eclipse.persistence.expressions.Expression.from(resultExp, currentNode);
+            org.eclipse.persistence.expressions.Expression resultExp = org.eclipse.persistence.expressions.Expression.from(result, new ExpressionBuilder());
             ((FunctionExpression)currentNode).addChild(resultExp);
             Expression<R> resultLiteral = internalLiteral(result);
             this.expressions.add(resultLiteral);
@@ -2787,7 +2782,8 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
          */
         @Override
         public SimpleCase<C, R> when(Expression<? extends C> condition, Expression<? extends R> result) {
-            org.eclipse.persistence.expressions.Expression conditionExp = org.eclipse.persistence.expressions.Expression.from(condition, new ExpressionBuilder());
+            org.eclipse.persistence.expressions.Expression conditionExp = ((InternalSelection)condition).getCurrentNode();
+            conditionExp = org.eclipse.persistence.expressions.Expression.from(conditionExp, currentNode);
             ((FunctionExpression)currentNode).addChild(conditionExp);
             this.expressions.add(condition);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,7 @@
 
 // Contributors:
 //     02/01/2022: Tomas Kraus
-//       - #N/A: Test extract() in CriteriaBuilder
+//       - Issue 1442: Implement New JPA API 3.1.0 Features
 package org.eclipse.persistence.jpa.test.criteria;
 
 import java.math.RoundingMode;
@@ -31,6 +31,8 @@ import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.framework.Property;
 import org.eclipse.persistence.sessions.Session;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Assume;
@@ -39,7 +41,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
- * Test sign() method in CriteriaBuilder.
+ * Test math functions in CriteriaBuilder.
  * Added to JPA-API as PR #351
  */
 @RunWith(EmfRunner.class)
@@ -358,9 +360,10 @@ public class TestMathFunctions {
         return em.createQuery(cq).getSingleResult();
     }
 
-    // Call POWER(n.longValue, 2) on long n>0.
+    // Call POWER(n.longValue, 2) on long n=0.
     @Test
     public void testPower2MethodWithZeroBase() {
+        // org.apache.derby.client.am.SqlException: The resulting value is outside the range for the data type DOUBLE.
         Assume.assumeFalse(emf.unwrap(Session.class).getPlatform().isDerby());
         try (final EntityManager em = emf.createEntityManager()) {
             Double result = callPower(em, 2, 0, "longValue");
@@ -372,28 +375,32 @@ public class TestMathFunctions {
     // Call POWER(n.longValue, 2) on long n>0.
     @Test
     public void testPower2MethodWithPositiveLongBase() {
-        Assume.assumeFalse(emf.unwrap(Session.class).getPlatform().isDerby());
         try (final EntityManager em = emf.createEntityManager()) {
             Double result = callPower(em, 2, 3, "longValue");
             Assert.assertEquals(
-                    Double.valueOf(Math.pow(NUMBER[3].getLongValue(), 2)), result);
+                    Double.valueOf(Math.pow(NUMBER[3].getLongValue(), 2)), Double.valueOf(Math.round(result)));
         }
     }
 
     // Call POWER(n.doubleValue, 2) on double n>0.
     @Test
     public void testPower2MethodWithPositiveDoubleBase() {
-        Assume.assumeFalse(emf.unwrap(Session.class).getPlatform().isDerby());
         try (final EntityManager em = emf.createEntityManager()) {
             Double result = callPower(em, 2, 3, "doubleValue");
-            Assert.assertEquals(
-                    Double.valueOf(Math.pow(NUMBER[3].getDoubleValue(), 2)), result);
+            if (emf.unwrap(Session.class).getPlatform().isDerby()) {
+                MatcherAssert.assertThat(
+                        Math.abs(Math.pow(NUMBER[3].getDoubleValue(), 2) - result), Matchers.lessThan(0.0000001d));
+            } else {
+                Assert.assertEquals(
+                        Double.valueOf(Math.pow(NUMBER[3].getDoubleValue(), 2)), result);
+            }
         }
     }
 
     // Call POWER(n.longValue, 2) on long n<0.
     @Test
     public void testPower2MethodWithNegativeLongBase() {
+        // org.apache.derby.client.am.SqlException: The resulting value is outside the range for the data type DOUBLE.
         Assume.assumeFalse(emf.unwrap(Session.class).getPlatform().isDerby());
         try (final EntityManager em = emf.createEntityManager()) {
             Double result = callPower(em, 2, 4, "longValue");
@@ -405,6 +412,7 @@ public class TestMathFunctions {
     // Call POWER(n.doubleValue, 2) on double n<0.
     @Test
     public void testPower2MethodWithNegativeDoubleBase() {
+        // org.apache.derby.client.am.SqlException: The resulting value is outside the range for the data type DOUBLE.
         Assume.assumeFalse(emf.unwrap(Session.class).getPlatform().isDerby());
         try (final EntityManager em = emf.createEntityManager()) {
             Double result = callPower(em, 2, 4, "doubleValue");
@@ -416,6 +424,7 @@ public class TestMathFunctions {
     // Call POWER(n.longValue, 3) on long n<0.
     @Test
     public void testPower3MethodWithNegativeLongBase() {
+        // org.apache.derby.client.am.SqlException: The resulting value is outside the range for the data type DOUBLE.
         Assume.assumeFalse(emf.unwrap(Session.class).getPlatform().isDerby());
         try (final EntityManager em = emf.createEntityManager()) {
             Double result = callPower(em, 3, 4, "longValue");
@@ -427,6 +436,7 @@ public class TestMathFunctions {
     // Call POWER(n.doubleValue, 3) on double n<0.
     @Test
     public void testPower3MethodWithNegativeDoubleBase() {
+        // org.apache.derby.client.am.SqlException: The resulting value is outside the range for the data type DOUBLE.
         Assume.assumeFalse(emf.unwrap(Session.class).getPlatform().isDerby());
         try (final EntityManager em = emf.createEntityManager()) {
             Double result = callPower(em, 3, 4, "doubleValue");
@@ -450,11 +460,16 @@ public class TestMathFunctions {
     // Call POWER(n.doubleValue, n.longValue) on id=7: [14.23D,4L] (result fits in double with no exponent).
     @Test
     public void testPowerMethodWithPositiveArgs() {
-        Assume.assumeFalse(emf.unwrap(Session.class).getPlatform().isDerby());
         try (final EntityManager em = emf.createEntityManager()) {
             Double result = callExprPower(em, 7);
-            Assert.assertEquals(
-                    Double.valueOf(Math.pow(NUMBER[7].getDoubleValue(), NUMBER[7].getLongValue())), result);
+            if (emf.unwrap(Session.class).getPlatform().isDerby()) {
+                MatcherAssert.assertThat(
+                        Math.abs(Math.pow(NUMBER[7].getDoubleValue(), NUMBER[7].getLongValue()) - result),
+                        Matchers.lessThan(0.0000001d));
+            } else {
+                Assert.assertEquals(
+                        Double.valueOf(Math.pow(NUMBER[7].getDoubleValue(), NUMBER[7].getLongValue())), result);
+            }
         }
     }
 
@@ -462,19 +477,22 @@ public class TestMathFunctions {
     // using CriteriaQuery
     // Matches Expression<Double> power(Expression<? extends Number> x, Number y) prototype
     private static Double callRound(final EntityManager em, final int d, final int id) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Double> cq = cb.createQuery(Double.class);
-        Root<NumberEntity> number = cq.from(NumberEntity.class);
-        cq.select(cb.round(number.get("doubleValue"), d));
-        cq.where(cb.equal(number.get("id"), id));
-        return em.createQuery(cq).getSingleResult();
+        try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Double> cq = cb.createQuery(Double.class);
+            Root<NumberEntity> number = cq.from(NumberEntity.class);
+            cq.select(cb.round(number.get("doubleValue"), d));
+            cq.where(cb.equal(number.get("id"), id));
+            return em.createQuery(cq).getSingleResult();
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        }
     }
 
     // Call ROUND(n) on n>0.
     @Test
     public void testRoundMethodWithPositive() {
-        Assume.assumeFalse(emf.unwrap(Session.class).getPlatform().isDerby());
-        Assume.assumeFalse(emf.unwrap(Session.class).getPlatform().isPostgreSQL());
         try (final EntityManager em = emf.createEntityManager()) {
             Double result = callRound(em, 6,8);
             Assert.assertEquals(Double.valueOf(44.754238D), result);
@@ -484,8 +502,6 @@ public class TestMathFunctions {
     // Call ROUND(n) on n<0.
     @Test
     public void testRoundMethodWithNegative() {
-        Assume.assumeFalse(emf.unwrap(Session.class).getPlatform().isDerby());
-        Assume.assumeFalse(emf.unwrap(Session.class).getPlatform().isPostgreSQL());
         try (final EntityManager em = emf.createEntityManager()) {
             Double result = callRound(em, 6, 9);
             Assert.assertEquals(Double.valueOf(-214.245732D), result);
