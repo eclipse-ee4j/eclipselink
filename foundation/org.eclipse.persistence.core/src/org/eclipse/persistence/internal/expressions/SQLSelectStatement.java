@@ -764,12 +764,6 @@ public class SQLSelectStatement extends SQLStatement {
         for (Iterator<Expression> expressionsEnum = getOrderByExpressions().iterator(); expressionsEnum.hasNext();) {
             Expression expression = expressionsEnum.next();
 
-            if(!printer.getPlatform().supportsOrderByParameters() || expression.isConstantExpression()) {
-                if(expression.isParameterExpression()) {
-                    printer.getCall().setUsesBinding(false);
-                }
-            }
-
             expression.printSQL(printer);
 
             if (expressionsEnum.hasNext()) {
