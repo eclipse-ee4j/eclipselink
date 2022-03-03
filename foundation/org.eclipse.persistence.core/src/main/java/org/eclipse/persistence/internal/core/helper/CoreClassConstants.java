@@ -12,6 +12,8 @@
 
 // Contributors:
 //     Blaise Doughan - 2.5 - initial implementation
+//     02/01/2022: Tomas Kraus
+//       - Issue 1442: Implement New JPA API 3.1.0 Features
 package org.eclipse.persistence.internal.core.helper;
 
 import java.io.File;
@@ -21,6 +23,9 @@ import java.net.URL;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -78,6 +83,9 @@ public class CoreClassConstants {
     public static final Class<String> STRING = String.class;
     public static final Class<Time> TIME = Time.class;
     public static final Class<Timestamp> TIMESTAMP = Timestamp.class;
+    public static final Class<LocalDate> LOCAL_DATE = LocalDate.class;
+    public static final Class<LocalTime> LOCAL_TIME = LocalTime.class;
+    public static final Class<LocalDateTime> LOCAL_DATETIME = LocalDateTime.class;
     public static final Class<UUID> UUID = UUID.class;
     public static final Class<URL> URL_Class = URL.class;
     public static final Class<java.util.Date> UTILDATE = java.util.Date.class;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -18,32 +18,36 @@
 //       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
 //     03/18/2015-2.6.0 Joe Grassel
 //       - 462498: Missing isolation level expression in SQL for Derby platform
+//     02/01/2022: Tomas Kraus
+//       - Issue 1442: Implement New JPA API 3.1.0 Features
 package org.eclipse.persistence.platform.database;
 
-import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
-import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
-import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.expressions.ExpressionOperator;
-import org.eclipse.persistence.queries.ValueReadQuery;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
-import java.io.Writer;
 import java.io.IOException;
+import java.io.Writer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Hashtable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
+import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
+import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.ValueReadQuery;
 
 /**
  * <p><b>Purpose</b>: Provides Derby DBMS specific behavior.
@@ -313,7 +317,7 @@ public class DerbyPlatform extends DB2Platform {
 
         fieldTypeMapping.put(java.time.LocalDate.class, new FieldTypeDefinition("DATE"));
         fieldTypeMapping.put(java.time.LocalDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
-        fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIMESTAMP"));
+        fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIME"));
         fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
         fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIMESTAMP"));
 
@@ -340,6 +344,149 @@ public class DerbyPlatform extends DB2Platform {
         // Derby does not support DECIMAL, but does have a DOUBLE function.
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.ToNumber, "DOUBLE"));
         addOperator(extractOperator());
+        addOperator(derbyPowerOperator());
+        addOperator(derbyRoundOperator());
+    }
+
+    // Emulate POWER(:a,:b) as EXP((:b)*LN(:a))
+    private static ExpressionOperator derbyPowerOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator() {
+            @Override
+            public void printDuo(Expression first, Expression second, ExpressionSQLPrinter printer) {
+                printer.printString(getDatabaseStrings()[0]);
+                if (second != null) {
+                    second.printSQL(printer);
+                } else {
+                    printer.printString("0");
+                }
+                printer.printString(getDatabaseStrings()[1]);
+                first.printSQL(printer);
+                printer.printString(getDatabaseStrings()[2]);
+            }
+            @Override
+            public void printCollection(List items, ExpressionSQLPrinter printer) {
+                if (printer.getPlatform().isDynamicSQLRequiredForFunctions() && !isBindingSupported()) {
+                    printer.getCall().setUsesBinding(false);
+                }
+                if (items.size() > 0) {
+                    Expression firstItem = (Expression)items.get(0);
+                    Expression secondItem = items.size() > 1 ? (Expression)items.get(1) : null;
+                    printDuo(firstItem, secondItem, printer);
+                } else {
+                    throw new IllegalArgumentException("List of items shall contain at least one item");
+                }
+            }
+            @Override
+            public void printJavaDuo(Expression first, Expression second, ExpressionJavaPrinter printer) {
+                printer.printString(getDatabaseStrings()[0]);
+                if (second != null) {
+                    second.printJava(printer);
+                } else {
+                    printer.printString("0");
+                }
+                printer.printString(getDatabaseStrings()[1]);
+                first.printJava(printer);
+                printer.printString(getDatabaseStrings()[2]);
+            }
+            @Override
+            public void printJavaCollection(List items, ExpressionJavaPrinter printer) {
+                if (items.size() > 0) {
+                    Expression firstItem = (Expression)items.get(0);
+                    Expression secondItem = items.size() > 1 ? (Expression)items.get(1) : null;
+                    printJavaDuo(firstItem, secondItem, printer);
+                } else {
+                    throw new IllegalArgumentException("List of items shall contain at least one item");
+                }
+            }
+        };
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.Power);
+        exOperator.setName("POWER");
+        List<String> v = new ArrayList<>(4);
+        v.add("EXP((");
+        v.add(")*LN(");
+        v.add("))");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+
+    // Emulate ROUND as FLOOR((:x)*1e:n+0.5)/1e:n
+    private static ExpressionOperator derbyRoundOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator() {
+            @Override
+            public void printDuo(Expression first, Expression second, ExpressionSQLPrinter printer) {
+                printer.printString(getDatabaseStrings()[0]);
+                first.printSQL(printer);
+                printer.printString(getDatabaseStrings()[1]);
+                if (second != null) {
+                    second.printSQL(printer);
+                } else {
+                    printer.printString("0");
+                }
+                printer.printString(getDatabaseStrings()[2]);
+                if (second != null) {
+                    second.printSQL(printer);
+                } else {
+                    printer.printString("0");
+                }
+                printer.printString(getDatabaseStrings()[3]);
+            }
+            @Override
+            public void printCollection(List items, ExpressionSQLPrinter printer) {
+                if (printer.getPlatform().isDynamicSQLRequiredForFunctions() && !isBindingSupported()) {
+                    printer.getCall().setUsesBinding(false);
+                }
+                if (items.size() > 0) {
+                    Expression firstItem = (Expression)items.get(0);
+                    Expression secondItem = items.size() > 1 ? (Expression)items.get(1) : null;
+                    printDuo(firstItem, secondItem, printer);
+                } else {
+                    throw new IllegalArgumentException("List of items shall contain at least one item");
+                }
+            }
+            @Override
+            public void printJavaDuo(Expression first, Expression second, ExpressionJavaPrinter printer) {
+                printer.printString(getDatabaseStrings()[0]);
+                first.printJava(printer);
+                printer.printString(getDatabaseStrings()[1]);
+                if (second != null) {
+                    second.printJava(printer);
+                } else {
+                    printer.printString("0");
+                }
+                printer.printString(getDatabaseStrings()[2]);
+                if (second != null) {
+                    second.printJava(printer);
+                } else {
+                    printer.printString("0");
+                }
+                printer.printString(getDatabaseStrings()[3]);
+            }
+            @Override
+            public void printJavaCollection(List items, ExpressionJavaPrinter printer) {
+                if (items.size() > 0) {
+                    Expression firstItem = (Expression)items.get(0);
+                    Expression secondItem = items.size() > 1 ? (Expression)items.get(1) : null;
+                    printJavaDuo(firstItem, secondItem, printer);
+                } else {
+                    throw new IllegalArgumentException("List of items shall contain at least one item");
+                }
+            }
+        };
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.Round);
+        exOperator.setName("ROUND");
+        List<String> v = new ArrayList<>(4);
+        v.add("FLOOR((");
+        v.add(")*1e");
+        v.add("+0.5)/1e");
+        v.add("");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2018, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -18,6 +18,8 @@
 //       - 263904: [PATCH] ExpressionOperator doesn't compare arrays correctly
 //     01/23/2018-2.7 Will Dazey
 //       - 530214: trim operation should not bind parameters
+//     02/01/2022: Tomas Kraus
+//       - Issue 1442: Implement New JPA API 3.1.0 Features
 package org.eclipse.persistence.expressions;
 
 import java.io.IOException;
@@ -214,6 +216,10 @@ public class ExpressionOperator implements Serializable {
      * current_time.
      */
     public static final int CurrentTime = 128;
+
+    public static final int LocalDate = 149;
+    public static final int LocalTime = 150;
+    public static final int LocalDateTime = 151;
 
     // Math
     public static final int Ceil = 55;
@@ -2978,6 +2984,30 @@ public class ExpressionOperator implements Serializable {
      */
     public static ExpressionOperator currentTime() {
         return simpleFunctionNoParentheses(CurrentTime, "CURRENT_TIME");
+    }
+
+    /**
+     * INTERNAL:
+     * Build operator.
+     */
+    public static ExpressionOperator localDate() {
+        return simpleFunctionNoParentheses(LocalDate,  "CURRENT_DATE");
+    }
+
+    /**
+     * INTERNAL:
+     * Build operator.
+     */
+    public static ExpressionOperator localTime() {
+        return simpleFunctionNoParentheses(LocalTime, "CURRENT_TIME");
+    }
+
+    /**
+     * INTERNAL:
+     * Build operator.
+     */
+    public static ExpressionOperator localDateTime() {
+        return simpleFunctionNoParentheses(LocalDateTime,  "CURRENT_TIMESTAMP");
     }
 
     /**

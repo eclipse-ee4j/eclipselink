@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -16,28 +16,43 @@
 //     Phillip Ross - LIMIT/OFFSET syntax support
 //     09/14/2011-2.3.1 Guy Pelletier
 //       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
+//     02/01/2022: Tomas Kraus
+//       - Issue 1442: Implement New JPA API 3.1.0 Features
 package org.eclipse.persistence.platform.database;
 
-import java.io.*;
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
-import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.RelationExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.queries.SQLCall;
+import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
@@ -130,6 +145,84 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         addOperator(operatorLocate2());
         addOperator(toNumberOperator());
         addOperator(regexpOperator());
+        addOperator(pgsqlRoundOperator());
+    }
+
+    // Emulate ROUND(:x,:n) as FLOOR((:x)*10^(:n)+0.5)/10^(:n)
+    private static ExpressionOperator pgsqlRoundOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator() {
+            @Override
+            public void printDuo(Expression first, Expression second, ExpressionSQLPrinter printer) {
+                printer.printString(getDatabaseStrings()[0]);
+                first.printSQL(printer);
+                printer.printString(getDatabaseStrings()[1]);
+                if (second != null) {
+                    second.printSQL(printer);
+                } else {
+                    printer.printString("0");
+                }
+                printer.printString(getDatabaseStrings()[2]);
+                if (second != null) {
+                    second.printSQL(printer);
+                } else {
+                    printer.printString("0");
+                }
+                printer.printString(getDatabaseStrings()[3]);
+            }
+            @Override
+            public void printCollection(List items, ExpressionSQLPrinter printer) {
+                if (printer.getPlatform().isDynamicSQLRequiredForFunctions() && !isBindingSupported()) {
+                    printer.getCall().setUsesBinding(false);
+                }
+                if (items.size() > 0) {
+                    Expression firstItem = (Expression)items.get(0);
+                    Expression secondItem = items.size() > 1 ? (Expression)items.get(1) : null;
+                    printDuo(firstItem, secondItem, printer);
+                } else {
+                    throw new IllegalArgumentException("List of items shall contain at least one item");
+                }
+            }
+            @Override
+            public void printJavaDuo(Expression first, Expression second, ExpressionJavaPrinter printer) {
+                printer.printString(getDatabaseStrings()[0]);
+                first.printJava(printer);
+                printer.printString(getDatabaseStrings()[1]);
+                if (second != null) {
+                    second.printJava(printer);
+                } else {
+                    printer.printString("0");
+                }
+                printer.printString(getDatabaseStrings()[2]);
+                if (second != null) {
+                    second.printJava(printer);
+                } else {
+                    printer.printString("0");
+                }
+                printer.printString(getDatabaseStrings()[3]);
+            }
+            @Override
+            public void printJavaCollection(List items, ExpressionJavaPrinter printer) {
+                if (items.size() > 0) {
+                    Expression firstItem = (Expression)items.get(0);
+                    Expression secondItem = items.size() > 1 ? (Expression)items.get(1) : null;
+                    printJavaDuo(firstItem, secondItem, printer);
+                } else {
+                    throw new IllegalArgumentException("List of items shall contain at least one item");
+                }
+            }
+        };
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.Round);
+        exOperator.setName("ROUND");
+        List<String> v = new ArrayList<>(4);
+        v.add("FLOOR((");
+        v.add(")*10^(");
+        v.add(")+0.5)/10^(");
+        v.add(")");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
     }
 
     /**

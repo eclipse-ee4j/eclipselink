@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -15,6 +15,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 //     05/24/2011-2.3 Guy Pelletier
 //       - 345962: Join fetch query when using tenant discriminator column fails.
+//     02/01/2022: Tomas Kraus
+//       - Issue 1442: Implement New JPA API 3.1.0 Features
 package org.eclipse.persistence.expressions;
 
 import java.io.BufferedWriter;
@@ -1195,6 +1197,34 @@ public abstract class Expression implements Serializable, Cloneable {
    public Expression currentTime() {
        return getFunction(ExpressionOperator.CurrentTime);
    }
+
+    /**
+     * PUBLIC:
+     * This gives access to the local date and time on the database through expression.
+     */
+    public Expression localDateTime() {
+        return getFunction(ExpressionOperator.LocalDateTime);
+    }
+
+    /**
+     * PUBLIC:
+     * This gives access to the local date only on the database through expression.
+     * Note the difference between localDate() and this method. This method does
+     * not return the time portion of local datetime where as localDate() does.
+     */
+    public Expression localDate() {
+        return getFunction(ExpressionOperator.LocalDate);
+    }
+
+    /**
+     * PUBLIC:
+     * This gives access to the local time only on the database through expression.
+     * Note the difference between localDate() and this method. This method does
+     * not return the date portion of local datetime where as localDate() does.
+     */
+    public Expression localTime() {
+        return getFunction(ExpressionOperator.LocalTime);
+    }
 
     /**
      * PUBLIC:

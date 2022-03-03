@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,12 +12,15 @@
 
 // Contributors:
 //     02/01/2022: Tomas Kraus
-//       - #N/A: Test extract() in CriteriaBuilder
+//       - Issue 1442: Implement New JPA API 3.1.0 Features
 package org.eclipse.persistence.jpa.test.criteria.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
+/**
+ * JPA Entity used in {@code CriteriaBuilder} math functions tests.
+ */
 @Entity
 public class NumberEntity {
 
@@ -29,7 +32,6 @@ public class NumberEntity {
     private Double doubleValue;
 
     public NumberEntity() {
-
     }
 
     public NumberEntity(final Integer id, final Long longValue, final Double doubleValue) {
@@ -61,4 +63,5 @@ public class NumberEntity {
     public void setDoubleValue(final Double doubleValue) {
         this.doubleValue = doubleValue;
     }
+
 }
