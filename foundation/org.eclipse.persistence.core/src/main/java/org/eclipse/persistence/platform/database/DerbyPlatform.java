@@ -317,7 +317,7 @@ public class DerbyPlatform extends DB2Platform {
 
         fieldTypeMapping.put(java.time.LocalDate.class, new FieldTypeDefinition("DATE"));
         fieldTypeMapping.put(java.time.LocalDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
-        fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIME"));
+        fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIMESTAMP"));
         fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
         fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIMESTAMP"));
 
@@ -343,6 +343,8 @@ public class DerbyPlatform extends DB2Platform {
         super.initializePlatformOperators();
         // Derby does not support DECIMAL, but does have a DOUBLE function.
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.ToNumber, "DOUBLE"));
+        // LocalTime should be processed as TIMESTAMP
+        addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.LocalTime, "CAST(CURRENT_TIME AS TIMESTAMP)"));
         addOperator(extractOperator());
         addOperator(derbyPowerOperator());
         addOperator(derbyRoundOperator());
