@@ -13,7 +13,7 @@
 // Contributors:
 //     02/01/2022: Tomas Kraus
 //       - Issue 1442: Implement New JPA API 3.1.0 Features
-package org.eclipse.persistence.jpa.test.criteria.model;
+package org.eclipse.persistence.jpa.test.criteria;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -29,6 +29,7 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.criteria.Root;
 
+import org.eclipse.persistence.jpa.test.criteria.model.DateTimeEntity;
 import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
@@ -227,9 +228,6 @@ public class TestDateTimeFunctions {
             cq.where(cb.and(cb.lessThan(entity.get("time"), cb.localTime()), cb.equal(entity.get("id"), 4)));
             em.createQuery(cq).getSingleResult();
             em.getTransaction().commit();
-        } catch (Throwable t) {
-            t.printStackTrace();
-            throw t;
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -255,9 +253,6 @@ public class TestDateTimeFunctions {
             List<DateTimeEntity> data = em.createQuery(cq).getResultList();
             em.getTransaction().commit();
             MatcherAssert.assertThat(data.size(), Matchers.equalTo(0));
-        } catch (Throwable t) {
-            t.printStackTrace();
-            throw t;
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -281,9 +276,6 @@ public class TestDateTimeFunctions {
             cq.where(cb.and(cb.lessThan(entity.get("date"), cb.localDate()), cb.equal(entity.get("id"), 4)));
             em.createQuery(cq).getSingleResult();
             em.getTransaction().commit();
-        } catch (Throwable t) {
-            t.printStackTrace();
-            throw t;
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -309,9 +301,6 @@ public class TestDateTimeFunctions {
             List<DateTimeEntity> data = em.createQuery(cq).getResultList();
             em.getTransaction().commit();
             MatcherAssert.assertThat(data.size(), Matchers.equalTo(0));
-        } catch (Throwable t) {
-            t.printStackTrace();
-            throw t;
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -335,9 +324,6 @@ public class TestDateTimeFunctions {
             cq.where(cb.and(cb.lessThan(entity.get("datetime"), cb.localDateTime()), cb.equal(entity.get("id"), 4)));
             em.createQuery(cq).getSingleResult();
             em.getTransaction().commit();
-        } catch (Throwable t) {
-            t.printStackTrace();
-            throw t;
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -363,9 +349,6 @@ public class TestDateTimeFunctions {
             List<DateTimeEntity> data = em.createQuery(cq).getResultList();
             em.getTransaction().commit();
             MatcherAssert.assertThat(data.size(), Matchers.equalTo(0));
-        } catch (Throwable t) {
-            t.printStackTrace();
-            throw t;
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -395,9 +378,6 @@ public class TestDateTimeFunctions {
             } else {
                 MatcherAssert.assertThat(86400000L + diffMilis, Matchers.lessThan(30000L));
             }
-        } catch (Throwable t) {
-            t.printStackTrace();
-            throw t;
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -423,9 +403,6 @@ public class TestDateTimeFunctions {
             MatcherAssert.assertThat(diff.getYears(), Matchers.equalTo(0));
             MatcherAssert.assertThat(diff.getMonths(), Matchers.equalTo(0));
             MatcherAssert.assertThat(diff.getDays(), Matchers.lessThan(2));
-        } catch (Throwable t) {
-            t.printStackTrace();
-            throw t;
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -449,9 +426,6 @@ public class TestDateTimeFunctions {
             em.getTransaction().commit();
             long diffMilis = Duration.between(datetime, LocalDateTime.now()).toMillis();
             MatcherAssert.assertThat(diffMilis, Matchers.lessThan(30000L));
-        } catch (Throwable t) {
-            t.printStackTrace();
-            throw t;
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();

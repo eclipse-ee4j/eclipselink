@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -41,6 +42,7 @@ import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
+import org.eclipse.persistence.internal.expressions.LiteralExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -345,7 +347,7 @@ public class DerbyPlatform extends DB2Platform {
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.ToNumber, "DOUBLE"));
         // LocalTime should be processed as TIMESTAMP
         addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.LocalTime, "CAST(CURRENT_TIME AS TIMESTAMP)"));
-        addOperator(extractOperator());
+        addOperator(derbyExtractOperator());
         addOperator(derbyPowerOperator());
         addOperator(derbyRoundOperator());
     }
@@ -495,12 +497,74 @@ public class DerbyPlatform extends DB2Platform {
      * INTERNAL:
      * Derby does not support EXTRACT, but does have YEAR, MONTH, DAY, etc.
      */
-    public static ExpressionOperator extractOperator() {
-        ExpressionOperator exOperator = new ExpressionOperator();
+    public static ExpressionOperator derbyExtractOperator() {
+
+        ExpressionOperator exOperator = new ExpressionOperator() {
+
+            // QUARTER emulation: ((MONTH(:first)+2)/3)
+            private final String[] QUARTER_STRINGS = new String[] {"((MONTH(", ")+2)/3)"};
+
+            private void printQuarterSQL(final Expression first, final ExpressionSQLPrinter printer) {
+                printer.printString(QUARTER_STRINGS[0]);
+                first.printSQL(printer);
+                printer.printString(QUARTER_STRINGS[1]);
+            }
+
+            private void printQuarterJava(final Expression first, final ExpressionJavaPrinter printer) {
+                printer.printString(QUARTER_STRINGS[0]);
+                first.printJava(printer);
+                printer.printString(QUARTER_STRINGS[1]);
+            }
+
+            @Override
+            public void printDuo(Expression first, Expression second, ExpressionSQLPrinter printer) {
+                if (second instanceof LiteralExpression && "QUARTER".equals(((LiteralExpression)second).getValue().toUpperCase())) {
+                    printQuarterSQL(first, printer);
+                } else {
+                    super.printDuo(first, second, printer);
+                }
+            }
+
+            @Override
+            public void printCollection(List items, ExpressionSQLPrinter printer) {
+                if (items.size() == 2) {
+                    Expression first = (Expression)items.get(0);
+                    Expression second = (Expression)items.get(1);
+                    if (second instanceof LiteralExpression && "QUARTER".equals(((LiteralExpression)second).getValue().toUpperCase())) {
+                        printQuarterSQL(first, printer);
+                        return;
+                    }
+                }
+                super.printCollection(items, printer);
+            }
+
+            @Override
+            public void printJavaDuo(Expression first, Expression second, ExpressionJavaPrinter printer) {
+                if (second instanceof LiteralExpression && "QUARTER".equals(((LiteralExpression)second).getValue().toUpperCase())) {
+                    printQuarterJava(first, printer);
+                } else {
+                    super.printJavaDuo(first, second, printer);
+                }
+            }
+
+            @Override
+            public void printJavaCollection(List items, ExpressionJavaPrinter printer) {
+                if (items.size() == 2) {
+                    Expression first = (Expression)items.get(0);
+                    Expression second = (Expression)items.get(1);
+                    if (second instanceof LiteralExpression && "QUARTER".equals(((LiteralExpression)second).getValue().toUpperCase())) {
+                        printQuarterJava(first, printer);
+                        return;
+                    }
+                }
+                super.printJavaCollection(items, printer);
+            }
+        };
+
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.Extract);
         exOperator.setName("EXTRACT");
-        List<String> v = new ArrayList<>(5);
+        List<String> v = new ArrayList<>(3);
         v.add("");
         v.add("(");
         v.add(")");
