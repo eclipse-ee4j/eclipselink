@@ -14,7 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.oxm;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
@@ -1589,15 +1591,27 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
         if (sourceObject instanceof String) {
             //the base64 string may have contained embedded whitespaces. Try again after
             //Removing any whitespaces.
-            StringTokenizer tokenizer = new StringTokenizer((String)sourceObject);
-            StringBuilder builder = new StringBuilder();
-            while(tokenizer.hasMoreTokens()) {
-                builder.append(tokenizer.nextToken());
-            }
-            byte[] bytes = Base64.base64Decode(builder.toString().getBytes());
-            return bytes;
+            return Base64.base64Decode(base64RemoveWhiteSpaces((String) sourceObject));
         }
         return convertObjectToByteArray(sourceObject);
+    }
+
+    private byte[] base64RemoveWhiteSpaces(String sourceObject) {
+        StringTokenizer tokenizer = new StringTokenizer(sourceObject);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(sourceObject.length());
+        try {
+            while (tokenizer.hasMoreTokens()) {
+                baos.write(tokenizer.nextToken().getBytes());
+            }
+        } catch (IOException e) {
+            throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.APBYTE, e);
+        } finally {
+            try {
+                baos.close();
+            } catch (Exception e) {
+            }
+        }
+        return baos.toByteArray();
     }
 
     @Override
