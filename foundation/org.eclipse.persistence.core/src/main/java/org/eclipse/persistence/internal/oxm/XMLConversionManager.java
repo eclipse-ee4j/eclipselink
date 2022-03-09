@@ -15,6 +15,7 @@
 package org.eclipse.persistence.internal.oxm;
 
 import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
