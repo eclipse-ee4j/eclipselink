@@ -139,10 +139,9 @@ public class ValidationXMLTestCase extends junit.framework.TestCase {
     public void setUp() throws Exception {
         classLoader = new ValidationClassLoader(currentThread.getContextClassLoader());
         currentThread.setContextClassLoader(classLoader);
-        resetBeanValidation();
     }
 
-    private void resetBeanValidation() throws Exception {
+    /*private void resetBeanValidation() throws Exception {
         Field beanValidationHelper = JAXBContext.class.getDeclaredField("beanValidationHelper");
         Field beanValidationPresent = JAXBContext.class.getDeclaredField("beanValidationPresent");
 
@@ -154,7 +153,7 @@ public class ValidationXMLTestCase extends junit.framework.TestCase {
 
         beanValidationHelper.setAccessible(false);
         beanValidationPresent.setAccessible(false);
-    }
+    }*/
 
     @Override
     @After
