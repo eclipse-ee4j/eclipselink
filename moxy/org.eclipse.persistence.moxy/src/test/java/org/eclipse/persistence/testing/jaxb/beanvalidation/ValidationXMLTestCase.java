@@ -141,20 +141,6 @@ public class ValidationXMLTestCase extends junit.framework.TestCase {
         currentThread.setContextClassLoader(classLoader);
     }
 
-    /*private void resetBeanValidation() throws Exception {
-        Field beanValidationHelper = JAXBContext.class.getDeclaredField("beanValidationHelper");
-        Field beanValidationPresent = JAXBContext.class.getDeclaredField("beanValidationPresent");
-
-        beanValidationHelper.setAccessible(true);
-        beanValidationPresent.setAccessible(true);
-
-        beanValidationHelper.set(JAXBContext.class, null);
-        beanValidationPresent.set(JAXBContext.class, null);
-
-        beanValidationHelper.setAccessible(false);
-        beanValidationPresent.setAccessible(false);
-    }*/
-
     @Override
     @After
     public void tearDown() throws Exception {
