@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -489,7 +489,6 @@
                                 <item>eclipselink-ddl-generation-model</item>
                                 <item>eclipselink-validation-failed-model</item>
                                 <item>eclipselink-cacheable-model</item>
-                                <item>eclipselink-advanced-field-access-model</item>
                                 <item>eclipselink-advanced-properties</item>
                                 <item>eclipselink-pu with spaces</item>
                                 <item>eclipselink-partitioned-model</item>
@@ -505,7 +504,6 @@
                                 <item>eclipselink-xml-composite-advanced-model-member_1</item>
                                 <item>eclipselink-xml-extended-model</item>
                                 <item>eclipselink-xml-extended-composite-advanced-model-member_1</item>
-                                <item>eclipselink-remote</item>
                             </items>
                             <pluginExecutors>
                                 <pluginExecutor>
