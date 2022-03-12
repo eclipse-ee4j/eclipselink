@@ -181,8 +181,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     private boolean initializedXMLInputFactory = false;
     private JAXBMarshaller jsonSchemaMarshaller;
 
-    private static volatile BeanValidationHelper beanValidationHelper;
-    private static volatile Boolean beanValidationPresent;
+    private BeanValidationHelper beanValidationHelper;
+    private Boolean beanValidationPresent;
 
     protected JAXBContext() {
         super();
