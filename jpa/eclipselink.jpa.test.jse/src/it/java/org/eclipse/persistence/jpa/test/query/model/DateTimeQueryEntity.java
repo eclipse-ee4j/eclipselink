@@ -21,11 +21,13 @@ import java.time.LocalTime;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.NamedQuery;
 
 /**
  * JPA Entity used in {@code LocalTime}/{@code LocalDate}/{@code LocalDateTime} tests.
  */
 @Entity
+@NamedQuery(name = "DateTimeQueryEntity.findByLocalDateTime", query = "SELECT e FROM DateTimeQueryEntity e WHERE e.datetime = :dateTime")
 public class DateTimeQueryEntity {
 
     @Id

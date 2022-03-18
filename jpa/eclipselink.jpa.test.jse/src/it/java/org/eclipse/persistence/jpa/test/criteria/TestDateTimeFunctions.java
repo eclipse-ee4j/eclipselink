@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -34,6 +35,8 @@ import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.framework.Property;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -80,6 +83,33 @@ public class TestDateTimeFunctions {
                                                                                        //              testCriteriaQuerySelectLocalDateTime
     };
 
+    // Database vs. Java timezone offset in seconds. Must be applied to LocalDateTime calculations.
+    private long dbOffset = 0;
+
+    // Update database vs. Java timezone offset using current database time.
+    private void updateDbOffset() {
+        final EntityManager em = emf.createEntityManager();
+        try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<LocalTime> cq = cb.createQuery(LocalTime.class);
+            cq.select(cb.localTime());
+            Root<DateTimeEntity> entity = cq.from(DateTimeEntity.class);
+            cq.where(cb.equal(entity.get("id"), 1));
+            LocalTime dbTime = em.createQuery(cq).getSingleResult();
+            LocalTime javaTime = LocalTime.now();
+            this.dbOffset = dbTime.truncatedTo(ChronoUnit.SECONDS).toSecondOfDay() - javaTime.truncatedTo(ChronoUnit.SECONDS).toSecondOfDay();
+        } catch (Throwable t) {
+            AbstractSessionLog.getLog().log(SessionLog.WARNING, "Can't update DB offset: " + t.getMessage());
+            t.printStackTrace();
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
+
+    }
+
     @Before
     public void setup() {
         final EntityManager em = emf.createEntityManager();
@@ -96,6 +126,7 @@ public class TestDateTimeFunctions {
             }
             em.close();
         }
+        updateDbOffset();
     }
 
     @After
@@ -134,7 +165,7 @@ public class TestDateTimeFunctions {
             em.getTransaction().commit();
             // Verify updated entity
             DateTimeEntity data = em.find(DateTimeEntity.class, 1);
-            long diffMilis = Duration.between(data.getTime(), LocalTime.now()).toMillis();
+            long diffMilis = Duration.between(data.getTime(), LocalTime.now().plusSeconds(dbOffset + 1)).toMillis();
             // Positive value means that test did not pass midnight.
             if (diffMilis > 0) {
                 MatcherAssert.assertThat(diffMilis, Matchers.lessThan(30000L));
@@ -203,7 +234,7 @@ public class TestDateTimeFunctions {
             em.getTransaction().commit();
             // Verify updated entity
             DateTimeEntity data = em.find(DateTimeEntity.class, 3);
-            long diffMilis = Duration.between(data.getDatetime(), LocalDateTime.now()).toMillis();
+            long diffMilis = Duration.between(data.getDatetime(), LocalDateTime.now().plusSeconds(dbOffset + 1)).toMillis();
             MatcherAssert.assertThat(diffMilis, Matchers.lessThan(30000L));
         } finally {
             if (em.getTransaction().isActive()) {
@@ -370,7 +401,7 @@ public class TestDateTimeFunctions {
             cq.where(cb.equal(entity.get("id"), 4));
             LocalTime time = em.createQuery(cq).getSingleResult();
             em.getTransaction().commit();
-            long diffMilis = Duration.between(time, LocalTime.now()).toMillis();
+            long diffMilis = Duration.between(time, LocalTime.now().plusSeconds(1 + dbOffset)).toMillis();
             // Positive value means that test did not pass midnight.
             if (diffMilis > 0) {
                 MatcherAssert.assertThat(diffMilis, Matchers.lessThan(30000L));
@@ -424,7 +455,7 @@ public class TestDateTimeFunctions {
             cq.where(cb.equal(entity.get("id"), 4));
             LocalDateTime datetime = em.createQuery(cq).getSingleResult();
             em.getTransaction().commit();
-            long diffMilis = Duration.between(datetime, LocalDateTime.now()).toMillis();
+            long diffMilis = Duration.between(datetime, LocalDateTime.now().plusSeconds(dbOffset + 1)).toMillis();
             MatcherAssert.assertThat(diffMilis, Matchers.lessThan(30000L));
         } finally {
             if (em.getTransaction().isActive()) {

@@ -16,6 +16,7 @@
 package org.eclipse.persistence.jpa.test.query;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -52,11 +53,13 @@ public class TestDateTimeFunctions {
     private EntityManagerFactory emf;
 
     private final LocalDateTime[] TS = {
-            LocalDateTime.of(2022, 3, 9, 14, 30, 25, 0)
+            LocalDateTime.of(2022, 3, 9, 14, 30, 25, 0),
+            LocalDateTime.now()
     };
 
     private final DateTimeQueryEntity[] ENTITY = {
-            new DateTimeQueryEntity(1, TS[0].toLocalTime(), TS[0].toLocalDate(), TS[0])
+            new DateTimeQueryEntity(1, TS[0].toLocalTime(), TS[0].toLocalDate(), TS[0]),
+            new DateTimeQueryEntity(2, TS[1].toLocalTime(), TS[1].toLocalDate(), TS[1])
     };
 
     @Before
@@ -378,6 +381,28 @@ public class TestDateTimeFunctions {
             q.setParameter("id", 1);
             long y = q.getSingleResult().longValue();
             MatcherAssert.assertThat(y, Matchers.equalTo(25L));
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
+    }
+
+    // Test LocalDateTime.now() in WHERE clause
+    // SELECT e FROM DateTimeQueryEntity e WHERE e.datetime = :dateTime
+    @Test
+    public void testLocalDateTime() {
+        final EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            TypedQuery<DateTimeQueryEntity> query = em.createNamedQuery("DateTimeQueryEntity.findByLocalDateTime", DateTimeQueryEntity.class);
+            query.setParameter("dateTime", TS[1]);
+            List<DateTimeQueryEntity> result = query.getResultList();
+            MatcherAssert.assertThat(result.size(), Matchers.equalTo(1));
         } catch (Throwable t) {
             t.printStackTrace();
             throw t;
