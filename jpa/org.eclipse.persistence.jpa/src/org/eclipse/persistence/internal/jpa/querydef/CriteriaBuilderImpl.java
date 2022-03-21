@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2009, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2020, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 2009, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -592,7 +592,9 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      */
     @Override
     public Predicate isNull(Expression<?> x){
-        return new PredicateImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().isNull(), new ArrayList(), BooleanOperator.AND);
+        List list = new ArrayList();
+        list.add(x);
+        return new PredicateImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().isNull(), list, BooleanOperator.AND);
     }
 
     /**
@@ -602,7 +604,9 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      */
     @Override
     public Predicate isNotNull(Expression<?> x){
-        return new PredicateImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().notNull(),new ArrayList(), BooleanOperator.AND);
+        List list = new ArrayList();
+        list.add(x);
+        return new PredicateImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().notNull(), list, BooleanOperator.AND);
     }
 
     // equality:
