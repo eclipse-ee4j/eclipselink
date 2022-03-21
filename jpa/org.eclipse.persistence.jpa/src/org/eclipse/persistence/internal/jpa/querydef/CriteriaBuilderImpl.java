@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2021 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2022 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -551,24 +551,24 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         }
         return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().equal(false), buildList(x), "equals");
     }
-    
+
     //null tests:
     /**
      * Create a predicate to test whether the expression is null.
      * @param x expression
      * @return predicate
      */
-    public Predicate isNull(Expression<?> x){
-        return new PredicateImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().isNull(), new ArrayList(), BooleanOperator.AND);
+    public Predicate isNull(Expression<?> x) {
+        return new PredicateImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().isNull(), buildList(x), BooleanOperator.AND);
     }
-    
+
     /**
      * Create a predicate to test whether the expression is not null.
      * @param x expression
      * @return predicate
      */
-    public Predicate isNotNull(Expression<?> x){
-        return new PredicateImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().notNull(),new ArrayList(), BooleanOperator.AND);
+    public Predicate isNotNull(Expression<?> x) {
+        return new PredicateImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().notNull(), buildList(x), BooleanOperator.AND);
     }
 
     // equality:
