@@ -215,7 +215,7 @@ public class MySQLPlatform extends DatabasePlatform {
         if (!isFractionalTimeSupported) {
             fd.setIsSizeAllowed(false);
         } else {
-            fd.setDefaultSize(3);
+            fd.setDefaultSize(6);
             fd.setIsSizeRequired(true);
         }
         fieldTypeMapping.put(java.time.LocalDateTime.class,fd); //no timezone info
@@ -224,7 +224,7 @@ public class MySQLPlatform extends DatabasePlatform {
         if (!isFractionalTimeSupported) {
             fd.setIsSizeAllowed(false);
         } else {
-            fd.setDefaultSize(3);
+            fd.setDefaultSize(6);
             fd.setIsSizeRequired(true);
         }
         fieldTypeMapping.put(java.time.LocalTime.class, fd);
@@ -233,7 +233,7 @@ public class MySQLPlatform extends DatabasePlatform {
         if (!isFractionalTimeSupported) {
             fd.setIsSizeAllowed(false);
         } else {
-            fd.setDefaultSize(3);
+            fd.setDefaultSize(6);
             fd.setIsSizeRequired(true);
         }
         fieldTypeMapping.put(java.time.OffsetDateTime.class, fd); //no timezone info
@@ -242,7 +242,7 @@ public class MySQLPlatform extends DatabasePlatform {
         if (!isFractionalTimeSupported) {
             fd.setIsSizeAllowed(false);
         } else {
-            fd.setDefaultSize(3);
+            fd.setDefaultSize(6);
             fd.setIsSizeRequired(true);
         }
         fieldTypeMapping.put(java.time.OffsetTime.class, fd);
@@ -384,6 +384,11 @@ public class MySQLPlatform extends DatabasePlatform {
     @Override
     protected void initializePlatformOperators() {
         super.initializePlatformOperators();
+        addOperator(currentTimeStamp());
+        addOperator(today());
+        addOperator(currentTime());
+        addOperator(localTime());
+        addOperator(localDateTime());
         addOperator(logOperator());
         addOperator(ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Atan2, "ATAN2"));
         addOperator(ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Concat, "CONCAT"));
@@ -395,6 +400,60 @@ public class MySQLPlatform extends DatabasePlatform {
         addOperator(ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Trunc, "TRUNCATE"));
         addOperator(leftTrim2());
         addOperator(rightTrim2());
+    }
+
+    /**
+     * INTERNAL:
+     * MySQL specific {@code currentTimeStamp} operator.
+     *
+     * @return new {@link ExpressionOperator} instance with {@code currentTimeStamp}
+     */
+    public static ExpressionOperator currentTimeStamp() {
+        return ExpressionOperator.simpleFunctionNoParentheses(
+                ExpressionOperator.Today,  "CURRENT_TIMESTAMP(6)");
+    }
+
+    /**
+     * INTERNAL:
+     * MySQL specific {@code today} operator.
+     *
+     * @return new {@link ExpressionOperator} instance with {@code today}
+     */
+    public static ExpressionOperator today() {
+        return currentTimeStamp();
+    }
+
+    /**
+     * INTERNAL:
+     * MySQL specific {@code currentTime} operator.
+     *
+     * @return new {@link ExpressionOperator} instance with {@code currentTime}
+     */
+    public static ExpressionOperator currentTime() {
+        return ExpressionOperator.simpleFunctionNoParentheses(
+                ExpressionOperator.CurrentTime, "CURRENT_TIME(6)");
+    }
+
+    /**
+     * INTERNAL:
+     * MySQL specific {@code localTime} operator.
+     *
+     * @return new {@link ExpressionOperator} instance with {@code localTime}
+     */
+    public static ExpressionOperator localTime() {
+        return ExpressionOperator.simpleFunctionNoParentheses(
+                ExpressionOperator.LocalTime, "CURRENT_TIME(6)");
+    }
+
+    /**
+     * INTERNAL:
+     * MySQL specific {@code localDateTime} operator.
+     *
+     * @return new {@link ExpressionOperator} instance with {@code localDateTime}
+     */
+    public static ExpressionOperator localDateTime() {
+        return ExpressionOperator.simpleFunctionNoParentheses(
+                ExpressionOperator.LocalDateTime,  "CURRENT_TIMESTAMP(6)");
     }
 
     /**
