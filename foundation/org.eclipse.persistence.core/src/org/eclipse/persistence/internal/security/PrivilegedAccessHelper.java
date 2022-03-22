@@ -27,7 +27,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -73,12 +75,12 @@ public class PrivilegedAccessHelper {
             SystemProperties.CONCURRENCY_MANAGER_ALLOW_INTERRUPTED_EXCEPTION, SystemProperties.CONCURRENCY_MANAGER_ALLOW_CONCURRENCY_EXCEPTION, SystemProperties.CONCURRENCY_MANAGER_ALLOW_STACK_TRACE_READ_LOCK,
             ServerPlatformBase.JMX_REGISTER_RUN_MBEAN_PROPERTY, ServerPlatformBase.JMX_REGISTER_DEV_MBEAN_PROPERTY,
             XMLPlatformFactory.XML_PLATFORM_PROPERTY};
-    private final static Set<String> legalPropertiesSet = Collections.unmodifiableSet(new HashSet(Arrays.asList(legalProperties)));
+    private final static Set<String> legalPropertiesSet = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(legalProperties)));
 
     private final static String[] exemptedProperties = { "line.separator" };
-    private final static Set<String> exemptedPropertiesSet = Collections.unmodifiableSet(new HashSet(Arrays.asList(exemptedProperties)));
+    private final static Set<String> exemptedPropertiesSet = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(exemptedProperties)));
 
-    private static Map<String, Class> primitiveClasses;
+    private static final Map<String, Class<?>> primitiveClasses;
 
     static {
         primitiveClasses = new HashMap<>();
@@ -91,6 +93,102 @@ public class PrivilegedAccessHelper {
         primitiveClasses.put("byte", byte.class);
         primitiveClasses.put("void", void.class);
         primitiveClasses.put("short", short.class);
+    }
+
+    /**
+     * INTERNAL
+     * A task that returns a result and shall not throw an exception.
+     * Implementors define a single {@code call()} method with no arguments.
+     *
+     * @param <T> the result type of method call
+     */
+    @FunctionalInterface
+    public interface PrivilegedCallable<T> {
+        T call();
+    }
+
+    /**
+     * INTERNAL
+     * A task that returns a result and may throw an exception.
+     * Implementors define a single {@code call()} method with no arguments.
+     *
+     * @param <T> the result type of method call
+     */
+    @FunctionalInterface
+    public interface PrivilegedExceptionCallable<T> {
+        T call() throws Exception;
+    }
+
+    /**
+     * INTERNAL
+     * Specific {@code Exception} supplier for {@link PrivilegedExceptionCallable}.
+     *
+     * @param <E> specific {@link Exception} type
+     */
+    @FunctionalInterface
+    public interface CallableExceptionSupplier<E extends Exception> {
+        E get(Exception e);
+    }
+
+    /**
+     * INTERNAL
+     * Executes provided {@link PrivilegedCallable} task using {@link AccessController#doPrivileged(PrivilegedAction)}
+     * when privileged access is enabled.
+     *
+     * @param <T> {@link PrivilegedCallable} return type
+     * @param task task to execute
+     */
+    @SuppressWarnings("removal")
+    public static <T> T callDoPrivileged(PrivilegedCallable<T> task) {
+        if (shouldUsePrivilegedAccess()) {
+            return AccessController.doPrivileged((PrivilegedAction<T>) task::call);
+        } else {
+            return task.call();
+        }
+    }
+
+    /**
+     * INTERNAL
+     * Executes provided {@link PrivilegedExceptionCallable} task using {@link AccessController#doPrivileged(PrivilegedExceptionAction)}
+     * when privileged access is enabled.
+     *
+     * @param <T> {@link PrivilegedExceptionCallable} return type
+     * @param task task to execute
+     */
+    @SuppressWarnings("removal")
+    public static <T> T callDoPrivilegedWithException(PrivilegedExceptionCallable<T> task) throws Exception {
+        if (shouldUsePrivilegedAccess()) {
+            try {
+                return AccessController.doPrivileged((PrivilegedExceptionAction<T>) task::call);
+                // AccessController.doPrivileged wraps Exception instances with PrivilegedActionException. Let's unwrap them
+                // to provide the same exception output as original callable without AccessController.doPrivileged
+            } catch (PrivilegedActionException pae) {
+                throw pae.getException();
+            }
+        } else {
+            return task.call();
+        }
+    }
+
+    /**
+     * INTERNAL
+     * Executes provided {@link PrivilegedExceptionCallable} task using {@link AccessController#doPrivileged(PrivilegedExceptionAction)}
+     * when privileged access is enabled.
+     * If {@link Exception} is thrown from task, it will be processed by provided {@link CallableExceptionSupplier}.
+     *
+     * @param <T> {@link PrivilegedExceptionCallable} return type
+     * @param <E> specific {@link Exception} type
+     * @param task task to execute
+     * @param exception specific {@link Exception} supplier
+     */
+    @SuppressWarnings("removal")
+    public static <T,E extends Exception> T callDoPrivilegedWithException(
+            PrivilegedExceptionCallable<T> task, CallableExceptionSupplier<E> exception) throws E {
+        try {
+            return callDoPrivilegedWithException(task);
+        } catch (Exception e) {
+            throw exception.get(e);
+        }
     }
 
     /**
@@ -108,11 +206,11 @@ public class PrivilegedAccessHelper {
      * find the field.  This method is called by the public getDeclaredField() method and does a recursive
      * search for the named field in the given classes or it's superclasses.
      */
-    private static Field findDeclaredField(Class javaClass, String fieldName) throws NoSuchFieldException {
+    private static <T> Field findDeclaredField(Class<T> javaClass, String fieldName) throws NoSuchFieldException {
         try {
             return javaClass.getDeclaredField(fieldName);
         } catch (NoSuchFieldException ex) {
-            Class superclass = javaClass.getSuperclass();
+            Class<? super T> superclass = javaClass.getSuperclass();
             if (superclass == null) {
                 throw ex;
             } else {
@@ -126,13 +224,13 @@ public class PrivilegedAccessHelper {
      * find the method.  This method is called by the public getDeclaredMethod() method and does a recursive
      * search for the named method in the given classes or it's superclasses.
      */
-    private static Method findMethod(Class javaClass, String methodName, Class[] methodParameterTypes) throws NoSuchMethodException {
+    private static <T> Method findMethod(Class<T> javaClass, String methodName, Class<?>[] methodParameterTypes) throws NoSuchMethodException {
         try {
             // use a combination of getDeclaredMethod() and recursion to ensure we get the non-public methods
             // getMethod will not help because it returns only public methods
             return javaClass.getDeclaredMethod(methodName, methodParameterTypes);
         } catch (NoSuchMethodException ex) {
-            Class superclass = javaClass.getSuperclass();
+            Class<? super T> superclass = javaClass.getSuperclass();
             if (superclass == null) {
                 throw ex;
             } else {
@@ -149,31 +247,33 @@ public class PrivilegedAccessHelper {
      * Execute a java Class.forName().  Wrap the call in a doPrivileged block if necessary.
      * @param className
      */
-    public static Class getClassForName(final String className) throws ClassNotFoundException {
+    @SuppressWarnings({"unchecked"})
+    public static <T> Class<T> getClassForName(final String className) throws ClassNotFoundException {
         // Check for primitive types.
-        Class primitive = primitiveClasses.get(className);
+        Class<?> primitive = primitiveClasses.get(className);
         if (primitive != null) {
-            return primitive;
+            return (Class<T>) primitive;
         }
-        return Class.forName(className);
+        return (Class<T>) Class.forName(className);
     }
 
     /**
      * Execute a java Class.forName() wrap the call in a doPrivileged block if necessary.
      */
-    public static Class getClassForName(final String className, final boolean initialize, final ClassLoader loader) throws ClassNotFoundException {
+    @SuppressWarnings({"unchecked"})
+    public static <T> Class<T> getClassForName(final String className, final boolean initialize, final ClassLoader loader) throws ClassNotFoundException {
         // Check for primitive types.
-        Class primitive = primitiveClasses.get(className);
+        Class<?> primitive = primitiveClasses.get(className);
         if (primitive != null) {
-            return primitive;
+            return (Class<T>) primitive;
         }
-        return Class.forName(className, initialize, loader);
+        return (Class<T>) Class.forName(className, initialize, loader);
     }
 
     /**
      * Gets the class loader for a given class. Wraps the call in a privileged block if necessary
      */
-    public static ClassLoader getClassLoaderForClass(final Class clazz) {
+    public static ClassLoader getClassLoaderForClass(final Class<?> clazz) {
         return clazz.getClassLoader();
     }
 
@@ -182,7 +282,7 @@ public class PrivilegedAccessHelper {
      * @deprecated Will be removed in next version.
      */
     @Deprecated
-    public static ClassLoader privilegedGetClassLoaderForClass(final Class clazz) {
+    public static ClassLoader privilegedGetClassLoaderForClass(final Class<?> clazz) {
         try{
             return AccessController.doPrivileged(new PrivilegedGetClassLoaderForClass(clazz));
         }catch (PrivilegedActionException ex){
@@ -199,18 +299,19 @@ public class PrivilegedAccessHelper {
      * @param shouldSetAccessible whether or not to call the setAccessible API
      * @throws java.lang.NoSuchMethodException
      */
-    public static Constructor getConstructorFor(final Class javaClass, final Class[] args, final boolean shouldSetAccessible) throws NoSuchMethodException {
-        Constructor result = null;
+    @SuppressWarnings({"unchecked"})
+    public static <T> Constructor<T> getConstructorFor(final Class<T> javaClass, final Class<?>[] args, final boolean shouldSetAccessible) throws NoSuchMethodException {
+        Constructor<T> result = null;
         try {
             result = javaClass.getConstructor(args);
         } catch (NoSuchMethodException missing) {
             // Search for any constructor with the same number of arguments and assignable types.
-            for (Constructor constructor : javaClass.getConstructors()) {
+            for (Constructor<?> constructor : javaClass.getConstructors()) {
                 if (constructor.getParameterTypes().length == args.length) {
                     boolean found = true;
                     for (int index = 0; index < args.length; index++) {
-                        Class parameterType = Helper.getObjectClass(constructor.getParameterTypes()[index]);
-                        Class argType = Helper.getObjectClass(args[index]);
+                        Class<?> parameterType = Helper.getObjectClass(constructor.getParameterTypes()[index]);
+                        Class<?> argType = Helper.getObjectClass(args[index]);
                         if ((!parameterType.isAssignableFrom(argType))
                                 && (!argType.isAssignableFrom(parameterType))) {
                             found = false;
@@ -218,7 +319,7 @@ public class PrivilegedAccessHelper {
                         }
                     }
                     if (found) {
-                        result = constructor;
+                        result = (Constructor<T>) constructor;
                         break;
                     }
                 }
@@ -250,8 +351,8 @@ public class PrivilegedAccessHelper {
      * @param shouldSetAccessible whether or not to call the setAccessible API
      * @throws java.lang.NoSuchMethodException
      */
-    public static Constructor getDeclaredConstructorFor(final Class javaClass, final Class[] args, final boolean shouldSetAccessible) throws NoSuchMethodException {
-        Constructor result = javaClass.getDeclaredConstructor(args);
+    public static <T> Constructor<T> getDeclaredConstructorFor(final Class<T> javaClass, final Class<?>[] args, final boolean shouldSetAccessible) throws NoSuchMethodException {
+        Constructor<T> result = javaClass.getDeclaredConstructor(args);
         if (shouldSetAccessible) {
             result.setAccessible(true);
         }
@@ -267,7 +368,7 @@ public class PrivilegedAccessHelper {
      * @param shouldSetAccessible whether or not to call the setAccessible API
      * @throws java.lang.NoSuchFieldException
      */
-    public static Field getField(final Class javaClass, final String fieldName, final boolean shouldSetAccessible) throws NoSuchFieldException {
+    public static Field getField(final Class<?> javaClass, final String fieldName, final boolean shouldSetAccessible) throws NoSuchFieldException {
         Field field = findDeclaredField(javaClass, fieldName);
         if (shouldSetAccessible) {
             field.setAccessible(true);
@@ -284,7 +385,7 @@ public class PrivilegedAccessHelper {
      * @param shouldSetAccessible whether or not to call the setAccessible API
      * @throws java.lang.NoSuchFieldException
      */
-    public static Field getDeclaredField(final Class javaClass, final String fieldName, final boolean shouldSetAccessible) throws NoSuchFieldException {
+    public static Field getDeclaredField(final Class<?> javaClass, final String fieldName, final boolean shouldSetAccessible) throws NoSuchFieldException {
         Field field = javaClass.getDeclaredField(fieldName);
         if (shouldSetAccessible) {
             field.setAccessible(true);
@@ -297,7 +398,7 @@ public class PrivilegedAccessHelper {
      * Excludes inherited fields.
      * @param clazz the class to get the fields from.
      */
-    public static Field[] getDeclaredFields(final Class clazz) {
+    public static Field[] getDeclaredFields(final Class<?> clazz) {
         return clazz.getDeclaredFields();
     }
 
@@ -305,11 +406,11 @@ public class PrivilegedAccessHelper {
      * Get the list of public fields in a class.  Wrap the call in doPrivileged if necessary
      * @param clazz the class to get the fields from.
      */
-    public static Field[] getFields(final Class clazz) {
+    public static Field[] getFields(final Class<?> clazz) {
         return clazz.getFields();
     }
 
-   /**
+    /**
      * Return a method on a given class with the given method name and parameter
      * types. This call will NOT traverse the superclasses. Wrap the call in
      * doPrivileged if necessary.
@@ -318,8 +419,8 @@ public class PrivilegedAccessHelper {
      * @param methodParameters a list of classes representing the classes of the
      *  parameters of the method.
      */
-    public static Method getDeclaredMethod(final Class clazz, final String methodName, final Class[] methodParameterTypes) throws NoSuchMethodException {
-         return clazz.getDeclaredMethod(methodName, methodParameterTypes);
+    public static Method getDeclaredMethod(final Class<?> clazz, final String methodName, final Class<?>[] methodParameterTypes) throws NoSuchMethodException {
+        return clazz.getDeclaredMethod(methodName, methodParameterTypes);
     }
 
     /**
@@ -334,7 +435,7 @@ public class PrivilegedAccessHelper {
      * @param shouldSetAccessible whether or not to call the setAccessible API
      * @throws java.lang.NoSuchMethodException
      */
-    public static Method getMethod(final Class javaClass, final String methodName, final Class[] methodParameterTypes, final boolean shouldSetAccessible) throws NoSuchMethodException {
+    public static Method getMethod(final Class<?> javaClass, final String methodName, final Class<?>[] methodParameterTypes, final boolean shouldSetAccessible) throws NoSuchMethodException {
         Method method = findMethod(javaClass, methodName, methodParameterTypes);
         if (shouldSetAccessible) {
             method.setAccessible(true);
@@ -354,7 +455,7 @@ public class PrivilegedAccessHelper {
      * @param shouldSetAccessible whether or not to call the setAccessible API
      * @throws java.lang.NoSuchMethodException
      */
-    public static Method getPublicMethod(final Class javaClass, final String methodName, final Class[] methodParameterTypes, final boolean shouldSetAccessible) throws NoSuchMethodException {
+    public static Method getPublicMethod(final Class<?> javaClass, final String methodName, final Class<?>[] methodParameterTypes, final boolean shouldSetAccessible) throws NoSuchMethodException {
         // Return the (public) method - will traverse superclass(es) if necessary
         Method method = javaClass.getMethod(methodName, methodParameterTypes);
         if (shouldSetAccessible) {
@@ -368,7 +469,7 @@ public class PrivilegedAccessHelper {
      * necessary. Excludes inherited methods.
      * @param clazz the class to get the methods from.
      */
-    public static Method[] getDeclaredMethods(final Class clazz) {
+    public static Method[] getDeclaredMethods(final Class<?> clazz) {
         return clazz.getDeclaredMethods();
     }
 
@@ -376,8 +477,9 @@ public class PrivilegedAccessHelper {
      * Get the return type for a given method. Wrap the call in doPrivileged if necessary.
      * @param field
      */
-    public static Class getFieldType(final Field field) {
-        return field.getType();
+    @SuppressWarnings({"unchecked"})
+    public static <T> Class<T> getFieldType(final Field field) {
+        return (Class<T>) field.getType();
     }
 
     /**
@@ -473,7 +575,7 @@ public class PrivilegedAccessHelper {
      * Get the list of parameter types for a given method.  Wrap the call in doPrivileged if necessary.
      * @param method The method to get the parameter types of
      */
-    public static Class[] getMethodParameterTypes(final Method method) {
+    public static Class<?>[] getMethodParameterTypes(final Method method) {
         return method.getParameterTypes();
     }
 
@@ -481,9 +583,10 @@ public class PrivilegedAccessHelper {
      * Get the return type for a given method. Wrap the call in doPrivileged if necessary.
      * @param method
      */
-    public static Class getMethodReturnType(final Method method) {
+    @SuppressWarnings({"unchecked"})
+    public static <T> Class<T> getMethodReturnType(final Method method) {
         // 323148: a null method as a possible problem with module ordering breaking weaving - has been trapped by implementors of this method.
-        return method.getReturnType();
+        return (Class<T>) method.getReturnType();
     }
 
     /**
@@ -491,22 +594,23 @@ public class PrivilegedAccessHelper {
      * necessary. This call will traverse the superclasses.
      * @param clazz the class to get the methods from.
      */
-    public static Method[] getMethods(final Class clazz) {
+    public static Method[] getMethods(final Class<?> clazz) {
         return clazz.getMethods();
     }
 
     /**
      * Get the value of the given field in the given object.
      */
-    public static Object getValueFromField(final Field field, final Object object) throws IllegalAccessException {
-        return field.get(object);
+    @SuppressWarnings({"unchecked"})
+    public static <T> T getValueFromField(final Field field, final Object object) throws IllegalAccessException {
+        return (T) field.get(object);
     }
 
     /**
      * Construct an object with the given Constructor and the given array of arguments.  Wrap the call in a
      * doPrivileged block if necessary.
      */
-    public static Object invokeConstructor(final Constructor constructor, final Object[] args) throws IllegalAccessException, InvocationTargetException, InstantiationException {
+    public static <T> T invokeConstructor(final Constructor<T> constructor, final Object[] args) throws IllegalAccessException, InvocationTargetException, InstantiationException {
         return constructor.newInstance(args);
     }
 
@@ -514,7 +618,7 @@ public class PrivilegedAccessHelper {
      * Invoke the givenMethod on a givenObject. Assumes method does not take
      * parameters. Wrap in a doPrivileged block if necessary.
      */
-    public static Object invokeMethod(final Method method, final Object object) throws IllegalAccessException, InvocationTargetException {
+    public static <T> T invokeMethod(final Method method, final Object object) throws IllegalAccessException, InvocationTargetException {
         return invokeMethod(method, object, (Object[]) null);
     }
 
@@ -522,12 +626,13 @@ public class PrivilegedAccessHelper {
      * Invoke the givenMethod on a givenObject using the array of parameters given.  Wrap in a doPrivileged block
      * if necessary.
      */
-    public static Object invokeMethod(final Method method, final Object object, final Object[] parameters) throws IllegalAccessException, InvocationTargetException {
+    @SuppressWarnings({"unchecked"})
+    public static <T> T invokeMethod(final Method method, final Object object, final Object[] parameters) throws IllegalAccessException, InvocationTargetException {
         // Ensure the method is accessible.
         if (!method.isAccessible()) {
             method.setAccessible(true);
         }
-        return method.invoke(object, parameters);
+        return (T) method.invoke(object, parameters);
     }
 
     /**

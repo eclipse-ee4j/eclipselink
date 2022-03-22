@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,17 +14,17 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.jaxb;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.util.*;
-import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
+import java.util.EnumSet;
+import java.util.Iterator;
+
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper.PrivilegedExceptionCallable;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
+import org.eclipse.persistence.sessions.Session;
 
 /**
  * INTERNAL:
@@ -52,6 +52,28 @@ public class JAXBEnumTypeConverter extends ObjectTypeConverter {
         m_usesOrdinalValues = usesOrdinalValues;
     }
 
+    // PrivilegedAccessHelper.getClassForName caller for PrivilegedAccessHelper.callDoPrivilegedWithException
+    private static final class CallGetClassForName implements PrivilegedExceptionCallable<Class<?>> {
+
+        private final ClassLoader classLoader;
+        private final String m_enumClassName;
+
+        private CallGetClassForName(final ClassLoader classLoader, final String m_enumClassName) {
+            this.classLoader = classLoader;
+            this.m_enumClassName = m_enumClassName;
+        }
+
+        @Override
+        public Class<?> call() throws Exception {
+            return org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(m_enumClassName, true, classLoader);
+        }
+    }
+
+    // Handle exception in PrivilegedAccessHelper.callDoPrivilegedWithException
+    private ValidationException getClassForNameException(final Exception ex) {
+        return ValidationException.classNotFoundWhileConvertingClassNames(m_enumClassName, ex);
+    }
+
     /**
      * INTERNAL:
      * Convert all the class-name-based settings in this converter to actual
@@ -59,20 +81,12 @@ public class JAXBEnumTypeConverter extends ObjectTypeConverter {
      * that has been built with class names to a project with classes.
      * @param classLoader
      */
-    public void convertClassNamesToClasses(ClassLoader classLoader){
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    m_enumClass = AccessController.doPrivileged(new PrivilegedClassForName(m_enumClassName, true, classLoader));
-                } catch (PrivilegedActionException exception) {
-                    throw ValidationException.classNotFoundWhileConvertingClassNames(m_enumClassName, exception.getException());
-                }
-            } else {
-                m_enumClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(m_enumClassName, true, classLoader);
-            }
-        } catch (ClassNotFoundException exception){
-            throw ValidationException.classNotFoundWhileConvertingClassNames(m_enumClassName, exception);
-        }
+    public void convertClassNamesToClasses(ClassLoader classLoader) {
+        CallGetClassForName callGetClassForName = new CallGetClassForName(classLoader, m_enumClassName);
+        m_enumClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                callGetClassForName,
+                this::getClassForNameException
+        );
     }
 
     /**

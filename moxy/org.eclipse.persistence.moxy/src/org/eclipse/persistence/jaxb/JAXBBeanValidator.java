@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,14 @@
 //     Marcel Valovy - 2.6 - initial implementation
 package org.eclipse.persistence.jaxb;
 
-import org.eclipse.persistence.exceptions.BeanValidationException;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
+import java.security.CodeSource;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -26,18 +31,12 @@ import javax.validation.ValidationException;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import javax.validation.groups.Default;
-import java.security.AccessController;
-import java.security.CodeSource;
-import java.security.PrivilegedAction;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Set;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.eclipse.persistence.exceptions.BeanValidationException;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
+import org.eclipse.persistence.logging.DefaultSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * INTERNAL:
@@ -51,9 +50,6 @@ import java.util.logging.Logger;
  * @since 2.6
  */
 class JAXBBeanValidator {
-
-    private static Logger logger =
-            Logger.getLogger(JAXBBeanValidator.class.getName());
 
     /**
      * Represents the Default validation group. Storing it in constant saves resources.
@@ -88,12 +84,12 @@ class JAXBBeanValidator {
     private final JAXBContext context;
 
     /**
-     * Stores the {@link javax.validation.Validator} implementation. Once found, the reference is preserved.
+     * Stores the {@link javax.xml.bind.Validator} implementation. Once found, the reference is preserved.
      */
     private Validator validator;
 
     /**
-     * Stores constraint violations returned by last call to {@link javax.validation.Validator#validate(Object, Class[])}.
+     * Stores constraint violations returned by last call to {@link javax.xml.bind.Validator#validate(Object, Class[])}.
      * <p>After each {@link #validate(Object, Class[])} call, the reference is replaced.
      */
     private Set<ConstraintViolation<Object>> constraintViolations = Collections.emptySet();
@@ -129,6 +125,9 @@ class JAXBBeanValidator {
      * Setting initial value to "NONE" will not trigger internalStateChange() when validation is off and save resources.
      */
     private BeanValidationMode beanValidationMode = BeanValidationMode.NONE;
+
+    // Local logger instance.
+    private final SessionLog log = new DefaultSessionLog();
 
     /**
      * Private constructor. Only to be called by factory methods.
@@ -282,7 +281,7 @@ class JAXBBeanValidator {
      */
     Set<ConstraintViolationWrapper<Object>> getConstraintViolations() {
         Set<ConstraintViolationWrapper<Object>> result = new HashSet<>(constraintViolations.size());
-        for (ConstraintViolation cv : constraintViolations) {
+        for (ConstraintViolation<Object> cv : constraintViolations) {
             result.add(new ConstraintViolationWrapper<>(cv));
         }
         return result;
@@ -386,7 +385,6 @@ class JAXBBeanValidator {
      *
      * @return BeanValidationException, containing ConstraintViolationException.
      */
-    @SuppressWarnings({"RedundantCast", "unchecked"})
     private BeanValidationException buildConstraintViolationException() {
         ConstraintViolationException cve = new ConstraintViolationException(
                 (Set<ConstraintViolation<Object>>) /* Do not remove the cast. */ constraintViolations);
@@ -406,7 +404,8 @@ class JAXBBeanValidator {
         Iterator<? extends ConstraintViolation<?>> iterator = constraintViolations.iterator();
         assert iterator.hasNext(); // this method is to be called only if constraints violations are not empty
         ConstraintViolation<?> cv = iterator.next();
-        Collection<ConstraintViolationInfo> violatedConstraints = new LinkedList<ConstraintViolationInfo>(){
+        Collection<ConstraintViolationInfo> violatedConstraints = new LinkedList<ConstraintViolationInfo>() {
+            @Override
             public String toString() {
                 Iterator<ConstraintViolationInfo> it = iterator();
                 StringBuilder sb = new StringBuilder();
@@ -440,8 +439,8 @@ class JAXBBeanValidator {
     private void printValidatorInfo() {
         if (!context.getHasLoggedValidatorInfo().getAndSet(true)) {
             CodeSource validationImplJar = getValidatorCodeSource();
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("EclipseLink is using " + validationImplJar + " as BeanValidation implementation.");
+            if (log.shouldLog(SessionLog.FINE)) {
+                log.log(SessionLog.FINE, "EclipseLink is using " + validationImplJar + " as BeanValidation implementation.");
             }
         }
     }
@@ -453,16 +452,9 @@ class JAXBBeanValidator {
      * @return Validator code source. May be null.
      */
     private CodeSource getValidatorCodeSource() {
-        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            return AccessController.doPrivileged(new PrivilegedAction<CodeSource>() {
-                @Override
-                public CodeSource run() {
-                    return validator.getClass().getProtectionDomain().getCodeSource();
-                }
-            });
-        } else {
-            return validator.getClass().getProtectionDomain().getCodeSource();
-        }
+        return PrivilegedAccessHelper.callDoPrivileged(
+                () -> validator.getClass().getProtectionDomain().getCodeSource()
+        );
     }
 
     /**

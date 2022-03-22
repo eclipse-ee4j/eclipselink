@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,15 +15,11 @@
 package org.eclipse.persistence.internal.jaxb;
 
 import java.lang.reflect.InvocationTargetException;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
-import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 
 /**
  * Purpose:
@@ -53,27 +49,24 @@ public class MultiArgInstantiationPolicy extends InstantiationPolicy {
         defaultValues = values;
     }
 
+    // Handle Class.forName() wrapper exception
+    private ValidationException invokeGetClassForNameException(final Exception ex) {
+        return ValidationException.classNotFoundWhileConvertingClassNames(factoryClassName, ex);
+    }
+
     @Override
     public void convertClassNamesToClasses(ClassLoader loader) {
         super.convertClassNamesToClasses(loader);
         if(parameterTypes == null) {
             if(parameterTypeNames != null) {
-                Class[] values = new Class[parameterTypeNames.length];
+                Class<?>[] values = new Class[parameterTypeNames.length];
                 for(int i = 0; i < values.length; i++) {
-                    try{
-                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                            try {
-                                values[i] = AccessController.doPrivileged(new PrivilegedClassForName(parameterTypeNames[i], true, loader));
-                            } catch (PrivilegedActionException exception) {
-                                throw ValidationException.classNotFoundWhileConvertingClassNames(parameterTypeNames[i], exception.getException());
-                            }
-                        } else {
-                            values[i] = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(parameterTypeNames[i], true, loader);
-                        }
-                    } catch (ClassNotFoundException exc){
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(factoryClassName, exc);
-                    }
-                }
+                    final String parameterTypeName = parameterTypeNames[i];
+                    values[i] = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                            () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(parameterTypeName, true, loader),
+                            this::invokeGetClassForNameException
+                    );
+                 }
                 this.parameterTypes = values;
             }
         }
@@ -95,35 +88,33 @@ public class MultiArgInstantiationPolicy extends InstantiationPolicy {
         }
     }
 
+    // Invoke factory method
+    private Object invokeFactoryMethod() throws Exception {
+        return PrivilegedAccessHelper.invokeMethod(getMethod(), getFactory(), this.defaultValues);
+    }
+
+    // Handle factory method invocation exception
+    @SuppressWarnings("unchecked")
+    private <E extends Exception> E invokeFactoryMethodException(final Exception ex) {
+        if (ex instanceof IllegalAccessException) {
+            return (E) DescriptorException.illegalAccessWhileMethodInstantiation(getMethod().toString(), this.getDescriptor(), ex);
+        } else if (ex instanceof InvocationTargetException) {
+            return (E) DescriptorException.targetInvocationWhileMethodInstantiation(getMethod().toString(), this.getDescriptor(), ex);
+        } else if (ex instanceof NullPointerException) {
+            return (E) DescriptorException.nullPointerWhileMethodInstantiation(this.getMethod().toString(), this.getDescriptor(), ex);
+        }
+        return (E) new RuntimeException("Unexpected exception from MultiArgInstantiationPolicy.buildNewInstanceUsingFactory()", ex);
+    }
+
     /**
      * Build and return a new instance, using the factory.
      * The factory can be null, in which case the method is a static method defined by the descriptor class.
      */
     protected Object buildNewInstanceUsingFactory() throws DescriptorException {
-        try {
-            // If the method is static, the first argument is ignored and can be null
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    return AccessController.doPrivileged(new PrivilegedMethodInvoker(getMethod(), getFactory(), this.defaultValues));
-                } catch (PrivilegedActionException exception) {
-                    Exception throwableException = exception.getException();
-                    if (throwableException instanceof IllegalAccessException) {
-                        throw DescriptorException.illegalAccessWhileMethodInstantiation(getMethod().toString(), this.getDescriptor(), throwableException);
-                    } else {
-                        throw DescriptorException.targetInvocationWhileMethodInstantiation(getMethod().toString(), this.getDescriptor(), throwableException);
-                    }
-                }
-            } else {
-                return PrivilegedAccessHelper.invokeMethod(getMethod(), getFactory(), this.defaultValues);
-            }
-        } catch (IllegalAccessException exception) {
-            throw DescriptorException.illegalAccessWhileMethodInstantiation(getMethod().toString(), this.getDescriptor(), exception);
-        } catch (InvocationTargetException exception) {
-            throw DescriptorException.targetInvocationWhileMethodInstantiation(getMethod().toString(), this.getDescriptor(), exception);
-        } catch (NullPointerException exception) {
-            // Some JVMs will throw a NULL pointer exception here
-            throw DescriptorException.nullPointerWhileMethodInstantiation(this.getMethod().toString(), this.getDescriptor(), exception);
-        }
+        return PrivilegedAccessHelper.callDoPrivilegedWithException(
+                this::invokeFactoryMethod,
+                this::invokeFactoryMethodException
+        );
     }
 
 }

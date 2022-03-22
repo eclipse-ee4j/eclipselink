@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,6 +16,40 @@
 //     Dmitry Kornilov - 2.6.1 - BeanValidationHelper refactoring
 package org.eclipse.persistence.jaxb;
 
+import java.awt.Image;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.Vector;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.PropertyException;
+import javax.xml.bind.SchemaOutputResolver;
+import javax.xml.bind.ValidationEvent;
+import javax.xml.bind.ValidationEventHandler;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.namespace.QName;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.transform.Source;
+
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.core.sessions.CoreProject;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -30,7 +64,6 @@ import org.eclipse.persistence.internal.jaxb.WrappedValue;
 import org.eclipse.persistence.internal.jaxb.json.schema.JsonSchemaGenerator;
 import org.eclipse.persistence.internal.jaxb.json.schema.model.JsonSchema;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
-import org.eclipse.persistence.internal.localization.JAXBLocalization;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -41,6 +74,7 @@ import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelGenerator;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper.PrivilegedCallable;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jaxb.compiler.Generator;
 import org.eclipse.persistence.jaxb.compiler.MarshalCallback;
@@ -68,41 +102,6 @@ import org.eclipse.persistence.oxm.platform.SAXPlatform;
 import org.eclipse.persistence.oxm.platform.XMLPlatform;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.SessionEventListener;
-
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
-import javax.xml.bind.SchemaOutputResolver;
-import javax.xml.bind.ValidationEvent;
-import javax.xml.bind.ValidationEventHandler;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.transform.Source;
-import java.awt.*;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.Vector;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.eclipse.persistence.jaxb.javamodel.Helper.getQualifiedJavaTypeName;
 
@@ -861,6 +860,24 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             this.contextPath = contextPath;
         }
 
+        // JaxbClassLoader creator to be used ONLY in createContextState() method
+        // statement PrivilegedAccessHelper.callDoPrivileged
+        private static final class CreateJaxbClassLoader implements PrivilegedCallable<JaxbClassLoader> {
+
+            private final ClassLoader classLoader;
+            private final Class<?>[] types;
+
+            private CreateJaxbClassLoader(final ClassLoader classLoader, final Class<?>[] types) {
+                this.classLoader = classLoader;
+                this.types = types;
+            }
+
+            @Override
+            public JaxbClassLoader call() {
+                return new JaxbClassLoader(classLoader, types);
+            }
+        }
+
         @Override
         protected JAXBContextState createContextState() throws javax.xml.bind.JAXBException {
             boolean foundMetadata = false;
@@ -919,7 +936,9 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 for (int i = 0; i < classes.size(); i++) {
                     classArray[i] = classes.get(i);
                 }
-                return createContextState(classArray, xmlBindingMap);
+                final CreateJaxbClassLoader createJaxbClassLoader = new CreateJaxbClassLoader(classLoader, classArray);
+                final JaxbClassLoader loader = PrivilegedAccessHelper.callDoPrivileged(createJaxbClassLoader);
+                return createContextState(loader, classArray, xmlBindingMap);
             }
 
             Exception sessionLoadingException = null;
@@ -941,15 +960,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
          * based on method parameters.  This method is useful when JAXB is used as
          * the binding layer for a Web Service provider.
          */
-        private JAXBContextState createContextState(Class[] classesToBeBound, Map<String, XmlBindings> xmlBindings) throws javax.xml.bind.JAXBException {
-            JaxbClassLoader loader = PrivilegedAccessHelper.shouldUsePrivilegedAccess()
-                    ? AccessController.doPrivileged(new PrivilegedAction<JaxbClassLoader>() {
-                        @Override
-                        public JaxbClassLoader run() {
-                            return new JaxbClassLoader(classLoader, classesToBeBound);
-                        }
-                    })
-                    : new JaxbClassLoader(classLoader, classesToBeBound);
+        private JAXBContextState createContextState(final JaxbClassLoader loader, Class<?>[] classesToBeBound, Map<String, XmlBindings> xmlBindings) throws javax.xml.bind.JAXBException {
             String defaultTargetNamespace = null;
             AnnotationHelper annotationHelper = null;
             boolean enableXmlAccessorFactory = false;
@@ -1110,6 +1121,24 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             });
         }
 
+        // JaxbClassLoader creator to be used ONLY in reateContextState() method
+        // statement PrivilegedAccessHelper.callDoPrivileged
+        private static final class CreateJaxbClassLoader implements PrivilegedCallable<JaxbClassLoader> {
+
+            private final ClassLoader classLoader;
+            private TypeMappingInfo[] types;
+
+            private CreateJaxbClassLoader(final ClassLoader classLoader, final TypeMappingInfo[] types) {
+                this.classLoader = classLoader;
+                this.types = types;
+            }
+
+            @Override
+            public JaxbClassLoader call() {
+                return new JaxbClassLoader(classLoader, types);
+            }
+        }
+
         @Override
         protected JAXBContextState createContextState() throws javax.xml.bind.JAXBException {
             // Check properties map for eclipselink-oxm.xml entries
@@ -1138,15 +1167,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 typesToBeBound = getXmlBindingsClasses(entry.getValue(), classLoader, typesToBeBound);
             }
 
-            final TypeMappingInfo[] types = typesToBeBound;
-
-            JaxbClassLoader loader = PrivilegedAccessHelper.shouldUsePrivilegedAccess()
-                    ? AccessController.doPrivileged(new PrivilegedAction<JaxbClassLoader>() {
-                        public JaxbClassLoader run() {
-                            return new JaxbClassLoader(classLoader, types);
-                        }
-                    })
-                    : new JaxbClassLoader(classLoader, types);
+            final CreateJaxbClassLoader createJaxbClassLoader = new CreateJaxbClassLoader(classLoader, typesToBeBound);
+            final JaxbClassLoader loader = PrivilegedAccessHelper.callDoPrivileged(createJaxbClassLoader);
 
             JavaModelImpl jModel;
             if (annotationHelper != null) {

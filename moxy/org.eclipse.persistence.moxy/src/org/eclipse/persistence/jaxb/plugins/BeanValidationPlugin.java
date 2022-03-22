@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,24 +14,9 @@
 //     Marcel Valovy - 2.6 - initial implementation
 package org.eclipse.persistence.jaxb.plugins;
 
-import static com.sun.xml.xsom.XSFacet.FACET_FRACTIONDIGITS;
-import static com.sun.xml.xsom.XSFacet.FACET_LENGTH;
-import static com.sun.xml.xsom.XSFacet.FACET_MAXEXCLUSIVE;
-import static com.sun.xml.xsom.XSFacet.FACET_MAXINCLUSIVE;
-import static com.sun.xml.xsom.XSFacet.FACET_MAXLENGTH;
-import static com.sun.xml.xsom.XSFacet.FACET_MINEXCLUSIVE;
-import static com.sun.xml.xsom.XSFacet.FACET_MININCLUSIVE;
-import static com.sun.xml.xsom.XSFacet.FACET_MINLENGTH;
-import static com.sun.xml.xsom.XSFacet.FACET_PATTERN;
-import static com.sun.xml.xsom.XSFacet.FACET_TOTALDIGITS;
-
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -47,9 +32,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.bind.annotation.XmlElement;
-
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.SAXParseException;
 
 import com.sun.codemodel.JAnnotationArrayMember;
 import com.sun.codemodel.JAnnotationUse;
@@ -84,7 +66,20 @@ import com.sun.xml.xsom.impl.AttributeUseImpl;
 import com.sun.xml.xsom.impl.ParticleImpl;
 import com.sun.xml.xsom.impl.RestrictionSimpleTypeImpl;
 import com.sun.xml.xsom.impl.parser.DelayedRef;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXParseException;
 
+import static com.sun.xml.xsom.XSFacet.FACET_FRACTIONDIGITS;
+import static com.sun.xml.xsom.XSFacet.FACET_LENGTH;
+import static com.sun.xml.xsom.XSFacet.FACET_MAXEXCLUSIVE;
+import static com.sun.xml.xsom.XSFacet.FACET_MAXINCLUSIVE;
+import static com.sun.xml.xsom.XSFacet.FACET_MAXLENGTH;
+import static com.sun.xml.xsom.XSFacet.FACET_MINEXCLUSIVE;
+import static com.sun.xml.xsom.XSFacet.FACET_MININCLUSIVE;
+import static com.sun.xml.xsom.XSFacet.FACET_MINLENGTH;
+import static com.sun.xml.xsom.XSFacet.FACET_PATTERN;
+import static com.sun.xml.xsom.XSFacet.FACET_TOTALDIGITS;
 
 /**
  * XJC Plugin for generation of JSR349 (Bean Validation) annotations.
@@ -215,7 +210,6 @@ public class BeanValidationPlugin extends Plugin {
 
     /* ######### CORE FUNCTIONALITY ######### */
     private static final String PATTERN_ANNOTATION_NOT_APPLICABLE = "Facet \"pattern\" was detected on a DOM node with non-string base type. Annotation was not generated, because it is not supported by the Bean Validation specification.";
-    private final boolean securityEnabled = System.getSecurityManager() != null;
 
     private static final JClass ANNOTATION_VALID;
     private static final JClass ANNOTATION_NOTNULL;
@@ -776,32 +770,29 @@ public class BeanValidationPlugin extends Plugin {
     /* ######### GENERAL UTILITIES ######### */
     private Class<?> loadClass(String className) {
         Class<?> clazz = null;
-        if (securityEnabled) try {
-            clazz = AccessController.doPrivileged(ForNameActionExecutor.INSTANCE.with(className));
-        } catch (PrivilegedActionException ignored) {
-            // - Can be only of type ClassNotFoundException, no check needed, see AccessController.doPrivileged().
-            /* - ClassNotFoundException for us "means" that the fieldVar is of some unknown class - not an issue to be
-             solved by this plugin. */
-        }
-        else try {
-            clazz = loadClassInternal(className);
+        try {
+            clazz = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> Class.forName(className)
+            );
         } catch (ClassNotFoundException ignored) {
             /* - ClassNotFoundException for us "means" that the fieldVar is of some unknown class - not an issue to be
              solved by this plugin. */
+        } catch (Exception ex) {
+            throw new RuntimeException(String.format("Failed loading of %s class", className), ex);
         }
         return clazz;
     }
 
     private int getOccursValue(final String attributeName, final XSParticle xsParticle) {
-        return securityEnabled
-            ? AccessController.doPrivileged(OccursValueActionExecutor.INSTANCE.with(attributeName, xsParticle)).intValue()
-            : loadOccursValue(attributeName, xsParticle).intValue();
+        return PrivilegedAccessHelper.callDoPrivileged(
+                () -> loadOccursValue(attributeName, xsParticle).intValue()
+        );
     }
 
     private String getExistingBoundaryValue(final JAnnotationUse jAnnotationUse) {
-        return securityEnabled
-            ? AccessController.doPrivileged(ExistingBoundaryValueActionExecutor.INSTANCE.with(jAnnotationUse))
-            : loadExistingBoundaryValue(jAnnotationUse);
+        return PrivilegedAccessHelper.callDoPrivileged(
+                () -> loadExistingBoundaryValue(jAnnotationUse)
+        );
     }
 
     private String eliminateShorthands(String regex) {
@@ -949,56 +940,6 @@ public class BeanValidationPlugin extends Plugin {
         }
     }
 
-    private static final class ForNameActionExecutor {
-
-        private interface PrivilegedExceptionActionWith<T> extends PrivilegedExceptionAction<T> {
-            PrivilegedExceptionAction<T> with(String className);
-        }
-
-        private static final PrivilegedExceptionActionWith<Class<?>> INSTANCE = new PrivilegedExceptionActionWith<Class<?>>() {
-            private String className;
-
-            @Override
-            public Class<?> run() throws ClassNotFoundException {
-                return loadClassInternal(className);
-            }
-
-            @Override
-            public PrivilegedExceptionActionWith<Class<?>> with(String className) {
-                this.className = className;
-                return this;
-            }
-        };
-    }
-
-    private static Class<?> loadClassInternal(String className) throws ClassNotFoundException {
-        return Class.forName(className);
-    }
-
-    private static final class OccursValueActionExecutor {
-
-        private interface PrivilegedActionWith<T> extends PrivilegedAction<T> {
-            PrivilegedAction<T> with(String fieldName, XSParticle xsParticle);
-        }
-
-        private static final PrivilegedActionWith<BigInteger> INSTANCE = new PrivilegedActionWith<BigInteger>() {
-            private String fieldName;
-            private XSParticle xsParticle;
-
-            @Override
-            public BigInteger run() {
-                return loadOccursValue(fieldName, xsParticle);
-            }
-
-            @Override
-            public PrivilegedActionWith<BigInteger> with(String className, XSParticle xsParticle) {
-                this.fieldName = className;
-                this.xsParticle = xsParticle;
-                return this;
-            }
-        };
-    }
-
     private static BigInteger loadOccursValue(String fieldName, XSParticle xsParticle) {
         try {
             Field field = ParticleImpl.class.getDeclaredField(fieldName);
@@ -1009,28 +950,6 @@ public class BeanValidationPlugin extends Plugin {
             // execute this plugin correctly and not should not receive generated default values.
             throw new RuntimeException(e);
         }
-    }
-
-    private static final class ExistingBoundaryValueActionExecutor {
-
-        private interface PrivilegedActionWith<T> extends PrivilegedAction<T> {
-            PrivilegedAction<T> with(JAnnotationUse jAnnotationUse);
-        }
-
-        private static final PrivilegedActionWith<String> INSTANCE = new PrivilegedActionWith<String>() {
-            private JAnnotationUse jAnnotationUse;
-
-            @Override
-            public String run() {
-                return loadExistingBoundaryValue(jAnnotationUse);
-            }
-
-            @Override
-            public PrivilegedAction<String> with(JAnnotationUse jAnnotationUse) {
-                this.jAnnotationUse = jAnnotationUse;
-                return this;
-            }
-        };
     }
 
     private static String loadExistingBoundaryValue(JAnnotationUse jAnnotationUse) {
