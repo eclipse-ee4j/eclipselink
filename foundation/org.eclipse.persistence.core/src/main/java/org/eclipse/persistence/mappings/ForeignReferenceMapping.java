@@ -575,6 +575,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                 if (size != rowsSize) {
                     // If only fetching a page, need to make sure the row we want is in the page.
                     startIndex = parentRows.indexOf(sourceRow);
+                    if (startIndex < 0) startIndex = 0;
                 }
                 if (startIndex == -1) {
                     return null;
