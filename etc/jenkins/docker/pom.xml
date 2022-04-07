@@ -19,7 +19,7 @@
     <groupId>org.eclipse.persistence.build</groupId>
     <artifactId>org.eclipse.persistence.build.docker</artifactId>
     <!-- Version is used as docker image tag -->
-    <version>2.0.0-EA1</version>
+    <version>2.0.0-EA2</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
