@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+-->
+
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>EclipseLink Docker Image</name>
+    <description>Docker image used in Eclipse Foundation build infrastructure to build EclipseLink and run LRG tests</description>
+    <groupId>org.eclipse.persistence.build</groupId>
+    <artifactId>org.eclipse.persistence.build.docker</artifactId>
+    <!-- Version is used as docker image tag -->
+    <version>2.0.0-EA1</version>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <docker.image>tkraus/el-build</docker.image>
+        <docker.source>oraclelinux:8</docker.source>
+        <java.pkg>openjdk-17.0.2_linux-x64_bin.tar.gz</java.pkg>
+        <java.url>https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/${java.pkg}</java.url>
+        <ant.pkg>apache-ant-1.10.12-bin.tar.gz</ant.pkg>
+        <ant.url>https://dlcdn.apache.org//ant/binaries/${ant.pkg}</ant.url>
+        <maven.pkg>apache-maven-3.8.5-bin.tar.gz</maven.pkg>
+        <maven.url>https://dlcdn.apache.org/maven/maven-3/3.8.5/binaries/${maven.pkg}</maven.url>
+        <mysql.pkg>mysql80-community-release-el8-3.noarch.rpm</mysql.pkg>
+        <mysql.url>https://dev.mysql.com/get/${mysql.pkg}</mysql.url>
+        <mongo.pkg>mysql80-community-release-el8-3.noarch.rpm</mongo.pkg>
+        <mongo.url>https://dev.mysql.com/get/${mysql.pkg}</mongo.url>
+        <install.root>/opt</install.root>
+        <install.scripts>${install.root}/bin</install.scripts>
+        <install.java>${install.root}/java</install.java>
+        <!-- Jenkins user name and UID -->
+        <build.user.name>jenkins</build.user.name>
+        <build.user.uid>1001560000</build.user.uid>
+        <!-- Jenkins user grup and GID -->
+        <build.group.name>jenkins</build.group.name>
+        <build.group.gid>1001560000</build.group.gid>
+        <!-- Jenkins user shell -->
+        <build.user.shell>/bin/bash</build.user.shell>
+        <build.user.comment>Jenkins user</build.user.comment>
+    </properties>
+
+    <build>
+
+        <resources>
+            <resource>
+                <targetPath>${project.build.directory}/image</targetPath>
+                <filtering>true</filtering>
+                <directory>${project.basedir}/image</directory>
+                <includes>
+                    <include>Dockerfile</include>
+                    <include>install.sh</include>
+                </includes>
+            </resource>
+            <resource>
+                <targetPath>${project.build.directory}/image</targetPath>
+                <filtering>false</filtering>
+                <directory>${project.basedir}/scripts</directory>
+                <includes>
+                    <include>*.sh</include>
+                </includes>
+            </resource>
+        </resources>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.2.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.0.0-M5</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.2.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>3.0.0-M1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>3.0.0-M2</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.googlecode.maven-download-plugin</groupId>
+                    <artifactId>download-maven-plugin</artifactId>
+                    <version>1.6.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>io.fabric8</groupId>
+                    <artifactId>docker-maven-plugin</artifactId>
+                    <version>0.39.1</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>com.googlecode.maven-download-plugin</groupId>
+                <artifactId>download-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>jdk</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>${java.url}</url>
+                            <outputFileName>${java.pkg}</outputFileName>
+                            <outputDirectory>${project.build.directory}/image</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>ant</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>${ant.url}</url>
+                            <outputFileName>${ant.pkg}</outputFileName>
+                            <outputDirectory>${project.build.directory}/image</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>maven</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>${maven.url}</url>
+                            <outputFileName>${maven.pkg}</outputFileName>
+                            <outputDirectory>${project.build.directory}/image</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>mysql</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>${mysql.url}</url>
+                            <outputFileName>${mysql.pkg}</outputFileName>
+                            <outputDirectory>${project.build.directory}/image</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>default</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <configuration>
+                    <images>
+                        <image>
+                            <name>${docker.image}:${project.version}</name>
+                            <build>
+                                <contextDir>${project.build.directory}/image</contextDir>
+                                <buildOptions>
+                                    <squash/>
+                                </buildOptions>
+                            </build>
+                        </image>
+                    </images>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>build-image</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>deploy-image</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>push</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>clean-image</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>remove</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Disable resources -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-testResources</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Disable compiler -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-compile</id>
+                        <phase>none</phase>
+                    </execution>
+                    <execution>
+                        <id>default-testCompile</id>
+                        <phase>none</phase>
+                    </execution>
+                    <execution>
+                        <id>default-clean</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Disable tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-test</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Disable packaging -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-jar</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Disable installation -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-install</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Disable installation -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-deploy</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+
+    </build>
+
+</project>
