@@ -6,7 +6,7 @@
 # terms of the Eclipse Distribution License v. 1.0, which is available at
 # http://www.eclipse.org/org/documents/edl-v10.php.
 #
-# SPDX-License-Identifier: BSD-3-Clause
+# SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
 
 # This script file is processed with Maven resource filtering
 # so variables expansion must be used with respect to defined
