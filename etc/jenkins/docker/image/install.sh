@@ -108,10 +108,15 @@ ROOT_PWD=`cat /var/log/mysqld.log | grep 'A temporary password is generated for 
 echo "
   ALTER USER 'root'@'localhost' IDENTIFIED BY '${db.root.pwd}';
   CREATE DATABASE ${mysql.database};
-  CREATE USER '${db.user}'@'*' IDENTIFIED BY '${db.pwd}';
-  GRANT ALL PRIVILEGES ON ${mysql.database}.* TO '${db.user}'@'*';
   FLUSH PRIVILEGES;
 " | mysql -v -u root --connect-expired-password --password="${ROOT_PWD}"
+if [ '${db.user}' != 'root' ]; then
+  echo "
+    CREATE USER '${db.user}'@'localhost' IDENTIFIED BY '${db.pwd}';
+    GRANT ALL PRIVILEGES ON ${mysql.database}.* TO '${db.user}'@'localhost';
+    FLUSH PRIVILEGES;
+  " | mysql -v -u root --password='${db.root.pwd}'
+fi
 /opt/bin/mysql-stop.sh
 echo '--------------------------------------------------------------------------------'
 
