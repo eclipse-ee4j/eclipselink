@@ -18,15 +18,18 @@
     <description>Docker image used in Eclipse Foundation build infrastructure to build EclipseLink and run LRG tests</description>
     <groupId>org.eclipse.persistence.build</groupId>
     <artifactId>org.eclipse.persistence.build.docker</artifactId>
-    <!-- Version is used as docker image tag -->
-    <version>2.0.0-EA2</version>
+    <packaging>pom</packaging>
+    <!-- Version is used as target docker image tag -->
+    <version>2.0.0-EA3</version>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <docker.image>tkraus/el-build</docker.image>
+        <!-- Source docker image -->
         <docker.source>oraclelinux:8</docker.source>
-        <java.pkg>openjdk-17.0.2_linux-x64_bin.tar.gz</java.pkg>
-        <java.url>https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/${java.pkg}</java.url>
+        <!-- Target docker image name-->
+        <docker.image>tkraus/el-build</docker.image>
+        <!-- Packages to be installed -->
+        <java.pkg>jdk-17.0.2_linux-x64_bin.tar.gz</java.pkg>
+        <java.url>https://download.oracle.com/java/17/archive/${java.pkg}</java.url>
         <ant.pkg>apache-ant-1.10.12-bin.tar.gz</ant.pkg>
         <ant.url>https://dlcdn.apache.org//ant/binaries/${ant.pkg}</ant.url>
         <maven.pkg>apache-maven-3.8.5-bin.tar.gz</maven.pkg>
@@ -35,36 +38,44 @@
         <mysql.url>https://dev.mysql.com/get/${mysql.pkg}</mysql.url>
         <mongo.pkg>mysql80-community-release-el8-3.noarch.rpm</mongo.pkg>
         <mongo.url>https://dev.mysql.com/get/${mysql.pkg}</mongo.url>
+        <!-- Installation directory structure -->
         <install.root>/opt</install.root>
         <install.scripts>${install.root}/bin</install.scripts>
         <install.java>${install.root}/java</install.java>
         <!-- Jenkins user name and UID -->
         <build.user.name>jenkins</build.user.name>
         <build.user.uid>1001560000</build.user.uid>
-        <!-- Jenkins user grup and GID -->
+        <!-- Jenkins user group and GID -->
         <build.group.name>jenkins</build.group.name>
         <build.group.gid>1001560000</build.group.gid>
-        <!-- Jenkins user shell -->
+        <!-- Jenkins additional user attributes -->
         <build.user.shell>/bin/bash</build.user.shell>
         <build.user.comment>Jenkins user</build.user.comment>
+        <!-- Skip install and deploy plugins -->
+        <maven.install.skip>true</maven.install.skip>
+        <maven.deploy.skip>true</maven.deploy.skip>
+        <!-- MySQL database setup properties file -->
+        <mysql.database>ecltests</mysql.database>
+        <mysql.properties.file>${project.basedir}/../../el-test.mysql.properties</mysql.properties.file>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <build>
 
         <resources>
             <resource>
+                <directory>${project.basedir}/image</directory>
                 <targetPath>${project.build.directory}/image</targetPath>
                 <filtering>true</filtering>
-                <directory>${project.basedir}/image</directory>
                 <includes>
                     <include>Dockerfile</include>
                     <include>install.sh</include>
                 </includes>
             </resource>
             <resource>
+                <directory>${project.basedir}/scripts</directory>
                 <targetPath>${project.build.directory}/image</targetPath>
                 <filtering>false</filtering>
-                <directory>${project.basedir}/scripts</directory>
                 <includes>
                     <include>*.sh</include>
                 </includes>
@@ -79,31 +90,6 @@
                     <version>3.2.0</version>
                 </plugin>
                 <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.0.0-M5</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.2.0</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-install-plugin</artifactId>
-                    <version>3.0.0-M1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-deploy-plugin</artifactId>
-                    <version>3.0.0-M2</version>
-                </plugin>
-                <plugin>
                     <groupId>com.googlecode.maven-download-plugin</groupId>
                     <artifactId>download-maven-plugin</artifactId>
                     <version>1.6.1</version>
@@ -113,10 +99,30 @@
                     <artifactId>docker-maven-plugin</artifactId>
                     <version>0.39.1</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>properties-maven-plugin</artifactId>
+                    <version>1.1.0</version>
+                </plugin>
             </plugins>
         </pluginManagement>
 
         <plugins>
+            <!-- Enable resources processing -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>docker</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Packages download -->
             <plugin>
                 <groupId>com.googlecode.maven-download-plugin</groupId>
                 <artifactId>download-maven-plugin</artifactId>
@@ -175,6 +181,7 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- Docker image lifecycle -->
             <plugin>
                 <groupId>io.fabric8</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
@@ -215,77 +222,20 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- Disable resources -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>default-testResources</id>
-                        <phase>none</phase>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- Disable compiler -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>default-compile</id>
-                        <phase>none</phase>
-                    </execution>
-                    <execution>
-                        <id>default-testCompile</id>
-                        <phase>none</phase>
-                    </execution>
-                    <execution>
-                        <id>default-clean</id>
-                        <phase>none</phase>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- Disable tests -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>default-test</id>
-                        <phase>none</phase>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- Disable packaging -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>default-jar</id>
-                        <phase>none</phase>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- Disable installation -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>default-install</id>
-                        <phase>none</phase>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- Disable installation -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>default-deploy</id>
-                        <phase>none</phase>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>read-project-properties</goal>
+                        </goals>
+                        <configuration>
+                            <files>
+                                <file>${mysql.properties.file}</file>
+                            </files>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

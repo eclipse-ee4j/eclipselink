@@ -101,6 +101,20 @@ echo '--------------------------------------------------------------------------
 cat /var/log/mysqld.log
 echo '--------------------------------------------------------------------------------'
 
+print "Setting up MySQL 8 for tests"
+echo '--------------------------------------------------------------------------------'
+/opt/bin/mysql-start.sh
+ROOT_PWD=`cat /var/log/mysqld.log | grep 'A temporary password is generated for root' | sed -e 's/^.*localhost: *//'`
+echo "
+  ALTER USER 'root'@'localhost' IDENTIFIED BY '${db.root.pwd}';
+  CREATE DATABASE ${mysql.database};
+  CREATE USER '${db.user}'@'*' IDENTIFIED BY '${db.pwd}';
+  GRANT ALL PRIVILEGES ON ${mysql.database}.* TO '${db.user}'@'*';
+  FLUSH PRIVILEGES;
+" | mysql -v -u root --connect-expired-password --password="${ROOT_PWD}"
+/opt/bin/mysql-stop.sh
+echo '--------------------------------------------------------------------------------'
+
 print "Configuring Mongo DB 3 yum repository"
 echo '--------------------------------------------------------------------------------'
 echo '[Mongodb]
@@ -111,7 +125,6 @@ enabled=1
 gpgkey=https://www.mongodb.org/static/pgp/server-3.6.asc
 ' > /etc/yum.repos.d/mongodb.repo
 chmod -v u=rw,og=r /etc/yum.repos.d/mongodb.repo
-
 echo '--------------------------------------------------------------------------------'
 print "Installing Mongo DB 3"
 echo '--------------------------------------------------------------------------------'

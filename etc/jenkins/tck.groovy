@@ -47,7 +47,7 @@ spec:
         memory: "1Gi"
         cpu: "500m"
   - name: eclipselink-tck-run
-    image:  tkraus/el-build:2.0.0-EA2
+    image:  tkraus/el-build:2.0.0-EA3
     resources:
       limits:
         memory: "3Gi"
