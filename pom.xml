@@ -167,7 +167,7 @@
         <test.xml.parser>org.eclipse.persistence.platform.xml.jaxp.JAXPParser</test.xml.parser>
 
         <!--Eclipse Dependencies version-->
-        <eclipselink.asm.version>9.2.0</eclipselink.asm.version>
+        <eclipselink.asm.version>9.3.0</eclipselink.asm.version>
         <activation.version>2.0.1</activation.version>
         <annotation.version>2.0.0</annotation.version>
         <cdi.version>3.0.0</cdi.version>
@@ -204,7 +204,7 @@
         <hamcrest.version>1.3</hamcrest.version>
         <!-- CQ #23048 -->
         <hibernate.version>7.0.1.Final</hibernate.version>
-        <checkstyle.version>8.40</checkstyle.version>
+        <checkstyle.version>10.1</checkstyle.version>
         <!-- CQ #23049 -->
         <jgroups.version>4.2.11.Final</jgroups.version>
         <jmh.version>1.27</jmh.version>
