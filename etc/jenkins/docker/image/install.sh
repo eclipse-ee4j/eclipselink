@@ -103,6 +103,10 @@ echo '--------------------------------------------------------------------------
 
 print "Setting up MySQL 8 for tests"
 echo '--------------------------------------------------------------------------------'
+#Addtional permanent settings in configuration file
+#To disable check for some stored functions
+echo 'log_bin_trust_function_creators = 1
+' >> /etc/my.cnf
 /opt/bin/mysql-start.sh
 ROOT_PWD=`cat /var/log/mysqld.log | grep 'A temporary password is generated for root' | sed -e 's/^.*localhost: *//'`
 echo "
