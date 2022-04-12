@@ -1,4 +1,4 @@
-// Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2020, 2022 Oracle and/or its affiliates. All rights reserved.
 //
 // This program and the accompanying materials are made available under the
 // terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -57,18 +57,18 @@ spec:
   - name: jnlp
     resources:
       limits:
-        memory: "1Gi"
+        memory: "2Gi"
         cpu: "1"
       requests:
-        memory: "1Gi"
+        memory: "2Gi"
         cpu: "500m"
   - name: el-build
     resources:
       limits:
-        memory: "2Gi"
+        memory: "4Gi"
         cpu: "2"
       requests:
-        memory: "2Gi"
+        memory: "4Gi"
         cpu: "1.5"
     image: tkraus/el-build:1.1.9
     volumeMounts:
