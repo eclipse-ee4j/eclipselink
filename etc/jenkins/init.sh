@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -23,7 +23,7 @@ wget -nc https://repo1.maven.org/maven2/org/jmockit/jmockit/1.35/jmockit-1.35.ja
 wget -nc https://repo1.maven.org/maven2/org/jboss/logging/jboss-logging/3.4.1.Final/jboss-logging-3.4.1.Final.jar -O $HOME/extension.lib.external/jboss-logging-3.4.1.Final.jar
 wget -nc https://repo1.maven.org/maven2/org/glassfish/javax.el/3.0.1-b08/javax.el-3.0.1-b08.jar -O $HOME/extension.lib.external/javax.el-3.0.1-b08.jar
 wget -nc https://repo1.maven.org/maven2/com/fasterxml/classmate/1.5.1/classmate-1.5.1.jar -O $HOME/extension.lib.external/classmate-1.5.1.jar
-wget -nc https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.48/mysql-connector-java-5.1.48.jar -O $HOME/extension.lib.external/mysql-connector-java-5.1.48.jar
+wget -nc https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.28/mysql-connector-java-8.0.28.jar -O $HOME/extension.lib.external/mysql-connector-java-8.0.28.jar
 wget -nc https://archive.apache.org/dist/ant/binaries/apache-ant-1.10.7-bin.tar.gz -O $HOME/extension.lib.external/apache-ant-1.10.7-bin.tar.gz
 wget -nc https://archive.apache.org/dist/maven/ant-tasks/2.1.3/binaries/maven-ant-tasks-2.1.3.jar -O $HOME/extension.lib.external/mavenant/maven-ant-tasks-2.1.3.jar
 wget -nc https://download.jboss.org/wildfly/15.0.1.Final/wildfly-15.0.1.Final.tar.gz -O $HOME/extension.lib.external/wildfly-15.0.1.Final.tar.gz
@@ -38,8 +38,8 @@ tar -x -z -C $HOME/extension.lib.external -f $HOME/extension.lib.external/apache
 #PREPARE build.properties FILE
 echo "extensions.depend.dir=$HOME/extension.lib.external" >> $HOME/build.properties
 echo "junit.lib=$HOME/extension.lib.external/junit-4.12.jar:$HOME/extension.lib.external/hamcrest-core-1.3.jar" >> $HOME/build.properties
-echo "jdbc.driver.jar=$HOME/extension.lib.external/mysql-connector-java-5.1.48.jar" >> $HOME/build.properties
-echo 'db.driver=com.mysql.jdbc.Driver' >> $HOME/build.properties
+echo "jdbc.driver.jar=$HOME/extension.lib.external/mysql-connector-java-8.0.28.jar" >> $HOME/build.properties
+echo 'db.driver=com.mysql.cj.jdbc.Driver' >> $HOME/build.properties
 echo "db.url=$TEST_DB_URL" >> $HOME/build.properties
 echo "db.user=$TEST_DB_USERNAME" >> $HOME/build.properties
 echo "db.pwd=$TEST_DB_PASSWORD" >> $HOME/build.properties

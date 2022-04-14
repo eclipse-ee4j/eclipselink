@@ -1,4 +1,4 @@
-// Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
 //
 // This program and the accompanying materials are made available under the
 // terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -75,7 +75,7 @@ spec:
         memory: "12Gi"
         cpu: "6"
         cpu: "5.5"
-    image: tkraus/el-build:1.1.9
+    image: tkraus/el-build:2.0.0
     volumeMounts:
     - name: tools
       mountPath: /opt/tools
