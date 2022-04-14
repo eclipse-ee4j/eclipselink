@@ -211,7 +211,7 @@
         <junit.version>4.13.2</junit.version>
         <!-- CQ #21138 -->
         <mongodb.version>3.12.7</mongodb.version>
-        <mysql.version>8.0.27</mysql.version>
+        <mysql.version>8.0.28</mysql.version>
         <mssql.version>9.2.0.jre8</mssql.version>
         <pgsql.version>42.2.18</pgsql.version>
         <!-- CQ #21139, 21140 -->
