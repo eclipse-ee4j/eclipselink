@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -117,7 +118,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
      * @return the row count.
      */
     @Override
-    public Integer executeNoSelect() throws DatabaseException {
+    public Object executeNoSelect() throws DatabaseException {
         // Prepare the calls if not already set (prepare may not have had the modify row).
         if ((this.call == null) && (!hasMultipleCalls())) {
             prepareExecuteNoSelect();

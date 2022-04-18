@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -286,8 +286,20 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      * @return the row count.
      */
     @Override
-    public Integer executeNoSelect() throws DatabaseException {
+    public Object executeNoSelect() throws DatabaseException {
+        if(((DatabaseCall)this.call).shouldReturnGeneratedKeys()) {
+            return generateKeysExecuteNoSelect();
+        }
         return executeNoSelectCall();
+    }
+
+    /**
+     * Execute a non selecting call.
+     * @exception  DatabaseException - an error has occurred on the database.
+     * @return the row count.
+     */
+    public DatabaseCall generateKeysExecuteNoSelect() throws DatabaseException {
+        return (DatabaseCall)executeCall();
     }
 
     /**
@@ -411,7 +423,11 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
                         updateObjectAndRowWithReturnRow(returnFields, index == 0);
                     }
                     if ((index == 0) && usesSequencing && shouldAcquireValueAfterInsert) {
-                        updateObjectAndRowWithSequenceNumber();
+                        if(result instanceof DatabaseCall) {
+                            updateObjectAndRowWithSequenceNumber((DatabaseCall) result);
+                        } else {
+                            updateObjectAndRowWithSequenceNumber();
+                        }
                     }
                 }
             }
@@ -425,7 +441,11 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
                 updateObjectAndRowWithReturnRow(returnFields, true);
             }
             if (usesSequencing && shouldAcquireValueAfterInsert) {
-                updateObjectAndRowWithSequenceNumber();
+                if(result instanceof DatabaseCall) {
+                    updateObjectAndRowWithSequenceNumber((DatabaseCall) result);
+                } else {
+                    updateObjectAndRowWithSequenceNumber();
+                }
             }
         }
 

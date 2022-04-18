@@ -76,6 +76,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         this.cursorCode = -100008;
         this.shouldBindPartialParameters = true;
         this.pingSQL = "VALUES(1)";
+        this.supportsReturnGeneratedKeys = true;
     }
 
     @Override
