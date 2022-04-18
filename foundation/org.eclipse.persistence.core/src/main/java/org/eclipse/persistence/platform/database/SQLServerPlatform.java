@@ -65,6 +65,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         super();
         this.pingSQL = "SELECT 1";
         this.storedProcedureTerminationToken = " go";
+        this.supportsReturnGeneratedKeys = true;
     }
 
     @Override

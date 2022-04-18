@@ -1889,6 +1889,13 @@ public class PersistenceUnitProperties {
      *
      * {@code
      *  <property name="eclipselink.target-database-properties" value="shouldBindLiterals=true"/>}
+     * <p>
+     * <b> Example 2 : </b> To change the value of
+     * DatabasePlatform.supportsReturnGeneratedKeys via configuration, provide the
+     * following :<br><br>
+     * 
+     * {@code
+     *  <property name="eclipselink.target-database-properties" value="supportsReturnGeneratedKeys=true"/>}
      * @see TargetDatabase
      * @see DatabasePlatform
      */

@@ -88,6 +88,7 @@ public class MySQLPlatform extends DatabasePlatform {
         this.pingSQL = "SELECT 1";
         this.startDelimiter = "`";
         this.endDelimiter = "`";
+        this.supportsReturnGeneratedKeys = true;
     }
 
     @Override
