@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -14,6 +14,8 @@
 // Contributors:
 //     Gordon Yorke - Initial development
 //
+//     04/19/2022: Jody Grassel
+//       - Issue 579726: CriteriaBuilder neg() only returns Integer type, instead of it's argument expression type.
 package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.io.Serializable;
@@ -999,7 +1001,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      */
     @Override
     public <N extends Number> Expression<N> neg(Expression<N> x){
-        return new FunctionExpressionImpl(this.metamodel, ClassConstants.INTEGER, ExpressionMath.negate(((InternalSelection)x).getCurrentNode()), buildList(x), "neg");
+        return new FunctionExpressionImpl(this.metamodel, (Class<N>) x.getJavaType(), ExpressionMath.negate(((InternalSelection)x).getCurrentNode()), buildList(x), "neg");
     }
 
     /**
