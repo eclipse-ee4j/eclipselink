@@ -65,36 +65,40 @@ public class TestProcessor {
     @Test
     public void testProc() throws Exception {
         testProc("testProc3030", PXML30, OXML30);
-        testProc("testProc3031", PXML30, OXML31);
+        testProc("testProc3131", PXML31, OXML31);
     }
 
     @Test
     public void testGenerateComment() throws Exception {
         testGenerateComment("testGenerateComment3030", PXML30, OXML30);
-        testGenerateComment("testGenerateComment3031", PXML30, OXML31);
+        testGenerateComment("testGenerateComment3131", PXML31, OXML31);
     }
 
     @Test
     public void testGenerate() throws Exception {
         testGenerate("testGenerate3030", PXML30, OXML30);
-        testGenerate("testGenerate3031", PXML30, OXML31);
+        testGenerate("testGenerate3131", PXML31, OXML31);
     }
 
     @Test
     public void testTypeUse() throws Exception {
         testTypeUse("testTypeUse3030", PXML30, OXML30);
-        testTypeUse("testTypeUse3031", PXML30, OXML31);
+        testTypeUse("testTypeUse3131", PXML31, OXML31);
     }
 
     @Test
     public void testProcessorLoggingOffFromCmdLine() throws Exception {
-        verifyLogging("testProcessorLoggingOffFromCmdLine", PXML30, false,
+        verifyLogging("testProcessorLoggingOffFromCmdLine30", PXML30, false,
+                "-Aeclipselink.logging.level.processor=OFF");
+        verifyLogging("testProcessorLoggingOffFromCmdLine31", PXML31, false,
                 "-Aeclipselink.logging.level.processor=OFF");
     }
 
     @Test
     public void testGlobalLoggingOffFromCmdLine() throws Exception {
-        verifyLogging("testGlobalLoggingOffFromCmdLine", PXML30, false,
+        verifyLogging("testGlobalLoggingOffFromCmdLine30", PXML30, false,
+                "-Aeclipselink.logging.level=OFF");
+        verifyLogging("testGlobalLoggingOffFromCmdLine31", PXML31, false,
                 "-Aeclipselink.logging.level=OFF");
     }
 
@@ -116,13 +120,17 @@ public class TestProcessor {
 
     @Test
     public void testProcessorLoggingFinestFromCmdLine() throws Exception {
-        verifyLogging("testProcessorLoggingFinestFromCmdLine", PXML30, true,
+        verifyLogging("testProcessorLoggingFinestFromCmdLine30", PXML30, true,
+                "-Aeclipselink.logging.level.processor=FINEST");
+        verifyLogging("testProcessorLoggingFinestFromCmdLine31", PXML31, true,
                 "-Aeclipselink.logging.level.processor=FINEST");
     }
 
     @Test
     public void testGlobalLoggingFinestFromCmdLine() throws Exception {
-        verifyLogging("testGlobalLoggingFinestFromCmdLine", PXML30, true,
+        verifyLogging("testGlobalLoggingFinestFromCmdLine30", PXML30, true,
+                "-Aeclipselink.logging.level=FINEST");
+        verifyLogging("testGlobalLoggingFinestFromCmdLine31", PXML31, true,
                 "-Aeclipselink.logging.level=FINEST");
     }
 
@@ -347,6 +355,19 @@ public class TestProcessor {
             "  xsi:schemaLocation=\"https://jakarta.ee/xml/ns/persistence\n" +
             "    https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd\"\n" +
             "  version=\"3.0\">\n" +
+            "     <persistence-unit name=\"sample-pu\" transaction-type=\"RESOURCE_LOCAL\">\n" +
+            "          <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>\n" +
+            "          <exclude-unlisted-classes>false</exclude-unlisted-classes>\n" +
+            "          <properties>\n" +
+            "          </properties>\n" +
+            "     </persistence-unit>\n" +
+            "</persistence>";
+
+    private static final String PXML31 = "<persistence xmlns=\"https://jakarta.ee/xml/ns/persistence\"\n" +
+            "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+            "  xsi:schemaLocation=\"https://jakarta.ee/xml/ns/persistence\n" +
+            "    https://jakarta.ee/xml/ns/persistence/persistence_3_1.xsd\"\n" +
+            "  version=\"3.1\">\n" +
             "     <persistence-unit name=\"sample-pu\" transaction-type=\"RESOURCE_LOCAL\">\n" +
             "          <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>\n" +
             "          <exclude-unlisted-classes>false</exclude-unlisted-classes>\n" +
