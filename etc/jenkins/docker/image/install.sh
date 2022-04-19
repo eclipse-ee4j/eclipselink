@@ -42,7 +42,7 @@ useradd -u "${JENKINS_UID}"       -g "${JENKINS_GID}" \
 print "Updating the system"
 echo '--------------------------------------------------------------------------------'
 yum -y update
-yum -y install git
+yum -y install git tar wget
 echo '--------------------------------------------------------------------------------'
 
 print "Configuring Java tools in ${INSTALL_JAVA}"
