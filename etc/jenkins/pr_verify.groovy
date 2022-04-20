@@ -129,7 +129,7 @@ spec:
                         echo "junit.lib=$HOME/extension.lib.external/junit-4.12.jar:$HOME/extension.lib.external/hamcrest-core-1.3.jar" >> $HOME/build.properties
                         echo "jdbc.driver.jar=$HOME/extension.lib.external/mysql-connector-java.jar" >> $HOME/build.properties
                         echo 'db.driver=com.mysql.cj.jdbc.Driver' >> $HOME/build.properties
-                        echo 'db.url=jdbc:mysql://localhost/ecltests?useSSL=false&#38;allowPublicKeyRetrieval=true' >> $HOME/build.properties
+                        echo 'db.url=jdbc:mysql://localhost/ecltests?allowPublicKeyRetrieval=true' >> $HOME/build.properties
                         echo 'db.user=root' >> $HOME/build.properties
                         echo 'db.pwd=root' >> $HOME/build.properties
                         echo 'db.platform=org.eclipse.persistence.platform.database.MySQLPlatform' >> $HOME/build.properties
