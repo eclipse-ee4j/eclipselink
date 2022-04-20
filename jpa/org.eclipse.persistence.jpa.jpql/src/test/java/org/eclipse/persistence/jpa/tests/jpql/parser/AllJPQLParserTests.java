@@ -31,6 +31,7 @@ import org.junit.runners.Suite.SuiteClasses;
     AllJPQLParserTests1_0.class,
     AllJPQLParserTests2_0.class,
     AllJPQLParserTests2_1.class,
+    AllJPQLParserTests3_1.class,
     AllEclipseLinkJPQLParserTests.class,
     AllEclipseLinkJPQLParserTests2_1.class,
     AllEclipseLinkJPQLParserTests2_4.class,

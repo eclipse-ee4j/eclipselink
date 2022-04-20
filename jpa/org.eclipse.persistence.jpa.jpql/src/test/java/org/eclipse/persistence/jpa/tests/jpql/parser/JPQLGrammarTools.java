@@ -28,6 +28,9 @@ import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar1_0;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_0;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_1;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_2;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar3_0;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar3_1;
 
 /**
  * This utility class provides an easy way of creating a list of {@link JPQLGrammar}, which is
@@ -180,6 +183,11 @@ public final class JPQLGrammarTools {
                     JPQLGrammar2_1.instance(),
                     EclipseLinkJPQLGrammar2_4.instance(),
                     EclipseLinkJPQLGrammar2_5.instance()
+                };
+            }
+            case VERSION_3_1: {
+                return new JPQLGrammar[] {
+                        JPQLGrammar3_1.instance()
                 };
             }
             default: {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2006, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -21,6 +21,9 @@
 //     05/11/2018-2.7 Will Dazey
 //       - 534515: Incorrect return type set for CASE functions
 //     IBM - Bug 537795: CASE THEN and ELSE scalar expression Constants should not be casted to CASE operand type
+//     04/21/2022: Tomas Kraus
+//       - Issue 1474: Update JPQL Grammar for JPA 2.2, 3.0 and 3.1
+
 package org.eclipse.persistence.internal.jpa.jpql;
 
 import java.sql.Date;
@@ -106,6 +109,7 @@ import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LowerExpression;
+import org.eclipse.persistence.jpa.jpql.parser.MathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.MaxFunction;
 import org.eclipse.persistence.jpa.jpql.parser.MinFunction;
 import org.eclipse.persistence.jpa.jpql.parser.ModExpression;
@@ -1301,6 +1305,30 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 
         // Set the expression type
         type[0] = String.class;
+    }
+
+    @Override
+    public void visit(MathExpression.Ceiling expression) {
+
+        // First create the expression from the encapsulated expression
+        expression.getExpression().accept(this);
+
+        // Now create the CEILING expression
+        queryExpression = ExpressionMath.ceil(queryExpression);
+
+        // Note: The type will be calculated when traversing the CEILING's expression
+    }
+
+    @Override
+    public void visit(MathExpression.Floor expression) {
+
+        // First create the expression from the encapsulated expression
+        expression.getExpression().accept(this);
+
+        // Now create the FLOOR expression
+        queryExpression = ExpressionMath.floor(queryExpression);
+
+        // Note: The type will be calculated when traversing the FLOOR's expression
     }
 
     @Override

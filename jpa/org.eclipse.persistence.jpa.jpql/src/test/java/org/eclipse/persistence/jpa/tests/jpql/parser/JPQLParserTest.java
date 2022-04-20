@@ -83,6 +83,7 @@ import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LogicalExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LowerExpression;
+import org.eclipse.persistence.jpa.jpql.parser.MathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.MaxFunction;
 import org.eclipse.persistence.jpa.jpql.parser.MinFunction;
 import org.eclipse.persistence.jpa.jpql.parser.ModExpression;
@@ -133,7 +134,6 @@ import org.eclipse.persistence.jpa.jpql.parser.WhenClause;
 import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 import org.eclipse.persistence.jpa.tests.jpql.JPQLBasicTest;
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
-import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLQueryBuilder.*;
 import static org.junit.Assert.*;
@@ -1745,6 +1745,23 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
         }
     }
 
+    public static final class CeilingExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+
+        protected CeilingExpressionTester(ExpressionTester expression) {
+            super(expression);
+        }
+
+        @Override
+        protected Class<? extends AbstractSingleEncapsulatedExpression> expressionType() {
+            return MathExpression.Ceiling.class;
+        }
+
+        @Override
+        protected String identifier() {
+            return CEILING;
+        }
+    }
+
     public static final class CoalesceExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
 
         protected CoalesceExpressionTester(ExpressionTester expression) {
@@ -2595,6 +2612,23 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             }
 
             super.toStringEncapsulatedExpression(sb);
+        }
+    }
+
+    public static final class FloorExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+
+        protected FloorExpressionTester(ExpressionTester expression) {
+            super(expression);
+        }
+
+        @Override
+        protected Class<? extends AbstractSingleEncapsulatedExpression> expressionType() {
+            return MathExpression.Floor.class;
+        }
+
+        @Override
+        protected String identifier() {
+            return FLOOR;
         }
     }
 

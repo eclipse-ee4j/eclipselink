@@ -28,7 +28,7 @@ import org.eclipse.persistence.jpa.jpql.JPAVersion;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @see JPQLGrammar2_1
+ * @see JPQLGrammar3_1
  * @see DefaultJPQLGrammar
  * @see DefaultEclipseLinkJPQLGrammar
  *
@@ -57,7 +57,7 @@ public final class DefaultJPQLGrammar implements JPQLGrammar {
      * @return The singleton instance of this {@link DefaultJPQLGrammar}
      */
     public static JPQLGrammar instance() {
-        return JPQLGrammar2_1.instance();
+        return JPQLGrammar3_1.instance();
     }
 
     @Override

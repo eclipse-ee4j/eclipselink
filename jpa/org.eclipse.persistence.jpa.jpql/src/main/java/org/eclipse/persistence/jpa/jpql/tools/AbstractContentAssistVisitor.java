@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,9 +12,10 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-//
 //     09/02/2019-3.0 Alexandre Jacob
 //        - 527415: Fix code when locale is tr, az or lt
+//     04/21/2022: Tomas Kraus
+//       - Issue 1474: Update JPQL Grammar for JPA 2.2, 3.0 and 3.1
 package org.eclipse.persistence.jpa.jpql.tools;
 
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
+
 import org.eclipse.persistence.jpa.jpql.AbstractValidator.JPQLQueryBNFValidator;
 import org.eclipse.persistence.jpa.jpql.Assert;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
@@ -110,6 +112,7 @@ import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LogicalExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LowerExpression;
+import org.eclipse.persistence.jpa.jpql.parser.MathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.MaxFunction;
 import org.eclipse.persistence.jpa.jpql.parser.MinFunction;
 import org.eclipse.persistence.jpa.jpql.parser.ModExpression;
@@ -170,7 +173,87 @@ import org.eclipse.persistence.jpa.jpql.tools.utility.filter.AndFilter;
 import org.eclipse.persistence.jpa.jpql.utility.CollectionTools;
 import org.eclipse.persistence.jpa.jpql.utility.filter.Filter;
 import org.eclipse.persistence.jpa.jpql.utility.filter.NullFilter;
-import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
+
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.ALL;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.AND;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.ANY;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.AS;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.ASC;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.BETWEEN;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.BOTH;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.CASE;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.COALESCE;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.CONCAT;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.CURRENT_DATE;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.CURRENT_TIME;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.CURRENT_TIMESTAMP;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.DELETE_FROM;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.DESC;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.DIFFERENT;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.DISTINCT;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.DOT;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.ELSE;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.END;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.EQUAL;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.ESCAPE;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.EXISTS;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.FALSE;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.FROM;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.GREATER_THAN;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.GREATER_THAN_OR_EQUAL;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.GROUP_BY;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.HAVING;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.IN;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.INNER;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.INNER_JOIN;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.INNER_JOIN_FETCH;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.IS;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.IS_EMPTY;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.IS_NOT_EMPTY;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.IS_NOT_NULL;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.IS_NULL;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.JOIN;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.JOIN_FETCH;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.LEADING;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.LEFT;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.LEFT_JOIN;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.LEFT_JOIN_FETCH;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.LEFT_OUTER_JOIN;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.LEFT_OUTER_JOIN_FETCH;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.LIKE;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.LOCATE;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.LOWER_THAN;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.LOWER_THAN_OR_EQUAL;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.MEMBER;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.MEMBER_OF;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.MOD;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.NEW;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.NOT;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.NOT_BETWEEN;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.NOT_EXISTS;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.NOT_IN;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.NOT_LIKE;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.NOT_MEMBER;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.NOT_MEMBER_OF;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.NULL;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.NULLIF;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.OF;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.ON;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.OR;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.ORDER_BY;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.PLUS;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.SELECT;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.SET;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.SOME;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.SUBSTRING;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.THEN;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.TRAILING;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.TREAT;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.TRIM;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.TRUE;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.UPDATE;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.WHEN;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.WHERE;
 
 /**
  * The visitor provides support for finding the possible proposals within a JPQL query at a certain
@@ -3226,6 +3309,18 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
     @Override
     public void visit(LowerExpression expression) {
+        super.visit(expression);
+        visitSingleEncapsulatedExpression(expression, IdentificationVariableType.ALL);
+    }
+
+    @Override
+    public void visit(MathExpression.Ceiling expression) {
+        super.visit(expression);
+        visitSingleEncapsulatedExpression(expression, IdentificationVariableType.ALL);
+    }
+
+    @Override
+    public void visit(MathExpression.Floor expression) {
         super.visit(expression);
         visitSingleEncapsulatedExpression(expression, IdentificationVariableType.ALL);
     }
@@ -7658,6 +7753,16 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
         @Override
         public void visit(LowerExpression expression) {
+            visitAbstractSingleEncapsulatedExpression(expression);
+        }
+
+        @Override
+        public void visit(MathExpression.Ceiling expression) {
+            visitAbstractSingleEncapsulatedExpression(expression);
+        }
+
+        @Override
+        public void visit(MathExpression.Floor expression) {
             visitAbstractSingleEncapsulatedExpression(expression);
         }
 

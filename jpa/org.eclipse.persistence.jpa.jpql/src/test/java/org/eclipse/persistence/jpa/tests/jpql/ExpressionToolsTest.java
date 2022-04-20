@@ -49,11 +49,16 @@ public final class ExpressionToolsTest {
     }
 
     private JPQLExpression parse(String jpqlQuery) {
-        return JPQLQueryBuilder.buildQuery(
-            jpqlQuery,
-            DefaultJPQLGrammar.instance(),
-            true
-        );
+        try {
+            return JPQLQueryBuilder.buildQuery(
+                    jpqlQuery,
+                    DefaultJPQLGrammar.instance(),
+                    true
+            );
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        }
     }
 
     private JPQLExpression parse(String jpqlQuery, JPQLQueryStringFormatter formatter) {

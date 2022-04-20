@@ -39,6 +39,9 @@ import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar1_0;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_0;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_1;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_2;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar3_0;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar3_1;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -225,24 +228,22 @@ public final class HermesParser implements JPAQueryBuilder {
      * of EclipseLink
      */
     private JPQLGrammar jpqlGrammar() {
-
-        if (validationLevel == ParserValidationType.EclipseLink) {
-            return DefaultEclipseLinkJPQLGrammar.instance();
+        switch(validationLevel) {
+            case ParserValidationType.JPA10:
+                return JPQLGrammar1_0.instance();
+            case ParserValidationType.JPA20:
+                return JPQLGrammar2_0.instance();
+            case ParserValidationType.JPA21:
+                return JPQLGrammar2_1.instance();
+            case ParserValidationType.JPA22:
+                return JPQLGrammar2_2.instance();
+            case ParserValidationType.JPA30:
+                return JPQLGrammar3_0.instance();
+            case ParserValidationType.JPA31:
+                return JPQLGrammar3_1.instance();
+            default:
+                return DefaultEclipseLinkJPQLGrammar.instance();
         }
-
-        if (validationLevel == ParserValidationType.JPA10) {
-            return JPQLGrammar1_0.instance();
-        }
-
-        if (validationLevel == ParserValidationType.JPA20) {
-            return JPQLGrammar2_0.instance();
-        }
-
-        if (validationLevel == ParserValidationType.JPA21) {
-            return JPQLGrammar2_1.instance();
-        }
-
-        return DefaultEclipseLinkJPQLGrammar.instance();
     }
 
     @Override

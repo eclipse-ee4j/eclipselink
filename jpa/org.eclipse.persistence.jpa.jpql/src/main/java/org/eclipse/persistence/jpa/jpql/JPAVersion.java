@@ -48,7 +48,22 @@ public enum JPAVersion {
     /**
      * The constant for the Java Persistence specification 2.1.
      */
-    VERSION_2_1(2.1);
+    VERSION_2_1(2.1),
+
+    /**
+     * The constant for the Java Persistence specification 2.2.
+     */
+    VERSION_2_2(2.2),
+
+    /**
+     * The constant for the Java Persistence specification 3.0.
+     */
+    VERSION_3_0(3.0),
+
+    /**
+     * The constant for the Java Persistence specification 3.0.
+     */
+    VERSION_3_1(3.1);
 
     /**
      * The real version number.
@@ -86,10 +101,13 @@ public enum JPAVersion {
      * @return The list of unique constants
      */
     public static JPAVersion[] versions() {
-        JPAVersion[] values = new JPAVersion[3];
+        JPAVersion[] values = new JPAVersion[6];
         values[0] = VERSION_1_0;
         values[1] = VERSION_2_0;
         values[2] = VERSION_2_1;
+        values[3] = VERSION_2_2;
+        values[4] = VERSION_3_0;
+        values[5] = VERSION_3_1;
         return values;
     }
 

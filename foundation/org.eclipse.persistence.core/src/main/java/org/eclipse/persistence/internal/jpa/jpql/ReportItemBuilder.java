@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -13,12 +13,14 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-//
+//     04/21/2022: Tomas Kraus
+//       - Issue 1474: Update JPQL Grammar for JPA 2.2, 3.0 and 3.1
 package org.eclipse.persistence.internal.jpa.jpql;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.parser.AbsExpression;
@@ -48,6 +50,7 @@ import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LowerExpression;
+import org.eclipse.persistence.jpa.jpql.parser.MathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.MaxFunction;
 import org.eclipse.persistence.jpa.jpql.parser.MinFunction;
 import org.eclipse.persistence.jpa.jpql.parser.ModExpression;
@@ -73,7 +76,8 @@ import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ValueExpression;
 import org.eclipse.persistence.queries.ReportQuery;
 
-import static org.eclipse.persistence.jpa.jpql.LiteralType.*;
+import static org.eclipse.persistence.jpa.jpql.LiteralType.PATH_EXPRESSION_IDENTIFICATION_VARIABLE;
+import static org.eclipse.persistence.jpa.jpql.LiteralType.PATH_EXPRESSION_LAST_PATH;
 
 /**
  * This builder is responsible to create the EclipseLink {@link Expression Expressions} representing
@@ -372,6 +376,18 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 
     @Override
     public void visit(LowerExpression expression) {
+        Expression queryExpression = queryContext.buildExpression(expression, type);
+        addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
+    }
+
+    @Override
+    public void visit(MathExpression.Ceiling expression) {
+        Expression queryExpression = queryContext.buildExpression(expression, type);
+        addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
+    }
+
+    @Override
+    public void visit(MathExpression.Floor expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
     }

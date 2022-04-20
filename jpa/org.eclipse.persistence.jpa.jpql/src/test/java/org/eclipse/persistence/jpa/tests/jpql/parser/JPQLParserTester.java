@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,10 +12,12 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-//
+//     04/21/2022: Tomas Kraus
+//       - Issue 1474: Update JPQL Grammar for JPA 2.2, 3.0 and 3.1
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import java.util.Arrays;
+
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem.NullOrdering;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem.Ordering;
@@ -32,6 +34,7 @@ import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.BadExpressio
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.BetweenExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.CaseExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.CastExpressionTester;
+import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.CeilingExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.CoalesceExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.CollectionExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.CollectionMemberDeclarationTester;
@@ -53,6 +56,7 @@ import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.EntryExpress
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ExistsExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ExtractExpressionTester;
+import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.FloorExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.FromClauseTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.FunctionExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.GroupByClauseTester;
@@ -115,7 +119,31 @@ import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.UpdateStatem
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.UpperExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.WhenClauseTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.WhereClauseTester;
-import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
+
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.ALL;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.ANY;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.CURRENT_DATE;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.CURRENT_TIME;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.CURRENT_TIMESTAMP;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.EXCEPT;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.FALSE;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.INNER_JOIN;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.INNER_JOIN_FETCH;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.INTERSECT;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.JOIN;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.JOIN_FETCH;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.LEFT_JOIN;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.LEFT_JOIN_FETCH;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.LEFT_OUTER_JOIN;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.LEFT_OUTER_JOIN_FETCH;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.MINUS;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.NULL;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.PLUS;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.SCN;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.SOME;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.TIMESTAMP;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.TRUE;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.UNION;
 
 /**
  * Utility class that creates an equivalent representation of any JPQL fragment, which then can be
@@ -350,6 +378,14 @@ public final class JPQLParserTester {
                                                  int precision) {
 
         return castAs(path(pathExpression), databaseType, size, precision);
+    }
+
+    public static CeilingExpressionTester ceiling(ExpressionTester simpleArithmeticExpression) {
+        return new CeilingExpressionTester(simpleArithmeticExpression);
+    }
+
+    public static CeilingExpressionTester ceiling(String statefieldPathExpression) {
+        return ceiling(path(statefieldPathExpression));
     }
 
     public static CoalesceExpressionTester coalesce(ExpressionTester expression) {
@@ -621,6 +657,14 @@ public final class JPQLParserTester {
 
     public static KeywordExpressionTester FALSE() {
         return new KeywordExpressionTester(FALSE);
+    }
+
+    public static FloorExpressionTester floor(ExpressionTester simpleArithmeticExpression) {
+        return new FloorExpressionTester(simpleArithmeticExpression);
+    }
+
+    public static FloorExpressionTester floor(String statefieldPathExpression) {
+        return floor(path(statefieldPathExpression));
     }
 
     public static FromClauseTester from(ExpressionTester declaration) {

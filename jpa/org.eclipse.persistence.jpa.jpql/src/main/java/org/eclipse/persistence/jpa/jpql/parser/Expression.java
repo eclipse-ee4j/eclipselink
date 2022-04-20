@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,8 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-//
+//     04/21/2022: Tomas Kraus
+//       - Issue 1474: Update JPQL Grammar for JPA 2.2, 3.0 and 3.1
 package org.eclipse.persistence.jpa.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.utility.iterable.ListIterable;
@@ -103,6 +104,13 @@ public interface Expression {
      * @since 2.4
      */
     String CAST = "CAST";
+
+    /**
+     * The constant for the identifier 'CEILING'.
+     *
+     * @since 3.1
+     */
+    String CEILING = "CEILING";
 
     /**
      * The constant for 'CHAR_LENGTH', which is an unused keyword.
@@ -258,6 +266,13 @@ public interface Expression {
      * @since 2.5
      */
     String FIRST = "FIRST";
+
+    /**
+     * The constant for the identifier 'FLOOR'.
+     *
+     * @since 3.1
+     */
+    String FLOOR = "FLOOR";
 
     /**
      * The constant for 'FROM'.

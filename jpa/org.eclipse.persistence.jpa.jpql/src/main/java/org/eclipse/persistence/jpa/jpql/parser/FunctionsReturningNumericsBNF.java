@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,8 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-//
+//     04/21/2022: Tomas Kraus
+//       - Issue 1474: Update JPQL Grammar for JPA 2.2, 3.0 and 3.1
 package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
@@ -32,6 +33,22 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                               MOD(simple_arithmetic_expression, simple_arithmetic_expression) |
  *                                                               SIZE(collection_valued_path_expression) |
  *                                                               INDEX(identification_variable)</code></div>
+ * JPA 3.1:
+ * <div><b>BNF:</b> <code>functions_returning_numerics ::= ABS(arithmetic_expression) |
+ *                                                               CEILING(arithmetic_expression) |
+ *                                                               EXP(arithmetic_expression) |
+ *                                                               FLOOR(arithmetic_expression) |
+ *                                                               LN(arithmetic_expression) |
+ *                                                               MOD(arithmetic_expression, arithmetic_expression) |
+ *                                                               POWER(arithmetic_expression, arithmetic_expression) |
+ *                                                               ROUND(arithmetic_expression, arithmetic_expression) |
+ *                                                               SIGN(arithmetic_expression) |
+ *                                                               SQRT(arithmetic_expression) |
+ *                                                               SIZE(collection_valued_path_expression) |
+ *                                                               INDEX(identification_variable) |
+ *                                                               extract_datetime_field</code>
+ *                  <code>extract_datetime_field := EXTRACT(datetime_field FROM datetime_expression)
+ *                        datetime_field := identification_variable</code></div>
  *
  * @version 2.4
  * @since 2.3
