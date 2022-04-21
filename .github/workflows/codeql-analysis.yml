@@ -67,7 +67,9 @@ jobs:
       #    and modify them (or add more) to build your code if your project
       #    uses a compiled language
 
-      - run: ant -f antbuild.xml build
+      - run: |
+          export M2_HOME=/usr/share/apache-maven-3.8.5
+          ant -f antbuild.xml build
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v1
