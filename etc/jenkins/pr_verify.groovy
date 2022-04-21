@@ -1,5 +1,4 @@
-//
-//  Copyright (c) 2021 Oracle and/or its affiliates. All rights reserved.
+//  Copyright (c) 2021, 2022 Oracle and/or its affiliates. All rights reserved.
 //
 //  This program and the accompanying materials are made available under the
 //  terms of the Eclipse Public License v. 2.0 which is available at
@@ -64,7 +63,7 @@ spec:
       requests:
         memory: "6Gi"
         cpu: "3"
-    image: tkraus/el-build:1.1.9
+    image: tkraus/el-build:2.0.1
     volumeMounts:
     - name: tools
       mountPath: /opt/tools
@@ -113,7 +112,7 @@ spec:
                         wget -nc https://repo1.maven.org/maven2/com/fasterxml/classmate/1.5.1/classmate-1.5.1.jar -O $HOME/extension.lib.external/classmate-1.5.1.jar
                         wget -nc https://archive.apache.org/dist/ant/binaries/apache-ant-1.10.7-bin.tar.gz -O $HOME/extension.lib.external/apache-ant-1.10.7-bin.tar.gz
                         wget -nc https://download.eclipse.org/eclipse/downloads/drops4/R-4.10-201812060815/eclipse-SDK-4.10-linux-gtk-x86_64.tar.gz -O $HOME/extension.lib.external/eclipse-SDK-4.10-linux-gtk-x86_64.tar.gz
-                        wget -nc https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.25/mysql-connector-java-8.0.25.jar -O $HOME/extension.lib.external/mysql-connector-java.jar
+                        wget -nc https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.28/mysql-connector-java-8.0.28.jar -O $HOME/extension.lib.external/mysql-connector-java.jar
                         tar -x -z -C $HOME -f $HOME/extension.lib.external/apache-ant-1.10.7-bin.tar.gz
                         tar -x -z -C $HOME/extension.lib.external -f $HOME/extension.lib.external/eclipse-SDK-4.10-linux-gtk-x86_64.tar.gz
                     """
@@ -130,7 +129,7 @@ spec:
                         echo "junit.lib=$HOME/extension.lib.external/junit-4.12.jar:$HOME/extension.lib.external/hamcrest-core-1.3.jar" >> $HOME/build.properties
                         echo "jdbc.driver.jar=$HOME/extension.lib.external/mysql-connector-java.jar" >> $HOME/build.properties
                         echo 'db.driver=com.mysql.cj.jdbc.Driver' >> $HOME/build.properties
-                        echo 'db.url=jdbc:mysql://localhost/ecltests?useSSL=false&#38;allowPublicKeyRetrieval=true' >> $HOME/build.properties
+                        echo 'db.url=jdbc:mysql://localhost/ecltests?allowPublicKeyRetrieval=true' >> $HOME/build.properties
                         echo 'db.user=root' >> $HOME/build.properties
                         echo 'db.pwd=root' >> $HOME/build.properties
                         echo 'db.platform=org.eclipse.persistence.platform.database.MySQLPlatform' >> $HOME/build.properties
