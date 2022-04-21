@@ -177,7 +177,7 @@
         <test.xml.parser>org.eclipse.persistence.platform.xml.jaxp.JAXPParser</test.xml.parser>
 
         <!--Eclipse Dependencies version-->
-        <eclipselink.asm.version>9.2.0</eclipselink.asm.version>
+        <eclipselink.asm.version>9.3.0</eclipselink.asm.version>
         <activation-api.version>2.1.0</activation-api.version>
         <angus-activation.version>1.0.0</angus-activation.version>
         <annotation.version>2.1.0</annotation.version>
