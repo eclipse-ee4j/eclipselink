@@ -37,7 +37,28 @@ public abstract class MathExpressionFactory extends ExpressionFactory {
                 JPQLQueryBNF queryBNF, AbstractExpression expression, boolean tolerant
         ) {
             return super.buildExpression(
-                    parent, wordParser, word, queryBNF, new MathExpression.Ceiling(parent), tolerant
+                    parent, wordParser, word, queryBNF, new MathSingleExpression.Ceiling(parent), tolerant
+            );
+        }
+
+    }
+
+    public static final class Exp extends MathExpressionFactory {
+
+        /** The unique identifier of this {@link MathExpressionFactory.Exp}. */
+        public static final String ID = Expression.EXP;
+
+        public Exp() {
+            super(ID);
+        }
+
+        @Override
+        protected AbstractExpression buildExpression(
+                AbstractExpression parent, WordParser wordParser, String word,
+                JPQLQueryBNF queryBNF, AbstractExpression expression, boolean tolerant
+        ) {
+            return super.buildExpression(
+                    parent, wordParser, word, queryBNF, new MathSingleExpression.Exp(parent), tolerant
             );
         }
 
@@ -58,7 +79,91 @@ public abstract class MathExpressionFactory extends ExpressionFactory {
                 JPQLQueryBNF queryBNF, AbstractExpression expression, boolean tolerant
         ) {
             return super.buildExpression(
-                    parent, wordParser, word, queryBNF, new MathExpression.Floor(parent), tolerant
+                    parent, wordParser, word, queryBNF, new MathSingleExpression.Floor(parent), tolerant
+            );
+        }
+
+    }
+
+    public static final class Ln extends MathExpressionFactory {
+
+        /** The unique identifier of this {@link MathExpressionFactory.Ln}. */
+        public static final String ID = Expression.LN;
+
+        public Ln() {
+            super(ID);
+        }
+
+        @Override
+        protected AbstractExpression buildExpression(
+                AbstractExpression parent, WordParser wordParser, String word,
+                JPQLQueryBNF queryBNF, AbstractExpression expression, boolean tolerant
+        ) {
+            return super.buildExpression(
+                    parent, wordParser, word, queryBNF, new MathSingleExpression.Ln(parent), tolerant
+            );
+        }
+
+    }
+
+    public static final class Power extends MathExpressionFactory {
+
+        /** The unique identifier of this {@link MathExpressionFactory.Power}. */
+        public static final String ID = Expression.POWER;
+
+        public Power() {
+            super(ID);
+        }
+
+        @Override
+        protected AbstractExpression buildExpression(
+                AbstractExpression parent, WordParser wordParser, String word,
+                JPQLQueryBNF queryBNF, AbstractExpression expression, boolean tolerant
+        ) {
+            return super.buildExpression(
+                    parent, wordParser, word, queryBNF, new MathDoubleExpression.Power(parent), tolerant
+            );
+        }
+
+    }
+
+    public static final class Round extends MathExpressionFactory {
+
+        /** The unique identifier of this {@link MathExpressionFactory.Round}. */
+        public static final String ID = Expression.ROUND;
+
+        public Round() {
+            super(ID);
+        }
+
+        @Override
+        protected AbstractExpression buildExpression(
+                AbstractExpression parent, WordParser wordParser, String word,
+                JPQLQueryBNF queryBNF, AbstractExpression expression, boolean tolerant
+        ) {
+            return super.buildExpression(
+                    parent, wordParser, word, queryBNF, new MathDoubleExpression.Round(parent), tolerant
+            );
+        }
+
+    }
+
+    public static final class Sign extends MathExpressionFactory {
+
+        /** The unique identifier of this {@link MathExpressionFactory.Sign}. */
+        public static final String ID = Expression.SIGN;
+
+        public Sign() {
+            super(ID);
+        }
+
+        @Override
+        protected AbstractExpression buildExpression(
+                AbstractExpression parent, WordParser wordParser, String word,
+                JPQLQueryBNF queryBNF, AbstractExpression expression, boolean tolerant
+        ) {
+            return super.buildExpression(
+                    parent, wordParser, word, queryBNF, new MathSingleExpression.Sign(parent), tolerant
             );
         }
 

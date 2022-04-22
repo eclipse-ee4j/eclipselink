@@ -91,7 +91,8 @@ import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LowerExpression;
-import org.eclipse.persistence.jpa.jpql.parser.MathExpression;
+import org.eclipse.persistence.jpa.jpql.parser.MathDoubleExpression;
+import org.eclipse.persistence.jpa.jpql.parser.MathSingleExpression;
 import org.eclipse.persistence.jpa.jpql.parser.MaxFunction;
 import org.eclipse.persistence.jpa.jpql.parser.MinFunction;
 import org.eclipse.persistence.jpa.jpql.parser.ModExpression;
@@ -870,15 +871,41 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
     }
 
     @Override
-    public void visit(MathExpression.Ceiling expression) {
+    public void visit(MathDoubleExpression.Power expression) {
+        type = Double.class;
+    }
+
+    @Override
+    public void visit(MathDoubleExpression.Round expression) {
+        // Visit the 1st child expression in order to create the resolver
+        expression.getFirstExpression().accept(this);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Ceiling expression) {
         // Visit the child expression in order to create the resolver
         expression.getExpression().accept(this);
     }
 
     @Override
-    public void visit(MathExpression.Floor expression) {
+    public void visit(MathSingleExpression.Exp expression) {
+        type = Double.class;
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Floor expression) {
         // Visit the child expression in order to create the resolver
         expression.getExpression().accept(this);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Ln expression) {
+        type = Double.class;
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Sign expression) {
+        type = Integer.class;
     }
 
     @Override

@@ -16,67 +16,73 @@
 package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
- * Math functions expressions.
+ * Math double argument functions expressions.
  */
-public abstract class MathExpression extends AbstractSingleEncapsulatedExpression {
+public abstract class MathDoubleExpression extends AbstractDoubleEncapsulatedExpression {
 
     /**
-     * The <code>CEILING</code> function takes a numeric argument and returns an integer.
+     * The <code>POWER</code> function takes two numeric arguments and returns a double.
      * <br>
      * JPA 3.1:
-     * <div><b>BNF:</b> <code>expression ::= CEILING(arithmetic_expression)</code></div>
+     * <div><b>BNF:</b> <code>expression ::= POWER(arithmetic_expression)</code></div>
      */
-    public static final class Ceiling extends MathExpression {
+    public static final class Power extends MathDoubleExpression {
         /**
-         * Creates a new instance of <code>CEILING</code> math function expression.
+         * Creates a new instance of <code>POWER</code> math function expression.
          *
          * @param parent The parent of this expression
          */
-        public Ceiling(AbstractExpression parent) {
-            super(parent, CEILING);
+        public Power(AbstractExpression parent) {
+            super(parent, POWER);
         }
 
         @Override
         public void accept(ExpressionVisitor visitor) {
             visitor.visit(this);
         }
+
+        @Override
+        public String parameterExpressionBNF(int index) {
+            return InternalPowerExpressionBNF.ID;
+        }
     }
 
     /**
-     * The <code>FLOOR</code> function takes a numeric argument and returns an integer.
+     * The <code>ROUND</code> function takes numeric argument and an integer argument and returns
+     * a number of the same type as the first argument.
      * <br>
      * JPA 3.1:
-     * <div><b>BNF:</b> <code>expression ::= FLOOR(arithmetic_expression)</code></div>
+     * <div><b>BNF:</b> <code>expression ::= ROUND(arithmetic_expression)</code></div>
      */
-    public static final class Floor extends MathExpression {
+    public static final class Round extends MathDoubleExpression {
         /**
-         * Creates a new instance of <code>FLOOR</code> math function expression.
+         * Creates a new instance of <code>ROUND</code> math function expression.
          *
          * @param parent The parent of this expression
          */
-        public Floor(AbstractExpression parent) {
-            super(parent, FLOOR);
+        public Round(AbstractExpression parent) {
+            super(parent, ROUND);
         }
 
         @Override
         public void accept(ExpressionVisitor visitor) {
             visitor.visit(this);
         }
+
+        @Override
+        public String parameterExpressionBNF(int index) {
+            return InternalRoundExpressionBNF.ID;
+        }
     }
 
     /**
-     * Creates a new instance of math function expression.
+     * Creates a new instance of math double argument function expression.
      *
      * @param parent The parent of this expression
      * @param identifier The JPQL identifier that starts this expression
      */
-    protected MathExpression(AbstractExpression parent, String identifier) {
+    protected MathDoubleExpression(AbstractExpression parent, String identifier) {
         super(parent, identifier);
-    }
-
-    @Override
-    public String getEncapsulatedExpressionQueryBNFId() {
-        return SimpleArithmeticExpressionBNF.ID;
     }
 
     @Override

@@ -29,4 +29,24 @@ public class JPQLQueries3_1 {
         return "SELECT o.totalPrice, FLOOR(o.totalPrice) FROM Order o";
     }
 
+    public static String query_Exp() {
+        return "SELECT o.totalPrice, EXP(o.totalPrice) FROM Order o";
+    }
+
+    public static String query_Ln() {
+        return "SELECT o.totalPrice, LN(o.totalPrice) FROM Order o";
+    }
+
+    public static String query_Sign() {
+        return "SELECT o.totalPrice, SIGN(o.totalPrice) FROM Order o";
+    }
+
+    public static String query_Power() {
+        return "SELECT o.totalPrice, POWER(o.totalPrice, 2) FROM Order o";
+    }
+
+    public static String query_Round() {
+        return "SELECT o.totalPrice, ROUND(o.totalPrice, 1) FROM Order o";
+    }
+
 }

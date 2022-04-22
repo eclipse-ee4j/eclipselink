@@ -75,7 +75,8 @@ import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LowerExpression;
-import org.eclipse.persistence.jpa.jpql.parser.MathExpression;
+import org.eclipse.persistence.jpa.jpql.parser.MathDoubleExpression;
+import org.eclipse.persistence.jpa.jpql.parser.MathSingleExpression;
 import org.eclipse.persistence.jpa.jpql.parser.MaxFunction;
 import org.eclipse.persistence.jpa.jpql.parser.MinFunction;
 import org.eclipse.persistence.jpa.jpql.parser.ModExpression;
@@ -726,7 +727,23 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
     }
 
     @Override
-    public void visit(MathExpression.Ceiling expression) {
+    public void visit(MathDoubleExpression.Power expression) {
+        resolver = buildClassResolver(Double.class);
+    }
+
+    @Override
+    public void visit(MathDoubleExpression.Round expression) {
+
+        // Visit the 1st child expression in order to create the resolver
+        expression.getFirstExpression().accept(this);
+
+        // Wrap the Resolver used to determine the type of the state field
+        // path expression so we can return the actual type
+        resolver = new MathFunctionResolver.Round(resolver);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Ceiling expression) {
 
         // Visit the child expression in order to create the resolver
         expression.getExpression().accept(this);
@@ -737,7 +754,12 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
     }
 
     @Override
-    public void visit(MathExpression.Floor expression) {
+    public void visit(MathSingleExpression.Exp expression) {
+        resolver = buildClassResolver(Double.class);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Floor expression) {
 
         // Visit the child expression in order to create the resolver
         expression.getExpression().accept(this);
@@ -745,6 +767,16 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
         // Wrap the Resolver used to determine the type of the state field
         // path expression so we can return the actual type
         resolver = new MathFunctionResolver.Floor(resolver);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Ln expression) {
+        resolver = buildClassResolver(Double.class);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Sign expression) {
+        resolver = buildClassResolver(Integer.class);
     }
 
     @Override

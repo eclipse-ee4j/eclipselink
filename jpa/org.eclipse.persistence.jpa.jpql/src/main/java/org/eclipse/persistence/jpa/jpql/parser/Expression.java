@@ -244,6 +244,11 @@ public interface Expression {
     String EXISTS = "EXISTS";
 
     /**
+     * The constant for 'EXP'.
+     */
+    String EXP = "EXP";
+
+    /**
      * The constant for 'EXTRACT'.
      *
      * @since 2.4
@@ -429,6 +434,11 @@ public interface Expression {
      * The constant for 'LIKE'.
      */
     String LIKE = "LIKE";
+
+    /**
+     * The constant for 'LN'.
+     */
+    String LN = "LN";
 
     /**
      * The constant for 'LOCATE'.
@@ -630,6 +640,11 @@ public interface Expression {
     String POSITIONAL_PARAMETER = "?";
 
     /**
+     * The constant for 'POWER'.
+     */
+    String POWER = "POWER";
+
+    /**
      * The constant for single quote.
      */
     String QUOTE = "'";
@@ -640,6 +655,13 @@ public interface Expression {
      * @since 2.4
      */
     String REGEXP = "REGEXP";
+
+    /**
+     * The constant for 'ROUND'.
+     *
+     * @since 2.4
+     */
+    String ROUND = "ROUND";
 
     /**
      * The constant for 'SCN'.
@@ -657,6 +679,11 @@ public interface Expression {
      * The constant for 'SET'.
      */
     String SET = "SET";
+
+    /**
+     * The constant for 'SIGN'.
+     */
+    String SIGN = "SIGN";
 
     /**
      * The constant for 'SIZE'.

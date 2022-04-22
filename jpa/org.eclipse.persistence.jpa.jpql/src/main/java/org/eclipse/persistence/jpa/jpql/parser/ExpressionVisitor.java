@@ -340,18 +340,53 @@ public interface ExpressionVisitor {
     void visit(LowerExpression expression);
 
     /**
-     * Visits the {@link MathExpression.Ceiling} expression.
+     * Visits the {@link MathDoubleExpression.Power} expression.
      *
      * @param expression The {@link Expression} to visit
      */
-    void visit(MathExpression.Ceiling expression);
+    void visit(MathDoubleExpression.Power expression);
 
     /**
-     * Visits the {@link MathExpression.Floor} expression.
+     * Visits the {@link MathDoubleExpression.Round} expression.
      *
      * @param expression The {@link Expression} to visit
      */
-    void visit(MathExpression.Floor expression);
+    void visit(MathDoubleExpression.Round expression);
+
+    /**
+     * Visits the {@link MathSingleExpression.Ceiling} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(MathSingleExpression.Ceiling expression);
+
+    /**
+     * Visits the {@link MathSingleExpression.Exp} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(MathSingleExpression.Exp expression);
+
+    /**
+     * Visits the {@link MathSingleExpression.Floor} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(MathSingleExpression.Floor expression);
+
+    /**
+     * Visits the {@link MathSingleExpression.Ln} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(MathSingleExpression.Ln expression);
+
+    /**
+     * Visits the {@link MathSingleExpression.Sign} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(MathSingleExpression.Sign expression);
 
     /**
      * Visits the {@link MaxFunction} expression.

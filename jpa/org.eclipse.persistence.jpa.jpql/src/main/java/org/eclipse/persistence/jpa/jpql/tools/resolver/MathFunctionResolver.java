@@ -60,6 +60,22 @@ public abstract class MathFunctionResolver extends Resolver {
     }
 
     /**
+     * The <code>ROUND</code> math function expression resolver.
+     */
+    public static final class Round extends MathFunctionResolver {
+
+        /**
+         * Creates a new instance of <code>ROUND</code> function expression resolver.
+         *
+         * @param parent The parent {@link Resolver}, which is never <code>null</code>
+         */
+        public Round(Resolver parent) {
+            super(parent);
+        }
+
+    }
+
+    /**
      * Creates a new instance of math function expression resolver.
      *
      * @param parent The parent {@link Resolver}, which is never <code>null</code>

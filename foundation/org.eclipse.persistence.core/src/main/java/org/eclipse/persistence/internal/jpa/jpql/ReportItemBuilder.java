@@ -50,7 +50,7 @@ import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LowerExpression;
-import org.eclipse.persistence.jpa.jpql.parser.MathExpression;
+import org.eclipse.persistence.jpa.jpql.parser.MathSingleExpression;
 import org.eclipse.persistence.jpa.jpql.parser.MaxFunction;
 import org.eclipse.persistence.jpa.jpql.parser.MinFunction;
 import org.eclipse.persistence.jpa.jpql.parser.ModExpression;
@@ -381,13 +381,13 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
     }
 
     @Override
-    public void visit(MathExpression.Ceiling expression) {
+    public void visit(MathSingleExpression.Ceiling expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
     }
 
     @Override
-    public void visit(MathExpression.Floor expression) {
+    public void visit(MathSingleExpression.Floor expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
     }

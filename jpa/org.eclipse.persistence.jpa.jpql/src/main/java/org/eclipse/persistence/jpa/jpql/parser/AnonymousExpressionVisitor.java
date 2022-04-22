@@ -266,12 +266,37 @@ public abstract class AnonymousExpressionVisitor implements ExpressionVisitor {
     }
 
     @Override
-    public void visit(MathExpression.Ceiling expression) {
+    public void visit(MathDoubleExpression.Power expression) {
         visit((Expression) expression);
     }
 
     @Override
-    public void visit(MathExpression.Floor expression) {
+    public void visit(MathDoubleExpression.Round expression) {
+        visit((Expression) expression);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Ceiling expression) {
+        visit((Expression) expression);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Exp expression) {
+        visit((Expression) expression);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Floor expression) {
+        visit((Expression) expression);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Ln expression) {
+        visit((Expression) expression);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Sign expression) {
         visit((Expression) expression);
     }
 

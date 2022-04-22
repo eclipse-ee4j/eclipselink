@@ -22,103 +22,7 @@ import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem.NullOrdering;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem.Ordering;
 import org.eclipse.persistence.jpa.jpql.parser.TrimExpression.Specification;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.AbsExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.AbstractSchemaNameTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.AdditionExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.AllOrAnyExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.AndExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ArithmeticFactorTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.AsOfClauseTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.AvgFunctionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.BadExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.BetweenExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.CaseExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.CastExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.CeilingExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.CoalesceExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.CollectionExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.CollectionMemberDeclarationTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.CollectionMemberExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.CollectionValuedPathExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ComparisonExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ConcatExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ConnectByClauseTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ConstructorExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.CountFunctionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.DatabaseTypeTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.DateTimeTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.DeleteClauseTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.DeleteStatementTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.DivisionExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.EmptyCollectionComparisonExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.EntityTypeLiteralTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.EntryExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ExistsExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ExtractExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.FloorExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.FromClauseTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.FunctionExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.GroupByClauseTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.HavingClauseTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.HierarchicalQueryClauseTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.IdentificationVariableDeclarationTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.IdentificationVariableTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.InExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.IndexExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.InputParameterTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.JPQLExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.JoinTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.KeywordExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.LengthExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.LikeExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.LocateExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.LowerExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.MaxFunctionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.MinFunctionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ModExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.MultiplicationExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.NotExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.NullComparisonExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.NullExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.NullIfExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.NumericLiteralTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ObjectExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.OnClauseTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.OrExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.OrderByClauseTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.OrderByItemTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.OrderSiblingsByClauseTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.RangeVariableDeclarationTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.RegexpExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ResultVariableTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.SelectClauseTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.SelectStatementTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.SimpleFromClauseTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.SimpleSelectClauseTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.SimpleSelectStatementTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.SizeExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.SqrtExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.StartWithClauseTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.StateFieldPathExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.StringLiteralTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.SubExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.SubstringExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.SubtractionExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.SumFunctionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.TableExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.TableVariableDeclarationTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.TreatExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.TrimExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.TypeExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.UnionClauseTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.UnknownExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.UpdateClauseTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.UpdateItemTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.UpdateStatementTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.UpperExpressionTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.WhenClauseTester;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.WhereClauseTester;
+import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.*;
 
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.ALL;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.ANY;
@@ -649,6 +553,14 @@ public final class JPQLParserTester {
 
     public static ExtractExpressionTester extract(String part, ExpressionTester expression) {
         return new ExtractExpressionTester(part, false, expression);
+    }
+
+    public static ExpExpressionTester exp(ExpressionTester simpleArithmeticExpression) {
+        return new ExpExpressionTester(simpleArithmeticExpression);
+    }
+
+    public static ExpExpressionTester exp(String statefieldPathExpression) {
+        return exp(path(statefieldPathExpression));
     }
 
     public static ExtractExpressionTester extractFrom(String part, ExpressionTester expression) {
@@ -2428,6 +2340,14 @@ public final class JPQLParserTester {
         return new LikeExpressionTester(stringExpression, false, patternValue, escapeCharacter);
     }
 
+    public static LnExpressionTester ln(ExpressionTester simpleArithmeticExpression) {
+        return new LnExpressionTester(simpleArithmeticExpression);
+    }
+
+    public static LnExpressionTester ln(String statefieldPathExpression) {
+        return ln(path(statefieldPathExpression));
+    }
+
     public static LocateExpressionTester locate(ExpressionTester firstExpression,
                                                    ExpressionTester secondExpression) {
 
@@ -2850,6 +2770,18 @@ public final class JPQLParserTester {
         return new ArithmeticFactorTester(PLUS, expression);
     }
 
+    public static PowerExpressionTester power(ExpressionTester simpleArithmeticExpression1, ExpressionTester simpleArithmeticExpression2) {
+        return new PowerExpressionTester(simpleArithmeticExpression1, simpleArithmeticExpression2);
+    }
+
+    public static PowerExpressionTester power(String statefieldPathExpression1, String statefieldPathExpression2) {
+        return power(path(statefieldPathExpression1), path(statefieldPathExpression2));
+    }
+
+    public static PowerExpressionTester power(String statefieldPathExpression1, ExpressionTester simpleArithmeticExpression2) {
+        return power(path(statefieldPathExpression1), simpleArithmeticExpression2);
+    }
+
     public static String quote(char character) {
         return new StringBuilder(3).append("'").append(character).append("'").toString();
     }
@@ -2951,6 +2883,18 @@ public final class JPQLParserTester {
                                                         String resultVariable) {
 
         return resultVariableAs(selectExpression, variable(resultVariable));
+    }
+
+    public static RoundExpressionTester round(ExpressionTester simpleArithmeticExpression1, ExpressionTester simpleArithmeticExpression2) {
+        return new RoundExpressionTester(simpleArithmeticExpression1, simpleArithmeticExpression2);
+    }
+
+    public static RoundExpressionTester round(String statefieldPathExpression1, String statefieldPathExpression2) {
+        return round(path(statefieldPathExpression1), path(statefieldPathExpression2));
+    }
+
+    public static RoundExpressionTester round(String statefieldPathExpression1, ExpressionTester simpleArithmeticExpression2) {
+        return round(path(statefieldPathExpression1), simpleArithmeticExpression2);
     }
 
     public static SelectClauseTester select(ExpressionTester selectExpression) {
@@ -3380,6 +3324,14 @@ public final class JPQLParserTester {
         }
 
         return set(path(pathExpression), newValue);
+    }
+
+    public static SignExpressionTester sign(ExpressionTester simpleArithmeticExpression) {
+        return new SignExpressionTester(simpleArithmeticExpression);
+    }
+
+    public static SignExpressionTester sign(String statefieldPathExpression) {
+        return sign(path(statefieldPathExpression));
     }
 
     public static SizeExpressionTester size(ExpressionTester collectionPath) {

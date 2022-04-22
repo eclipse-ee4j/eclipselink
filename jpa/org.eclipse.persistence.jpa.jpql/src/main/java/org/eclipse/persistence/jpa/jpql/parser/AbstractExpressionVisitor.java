@@ -214,11 +214,31 @@ public abstract class AbstractExpressionVisitor implements ExpressionVisitor {
     }
 
     @Override
-    public void visit(MathExpression.Ceiling expression) {
+    public void visit(MathDoubleExpression.Power expression) {
     }
 
     @Override
-    public void visit(MathExpression.Floor expression) {
+    public void visit(MathDoubleExpression.Round expression) {
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Ceiling expression) {
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Exp expression) {
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Floor expression) {
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Ln expression) {
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Sign expression) {
     }
 
     @Override

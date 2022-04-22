@@ -112,7 +112,8 @@ import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LogicalExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LowerExpression;
-import org.eclipse.persistence.jpa.jpql.parser.MathExpression;
+import org.eclipse.persistence.jpa.jpql.parser.MathDoubleExpression;
+import org.eclipse.persistence.jpa.jpql.parser.MathSingleExpression;
 import org.eclipse.persistence.jpa.jpql.parser.MaxFunction;
 import org.eclipse.persistence.jpa.jpql.parser.MinFunction;
 import org.eclipse.persistence.jpa.jpql.parser.ModExpression;
@@ -254,6 +255,8 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.TRUE;
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.UPDATE;
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.WHEN;
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.WHERE;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.POWER;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.ROUND;
 
 /**
  * The visitor provides support for finding the possible proposals within a JPQL query at a certain
@@ -3314,13 +3317,43 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     }
 
     @Override
-    public void visit(MathExpression.Ceiling expression) {
+    public void visit(MathDoubleExpression.Power expression) {
+        super.visit(expression);
+        visitCollectionExpression(expression, POWER, getDoubleEncapsulatedCollectionHelper());
+    }
+
+    @Override
+    public void visit(MathDoubleExpression.Round expression) {
+        super.visit(expression);
+        visitCollectionExpression(expression, ROUND, getDoubleEncapsulatedCollectionHelper());
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Ceiling expression) {
         super.visit(expression);
         visitSingleEncapsulatedExpression(expression, IdentificationVariableType.ALL);
     }
 
     @Override
-    public void visit(MathExpression.Floor expression) {
+    public void visit(MathSingleExpression.Exp expression) {
+        super.visit(expression);
+        visitSingleEncapsulatedExpression(expression, IdentificationVariableType.ALL);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Floor expression) {
+        super.visit(expression);
+        visitSingleEncapsulatedExpression(expression, IdentificationVariableType.ALL);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Ln expression) {
+        super.visit(expression);
+        visitSingleEncapsulatedExpression(expression, IdentificationVariableType.ALL);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Sign expression) {
         super.visit(expression);
         visitSingleEncapsulatedExpression(expression, IdentificationVariableType.ALL);
     }
@@ -7757,12 +7790,37 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         }
 
         @Override
-        public void visit(MathExpression.Ceiling expression) {
+        public void visit(MathDoubleExpression.Power expression) {
+            visitAbstractDoubleEncapsulatedExpression(expression);
+        }
+
+        @Override
+        public void visit(MathDoubleExpression.Round expression) {
+            visitAbstractDoubleEncapsulatedExpression(expression);
+        }
+
+        @Override
+        public void visit(MathSingleExpression.Ceiling expression) {
             visitAbstractSingleEncapsulatedExpression(expression);
         }
 
         @Override
-        public void visit(MathExpression.Floor expression) {
+        public void visit(MathSingleExpression.Exp expression) {
+            visitAbstractSingleEncapsulatedExpression(expression);
+        }
+
+        @Override
+        public void visit(MathSingleExpression.Floor expression) {
+            visitAbstractSingleEncapsulatedExpression(expression);
+        }
+
+        @Override
+        public void visit(MathSingleExpression.Ln expression) {
+            visitAbstractSingleEncapsulatedExpression(expression);
+        }
+
+        @Override
+        public void visit(MathSingleExpression.Sign expression) {
             visitAbstractSingleEncapsulatedExpression(expression);
         }
 

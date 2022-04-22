@@ -109,7 +109,8 @@ import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LowerExpression;
-import org.eclipse.persistence.jpa.jpql.parser.MathExpression;
+import org.eclipse.persistence.jpa.jpql.parser.MathDoubleExpression;
+import org.eclipse.persistence.jpa.jpql.parser.MathSingleExpression;
 import org.eclipse.persistence.jpa.jpql.parser.MaxFunction;
 import org.eclipse.persistence.jpa.jpql.parser.MinFunction;
 import org.eclipse.persistence.jpa.jpql.parser.ModExpression;
@@ -1308,7 +1309,42 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
     }
 
     @Override
-    public void visit(MathExpression.Ceiling expression) {
+    public void visit(MathDoubleExpression.Power expression) {
+
+        // First create the Expression for the first expression
+        expression.getFirstExpression().accept(this);
+        Expression leftExpression = queryExpression;
+
+        // Now create the Expression for the second expression
+        expression.getSecondExpression().accept(this);
+        Expression rightExpression = queryExpression;
+
+        // Now create the POWER expression
+        queryExpression = ExpressionMath.power(leftExpression, rightExpression);
+
+        // Set the expression type
+        type[0] = Double.class;
+    }
+
+    @Override
+    public void visit(MathDoubleExpression.Round expression) {
+
+        // First create the Expression for the first expression
+        expression.getFirstExpression().accept(this);
+        Expression leftExpression = queryExpression;
+
+        // Now create the Expression for the second expression
+        expression.getSecondExpression().accept(this);
+        Expression rightExpression = queryExpression;
+
+        // Now create the ROUND expression
+        queryExpression = ExpressionMath.round(leftExpression, rightExpression);
+
+        // Note: The type will be calculated when traversing the ROUND's expression
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Ceiling expression) {
 
         // First create the expression from the encapsulated expression
         expression.getExpression().accept(this);
@@ -1320,7 +1356,20 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
     }
 
     @Override
-    public void visit(MathExpression.Floor expression) {
+    public void visit(MathSingleExpression.Exp expression) {
+
+        // First create the expression from the encapsulated expression
+        expression.getExpression().accept(this);
+
+        // Now create the EXP expression
+        queryExpression = ExpressionMath.exp(queryExpression);
+
+        // Set the expression type
+        type[0] = Double.class;
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Floor expression) {
 
         // First create the expression from the encapsulated expression
         expression.getExpression().accept(this);
@@ -1329,6 +1378,32 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
         queryExpression = ExpressionMath.floor(queryExpression);
 
         // Note: The type will be calculated when traversing the FLOOR's expression
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Ln expression) {
+
+        // First create the expression from the encapsulated expression
+        expression.getExpression().accept(this);
+
+        // Now create the LN expression
+        queryExpression = ExpressionMath.ln(queryExpression);
+
+        // Set the expression type
+        type[0] = Double.class;
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Sign expression) {
+
+        // First create the expression from the encapsulated expression
+        expression.getExpression().accept(this);
+
+        // Now create the SIGN expression
+        queryExpression = ExpressionMath.sign(queryExpression);
+
+        // Set the expression type
+        type[0] = Integer.class;
     }
 
     @Override

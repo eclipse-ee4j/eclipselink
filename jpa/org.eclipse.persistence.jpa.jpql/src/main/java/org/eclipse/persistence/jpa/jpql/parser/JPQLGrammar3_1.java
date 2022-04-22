@@ -20,6 +20,11 @@ import org.eclipse.persistence.jpa.jpql.JPAVersion;
 
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.CEILING;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.FLOOR;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.EXP;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.LN;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.POWER;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.ROUND;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.SIGN;
 
 /**
  * This {@link JPQLGrammar} provides support for parsing JPQL queries defined in
@@ -92,18 +97,30 @@ public class JPQLGrammar3_1 extends AbstractJPQLGrammar {
 
     @Override
     protected void initializeBNFs() {
+        registerBNF(new InternalPowerExpressionBNF());
+        registerBNF(new InternalRoundExpressionBNF());
     }
 
     @Override
     protected void initializeExpressionFactories() {
         registerFunctionExpressionFactory(new MathExpressionFactory.Ceiling(), CEILING);
+        registerFunctionExpressionFactory(new MathExpressionFactory.Exp(), EXP);
         registerFunctionExpressionFactory(new MathExpressionFactory.Floor(), FLOOR);
+        registerFunctionExpressionFactory(new MathExpressionFactory.Ln(), LN);
+        registerFunctionExpressionFactory(new MathExpressionFactory.Power(), POWER);
+        registerFunctionExpressionFactory(new MathExpressionFactory.Round(), ROUND);
+        registerFunctionExpressionFactory(new MathExpressionFactory.Sign(), SIGN);
     }
 
     @Override
     protected void initializeIdentifiers() {
         registerFunctionIdentifier(CEILING);
+        registerFunctionIdentifier(EXP);
         registerFunctionIdentifier(FLOOR);
+        registerFunctionIdentifier(LN);
+        registerFunctionIdentifier(POWER);
+        registerFunctionIdentifier(ROUND);
+        registerFunctionIdentifier(SIGN);
     }
 
     @Override
