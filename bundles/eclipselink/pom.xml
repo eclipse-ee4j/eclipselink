@@ -437,8 +437,15 @@
                                     <directory>${gen.src.dir}</directory>
                                     <excludes>
                                         <exclude>**/*.java</exclude>
+                                        <exclude>org/eclipse/persistence/version.properties</exclude>
                                     </excludes>
+                                </resource>
+                                <resource>
+                                    <directory>${gen.src.dir}</directory>
                                     <filtering>true</filtering>
+                                    <includes>
+                                        <include>org/eclipse/persistence/version.properties</include>
+                                    </includes>
                                 </resource>
                             </resources>
                         </configuration>
