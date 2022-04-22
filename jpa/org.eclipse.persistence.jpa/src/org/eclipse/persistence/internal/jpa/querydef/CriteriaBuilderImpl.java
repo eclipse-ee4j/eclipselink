@@ -999,7 +999,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @return negated expression
      */
     public <N extends Number> Expression<N> neg(Expression<N> x){
-        return new FunctionExpressionImpl(this.metamodel, ClassConstants.INTEGER, ExpressionMath.negate(((InternalSelection)x).getCurrentNode()), buildList(x), "neg");
+        return new FunctionExpressionImpl(this.metamodel, (Class<N>) x.getJavaType(), ExpressionMath.negate(((InternalSelection)x).getCurrentNode()), buildList(x), "neg");
     }
 
     /**
