@@ -14,6 +14,9 @@
 // Contributors:
 //     Gordon Yorke - Initial development
 //
+// Contributors:
+//     04/19/2022: Jody Grassel
+//       - Issue 579726: CriteriaBuilder neg() only returns Integer type, instead of it's argument expression type.
 package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.io.Serializable;
@@ -650,7 +653,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         if (((InternalSelection)x).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
-        if (y instanceof ParameterExpression) 
+        if (y instanceof ParameterExpression)
             return this.equal(x, (ParameterExpression)y);
 
         return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().equal(y), buildList(x, internalLiteral(y)), "equal");
@@ -670,7 +673,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         if (((InternalSelection)x).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
-        if (y instanceof ParameterExpression) 
+        if (y instanceof ParameterExpression)
             return this.notEqual(x, (ParameterExpression)y);
 
         return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().notEqual(y), buildList(x, internalLiteral(y)), "not equal");
@@ -999,7 +1002,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      */
     @Override
     public <N extends Number> Expression<N> neg(Expression<N> x){
-        return new FunctionExpressionImpl(this.metamodel, ClassConstants.INTEGER, ExpressionMath.negate(((InternalSelection)x).getCurrentNode()), buildList(x), "neg");
+        return new FunctionExpressionImpl(this.metamodel, (Class<N>) x.getJavaType(), ExpressionMath.negate(((InternalSelection)x).getCurrentNode()), buildList(x), "neg");
     }
 
     /**
