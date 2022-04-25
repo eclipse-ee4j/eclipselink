@@ -9,7 +9,6 @@
 // Job input parameters (passed from Properties Content field from Jenkins job):
 //  GIT_REPOSITORY_URL          - Git repository location (URL)
 //  GIT_BRANCH                  - Git branch
-//  SSH_CREDENTIALS_ID          - SSH credentials is used to access Git repository at the GitHub
 //  BUILD_RESULTS_TARGET_DIR    - Location in the projects-storage.eclipse.org server for nightly builds (jar files)
 //  TEST_RESULTS_TARGET_DIR     - Location in the projects-storage.eclipse.org server for nightly builds (test results)
 //  TEST_DB_URL                 - Test database URL
@@ -66,6 +65,9 @@ spec:
       requests:
         memory: "4Gi"
         cpu: "1"
+    volumeMounts:
+    - name: volume-known-hosts
+      mountPath: /home/jenkins/.ssh          
   - name: el-build
     resources:
       limits:
@@ -101,17 +103,18 @@ spec:
 """
         }
     }
+    tools {
+        jdk 'adoptopenjdk-hotspot-jdk8-latest'
+    }
     stages {
         // Initialize build environment
         stage('Init') {
             steps {
                 container('el-build') {
                     git branch: '${GIT_BRANCH}', url: '${GIT_REPOSITORY_URL}'
-                    sshagent(['SSH_CREDENTIALS_ID']) {
-                        sh """
-                            etc/jenkins/init.sh
-                            """
-                    }
+                    sh """
+                        etc/jenkins/init.sh
+                    """
                     withCredentials([file(credentialsId: 'secret-subkeys.asc', variable: 'KEYRING')]) {
                         sh label: '', script: '''
                             gpg --batch --import "${KEYRING}"
@@ -127,11 +130,9 @@ spec:
         stage('Build') {
             steps {
                 container('el-build') {
-                    sshagent(['SSH_CREDENTIALS_ID']) {
-                        sh """
-                            etc/jenkins/build.sh
-                        """
-                    }
+                    sh """
+                        etc/jenkins/build.sh
+                    """
                 }
             }
         }
@@ -139,23 +140,19 @@ spec:
         stage('Publish to snapshots') {
             steps {
                 container('el-build') {
-                    sshagent([SSH_CREDENTIALS_ID]) {
-                        sh """
-                            etc/jenkins/publish_snapshots.sh
-                            """
-                    }
+                    sh """
+                        etc/jenkins/publish_snapshots.sh
+                    """
                 }
             }
         }
         // Publish to nightly
         stage('Publish to nightly') {
             steps {
-                container('el-build') {
-                    sshagent(['projects-storage.eclipse.org-bot-ssh']) {
-                        sh """
-                            etc/jenkins/publish_nightly.sh
-                            """
-                    }
+                sshagent(['projects-storage.eclipse.org-bot-ssh']) {
+                    sh """
+                        etc/jenkins/publish_nightly.sh
+                    """
                 }
             }
         }
