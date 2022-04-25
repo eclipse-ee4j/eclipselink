@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #****************************************************************************************
-# Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 # which accompanies this distribution.
@@ -55,10 +55,10 @@ ANT_TARGET=build-milestone
 #Global Variables
 RELEASE=false
 
-PATH=${JAVA_HOME}/bin:${ANT_HOME}/bin:${RELENG_REPO}:/usr/bin:/usr/local/bin:${PATH}
+PATH=${JAVA_HOME}/bin:${ANT_HOME}/bin:${M2_HOME}/bin:${RELENG_REPO}:/usr/bin:/usr/local/bin:${PATH}
 
 # Export necessary global environment variables
-export ANT_ARGS ANT_OPTS ANT_HOME HOME_DIR JAVA_HOME LOG_DIR PATH
+export ANT_ARGS ANT_OPTS ANT_HOME M2_HOME HOME_DIR JAVA_HOME LOG_DIR PATH
 #==========================
 #   Functions Definitions
 #
@@ -369,7 +369,7 @@ callAnt() {
         fi
 
         #Invoke Antscript for Branch specific promotion
-        arguments="-Dbuild.deps.dir=${BldDepsDir} -Dreleng.repo.dir=${RELENG_REPO} -Dgit.exec=${GIT_EXEC} -Declipselink.root.download.dir=${DNLD_DIR} -Dsigning.dir=${SIGN_DIR}"
+        arguments="-Dbuild.deps.dir=${BldDepsDir} -Dreleng.repo.dir=${RELENG_REPO} -Dgit.exec=${GIT_EXEC} -Declipselink.root.download.dir=${DNLD_DIR} -Dsigning.dir=${SIGN_DIR} -DM2_HOME=${M2_HOME}"
         arguments="${arguments} -Dbranch.name=${branch_nm} -Drelease.version=${version} -Dbuild.type=${milestone} -Dbranch=${branch}"
         arguments="${arguments} -Dversion.qualifier=${qualifier} -Dbuild.date=${blddate} -Dgit.hash=${githash}"
         echo "   sign   = '${SIGN}'"
@@ -383,7 +383,7 @@ callAnt() {
         echo "pwd='`pwd`"
         echo "ant ${BUILDFILE} ${arguments} ${ANT_TARGET}"
         if [ -f ${BUILDFILE} ] ; then
-            ant -f ${BUILDFILE} ${arguments} ${ANT_TARGET}
+            $ANT_HOME/bin/ant -f ${BUILDFILE} ${arguments} ${ANT_TARGET}
             if [ "$?" = "0" ]
             then
                 echo "Ant promote complete."
@@ -461,6 +461,12 @@ if [ ! -d ${ANT_HOME} ] ; then
 fi
 echo "ANT_HOME verified at: '${ANT_HOME}'"
 
+if [ ! -d ${M2_HOME} ] ; then
+    echo "Expecting Maven at: '${M2_HOME}', but is not there!"
+    #exit
+fi
+echo "M2_HOME verified at: '${M2_HOME}'"
+
 if [ ! -d ${HOME_DIR} ] ; then
     echo "Need to create HOME_DIR '${HOME_DIR}'"
     if [ "${DEBUG}" = "false" ] ; then
@@ -478,7 +484,7 @@ if [ ! -d ${LOG_DIR} ] ; then
         echo "    Debug on, No actual work being done."
     fi
 fi
-GIT_EXEC=/usr/local/bin/git
+GIT_EXEC=/usr/bin/git
 if [ ! -x ${GIT_EXEC} ] ; then
     echo "Cannot find Git executable using default value '$GIT_EXEC'. Attempting Autofind..."
     GIT_EXEC=`which git`

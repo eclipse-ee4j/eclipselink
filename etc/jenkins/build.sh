@@ -13,7 +13,6 @@
 #  N/A
 
 echo '-[ EclipseLink Build ]-----------------------------------------------------------'
-. /etc/profile
 /opt/bin/mysql-start.sh
 
 if [ ${CONTINUOUS_BUILD} = "true" ]; then
@@ -24,6 +23,6 @@ fi
 
 export ANT_OPTS=-Xmx4G
 set -o pipefail
-ant -f autobuild.xml ${ANT_TARGET} -Denv.JAVA_HOME=${JAVA_HOME} -DM2_HOME=${HOME}/extension.lib.external/apache-maven-3.6.0 -Djdbc.driver.jar=${HOME}/extension.lib.external/mysql-connector-java-8.0.28.jar -Ddb.url=${TEST_DB_URL} -Ddb.user=${TEST_DB_USERNAME} -Ddb.pwd=${TEST_DB_PASSWORD} -Dextensions.depend.dir=${HOME}/extension.lib.external -Declipse.install.dir=${HOME}/extension.lib.external/eclipse -Djunit.lib=${HOME}/extension.lib.external/junit-4.12.jar:${HOME}/extension.lib.external/hamcrest-core-1.3.jar:${HOME}/extension.lib.external/jmockit-1.35.jar -Dhudson.workspace=${WORKSPACE} -Dtest.logging.level=INFO -Dfail.on.error=true
+$ANT_HOME/bin/ant -f autobuild.xml ${ANT_TARGET} -Denv.JAVA_HOME=${JAVA_HOME} -DM2_HOME=${M2_HOME} -Djdbc.driver.jar=${HOME}/extension.lib.external/mysql-connector-java-8.0.28.jar -Ddb.url=${TEST_DB_URL} -Ddb.user=${TEST_DB_USERNAME} -Ddb.pwd=${TEST_DB_PASSWORD} -Dextensions.depend.dir=${HOME}/extension.lib.external -Declipse.install.dir=${HOME}/extension.lib.external/eclipse -Djunit.lib=${HOME}/extension.lib.external/junit-4.12.jar:${HOME}/extension.lib.external/hamcrest-core-1.3.jar:${HOME}/extension.lib.external/jmockit-1.35.jar -Dhudson.workspace=${WORKSPACE} -Dtest.logging.level=INFO -Dfail.on.error=true
 
 /opt/bin/mysql-stop.sh

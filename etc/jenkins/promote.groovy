@@ -123,8 +123,11 @@ spec:
                             """
                         // Prepare and promote EclipseLink artifacts to oss.sonatype.org (staging)
                         sh """
-                            . /etc/profile
                             curl --version
+                            $JAVA_HOME/bin/java -version
+                            echo JAVA_HOME = ${JAVA_HOME}
+                            echo ANT_HOME = ${ANT_HOME}
+                            echo M2_HOME = ${M2_HOME}
                             echo ${RELEASE}
                             echo ${MAJOR_VERSION}
                             echo ${NIGHTLY_BUILD_ID}
