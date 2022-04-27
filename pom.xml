@@ -196,7 +196,7 @@
         <!-- CQ #23046 -->
         <apache.felix.framework.version>7.0.0</apache.felix.framework.version>
         <!-- CQ #21133 -->
-        <ant.version>1.10.9</ant.version>
+        <ant.version>1.10.12</ant.version>
         <commonj.sdo.version>2.1.1</commonj.sdo.version>
         <derby.version>10.14.2.0</derby.version>
         <!-- CQ #21134, 21135, 21136, 21137 -->
