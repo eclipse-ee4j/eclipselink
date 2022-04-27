@@ -223,8 +223,8 @@
         <jgroups.version>4.2.11.Final</jgroups.version>
         <jmh.version>1.27</jmh.version>
         <junit.version>4.13.2</junit.version>
-        <!-- CQ #21138 -->
-        <mongodb.version>3.12.7</mongodb.version>
+        <!-- CQ #24079 -->
+        <mongodb.version>3.12.11</mongodb.version>
         <mysql.version>8.0.28</mysql.version>
         <mssql.version>9.2.0.jre8</mssql.version>
         <pgsql.version>42.3.3</pgsql.version>
