@@ -50,6 +50,7 @@ import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LowerExpression;
+import org.eclipse.persistence.jpa.jpql.parser.MathDoubleExpression;
 import org.eclipse.persistence.jpa.jpql.parser.MathSingleExpression;
 import org.eclipse.persistence.jpa.jpql.parser.MaxFunction;
 import org.eclipse.persistence.jpa.jpql.parser.MinFunction;
@@ -381,13 +382,43 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
     }
 
     @Override
+    public void visit(MathDoubleExpression.Power expression) {
+        Expression queryExpression = queryContext.buildExpression(expression, type);
+        addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
+    }
+
+    @Override
+    public void visit(MathDoubleExpression.Round expression) {
+        Expression queryExpression = queryContext.buildExpression(expression, type);
+        addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
+    }
+
+    @Override
     public void visit(MathSingleExpression.Ceiling expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
     }
 
     @Override
+    public void visit(MathSingleExpression.Exp expression) {
+        Expression queryExpression = queryContext.buildExpression(expression, type);
+        addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
+    }
+
+    @Override
     public void visit(MathSingleExpression.Floor expression) {
+        Expression queryExpression = queryContext.buildExpression(expression, type);
+        addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Ln expression) {
+        Expression queryExpression = queryContext.buildExpression(expression, type);
+        addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Sign expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
     }
