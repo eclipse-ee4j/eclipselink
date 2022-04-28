@@ -1332,6 +1332,8 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
         // First create the Expression for the first expression
         expression.getFirstExpression().accept(this);
         Expression leftExpression = queryExpression;
+        // Store type of the 1st (left) expression before being overwritten by the second expression.
+        final Class<?> leftType = type[0];
 
         // Now create the Expression for the second expression
         expression.getSecondExpression().accept(this);
@@ -1340,7 +1342,8 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
         // Now create the ROUND expression
         queryExpression = ExpressionMath.round(leftExpression, rightExpression);
 
-        // Note: The type will be calculated when traversing the ROUND's expression
+        // Note: The type is used from the 1st (left) expression.
+        type[0] = leftType;
     }
 
     @Override

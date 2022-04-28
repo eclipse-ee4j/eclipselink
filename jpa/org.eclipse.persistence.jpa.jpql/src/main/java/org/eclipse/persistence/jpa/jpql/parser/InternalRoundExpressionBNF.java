@@ -43,7 +43,7 @@ public class InternalRoundExpressionBNF extends JPQLQueryBNF {
         super.initialize();
         setFallbackBNFId(ID);
         setFallbackExpressionFactoryId(LiteralExpressionFactory.ID);
-        registerChild(SimpleArithmeticExpressionBNF.ID);
+        registerChild(ArithmeticExpressionBNF.ID);
     }
 
 }
