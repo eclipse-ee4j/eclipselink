@@ -46,8 +46,6 @@ import org.eclipse.persistence.mappings.querykeys.QueryKey;
 /**
  * This visitor resolves the type of any given {@link Expression}.
  *
- * @version 2.6
- * @since 2.4
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,8 +19,6 @@ package org.eclipse.persistence.jpa.jpql;
 /**
  * An enumeration listing the various releases of EclipseLink.
  *
- * @version 4.0
- * @since 2.5
  * @author Pascal Filion
  */
 public enum EclipseLinkVersion {
@@ -76,11 +74,6 @@ public enum EclipseLinkVersion {
     VERSION_3_0(3.0),
 
     /**
-     * The constant for the EclipseLink 3.1 release.
-     */
-    VERSION_3_1(3.1),
-
-    /**
      * The constant for the EclipseLink 4.0 release.
      */
     VERSION_4_0(4.0);
@@ -95,7 +88,7 @@ public enum EclipseLinkVersion {
      *
      * @param version The actual version number
      */
-    EclipseLinkVersion(double version) {
+    private EclipseLinkVersion(double version) {
         this.version = version;
     }
 
@@ -123,7 +116,7 @@ public enum EclipseLinkVersion {
      * @return The list of unique constants
      */
     public static EclipseLinkVersion[] versions() {
-        EclipseLinkVersion[] values = new EclipseLinkVersion[10];
+        EclipseLinkVersion[] values = new EclipseLinkVersion[9];
         values[0] = VERSION_1_x;
         values[1] = VERSION_2_0;
         values[2] = VERSION_2_1;
@@ -132,8 +125,7 @@ public enum EclipseLinkVersion {
         values[5] = VERSION_2_4;
         values[6] = VERSION_2_5;
         values[7] = VERSION_3_0;
-        values[8] = VERSION_3_1;
-        values[9] = VERSION_4_0;
+        values[8] = VERSION_4_0;
         return values;
     }
 

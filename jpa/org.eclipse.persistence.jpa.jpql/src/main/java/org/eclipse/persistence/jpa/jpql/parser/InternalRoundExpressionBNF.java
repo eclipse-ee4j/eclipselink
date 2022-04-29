@@ -18,10 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for the parameters of the <code><b>ROUND</b></code> expression.
  * <br>
- * JPA 1.0, 2.0:
- * <div><b>BNF:</b> <code>expression ::= ROUND(simple_arithmetic_expression, simple_arithmetic_expression)</code></div>
- * <br>
- * JPA 2.1:
+ * JPA 3.1:
  * <div><b>BNF:</b> <code>expression ::= ROUND(arithmetic_expression, arithmetic_expression)</code></div>
  */
 public class InternalRoundExpressionBNF extends JPQLQueryBNF {

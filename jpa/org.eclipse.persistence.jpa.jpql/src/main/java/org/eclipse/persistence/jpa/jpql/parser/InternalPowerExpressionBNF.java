@@ -18,10 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for the parameters of the <code><b>POWER</b></code> expression.
  * <br>
- * JPA 1.0, 2.0:
- * <div><b>BNF:</b> <code>expression ::= POWER(simple_arithmetic_expression, simple_arithmetic_expression)</code></div>
- * <br>
- * JPA 2.1:
+ * JPA 3.1:
  * <div><b>BNF:</b> <code>expression ::= POWER(arithmetic_expression, arithmetic_expression)</code></div>
  */
 public class InternalPowerExpressionBNF extends JPQLQueryBNF {
@@ -43,7 +40,7 @@ public class InternalPowerExpressionBNF extends JPQLQueryBNF {
         super.initialize();
         setFallbackBNFId(ID);
         setFallbackExpressionFactoryId(LiteralExpressionFactory.ID);
-        registerChild(SimpleArithmeticExpressionBNF.ID);
+        registerChild(ArithmeticExpressionBNF.ID);
     }
 
 }

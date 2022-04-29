@@ -50,8 +50,6 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                  <code>extract_datetime_field := EXTRACT(datetime_field FROM datetime_expression)
  *                        datetime_field := identification_variable</code></div>
  *
- * @version 2.4
- * @since 2.3
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")

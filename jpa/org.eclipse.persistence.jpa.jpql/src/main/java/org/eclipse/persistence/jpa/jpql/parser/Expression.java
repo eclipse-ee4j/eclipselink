@@ -29,8 +29,6 @@ import org.eclipse.persistence.jpa.jpql.utility.iterable.ListIterable;
  *
  * @see JPQLGrammar
  *
- * @version 2.5
- * @since 2.3
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
@@ -107,8 +105,6 @@ public interface Expression {
 
     /**
      * The constant for the identifier 'CEILING'.
-     *
-     * @since 3.1
      */
     String CEILING = "CEILING";
 
@@ -274,8 +270,6 @@ public interface Expression {
 
     /**
      * The constant for the identifier 'FLOOR'.
-     *
-     * @since 3.1
      */
     String FLOOR = "FLOOR";
 
@@ -658,8 +652,6 @@ public interface Expression {
 
     /**
      * The constant for 'ROUND'.
-     *
-     * @since 2.4
      */
     String ROUND = "ROUND";
 

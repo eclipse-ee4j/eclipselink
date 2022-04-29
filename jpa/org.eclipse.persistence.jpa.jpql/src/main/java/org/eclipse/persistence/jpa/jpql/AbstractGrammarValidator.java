@@ -21,7 +21,119 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.eclipse.persistence.jpa.jpql.parser.*;
+
+import org.eclipse.persistence.jpa.jpql.parser.AbsExpression;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractConditionalClause;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractDoubleEncapsulatedExpression;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractEncapsulatedExpression;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractExpressionVisitor;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractFromClause;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractPathExpression;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractSchemaName;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectClause;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectStatement;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractSingleEncapsulatedExpression;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractTripleEncapsulatedExpression;
+import org.eclipse.persistence.jpa.jpql.parser.AdditionExpression;
+import org.eclipse.persistence.jpa.jpql.parser.AggregateFunction;
+import org.eclipse.persistence.jpa.jpql.parser.AllOrAnyExpression;
+import org.eclipse.persistence.jpa.jpql.parser.AndExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ArithmeticExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ArithmeticExpressionBNF;
+import org.eclipse.persistence.jpa.jpql.parser.ArithmeticFactor;
+import org.eclipse.persistence.jpa.jpql.parser.ArithmeticPrimaryBNF;
+import org.eclipse.persistence.jpa.jpql.parser.ArithmeticTermBNF;
+import org.eclipse.persistence.jpa.jpql.parser.AvgFunction;
+import org.eclipse.persistence.jpa.jpql.parser.BadExpression;
+import org.eclipse.persistence.jpa.jpql.parser.BetweenExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CaseExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CoalesceExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration;
+import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpressionBNF;
+import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CompoundExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ConditionalExpressionBNF;
+import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
+import org.eclipse.persistence.jpa.jpql.parser.DateTime;
+import org.eclipse.persistence.jpa.jpql.parser.DeleteClause;
+import org.eclipse.persistence.jpa.jpql.parser.DeleteStatement;
+import org.eclipse.persistence.jpa.jpql.parser.DivisionExpression;
+import org.eclipse.persistence.jpa.jpql.parser.EmptyCollectionComparisonExpression;
+import org.eclipse.persistence.jpa.jpql.parser.EntityTypeLiteral;
+import org.eclipse.persistence.jpa.jpql.parser.EntryExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ExistsExpression;
+import org.eclipse.persistence.jpa.jpql.parser.Expression;
+import org.eclipse.persistence.jpa.jpql.parser.FromClause;
+import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
+import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
+import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
+import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
+import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableBNF;
+import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration;
+import org.eclipse.persistence.jpa.jpql.parser.InExpression;
+import org.eclipse.persistence.jpa.jpql.parser.IndexExpression;
+import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
+import org.eclipse.persistence.jpa.jpql.parser.InternalOrderByItemBNF;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF;
+import org.eclipse.persistence.jpa.jpql.parser.Join;
+import org.eclipse.persistence.jpa.jpql.parser.JoinAssociationPathExpressionBNF;
+import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
+import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LikeExpressionEscapeCharacterBNF;
+import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LogicalExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LowerExpression;
+import org.eclipse.persistence.jpa.jpql.parser.MaxFunction;
+import org.eclipse.persistence.jpa.jpql.parser.MinFunction;
+import org.eclipse.persistence.jpa.jpql.parser.ModExpression;
+import org.eclipse.persistence.jpa.jpql.parser.MultiplicationExpression;
+import org.eclipse.persistence.jpa.jpql.parser.NotExpression;
+import org.eclipse.persistence.jpa.jpql.parser.NullComparisonExpression;
+import org.eclipse.persistence.jpa.jpql.parser.NullExpression;
+import org.eclipse.persistence.jpa.jpql.parser.NullIfExpression;
+import org.eclipse.persistence.jpa.jpql.parser.NumericLiteral;
+import org.eclipse.persistence.jpa.jpql.parser.ObjectExpression;
+import org.eclipse.persistence.jpa.jpql.parser.OnClause;
+import org.eclipse.persistence.jpa.jpql.parser.OrExpression;
+import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
+import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
+import org.eclipse.persistence.jpa.jpql.parser.RangeDeclarationBNF;
+import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
+import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
+import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
+import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
+import org.eclipse.persistence.jpa.jpql.parser.SimpleFromClause;
+import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectClause;
+import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
+import org.eclipse.persistence.jpa.jpql.parser.SizeExpression;
+import org.eclipse.persistence.jpa.jpql.parser.SqrtExpression;
+import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
+import org.eclipse.persistence.jpa.jpql.parser.StringLiteral;
+import org.eclipse.persistence.jpa.jpql.parser.SubExpression;
+import org.eclipse.persistence.jpa.jpql.parser.SubstringExpression;
+import org.eclipse.persistence.jpa.jpql.parser.SubtractionExpression;
+import org.eclipse.persistence.jpa.jpql.parser.SumFunction;
+import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
+import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
+import org.eclipse.persistence.jpa.jpql.parser.TypeExpression;
+import org.eclipse.persistence.jpa.jpql.parser.UnknownExpression;
+import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
+import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
+import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
+import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ValueExpression;
+import org.eclipse.persistence.jpa.jpql.parser.WhenClause;
+import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
+
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
@@ -34,10 +146,8 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @see AbstractSemanticValidator
+ * @see org.eclipse.persistence.jpa.jpql.AbstractSemanticValidator
  *
- * @version 4.0
- * @since 2.4
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")

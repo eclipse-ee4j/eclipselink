@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,8 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-//
+//     04/21/2022: Tomas Kraus
+//       - Issue 1474: Update JPQL Grammar for JPA 2.2, 3.0 and 3.1
 package org.eclipse.persistence.internal.jpa.jpql;
 
 import java.text.MessageFormat;
@@ -66,8 +67,6 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
  *
  * @see JPQLExpression
  *
- * @version 2.5
- * @since 2.3
  * @author John Bracken
  * @author Pascal Filion
  */

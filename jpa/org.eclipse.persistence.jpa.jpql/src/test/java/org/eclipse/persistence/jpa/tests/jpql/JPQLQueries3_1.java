@@ -15,6 +15,9 @@
 //       - Issue 1474: Update JPQL Grammar for JPA 2.2, 3.0 and 3.1
 package org.eclipse.persistence.jpa.tests.jpql;
 
+/**
+ * This class provides a list of queries that are written against the JPQL 3.1 grammar.
+ */
 public class JPQLQueries3_1 {
 
     private JPQLQueries3_1() {

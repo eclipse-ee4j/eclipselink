@@ -84,8 +84,6 @@ import static org.eclipse.persistence.jpa.jpql.LiteralType.PATH_EXPRESSION_LAST_
  * This builder is responsible to create the EclipseLink {@link Expression Expressions} representing
  * the select items of the <code><b>SELECT</b></code> clause.
  *
- * @version 2.4
- * @since 2.3
  * @author Pascal Filion
  * @author John Bracken
  */

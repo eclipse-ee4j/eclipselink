@@ -23,7 +23,6 @@
 //     IBM - Bug 537795: CASE THEN and ELSE scalar expression Constants should not be casted to CASE operand type
 //     04/21/2022: Tomas Kraus
 //       - Issue 1474: Update JPQL Grammar for JPA 2.2, 3.0 and 3.1
-
 package org.eclipse.persistence.internal.jpa.jpql;
 
 import java.sql.Date;
@@ -166,8 +165,6 @@ import org.eclipse.persistence.queries.ReportQuery;
  * This {@link org.eclipse.persistence.jpa.jpql.parser.ExpressionVisitor} visits an {@link org.eclipse.persistence.jpa.jpql.parser.Expression
  * JPQL Expression} and creates the corresponding {@link org.eclipse.persistence.expressions.Expression EclipseLink Expression}.
  *
- * @version 2.6
- * @since 2.3
  * @author Pascal Filion
  * @author John Bracken
  */

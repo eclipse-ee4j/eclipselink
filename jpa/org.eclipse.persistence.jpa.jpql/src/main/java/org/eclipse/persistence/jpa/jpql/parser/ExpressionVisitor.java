@@ -9,11 +9,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
+
 // Contributors:
 //     Oracle - initial API and implementation
 //     04/21/2022: Tomas Kraus
 //       - Issue 1474: Update JPQL Grammar for JPA 2.2, 3.0 and 3.1
-
 package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
@@ -25,8 +25,6 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4
- * @since 2.3
  * @author Pascal Filion
  */
 public interface ExpressionVisitor {

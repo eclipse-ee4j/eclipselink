@@ -19,8 +19,7 @@ import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.JPAVersion;
 
 /**
- * This {@link JPQLGrammar} provides support for parsing JPQL queries defined in
- * Java Persistence 2.2.
+ * This {@link JPQLGrammar} provides support for parsing JPQL queries defined in Java Persistence 2.2.
  */
 public class JPQLGrammar2_2 extends AbstractJPQLGrammar {
 

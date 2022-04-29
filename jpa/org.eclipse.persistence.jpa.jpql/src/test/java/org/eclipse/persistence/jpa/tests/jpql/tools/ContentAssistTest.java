@@ -51,8 +51,6 @@ import static org.junit.Assert.*;
 /**
  * The abstract unit-test providing helper methods required for testing content assist.
  *
- * @version 4.0
- * @since 2.5
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")

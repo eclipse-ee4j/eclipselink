@@ -27,8 +27,26 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.ROUND;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.SIGN;
 
 /**
- * This {@link JPQLGrammar} provides support for parsing JPQL queries defined in
- * Java Persistence 3.1.
+ * This {@link JPQLGrammar} provides support for parsing JPQL queries defined in Java Persistence 3.1.
+ * <pre><code>
+ * functions_returning_numerics ::= ABS(arithmetic_expression) |
+ *                                  CEILING(arithmetic_expression) |
+ *                                  EXP(arithmetic_expression) |
+ *                                  FLOOR(arithmetic_expression) |
+ *                                  LN(arithmetic_expression) |
+ *                                  MOD(arithmetic_expression, arithmetic_expression) |
+ *                                  POWER(arithmetic_expression, arithmetic_expression) |
+ *                                  ROUND(arithmetic_expression, arithmetic_expression) |
+ *                                  SIGN(arithmetic_expression) |
+ *                                  SQRT(arithmetic_expression) |
+ *                                  SIZE(collection_valued_path_expression) |
+ *                                  INDEX(identification_variable) |
+ *                                  extract_datetime_field
+ *
+ * extract_datetime_field := EXTRACT(datetime_field FROM datetime_expression)
+ *
+ * datetime_field := identification_variable
+ * </code></pre>
  */
 public class JPQLGrammar3_1 extends AbstractJPQLGrammar {
 
