@@ -55,7 +55,6 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
             super.addChild(argument);
         }
         setBaseExpression(getChildren().firstElement());
-        ((ListExpressionOperator)operator).incrementNumberOfItems();
     }
 
     /**
@@ -86,7 +85,6 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
     public void setOperator(ExpressionOperator theOperator) {
         assert(theOperator instanceof ListExpressionOperator);
         super.setOperator(theOperator);
-        ((ListExpressionOperator)theOperator).setNumberOfItems(0);
     }
     
     /**
@@ -94,10 +92,11 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
      * Print SQL
      */
     public void printSQL(ExpressionSQLPrinter printer) {
-        ListExpressionOperator platformOperator = (ListExpressionOperator)getPlatformOperator(printer.getPlatform());
-        platformOperator.copyTo(operator);
-        ((ListExpressionOperator)operator).setIsComplete(true);
-        operator.printCollection(getChildren(), printer);
+        ListExpressionOperator realOperator;
+        realOperator = (ListExpressionOperator)getPlatformOperator(printer.getPlatform());
+        operator.copyTo(realOperator);
+        ((ListExpressionOperator) realOperator).setIsComplete(true);
+        realOperator.printCollection(this.children, printer);
     }
 
     @Override
@@ -124,9 +123,6 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
      */
     public void initializePlatformOperator(DatabasePlatform platform) {
         super.initializePlatformOperator(platform);
-        ((ListExpressionOperator)platformOperator).setNumberOfItems(((ListExpressionOperator)operator).getNumberOfItems());
     }
-    
-    
 }
 

@@ -56,17 +56,17 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
      * INTERNAL:
      * Set the data passed through setCustomSQLArgumentType and useCustomSQLCursorOutputAsResultSet methods.
      */
-    protected void afterTranslateCustomQuery(List updatedParameters, List<Integer> updatedParameterTypes) {
+    protected void afterTranslateCustomQuery(List updatedParameters, List<ParameterType> updatedParameterTypes) {
         int size = getParameters().size();
         for (int i = 0; i < size; i++) {
-            Integer parameterType = this.parameterTypes.get(i);
+            ParameterType parameterType = this.parameterTypes.get(i);
             Object parameter = this.parameters.get(i);
-            if ((parameterType == MODIFY) || (parameterType == OUT) || (parameterType == OUT_CURSOR) || ((parameterType == IN) && parameter instanceof DatabaseField)) {
+            if ((parameterType == ParameterType.MODIFY) || (parameterType == ParameterType.OUT) || (parameterType == ParameterType.OUT_CURSOR) || ((parameterType == ParameterType.IN) && parameter instanceof DatabaseField)) {
                 DatabaseField field = afterTranslateCustomQueryUpdateParameter((DatabaseField)parameter, i, parameterType, updatedParameters, updatedParameterTypes);
                 if (field!=null){
                     this.parameters.set(i, field);
                 }
-            } else if (parameterType == INOUT) {
+            } else if (parameterType == ParameterType.INOUT) {
                 DatabaseField outField = afterTranslateCustomQueryUpdateParameter((DatabaseField)((Object[])parameter)[1], i, parameterType, updatedParameters, updatedParameterTypes);
                 if (outField != null) {
                     if (((Object[])parameter)[0] instanceof DatabaseField){
@@ -80,7 +80,7 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
                     }
                     ((Object[])parameter)[1] = outField;
                 }
-            } else if ((parameterType == IN) && (parameter instanceof DatabaseField)){
+            } else if ((parameterType == ParameterType.IN) && (parameter instanceof DatabaseField)){
                 DatabaseField field = afterTranslateCustomQueryUpdateParameter((DatabaseField)parameter, i, parameterType, updatedParameters, updatedParameterTypes);
                 if (field != null) {
                     this.parameters.set(i, field);
@@ -94,17 +94,17 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
      * Set the data passed through setCustomSQLArgumentType and useCustomSQLCursorOutputAsResultSet methods.
      * This will return the null if the user did not add the field/type using the setCustomSQLArgumentType method
      */
-    protected DatabaseField afterTranslateCustomQueryUpdateParameter(DatabaseField field, int index, Integer parameterType, List updatedParameters, List<Integer> updatedParameterTypes) {
+    protected DatabaseField afterTranslateCustomQueryUpdateParameter(DatabaseField field, int index, ParameterType parameterType, List updatedParameters, List<ParameterType> updatedParameterTypes) {
         int size = updatedParameters.size();
         for (int j = 0; j < size; j++) {
             DatabaseField updateField = (DatabaseField)updatedParameters.get(j);
             if (field.equals(updateField)) {
-                Integer updateParameterType = updatedParameterTypes.get(j);
+                ParameterType updateParameterType = updatedParameterTypes.get(j);
                 if (updateParameterType == null) {
                     return updateField;
-                } else if (updateParameterType == OUT_CURSOR) {
-                    if (parameterType == OUT) {
-                        this.parameterTypes.set(index, OUT_CURSOR);
+                } else if (updateParameterType == ParameterType.OUT_CURSOR) {
+                    if (parameterType == ParameterType.OUT) {
+                        this.parameterTypes.set(index, ParameterType.OUT_CURSOR);
                         return updateField;
                     } else {
                         throw ValidationException.cannotSetCursorForParameterTypeOtherThanOut(field.getName(), toString());
@@ -143,7 +143,7 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
         if (hasCustomSQLArguments()) {
             // hold results of setCustomSQLArgumentType and useCustomSQLCursorOutputAsResultSet methods
             List updatedParameters = null;
-            List updatedParameterTypes = null;
+            List<ParameterType> updatedParameterTypes = null;
             if (getParameters().size() > 0) {
                 updatedParameters = getParameters();
                 setParameters(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance());
@@ -179,6 +179,7 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
         field.setType(type);
         getParameters().add(field);
         getParameterTypes().add(null);
+        getParameterBindings().add(true);
     }
     
     /**
@@ -193,6 +194,7 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
         field.setSqlType(type);
         getParameters().add(field);
         getParameterTypes().add(null);
+        getParameterBindings().add(true);
     }
     
     /**
@@ -209,6 +211,7 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
         field.setSqlTypeName(typeName);
         getParameters().add(field);
         getParameterTypes().add(null);
+        getParameterBindings().add(true);
     }
     
     /**
@@ -227,6 +230,7 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
         field.setType(javaType);
         getParameters().add(field);
         getParameterTypes().add(null);
+        getParameterBindings().add(true);
     }
     
     /**
@@ -245,6 +249,7 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
         field.setNestedTypeField(nestedType);
         getParameters().add(field);
         getParameterTypes().add(null);
+        getParameterBindings().add(true);
     }
     
     /**
@@ -265,6 +270,7 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
         field.setNestedTypeField(nestedType);
         getParameters().add(field);
         getParameterTypes().add(null);
+        getParameterBindings().add(true);
     }
 
     /**
@@ -317,7 +323,8 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
             throw ValidationException.fileError(exception);
         }
         getParameters().add(expression);
-        getParameterTypes().add(TRANSLATION);
+        getParameterTypes().add(ParameterType.TRANSLATION);
+        getParameterBindings().add(expression.canBind());
     }
 
     /**
@@ -330,7 +337,8 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
     public void useCustomSQLCursorOutputAsResultSet(String customParameterName) {
         DatabaseField field = new DatabaseField(customParameterName);
         getParameters().add(field);
-        getParameterTypes().add(OUT_CURSOR);
+        getParameterTypes().add(ParameterType.OUT_CURSOR);
+        getParameterBindings().add(true);
         setIsCursorOutputProcedure(true);
     }
 }

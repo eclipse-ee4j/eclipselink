@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -57,6 +57,7 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 import org.eclipse.persistence.internal.databaseaccess.OutputParameterForCallableStatement;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.querydef.ParameterExpressionImpl;
@@ -429,16 +430,16 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             int index = 0;
                 
             for (Object parameter : getCall().getParameters()) {
-                Integer parameterType = getCall().getParameterTypes().get(index);
+                ParameterType parameterType = getCall().getParameterTypes().get(index);
                 String argumentName = getCall().getProcedureArgumentNames().get(index);
                     
                 DatabaseField field = null;
                     
-                if (parameterType == getCall().INOUT) {
+                if (parameterType == ParameterType.INOUT) {
                     field = (DatabaseField) ((Object[]) parameter)[0];
-                } else if (parameterType == getCall().IN) {
+                } else if (parameterType == ParameterType.IN) {
                     field = (DatabaseField) parameter;
-                } else if (parameterType == getCall().OUT || parameterType == getCall().OUT_CURSOR) {
+                } else if (parameterType == ParameterType.OUT || parameterType == ParameterType.OUT_CURSOR) {
                     if (parameter instanceof OutputParameterForCallableStatement) {
                         // Case: Oracle OUT_CURSOR after execution.
                         field = ((OutputParameterForCallableStatement) parameter).getOutputField();

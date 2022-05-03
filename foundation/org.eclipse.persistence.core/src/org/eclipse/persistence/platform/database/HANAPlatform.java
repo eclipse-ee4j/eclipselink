@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 SAP, Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 SAP, Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -43,7 +43,6 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
@@ -201,7 +200,7 @@ public final class HANAPlatform extends DatabasePlatform {
         this.addOperator(HANAPlatform.createLocateOperator());
         this.addOperator(HANAPlatform.createLocate2Operator());
         this.addOperator(HANAPlatform.createVarianceOperator());
-        this.addNonBindingOperator(HANAPlatform.createNullValueOperator());
+        this.addOperator(HANAPlatform.createNullValueOperator());
     }
 
     private static final ExpressionOperator createConcatExpressionOperator() {
@@ -316,7 +315,9 @@ public final class HANAPlatform extends DatabasePlatform {
     }
 
     private static final ExpressionOperator createNullValueOperator() {
-        return ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Nvl, "IFNULL");
+        ExpressionOperator exOperator = ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Nvl, "IFNULL");
+        exOperator.setIsBindingSupported(false);
+        return exOperator;
     }
 
     public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer,
@@ -359,11 +360,6 @@ public final class HANAPlatform extends DatabasePlatform {
     @Override
     public boolean shouldOptimizeDataConversion() {
         return true; // TODO is this needed? (seems to default to true)
-    }
-
-    private void addNonBindingOperator(ExpressionOperator operator) {
-        operator.setIsBindingSupported(false);
-        addOperator(operator);
     }
 
     @Override

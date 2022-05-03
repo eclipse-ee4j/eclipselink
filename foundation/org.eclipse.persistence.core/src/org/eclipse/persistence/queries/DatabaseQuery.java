@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -1500,7 +1500,6 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
             return null;
         }
         SQLCall call = (SQLCall) queryMechanism.getCall().clone();
-        call.setUsesBinding(false);
         call.translate((AbstractRecord) translationRow, queryMechanism.getModifyRow(), (AbstractSession) session);
         return call.getSQLString();
     }
@@ -1523,7 +1522,6 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         while (iterator.hasNext()) {
             SQLCall call = (SQLCall) iterator.next();
             call = (SQLCall) call.clone();
-            call.setUsesBinding(false);
             call.translate((AbstractRecord) translationRow, queryMechanism.getModifyRow(), (AbstractSession) session);
             calls.add(call.getSQLString());
         }

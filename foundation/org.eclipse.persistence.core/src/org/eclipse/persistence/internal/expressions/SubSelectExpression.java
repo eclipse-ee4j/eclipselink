@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -247,6 +247,7 @@ public class SubSelectExpression extends BaseExpression {
         call.translateCustomQuery();
         printer.getCall().getParameters().addAll(call.getParameters());
         printer.getCall().getParameterTypes().addAll(call.getParameterTypes());
+        printer.getCall().getParameterBindings().addAll(call.getParameterBindings());
         printer.printString(call.getCallString());
     }
 

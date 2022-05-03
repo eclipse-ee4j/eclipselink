@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Jenzabar, Inc, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Jenzabar, Inc, Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -126,12 +126,10 @@ public class Informix11Platform extends InformixPlatform {
    */
   @Override
   protected void initializePlatformOperators() {
-    final ExpressionOperator distinctOverride = ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Distinct));
-    assert distinctOverride != null;
-    distinctOverride.printsAs("DISTINCT "); // no parens, one space
     super.initializePlatformOperators();
     this.addOperator(this.currentDateOperator());
     this.addOperator(this.currentTimeOperator());
+    this.addOperator(this.distinctOperator());
   }
 
   /**
@@ -170,6 +168,26 @@ public class Informix11Platform extends InformixPlatform {
    */
   protected ExpressionOperator currentTimeOperator() {
     return ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.CurrentDate, "CURRENT YEAR TO FRACTION(3)");
+  }
+
+
+  /**
+   * Fixes <a
+   * href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=402600">EclipseLink
+   * bug 402600</a> by making sure that the {@link
+   * ExpressionOperator#distinct() Distinct} {@link
+   * ExpressionOperator} is set to {@linkplain
+   * ExpressionOperator#printsAs(String) print as} {@code
+   * DISTINCT&nbsp;} (no parentheses, one trailing space), and fixes
+   *
+   * @see <a
+   * href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=402600">EclipseLink
+   * bug 402600</a>
+   */
+  protected ExpressionOperator distinctOperator() {
+    ExpressionOperator operator = ExpressionOperator.distinct();
+    operator.printsAs("DISTINCT "); // no parens, one space
+    return operator;
   }
 
   /**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2019 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -109,7 +109,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
     public void addNamedArgument(String procedureParameterName, DatabaseType databaseType) {
         DatabaseType dt = databaseType.isComplexDatabaseType() ? 
             ((ComplexDatabaseType)databaseType).clone() : databaseType;
-        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, IN, dt));
+        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, ParameterType.IN, dt));
     }
 
     /**
@@ -122,7 +122,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         int length) {
         DatabaseType dt = databaseType.isComplexDatabaseType() ? 
             ((ComplexDatabaseType)databaseType).clone() : databaseType;
-        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, IN, dt, length));
+        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, ParameterType.IN, dt, length));
     }
 
     /**
@@ -136,19 +136,19 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         int precision, int scale) {
         DatabaseType dt = databaseType.isComplexDatabaseType() ? 
             ((ComplexDatabaseType)databaseType).clone() : databaseType;
-        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, IN, dt, precision, scale));
+        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, ParameterType.IN, dt, precision, scale));
     }
 
     @Override
     public void addNamedArgument(String procedureParameterName, String argumentFieldName, int type) {
-        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, IN,
+        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, ParameterType.IN,
             getDatabaseTypeForCode(type))); // figure out databaseType from the sqlType
     }
 
     @Override
     public void addNamedArgument(String procedureParameterName, String argumentFieldName, int type,
         String typeName) {
-        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, IN,
+        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, ParameterType.IN,
             getDatabaseTypeForCode(type)));
     }
 
@@ -159,7 +159,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
     public void addNamedInOutputArgument(String procedureParameterName, DatabaseType databaseType) {
         DatabaseType dt = databaseType.isComplexDatabaseType() ? 
             ((ComplexDatabaseType)databaseType).clone() : databaseType;
-        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, INOUT, dt));
+        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, ParameterType.INOUT, dt));
     }
 
     /**
@@ -172,7 +172,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         int length) {
         DatabaseType dt = databaseType.isComplexDatabaseType() ? 
             ((ComplexDatabaseType)databaseType).clone() : databaseType;
-        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, INOUT, dt, length));
+        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, ParameterType.INOUT, dt, length));
     }
 
     /**
@@ -185,28 +185,28 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         int precision, int scale) {
         DatabaseType dt = databaseType.isComplexDatabaseType() ? 
             ((ComplexDatabaseType)databaseType).clone() : databaseType;
-        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, INOUT, dt,
+        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, ParameterType.INOUT, dt,
             precision, scale));
     }
 
     @Override
     public void addNamedInOutputArgument(String procedureParameterName, String inArgumentFieldName,
         String outArgumentFieldName, int type) {
-        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, INOUT,
+        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, ParameterType.INOUT,
             getDatabaseTypeForCode(type)));
     }
 
     @Override
     public void addNamedInOutputArgument(String procedureParameterName, String inArgumentFieldName,
         String outArgumentFieldName, int type, String typeName) {
-        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, INOUT,
+        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, ParameterType.INOUT,
             getDatabaseTypeForCode(type)));
     }
 
     @Override
     public void addNamedInOutputArgument(String procedureParameterName, String inArgumentFieldName,
         String outArgumentFieldName, int type, String typeName, Class classType) {
-        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, INOUT,
+        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, ParameterType.INOUT,
             getDatabaseTypeForCode(type)));
     }
 
@@ -214,7 +214,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
     public void addNamedInOutputArgument(String procedureParameterName, String inArgumentFieldName,
         String outArgumentFieldName, int type, String typeName, Class javaType,
         DatabaseField nestedType) {
-        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, INOUT,
+        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, ParameterType.INOUT,
             getDatabaseTypeForCode(type)));
     }
 
@@ -225,7 +225,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
     public void addNamedOutputArgument(String procedureParameterName, DatabaseType databaseType) {
         DatabaseType dt = databaseType.isComplexDatabaseType() ? 
             ((ComplexDatabaseType)databaseType).clone() : databaseType;
-        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, OUT, dt));
+        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, ParameterType.OUT, dt));
     }
 
     /**
@@ -238,7 +238,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         int length) {
         DatabaseType dt = databaseType.isComplexDatabaseType() ? 
             ((ComplexDatabaseType)databaseType).clone() : databaseType;
-        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, OUT, dt, length));
+        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, ParameterType.OUT, dt, length));
     }
 
     /**
@@ -251,35 +251,35 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         int precision, int scale) {
         DatabaseType dt = databaseType.isComplexDatabaseType() ? 
             ((ComplexDatabaseType)databaseType).clone() : databaseType;
-        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, OUT, dt,
+        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, ParameterType.OUT, dt,
             precision, scale));
     }
 
     @Override
     public void addNamedOutputArgument(String procedureParameterName, String argumentFieldName,
         int jdbcType, String typeName, Class javaType) {
-        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, OUT,
+        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, ParameterType.OUT,
             getDatabaseTypeForCode(jdbcType)));
     }
 
     @Override
     public void addNamedOutputArgument(String procedureParameterName, String argumentFieldName,
         int jdbcType, String typeName, Class javaType, DatabaseField nestedType) {
-        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, OUT,
+        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, ParameterType.OUT,
             getDatabaseTypeForCode(jdbcType)));
     }
 
     @Override
     public void addNamedOutputArgument(String procedureParameterName, String argumentFieldName,
         int type, String typeName) {
-        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, OUT,
+        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, ParameterType.OUT,
             getDatabaseTypeForCode(type)));
     }
 
     @Override
     public void addNamedOutputArgument(String procedureParameterName, String argumentFieldName,
         int type) {
-        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, OUT,
+        arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, ParameterType.OUT,
             getDatabaseTypeForCode(type)));
     }
 
@@ -471,7 +471,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
     public void useNamedCursorOutputAsResultSet(String argumentName, DatabaseType databaseType) {
         DatabaseType dt = databaseType.isComplexDatabaseType() ? 
             ((ComplexDatabaseType)databaseType).clone() : databaseType;
-        PLSQLargument newArg = new PLSQLargument(argumentName, originalIndex++, OUT, dt);
+        PLSQLargument newArg = new PLSQLargument(argumentName, originalIndex++, ParameterType.OUT, dt);
         newArg.cursorOutput = true;
         arguments.add(newArg);
     }
@@ -482,8 +482,8 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      * the INOUT args
      */
     protected void assignIndices() {
-        List<PLSQLargument> inArguments = getArguments(arguments, IN);
-        List<PLSQLargument> inOutArguments = getArguments(arguments, INOUT);
+        List<PLSQLargument> inArguments = getArguments(arguments, ParameterType.IN);
+        List<PLSQLargument> inOutArguments = getArguments(arguments, ParameterType.INOUT);
         inArguments.addAll(inOutArguments);
         int newIndex = 1;
         List<PLSQLargument> expandedArguments = new ArrayList<PLSQLargument>();
@@ -546,7 +546,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
                 }
             }
         }
-        List<PLSQLargument> outArguments = getArguments(arguments, OUT);
+        List<PLSQLargument> outArguments = getArguments(arguments, ParameterType.OUT);
         outArguments.addAll(inOutArguments);
         for (ListIterator<PLSQLargument> outArgsIter = outArguments.listIterator(); outArgsIter.hasNext();) {
             PLSQLargument outArg = outArgsIter.next();
@@ -617,10 +617,10 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      * in the DECLARE section.
      */
     protected void buildDeclareBlock(StringBuilder sb, List<PLSQLargument> arguments) {
-        List<PLSQLargument> inArguments = getArguments(arguments, IN);
-        List<PLSQLargument> inOutArguments = getArguments(arguments, INOUT);
+        List<PLSQLargument> inArguments = getArguments(arguments, ParameterType.IN);
+        List<PLSQLargument> inOutArguments = getArguments(arguments, ParameterType.INOUT);
         inArguments.addAll(inOutArguments);
-        List<PLSQLargument> outArguments = getArguments(arguments, OUT);
+        List<PLSQLargument> outArguments = getArguments(arguments, ParameterType.OUT);
         Collections.sort(inArguments, new InArgComparer());
         for (PLSQLargument arg : inArguments) {
             arg.databaseType.buildInDeclare(sb, arg);
@@ -666,18 +666,18 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         if (info == null) {
             info = generateNestedFunction(type, isNestedTable);
         }
-        if (argument.direction == IN) {
+        if (argument.pdirection == ParameterType.IN) {
             if (!functions.contains(info.sql2PlConv)) {
                 functions.add(info.sql2PlConv);
             }
-        } else if (argument.direction == INOUT) {
+        } else if (argument.pdirection == ParameterType.INOUT) {
             if (!functions.contains(info.sql2PlConv)) {
                 functions.add(info.sql2PlConv);
             }
             if (!functions.contains(info.pl2SqlConv)) {
                 functions.add(info.pl2SqlConv);
             }
-        } else if (argument.direction == OUT) {
+        } else if (argument.pdirection == ParameterType.OUT) {
             if (!functions.contains(info.pl2SqlConv)) {
                 functions.add(info.pl2SqlConv);
             }
@@ -981,8 +981,8 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      * of the BEGIN block (before invoking the target procedure).
      */
     protected void buildBeginBlock(StringBuilder sb, List<PLSQLargument> arguments) {
-        List<PLSQLargument> inArguments = getArguments(arguments, IN);
-        inArguments.addAll(getArguments(arguments, INOUT));
+        List<PLSQLargument> inArguments = getArguments(arguments, ParameterType.IN);
+        inArguments.addAll(getArguments(arguments, ParameterType.INOUT));
         for (PLSQLargument arg : inArguments) {
     		arg.databaseType.buildBeginBlock(sb, arg, this);
         }
@@ -1014,8 +1014,8 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      * invoked and OUT parameters must be handled.
      */
     protected void buildOutAssignments(StringBuilder sb, List<PLSQLargument> arguments) {
-        List<PLSQLargument> outArguments = getArguments(arguments, OUT);
-        outArguments.addAll(getArguments(arguments, INOUT));
+        List<PLSQLargument> outArguments = getArguments(arguments, ParameterType.OUT);
+        outArguments.addAll(getArguments(arguments, ParameterType.INOUT));
         for (PLSQLargument arg : outArguments) {
     		arg.databaseType.buildOutAssignment(sb, arg, this);
         }
@@ -1124,7 +1124,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         Vector translationRowValues = translationRow.getValues();
         translationRowValues.setSize(len);
         for (PLSQLargument arg : arguments) {
-            if (arg.direction == IN || arg.direction == INOUT) {
+            if (arg.pdirection == ParameterType.IN || arg.pdirection == ParameterType.INOUT) {
                 arg.databaseType.translate(arg, translationRow,
                     copyOfTranslationRow, copyOfTranslationFields, translationRowFields,
                     translationRowValues, this);
@@ -1151,8 +1151,8 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         Vector outputRowFields = outputRow.getFields();
         Vector outputRowValues = outputRow.getValues();
         DatabaseRecord newOutputRow = new DatabaseRecord();
-        List<PLSQLargument> outArguments = getArguments(arguments, OUT);
-        outArguments.addAll(getArguments(arguments, INOUT));
+        List<PLSQLargument> outArguments = getArguments(arguments, ParameterType.OUT);
+        outArguments.addAll(getArguments(arguments, ParameterType.INOUT));
         Collections.sort(outArguments, new Comparator<PLSQLargument>() {
             public int compare(PLSQLargument o1, PLSQLargument o2) {
                 return o1.originalIndex - o2.originalIndex;
@@ -1188,8 +1188,8 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
                 }
             }
         }
-        List<PLSQLargument> inArguments = getArguments(specifiedArguments, IN);
-        inArguments.addAll(getArguments(specifiedArguments, INOUT));
+        List<PLSQLargument> inArguments = getArguments(specifiedArguments, ParameterType.IN);
+        inArguments.addAll(getArguments(specifiedArguments, ParameterType.INOUT));
         Collections.sort(inArguments, new Comparator<PLSQLargument>() {
             public int compare(PLSQLargument o1, PLSQLargument o2) {
                 return o1.inIndex - o2.inIndex;
@@ -1197,14 +1197,14 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         });
         for (Iterator<PLSQLargument> i = inArguments.iterator(); i.hasNext();) {
             PLSQLargument inArg = i.next();
-            inArg.databaseType.logParameter(sb, IN, inArg, translationRow, 
+            inArg.databaseType.logParameter(sb, ParameterType.IN, inArg, translationRow, 
                 getQuery().getSession().getPlatform());
             if (i.hasNext()) {
                 sb.append(", ");
             }
         }
-        List<PLSQLargument> outArguments = getArguments(specifiedArguments, OUT);
-        outArguments.addAll(getArguments(specifiedArguments, INOUT));
+        List<PLSQLargument> outArguments = getArguments(specifiedArguments, ParameterType.OUT);
+        outArguments.addAll(getArguments(specifiedArguments, ParameterType.INOUT));
         Collections.sort(outArguments, new Comparator<PLSQLargument>() {
             public int compare(PLSQLargument o1, PLSQLargument o2) {
                 return o1.outIndex - o2.outIndex;
@@ -1215,7 +1215,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         }
         for (Iterator<PLSQLargument> i = outArguments.iterator(); i.hasNext();) {
             PLSQLargument outArg = i.next();
-            outArg.databaseType.logParameter(sb, OUT, outArg, translationRow,
+            outArg.databaseType.logParameter(sb, ParameterType.OUT, outArg, translationRow,
                 getQuery().getSession().getPlatform());
             if (i.hasNext()) {
                 sb.append(", ");
@@ -1232,10 +1232,22 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      * @param direction
      * @return list of arguments with the specified direction
      */
+    @Deprecated
     protected static List<PLSQLargument> getArguments(List<PLSQLargument> args, Integer direction) {
+        return getArguments(args, ParameterType.valueOf(direction));
+    }
+
+    /**
+     * INTERNAL
+     * 
+     * @param args
+     * @param direction
+     * @return list of arguments with the specified direction
+     */
+    protected static List<PLSQLargument> getArguments(List<PLSQLargument> args, ParameterType direction) {
         List<PLSQLargument> inArgs = new ArrayList<PLSQLargument>();
         for (PLSQLargument arg : args) {
-            if (arg.direction == direction) {
+            if (arg.pdirection == direction) {
                 inArgs.add(arg);
             }
         }

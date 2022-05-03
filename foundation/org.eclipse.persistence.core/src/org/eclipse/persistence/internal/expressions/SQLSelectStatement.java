@@ -31,7 +31,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 import static org.eclipse.persistence.queries.ReadAllQuery.Direction.CHILD_TO_PARENT;
-import static org.eclipse.persistence.queries.ReadAllQuery.Direction.PARENT_TO_CHILD;
 
 /**
  * <p><b>Purpose</b>: Print SELECT statement.
@@ -718,6 +717,21 @@ public class SQLSelectStatement extends SQLStatement {
 
         for (Iterator<Expression> expressionsEnum = getOrderByExpressions().iterator(); expressionsEnum.hasNext();) {
             Expression expression = expressionsEnum.next();
+
+            /*
+             *  Allow the platform to indicate if they support parameter expressions in the ORDER BY clause 
+             *  as a whole, regardless if individual functions allow binding. We make that decision here 
+             *  before we continue parsing into generic API calls
+             */
+            if(!printer.getPlatform().supportsOrderByParameters()) {
+                if(printer.getPlatform().shouldBindPartialParameters()) {
+                    if(expression.isParameterExpression()) {
+                        ((ParameterExpression) expression).setCanBind(false);
+                    } else if(expression.isConstantExpression() && printer.getPlatform().shouldBindLiterals()) {
+                        ((ConstantExpression) expression).setCanBind(false);
+                    }
+                }
+            }
 
             expression.printSQL(printer);
 

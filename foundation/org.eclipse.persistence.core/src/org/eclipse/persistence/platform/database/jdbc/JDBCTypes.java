@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022, IBM Corporation, Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -51,6 +51,7 @@ import static java.sql.Types.TINYINT;
 import static java.sql.Types.VARBINARY;
 import static java.sql.Types.VARCHAR;
 
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseType;
@@ -283,7 +284,13 @@ public enum JDBCTypes implements JDBCType {
                 newOutputRow, outputRowFields, outputRowValues);
         }
 
+        @Deprecated
         public void logParameter(StringBuilder sb, Integer direction, PLSQLargument arg,
+                AbstractRecord translationRow, DatabasePlatform platform) {
+            logParameter(sb, ParameterType.valueOf(direction), arg, translationRow, platform);
+        }
+
+        public void logParameter(StringBuilder sb, ParameterType direction, PLSQLargument arg,
                 AbstractRecord translationRow, DatabasePlatform platform) {
             databaseTypeHelper.logParameter(sb, direction, arg, translationRow, platform);
         }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -26,6 +26,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.RelationExpression;
@@ -441,7 +442,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         for (int index = indexFirst; index < size; index++) {
              String name = call.getProcedureArgumentNames().get(index);
              Object parameter = call.getParameters().get(index);
-             Integer parameterType = call.getParameterTypes().get(index);
+             ParameterType parameterType = call.getParameterTypes().get(index);
              // If the argument is optional and null, ignore it.
              if (!call.hasOptionalArguments() || !call.getOptionalArguments().contains(parameter) || (row.get(parameter) != null)) {
                   if (!DatasourceCall.isOutputParameterType(parameterType)) {

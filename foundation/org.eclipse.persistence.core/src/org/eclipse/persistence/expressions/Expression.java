@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2021 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -15,6 +15,7 @@
 package org.eclipse.persistence.expressions;
 
 import java.util.*;
+
 import java.io.*;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -747,10 +748,8 @@ public abstract class Expression implements Serializable, Cloneable {
      * @see ArgumentListFunctionExpression
      */
     public ArgumentListFunctionExpression caseStatement() {
-        
-        ListExpressionOperator caseOperator = (ListExpressionOperator)getOperator(ExpressionOperator.Case);
-        ListExpressionOperator clonedCaseOperator = new ListExpressionOperator();
-        caseOperator.copyTo(clonedCaseOperator);
+        ExpressionOperator caseOperator = getOperator(ExpressionOperator.Case);
+        ExpressionOperator clonedCaseOperator = caseOperator.clone();
 
         ArgumentListFunctionExpression expression = new ArgumentListFunctionExpression();
         expression.setBaseExpression(this);
@@ -819,9 +818,8 @@ public abstract class Expression implements Serializable, Cloneable {
      * @see ArgumentListFunctionExpression
      */
     public ArgumentListFunctionExpression caseConditionStatement() {
-        ListExpressionOperator caseOperator = (ListExpressionOperator)getOperator(ExpressionOperator.CaseCondition);
-        ListExpressionOperator clonedCaseOperator = new ListExpressionOperator();
-        caseOperator.copyTo(clonedCaseOperator);
+        ExpressionOperator caseOperator = getOperator(ExpressionOperator.CaseCondition);
+        ExpressionOperator clonedCaseOperator = caseOperator.clone();
 
         ArgumentListFunctionExpression expression = new ArgumentListFunctionExpression();
         expression.setBaseExpression(this);
@@ -882,9 +880,8 @@ public abstract class Expression implements Serializable, Cloneable {
     }
     
     public ArgumentListFunctionExpression coalesce() {
-        ListExpressionOperator coalesceOperator = (ListExpressionOperator)getOperator(ExpressionOperator.Coalesce);
-        ListExpressionOperator clonedCoalesceOperator = new ListExpressionOperator();
-        coalesceOperator.copyTo(clonedCoalesceOperator);
+        ExpressionOperator coalesceOperator = getOperator(ExpressionOperator.Coalesce);
+        ExpressionOperator clonedCoalesceOperator = coalesceOperator.clone();
 
         ArgumentListFunctionExpression expression = new ArgumentListFunctionExpression();
         expression.setBaseExpression(this);
@@ -2000,14 +1997,27 @@ public abstract class Expression implements Serializable, Cloneable {
      * INTERNAL:
      * Create a new expression tree with the named operator. Part of the implementation of user-level "get"
      */
-    public ExpressionOperator getOperator(int selector) {
+    public static ExpressionOperator getOperator(int selector) {
+        /*
+         *  Get an operator based on a user defined function, if it exists.
+         */
         ExpressionOperator result = ExpressionOperator.getOperator(Integer.valueOf(selector));
         if (result != null) {
             return result;
         }
 
-        // Make a temporary operator which we expect the platform
-        // to supply later.
+        /*
+         * Create an operator based on known selectors.
+         * This is actually a temporary object which we expect Platforms to supply later.
+         * @see org.eclipse.persistence.internal.expressions.CompoundExpression#initializePlatformOperator(DatabasePlatform platform)
+         * @see org.eclipse.persistence.internal.expressions.FunctionExpression#initializePlatformOperator(DatabasePlatform platform)
+         */
+        result = ExpressionOperator.getInternalOperator(Integer.valueOf(selector));
+        if (result != null) {
+            return result;
+        }
+
+        // Create a default Function ExpressionOperator
         result = new ExpressionOperator();
         result.setSelector(selector);
         result.setNodeClass(ClassConstants.FunctionExpression_Class);
