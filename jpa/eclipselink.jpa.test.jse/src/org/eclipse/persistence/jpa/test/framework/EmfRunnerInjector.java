@@ -280,7 +280,7 @@ public class EmfRunnerInjector {
 
         @Override
         public void preExecuteCall(SessionEvent event) {
-            super.preExecuteQuery(event);
+            super.preExecuteCall(event);
             Call call = event.getCall();
             if(call instanceof DatabaseCall) {
                 _sql.add(((DatabaseCall)call).getSQLString());
