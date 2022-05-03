@@ -36,7 +36,10 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.internal.expressions.ConstantExpression;
+import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
@@ -425,7 +428,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
      * Obtain the platform specific argument string
      */
     @Override
-    public String getProcedureArgument(String name, Object parameter, Integer parameterType, StoredProcedureCall call, AbstractSession session) {
+    public String getProcedureArgument(String name, Object parameter, ParameterType parameterType, StoredProcedureCall call, AbstractSession session) {
         if (name != null && shouldPrintStoredProcedureArgumentNameInCall()) {
             return getProcedureArgumentString() + name + " => " + "?";
         }
@@ -440,6 +443,15 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     @Override
     public boolean shouldPrintOutputTokenAtStart() {
         return true;
+    }
+
+    /**
+     * Used to determine if the platform should perform partial parameter binding or not
+     * Enabled for DB2 and DB2 for zOS to add support for partial binding
+     */
+    @Override
+    public boolean shouldBindPartialParameters() {
+        return this.shouldBindPartialParameters;
     }
 
     /**
@@ -467,15 +479,1076 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
 
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.ToUpperCase, "UCASE"));
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.ToLowerCase, "LCASE"));
+        addOperator(count());
+        addOperator(max());
+        addOperator(min());
         addOperator(concatOperator());
+        addOperator(caseOperator());
+        addOperator(caseConditionOperator());
+        addOperator(distinct());
         addOperator(ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Instring, "Locate"));
         // CR#2811076 some missing DB2 functions added.
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.ToNumber, "DECIMAL"));
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.ToChar, "CHAR"));
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.DateToString, "CHAR"));
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.ToDate, "DATE"));
+
+        addOperator(ascendingOperator());
+        addOperator(descendingOperator());
+
+        addOperator(trim2());
         addOperator(ltrim2Operator());
         addOperator(rtrim2Operator());
+
+        addOperator(lengthOperator());
+        addOperator(nullifOperator());
+        addOperator(coalesceOperator());
+    }
+
+    /**
+     * Create an ExpressionOperator that disables all parameter binding
+     */
+    protected static ExpressionOperator disableAllBindingExpression() {
+        return new ExpressionOperator() {
+            @Override
+            public void printDuo(Expression first, Expression second, ExpressionSQLPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printDuo(first, second, printer);
+                    return;
+                }
+
+                if(first.isParameterExpression()) {
+                    ((ParameterExpression) first).setCanBind(false);
+                } else if(first.isConstantExpression()) {
+                    ((ConstantExpression) first).setCanBind(false);
+                }
+                if(second.isParameterExpression()) {
+                    ((ParameterExpression) second).setCanBind(false);
+                } else if(second.isConstantExpression()) {
+                    ((ConstantExpression) second).setCanBind(false);
+                }
+                super.printDuo(first, second, printer);
+            }
+
+            @Override
+            public void printCollection(Vector items, ExpressionSQLPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printCollection(items, printer);
+                    return;
+                }
+
+                // Initialize argumentIndices
+                if (this.argumentIndices == null) {
+                    this.argumentIndices = new int[items.size()];
+                    for (int i = 0; i < this.argumentIndices.length; i++){
+                        this.argumentIndices[i] = i;
+                    }
+                }
+
+                for(Object item : items) {
+                    if(((Expression)item).isParameterExpression()) {
+                        ((ParameterExpression) item).setCanBind(false);
+                    } else if(((Expression)item).isConstantExpression()) {
+                        ((ConstantExpression) item).setCanBind(false);
+                    }
+                }
+                super.printCollection(items, printer);
+            }
+
+            @Override
+            public void printJavaDuo(Expression first, Expression second, ExpressionJavaPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printJavaDuo(first, second, printer);
+                    return;
+                }
+
+                if(first.isParameterExpression()) {
+                    ((ParameterExpression) first).setCanBind(false);
+                } else if(first.isConstantExpression()) {
+                    ((ConstantExpression) first).setCanBind(false);
+                }
+                if(second.isParameterExpression()) {
+                    ((ParameterExpression) second).setCanBind(false);
+                } else if(second.isConstantExpression()) {
+                    ((ConstantExpression) second).setCanBind(false);
+                }
+                super.printJavaDuo(first, second, printer);
+            }
+
+            @Override
+            public void printJavaCollection(Vector items, ExpressionJavaPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printJavaCollection(items, printer);
+                    return;
+                }
+
+                for(Object item : items) {
+                    if(((Expression)item).isParameterExpression()) {
+                        ((ParameterExpression) item).setCanBind(false);
+                    } else if(((Expression)item).isConstantExpression()) {
+                        ((ConstantExpression) item).setCanBind(false);
+                    }
+                }
+                super.printJavaCollection(items, printer);
+            }
+        };
+    }
+
+    /**
+     * Create an ExpressionOperator that requires at least 1 typed argument
+     */
+    protected static ExpressionOperator disableAtLeast1BindingExpression() {
+        return new ExpressionOperator() {
+            @Override
+            public void printDuo(Expression first, Expression second, ExpressionSQLPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printDuo(first, second, printer);
+                    return;
+                }
+
+                boolean firstBound = true;
+                if(second != null) {
+                    boolean secondBound = true;
+
+                    // If both are parameters and/or constants, we need to determine which should be bound
+                    if(first.isValueExpression() && second.isValueExpression()) {
+                        if(printer.getPlatform().shouldBindLiterals()) {
+                            // If literal binding is enabled, we should make sure parameters are favored
+                            if(first.isConstantExpression() && second.isParameterExpression()) {
+                                firstBound = false;
+                            } else {
+                                secondBound = false;
+                            }
+                        } else {
+                            // Otherwise, we default to favor the first argument
+                            if(first.isParameterExpression() && second.isParameterExpression()) {
+                                secondBound = false;
+                            }
+                        }
+                    }
+
+                    if(second.isParameterExpression()) {
+                        ((ParameterExpression) second).setCanBind(secondBound);
+                    } else if(second.isConstantExpression()) {
+                        ((ConstantExpression) second).setCanBind(secondBound);
+                    }
+                }
+
+                if(first.isParameterExpression()) {
+                    ((ParameterExpression) first).setCanBind(firstBound);
+                } else if(first.isConstantExpression()) {
+                    ((ConstantExpression) first).setCanBind(firstBound);
+                }
+                super.printDuo(first, second, printer);
+            }
+
+            @Override
+            public void printCollection(Vector items, ExpressionSQLPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printCollection(items, printer);
+                    return;
+                }
+
+                // Initialize argumentIndices
+                if (this.argumentIndices == null) {
+                    this.argumentIndices = new int[items.size()];
+                    for (int i = 0; i < this.argumentIndices.length; i++){
+                        this.argumentIndices[i] = i;
+                    }
+                }
+
+                boolean allBind = true;
+                for (int i = 0; i < items.size(); i++) {
+                    final int index = this.argumentIndices[i];
+                    Expression item = (Expression)items.elementAt(index);
+                    boolean shouldBind = true;
+
+                    // If the item isn't a Constant/Parameter, this will suffice and the rest should bind
+                    if(!item.isValueExpression()) {
+                        allBind = false;
+                    }
+
+                    if(allBind) {
+                        if(printer.getPlatform().shouldBindLiterals()) {
+                            if((i == (this.argumentIndices.length - 1))) {
+                                // The last parameter has to be disabled
+                                shouldBind = allBind = false;
+                            }
+                        } else {
+                            if(item.isConstantExpression()) {
+                                // The first literal has to be disabled
+                                shouldBind = allBind = false;
+                            } else if((i == (this.argumentIndices.length - 1)) && item.isParameterExpression()) {
+                                // The last parameter has to be disabled
+                                shouldBind = allBind = false;
+                            }
+                        }
+                    }
+
+                    if(item.isParameterExpression()) {
+                        ((ParameterExpression) item).setCanBind(shouldBind);
+                    } else if(item.isConstantExpression()) {
+                        ((ConstantExpression) item).setCanBind(shouldBind);
+                    }
+                }
+                super.printCollection(items, printer);
+            }
+
+            @Override
+            public void printJavaDuo(Expression first, Expression second, ExpressionJavaPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printJavaDuo(first, second, printer);
+                    return;
+                }
+
+                boolean firstBound = true;
+                if(second != null) {
+                    boolean secondBound = true;
+
+                    // If both are parameters and/or constants, we need to determine which should be bound
+                    if(first.isValueExpression() && second.isValueExpression()) {
+                        if(printer.getPlatform().shouldBindLiterals()) {
+                            // If literal binding is enabled, we should make sure parameters are favored
+                            if(first.isConstantExpression() && second.isParameterExpression()) {
+                                firstBound = false;
+                            } else {
+                                secondBound = false;
+                            }
+                        } else {
+                            // Otherwise, we default to favor the first argument
+                            if(first.isParameterExpression() && second.isParameterExpression()) {
+                                secondBound = false;
+                            }
+                        }
+                    }
+
+                    if(second.isParameterExpression()) {
+                        ((ParameterExpression) second).setCanBind(secondBound);
+                    } else if(second.isConstantExpression()) {
+                        ((ConstantExpression) second).setCanBind(secondBound);
+                    }
+                }
+
+                if(first.isParameterExpression()) {
+                    ((ParameterExpression) first).setCanBind(firstBound);
+                } else if(first.isConstantExpression()) {
+                    ((ConstantExpression) first).setCanBind(firstBound);
+                }
+                super.printJavaDuo(first, second, printer);
+            }
+
+            @Override
+            public void printJavaCollection(Vector items, ExpressionJavaPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printJavaCollection(items, printer);
+                    return;
+                }
+
+                boolean allBind = true;
+                for (int i = 0; i < items.size(); i++) {
+                    Expression item = (Expression)items.elementAt(i);
+
+                    boolean shouldBind = true;
+
+                    // If the item isn't a Constant/Parameter, this will suffice and the rest should bind
+                    if(!item.isValueExpression()) {
+                        allBind = false;
+                    }
+
+                    if(allBind) {
+                        if(printer.getPlatform().shouldBindLiterals()) {
+                            if((i == (items.size() - 1))) {
+                                // The last parameter has to be disabled
+                                shouldBind = allBind = false;
+                            }
+                        } else {
+                            if(item.isConstantExpression()) {
+                                // The first literal has to be disabled
+                                shouldBind = allBind = false;
+                            } else if((i == (items.size() - 1)) && item.isParameterExpression()) {
+                                // The last parameter has to be disabled
+                                shouldBind = allBind = false;
+                            }
+                        }
+                    }
+
+                    if(item.isParameterExpression()) {
+                        ((ParameterExpression) item).setCanBind(shouldBind);
+                    } else if(item.isConstantExpression()) {
+                        ((ConstantExpression) item).setCanBind(shouldBind);
+                    }
+                }
+                super.printJavaCollection(items, printer);
+            }
+        };
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 & DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     * <p>
+     * With binding enabled, Derby will throw an error:
+     * <pre>ERROR 42X34: There is a ? parameter in the select list. This is not allowed.</pre>
+     */
+    protected ExpressionOperator ascendingOperator() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.ascending().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 & DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     * <p>
+     * With binding enabled, Derby will throw an error:
+     * <pre>ERROR 42X34: There is a ? parameter in the select list. This is not allowed.</pre>
+     */
+    protected ExpressionOperator descendingOperator() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.descending().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * INTERNAL:
+     * The concat operator is of the form .... VARCHAR ( <operand1> ||
+     * <operand2> )
+     */
+    protected ExpressionOperator concatOperator() {
+        ExpressionOperator operator = new ExpressionOperator();
+        operator.setType(ExpressionOperator.FunctionOperator);
+        operator.setSelector(ExpressionOperator.Concat);
+        Vector v = new Vector(5);
+        v.add("VARCHAR(");
+        v.add(" || ");
+        v.add(")");
+        operator.printsAs(v);
+        operator.bePrefix();
+        operator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 will throw an error:
+     * <pre>Db2 cannot determine how to implicitly cast the arguments between string and 
+     * numeric data types. DB2 SQL Error: SQLCODE=-245, SQLSTATE=428F5</pre>
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     * <p>
+     * With binding enabled, Derby will throw an error:
+     * <pre>ERROR 42X36: The 'COUNT' operator is not allowed to take a ? parameter as an operand.</pre>
+     */
+    protected ExpressionOperator count() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.count().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 will throw an error:
+     * <pre>Db2 cannot determine how to implicitly cast the arguments between string and 
+     * numeric data types. DB2 SQL Error: SQLCODE=-245, SQLSTATE=428F5</pre>
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     * <p>
+     * With binding enabled, Derby will throw an error:
+     * <pre>ERROR 42X36: The 'MAX' operator is not allowed to take a ? parameter as an operand.</pre>
+     */
+    protected ExpressionOperator max() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.maximum().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 will throw an error:
+     * <pre>Db2 cannot determine how to implicitly cast the arguments between string and 
+     * numeric data types. DB2 SQL Error: SQLCODE=-245, SQLSTATE=428F5</pre>
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     * <p>
+     * With binding enabled, Derby will throw an error:
+     * <pre>ERROR 42X36: The 'MIN' operator is not allowed to take a ? parameter as an operand.</pre>
+     */
+    protected ExpressionOperator min() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.minimum().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 will throw an error:
+     * <pre>Db2 cannot determine how to implicitly cast the arguments between string and 
+     * numeric data types. DB2 SQL Error: SQLCODE=-245, SQLSTATE=428F5</pre>
+     * <p>
+     * With binding enabled, DB2 & DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     * <p>
+     * With binding enabled, Derby will throw an error:
+     * <pre>ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.</pre>
+     */
+    protected ExpressionOperator distinct() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.distinct().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * DB2 does not allow untyped parameter binding for the THEN & ELSE 'result-expressions' of CASE expressions
+     * <p>
+     * With binding enabled, DB2 & DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     * <b>Examples of places where parameter markers cannot be used:</b>
+     * <ul>
+     * <li>In a result-expression in any CASE expression when all the other result-expressions are either NULL or untyped parameter markers
+     * </ul>
+     * <p>
+     * With binding enabled, Derby will throw an error:
+     * <pre>ERROR 42X87: At least one result expression (THEN or ELSE) of the CASE expression must have a known type.
+     */
+    protected ExpressionOperator caseOperator() {
+        ListExpressionOperator operator = new ListExpressionOperator() {
+            @Override
+            public void printCollection(Vector items, ExpressionSQLPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printCollection(items, printer);
+                    return;
+                }
+
+                // First, calculate all argument binding positions
+                int i = 0;
+                int numberOfItems = items.size();
+                boolean[] argumentBinding = new boolean[numberOfItems + 1];
+
+                // Enabled for CASE operator
+                argumentBinding[i] = true;
+                i++;
+
+                // Enabled for WHEN, but not for THEN
+                boolean[] separatorsBinding = new boolean[]{true, false};
+                // Disable for ELSE, but not for END
+                boolean[] terminationStringsBinding = new boolean[]{false, true};
+                while (i < numberOfItems - (terminationStringsBinding.length - 1)) {
+                    for (int j = 0; j < separatorsBinding.length; j++) {
+                        argumentBinding[i] = separatorsBinding[j];
+                        i++;
+                    }
+                }
+                while (i <= numberOfItems) {
+                    for (int j = 0; j < terminationStringsBinding.length; j++) {
+                        argumentBinding[i] = terminationStringsBinding[j];
+                        i++;
+                    }
+                }
+
+                // Initialize argumentIndices
+                if (this.argumentIndices == null) {
+                    this.argumentIndices = new int[items.size()];
+                    for (int k = 0; k < this.argumentIndices.length; k++){
+                        this.argumentIndices[k] = k;
+                    }
+                }
+
+                for (int j = 0; j < items.size(); j++) {
+                    final int index = this.argumentIndices[j];
+                    Expression item = (Expression)items.elementAt(index);
+
+                    if(item.isParameterExpression()) {
+                        ((ParameterExpression) item).setCanBind(argumentBinding[index]);
+                    } else if(item.isConstantExpression()) {
+                        ((ConstantExpression) item).setCanBind(argumentBinding[index]);
+                    }
+                }
+                super.printCollection(items, printer);
+            }
+
+            @Override
+            public void printJavaCollection(Vector items, ExpressionJavaPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printJavaCollection(items, printer);
+                    return;
+                }
+
+                // First, calculate all argument binding positions
+                int i = 0;
+                int numberOfItems = items.size();
+                boolean[] argumentBinding = new boolean[numberOfItems + 1];
+
+                // Enabled for CASE operator
+                argumentBinding[i] = true;
+                i++;
+
+                // Enabled for WHEN, but not for THEN
+                boolean[] separatorsBinding = new boolean[]{true, false};
+                // Disable for ELSE, but not for END
+                boolean[] terminationStringsBinding = new boolean[]{false, true};
+                while (i < numberOfItems - (terminationStringsBinding.length - 1)) {
+                    for (int j = 0; j < separatorsBinding.length; j++) {
+                        argumentBinding[i] = separatorsBinding[j];
+                        i++;
+                    }
+                }
+                while (i <= numberOfItems) {
+                    for (int j = 0; j < terminationStringsBinding.length; j++) {
+                        argumentBinding[i] = terminationStringsBinding[j];
+                        i++;
+                    }
+                }
+
+                for (int j = 0; j < items.size(); j++) {
+                    Expression item = (Expression)items.elementAt(j);
+
+                    if(item.isParameterExpression()) {
+                        ((ParameterExpression) item).setCanBind(argumentBinding[j]);
+                    } else if(item.isConstantExpression()) {
+                        ((ConstantExpression) item).setCanBind(argumentBinding[j]);
+                    }
+                }
+                super.printJavaCollection(items, printer);
+            }
+        };
+        ExpressionOperator.caseStatement().copyTo(operator); 
+        return operator;
+    }
+
+    /**
+     * DB2 does not allow untyped parameter binding for the THEN & ELSE 'result-expressions' of CASE expressions
+     * <p>
+     * With binding enabled, DB2 & DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     * <b>Examples of places where parameter markers cannot be used:</b>
+     * <ul>
+     * <li>In a result-expression in any CASE expression when all the other result-expressions are either NULL or untyped parameter markers
+     * </ul>
+     * <p>
+     * With binding enabled, Derby will throw an error:
+     * <pre>ERROR 42X87: At least one result expression (THEN or ELSE) of the CASE expression must have a known type.
+     */
+    protected ExpressionOperator caseConditionOperator() {
+        ListExpressionOperator operator = new ListExpressionOperator() {
+            @Override
+            public void printCollection(Vector items, ExpressionSQLPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printCollection(items, printer);
+                    return;
+                }
+
+                // First, calculate all argument binding positions
+                int i = 0;
+                int numberOfItems = items.size();
+                boolean[] argumentBinding = new boolean[numberOfItems + 1];
+
+                // Enabled for CASE WHEN operator
+                argumentBinding[i] = true;
+                i++;
+                // Disabled for THEN operator
+                argumentBinding[i] = false;
+                i++;
+
+                // Enabled for WHEN, but not for THEN
+                boolean[] separatorsBinding = new boolean[]{true, false};
+                // Disable for ELSE, but not for END
+                boolean[] terminationStringsBinding = new boolean[]{false, true};
+                while (i < numberOfItems - (terminationStringsBinding.length - 1)) {
+                    for (int j = 0; j < separatorsBinding.length; j++) {
+                        argumentBinding[i] = separatorsBinding[j];
+                        i++;
+                    }
+                }
+                while (i <= numberOfItems) {
+                    for (int j = 0; j < terminationStringsBinding.length; j++) {
+                        argumentBinding[i] = terminationStringsBinding[j];
+                        i++;
+                    }
+                }
+
+                // Initialize argumentIndices
+                if (this.argumentIndices == null) {
+                    this.argumentIndices = new int[items.size()];
+                    for (int k = 0; k < this.argumentIndices.length; k++){
+                        this.argumentIndices[k] = k;
+                    }
+                }
+
+                for (int j = 0; j < items.size(); j++) {
+                    final int index = this.argumentIndices[j];
+                    Expression item = (Expression)items.elementAt(index);
+
+                    if(item.isParameterExpression()) {
+                        ((ParameterExpression) item).setCanBind(argumentBinding[index]);
+                    } else if(item.isConstantExpression()) {
+                        ((ConstantExpression) item).setCanBind(argumentBinding[index]);
+                    }
+                }
+                super.printCollection(items, printer);
+            }
+
+            @Override
+            public void printJavaCollection(Vector items, ExpressionJavaPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printJavaCollection(items, printer);
+                    return;
+                }
+
+                // First, calculate all argument binding positions
+                int i = 0;
+                int numberOfItems = items.size();
+                boolean[] argumentBinding = new boolean[numberOfItems + 1];
+
+                // Enabled for CASE WHEN operator
+                argumentBinding[i] = true;
+                i++;
+                // Disabled for THEN operator
+                argumentBinding[i] = false;
+                i++;
+
+                // Enabled for WHEN, but not for THEN
+                boolean[] separatorsBinding = new boolean[]{true, false};
+                // Disable for ELSE, but not for END
+                boolean[] terminationStringsBinding = new boolean[]{false, true};
+                while (i < numberOfItems - (terminationStringsBinding.length - 1)) {
+                    for (int j = 0; j < separatorsBinding.length; j++) {
+                        argumentBinding[i] = separatorsBinding[j];
+                        i++;
+                    }
+                }
+                while (i <= numberOfItems) {
+                    for (int j = 0; j < terminationStringsBinding.length; j++) {
+                        argumentBinding[i] = terminationStringsBinding[j];
+                        i++;
+                    }
+                }
+
+                for (int j = 0; j < items.size(); j++) {
+                    Expression item = (Expression)items.elementAt(j);
+
+                    if(item.isParameterExpression()) {
+                        ((ParameterExpression) item).setCanBind(argumentBinding[j]);
+                    } else if(item.isConstantExpression()) {
+                        ((ConstantExpression) item).setCanBind(argumentBinding[j]);
+                    }
+                }
+                super.printJavaCollection(items, printer);
+            }
+        };
+        ExpressionOperator.caseConditionStatement().copyTo(operator); 
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 will throw an error:
+     * <pre>Db2 cannot determine how to implicitly cast the arguments between string and 
+     * numeric data types. DB2 SQL Error: SQLCODE=-245, SQLSTATE=428F5</pre>
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     * <p>
+     * With binding enabled, Derby will throw an error:
+     * <pre>ERROR 42X36: The 'length' operator is not allowed to take a ? parameter as an operand.</pre>
+     */
+    protected ExpressionOperator lengthOperator() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.length().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * DB2 requires that at least one argument be a known type
+     * <p>
+     * With binding enabled, DB2 & DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     * <p>
+     * With binding enabled, Derby will throw an error:
+     * <pre>ERROR 42X35: It is not allowed for both operands of '=' to be ? parameters.</pre>
+     */
+    protected ExpressionOperator nullifOperator() {
+        ExpressionOperator operator = disableAtLeast1BindingExpression();
+        ExpressionOperator.nullIf().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * DB2 requires that at least one argument be a known type
+     * <p>
+     * With binding enabled, DB2 will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement string specified as the object of a PREPARE contains a 
+     * predicate or expression where parameter markers have been used as operands of 
+     * the same operator—for example: ? > ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
+     * <p>
+     * With binding enabled, Derby will throw an error:
+     * <pre>ERROR 42610: All the arguments to the COALESCE/VALUE function cannot be parameters. The function needs at least one argument that is not a parameter.</pre>
+     */
+    protected ExpressionOperator coalesceOperator() {
+        ListExpressionOperator operator = new ListExpressionOperator() {
+            @Override
+            public void printCollection(Vector items, ExpressionSQLPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printCollection(items, printer);
+                    return;
+                }
+
+                // Initialize argumentIndices
+                if (this.argumentIndices == null) {
+                    this.argumentIndices = new int[items.size()];
+                    for (int i = 0; i < this.argumentIndices.length; i++){
+                        this.argumentIndices[i] = i;
+                    }
+                }
+
+                boolean allBind = true;
+                for (int i = 0; i < items.size(); i++) {
+                    final int index = this.argumentIndices[i];
+                    Expression item = (Expression)items.elementAt(index);
+                    boolean shouldBind = true;
+
+                    // If the item isn't a Constant/Parameter, this will suffice and the rest should bind
+                    if(!item.isValueExpression()) {
+                        allBind = false;
+                    }
+
+                    if(allBind) {
+                        if(printer.getPlatform().shouldBindLiterals()) {
+                            if((i == (this.argumentIndices.length - 1))) {
+                                // The last parameter has to be disabled
+                                shouldBind = allBind = false;
+                            }
+                        } else {
+                            if(item.isConstantExpression()) {
+                                // The first literal has to be disabled
+                                shouldBind = allBind = false;
+                            } else if((i == (this.argumentIndices.length - 1)) && item.isParameterExpression()) {
+                                // The last parameter has to be disabled
+                                shouldBind = allBind = false;
+                            }
+                        }
+                    }
+
+                    if(item.isParameterExpression()) {
+                        ((ParameterExpression) item).setCanBind(shouldBind);
+                    } else if(item.isConstantExpression()) {
+                        ((ConstantExpression) item).setCanBind(shouldBind);
+                    }
+                }
+                super.printCollection(items, printer);
+            }
+
+            @Override
+            public void printJavaCollection(Vector items, ExpressionJavaPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printJavaCollection(items, printer);
+                    return;
+                }
+
+                boolean allBind = true;
+                for (int i = 0; i < items.size(); i++) {
+                    Expression item = (Expression)items.elementAt(i);
+
+                    boolean shouldBind = true;
+
+                    // If the item isn't a Constant/Parameter, this will suffice and the rest should bind
+                    if(!item.isValueExpression()) {
+                        allBind = false;
+                    }
+
+                    if(allBind) {
+                        if(printer.getPlatform().shouldBindLiterals()) {
+                            if((i == (items.size() - 1))) {
+                                // The last parameter has to be disabled
+                                shouldBind = allBind = false;
+                            }
+                        } else {
+                            if(item.isConstantExpression()) {
+                                // The first literal has to be disabled
+                                shouldBind = allBind = false;
+                            } else if((i == (items.size() - 1)) && item.isParameterExpression()) {
+                                // The last parameter has to be disabled
+                                shouldBind = allBind = false;
+                            }
+                        }
+                    }
+
+                    if(item.isParameterExpression()) {
+                        ((ParameterExpression) item).setCanBind(shouldBind);
+                    } else if(item.isConstantExpression()) {
+                        ((ConstantExpression) item).setCanBind(shouldBind);
+                    }
+                }
+                super.printJavaCollection(items, printer);
+            }
+        };
+        ExpressionOperator.coalesce().copyTo(operator); 
+        return operator;
+    }
+
+    /**
+     * DB2 does not support untyped parameter binding for <operand2>
+     * <p>
+     * With binding enabled, DB2 & DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     */
+    protected ExpressionOperator trim2() {
+        ExpressionOperator operator = new ExpressionOperator(){
+            @Override
+            public void printCollection(Vector items, ExpressionSQLPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printCollection(items, printer);
+                    return;
+                }
+
+                // Initialize argumentIndices
+                if (this.argumentIndices == null) {
+                    this.argumentIndices = new int[items.size()];
+                    for (int i = 0; i < this.argumentIndices.length; i++){
+                        this.argumentIndices[i] = i;
+                    }
+                }
+
+                for (int i = 0; i < items.size(); i++) {
+                    final int index = this.argumentIndices[i];
+                    Expression item = (Expression)items.elementAt(index);
+
+                    // Disable the first item, which should be <operand2> for this operator
+                    if(i == 0) {
+                        if(item.isParameterExpression()) {
+                            ((ParameterExpression) item).setCanBind(false);
+                        } else if(item.isConstantExpression()) {
+                            ((ConstantExpression) item).setCanBind(false);
+                        }
+                    }
+                }
+                super.printCollection(items, printer);
+            }
+
+            @Override
+            public void printJavaCollection(Vector items, ExpressionJavaPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printJavaCollection(items, printer);
+                    return;
+                }
+
+                for (int i = 0; i < items.size(); i++) {
+                    Expression item = (Expression)items.elementAt(i);
+
+                    // Disable the first item, which should be <operand2> for this operator
+                    if(i == 0) {
+                        if(item.isParameterExpression()) {
+                            ((ParameterExpression) item).setCanBind(false);
+                        } else if(item.isConstantExpression()) {
+                            ((ConstantExpression) item).setCanBind(false);
+                        }
+                    }
+                }
+                super.printJavaCollection(items, printer);
+            }
+        };
+
+        operator.setType(ExpressionOperator.FunctionOperator);
+        operator.setSelector(ExpressionOperator.Trim2);
+        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(5);
+        v.add("TRIM(");
+        v.add(" FROM ");
+        v.add(")");
+        operator.printsAs(v);
+        operator.bePrefix();
+
+        // Bug 573094
+        int[] indices = { 1, 0 };
+        operator.setArgumentIndices(indices);
+
+        operator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return operator;
+    }
+
+    /**
+     * DB2 does not support untyped parameter binding for <operand2>
+     * <p>
+     * With binding enabled, DB2 & DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     */
+    protected ExpressionOperator ltrim2Operator() {
+        ExpressionOperator operator = new ExpressionOperator(){
+            @Override
+            public void printCollection(Vector items, ExpressionSQLPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printCollection(items, printer);
+                    return;
+                }
+
+                // Initialize argumentIndices
+                if (this.argumentIndices == null) {
+                    this.argumentIndices = new int[items.size()];
+                    for (int i = 0; i < this.argumentIndices.length; i++){
+                        this.argumentIndices[i] = i;
+                    }
+                }
+
+                for (int i = 0; i < items.size(); i++) {
+                    final int index = this.argumentIndices[i];
+                    Expression item = (Expression)items.elementAt(index);
+
+                    // Disable the first item, which should be <operand2> for this operator
+                    if(i == 0) {
+                        if(item.isParameterExpression()) {
+                            ((ParameterExpression) item).setCanBind(false);
+                        } else if(item.isConstantExpression()) {
+                            ((ConstantExpression) item).setCanBind(false);
+                        }
+                    }
+                }
+                super.printCollection(items, printer);
+            }
+
+            @Override
+            public void printJavaCollection(Vector items, ExpressionJavaPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printJavaCollection(items, printer);
+                    return;
+                }
+
+                for (int i = 0; i < items.size(); i++) {
+                    Expression item = (Expression)items.elementAt(i);
+
+                    // Disable the first item, which should be <operand2> for this operator
+                    if(i == 0) {
+                        if(item.isParameterExpression()) {
+                            ((ParameterExpression) item).setCanBind(false);
+                        } else if(item.isConstantExpression()) {
+                            ((ConstantExpression) item).setCanBind(false);
+                        }
+                    }
+                }
+                super.printJavaCollection(items, printer);
+            }
+        };
+
+        operator.setType(ExpressionOperator.FunctionOperator);
+        operator.setSelector(ExpressionOperator.LeftTrim2);
+        Vector v = new Vector(5);
+        v.add("TRIM(LEADING ");
+        v.add(" FROM ");
+        v.add(")");
+        operator.printsAs(v);
+        operator.bePrefix();
+
+        // Bug 573094
+        int[] indices = { 1, 0 };
+        operator.setArgumentIndices(indices);
+
+        operator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return operator;
+    }
+
+    /**
+     * DB2 does not support untyped parameter binding for <operand2>
+     * <p>
+     * With binding enabled, DB2 & DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     */
+    protected ExpressionOperator rtrim2Operator() {
+        ExpressionOperator operator = new ExpressionOperator(){
+            @Override
+            public void printCollection(Vector items, ExpressionSQLPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printCollection(items, printer);
+                    return;
+                }
+
+                // Initialize argumentIndices
+                if (this.argumentIndices == null) {
+                    this.argumentIndices = new int[items.size()];
+                    for (int i = 0; i < this.argumentIndices.length; i++){
+                        this.argumentIndices[i] = i;
+                    }
+                }
+
+                for (int i = 0; i < items.size(); i++) {
+                    final int index = this.argumentIndices[i];
+                    Expression item = (Expression)items.elementAt(index);
+
+                    // Disable the first item, which should be <operand2> for this operator
+                    if(i == 0) {
+                        if(item.isParameterExpression()) {
+                            ((ParameterExpression) item).setCanBind(false);
+                        } else if(item.isConstantExpression()) {
+                            ((ConstantExpression) item).setCanBind(false);
+                        }
+                    }
+                }
+                super.printCollection(items, printer);
+            }
+
+            @Override
+            public void printJavaCollection(Vector items, ExpressionJavaPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printJavaCollection(items, printer);
+                    return;
+                }
+
+                for (int i = 0; i < items.size(); i++) {
+                    Expression item = (Expression)items.elementAt(i);
+
+                    // Disable the first item, which should be <operand2> for this operator
+                    if(i == 0) {
+                        if(item.isParameterExpression()) {
+                            ((ParameterExpression) item).setCanBind(false);
+                        } else if(item.isConstantExpression()) {
+                            ((ConstantExpression) item).setCanBind(false);
+                        }
+                    }
+                }
+                super.printJavaCollection(items, printer);
+            }
+        };
+
+        operator.setType(ExpressionOperator.FunctionOperator);
+        operator.setSelector(ExpressionOperator.RightTrim2);
+        Vector v = new Vector(5);
+        v.add("TRIM(TRAILING ");
+        v.add(" FROM ");
+        v.add(")");
+        operator.printsAs(v);
+        operator.bePrefix();
+
+        // Bug 573094
+        int[] indices = { 1, 0 };
+        operator.setArgumentIndices(indices);
+
+        operator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return operator;
     }
 
     @Override
@@ -553,69 +1626,6 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     @Override
     public boolean shouldUseJDBCOuterJoinSyntax() {
         return false;
-    }
-
-    /**
-     * INTERNAL:
-     * The Concat operator is of the form .... VARCHAR ( <operand1> ||
-     * <operand2> )
-     */
-    private ExpressionOperator concatOperator() {
-        ExpressionOperator exOperator = new ExpressionOperator();
-        exOperator.setType(ExpressionOperator.FunctionOperator);
-        exOperator.setSelector(ExpressionOperator.Concat);
-        Vector v = new Vector(5);
-        v.add("VARCHAR(");
-        v.add(" || ");
-        v.add(")");
-        exOperator.printsAs(v);
-        exOperator.bePrefix();
-        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
-        return exOperator;
-    }
-
-    /**
-     * INTERNAL:
-     * The 2 arg LTRIM operator is of the form .... TRIM (LEADING, <operand2> FROM <operand1> )
-     */
-    private ExpressionOperator ltrim2Operator() {
-        ExpressionOperator operator = new ExpressionOperator();
-        operator.setType(ExpressionOperator.FunctionOperator);
-        operator.setSelector(ExpressionOperator.LeftTrim2);
-        Vector v = new Vector(5);
-        v.add("TRIM(LEADING ");
-        v.add(" FROM ");
-        v.add(")");
-        operator.printsAs(v);
-        operator.bePrefix();
-        // Bug 573094
-        int[] indices = { 1, 0 };
-        operator.setArgumentIndices(indices);
-        operator.setNodeClass(ClassConstants.FunctionExpression_Class);
-        operator.setIsBindingSupported(false);
-        return operator;
-    }
-
-    /**
-     * INTERNAL:
-     * The 2 arg RTRIM operator is of the form .... TRIM (TRAILING, <operand2> FROM <operand1> )
-     */
-    private ExpressionOperator rtrim2Operator() {
-        ExpressionOperator operator = new ExpressionOperator();
-        operator.setType(ExpressionOperator.FunctionOperator);
-        operator.setSelector(ExpressionOperator.RightTrim2);
-        Vector v = new Vector(5);
-        v.add("TRIM(TRAILING ");
-        v.add(" FROM ");
-        v.add(")");
-        operator.printsAs(v);
-        operator.bePrefix();
-        // Bug 573094
-        int[] indices = { 1, 0 };
-        operator.setArgumentIndices(indices);
-        operator.setNodeClass(ClassConstants.FunctionExpression_Class);
-        operator.setIsBindingSupported(false);
-        return operator;
     }
 
     /**
@@ -736,7 +1746,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     public boolean isNullAllowedInSelectClause() {
         return false;
     }
-    
+
     /**
      * INTERNAL
      * DB2 has some issues with using parameters on certain functions and relations.
@@ -749,6 +1759,15 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
             return false;
         }
         return !isCastRequired();
+    }
+
+    /**
+     * INTERNAL: DB2 does not allow stand alone, untyped parameter markers in select clause.
+     * @see {@link org.eclipse.persistence.internal.expressions.ParameterExpression#writeFields(ExpressionSQLPrinter printer, Vector newFields, SQLSelectStatement statement)}
+     */
+    @Override
+    public boolean allowBindingForSelectClause() {
+        return false;
     }
 
     /**
@@ -779,10 +1798,12 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
                 castType = "DOUBLE";
             } else if (typeHelper.isStringType(type)) {
                 castType = "VARCHAR(" + getCastSizeForVarcharParameter() + ")";
+            } else if (typeHelper.isCharacterType(type)) {
+                castType = "CHAR";
             }
 
             if (castType != null) {
-                paramaterMarker = "CAST (? AS " + castType + " )";
+                paramaterMarker = "CAST (? AS " + castType + ")";
             }
         }
         writer.write(paramaterMarker);
@@ -814,6 +1835,16 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         return true;
     }
 
+    /**
+     * DB2 disables single parameter usage in ORDER BY clause.
+     * <p>
+     * If a parameter marker is used, DB2 & DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     * <p>
+     * If a parameter marker is used, Derby will throw an error:
+     * <pre>ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.</pre>
+     */
     @Override
     public boolean supportsOrderByParameters() {
         return false;

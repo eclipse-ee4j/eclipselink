@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2014 Fujitsu Limited, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2022 Fujitsu Limited, Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -339,6 +339,11 @@ public class SymfowarePlatform extends DatabasePlatform {
     @Override
     public boolean isDynamicSQLRequiredForFunctions() {
         return true;
+    }
+
+    @Override
+    public boolean allowBindingForSelectClause() {
+        return false;
     }
 
     /**

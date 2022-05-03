@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,6 +28,7 @@ import static java.lang.Integer.MIN_VALUE;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
 import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -95,10 +96,6 @@ import org.eclipse.persistence.queries.CursoredStreamPolicy;
 import org.eclipse.persistence.queries.ScrollableCursorPolicy;
 import org.eclipse.persistence.queries.StoredFunctionCall;
 import org.eclipse.persistence.queries.StoredProcedureCall;
-import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.IN;
-import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.INOUT;
-import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT;
-import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT_CURSOR;
 import static org.eclipse.persistence.internal.helper.DatabaseField.NULL_SQL_TYPE;
 import static org.eclipse.persistence.sessions.factories.XMLProjectReader.SCHEMA_DIR;
 import static org.eclipse.persistence.sessions.factories.XMLProjectReader.TOPLINK_11_SCHEMA;
@@ -753,8 +750,8 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
           StoredProcedureArgument(DatabaseField dbfield) {
               this.setDatabaseField(dbfield);
           }
-          Integer getDirection() {
-              return IN;
+          ParameterType getDirection() {
+              return ParameterType.IN;
           }
           DatabaseField getDatabaseField() {
               DatabaseField dbfield = new DatabaseField(argumentFieldName == null ? "" : argumentFieldName);
@@ -813,8 +810,8 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
           StoredProcedureInOutArgument(DatabaseField dbfield) {
               super(dbfield);
           }
-          Integer getDirection() {
-              return INOUT;
+          ParameterType getDirection() {
+              return ParameterType.INOUT;
           }
     }
 
@@ -825,8 +822,8 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         StoredProcedureOutArgument(DatabaseField dbfield){
             super(dbfield);
         }
-        Integer getDirection() {
-            return OUT;
+        ParameterType getDirection() {
+            return ParameterType.OUT;
         }
     }
 
@@ -837,8 +834,8 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         StoredProcedureOutCursorArgument(DatabaseField dbfield){
             super(dbfield);
         }
-        Integer getDirection() {
-            return OUT_CURSOR;
+        ParameterType getDirection() {
+            return ParameterType.OUT_CURSOR;
         }
     }
 
@@ -986,22 +983,22 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         @Override
         public Object getAttributeValueFromObject(Object anObject) throws DescriptorException {
             StoredProcedureCall spc = (StoredProcedureCall)anObject;
-            List parameterTypes = spc.getParameterTypes();
+            List<ParameterType> parameterTypes = spc.getParameterTypes();
             List parameters = spc.getParameters();
             List procedureArgumentNames = spc.getProcedureArgumentNames();
             List storedProcedureArguments = new Vector();
             for (int i = spc.getFirstParameterIndexForCallString(); i < parameterTypes.size(); i++) {
                 StoredProcedureArgument spa = null;
-                Integer direction = (Integer)parameterTypes.get(i);
+                ParameterType direction = parameterTypes.get(i);
                 Object argument = parameters.get(i);
                 String argumentName = (String)procedureArgumentNames.get(i);
-                if (direction.equals(IN)) {
+                if (direction.equals(ParameterType.IN)) {
                     spa = new StoredProcedureArgument();
                 }
-                else if (direction.equals(OUT)) {
+                else if (direction.equals(ParameterType.OUT)) {
                     spa = new StoredProcedureOutArgument();
                 }
-                else if (direction.equals(INOUT)) {
+                else if (direction.equals(ParameterType.INOUT)) {
                     spa = new StoredProcedureInOutArgument();
                     // outputArgumentName ??
                 }
@@ -1044,10 +1041,10 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
             Vector procedureArguments = (Vector)attributeValue;
             for (int i = 0; i < procedureArguments.size(); i++) {
                 StoredProcedureArgument spa = (StoredProcedureArgument)procedureArguments.get(i);
-                Integer direction = spa.getDirection();
+                ParameterType direction = spa.getDirection();
                 DatabaseField dbField = spa.getDatabaseField();
                 spc.getProcedureArgumentNames().add(spa.argumentName);
-                if (direction.equals(IN)) {
+                if (direction.equals(ParameterType.IN)) {
                     if (spa.argumentValue != null) {
                         spc.appendIn(spa.argumentValue);
                     }
@@ -1055,13 +1052,13 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                         spc.appendIn(dbField);
                     }
                 }
-                else if (direction.equals(OUT)) {
+                else if (direction.equals(ParameterType.OUT)) {
                     spc.appendOut(dbField);
                 }
-                else if (direction.equals(OUT_CURSOR)) {
+                else if (direction.equals(ParameterType.OUT_CURSOR)) {
                     spc.appendOutCursor(dbField);
                 }
-                else  if (direction.equals(INOUT)) {
+                else  if (direction.equals(ParameterType.INOUT)) {
                     StoredProcedureInOutArgument spaInOut = (StoredProcedureInOutArgument)spa;
                     DatabaseField outField = new DatabaseField(spaInOut.outputArgumentName);
                     outField.type = dbField.type;
@@ -1136,7 +1133,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
             sfc.getProcedureArgumentNames().set(0, spoa.argumentName);
             sfc.getParameters().set(0, spoa.getDatabaseField());
             // Set argument type.
-            sfc.getParameterTypes().set(0, OUT);
+            sfc.getParameterTypes().set(0, ParameterType.OUT);
         }
     }
 
@@ -1929,11 +1926,11 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          directionMapping.setAttributeName("direction");
          directionMapping.setXPath(getPrimaryNamespaceXPath() + "direction/text()");
          ObjectTypeConverter directionConverter = new ObjectTypeConverter();
-         directionConverter.addConversionValue("IN", IN);
-         directionConverter.addConversionValue("INOUT", INOUT);
-         directionConverter.addConversionValue("OUT", OUT);
+         directionConverter.addConversionValue("IN", ParameterType.IN);
+         directionConverter.addConversionValue("INOUT", ParameterType.INOUT);
+         directionConverter.addConversionValue("OUT", ParameterType.OUT);
          directionMapping.setConverter(directionConverter);
-         directionMapping.setNullValue(IN);
+         directionMapping.setNullValue(ParameterType.IN);
          descriptor.addMapping(directionMapping);
 
          XMLDirectMapping lengthMapping = new XMLDirectMapping();

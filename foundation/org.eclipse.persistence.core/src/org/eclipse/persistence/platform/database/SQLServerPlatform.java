@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -407,17 +407,17 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         addOperator(ExpressionOperator.replicate());
         addOperator(ExpressionOperator.right());
         addOperator(ExpressionOperator.cot());
-        addOperator(ExpressionOperator.sybaseAtan2Operator());
-        addOperator(ExpressionOperator.sybaseAddMonthsOperator());
-        addOperator(ExpressionOperator.sybaseInStringOperator());
+        addOperator(ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Atan2, "ATN2"));
+        addOperator(addMonthsOperator());
+        addOperator(inStringOperator());
         // bug 3061144
         addOperator(ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Nvl, "ISNULL"));
         // CR### TO_NUMBER, TO_CHAR, TO_DATE is CONVERT(type, ?)
-        addOperator(ExpressionOperator.sybaseToNumberOperator());
-        addOperator(ExpressionOperator.sybaseToDateToStringOperator());
-        addOperator(ExpressionOperator.sybaseToDateOperator());
-        addOperator(ExpressionOperator.sybaseToCharOperator());
-        addOperator(ExpressionOperator.sybaseLocateOperator());
+        addOperator(toNumberOperator());
+        addOperator(toDateToStringOperator());
+        addOperator(toDateOperator());
+        addOperator(toCharOperator());
+        addOperator(locateOperator());
         addOperator(locate2Operator());
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.Ceil, "CEILING"));
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.Length, "LEN"));
@@ -432,7 +432,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      * INTERNAL:
      * Derby does not support EXTRACT, but does have DATEPART.
      */
-    public static ExpressionOperator extractOperator() {
+    protected static ExpressionOperator extractOperator() {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.Extract);
@@ -450,12 +450,12 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
         return exOperator;
     }
-    
+
     /**
      * INTERNAL:
      * Use RTRIM(LTRIM(?)) function for trim.
      */
-    public static ExpressionOperator trimOperator() {
+    protected static ExpressionOperator trimOperator() {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.Trim);
@@ -467,12 +467,12 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
         return exOperator;
     }
-    
+
     /**
      * INTERNAL:
      * Build Trim operator.
      */
-    public static ExpressionOperator trim2Operator() {
+    protected static ExpressionOperator trim2Operator() {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.Trim2);
@@ -489,6 +489,193 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         exOperator.setArgumentIndices(argumentIndices);
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
         return exOperator;
+    }
+
+    /**
+     * Override the default MOD operator.
+     */
+    protected ExpressionOperator modOperator() {
+        ExpressionOperator result = new ExpressionOperator();
+        result.setSelector(ExpressionOperator.Mod);
+        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        v.addElement(" % ");
+        result.printsAs(v);
+        result.bePostfix();
+        result.setNodeClass(org.eclipse.persistence.internal.expressions.FunctionExpression.class);
+        return result;
+    }
+
+    /**
+     * Override the default SubstringSingleArg operator.
+     */
+    protected static ExpressionOperator singleArgumentSubstringOperator() {
+        ExpressionOperator result = new ExpressionOperator();
+        result.setSelector(ExpressionOperator.SubstringSingleArg);
+        result.setType(ExpressionOperator.FunctionOperator);
+        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        v.addElement("SUBSTRING(");
+        v.addElement(",");
+        v.addElement(", LEN(");
+        v.addElement("))");
+        result.printsAs(v);
+        int[] indices = new int[3];
+        indices[0] = 0;
+        indices[1] = 1;
+        indices[2] = 0;
+
+        result.setArgumentIndices(indices);
+        result.setNodeClass(ClassConstants.FunctionExpression_Class);
+        result.bePrefix();
+        return result;
+    }
+
+    /*
+     *  Create the outer join operator for this platform
+     */
+    protected static ExpressionOperator operatorOuterJoin() {
+        ExpressionOperator result = new ExpressionOperator();
+        result.setSelector(ExpressionOperator.EqualOuterJoin);
+        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        v.addElement(" =* ");
+        result.printsAs(v);
+        result.bePostfix();
+        result.setNodeClass(RelationExpression.class);
+        return result;
+    }
+
+    /**
+     * INTERNAL:
+     * create the Locate2 Operator for this platform
+     */
+    protected static ExpressionOperator locate2Operator() {
+        ExpressionOperator result = ExpressionOperator.simpleThreeArgumentFunction(ExpressionOperator.Locate2, "CHARINDEX");
+        int[] argumentIndices = new int[3];
+        argumentIndices[0] = 1;
+        argumentIndices[1] = 0;
+        argumentIndices[2] = 2;
+        result.setArgumentIndices(argumentIndices);
+        return result;
+    }
+
+    /**
+     * INTERNAL:
+     * Function, to add months to a date.
+     */
+    protected static ExpressionOperator addMonthsOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.AddMonths);
+        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(3);
+        v.add("DATEADD(month, ");
+        v.add(", ");
+        v.add(")");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        int[] indices = { 1, 0 };
+        exOperator.setArgumentIndices(indices);
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+
+    /**
+     * INTERNAL:
+     * Build instring operator
+     */
+    protected static ExpressionOperator inStringOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.Instring);
+        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(3);
+        v.add("CHARINDEX(");
+        v.add(", ");
+        v.add(")");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        int[] indices = { 1, 0 };
+        exOperator.setArgumentIndices(indices);
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+
+    /**
+     * INTERNAL:
+     * Build Sybase equivalent to TO_NUMBER.
+     */
+    protected static ExpressionOperator toNumberOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.ToNumber);
+        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
+        v.add("CONVERT(NUMERIC, ");
+        v.add(")");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+
+    /**
+     * INTERNAL:
+     * Build Sybase equivalent to TO_CHAR.
+     */
+    protected static ExpressionOperator toDateToStringOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.DateToString);
+        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
+        v.add("CONVERT(CHAR, ");
+        v.add(")");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+
+    /**
+     * INTERNAL:
+     * Build Sybase equivalent to TO_DATE.
+     */
+    protected static ExpressionOperator toDateOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.ToDate);
+        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
+        v.add("CONVERT(DATETIME, ");
+        v.add(")");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+
+    /**
+     * INTERNAL:
+     * Build Sybase equivalent to TO_CHAR.
+     */
+    protected static ExpressionOperator toCharOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.ToChar);
+        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
+        v.add("CONVERT(CHAR, ");
+        v.add(")");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+
+    /**
+     * INTERNAL:
+     * Build the Sybase equivalent to Locate
+     */
+    protected static ExpressionOperator locateOperator() {
+        ExpressionOperator result = ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Locate, "CHARINDEX");
+        int[] argumentIndices = new int[2];
+        argumentIndices[0] = 1;
+        argumentIndices[1] = 0;
+        result.setArgumentIndices(argumentIndices);
+        return result;
     }
 
     /**
@@ -541,74 +728,6 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         values.put(java.math.BigDecimal.class, new java.math.BigDecimal("-999999999.9999999999999999999"));
         return values;
     }
-
-    /**
-     * Override the default MOD operator.
-     */
-    public ExpressionOperator modOperator() {
-        ExpressionOperator result = new ExpressionOperator();
-        result.setSelector(ExpressionOperator.Mod);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
-        v.addElement(" % ");
-        result.printsAs(v);
-        result.bePostfix();
-        result.setNodeClass(org.eclipse.persistence.internal.expressions.FunctionExpression.class);
-        return result;
-    }
-    
-    /**
-     * Override the default SubstringSingleArg operator.
-     */
-    public ExpressionOperator singleArgumentSubstringOperator() {
-        ExpressionOperator result = new ExpressionOperator();
-        result.setSelector(ExpressionOperator.SubstringSingleArg);
-        result.setType(ExpressionOperator.FunctionOperator);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
-        v.addElement("SUBSTRING(");
-        v.addElement(",");
-        v.addElement(", LEN(");
-        v.addElement("))");
-        result.printsAs(v);
-        int[] indices = new int[3];
-        indices[0] = 0;
-        indices[1] = 1;
-        indices[2] = 0;
-
-        result.setArgumentIndices(indices);
-        result.setNodeClass(ClassConstants.FunctionExpression_Class);
-        result.bePrefix();
-        return result;
-    }
-
-    /*
-     *  Create the outer join operator for this platform
-     */
-    protected ExpressionOperator operatorOuterJoin() {
-        ExpressionOperator result = new ExpressionOperator();
-        result.setSelector(ExpressionOperator.EqualOuterJoin);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
-        v.addElement(" =* ");
-        result.printsAs(v);
-        result.bePostfix();
-        result.setNodeClass(RelationExpression.class);
-        return result;
-    }
-
-    /**
-     * INTERNAL:
-     * create the Locate2 Operator for this platform
-     */
-    public static ExpressionOperator locate2Operator() {
-        ExpressionOperator result = ExpressionOperator.simpleThreeArgumentFunction(ExpressionOperator.Locate2, "CHARINDEX");
-        int[] argumentIndices = new int[3];
-        argumentIndices[0] = 1;
-        argumentIndices[1] = 0;
-        argumentIndices[2] = 2;
-        result.setArgumentIndices(argumentIndices);
-        return result;
-    }
-
-
 
     /**
      * INTERNAL:

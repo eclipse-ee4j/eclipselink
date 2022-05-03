@@ -38,7 +38,7 @@ public class CollectionExpression extends ConstantExpression {
         if(this.localBase != null) {
             value = this.localBase.getFieldValue(value, getSession());
         }
-        printer.printList((Collection)value);
+        printer.printList((Collection)value, this.canBind);
     }
     
     /**

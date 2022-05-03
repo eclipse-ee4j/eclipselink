@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -215,8 +215,9 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
         }
         
         call.getParameters().addAll(selectCall.getParameters());
-        call.getParameterTypes().addAll(selectCall.getParameterTypes());            
-    }    
+        call.getParameterTypes().addAll(selectCall.getParameterTypes());
+        call.getParameterBindings().addAll(selectCall.getParameterBindings());
+    }
 
     protected boolean writeWhere(Writer writer, SQLCall selectCall, SQLCall call) throws IOException {
         String selectStr = selectCallForExist.getSQLString();
@@ -233,7 +234,8 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
 
         // add parameters
         call.getParameters().addAll(selectCall.getParameters());
-        call.getParameterTypes().addAll(selectCall.getParameterTypes());            
+        call.getParameterTypes().addAll(selectCall.getParameterTypes());
+        call.getParameterBindings().addAll(selectCall.getParameterBindings());
 
         return true;
     }

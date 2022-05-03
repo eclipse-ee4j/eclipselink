@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2020 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -406,6 +406,31 @@ public class DatasourcePlatform implements Platform {
         addOperator(ExpressionOperator.except());
         addOperator(ExpressionOperator.exceptAll());
 
+        addOperator(ExpressionOperator.count());
+        addOperator(ExpressionOperator.sum());
+        addOperator(ExpressionOperator.average());
+        addOperator(ExpressionOperator.minimum());
+        addOperator(ExpressionOperator.maximum());
+        addOperator(ExpressionOperator.distinct());
+        addOperator(ExpressionOperator.notOperator());
+        addOperator(ExpressionOperator.ascending());
+        addOperator(ExpressionOperator.descending());
+        addOperator(ExpressionOperator.as());
+        addOperator(ExpressionOperator.nullsFirst());
+        addOperator(ExpressionOperator.nullsLast());
+        addOperator(ExpressionOperator.any());
+        addOperator(ExpressionOperator.some());
+        addOperator(ExpressionOperator.all());
+        addOperator(ExpressionOperator.in());
+        addOperator(ExpressionOperator.inSubQuery());
+        addOperator(ExpressionOperator.notIn());
+        addOperator(ExpressionOperator.notInSubQuery());
+
+        addOperator(ExpressionOperator.and());
+        addOperator(ExpressionOperator.or());
+        addOperator(ExpressionOperator.isNull());
+        addOperator(ExpressionOperator.notNull());
+
         // Date
         addOperator(ExpressionOperator.addMonths());
         addOperator(ExpressionOperator.dateToString());
@@ -420,11 +445,28 @@ public class DatasourcePlatform implements Platform {
         addOperator(ExpressionOperator.extract());
 
         // Math
-        addOperator(ExpressionOperator.simpleMath(ExpressionOperator.Add, "+"));
-        addOperator(ExpressionOperator.simpleMath(ExpressionOperator.Subtract, "-"));
-        addOperator(ExpressionOperator.simpleMath(ExpressionOperator.Multiply, "*"));
-        addOperator(ExpressionOperator.simpleMath(ExpressionOperator.Divide, "/"));
+        addOperator(ExpressionOperator.add());
+        addOperator(ExpressionOperator.subtract());
+        addOperator(ExpressionOperator.multiply());
+        addOperator(ExpressionOperator.divide());
         addOperator(ExpressionOperator.negate());
+
+        addOperator(ExpressionOperator.equal());
+        addOperator(ExpressionOperator.notEqual());
+        addOperator(ExpressionOperator.lessThan());
+        addOperator(ExpressionOperator.lessThanEqual());
+        addOperator(ExpressionOperator.greaterThan());
+        addOperator(ExpressionOperator.greaterThanEqual());
+
+        addOperator(ExpressionOperator.like());
+        addOperator(ExpressionOperator.likeEscape());
+        addOperator(ExpressionOperator.notLike());
+        addOperator(ExpressionOperator.notLikeEscape());
+        addOperator(ExpressionOperator.between());
+        addOperator(ExpressionOperator.notBetween());
+
+        addOperator(ExpressionOperator.exists());
+        addOperator(ExpressionOperator.notExists());
 
         addOperator(ExpressionOperator.ceil());
         addOperator(ExpressionOperator.cos());

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -175,13 +175,15 @@ public abstract class CompoundExpression extends Expression {
      * INTERNAL:
      */
     public void initializePlatformOperator(DatabasePlatform platform) {
-        if (this.operator.isComplete()) {
-            platformOperator = this.operator;
-            return;
-        }
+        // First, check that the platform operator doesn't override the operator behavior
         platformOperator = platform.getOperator(this.operator.getSelector());
         if (platformOperator == null) {
-            throw QueryException.invalidOperator(this.operator.toString());
+            // If the platform doesn't specifically override, fallback on the internal operator
+            // This operator should be either user-defined or one from ExpressionOperator.initializeInternalOperators.
+            platformOperator = this.operator;
+            if (platformOperator == null) {
+                throw QueryException.invalidOperator(this.operator);
+            }
         }
     }
 

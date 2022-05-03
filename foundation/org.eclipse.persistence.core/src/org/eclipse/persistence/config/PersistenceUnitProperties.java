@@ -1011,18 +1011,39 @@ public class PersistenceUnitProperties {
     public static final String PARTITIONING_CALLBACK = "eclipselink.partitioning.callback";
 
     /**
-     * Property "<code>eclipselink.jdbc.bind-parameters</code>" configures whether parameter binding will be used in the
-     * creation of JDBC prepared statements. Usage of parameter binding is
-     * generally a performance optimization allowing for SQL and prepared
-     * statement caching as well as usage of batch writing.
+     * Property "<code>eclipselink.jdbc.bind-parameters</code>" configures whether parameter binding 
+     * should be used in the creation of JDBC prepared statements.
+     * <p>
+     * Usage of parameter binding is generally a performance optimization; 
+     * allowing for SQL and prepared statement caching, as well as usage of batch writing. 
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>" - values will be written literally into the generated SQL
-     * <li>"<code>true</code>" (DEFAULT) - binding will be used
+     * <li>"<code>false</code>" - all values will be written literally into the generated SQL
+     * <li>"<code>true</code>" (DEFAULT) - all values will be bound as parameters in the generated SQL
      * </ul>
      */
     public static final String JDBC_BIND_PARAMETERS = "eclipselink.jdbc.bind-parameters";
+
+    /**
+     * Property "<code>eclipselink.jdbc.allow-partial-bind-parameters</code>" configures whether 
+     * partial parameter binding should be allowed in the creation of JDBC prepared statements.
+     * <p>
+     * EclipseLink determines binding behavior based on the database platform's support for binding.
+     * If the database platform doesn't support binding for a specific expression, EclipseLink disables
+     * all binding for the whole query. Setting this property to 'true' will allow EclipseLink to bind
+     * per expression, instead of per query.
+     * <p>
+     * Usage of parameter binding is generally a performance optimization; 
+     * allowing for SQL and prepared statement caching, as well as usage of batch writing. 
+     * <p>
+     * <b>Allowed Values:</b>
+     * <ul>
+     * <li>"<code>false</code>" (DEFAULT) - EclipseLink either binds all parameters or no parameters; depending on database support
+     * <li>"<code>true</code>" - EclipseLink binds parameters per SQL function/expression
+     * </ul>
+     */
+    public static final String JDBC_ALLOW_PARTIAL_PARAMETERS = "eclipselink.jdbc.allow-partial-bind-parameters";
 
     /**
      * Property "<code>eclipselink.jdbc.force-bind-parameters</code>" enables parameter binding 

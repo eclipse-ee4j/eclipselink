@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -37,52 +37,90 @@ public class ListExpressionOperator extends ExpressionOperator {
     protected String[] startStrings = null;
     protected String[] separators = null;
     protected String[] terminationStrings = null;
+
+    @Deprecated
     protected int numberOfItems = 0;
+    protected boolean changed = false;
+
     protected boolean isComplete = false;
-    
+
+    public ExpressionOperator clone(){
+        ListExpressionOperator clone = new ListExpressionOperator();
+        this.copyTo(clone);
+        return clone;
+    }
+
+    /** Copies this into argument ExpressionOperator */
     public void copyTo(ExpressionOperator operator){
         super.copyTo(operator);
+        if(operator == null)
+            return;
+
         if (operator instanceof ListExpressionOperator){
             ((ListExpressionOperator)operator).startStrings = Helper.copyStringArray(startStrings);
             ((ListExpressionOperator)operator).separators = Helper.copyStringArray(separators);
             ((ListExpressionOperator)operator).terminationStrings = Helper.copyStringArray(terminationStrings);
-            // don't copy numberOfItems since this copy method is used to duplicate an operator that
-            // may have a different number of items
         }
     }
-    
+
     /**
      * INTERNAL:
      * Recalculate the database strings each time this is called in
      * case one has been added.
      */
+    @Deprecated
     @Override
     public String[] getDatabaseStrings() {
-        databaseStrings = new String[numberOfItems + 1];
+        return getDatabaseStrings(0);
+    }
+
+    /**
+     * Returns an array of Strings that expects a query argument between each String in the array to form the Expression.
+     * The array is built from the defined startStrings, separators, and terminationStrings.
+     * Start strings and termination strings take precedence over separator strings.
+     * 
+     * The first defined start string will be added to the array.
+     * All subsequent start strings are optional, meaning they will only be added to the array if there are argument spaces available.
+     * 
+     * The defined set of separator strings will be repeated, as a complete set, as long as there are argument spaces available.
+     * 
+     * The last defined termination string will be added to the array.
+     * All antecedent termination strings are optional, meaning they will only be added to the array if there are argument spaces available.
+     */
+    @Override
+    public String[] getDatabaseStrings(int arguments) {
         int i = 0;
-        while (i < startStrings.length){
-            databaseStrings[i] = startStrings[i];
+        String[] databaseStrings = new String[(arguments == 0) ? 2 : arguments + 1];
+
+        int start = (arguments < (startStrings.length)) ? databaseStrings.length - 1 : startStrings.length;
+        for (int j = 0; j < start; j++) {
+            databaseStrings[i] = startStrings[j];
             i++;
         }
-        while  (i < numberOfItems - (terminationStrings.length - 1)){
-            for (int j=0;j<separators.length;j++){
-                databaseStrings[i] = separators[j];
+
+        // '- 1' to save a spot for the guaranteed 1 terminator
+        int separ = ((databaseStrings.length - start - 1) / separators.length);
+        for (int j = 0; j < separ; j++) {
+            for (int k = 0; k < separators.length; k++) {
+                databaseStrings[i] = separators[k];
                 i++;
             }
         }
-        while (i <= numberOfItems){
-            for (int j=0;j<terminationStrings.length;j++){
-                databaseStrings[i] = terminationStrings[j];
-                    i++;
-            }
+
+        int termi = databaseStrings.length - (start + (separ * separators.length));
+        for (int j = (terminationStrings.length - termi); j < terminationStrings.length; j++) {
+            databaseStrings[i] = terminationStrings[j];
+            i++;
         }
         return databaseStrings;
     }
 
+    @Deprecated
     public int getNumberOfItems(){
         return numberOfItems;
     }
-    
+
+    @Deprecated
     public void setNumberOfItems(int numberOfItems){
         this.numberOfItems = numberOfItems;
     }
@@ -122,18 +160,17 @@ public class ListExpressionOperator extends ExpressionOperator {
     public void setTerminationStrings(String[] terminationStrings){
         this.terminationStrings = terminationStrings;
     }
-    
+
+    @Deprecated
     public void incrementNumberOfItems(){
         numberOfItems++;
     }
-    
+
     public void setIsComplete(boolean isComplete){
         this.isComplete = isComplete;
     }
-    
+
     public boolean isComplete() {
         return isComplete;
     }
-    
-    
 }

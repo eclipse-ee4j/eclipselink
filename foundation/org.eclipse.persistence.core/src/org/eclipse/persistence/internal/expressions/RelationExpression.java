@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -885,10 +885,16 @@ public class RelationExpression extends CompoundExpression {
      * Print SQL
      */
     public void printSQL(ExpressionSQLPrinter printer) {
-        // If both sides are parameters, some databases don't allow binding.
+        /*
+         * If the platform doesn't support binding for functions and both sides are parameters/constants, 
+         * then disable binding for the whole query
+         * 
+         * DatabasePlatform classes should instead override DatasourcePlatform.initializePlatformOperators()
+         *      @see ExpressionOperator.setIsBindingSupported(boolean isBindingSupported)
+         * In this way, platforms can define their own supported binding behaviors for individual functions
+         */
         if (printer.getPlatform().isDynamicSQLRequiredForFunctions()
-                && ((this.firstChild.isParameterExpression() || this.firstChild.isConstantExpression())
-                        && (this.secondChild.isParameterExpression() || this.secondChild.isConstantExpression()))) {
+                && (this.firstChild.isValueExpression() && this.secondChild.isValueExpression())) {
             printer.getCall().setUsesBinding(false);
         }
         if (isEqualNull(printer)) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -160,13 +160,13 @@ public class ExpressionSQLPrinter {
         getCall().appendTranslation(getWriter(), field);
     }
 
-    public void printPrimitive(Object value) {
+    public void printPrimitive(Object value, Boolean canBind) {
         if (value instanceof Collection) {
-            printValuelist((Collection)value);
+            printValuelist((Collection)value, canBind);
             return;
         }
 
-        session.getPlatform().appendLiteralToCall(getCall(), getWriter(), value);
+        session.getPlatform().appendLiteralToCall(getCall(), getWriter(), value, canBind);
     }
 
     public void printNull(ConstantExpression nullValueExpression) {
@@ -176,9 +176,9 @@ public class ExpressionSQLPrinter {
             if(localBase != null && (localBase.isFieldExpression() || localBase.isQueryKeyExpression())) {
                 field = ((DataExpression)localBase).getField();
             }
-            session.getPlatform().appendLiteralToCall(getCall(), getWriter(), field);
+            session.getPlatform().appendLiteralToCall(getCall(), getWriter(), field, nullValueExpression.canBind());
         } else {
-            session.getPlatform().appendLiteralToCall(getCall(), getWriter(), null);
+            session.getPlatform().appendLiteralToCall(getCall(), getWriter(), null, nullValueExpression.canBind());
         }
     }
     
@@ -191,7 +191,7 @@ public class ExpressionSQLPrinter {
         }
     }
 
-    public void printValuelist(Collection values) {
+    public void printValuelist(Collection values, Boolean canBind) {
         try {
             getWriter().write("(");
             Iterator valuesEnum = values.iterator();
@@ -199,11 +199,11 @@ public class ExpressionSQLPrinter {
                 Object value = valuesEnum.next();
                 // Support nested arrays for IN.
                 if (value instanceof Collection) {
-                    printValuelist((Collection)value);
+                    printValuelist((Collection)value, canBind);
                 } else if (value instanceof Expression) {
                     ((Expression)value).printSQL(this);
                 } else {
-                    session.getPlatform().appendLiteralToCall(getCall(), getWriter(), value);
+                    session.getPlatform().appendLiteralToCall(getCall(), getWriter(), value, canBind);
                 }
                 if (valuesEnum.hasNext()) {
                     getWriter().write(", ");
@@ -214,11 +214,11 @@ public class ExpressionSQLPrinter {
             throw ValidationException.fileError(exception);
         }
     }
-    
+
     /*
      * Same as printValuelist, but allows for collections containing expressions recursively
      */
-    public void printList(Collection values) {
+    public void printList(Collection values, Boolean canBind) {
         try {
             getWriter().write("(");
             Iterator valuesEnum = values.iterator();
@@ -227,7 +227,7 @@ public class ExpressionSQLPrinter {
                 if (value instanceof Expression){
                     ((Expression)value).printSQL(this);
                 }else{
-                    session.getPlatform().appendLiteralToCall(getCall(), getWriter(), value);
+                    session.getPlatform().appendLiteralToCall(getCall(), getWriter(), value, canBind);
                 }
                 if (valuesEnum.hasNext()) {
                     getWriter().write(", ");

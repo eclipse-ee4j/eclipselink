@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -19,10 +19,8 @@ import static java.lang.Integer.MIN_VALUE;
 import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
 // EclipseLink imports
 import org.eclipse.persistence.internal.helper.DatabaseType;
-import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.IN;
-import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.INOUT;
-import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT;
-import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT_CURSOR;
+
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 
 /**
  * <p>
@@ -33,7 +31,9 @@ import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT
 public class PLSQLargument implements Cloneable {
 
     public String name;
-    public int direction = IN;
+    @Deprecated
+    public int direction = ParameterType.IN.val;
+    public ParameterType pdirection = ParameterType.IN;
     public int originalIndex = MIN_VALUE;
     public int inIndex = MIN_VALUE;   // re-computed positional index for IN argument
     public int outIndex = MIN_VALUE;  // re-computed positional index for OUT argument
@@ -46,7 +46,8 @@ public class PLSQLargument implements Cloneable {
     public PLSQLargument() {
         super();
     }
-    
+
+    @Deprecated
     public PLSQLargument(String name, int originalIndex, int direction,
         DatabaseType databaseType) {
         this();
@@ -54,15 +55,41 @@ public class PLSQLargument implements Cloneable {
         this.databaseType = databaseType;
         this.originalIndex = originalIndex;
         this.direction = direction;
+        this.pdirection = ParameterType.valueOf(direction);
     }
-    
+
+    public PLSQLargument(String name, int originalIndex, ParameterType direction,
+        DatabaseType databaseType) {
+        this();
+        this.name = name;
+        this.databaseType = databaseType;
+        this.originalIndex = originalIndex;
+        this.direction = direction.val;
+        this.pdirection = direction;
+    }
+
+    @Deprecated
     public PLSQLargument(String name, int originalIndex, int direction,
         DatabaseType databaseType, int length) {
         this(name, originalIndex, direction, databaseType);
         this.length = length;
     }
-    
+
+    public PLSQLargument(String name, int originalIndex, ParameterType direction,
+        DatabaseType databaseType, int length) {
+        this(name, originalIndex, direction, databaseType);
+        this.length = length;
+    }
+
+    @Deprecated
     public PLSQLargument(String name, int originalIndex, int direction,
+        DatabaseType databaseType, int precision, int scale) {
+        this(name, originalIndex, direction, databaseType);
+        this.precision = precision;
+        this.scale = scale;
+    }
+
+    public PLSQLargument(String name, int originalIndex, ParameterType direction,
         DatabaseType databaseType, int precision, int scale) {
         this(name, originalIndex, direction, databaseType);
         this.precision = precision;
@@ -110,16 +137,16 @@ public class PLSQLargument implements Cloneable {
     public String toString() {
         StringBuilder sb = new StringBuilder(name);
         sb.append('{');
-        if (direction == IN) {
+        if (pdirection == ParameterType.IN) {
             sb.append("IN");
         }
-        else if (direction == INOUT) {
+        else if (pdirection == ParameterType.INOUT) {
             sb.append("IN");
         }
-        else if (direction == OUT) {
+        else if (pdirection == ParameterType.OUT) {
             sb.append("OUT");
         }
-        else if (direction == OUT_CURSOR) {
+        else if (pdirection == ParameterType.OUT_CURSOR) {
             sb.append("OUT CURSOR");
         }
         sb.append(',');
