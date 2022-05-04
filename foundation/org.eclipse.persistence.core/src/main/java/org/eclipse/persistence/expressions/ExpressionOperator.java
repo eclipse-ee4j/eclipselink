@@ -19,7 +19,7 @@
 //     01/23/2018-2.7 Will Dazey
 //       - 530214: trim operation should not bind parameters
 //     02/01/2022: Tomas Kraus
-//       - Issue 1442: Implement New JPA API 3.1.0 Features
+//       - Issue 1442: Implement New Jakarta Persistence 3.1 Features
 package org.eclipse.persistence.expressions;
 
 import java.io.IOException;

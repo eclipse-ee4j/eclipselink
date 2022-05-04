@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,8 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-//
+//     04/21/2022: Tomas Kraus
+//       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
 package org.eclipse.persistence.jpa.jpql.tools.resolver;
 
 import java.sql.Date;
@@ -21,6 +22,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import org.eclipse.persistence.jpa.jpql.Assert;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.LiteralType;
@@ -73,6 +75,8 @@ import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LowerExpression;
+import org.eclipse.persistence.jpa.jpql.parser.MathDoubleExpression;
+import org.eclipse.persistence.jpa.jpql.parser.MathSingleExpression;
 import org.eclipse.persistence.jpa.jpql.parser.MaxFunction;
 import org.eclipse.persistence.jpa.jpql.parser.MinFunction;
 import org.eclipse.persistence.jpa.jpql.parser.ModExpression;
@@ -175,8 +179,6 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.IType;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.5.1
- * @since 2.3
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
@@ -720,6 +722,59 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
     @Override
     public void visit(LowerExpression expression) {
         resolver = buildClassResolver(String.class);
+    }
+
+    @Override
+    public void visit(MathDoubleExpression.Power expression) {
+        resolver = buildClassResolver(Double.class);
+    }
+
+    @Override
+    public void visit(MathDoubleExpression.Round expression) {
+
+        // Visit the 1st child expression in order to create the resolver
+        expression.getFirstExpression().accept(this);
+
+        // Wrap the Resolver used to determine the type of the state field
+        // path expression so we can return the actual type
+        resolver = new MathFunctionResolver.Round(resolver);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Ceiling expression) {
+
+        // Visit the child expression in order to create the resolver
+        expression.getExpression().accept(this);
+
+        // Wrap the Resolver used to determine the type of the state field
+        // path expression so we can return the actual type
+        resolver = new MathFunctionResolver.Ceiling(resolver);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Exp expression) {
+        resolver = buildClassResolver(Double.class);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Floor expression) {
+
+        // Visit the child expression in order to create the resolver
+        expression.getExpression().accept(this);
+
+        // Wrap the Resolver used to determine the type of the state field
+        // path expression so we can return the actual type
+        resolver = new MathFunctionResolver.Floor(resolver);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Ln expression) {
+        resolver = buildClassResolver(Double.class);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Sign expression) {
+        resolver = buildClassResolver(Integer.class);
     }
 
     @Override

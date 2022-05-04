@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,8 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-//
+//     04/21/2022: Tomas Kraus
+//       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
 package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
@@ -24,8 +25,6 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4
- * @since 2.3
  * @author Pascal Filion
  */
 public abstract class AbstractExpressionVisitor implements ExpressionVisitor {
@@ -210,6 +209,34 @@ public abstract class AbstractExpressionVisitor implements ExpressionVisitor {
 
     @Override
     public void visit(LowerExpression expression) {
+    }
+
+    @Override
+    public void visit(MathDoubleExpression.Power expression) {
+    }
+
+    @Override
+    public void visit(MathDoubleExpression.Round expression) {
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Ceiling expression) {
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Exp expression) {
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Floor expression) {
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Ln expression) {
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Sign expression) {
     }
 
     @Override

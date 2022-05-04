@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2006, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -21,6 +21,8 @@
 //     05/11/2018-2.7 Will Dazey
 //       - 534515: Incorrect return type set for CASE functions
 //     IBM - Bug 537795: CASE THEN and ELSE scalar expression Constants should not be casted to CASE operand type
+//     04/21/2022: Tomas Kraus
+//       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
 package org.eclipse.persistence.internal.jpa.jpql;
 
 import java.sql.Date;
@@ -106,6 +108,8 @@ import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LowerExpression;
+import org.eclipse.persistence.jpa.jpql.parser.MathDoubleExpression;
+import org.eclipse.persistence.jpa.jpql.parser.MathSingleExpression;
 import org.eclipse.persistence.jpa.jpql.parser.MaxFunction;
 import org.eclipse.persistence.jpa.jpql.parser.MinFunction;
 import org.eclipse.persistence.jpa.jpql.parser.ModExpression;
@@ -161,8 +165,6 @@ import org.eclipse.persistence.queries.ReportQuery;
  * This {@link org.eclipse.persistence.jpa.jpql.parser.ExpressionVisitor} visits an {@link org.eclipse.persistence.jpa.jpql.parser.Expression
  * JPQL Expression} and creates the corresponding {@link org.eclipse.persistence.expressions.Expression EclipseLink Expression}.
  *
- * @version 2.6
- * @since 2.3
  * @author Pascal Filion
  * @author John Bracken
  */
@@ -1301,6 +1303,107 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 
         // Set the expression type
         type[0] = String.class;
+    }
+
+    @Override
+    public void visit(MathDoubleExpression.Power expression) {
+
+        // First create the Expression for the first expression
+        expression.getFirstExpression().accept(this);
+        Expression leftExpression = queryExpression;
+
+        // Now create the Expression for the second expression
+        expression.getSecondExpression().accept(this);
+        Expression rightExpression = queryExpression;
+
+        // Now create the POWER expression
+        queryExpression = ExpressionMath.power(leftExpression, rightExpression);
+
+        // Set the expression type
+        type[0] = Double.class;
+    }
+
+    @Override
+    public void visit(MathDoubleExpression.Round expression) {
+
+        // First create the Expression for the first expression
+        expression.getFirstExpression().accept(this);
+        Expression leftExpression = queryExpression;
+        // Store type of the 1st (left) expression before being overwritten by the second expression.
+        final Class<?> leftType = type[0];
+
+        // Now create the Expression for the second expression
+        expression.getSecondExpression().accept(this);
+        Expression rightExpression = queryExpression;
+
+        // Now create the ROUND expression
+        queryExpression = ExpressionMath.round(leftExpression, rightExpression);
+
+        // Note: The type is used from the 1st (left) expression.
+        type[0] = leftType;
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Ceiling expression) {
+
+        // First create the expression from the encapsulated expression
+        expression.getExpression().accept(this);
+
+        // Now create the CEILING expression
+        queryExpression = ExpressionMath.ceil(queryExpression);
+
+        // Note: The type will be calculated when traversing the CEILING's expression
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Exp expression) {
+
+        // First create the expression from the encapsulated expression
+        expression.getExpression().accept(this);
+
+        // Now create the EXP expression
+        queryExpression = ExpressionMath.exp(queryExpression);
+
+        // Set the expression type
+        type[0] = Double.class;
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Floor expression) {
+
+        // First create the expression from the encapsulated expression
+        expression.getExpression().accept(this);
+
+        // Now create the FLOOR expression
+        queryExpression = ExpressionMath.floor(queryExpression);
+
+        // Note: The type will be calculated when traversing the FLOOR's expression
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Ln expression) {
+
+        // First create the expression from the encapsulated expression
+        expression.getExpression().accept(this);
+
+        // Now create the LN expression
+        queryExpression = ExpressionMath.ln(queryExpression);
+
+        // Set the expression type
+        type[0] = Double.class;
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Sign expression) {
+
+        // First create the expression from the encapsulated expression
+        expression.getExpression().accept(this);
+
+        // Now create the SIGN expression
+        queryExpression = ExpressionMath.sign(queryExpression);
+
+        // Set the expression type
+        type[0] = Integer.class;
     }
 
     @Override

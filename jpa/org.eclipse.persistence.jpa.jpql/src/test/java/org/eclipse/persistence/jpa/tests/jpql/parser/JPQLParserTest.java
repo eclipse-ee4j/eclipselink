@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,8 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-//
+//     04/21/2022: Tomas Kraus
+//       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
@@ -83,6 +84,8 @@ import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LogicalExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LowerExpression;
+import org.eclipse.persistence.jpa.jpql.parser.MathDoubleExpression;
+import org.eclipse.persistence.jpa.jpql.parser.MathSingleExpression;
 import org.eclipse.persistence.jpa.jpql.parser.MaxFunction;
 import org.eclipse.persistence.jpa.jpql.parser.MinFunction;
 import org.eclipse.persistence.jpa.jpql.parser.ModExpression;
@@ -132,11 +135,13 @@ import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
 import org.eclipse.persistence.jpa.jpql.parser.WhenClause;
 import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 import org.eclipse.persistence.jpa.tests.jpql.JPQLBasicTest;
+
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
-import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
-import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
-import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLQueryBuilder.*;
-import static org.junit.Assert.*;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.jpqlExpression;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLQueryBuilder.buildQuery;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 
 /**
  * This abstract class provides the functionality to test the parsed tree representation of a JPQL
@@ -145,8 +150,6 @@ import static org.junit.Assert.*;
  * Note: This class provides the {@link ExpressionTester} for all JPQL grammars (1.0, 2.0 and 2.1),
  * as well as for EclipseLink (all versions).
  *
- * @version 2.6
- * @since 2.3
  * @author Pascal Filion
  */
 @SuppressWarnings({"nls", "unused" /* For the extra import statement, see bug 330740 */ })
@@ -1745,6 +1748,23 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
         }
     }
 
+    public static final class CeilingExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+
+        protected CeilingExpressionTester(ExpressionTester expression) {
+            super(expression);
+        }
+
+        @Override
+        protected Class<? extends AbstractSingleEncapsulatedExpression> expressionType() {
+            return MathSingleExpression.Ceiling.class;
+        }
+
+        @Override
+        protected String identifier() {
+            return CEILING;
+        }
+    }
+
     public static final class CoalesceExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
 
         protected CoalesceExpressionTester(ExpressionTester expression) {
@@ -2536,6 +2556,23 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
         void test(Expression expression);
     }
 
+    public static final class ExpExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+
+        protected ExpExpressionTester(ExpressionTester expression) {
+            super(expression);
+        }
+
+        @Override
+        protected Class<? extends AbstractSingleEncapsulatedExpression> expressionType() {
+            return MathSingleExpression.Exp.class;
+        }
+
+        @Override
+        protected String identifier() {
+            return EXP;
+        }
+    }
+
     public static final class ExtractExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
 
         private boolean hasFrom;
@@ -2595,6 +2632,23 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             }
 
             super.toStringEncapsulatedExpression(sb);
+        }
+    }
+
+    public static final class FloorExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+
+        protected FloorExpressionTester(ExpressionTester expression) {
+            super(expression);
+        }
+
+        @Override
+        protected Class<? extends AbstractSingleEncapsulatedExpression> expressionType() {
+            return MathSingleExpression.Floor.class;
+        }
+
+        @Override
+        protected String identifier() {
+            return FLOOR;
         }
     }
 
@@ -3193,6 +3247,23 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
         }
     }
 
+    public static final class LnExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+
+        protected LnExpressionTester(ExpressionTester expression) {
+            super(expression);
+        }
+
+        @Override
+        protected Class<? extends AbstractSingleEncapsulatedExpression> expressionType() {
+            return MathSingleExpression.Ln.class;
+        }
+
+        @Override
+        protected String identifier() {
+            return LN;
+        }
+    }
+
     public static final class LocateExpressionTester extends AbstractTripleEncapsulatedExpressionTester {
 
         protected LocateExpressionTester(ExpressionTester firstExpression,
@@ -3610,6 +3681,23 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
         }
     }
 
+    public static final class PowerExpressionTester extends AbstractDoubleEncapsulatedExpressionTester {
+
+        protected PowerExpressionTester(ExpressionTester firstExpression, ExpressionTester secondExpression) {
+            super(firstExpression, secondExpression);
+        }
+
+        @Override
+        protected Class<? extends AbstractDoubleEncapsulatedExpression> expressionType() {
+            return MathDoubleExpression.Power.class;
+        }
+
+        @Override
+        protected String identifier() {
+            return POWER;
+        }
+    }
+
     public static final class RangeVariableDeclarationTester extends AbstractExpressionTester {
 
         private ExpressionTester abstractSchemaName;
@@ -3767,6 +3855,23 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
         }
     }
 
+    public static final class RoundExpressionTester extends AbstractDoubleEncapsulatedExpressionTester {
+
+        protected RoundExpressionTester(ExpressionTester firstExpression, ExpressionTester secondExpression) {
+            super(firstExpression, secondExpression);
+        }
+
+        @Override
+        protected Class<? extends AbstractDoubleEncapsulatedExpression> expressionType() {
+            return MathDoubleExpression.Round.class;
+        }
+
+        @Override
+        protected String identifier() {
+            return ROUND;
+        }
+    }
+
     public static final class SelectClauseTester extends AbstractSelectClauseTester {
 
         protected SelectClauseTester(ExpressionTester selectExpressions, boolean hasDistinct) {
@@ -3844,6 +3949,23 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             }
             sb.append(unionClauses);
             return sb.toString();
+        }
+    }
+
+    public static final class SignExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+
+        protected SignExpressionTester(ExpressionTester expression) {
+            super(expression);
+        }
+
+        @Override
+        protected Class<? extends AbstractSingleEncapsulatedExpression> expressionType() {
+            return MathSingleExpression.Sign.class;
+        }
+
+        @Override
+        protected String identifier() {
+            return SIGN;
         }
     }
 

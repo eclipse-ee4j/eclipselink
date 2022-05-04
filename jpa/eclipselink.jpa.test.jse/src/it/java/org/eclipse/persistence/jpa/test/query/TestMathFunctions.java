@@ -13,7 +13,7 @@
 // Contributors:
 //     02/01/2022: Tomas Kraus
 //       - Issue 1442: Implement New Jakarta Persistence 3.1 Features
-package org.eclipse.persistence.jpa.test.criteria;
+package org.eclipse.persistence.jpa.test.query;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -21,9 +21,7 @@ import java.text.DecimalFormat;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceException;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.TypedQuery;
 
 import org.eclipse.persistence.jpa.test.criteria.model.NumberEntity;
 import org.eclipse.persistence.jpa.test.framework.DDLGen;
@@ -117,15 +115,12 @@ public class TestMathFunctions {
         Assert.assertEquals(expectedRounded, returnedRounded);
     }
 
-    // Call SELECT SIGN(n.longValue) FROM NumberEntity n WHERE n.id = id
-    // using CriteriaQuery
+    // Call SELECT SIGN(n.longValue) FROM NumberEntity n WHERE n.id = :id using JPQL
     private static Integer callSign(final EntityManager em, final int id) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
-        Root<NumberEntity> number = cq.from(NumberEntity.class);
-        cq.select(cb.sign(number.get("longValue")));
-        cq.where(cb.equal(number.get("id"), id));
-        return em.createQuery(cq).getSingleResult();
+        TypedQuery<Integer> query = em.createQuery(
+                "SELECT SIGN(n.longValue) FROM NumberEntity n WHERE n.id = :id", Integer.class);
+        query.setParameter("id", id);
+        return query.getSingleResult();
     }
 
     // Call SIGN(n) on n=0.
@@ -155,15 +150,12 @@ public class TestMathFunctions {
         }
     }
 
-    // Call SELECT CEILING(n.doubleValue) FROM NumberEntity n WHERE n.id = id
-    // using CriteriaQuery
+    // Call SELECT CEILING(n.doubleValue) FROM NumberEntity n WHERE n.id = :id using JPQL
     private static Double callCeiling(final EntityManager em, final int id) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Double> cq = cb.createQuery(Double.class);
-        Root<NumberEntity> number = cq.from(NumberEntity.class);
-        cq.select(cb.ceiling(number.get("doubleValue")));
-        cq.where(cb.equal(number.get("id"), id));
-        return em.createQuery(cq).getSingleResult();
+        TypedQuery<Double> query = em.createQuery(
+                "SELECT CEILING(n.doubleValue) FROM NumberEntity n WHERE n.id = :id", Double.class);
+        query.setParameter("id", id);
+        return query.getSingleResult();
     }
 
     // Call CEILING(n) on n=0.
@@ -195,15 +187,12 @@ public class TestMathFunctions {
         }
     }
 
-    // Call SELECT FLOOR(n.doubleValue) FROM NumberEntity n WHERE n.id = id
-    // using CriteriaQuery
+    // Call SELECT FLOOR(n.doubleValue) FROM NumberEntity n WHERE n.id = :id using JPQL
     private static Double callFloor(final EntityManager em, final int id) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Double> cq = cb.createQuery(Double.class);
-        Root<NumberEntity> number = cq.from(NumberEntity.class);
-        cq.select(cb.floor(number.get("doubleValue")));
-        cq.where(cb.equal(number.get("id"), id));
-        return em.createQuery(cq).getSingleResult();
+        TypedQuery<Double> query = em.createQuery(
+                "SELECT FLOOR(n.doubleValue) FROM NumberEntity n WHERE n.id = :id", Double.class);
+        query.setParameter("id", id);
+        return query.getSingleResult();
     }
 
     // Call FLOOR(n) on n=0.
@@ -235,15 +224,12 @@ public class TestMathFunctions {
         }
     }
 
-    // Call SELECT EXP(n.doubleValue) FROM NumberEntity n WHERE n.id = id
-    // using CriteriaQuery
+    // Call SELECT EXP(n.doubleValue) FROM NumberEntity n WHERE n.id = :id using JPQL
     private static Double callExp(final EntityManager em, final int id) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Double> cq = cb.createQuery(Double.class);
-        Root<NumberEntity> number = cq.from(NumberEntity.class);
-        cq.select(cb.exp(number.get("doubleValue")));
-        cq.where(cb.equal(number.get("id"), id));
-        return em.createQuery(cq).getSingleResult();
+        TypedQuery<Double> query = em.createQuery(
+                "SELECT EXP(n.doubleValue) FROM NumberEntity n WHERE n.id = :id", Double.class);
+        query.setParameter("id", id);
+        return query.getSingleResult();
     }
 
     // Call EXP(0).
@@ -288,15 +274,12 @@ public class TestMathFunctions {
         }
     }
 
-    // Call SELECT LN(n.doubleValue) FROM NumberEntity n WHERE n.id = id
-    // using CriteriaQuery
+    // Call SELECT LN(n.doubleValue) FROM NumberEntity n WHERE n.id = :id using JPQL
     private static Double callLn(final EntityManager em, final int id) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Double> cq = cb.createQuery(Double.class);
-        Root<NumberEntity> number = cq.from(NumberEntity.class);
-        cq.select(cb.ln(number.get("doubleValue")));
-        cq.where(cb.equal(number.get("id"), id));
-        return em.createQuery(cq).getSingleResult();
+        TypedQuery<Double> query = em.createQuery(
+                "SELECT LN(n.doubleValue) FROM NumberEntity n WHERE n.id = :id", Double.class);
+        query.setParameter("id", id);
+        return query.getSingleResult();
     }
 
     // Call LN(0). Domain of f(x): y = ln(x) is (0,infinity) so it shall throw an exception or return null.
@@ -348,16 +331,14 @@ public class TestMathFunctions {
         }
     }
 
-    // Call SELECT POWER(n.:field, exponent) FROM NumberEntity n WHERE n.id = id
-    // using CriteriaQuery
+    // Call SELECT POWER(n.$field, :exponent) FROM NumberEntity n WHERE n.id = :id using JPQL
     // Matches Expression<Double> power(Expression<? extends Number> x, Number y) prototype
     private static Double callPower(final EntityManager em, final int exponent, final int id, final String field) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Double> cq = cb.createQuery(Double.class);
-        Root<NumberEntity> number = cq.from(NumberEntity.class);
-        cq.select(cb.power(number.get(field), exponent));
-        cq.where(cb.equal(number.get("id"), id));
-        return em.createQuery(cq).getSingleResult();
+        TypedQuery<Double> query = em.createQuery(
+                "SELECT POWER(n." + field + " :exponent) FROM NumberEntity n WHERE n.id = :id", Double.class);
+        query.setParameter("exponent", exponent);
+        query.setParameter("id", id);
+        return query.getSingleResult();
     }
 
     // Call POWER(n.longValue, 2) on long n=0.
@@ -445,16 +426,13 @@ public class TestMathFunctions {
         }
     }
 
-    // Call SELECT POWER(n.doubleValue, n.longValue) FROM NumberEntity n WHERE n.id = id
-    // using CriteriaQuery
+    // Call SELECT POWER(n.doubleValue, n.longValue) FROM NumberEntity n WHERE n.id = :id using JPQL
     // Matches Expression<Double> power(Expression<? extends Number> x, Expression<? extends Number> y) prototype
     private static Double callExprPower(final EntityManager em, final int id) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Double> cq = cb.createQuery(Double.class);
-        Root<NumberEntity> number = cq.from(NumberEntity.class);
-        cq.select(cb.power(number.get("doubleValue"), number.get("longValue")));
-        cq.where(cb.equal(number.get("id"), id));
-        return em.createQuery(cq).getSingleResult();
+        TypedQuery<Double> query = em.createQuery(
+                "SELECT POWER(n.doubleValue, n.longValue) FROM NumberEntity n WHERE n.id = :id", Double.class);
+        query.setParameter("id", id);
+        return query.getSingleResult();
     }
 
     // Call POWER(n.doubleValue, n.longValue) on id=7: [14.23D,4L] (result fits in double with no exponent).
@@ -473,24 +451,22 @@ public class TestMathFunctions {
         }
     }
 
-    // Call SELECT ROUND(n.doubleValue, d) FROM NumberEntity n WHERE n.id = id
-    // using CriteriaQuery
-    // Matches Expression<Double> power(Expression<? extends Number> x, Number y) prototype
+    // Call SELECT ROUND(n.doubleValue, $round) FROM NumberEntity n WHERE n.id = :id using JPQL
+    // Matches Expression<Double> round(Expression<? extends Number> x, Number y) prototype
     private static Double callRound(final EntityManager em, final int d, final int id) {
         try {
-            CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<Double> cq = cb.createQuery(Double.class);
-            Root<NumberEntity> number = cq.from(NumberEntity.class);
-            cq.select(cb.round(number.get("doubleValue"), d));
-            cq.where(cb.equal(number.get("id"), id));
-            return em.createQuery(cq).getSingleResult();
+            TypedQuery<Double> query = em.createQuery(
+                    "SELECT ROUND(n.doubleValue," + d + ") FROM NumberEntity n WHERE n.id = :id", Double.class);
+            query.setParameter("id", id);
+            System.out.println("RESULT LIST: "+query.getSingleResult().toString());
+            return query.getSingleResult();
         } catch (Throwable t) {
             t.printStackTrace();
             throw t;
         }
     }
 
-    // Call ROUND(n) on n>0.
+    // Call ROUND(n.doubleValue, 6) on n>0.
     @Test
     public void testRoundMethodWithPositive() {
         try (final EntityManager em = emf.createEntityManager()) {
@@ -499,11 +475,48 @@ public class TestMathFunctions {
         }
     }
 
-    // Call ROUND(n) on n<0.
+    // Call ROUND(n.doubleValue, 6) on n<0.
     @Test
     public void testRoundMethodWithNegative() {
         try (final EntityManager em = emf.createEntityManager()) {
             Double result = callRound(em, 6, 9);
+            Assert.assertEquals(Double.valueOf(-214.245732D), result);
+        }
+    }
+
+    // Call SELECT ROUND(n.doubleValue, :round) FROM NumberEntity n WHERE n.id = :id using JPQL
+    // Matches Expression<Double> round(Expression<? extends Number> x, Number y) prototype
+    private static Double callRoundDigitsAsParam(final EntityManager em, final int d, final int id) {
+        try {
+            TypedQuery<Double> query = em.createQuery(
+                    "SELECT ROUND(n.doubleValue, :round) FROM NumberEntity n WHERE n.id = :id", Double.class);
+            query.setParameter("round", d);
+            query.setParameter("id", id);
+            return query.getSingleResult();
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        }
+    }
+
+    // Call ROUND(n.doubleValue, :round) with :round = 6 on n>0.
+    // Derby emulation does not support 2nd ROUND argument as query parameter
+    @Test
+    public void testRoundMethodWithPositiveDigitsAsParam() {
+        Assume.assumeFalse(emf.unwrap(Session.class).getPlatform().isDerby());
+        try (final EntityManager em = emf.createEntityManager()) {
+            Double result = callRoundDigitsAsParam(em, 6,8);
+            Assert.assertEquals(Double.valueOf(44.754238D), result);
+        }
+    }
+
+    // Call ROUND(n.doubleValue, :round) with :round = 6 on n<0.
+    // Derby emulation does not support 2nd ROUND argument as query parameter
+    @Test
+    public void testRoundMethodWithNegativeDigitsAsParam() {
+        Assume.assumeFalse(emf.unwrap(Session.class).getPlatform().isDerby());
+        try (final EntityManager em = emf.createEntityManager()) {
+            Double result = callRoundDigitsAsParam(em, 6, 9);
             Assert.assertEquals(Double.valueOf(-214.245732D), result);
         }
     }

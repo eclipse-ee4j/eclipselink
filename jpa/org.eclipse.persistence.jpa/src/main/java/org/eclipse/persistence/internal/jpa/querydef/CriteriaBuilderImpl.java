@@ -14,7 +14,7 @@
 // Contributors:
 //     Gordon Yorke - Initial development
 //     02/01/2022: Tomas Kraus
-//       - Issue 1442: Implement New JPA API 3.1.0 Features
+//       - Issue 1442: Implement New Jakarta Persistence 3.1 Features
 //     04/19/2022: Jody Grassel
 //       - Issue 579726: CriteriaBuilder neg() only returns Integer type, instead of it's argument expression type.
 package org.eclipse.persistence.internal.jpa.querydef;

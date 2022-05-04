@@ -19,7 +19,7 @@
 //     03/18/2015-2.6.0 Joe Grassel
 //       - 462498: Missing isolation level expression in SQL for Derby platform
 //     02/01/2022: Tomas Kraus
-//       - Issue 1442: Implement New JPA API 3.1.0 Features
+//       - Issue 1442: Implement New Jakarta Persistence 3.1 Features
 package org.eclipse.persistence.platform.database;
 
 import java.io.IOException;

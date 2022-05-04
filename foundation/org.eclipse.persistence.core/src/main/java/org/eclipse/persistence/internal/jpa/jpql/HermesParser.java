@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,8 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-//
+//     04/21/2022: Tomas Kraus
+//       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
 package org.eclipse.persistence.internal.jpa.jpql;
 
 import java.text.MessageFormat;
@@ -39,6 +40,9 @@ import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar1_0;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_0;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_1;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_2;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar3_0;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar3_1;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -63,8 +67,6 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
  *
  * @see JPQLExpression
  *
- * @version 2.5
- * @since 2.3
  * @author John Bracken
  * @author Pascal Filion
  */
@@ -225,24 +227,22 @@ public final class HermesParser implements JPAQueryBuilder {
      * of EclipseLink
      */
     private JPQLGrammar jpqlGrammar() {
-
-        if (validationLevel == ParserValidationType.EclipseLink) {
-            return DefaultEclipseLinkJPQLGrammar.instance();
+        switch(validationLevel) {
+            case ParserValidationType.JPA10:
+                return JPQLGrammar1_0.instance();
+            case ParserValidationType.JPA20:
+                return JPQLGrammar2_0.instance();
+            case ParserValidationType.JPA21:
+                return JPQLGrammar2_1.instance();
+            case ParserValidationType.JPA22:
+                return JPQLGrammar2_2.instance();
+            case ParserValidationType.JPA30:
+                return JPQLGrammar3_0.instance();
+            case ParserValidationType.JPA31:
+                return JPQLGrammar3_1.instance();
+            default:
+                return DefaultEclipseLinkJPQLGrammar.instance();
         }
-
-        if (validationLevel == ParserValidationType.JPA10) {
-            return JPQLGrammar1_0.instance();
-        }
-
-        if (validationLevel == ParserValidationType.JPA20) {
-            return JPQLGrammar2_0.instance();
-        }
-
-        if (validationLevel == ParserValidationType.JPA21) {
-            return JPQLGrammar2_1.instance();
-        }
-
-        return DefaultEclipseLinkJPQLGrammar.instance();
     }
 
     @Override

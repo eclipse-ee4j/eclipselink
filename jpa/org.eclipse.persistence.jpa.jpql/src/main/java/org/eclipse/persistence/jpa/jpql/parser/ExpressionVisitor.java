@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,8 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-//
+//     04/21/2022: Tomas Kraus
+//       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
 package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
@@ -24,8 +25,6 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4
- * @since 2.3
  * @author Pascal Filion
  */
 public interface ExpressionVisitor {
@@ -337,6 +336,55 @@ public interface ExpressionVisitor {
      * @param expression The {@link Expression} to visit
      */
     void visit(LowerExpression expression);
+
+    /**
+     * Visits the {@link MathDoubleExpression.Power} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(MathDoubleExpression.Power expression);
+
+    /**
+     * Visits the {@link MathDoubleExpression.Round} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(MathDoubleExpression.Round expression);
+
+    /**
+     * Visits the {@link MathSingleExpression.Ceiling} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(MathSingleExpression.Ceiling expression);
+
+    /**
+     * Visits the {@link MathSingleExpression.Exp} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(MathSingleExpression.Exp expression);
+
+    /**
+     * Visits the {@link MathSingleExpression.Floor} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(MathSingleExpression.Floor expression);
+
+    /**
+     * Visits the {@link MathSingleExpression.Ln} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(MathSingleExpression.Ln expression);
+
+    /**
+     * Visits the {@link MathSingleExpression.Sign} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(MathSingleExpression.Sign expression);
 
     /**
      * Visits the {@link MaxFunction} expression.

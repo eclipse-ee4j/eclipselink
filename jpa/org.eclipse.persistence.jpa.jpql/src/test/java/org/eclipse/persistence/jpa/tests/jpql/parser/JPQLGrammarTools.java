@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,8 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-//
+//     04/21/2022: Tomas Kraus
+//       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.EclipseLinkVersion;
@@ -24,17 +25,17 @@ import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_2;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_3;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_5;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar4_0;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar1_0;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_0;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_1;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar3_1;
 
 /**
  * This utility class provides an easy way of creating a list of {@link JPQLGrammar}, which is
  * easier to update when a new grammar is added.
  *
- * @version 2.5
- * @since 2.5
  * @author Pascal Filion
  */
 public final class JPQLGrammarTools {
@@ -68,6 +69,11 @@ public final class JPQLGrammarTools {
             case VERSION_2_1: {
                 return new JPQLGrammar[] {
                     JPQLGrammar2_1.instance()
+                };
+            }
+            case VERSION_3_1: {
+                return new JPQLGrammar[] {
+                        JPQLGrammar3_1.instance()
                 };
             }
             default: {
@@ -137,6 +143,11 @@ public final class JPQLGrammarTools {
                     EclipseLinkJPQLGrammar2_5.instance()
                 };
             }
+            case VERSION_4_0: {
+                return new JPQLGrammar[] {
+                    EclipseLinkJPQLGrammar4_0.instance()
+                };
+            }
             default: {
                 return new JPQLGrammar[0];
             }
@@ -180,6 +191,12 @@ public final class JPQLGrammarTools {
                     JPQLGrammar2_1.instance(),
                     EclipseLinkJPQLGrammar2_4.instance(),
                     EclipseLinkJPQLGrammar2_5.instance()
+                };
+            }
+            case VERSION_3_1: {
+                return new JPQLGrammar[] {
+                    JPQLGrammar3_1.instance(),
+                    EclipseLinkJPQLGrammar4_0.instance()
                 };
             }
             default: {

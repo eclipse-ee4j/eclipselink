@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,8 +23,6 @@ package org.eclipse.persistence.jpa.jpql;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.5
- * @since 2.3
  * @author Pascal Filion
  */
 public enum JPAVersion {
@@ -48,12 +46,27 @@ public enum JPAVersion {
     /**
      * The constant for the Java Persistence specification 2.1.
      */
-    VERSION_2_1(2.1);
+    VERSION_2_1(2.1),
+
+    /**
+     * The constant for the Java Persistence specification 2.2.
+     */
+    VERSION_2_2(2.2),
+
+    /**
+     * The constant for the Jakarta Persistence specification 3.0.
+     */
+    VERSION_3_0(3.0),
+
+    /**
+     * The constant for the Jakarta Persistence specification 3.1.
+     */
+    VERSION_3_1(3.1);
 
     /**
      * The real version number.
      */
-    private double version;
+    private final double version;
 
     /**
      * Creates a new <code>JPAVersion</code>.
@@ -86,10 +99,13 @@ public enum JPAVersion {
      * @return The list of unique constants
      */
     public static JPAVersion[] versions() {
-        JPAVersion[] values = new JPAVersion[3];
+        JPAVersion[] values = new JPAVersion[6];
         values[0] = VERSION_1_0;
         values[1] = VERSION_2_0;
         values[2] = VERSION_2_1;
+        values[3] = VERSION_2_2;
+        values[4] = VERSION_3_0;
+        values[5] = VERSION_3_1;
         return values;
     }
 

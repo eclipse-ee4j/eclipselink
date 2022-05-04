@@ -17,7 +17,7 @@
 //     09/14/2011-2.3.1 Guy Pelletier
 //       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
 //     02/01/2022: Tomas Kraus
-//       - Issue 1442: Implement New JPA API 3.1.0 Features
+//       - Issue 1442: Implement New Jakarta Persistence 3.1 Features
 package org.eclipse.persistence.platform.database;
 
 import java.io.CharArrayWriter;

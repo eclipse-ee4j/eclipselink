@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,8 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-//
+//     04/21/2022: Tomas Kraus
+//       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
 package org.eclipse.persistence.internal.jpa.jpql;
 
 import java.lang.reflect.Field;
@@ -45,8 +46,6 @@ import org.eclipse.persistence.mappings.querykeys.QueryKey;
 /**
  * This visitor resolves the type of any given {@link Expression}.
  *
- * @version 2.6
- * @since 2.4
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
@@ -764,6 +763,44 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
     @Override
     public void visit(LowerExpression expression) {
         type = String.class;
+    }
+
+    @Override
+    public void visit(MathDoubleExpression.Power expression) {
+        type = Double.class;
+    }
+
+    @Override
+    public void visit(MathDoubleExpression.Round expression) {
+        // Visit the 1st child expression in order to create the resolver
+        expression.getFirstExpression().accept(this);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Ceiling expression) {
+        // Visit the child expression in order to create the resolver
+        expression.getExpression().accept(this);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Exp expression) {
+        type = Double.class;
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Floor expression) {
+        // Visit the child expression in order to create the resolver
+        expression.getExpression().accept(this);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Ln expression) {
+        type = Double.class;
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Sign expression) {
+        type = Integer.class;
     }
 
     @Override

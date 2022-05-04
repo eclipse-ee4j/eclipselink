@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,8 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-//
+//     04/21/2022: Tomas Kraus
+//       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
 package org.eclipse.persistence.jpa.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.utility.iterable.ListIterable;
@@ -28,8 +29,6 @@ import org.eclipse.persistence.jpa.jpql.utility.iterable.ListIterable;
  *
  * @see JPQLGrammar
  *
- * @version 2.5
- * @since 2.3
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
@@ -103,6 +102,11 @@ public interface Expression {
      * @since 2.4
      */
     String CAST = "CAST";
+
+    /**
+     * The constant for the identifier 'CEILING'.
+     */
+    String CEILING = "CEILING";
 
     /**
      * The constant for 'CHAR_LENGTH', which is an unused keyword.
@@ -236,6 +240,11 @@ public interface Expression {
     String EXISTS = "EXISTS";
 
     /**
+     * The constant for 'EXP'.
+     */
+    String EXP = "EXP";
+
+    /**
      * The constant for 'EXTRACT'.
      *
      * @since 2.4
@@ -258,6 +267,11 @@ public interface Expression {
      * @since 2.5
      */
     String FIRST = "FIRST";
+
+    /**
+     * The constant for the identifier 'FLOOR'.
+     */
+    String FLOOR = "FLOOR";
 
     /**
      * The constant for 'FROM'.
@@ -414,6 +428,11 @@ public interface Expression {
      * The constant for 'LIKE'.
      */
     String LIKE = "LIKE";
+
+    /**
+     * The constant for 'LN'.
+     */
+    String LN = "LN";
 
     /**
      * The constant for 'LOCATE'.
@@ -615,6 +634,11 @@ public interface Expression {
     String POSITIONAL_PARAMETER = "?";
 
     /**
+     * The constant for 'POWER'.
+     */
+    String POWER = "POWER";
+
+    /**
      * The constant for single quote.
      */
     String QUOTE = "'";
@@ -625,6 +649,11 @@ public interface Expression {
      * @since 2.4
      */
     String REGEXP = "REGEXP";
+
+    /**
+     * The constant for 'ROUND'.
+     */
+    String ROUND = "ROUND";
 
     /**
      * The constant for 'SCN'.
@@ -642,6 +671,11 @@ public interface Expression {
      * The constant for 'SET'.
      */
     String SET = "SET";
+
+    /**
+     * The constant for 'SIGN'.
+     */
+    String SIGN = "SIGN";
 
     /**
      * The constant for 'SIZE'.

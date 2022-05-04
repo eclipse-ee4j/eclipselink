@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,9 +12,10 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-//
 //     09/02/2019-3.0 Alexandre Jacob
 //        - 527415: Fix code when locale is tr, az or lt
+//     04/21/2022: Tomas Kraus
+//       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
 package org.eclipse.persistence.jpa.jpql.tools;
 
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
+
 import org.eclipse.persistence.jpa.jpql.AbstractValidator.JPQLQueryBNFValidator;
 import org.eclipse.persistence.jpa.jpql.Assert;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
@@ -110,6 +112,8 @@ import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LogicalExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LowerExpression;
+import org.eclipse.persistence.jpa.jpql.parser.MathDoubleExpression;
+import org.eclipse.persistence.jpa.jpql.parser.MathSingleExpression;
 import org.eclipse.persistence.jpa.jpql.parser.MaxFunction;
 import org.eclipse.persistence.jpa.jpql.parser.MinFunction;
 import org.eclipse.persistence.jpa.jpql.parser.ModExpression;
@@ -170,6 +174,7 @@ import org.eclipse.persistence.jpa.jpql.tools.utility.filter.AndFilter;
 import org.eclipse.persistence.jpa.jpql.utility.CollectionTools;
 import org.eclipse.persistence.jpa.jpql.utility.filter.Filter;
 import org.eclipse.persistence.jpa.jpql.utility.filter.NullFilter;
+
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 
 /**
@@ -181,8 +186,6 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.5
- * @since 2.4
  * @author Pascal Filion
  */
 @SuppressWarnings({"nls", "unused"}) // unused used for the import statement: see bug 330740
@@ -3226,6 +3229,48 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
     @Override
     public void visit(LowerExpression expression) {
+        super.visit(expression);
+        visitSingleEncapsulatedExpression(expression, IdentificationVariableType.ALL);
+    }
+
+    @Override
+    public void visit(MathDoubleExpression.Power expression) {
+        super.visit(expression);
+        visitCollectionExpression(expression, Expression.POWER, getDoubleEncapsulatedCollectionHelper());
+    }
+
+    @Override
+    public void visit(MathDoubleExpression.Round expression) {
+        super.visit(expression);
+        visitCollectionExpression(expression, Expression.ROUND, getDoubleEncapsulatedCollectionHelper());
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Ceiling expression) {
+        super.visit(expression);
+        visitSingleEncapsulatedExpression(expression, IdentificationVariableType.ALL);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Exp expression) {
+        super.visit(expression);
+        visitSingleEncapsulatedExpression(expression, IdentificationVariableType.ALL);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Floor expression) {
+        super.visit(expression);
+        visitSingleEncapsulatedExpression(expression, IdentificationVariableType.ALL);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Ln expression) {
+        super.visit(expression);
+        visitSingleEncapsulatedExpression(expression, IdentificationVariableType.ALL);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Sign expression) {
         super.visit(expression);
         visitSingleEncapsulatedExpression(expression, IdentificationVariableType.ALL);
     }
@@ -7658,6 +7703,41 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
         @Override
         public void visit(LowerExpression expression) {
+            visitAbstractSingleEncapsulatedExpression(expression);
+        }
+
+        @Override
+        public void visit(MathDoubleExpression.Power expression) {
+            visitAbstractDoubleEncapsulatedExpression(expression);
+        }
+
+        @Override
+        public void visit(MathDoubleExpression.Round expression) {
+            visitAbstractDoubleEncapsulatedExpression(expression);
+        }
+
+        @Override
+        public void visit(MathSingleExpression.Ceiling expression) {
+            visitAbstractSingleEncapsulatedExpression(expression);
+        }
+
+        @Override
+        public void visit(MathSingleExpression.Exp expression) {
+            visitAbstractSingleEncapsulatedExpression(expression);
+        }
+
+        @Override
+        public void visit(MathSingleExpression.Floor expression) {
+            visitAbstractSingleEncapsulatedExpression(expression);
+        }
+
+        @Override
+        public void visit(MathSingleExpression.Ln expression) {
+            visitAbstractSingleEncapsulatedExpression(expression);
+        }
+
+        @Override
+        public void visit(MathSingleExpression.Sign expression) {
             visitAbstractSingleEncapsulatedExpression(expression);
         }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,22 +12,21 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-//
+//     04/21/2022: Tomas Kraus
+//       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
 package org.eclipse.persistence.jpa.jpql;
 
 /**
  * An enumeration listing the various releases of EclipseLink.
  *
- * @version 2.6
- * @since 2.5
  * @author Pascal Filion
  */
 public enum EclipseLinkVersion {
 
     /**
-     * A constant that points to the current release of EclipseLink, which is 2.6.
+     * A constant that points to the current release of EclipseLink, which is 4.0.
      */
-    DEFAULT_VERSION(2.6),
+    DEFAULT_VERSION(4.0),
 
     /**
      * The constant for the EclipseLink 1.x release.
@@ -67,12 +66,22 @@ public enum EclipseLinkVersion {
     /**
      * The constant for the EclipseLink 2.6 release.
      */
-    VERSION_2_6(2.6);
+    VERSION_2_6(2.6),
+
+    /**
+     * The constant for the EclipseLink 3.0 release.
+     */
+    VERSION_3_0(3.0),
+
+    /**
+     * The constant for the EclipseLink 4.0 release.
+     */
+    VERSION_4_0(4.0);
 
     /**
      * The real version number.
      */
-    private double version;
+    private final double version;
 
     /**
      * Creates a new <code>EclipseLinkVersion</code>.
@@ -107,7 +116,7 @@ public enum EclipseLinkVersion {
      * @return The list of unique constants
      */
     public static EclipseLinkVersion[] versions() {
-        EclipseLinkVersion[] values = new EclipseLinkVersion[7];
+        EclipseLinkVersion[] values = new EclipseLinkVersion[9];
         values[0] = VERSION_1_x;
         values[1] = VERSION_2_0;
         values[2] = VERSION_2_1;
@@ -115,6 +124,8 @@ public enum EclipseLinkVersion {
         values[4] = VERSION_2_3;
         values[5] = VERSION_2_4;
         values[6] = VERSION_2_5;
+        values[7] = VERSION_3_0;
+        values[8] = VERSION_4_0;
         return values;
     }
 

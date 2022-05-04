@@ -13,7 +13,7 @@
 // Contributors:
 //     Blaise Doughan - 2.5 - initial implementation
 //     02/01/2022: Tomas Kraus
-//       - Issue 1442: Implement New JPA API 3.1.0 Features
+//       - Issue 1442: Implement New Jakarta Persistence 3.1 Features
 package org.eclipse.persistence.internal.core.helper;
 
 import java.io.File;

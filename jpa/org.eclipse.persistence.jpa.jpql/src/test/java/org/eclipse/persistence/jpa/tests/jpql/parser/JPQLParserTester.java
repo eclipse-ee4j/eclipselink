@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,10 +12,12 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-//
+//     04/21/2022: Tomas Kraus
+//       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import java.util.Arrays;
+
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem.NullOrdering;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem.Ordering;
@@ -32,6 +34,7 @@ import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.BadExpressio
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.BetweenExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.CaseExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.CastExpressionTester;
+import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.CeilingExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.CoalesceExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.CollectionExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.CollectionMemberDeclarationTester;
@@ -51,8 +54,10 @@ import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.EmptyCollect
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.EntityTypeLiteralTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.EntryExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ExistsExpressionTester;
+import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ExpExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ExtractExpressionTester;
+import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.FloorExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.FromClauseTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.FunctionExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.GroupByClauseTester;
@@ -68,6 +73,7 @@ import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.JoinTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.KeywordExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.LengthExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.LikeExpressionTester;
+import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.LnExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.LocateExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.LowerExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.MaxFunctionTester;
@@ -85,11 +91,14 @@ import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.OrExpression
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.OrderByClauseTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.OrderByItemTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.OrderSiblingsByClauseTester;
+import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.PowerExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.RangeVariableDeclarationTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.RegexpExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ResultVariableTester;
+import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.RoundExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.SelectClauseTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.SelectStatementTester;
+import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.SignExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.SimpleFromClauseTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.SimpleSelectClauseTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.SimpleSelectStatementTester;
@@ -115,14 +124,13 @@ import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.UpdateStatem
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.UpperExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.WhenClauseTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.WhereClauseTester;
+
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
  * Utility class that creates an equivalent representation of any JPQL fragment, which then can be
  * used to test the actual hierarchical representation of a parsed JPQL query.
  *
- * @version 2.5.2
- * @since 2.5
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
@@ -350,6 +358,14 @@ public final class JPQLParserTester {
                                                  int precision) {
 
         return castAs(path(pathExpression), databaseType, size, precision);
+    }
+
+    public static CeilingExpressionTester ceiling(ExpressionTester simpleArithmeticExpression) {
+        return new CeilingExpressionTester(simpleArithmeticExpression);
+    }
+
+    public static CeilingExpressionTester ceiling(String statefieldPathExpression) {
+        return ceiling(path(statefieldPathExpression));
     }
 
     public static CoalesceExpressionTester coalesce(ExpressionTester expression) {
@@ -615,12 +631,28 @@ public final class JPQLParserTester {
         return new ExtractExpressionTester(part, false, expression);
     }
 
+    public static ExpExpressionTester exp(ExpressionTester simpleArithmeticExpression) {
+        return new ExpExpressionTester(simpleArithmeticExpression);
+    }
+
+    public static ExpExpressionTester exp(String statefieldPathExpression) {
+        return exp(path(statefieldPathExpression));
+    }
+
     public static ExtractExpressionTester extractFrom(String part, ExpressionTester expression) {
         return new ExtractExpressionTester(part, true, expression);
     }
 
     public static KeywordExpressionTester FALSE() {
         return new KeywordExpressionTester(FALSE);
+    }
+
+    public static FloorExpressionTester floor(ExpressionTester simpleArithmeticExpression) {
+        return new FloorExpressionTester(simpleArithmeticExpression);
+    }
+
+    public static FloorExpressionTester floor(String statefieldPathExpression) {
+        return floor(path(statefieldPathExpression));
     }
 
     public static FromClauseTester from(ExpressionTester declaration) {
@@ -2384,6 +2416,14 @@ public final class JPQLParserTester {
         return new LikeExpressionTester(stringExpression, false, patternValue, escapeCharacter);
     }
 
+    public static LnExpressionTester ln(ExpressionTester simpleArithmeticExpression) {
+        return new LnExpressionTester(simpleArithmeticExpression);
+    }
+
+    public static LnExpressionTester ln(String statefieldPathExpression) {
+        return ln(path(statefieldPathExpression));
+    }
+
     public static LocateExpressionTester locate(ExpressionTester firstExpression,
                                                    ExpressionTester secondExpression) {
 
@@ -2806,6 +2846,18 @@ public final class JPQLParserTester {
         return new ArithmeticFactorTester(PLUS, expression);
     }
 
+    public static PowerExpressionTester power(ExpressionTester simpleArithmeticExpression1, ExpressionTester simpleArithmeticExpression2) {
+        return new PowerExpressionTester(simpleArithmeticExpression1, simpleArithmeticExpression2);
+    }
+
+    public static PowerExpressionTester power(String statefieldPathExpression1, String statefieldPathExpression2) {
+        return power(path(statefieldPathExpression1), path(statefieldPathExpression2));
+    }
+
+    public static PowerExpressionTester power(String statefieldPathExpression1, ExpressionTester simpleArithmeticExpression2) {
+        return power(path(statefieldPathExpression1), simpleArithmeticExpression2);
+    }
+
     public static String quote(char character) {
         return new StringBuilder(3).append("'").append(character).append("'").toString();
     }
@@ -2907,6 +2959,18 @@ public final class JPQLParserTester {
                                                         String resultVariable) {
 
         return resultVariableAs(selectExpression, variable(resultVariable));
+    }
+
+    public static RoundExpressionTester round(ExpressionTester simpleArithmeticExpression1, ExpressionTester simpleArithmeticExpression2) {
+        return new RoundExpressionTester(simpleArithmeticExpression1, simpleArithmeticExpression2);
+    }
+
+    public static RoundExpressionTester round(String statefieldPathExpression1, String statefieldPathExpression2) {
+        return round(path(statefieldPathExpression1), path(statefieldPathExpression2));
+    }
+
+    public static RoundExpressionTester round(String statefieldPathExpression1, ExpressionTester simpleArithmeticExpression2) {
+        return round(path(statefieldPathExpression1), simpleArithmeticExpression2);
     }
 
     public static SelectClauseTester select(ExpressionTester selectExpression) {
@@ -3336,6 +3400,14 @@ public final class JPQLParserTester {
         }
 
         return set(path(pathExpression), newValue);
+    }
+
+    public static SignExpressionTester sign(ExpressionTester simpleArithmeticExpression) {
+        return new SignExpressionTester(simpleArithmeticExpression);
+    }
+
+    public static SignExpressionTester sign(String statefieldPathExpression) {
+        return sign(path(statefieldPathExpression));
     }
 
     public static SizeExpressionTester size(ExpressionTester collectionPath) {
