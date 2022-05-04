@@ -283,7 +283,8 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     /**
      * Execute a non selecting call.
      * @exception  DatabaseException - an error has occurred on the database.
-     * @return the row count.
+     * @return Returns either a {@link DatabaseCall} or Integer value, 
+     * depending on if this INSERT call needs to return generated keys
      */
     @Override
     public Object executeNoSelect() throws DatabaseException {
