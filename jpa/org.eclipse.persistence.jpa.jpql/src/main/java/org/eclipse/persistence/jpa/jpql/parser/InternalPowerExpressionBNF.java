@@ -12,13 +12,13 @@
 
 // Contributors:
 //     04/21/2022: Tomas Kraus
-//       - Issue 1474: Update JPQL Grammar for JPA 2.2, 3.0 and 3.1
+//       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
 package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
  * The query BNF for the parameters of the <code><b>POWER</b></code> expression.
  * <br>
- * JPA 3.1:
+ * Jakarta Persistence 3.1:
  * <div><b>BNF:</b> <code>expression ::= POWER(arithmetic_expression, arithmetic_expression)</code></div>
  */
 public class InternalPowerExpressionBNF extends JPQLQueryBNF {

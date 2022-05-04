@@ -13,7 +13,7 @@
 // Contributors:
 //     Oracle - initial API and implementation
 //     04/21/2022: Tomas Kraus
-//       - Issue 1474: Update JPQL Grammar for JPA 2.2, 3.0 and 3.1
+//       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
 package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
@@ -33,7 +33,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                               MOD(simple_arithmetic_expression, simple_arithmetic_expression) |
  *                                                               SIZE(collection_valued_path_expression) |
  *                                                               INDEX(identification_variable)</code></div>
- * JPA 3.1:
+ * Jakarta Persistence 3.1:
  * <div><b>BNF:</b> <code>functions_returning_numerics ::= ABS(arithmetic_expression) |
  *                                                               CEILING(arithmetic_expression) |
  *                                                               EXP(arithmetic_expression) |

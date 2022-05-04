@@ -13,7 +13,7 @@
 // Contributors:
 //     Oracle - initial API and implementation
 //     04/21/2022: Tomas Kraus
-//       - Issue 1474: Update JPQL Grammar for JPA 2.2, 3.0 and 3.1
+//       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
 package org.eclipse.persistence.internal.jpa.jpql;
 
 import java.lang.reflect.Field;

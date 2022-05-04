@@ -20,7 +20,7 @@
 //     02/20/2018-2.7 Will Dazey
 //       - 529602: Added support for CLOBs in DELETE statements for Oracle
 //     02/01/2022: Tomas Kraus
-//       - Issue 1442: Implement New JPA API 3.1.0 Features
+//       - Issue 1442: Implement New Jakarta Persistence 3.1 Features
 package org.eclipse.persistence.internal.databaseaccess;
 
 import java.io.IOException;

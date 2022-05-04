@@ -54,12 +54,12 @@ public enum JPAVersion {
     VERSION_2_2(2.2),
 
     /**
-     * The constant for the Java Persistence specification 3.0.
+     * The constant for the Jakarta Persistence specification 3.0.
      */
     VERSION_3_0(3.0),
 
     /**
-     * The constant for the Java Persistence specification 3.0.
+     * The constant for the Jakarta Persistence specification 3.1.
      */
     VERSION_3_1(3.1);
 

@@ -12,14 +12,14 @@
 
 // Contributors:
 //     04/21/2022: Tomas Kraus
-//       - Issue 1474: Update JPQL Grammar for JPA 2.2, 3.0 and 3.1
+//       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.runners.Suite;
 
 /**
  * This test suite contains a series of unit-tests that test parsing JPQL queries that follows the
- * JPQL grammar defined in JPA 3.1.
+ * JPQL grammar defined in Jakarta Persistence 3.1.
  */
 @Suite.SuiteClasses({
         // Test the parser with JPQL queries

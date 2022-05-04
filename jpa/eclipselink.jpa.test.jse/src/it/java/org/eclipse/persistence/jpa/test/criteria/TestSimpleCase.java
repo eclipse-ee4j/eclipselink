@@ -12,7 +12,7 @@
 
 // Contributors:
 //     02/01/2022: Tomas Kraus
-//       - Issue 1442: Implement New JPA API 3.1.0 Features
+//       - Issue 1442: Implement New Jakarta Persistence 3.1 Features
 package org.eclipse.persistence.jpa.test.criteria;
 
 import java.util.List;

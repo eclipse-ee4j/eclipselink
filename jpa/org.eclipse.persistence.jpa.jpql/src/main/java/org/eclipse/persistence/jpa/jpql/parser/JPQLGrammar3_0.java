@@ -12,14 +12,14 @@
 
 // Contributors:
 //     04/21/2022: Tomas Kraus
-//       - Issue 1474: Update JPQL Grammar for JPA 2.2, 3.0 and 3.1
+//       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
 package org.eclipse.persistence.jpa.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.JPAVersion;
 
 /**
- * This {@link JPQLGrammar} provides support for parsing JPQL queries defined in Java Persistence 3.0.
+ * This {@link JPQLGrammar} provides support for parsing JPQL queries defined in Jakarta Persistence 3.0.
  */
 public class JPQLGrammar3_0 extends AbstractJPQLGrammar {
 
@@ -29,14 +29,14 @@ public class JPQLGrammar3_0 extends AbstractJPQLGrammar {
     private static final JPQLGrammar INSTANCE = new JPQLGrammar3_0();
 
     /**
-     * Creates an insance of Java Persistence 3.0 JPQL grammar.
+     * Creates an insance of Jakarta Persistence 3.0 JPQL grammar.
      */
     public JPQLGrammar3_0() {
         super();
     }
 
     /**
-     * Creates an insance of Java Persistence 3.0 JPQL grammar.
+     * Creates an insance of Jakarta Persistence 3.0 JPQL grammar.
      *
      * @param jpqlGrammar The {@link JPQLGrammar} to extend with the content of this one without
      * instantiating the base {@link JPQLGrammar}
@@ -58,9 +58,9 @@ public class JPQLGrammar3_0 extends AbstractJPQLGrammar {
 
     /**
      * Returns the singleton instance of the default implementation of {@link JPQLGrammar} which
-     * provides support for the JPQL grammar defined in the JPA 3.0 functional specification.
+     * provides support for the JPQL grammar defined in the Jakarta Persistence 3.0 functional specification.
      *
-     * @return The {@link JPQLGrammar} that only has support for JPA 3.0
+     * @return The {@link JPQLGrammar} that only has support for Jakarta Persistence 3.0
      */
     public static JPQLGrammar instance() {
         return INSTANCE;

@@ -13,7 +13,7 @@
 // Contributors:
 //     Oracle - initial API and implementation
 //     04/21/2022: Tomas Kraus
-//       - Issue 1474: Update JPQL Grammar for JPA 2.2, 3.0 and 3.1
+//       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
 package org.eclipse.persistence.jpa.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
@@ -21,7 +21,7 @@ import org.eclipse.persistence.jpa.jpql.JPAVersion;
 
 /**
  * This {@link JPQLGrammar JPQL grammar} provides support for parsing JPQL queries defined in the
- * latest JPA functional specification.
+ * latest Jakarta Persistence functional specification.
  * <p>
  * Provisional API: This interface is part of an interim API that is still under development and
  * expected to change significantly before reaching stability. It is available at this early stage

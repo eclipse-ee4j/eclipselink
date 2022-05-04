@@ -12,7 +12,7 @@
 
 // Contributors:
 //     04/21/2022: Tomas Kraus
-//       - Issue 1474: Update JPQL Grammar for JPA 2.2, 3.0 and 3.1
+//       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
 package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
@@ -23,7 +23,7 @@ public abstract class MathDoubleExpression extends AbstractDoubleEncapsulatedExp
     /**
      * The <code>POWER</code> function takes two numeric arguments and returns a double.
      * <br>
-     * JPA 3.1:
+     * Jakarta Persistence 3.1:
      * <div><b>BNF:</b> <code>expression ::= POWER(arithmetic_expression)</code></div>
      */
     public static final class Power extends MathDoubleExpression {
@@ -51,7 +51,7 @@ public abstract class MathDoubleExpression extends AbstractDoubleEncapsulatedExp
      * The <code>ROUND</code> function takes numeric argument and an integer argument and returns
      * a number of the same type as the first argument.
      * <br>
-     * JPA 3.1:
+     * Jakarta Persistence 3.1:
      * <div><b>BNF:</b> <code>expression ::= ROUND(arithmetic_expression)</code></div>
      */
     public static final class Round extends MathDoubleExpression {

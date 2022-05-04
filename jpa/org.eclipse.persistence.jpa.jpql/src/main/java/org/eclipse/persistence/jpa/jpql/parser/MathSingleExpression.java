@@ -12,7 +12,7 @@
 
 // Contributors:
 //     04/21/2022: Tomas Kraus
-//       - Issue 1474: Update JPQL Grammar for JPA 2.2, 3.0 and 3.1
+//       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
 package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
@@ -24,7 +24,7 @@ public abstract class MathSingleExpression extends AbstractSingleEncapsulatedExp
      * The <code>CEILING</code> function takes a numeric argument and return a number (integer,
      * float, or double) of the same type as the argument.
      * <br>
-     * JPA 3.1:
+     * Jakarta Persistence 3.1:
      * <div><b>BNF:</b> <code>expression ::= CEILING(arithmetic_expression)</code></div>
      */
     public static final class Ceiling extends MathSingleExpression {
@@ -46,7 +46,7 @@ public abstract class MathSingleExpression extends AbstractSingleEncapsulatedExp
     /**
      * The <code>EXP</code> function takes a numeric argument and returns a double.
      * <br>
-     * JPA 3.1:
+     * Jakarta Persistence 3.1:
      * <div><b>BNF:</b> <code>expression ::= EXP(arithmetic_expression)</code></div>
      */
     public static final class Exp extends MathSingleExpression {
@@ -69,7 +69,7 @@ public abstract class MathSingleExpression extends AbstractSingleEncapsulatedExp
      * The <code>FLOOR</code> function takes a numeric argument and returns a number (integer,
      * float, or double) of the same type as the argument.
      * <br>
-     * JPA 3.1:
+     * Jakarta Persistence 3.1:
      * <div><b>BNF:</b> <code>expression ::= FLOOR(arithmetic_expression)</code></div>
      */
     public static final class Floor extends MathSingleExpression {
@@ -91,7 +91,7 @@ public abstract class MathSingleExpression extends AbstractSingleEncapsulatedExp
     /**
      * The <code>LN</code> function takes a numeric argument and returns a double.
      * <br>
-     * JPA 3.1:
+     * Jakarta Persistence 3.1:
      * <div><b>BNF:</b> <code>expression ::= LN(arithmetic_expression)</code></div>
      */
     public static final class Ln extends MathSingleExpression {
@@ -114,7 +114,7 @@ public abstract class MathSingleExpression extends AbstractSingleEncapsulatedExp
     /**
      * The <code>SIGN</code> function takes a numeric argument and returns an integer.
      * <br>
-     * JPA 3.1:
+     * Jakarta Persistence 3.1:
      * <div><b>BNF:</b> <code>expression ::= SIGN(arithmetic_expression)</code></div>
      */
     public static final class Sign extends MathSingleExpression {

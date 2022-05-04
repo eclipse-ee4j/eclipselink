@@ -12,7 +12,7 @@
 
 // Contributors:
 //     02/01/2022: Tomas Kraus
-//       - Issue 1442: Implement New JPA API 3.1.0 Features
+//       - Issue 1442: Implement New Jakarta Persistence 3.1 Features
 package org.eclipse.persistence.jpa.test.query;
 
 import java.math.RoundingMode;
@@ -40,7 +40,7 @@ import org.junit.runner.RunWith;
 
 /**
  * Test math functions in CriteriaBuilder.
- * Added to JPA-API as PR #351
+ * Added to Jakarta Persistence API as PR #351
  */
 @RunWith(EmfRunner.class)
 public class TestMathFunctions {
