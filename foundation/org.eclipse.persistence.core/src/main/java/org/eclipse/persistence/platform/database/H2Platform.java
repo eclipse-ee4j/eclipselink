@@ -126,6 +126,11 @@ public class H2Platform extends DatabasePlatform {
     }
 
     @Override
+    public boolean allowBindingForSelectClause() {
+        return false;
+    }
+
+    @Override
     public ValueReadQuery buildSelectQueryForSequenceObject(String seqName, Integer size) {
         return new ValueReadQuery(new StringBuilder(20 + seqName.length()).append("CALL NEXT VALUE FOR ").append(seqName).toString());
     }

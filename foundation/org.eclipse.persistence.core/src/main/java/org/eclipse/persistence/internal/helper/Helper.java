@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -803,6 +803,21 @@ public class Helper extends CoreHelper implements Serializable {
         }
         int length = original.length;
         int[] copy = new int[length];
+        System.arraycopy(original, 0, copy, 0, length);
+        return copy;
+    }
+
+    /**
+     * Copy an array of boolean to a new array
+     * @param original
+     * @return
+     */
+    public static boolean[] copyBooleanArray(boolean[] original){
+        if (original == null){
+            return null;
+        }
+        int length = original.length;
+        boolean[] copy = new boolean[length];
         System.arraycopy(original, 0, copy, 0, length);
         return copy;
     }

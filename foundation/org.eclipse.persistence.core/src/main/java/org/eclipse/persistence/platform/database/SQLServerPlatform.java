@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -457,17 +457,17 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         addOperator(ExpressionOperator.replicate());
         addOperator(ExpressionOperator.right());
         addOperator(ExpressionOperator.cot());
-        addOperator(ExpressionOperator.sybaseAtan2Operator());
-        addOperator(ExpressionOperator.sybaseAddMonthsOperator());
-        addOperator(ExpressionOperator.sybaseInStringOperator());
+        addOperator(ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Atan2, "ATN2"));
+        addOperator(addMonthsOperator());
+        addOperator(inStringOperator());
         // bug 3061144
         addOperator(ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Nvl, "ISNULL"));
         // CR### TO_NUMBER, TO_CHAR, TO_DATE is CONVERT(type, ?)
-        addOperator(ExpressionOperator.sybaseToNumberOperator());
-        addOperator(ExpressionOperator.sybaseToDateToStringOperator());
-        addOperator(ExpressionOperator.sybaseToDateOperator());
-        addOperator(ExpressionOperator.sybaseToCharOperator());
-        addOperator(ExpressionOperator.sybaseLocateOperator());
+        addOperator(toNumberOperator());
+        addOperator(toDateToStringOperator());
+        addOperator(toDateOperator());
+        addOperator(toCharOperator());
+        addOperator(locateOperator());
         addOperator(locate2Operator());
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.Ceil, "CEILING"));
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.Length, "LEN"));
@@ -482,7 +482,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      * INTERNAL:
      * Derby does not support EXTRACT, but does have DATEPART.
      */
-    public static ExpressionOperator extractOperator() {
+    protected static ExpressionOperator extractOperator() {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.Extract);
@@ -505,7 +505,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      * INTERNAL:
      * Use RTRIM(LTRIM(?)) function for trim.
      */
-    public static ExpressionOperator trimOperator() {
+    protected static ExpressionOperator trimOperator() {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.Trim);
@@ -522,7 +522,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      * INTERNAL:
      * Build Trim operator.
      */
-    public static ExpressionOperator trim2Operator() {
+    protected static ExpressionOperator trim2Operator() {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.Trim2);
@@ -539,20 +539,6 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         exOperator.setArgumentIndices(argumentIndices);
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
         return exOperator;
-    }
-
-    /**
-     * INTERNAL:
-     * Return true if output parameters can be built with result sets.
-     */
-    @Override
-    public boolean isOutputAllowWithResultSet() {
-        return false;
-    }
-
-    @Override
-    public boolean isSQLServer() {
-        return true;
     }
 
     /**
@@ -596,7 +582,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     /**
      * Override the default MOD operator.
      */
-    public ExpressionOperator modOperator() {
+    protected ExpressionOperator modOperator() {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(ExpressionOperator.Mod);
         List<String> v = new ArrayList<>();
@@ -610,7 +596,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     /**
      * Override the default SubstringSingleArg operator.
      */
-    public ExpressionOperator singleArgumentSubstringOperator() {
+    protected static ExpressionOperator singleArgumentSubstringOperator() {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(ExpressionOperator.SubstringSingleArg);
         result.setType(ExpressionOperator.FunctionOperator);
@@ -634,7 +620,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     /*
      *  Create the outer join operator for this platform
      */
-    protected ExpressionOperator operatorOuterJoin() {
+    protected static ExpressionOperator operatorOuterJoin() {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(ExpressionOperator.EqualOuterJoin);
         List<String> v = new ArrayList<>();
@@ -649,7 +635,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      * INTERNAL:
      * create the Locate2 Operator for this platform
      */
-    public static ExpressionOperator locate2Operator() {
+    protected static ExpressionOperator locate2Operator() {
         ExpressionOperator result = ExpressionOperator.simpleThreeArgumentFunction(ExpressionOperator.Locate2, "CHARINDEX");
         int[] argumentIndices = new int[3];
         argumentIndices[0] = 1;
@@ -660,6 +646,140 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     }
 
 
+
+    /**
+     * INTERNAL:
+     * Function, to add months to a date.
+     */
+    protected static ExpressionOperator addMonthsOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.AddMonths);
+        List<String> v = new ArrayList<>(3);
+        v.add("DATEADD(month, ");
+        v.add(", ");
+        v.add(")");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        int[] indices = { 1, 0 };
+        exOperator.setArgumentIndices(indices);
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+
+    /**
+     * INTERNAL:
+     * Build instring operator
+     */
+    protected static ExpressionOperator inStringOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.Instring);
+        List<String> v = new ArrayList<>(3);
+        v.add("CHARINDEX(");
+        v.add(", ");
+        v.add(")");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        int[] indices = { 1, 0 };
+        exOperator.setArgumentIndices(indices);
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+
+    /**
+     * INTERNAL:
+     * Build Sybase equivalent to TO_NUMBER.
+     */
+    protected static ExpressionOperator toNumberOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.ToNumber);
+        List<String> v = new ArrayList<>(2);
+        v.add("CONVERT(NUMERIC, ");
+        v.add(")");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+
+    /**
+     * INTERNAL:
+     * Build Sybase equivalent to TO_CHAR.
+     */
+    protected static ExpressionOperator toDateToStringOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.DateToString);
+        List<String> v = new ArrayList<>(2);
+        v.add("CONVERT(CHAR, ");
+        v.add(")");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+
+    /**
+     * INTERNAL:
+     * Build Sybase equivalent to TO_DATE.
+     */
+    protected static ExpressionOperator toDateOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.ToDate);
+        List<String> v = new ArrayList<>(2);
+        v.add("CONVERT(DATETIME, ");
+        v.add(")");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+
+    /**
+     * INTERNAL:
+     * Build Sybase equivalent to TO_CHAR.
+     */
+    protected static ExpressionOperator toCharOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.ToChar);
+        List<String> v = new ArrayList<>(2);
+        v.add("CONVERT(CHAR, ");
+        v.add(")");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+
+    /**
+     * INTERNAL:
+     * Build the Sybase equivalent to Locate
+     */
+    protected static ExpressionOperator locateOperator() {
+        ExpressionOperator result = ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Locate, "CHARINDEX");
+        int[] argumentIndices = new int[2];
+        argumentIndices[0] = 1;
+        argumentIndices[1] = 0;
+        result.setArgumentIndices(argumentIndices);
+        return result;
+    }
+
+    /**
+     * INTERNAL:
+     * Return true if output parameters can be built with result sets.
+     */
+    @Override
+    public boolean isOutputAllowWithResultSet() {
+        return false;
+    }
+
+    public boolean isSQLServer() {
+        return true;
+    }
 
     /**
      * INTERNAL:

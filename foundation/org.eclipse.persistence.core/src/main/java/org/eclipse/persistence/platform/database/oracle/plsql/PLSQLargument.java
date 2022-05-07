@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,10 +22,8 @@ import static java.lang.Integer.MIN_VALUE;
 import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
 // EclipseLink imports
 import org.eclipse.persistence.internal.helper.DatabaseType;
-import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.IN;
-import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.INOUT;
-import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT;
-import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT_CURSOR;
+
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 
 /**
  * <p>
@@ -35,7 +34,7 @@ import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT
 public class PLSQLargument implements Cloneable {
 
     public String name;
-    public int direction = IN;
+    public ParameterType direction = ParameterType.IN;
     public int originalIndex = MIN_VALUE;
     public int inIndex = MIN_VALUE;   // re-computed positional index for IN argument
     public int outIndex = MIN_VALUE;  // re-computed positional index for OUT argument
@@ -49,7 +48,7 @@ public class PLSQLargument implements Cloneable {
         super();
     }
 
-    public PLSQLargument(String name, int originalIndex, int direction,
+    public PLSQLargument(String name, int originalIndex, ParameterType direction,
         DatabaseType databaseType) {
         this();
         this.name = name;
@@ -58,13 +57,13 @@ public class PLSQLargument implements Cloneable {
         this.direction = direction;
     }
 
-    public PLSQLargument(String name, int originalIndex, int direction,
+    public PLSQLargument(String name, int originalIndex, ParameterType direction,
         DatabaseType databaseType, int length) {
         this(name, originalIndex, direction, databaseType);
         this.length = length;
     }
 
-    public PLSQLargument(String name, int originalIndex, int direction,
+    public PLSQLargument(String name, int originalIndex, ParameterType direction,
         DatabaseType databaseType, int precision, int scale) {
         this(name, originalIndex, direction, databaseType);
         this.precision = precision;
@@ -112,16 +111,16 @@ public class PLSQLargument implements Cloneable {
     public String toString() {
         StringBuilder sb = new StringBuilder(name);
         sb.append('{');
-        if (direction == IN) {
+        if (direction == ParameterType.IN) {
             sb.append("IN");
         }
-        else if (direction == INOUT) {
+        else if (direction == ParameterType.INOUT) {
             sb.append("IN");
         }
-        else if (direction == OUT) {
+        else if (direction == ParameterType.OUT) {
             sb.append("OUT");
         }
-        else if (direction == OUT_CURSOR) {
+        else if (direction == ParameterType.OUT_CURSOR) {
             sb.append("OUT CURSOR");
         }
         sb.append(',');

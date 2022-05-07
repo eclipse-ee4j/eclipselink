@@ -14,9 +14,6 @@
 //     David McCann - 2.5.0 - Sept.18, 2012 - Initial Implementation
 package org.eclipse.persistence.tools.dbws;
 
-import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.IN;
-import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.INOUT;
-import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.EL_ACCESS_VIRTUAL;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_IN;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_INOUT;
@@ -49,7 +46,7 @@ import java.util.Map;
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
@@ -256,7 +253,7 @@ public class XmlEntityMappingsGenerator {
                     DatabaseField arg;
                     StoredProcedureParameterMetadata param;
                     List<DatabaseField> paramFields = call.getParameters();
-                    List<Integer> types = call.getParameterTypes();
+                    List<ParameterType> types = call.getParameterTypes();
                     for (int i=0; i < paramFields.size(); i++) {
                         arg = paramFields.get(i);
                         param = new StoredProcedureParameterMetadata();
@@ -274,7 +271,7 @@ public class XmlEntityMappingsGenerator {
                             // first arg is the return arg
                             metadata.setReturnParameter(param);
                             // handle CURSOR types - want name/value pairs returned
-                            if (types.get(i) == 8) {
+                            if (types.get(i) == ParameterType.OUT_CURSOR) {
                                 addQueryHint(metadata);
                             }
                         } else {
@@ -338,9 +335,9 @@ public class XmlEntityMappingsGenerator {
                     DatabaseField arg;
                     StoredProcedureParameterMetadata param;
                     List paramFields = call.getParameters();
-                    List<Integer> types = call.getParameterTypes();
+                    List<ParameterType> types = call.getParameterTypes();
                     for (int i = 0; i < paramFields.size(); i++) {
-                        if (types.get(i) == DatabaseCall.INOUT) {
+                        if (types.get(i) == ParameterType.INOUT) {
                             // for INOUT we get Object[IN, OUT]
                             arg = (DatabaseField) ((Object[]) paramFields.get(i))[1];
                         } else {
@@ -360,7 +357,7 @@ public class XmlEntityMappingsGenerator {
                         param.setMode(getParameterModeAsString(types.get(i)));
 
                         // handle CURSOR types - want name/value pairs returned
-                        if (types.get(i) == 8) {
+                        if (types.get(i) == ParameterType.OUT_CURSOR) {
                             addQueryHint(metadata);
                         }
 
@@ -625,21 +622,21 @@ public class XmlEntityMappingsGenerator {
      *
      * Expected 'direction' value is one of:
      * <ul>
-     * <li>org.eclipse.persistence.internal.databaseaccess.DatasourceCall.IN
-     * <li>org.eclipse.persistence.internal.databaseaccess.DatasourceCall.INOUT
-     * <li>org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT
-     * <li>org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT_CURSOR
+     * <li>org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType.IN
+     * <li>org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType.INOUT
+     * <li>org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType.OUT
+     * <li>org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType.OUT_CURSOR
      * </ul>
      *
      */
-    public static String getDirectionAsString(int direction) {
-        if (direction == IN) {
+    public static String getDirectionAsString(ParameterType direction) {
+        if (direction == ParameterType.IN) {
             return IN_STR;
         }
-        if (direction == OUT) {
+        if (direction == ParameterType.OUT) {
             return OUT_STR;
         }
-        if (direction == INOUT) {
+        if (direction == ParameterType.INOUT) {
             return INOUT_STR;
         }
         return CURSOR_STR;
@@ -650,10 +647,10 @@ public class XmlEntityMappingsGenerator {
      *
      * Expected 'direction' value is one of:
      * <ul>
-     * <li>org.eclipse.persistence.internal.databaseaccess.DatasourceCall.IN
-     * <li>org.eclipse.persistence.internal.databaseaccess.DatasourceCall.INOUT
-     * <li>org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT
-     * <li>org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT_CURSOR
+     * <li>org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType.IN
+     * <li>org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType.INOUT
+     * <li>org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType.OUT
+     * <li>org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType.OUT_CURSOR
      * </ul>
      *
      * Will return one of:
@@ -664,14 +661,14 @@ public class XmlEntityMappingsGenerator {
      * <li>org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_REF_CURSOR
      * </ul>
      */
-    public static String getParameterModeAsString(int direction) {
-        if (direction == IN) {
+    public static String getParameterModeAsString(ParameterType direction) {
+        if (direction == ParameterType.IN) {
             return JPA_PARAMETER_IN;
         }
-        if (direction == OUT) {
+        if (direction == ParameterType.OUT) {
             return JPA_PARAMETER_OUT;
         }
-        if (direction == INOUT) {
+        if (direction == ParameterType.INOUT) {
             return JPA_PARAMETER_INOUT;
         }
         return JPA_PARAMETER_REF_CURSOR;

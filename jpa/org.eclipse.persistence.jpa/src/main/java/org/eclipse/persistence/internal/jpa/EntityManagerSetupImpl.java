@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -2837,6 +2837,11 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             String shouldForceBindString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_FORCE_BIND_PARAMETERS, m, session);
             if(shouldForceBindString != null) {
                 session.getPlatform().setShouldForceBindAllParameters(Boolean.parseBoolean(shouldForceBindString));
+            }
+
+            String allowPartialBindString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_ALLOW_PARTIAL_PARAMETERS, m, session);
+            if(allowPartialBindString != null) {
+                session.getPlatform().setShouldBindPartialParameters(Boolean.parseBoolean(allowPartialBindString));
             }
 
             updateLogins(m);

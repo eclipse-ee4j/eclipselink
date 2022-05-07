@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,9 +18,6 @@ package org.eclipse.persistence.platform.database.oracle.plsql;
 
 import static java.sql.Types.OTHER;
 import static java.sql.Types.STRUCT;
-import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.IN;
-import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.INOUT;
-import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT;
 import static org.eclipse.persistence.internal.helper.DatabaseType.DatabaseTypeHelper.databaseTypeHelper;
 
 import java.util.ArrayList;
@@ -28,6 +26,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseType;
@@ -85,13 +84,13 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
     }
 
     public void addField(String fieldName, DatabaseType databaseType) {
-        fields.add(new PLSQLargument(fieldName, -1, IN, databaseType));
+        fields.add(new PLSQLargument(fieldName, -1, ParameterType.IN, databaseType));
     }
     public void addField(String fieldName, DatabaseType databaseType, int precision, int scale) {
-        fields.add(new PLSQLargument(fieldName, -1, IN, databaseType, precision, scale));
+        fields.add(new PLSQLargument(fieldName, -1, ParameterType.IN, databaseType, precision, scale));
     }
     public void addField(String fieldName, DatabaseType databaseType, int length) {
-        fields.add(new PLSQLargument(fieldName, -1, IN, databaseType, length));
+        fields.add(new PLSQLargument(fieldName, -1, ParameterType.IN, databaseType, length));
     }
 
     @Override
@@ -121,7 +120,7 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
             outArg.outIndex = newIndex;
             for (PLSQLargument argument : fields) {
                 argument.outIndex = newIndex++;
-                argument.direction = OUT;
+                argument.direction = ParameterType.OUT;
                 iterator.add(argument);
             }
             return newIndex;
@@ -166,7 +165,7 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
             super.buildBeginBlock(sb, arg, call);
         } else {
             String target = databaseTypeHelper.buildTarget(arg);
-            if (arg.direction == IN || arg.direction == INOUT) {
+            if (arg.direction == ParameterType.IN || arg.direction == ParameterType.INOUT) {
                 for (PLSQLargument f : fields) {
                     sb.append("  ");
                     sb.append(target);
@@ -230,7 +229,7 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
     }
 
     @Override
-    public void logParameter(StringBuilder sb, Integer direction, PLSQLargument arg,
+    public void logParameter(StringBuilder sb, ParameterType direction, PLSQLargument arg,
                 AbstractRecord translationRow, DatabasePlatform platform) {
         if (hasCompatibleType()) {
             super.logParameter(sb, direction, arg, translationRow, platform);

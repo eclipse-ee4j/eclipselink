@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -56,19 +58,40 @@ public abstract class DatasourceCall implements Call {
     protected transient DatabaseQuery query;
 
     // The parameters (values) are ordered as they appear in the call.
-    protected List parameters;
+    protected List<Object> parameters;
 
     // The parameter types determine if the parameter is a modify, translation or literal type.
-    protected List<Integer> parameterTypes;
-    public static final Integer LITERAL = 1;
-    public static final Integer MODIFY = 2;
-    public static final Integer TRANSLATION = 3;
-    public static final Integer CUSTOM_MODIFY = 4;
-    public static final Integer OUT = 5;
-    public static final Integer INOUT = 6;
-    public static final Integer IN = 7;
-    public static final Integer OUT_CURSOR = 8;
-    public static final Integer INLINE = 9;
+    protected List<ParameterType> parameterTypes;
+
+    // The parameter binding determines if the specific parameter should be bound.
+    protected List<Boolean> parameterBindings;
+
+    /**
+     *  The call may specify that all of its parameters should/shouldn't be bound.
+     *  <p>
+     *  Typically, this is set to false in the event that the DatabasePlatform marks the call
+     *  as containing illegal binding behavior during JPQL parsing. 
+     *  <p>
+     *  Defaults to null to indicate no preference and allows database platforms to determine
+     */
+    protected Boolean usesBinding;
+
+    public enum ParameterType {
+        LITERAL(1), MODIFY(2), TRANSLATION(3), CUSTOM_MODIFY(4), OUT(5), 
+        INOUT(6), IN(7), OUT_CURSOR(8), INLINE(9);
+
+        public int val; 
+
+        ParameterType(int val) {
+            this.val = val;
+        }
+
+        public static ParameterType valueOf(int value) {
+            for(ParameterType v : values())
+                if(v.val == value) return v;
+            throw new IllegalArgumentException("Value (" + value + ") does not match a ParameterType");
+        }
+    }
 
     // Store if the call has been prepared.
     protected boolean isPrepared;
@@ -78,6 +101,11 @@ public abstract class DatasourceCall implements Call {
 
     //Eclipselink Bug 217745 indicates whether or not the token(#,?) needs to be processed if they are in the quotes.
     protected boolean shouldProcessTokenInQuotes;
+
+    /**
+     * Keep a list of the output cursors.
+     */
+    protected List<DatabaseField> outputCursors;
 
     // Type of call.
     protected int returnType;
@@ -90,6 +118,7 @@ public abstract class DatasourceCall implements Call {
     protected DatasourceCall() {
         this.isPrepared = false;
         this.shouldProcessTokenInQuotes = true;
+        this.usesBinding = null;
     }
 
     /**
@@ -106,11 +135,21 @@ public abstract class DatasourceCall implements Call {
     /**
      * The parameter types determine if the parameter is a modify, translation or literal type.
      */
-    public List<Integer> getParameterTypes() {
+    public List<ParameterType> getParameterTypes() {
         if (parameterTypes == null) {
             parameterTypes = new ArrayList<>();
         }
         return parameterTypes;
+    }
+
+    /**
+     * The parameter binding determines if the specific parameter should be bound.
+     */
+    public List<Boolean> getParameterBindings() {
+        if (parameterBindings == null) {
+            parameterBindings = new ArrayList<Boolean>();
+        }
+        return parameterBindings;
     }
 
     /**
@@ -123,8 +162,15 @@ public abstract class DatasourceCall implements Call {
     /**
      * The parameter types determine if the parameter is a modify, translation or literal type.
      */
-    public void setParameterTypes(List<Integer> parameterTypes) {
+    public void setParameterTypes(List<ParameterType> parameterTypes) {
         this.parameterTypes = parameterTypes;
+    }
+
+    /**
+     * The parameter binding determines if the specific parameter should be bound.
+     */
+    public void setParameterBindings(List<Boolean> parameterBindings) {
+        this.parameterBindings = parameterBindings;
     }
 
     /**
@@ -136,14 +182,33 @@ public abstract class DatasourceCall implements Call {
     }
 
     /**
+     * INTERNAL:
+     * Return the output cursors for this stored procedure call.
+     */
+    public List<DatabaseField> getOutputCursors() {
+        if (outputCursors == null) {
+            outputCursors = new ArrayList<DatabaseField>();
+        }
+
+        return outputCursors;
+    }
+
+    /**
+     * Return true if there are output cursors on this call.
+     */
+    public boolean hasOutputCursors() {
+        return outputCursors != null && ! outputCursors.isEmpty();
+    }
+
+    /**
      * The return type is one of, NoReturn, ReturnOneRow or ReturnManyRows.
      */
     public boolean areManyRowsReturned() {
         return this.returnType == RETURN_MANY_ROWS;
     }
 
-    public static boolean isOutputParameterType(Integer parameterType) {
-        return (parameterType == OUT) || (parameterType == INOUT) || (parameterType == OUT_CURSOR);
+    public static boolean isOutputParameterType(ParameterType  parameterType) {
+        return (parameterType == ParameterType.OUT) || (parameterType == ParameterType.INOUT) || (parameterType == ParameterType.OUT_CURSOR);
     }
 
     /**
@@ -158,6 +223,53 @@ public abstract class DatasourceCall implements Call {
      */
     public void setIsPrepared(boolean isPrepared) {
         this.isPrepared = isPrepared;
+    }
+
+    /**
+     * Set that this call should or shouldn't bind all parameters
+     */
+    public void setUsesBinding(boolean usesBinding) {
+        this.usesBinding = Boolean.valueOf(usesBinding);
+    }
+
+    /**
+     * Convenience method
+     * @see org.eclipse.persistence.internal.databaseaccess.DatasourceCall#usesBinding(DatabasePlatform databasePlatform)
+     */
+    public boolean usesBinding(AbstractSession session) {
+        return usesBinding(session.getPlatform());
+    }
+
+    /**
+     * Determines if this call should bind all parameters. 
+     * <p>
+     * Defaults behavior to the databasePlatform if this call does not have a preference; if 
+     * {@link org.eclipse.persistence.internal.databaseaccess.DatasourceCall#usesBinding} is not set
+     * <p>
+     * @see org.eclipse.persistence.internal.databaseaccess.DatabasePlatform#shouldBindAllParameters()
+     */
+    public boolean usesBinding(DatabasePlatform databasePlatform) {
+        if (this.usesBinding == null) {
+            return databasePlatform.shouldBindAllParameters();
+        } else {
+            return this.usesBinding.booleanValue();
+        }
+    }
+
+    /**
+     * INTERNAL
+     * Indicates whether usesBinding has been set.
+     */
+    public Boolean usesBinding() {
+        return this.usesBinding;
+    }
+
+    /**
+     * INTERNAL
+     * Indicates whether usesBinding has been set.
+     */
+    public boolean isUsesBindingSet() {
+        return this.usesBinding != null;
     }
 
     /**
@@ -576,8 +688,7 @@ public abstract class DatasourceCall implements Call {
         } catch (IOException exception) {
             throw ValidationException.fileError(exception);
         }
-        getParameters().add(literal);
-        getParameterTypes().add(LITERAL);
+        appendLiteral(literal);
     }
 
     /**
@@ -590,8 +701,7 @@ public abstract class DatasourceCall implements Call {
         } catch (IOException exception) {
             throw ValidationException.fileError(exception);
         }
-        getParameters().add(modifyField);
-        getParameterTypes().add(TRANSLATION);
+        appendTranslation(modifyField);
     }
 
     /**
@@ -604,8 +714,7 @@ public abstract class DatasourceCall implements Call {
         } catch (IOException exception) {
             throw ValidationException.fileError(exception);
         }
-        getParameters().add(modifyField);
-        getParameterTypes().add(MODIFY);
+        appendModify(modifyField);
     }
 
     /**
@@ -618,8 +727,7 @@ public abstract class DatasourceCall implements Call {
         } catch (IOException exception) {
             throw ValidationException.fileError(exception);
         }
-        getParameters().add(field);
-        getParameterTypes().add(IN);
+        appendIn(field);
     }
 
     /**
@@ -632,9 +740,7 @@ public abstract class DatasourceCall implements Call {
         } catch (IOException exception) {
             throw ValidationException.fileError(exception);
         }
-        Object[] inOut = { inoutField, inoutField };
-        getParameters().add(inOut);
-        getParameterTypes().add(INOUT);
+        appendInOut(inoutField);
     }
 
     /**
@@ -647,16 +753,163 @@ public abstract class DatasourceCall implements Call {
         } catch (IOException exception) {
             throw ValidationException.fileError(exception);
         }
-        getParameters().add(outField);
-        getParameterTypes().add(OUT);
+        appendOut(outField);
     }
 
     /**
-     * Add the parameter.
-     * If using binding bind the parameter otherwise let the platform print it.
-     * The platform may also decide to bind the value.
+     * INTERNAL:
      */
-    public void appendParameter(Writer writer, Object parameter, AbstractSession session) {
+    public void appendLiteral(Object literal) {
+        getParameters().add(literal);
+        getParameterTypes().add(ParameterType.LITERAL);
+        getParameterBindings().add(true);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void appendLiteral(Object literal, Boolean shouldBind) {
+        getParameters().add(literal);
+        getParameterTypes().add(ParameterType.LITERAL);
+        getParameterBindings().add(shouldBind);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void appendTranslation(DatabaseField modifyField) {
+        getParameters().add(modifyField);
+        getParameterTypes().add(ParameterType.TRANSLATION);
+        getParameterBindings().add(true);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void appendTranslation(DatabaseField modifyField, Boolean shouldBind) {
+        getParameters().add(modifyField);
+        getParameterTypes().add(ParameterType.TRANSLATION);
+        getParameterBindings().add(shouldBind);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void appendModify(DatabaseField modifyField) {
+        getParameters().add(modifyField);
+        getParameterTypes().add(ParameterType.MODIFY);
+        getParameterBindings().add(true);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void appendModify(DatabaseField modifyField, Boolean shouldBind) {
+        getParameters().add(modifyField);
+        getParameterTypes().add(ParameterType.MODIFY);
+        getParameterBindings().add(shouldBind);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void appendIn(Object inObject) {
+        getParameters().add(inObject);
+        getParameterTypes().add(ParameterType.IN);
+        getParameterBindings().add(true);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void appendIn(Object inObject, Boolean shouldBind) {
+        getParameters().add(inObject);
+        getParameterTypes().add(ParameterType.IN);
+        getParameterBindings().add(shouldBind);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void appendInOut(DatabaseField inoutField) {
+        Object[] inOut = { inoutField, inoutField };
+        getParameters().add(inOut);
+        getParameterTypes().add(ParameterType.INOUT);
+        getParameterBindings().add(true);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void appendInOut(DatabaseField inoutField, Boolean shouldBind) {
+        Object[] inOut = { inoutField, inoutField };
+        getParameters().add(inOut);
+        getParameterTypes().add(ParameterType.INOUT);
+        getParameterBindings().add(shouldBind);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void appendInOut(Object inValueOrField, DatabaseField outField) {
+        Object[] inOut = { inValueOrField, outField };
+        getParameters().add(inOut);
+        getParameterTypes().add(ParameterType.INOUT);
+        getParameterBindings().add(true);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void appendInOut(Object inValueOrField, DatabaseField outField, Boolean shouldBind) {
+        Object[] inOut = { inValueOrField, outField };
+        getParameters().add(inOut);
+        getParameterTypes().add(ParameterType.INOUT);
+        getParameterBindings().add(shouldBind);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void appendOut(DatabaseField outField) {
+        getParameters().add(outField);
+        getParameterTypes().add(ParameterType.OUT);
+        getParameterBindings().add(true);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void appendOut(DatabaseField outField, Boolean shouldBind) {
+        getParameters().add(outField);
+        getParameterTypes().add(ParameterType.OUT);
+        getParameterBindings().add(shouldBind);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void appendOutCursor(DatabaseField outField) {
+        getParameters().add(outField);
+        getParameterTypes().add(ParameterType.OUT_CURSOR);
+        getParameterBindings().add(true);
+        getOutputCursors().add(outField);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void appendOutCursor(DatabaseField outField, Boolean shouldBind) {
+        getParameters().add(outField);
+        getParameterTypes().add(ParameterType.OUT_CURSOR);
+        getParameterBindings().add(shouldBind);
+        getOutputCursors().add(outField);
+    }
+
+    /**
+     * Add the parameter using the DatasourcePlatform.
+     */
+    public void appendParameter(Writer writer, Object parameter, boolean shouldBind, AbstractSession session) {
         session.getDatasourcePlatform().appendParameter(this, writer, parameter);
     }
 
@@ -698,9 +951,9 @@ public abstract class DatasourceCall implements Call {
         try {
             // PERF: This method is heavily optimized do not touch anything unless you know "very well" what your doing.
             // Must translate field parameters and may get new bound parameters for large data.
-            List parameterFields = getParameters();
-            List<Integer> parameterTypes = getParameterTypes();
-            setParameters(new ArrayList(parameterFields.size()));
+            List<Object> parameterFields = getParameters();
+            List<ParameterType> parameterTypes = getParameterTypes();
+            setParameters(new ArrayList<Object>(parameterFields.size()));
             while (lastIndex != -1) {
                 int tokenIndex = queryString.indexOf(argumentMarker(), lastIndex);
                 String token;
@@ -740,13 +993,13 @@ public abstract class DatasourceCall implements Call {
                 writer.write(token);
                 if (tokenIndex != -1) {
                     // Process next parameter.
-                    Integer parameterType = parameterTypes.get(parameterIndex);
+                    ParameterType parameterType = parameterTypes.get(parameterIndex);
                     Object parameter = parameterFields.get(parameterIndex);
-                    if (parameterType == MODIFY) {
+                    if (parameterType == ParameterType.MODIFY) {
                         DatabaseField field = (DatabaseField)parameter;
                         Object value = modifyRow.get(field);
-                        appendParameter(writer, value, session);
-                    } else if (parameterType == CUSTOM_MODIFY) {
+                        appendParameter(writer, value, false, session);
+                    } else if (parameterType == ParameterType.CUSTOM_MODIFY) {
                         DatabaseField field = (DatabaseField)parameter;
                         Object value = modifyRow.get(field);
                         if (value != null) {
@@ -756,8 +1009,8 @@ public abstract class DatasourceCall implements Call {
                                 this.isNativeConnectionRequired=true;
                             }
                         }
-                        appendParameter(writer, value, session);
-                    } else if (parameterType == TRANSLATION) {
+                        appendParameter(writer, value, false, session);
+                    } else if (parameterType == ParameterType.TRANSLATION) {
                         Object value = null;
                         // Parameter expressions are used for nesting and correct mapping conversion of the value.
                         if (parameter instanceof ParameterExpression) {
@@ -770,31 +1023,404 @@ public abstract class DatasourceCall implements Call {
                                 value = modifyRow.get(field);
                             }
                         }
-                        appendParameter(writer, value, session);
-                    } else if (parameterType == LITERAL) {
+                        appendParameter(writer, value, false, session);
+                    } else if (parameterType == ParameterType.LITERAL) {
                         if (parameter instanceof DatabaseField) {
                             parameter = null;
                         }
-                        appendParameter(writer, parameter, session);
-                    } else if (parameterType == IN) {
+                        appendParameter(writer, parameter, false, session);
+                    } else if (parameterType == ParameterType.IN) {
                         Object value = getValueForInParameter(parameter, translationRow, modifyRow, session, false);
-                        appendParameter(writer, value, session);
-                    } else if (parameterType == INOUT) {
+                        appendParameter(writer, value, false, session);
+                    } else if (parameterType == ParameterType.INOUT) {
                         Object value = getValueForInOutParameter(parameter, translationRow, modifyRow, session);
-                        appendParameter(writer, value, session);
-                    } else if (parameterType == INLINE) {
+                        appendParameter(writer, value, false, session);
+                    } else if (parameterType == ParameterType.INLINE) {
                         writer.write((String)parameter);
-                    } else if (parameterType == OUT || parameterType == OUT_CURSOR) {
+                    } else if (parameterType == ParameterType.OUT || parameterType == ParameterType.OUT_CURSOR) {
                         if (parameter instanceof DatabaseField) {
                             parameter = null;
                         }
-                        appendParameter(writer, parameter, session);
+                        appendParameter(writer, parameter, false, session);
                     }
                     lastIndex = tokenIndex + 1;
                     parameterIndex++;
                 }
             }
 
+            setQueryString(writer.toString());
+
+        } catch (IOException exception) {
+            throw ValidationException.fileError(exception);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Allow the call to translate from the translation for predefined calls.
+     */
+    public void translateQueryStringAndBindParameters(AbstractRecord translationRow, AbstractRecord modifyRow, AbstractSession session) {
+        List<Object> parameters = getParameters();
+
+        // This call has no parameters
+        if ((parameters == null) || parameters.isEmpty()) {
+            return;
+        }
+
+        String marker = "" + argumentMarker();
+        StringBuilder queryString = new StringBuilder(getQueryString());
+        // The string has no argument markers
+        if (queryString.indexOf(marker) == -1) {
+            return;
+        }
+
+        int lastIndex = 0;
+        int tokenIndex = -1;
+
+        boolean hasParameterizedIN = false;
+        int size = parameters.size();
+        List<Object> translatedParametersValues = new ArrayList<Object>(size);
+
+        Writer writer = new CharArrayWriter(queryString.length() + 50);
+        try {
+            // PERF: This method is heavily optimized do not touch anything unless you know "very well" what your doing.
+            // Must translate field parameters and may get new bound parameters for large data.
+            List<Object> parameterFields = getParameters();
+            List<ParameterType> parameterTypes = getParameterTypes();
+            List<Boolean> canBindParameters = getParameterBindings();
+
+            // clear the parameters list 
+            setParameters(new ArrayList<Object>(parameterFields.size()));
+
+            for (int parameterIndex = 0; parameterIndex < size; parameterIndex++) {
+                tokenIndex = queryString.indexOf(marker, tokenIndex + 1);
+                if (!this.shouldProcessTokenInQuotes) {
+
+                    // Look for a parameter marker NOT inside quotes
+                    do {
+                        boolean hasPairedQuoteBeforeMark = true;
+                        int quotePairIndex = tokenIndex;
+
+                        // First, check if current mark is inside quotes
+                        do {
+                            quotePairIndex = queryString.lastIndexOf(String.valueOf('\''), quotePairIndex - 1);
+                            if (quotePairIndex != -1 && quotePairIndex > lastIndex) {
+                                hasPairedQuoteBeforeMark = !hasPairedQuoteBeforeMark;
+                            } else {
+                                break;
+                            }
+                        } while (true);
+
+                        int endQuoteIndex = -1;
+                        if (!hasPairedQuoteBeforeMark) { 
+                            // All the quotes in front of current mark are not paired, so we should be inside quotes
+                            endQuoteIndex = queryString.indexOf(String.valueOf('\''), tokenIndex + 1);
+                        }
+
+                        if (endQuoteIndex != -1) { 
+                            // there is a quote around the mark, so find the next mark and try again
+                            tokenIndex = queryString.indexOf(marker, tokenIndex + 1);
+                        } else {
+                            // we aren't inside quotes, so we're done
+                            break;
+                        }
+                    } while (true);
+                }
+
+                DatabaseField field = null;
+                Object translatedValue = null;
+                Object parameterValue = parameterFields.get(parameterIndex);
+                ParameterType parameterType = parameterTypes.get(parameterIndex);
+                Boolean canBind = canBindParameters.get(parameterIndex);
+
+                switch(parameterType) {
+                    case MODIFY: 
+                        field = (DatabaseField) parameterValue;
+                        translatedValue = modifyRow.get(field);
+
+                        // If the value is null, the field is passed as the value so the type can be obtained from the field.
+                        if (translatedValue == null) {
+                            // The field from the modify row is used, as the calls field may not have the type,
+                            // but if the field is missing the calls field may also have the type.
+                            translatedValue = modifyRow.getField(field);
+                            if (translatedValue == null) {
+                                translatedValue = field;
+                            }
+                        }
+
+                        // If the parameter doesn't allow binding, we have to append this translated 
+                        // parameter value into the query string
+                        if(Boolean.FALSE.equals(canBind)) {
+                            String token = queryString.substring(lastIndex, tokenIndex);
+                            writer.write(token);
+                            lastIndex = tokenIndex + 1;
+                            appendParameter(writer, translatedValue, false, session);
+                        } else {
+                            translatedParametersValues.add(translatedValue);
+                        }
+
+                        break;
+                    case CUSTOM_MODIFY: 
+                        field = (DatabaseField) parameterValue;
+                        translatedValue = modifyRow.get(field);
+                        translatedValue = session.getPlatform().getCustomModifyValueForCall(this, translatedValue, field, true);
+                        //Bug#8200836 needs use unwrapped connection
+                        if ((translatedValue != null) && (translatedValue instanceof BindCallCustomParameter) &&  (((BindCallCustomParameter)translatedValue).shouldUseUnwrappedConnection())){
+                            this.isNativeConnectionRequired=true;
+                        }
+
+                        // If the value is null, the field is passed as the value so the type can be obtained from the field.
+                        if (translatedValue == null) {
+                            // The field from the modify row is used, as the calls field may not have the type,
+                            // but if the field is missing the calls field may also have the type.
+                            translatedValue = modifyRow.getField(field);
+                            if (translatedValue == null) {
+                                translatedValue = field;
+                            }
+                        }
+
+                        // If the parameter doesn't allow binding, we have to append this translated 
+                        // parameter value into the query string
+                        if(Boolean.FALSE.equals(canBind)) {
+                            String token = queryString.substring(lastIndex, tokenIndex);
+                            writer.write(token);
+                            lastIndex = tokenIndex + 1;
+                            appendParameter(writer, translatedValue, false, session);
+                        } else {
+                            translatedParametersValues.add(translatedValue);
+                        }
+
+                        break;
+                    case TRANSLATION: 
+                        if (parameterValue instanceof ParameterExpression) {
+                            field = ((ParameterExpression) parameterValue).getField();
+                            translatedValue = ((ParameterExpression) parameterValue).getValue(translationRow, query, session);
+                        } else {
+                            field = (DatabaseField)parameterValue;
+                            translatedValue = translationRow.get(field);
+                            if (translatedValue == null) {// Backward compatibility double check.
+                                translatedValue = modifyRow.get(field);
+                            }
+                        }
+
+                        if (translatedValue instanceof Collection && !Boolean.FALSE.equals(canBind)) {
+                            // Must re-translate IN parameters.
+                            hasParameterizedIN = true;
+                        }
+
+                        // If the value is null, the field is passed as the value so the type can be obtained from the field.
+                        if ((translatedValue == null) && (field != null)) {
+                            if (!this.query.hasNullableArguments() || !this.query.getNullableArguments().contains(field)) {
+                                translatedValue = translationRow.getField(field);
+                                // The field from the row is used, as the calls field may not have the type,
+                                // but if the field is missing the calls field may also have the type.
+                                if (translatedValue == null) {
+                                    translatedValue = field;
+                                }
+
+                                // If the parameter doesn't allow binding, we have to append this translated 
+                                // parameter value into the query string
+                                if(Boolean.FALSE.equals(canBind)) {
+                                    String token = queryString.substring(lastIndex, tokenIndex);
+                                    writer.write(token);
+                                    lastIndex = tokenIndex + 1;
+                                    appendParameter(writer, translatedValue, false, session);
+                                } else {
+                                    translatedParametersValues.add(translatedValue);
+                                }
+                            }
+                        } else {
+                            // If the parameter doesn't allow binding, we have to append this translated 
+                            // parameter value into the query string
+                            if(Boolean.FALSE.equals(canBind)) {
+                                String token = queryString.substring(lastIndex, tokenIndex);
+                                writer.write(token);
+                                lastIndex = tokenIndex + 1;
+                                appendParameter(writer, translatedValue, false, session);
+                            } else {
+                                translatedParametersValues.add(translatedValue);
+                            }
+                        }
+                        break;
+                    case LITERAL: 
+                        translatedValue = parameterValue;
+
+                        // If the parameter doesn't allow binding, we have to append this translated 
+                        // parameter value into the query string
+                        if(Boolean.FALSE.equals(canBind)) {
+                            String token = queryString.substring(lastIndex, tokenIndex);
+                            writer.write(token);
+                            lastIndex = tokenIndex + 1;
+
+                            if (parameterValue instanceof DatabaseField) {
+                                translatedValue = null;
+                            }
+                            appendParameter(writer, translatedValue, false, session);
+                        } else {
+                            translatedParametersValues.add(translatedValue);
+                        }
+                        break;
+                    case IN: 
+                        translatedValue = getValueForInParameter(parameterValue, translationRow, modifyRow, session, true);
+                        // Returning this means the parameter was optional and should not be included.
+                        if (translatedValue != this) {
+                            // If the parameter doesn't allow binding, we have to append this translated 
+                            // parameter value into the query string
+                            if(Boolean.FALSE.equals(canBind)) {
+                                String token = queryString.substring(lastIndex, tokenIndex);
+                                writer.write(token);
+                                lastIndex = tokenIndex + 1;
+                                appendParameter(writer, translatedValue, false, session);
+                            } else {
+                                translatedParametersValues.add(translatedValue);
+                            }
+                        }
+                        break;
+                    case INOUT: 
+                        translatedValue = getValueForInOutParameter(parameterValue, translationRow, modifyRow, session);
+
+                        // If the parameter doesn't allow binding, we have to append this translated 
+                        // parameter value into the query string
+                        if(Boolean.FALSE.equals(canBind)) {
+                            String token = queryString.substring(lastIndex, tokenIndex);
+                            writer.write(token);
+                            lastIndex = tokenIndex + 1;
+                            appendParameter(writer, translatedValue, false, session);
+                        } else {
+                            translatedParametersValues.add(translatedValue);
+                        }
+                        break;
+                    case OUT: 
+                    case OUT_CURSOR: 
+                        if (parameterValue != null && parameterValue instanceof OutputParameterForCallableStatement) {
+                            ((OutputParameterForCallableStatement) parameterValue).getOutputField().setIndex(parameterIndex);
+                        }
+
+                        // If the parameter doesn't allow binding, we have to append this translated 
+                        // parameter value into the query string
+                        if(Boolean.FALSE.equals(canBind)) {
+                            String token = queryString.substring(lastIndex, tokenIndex);
+                            writer.write(token);
+                            lastIndex = tokenIndex + 1;
+                            appendParameter(writer, translatedValue, false, session);
+                        } else {
+                            translatedParametersValues.add(translatedValue);
+                        }
+                        break;
+                }
+            }
+
+            if(writer.toString().length() > 0) {
+                String token = queryString.substring(lastIndex);
+                writer.write(token);
+                setQueryString(writer.toString());
+            }
+            if(translatedParametersValues.size() > 0) {
+                setParameters(translatedParametersValues);
+            }
+
+            // If an IN parameter was found must translate SQL.
+            if (hasParameterizedIN) {
+                translateQueryStringForParameterizedIN(translationRow, modifyRow, session);
+            }
+        } catch (IOException exception) {
+            throw ValidationException.fileError(exception);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Translate only IN() parameter values (List parameters).
+     */
+    public void translateQueryStringForParameterizedIN(AbstractRecord translationRow, AbstractRecord modifyRow, AbstractSession session) {
+        int lastIndex = 0;
+        int parameterIndex = 0;
+        String queryString = getQueryString();
+        Writer writer = new CharArrayWriter(queryString.length() + 50);
+        try {
+            // PERF: This method is heavily optimized do not touch anything unless you know "very well" what your doing.
+            List<Object> parameters = getParameters();            
+            List<Object> parametersValues = new ArrayList<Object>(parameters.size());
+            while (lastIndex != -1) {
+                int tokenIndex = queryString.indexOf(argumentMarker(), lastIndex);
+                String token;
+                if (tokenIndex == -1) {
+                    token = queryString.substring(lastIndex, queryString.length());
+                    lastIndex = -1;
+                } else {
+                    token = queryString.substring(lastIndex, tokenIndex);
+                }
+                writer.write(token);
+                if (tokenIndex != -1) {
+                    // Process next parameter.
+                    Object parameter = parameters.get(parameterIndex);
+                    // Parameter expressions are used for nesting and correct mapping conversion of the value.
+                    if (parameter instanceof Collection) {
+                        Collection<?> values = (Collection<?>)parameter;
+                        writer.write("(");
+                        if ((values.size() > 0) && (values.iterator().next() instanceof List)) {
+                            // Support nested lists.
+                            int size = values.size();
+                            Iterator<?> valuesIterator = values.iterator();
+                            for (int index = 0; index < size; index++) {
+                                List<?> nestedValues = (List<?>)valuesIterator.next();
+                                parametersValues.addAll(nestedValues);
+                                int nestedSize = nestedValues.size();
+                                writer.write("(");
+                                for (int nestedIndex = 0; nestedIndex < nestedSize; nestedIndex++) {
+                                    writer.write("?");
+                                    if ((nestedIndex + 1) < nestedSize) {
+                                        writer.write(",");
+                                    }
+                                }
+                                writer.write(")");
+                                if ((index + 1) < size) {
+                                    writer.write(",");
+                                }
+                            }
+                        } else {
+                            parametersValues.addAll(values);
+                            int size = values.size();
+
+                            int limit = ((DatasourcePlatform)session.getDatasourcePlatform()).getINClauseLimit();
+                            //The database platform has a limit for the IN clause so we need to reformat the clause
+                            if(limit > 0) {
+                                boolean not = token.endsWith(" NOT IN ");
+                                String subToken = token.substring(0, token.length() - (not ? " NOT IN " : " IN ").length());
+                                int spaceIndex = subToken.lastIndexOf(' ');
+                                int braceIndex = subToken.lastIndexOf('(');
+                                String fieldName = subToken.substring((spaceIndex > braceIndex ? spaceIndex : braceIndex) + 1);
+                                String inToken = not ? ") AND " + fieldName + " NOT IN (" : ") OR " + fieldName + " IN (";
+
+                                for (int index = 0; index < size; index++) {
+                                    writer.write("?");
+                                    if ((index + 1) < size) {
+                                        if (index > 0 && (index + 1) % limit == 0) {
+                                            writer.write(inToken);
+                                        } else  {
+                                            writer.write(",");
+                                        }
+                                    }
+                                }
+                            } else {
+                                for (int index = 0; index < size; index++) {
+                                    writer.write("?");
+                                    if ((index + 1) < size) {
+                                        writer.write(",");
+                                    }
+                                }
+                            }
+                        }
+                        writer.write(")");
+                    } else {
+                        parametersValues.add(parameter);
+                        writer.write("?");
+                    }
+                    lastIndex = tokenIndex + 1;
+                    parameterIndex++;
+                }
+            }
+            setParameters(parametersValues);
             setQueryString(writer.toString());
 
         } catch (IOException exception) {
@@ -951,24 +1577,24 @@ public abstract class DatasourceCall implements Call {
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         if (parameterTypes !=null) {
-            List<Integer> newParameterTypes = new ArrayList<>(parameterTypes.size());
-            for (Integer type: parameterTypes){
-                if (LITERAL.equals(type)) {
-                    newParameterTypes.add(LITERAL);
-                } else if (MODIFY.equals(type)) {
-                    newParameterTypes.add(MODIFY);
-                } else if (TRANSLATION.equals(type)) {
-                    newParameterTypes.add(TRANSLATION);
-                } else if (CUSTOM_MODIFY.equals(type)) {
-                    newParameterTypes.add(CUSTOM_MODIFY);
-                } else if (OUT.equals(type)) {
-                    newParameterTypes.add(OUT);
-                } else if (INOUT.equals(type)) {
-                    newParameterTypes.add(INOUT);
-                } else if (IN.equals(type)) {
-                    newParameterTypes.add(IN);
-                } else if (OUT_CURSOR.equals(type)) {
-                    newParameterTypes.add(OUT_CURSOR);
+            List<ParameterType> newParameterTypes = new ArrayList<>(parameterTypes.size());
+            for (ParameterType type: parameterTypes){
+                if (ParameterType.LITERAL.equals(type)) {
+                    newParameterTypes.add(ParameterType.LITERAL);
+                } else if (ParameterType.MODIFY.equals(type)) {
+                    newParameterTypes.add(ParameterType.MODIFY);
+                } else if (ParameterType.TRANSLATION.equals(type)) {
+                    newParameterTypes.add(ParameterType.TRANSLATION);
+                } else if (ParameterType.CUSTOM_MODIFY.equals(type)) {
+                    newParameterTypes.add(ParameterType.CUSTOM_MODIFY);
+                } else if (ParameterType.OUT.equals(type)) {
+                    newParameterTypes.add(ParameterType.OUT);
+                } else if (ParameterType.INOUT.equals(type)) {
+                    newParameterTypes.add(ParameterType.INOUT);
+                } else if (ParameterType.IN.equals(type)) {
+                    newParameterTypes.add(ParameterType.IN);
+                } else if (ParameterType.OUT_CURSOR.equals(type)) {
+                    newParameterTypes.add(ParameterType.OUT_CURSOR);
                 }
             }
             parameterTypes = newParameterTypes;

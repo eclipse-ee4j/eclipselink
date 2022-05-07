@@ -63,6 +63,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseType;
@@ -298,7 +299,7 @@ public enum JDBCTypes implements JDBCType {
         }
 
         @Override
-        public void logParameter(StringBuilder sb, Integer direction, PLSQLargument arg,
+        public void logParameter(StringBuilder sb, ParameterType direction, PLSQLargument arg,
                 AbstractRecord translationRow, DatabasePlatform platform) {
             databaseTypeHelper.logParameter(sb, direction, arg, translationRow, platform);
         }

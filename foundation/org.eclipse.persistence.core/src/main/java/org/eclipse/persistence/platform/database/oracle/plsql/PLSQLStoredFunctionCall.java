@@ -35,28 +35,28 @@ public class PLSQLStoredFunctionCall extends PLSQLStoredProcedureCall {
 
     public PLSQLStoredFunctionCall() {
         super();
-        this.arguments.add(new PLSQLargument("RESULT", this.originalIndex++, OUT, JDBCTypes.VARCHAR_TYPE));
+        this.arguments.add(new PLSQLargument("RESULT", this.originalIndex++, ParameterType.OUT, JDBCTypes.VARCHAR_TYPE));
     }
 
     public PLSQLStoredFunctionCall(DatabaseType databaseType) {
         super();
         DatabaseType dt = databaseType.isComplexDatabaseType() ?
             ((ComplexDatabaseType)databaseType).clone() : databaseType;
-        this.arguments.add(new PLSQLargument("RESULT", this.originalIndex++, OUT, dt));
+        this.arguments.add(new PLSQLargument("RESULT", this.originalIndex++, ParameterType.OUT, dt));
     }
 
     public PLSQLStoredFunctionCall(DatabaseType databaseType, int length) {
         super();
         DatabaseType dt = databaseType.isComplexDatabaseType() ?
             ((ComplexDatabaseType)databaseType).clone() : databaseType;
-        this.arguments.add(new PLSQLargument("RESULT", this.originalIndex++, OUT, dt, length));
+        this.arguments.add(new PLSQLargument("RESULT", this.originalIndex++, ParameterType.OUT, dt, length));
     }
 
     public PLSQLStoredFunctionCall(DatabaseType databaseType, int length, int scale) {
         super();
         DatabaseType dt = databaseType.isComplexDatabaseType() ?
             ((ComplexDatabaseType)databaseType).clone() : databaseType;
-        this.arguments.add(new PLSQLargument("RESULT", this.originalIndex++, OUT, dt, length, scale));
+        this.arguments.add(new PLSQLargument("RESULT", this.originalIndex++, ParameterType.OUT, dt, length, scale));
     }
 
     /**

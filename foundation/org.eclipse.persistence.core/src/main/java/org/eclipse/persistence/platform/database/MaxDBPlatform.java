@@ -1,6 +1,7 @@
 /*
- * Copyright (c) 2009, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2009, 2018 Markus Karg, SAP. All rights reserved.
+ * Copyright (c) 2009, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 2009, 2022 Markus Karg, SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -182,7 +183,7 @@ public final class MaxDBPlatform extends DatabasePlatform {
         this.addOperator(MaxDBPlatform.createTodayExpressionOperator());
         this.addOperator(MaxDBPlatform.createCurrentDateExpressionOperator());
         this.addOperator(MaxDBPlatform.createCurrentTimeExpressionOperator());
-        this.addNonBindingOperator(MaxDBPlatform.createNullValueOperator());
+        this.addOperator(MaxDBPlatform.createNullValueOperator());
     }
 
     private static ExpressionOperator createConcatExpressionOperator() {
@@ -221,7 +222,9 @@ public final class MaxDBPlatform extends DatabasePlatform {
     }
 
     private static ExpressionOperator createNullValueOperator() {
-        return ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Nvl, "VALUE");
+        ExpressionOperator exOperator = ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Nvl, "VALUE");
+        exOperator.setIsBindingSupported(false);
+        return exOperator;
     }
 
     /* see bug 316774 */
@@ -256,11 +259,6 @@ public final class MaxDBPlatform extends DatabasePlatform {
     @Override
     public boolean shouldOptimizeDataConversion() {
         return true; // TODO is this needed? (seems to default to true)
-    }
-
-    private void addNonBindingOperator(ExpressionOperator operator) {
-        operator.setIsBindingSupported(false);
-        addOperator(operator);
     }
 
     @Override
