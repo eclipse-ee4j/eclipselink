@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.ListIterator;
 import static java.sql.Types.OTHER;
 
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseType;
 import org.eclipse.persistence.internal.helper.SimpleDatabaseType;
@@ -252,7 +253,7 @@ public enum OraclePLSQLTypes implements SimpleDatabaseType, OraclePLSQLType {
      * Append the parameter for logging purposes.
      */
     @Override
-    public void logParameter(StringBuilder sb, Integer direction, PLSQLargument arg,
+    public void logParameter(StringBuilder sb, ParameterType direction, PLSQLargument arg,
             AbstractRecord translationRow, DatabasePlatform platform) {
         databaseTypeHelper.logParameter(sb, direction, arg, translationRow, platform);
     }

@@ -50,7 +50,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
-import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
@@ -200,14 +200,6 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         } else {
             super.appendCalendar(calendar, writer);
         }
-    }
-
-    /**
-     * INTERNAL:
-     * Build operator.
-     */
-    public ExpressionOperator atan2Operator() {
-        return ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Atan2, "ATAN2");
     }
 
     /**
@@ -583,14 +575,14 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         addOperator(operatorOuterJoin());
         addOperator(logOperator());
         addOperator(ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Concat, "CONCAT"));
-        addOperator(todayOperator());
-        addOperator(currentDateOperator());
-        addOperator(currentTimeOperator());
+        addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.Today, "SYSDATE"));
+        addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.CurrentDate, "TO_DATE(CURRENT_DATE)"));
+        addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.CurrentTime, "SYSDATE"));
         addOperator(ExpressionOperator.truncateDate());
         addOperator(ExpressionOperator.newTime());
         addOperator(ExpressionOperator.ifNull());
-        addOperator(atan2Operator());
-        addOperator(ExpressionOperator.oracleDateName());
+        addOperator(ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Atan2, "ATAN2"));
+        addOperator(oracleDateName());
         addOperator(operatorLocate());
         addOperator(operatorLocate2());
         addOperator(regexpOperator());
@@ -598,10 +590,25 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     /**
+     * Create the outer join operator for this platform
+     */
+    protected static ExpressionOperator operatorOuterJoin() {
+        ExpressionOperator result = new ExpressionOperator();
+        result.setSelector(ExpressionOperator.EqualOuterJoin);
+        List<String> v = new ArrayList<>(2);
+        v.add(" (+) = ");
+        result.printsAs(v);
+        result.bePostfix();
+        result.setNodeClass(RelationExpression.class);
+        return result;
+
+    }
+
+    /**
      * INTERNAL:
      * Create the EXCEPT operator, MINUS in Oracle.
      */
-    public static ExpressionOperator exceptOperator() {
+    protected static ExpressionOperator exceptOperator() {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.Except);
@@ -615,7 +622,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * INTERNAL:
      * Create the REGEXP_LIKE operator.
      */
-    public static ExpressionOperator regexpOperator() {
+    protected static ExpressionOperator regexpOperator() {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(ExpressionOperator.Regexp);
         result.setType(ExpressionOperator.FunctionOperator);
@@ -639,19 +646,41 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * to indicate whether app. server should unwrap connection
      * to use lob locator.
      */
-    public boolean isNativeConnectionRequiredForLobLocator() {
-        return false;
+    protected static ExpressionOperator operatorLocate() {
+        ExpressionOperator result = new ExpressionOperator();
+        result.setSelector(ExpressionOperator.Locate);
+        List<String> v = new ArrayList<>(3);
+        v.add("INSTR(");
+        v.add(", ");
+        v.add(")");
+        result.printsAs(v);
+        result.bePrefix();
+        result.setNodeClass(RelationExpression.class);
+        return result;
     }
 
-    @Override
-    public boolean isOracle() {
-        return true;
+    /**
+     * INTERNAL:
+     * Override the default locate operator
+     */
+    protected static ExpressionOperator operatorLocate2() {
+        ExpressionOperator result = new ExpressionOperator();
+        result.setSelector(ExpressionOperator.Locate2);
+        List<String> v = new ArrayList<>(4);
+        v.add("INSTR(");
+        v.add(", ");
+        v.add(", ");
+        v.add(")");
+        result.printsAs(v);
+        result.bePrefix();
+        result.setNodeClass(RelationExpression.class);
+        return result;
     }
 
     /**
      *  Create the log operator for this platform
      */
-    protected ExpressionOperator logOperator() {
+    protected static ExpressionOperator logOperator() {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(ExpressionOperator.Log);
         List<String> v = new ArrayList<>(2);
@@ -661,7 +690,41 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         result.bePrefix();
         result.setNodeClass(FunctionExpression.class);
         return result;
+    }
 
+    /**
+     * INTERNAL:
+     * Oracle equivalent to DATENAME is TO_CHAR.
+     */
+    protected static ExpressionOperator oracleDateName() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.DateName);
+        List<String> v = new ArrayList<>(3);
+        v.add("TO_CHAR(");
+        v.add(", '");
+        v.add("')");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        int[] indices = { 1, 0 };
+        exOperator.setArgumentIndices(indices);
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+
+    /**
+     * INTERNAL:
+     * Used by derived platforms (Oracle8Platform and higher)
+     * to indicate whether app. server should unwrap connection
+     * to use lob locator.
+     */
+    public boolean isNativeConnectionRequiredForLobLocator() {
+        return false;
+    }
+
+    @Override
+    public boolean isOracle() {
+        return true;
     }
 
     /**
@@ -725,56 +788,6 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     /**
-     * Create the outer join operator for this platform
-     */
-    protected ExpressionOperator operatorOuterJoin() {
-        ExpressionOperator result = new ExpressionOperator();
-        result.setSelector(ExpressionOperator.EqualOuterJoin);
-        List<String> v = new ArrayList<>(2);
-        v.add(" (+) = ");
-        result.printsAs(v);
-        result.bePostfix();
-        result.setNodeClass(RelationExpression.class);
-        return result;
-
-    }
-
-    /**
-     * INTERNAL:
-     * Override the default locate operator
-     */
-    protected ExpressionOperator operatorLocate() {
-        ExpressionOperator result = new ExpressionOperator();
-        result.setSelector(ExpressionOperator.Locate);
-        List<String> v = new ArrayList<>(2);
-        v.add("INSTR(");
-        v.add(", ");
-        v.add(")");
-        result.printsAs(v);
-        result.bePrefix();
-        result.setNodeClass(RelationExpression.class);
-        return result;
-    }
-
-    /**
-     * INTERNAL:
-     * Override the default locate operator
-     */
-    protected ExpressionOperator operatorLocate2() {
-        ExpressionOperator result = new ExpressionOperator();
-        result.setSelector(ExpressionOperator.Locate2);
-        List<String> v = new ArrayList<>(2);
-        v.add("INSTR(");
-        v.add(", ");
-        v.add(", ");
-        v.add(")");
-        result.printsAs(v);
-        result.bePrefix();
-        result.setNodeClass(RelationExpression.class);
-        return result;
-    }
-
-    /**
      * INTERNAL:
      * Append the receiver's field 'NULL' constraint clause to a writer.
      */
@@ -805,9 +818,9 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     @Override
-    public String getProcedureArgument(String name, Object parameter, Integer parameterType, 
+    public String getProcedureArgument(String name, Object parameter, ParameterType parameterType, 
             StoredProcedureCall call, AbstractSession session) {
-        if(name != null && DatasourceCall.IN.equals(parameterType) && !call.usesBinding(session)) {
+        if(name != null && ParameterType.IN.equals(parameterType) && !call.usesBinding(session)) {
             return name + "=>" + "?";
         }
         return "?";
@@ -898,21 +911,6 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      */
     public boolean supportsSelectForUpdateNoWait() {
         return true;
-    }
-
-    /**
-     * Create the sysdate operator for this platform
-     */
-    protected ExpressionOperator todayOperator() {
-        return ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.Today, "SYSDATE");
-    }
-
-    protected ExpressionOperator currentDateOperator() {
-        return ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.CurrentDate, "TO_DATE(CURRENT_DATE)");
-    }
-
-    protected ExpressionOperator currentTimeOperator() {
-        return ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.CurrentTime, "SYSDATE");
     }
 
     /**
@@ -1070,7 +1068,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         List newParameterList = new ArrayList(call.getParameters());
         newParameterList.addAll(call.getParameters());
         call.setParameters(newParameterList);
-        List<Integer> newParameterTypesList = new ArrayList<>(call.getParameterTypes());
+        List<ParameterType> newParameterTypesList = new ArrayList<>(call.getParameterTypes());
         newParameterTypesList.addAll(call.getParameterTypes());
         call.setParameterTypes(newParameterTypesList);
     }

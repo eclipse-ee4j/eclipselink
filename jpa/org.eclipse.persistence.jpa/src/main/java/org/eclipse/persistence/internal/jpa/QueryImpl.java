@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -674,8 +675,9 @@ public class QueryImpl {
             PLSQLStoredProcedureCall plsqlCall = (PLSQLStoredProcedureCall)call;
             for (int index = 0; index < plsqlCall.getArguments().size(); index++) {
                 PLSQLargument argument = plsqlCall.getArguments().get(index);
-                int type = argument.direction;
-                if ((type == StoredProcedureCall.IN) || (type == StoredProcedureCall.INOUT)) {
+                org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType type = argument.direction;
+                if ((type == org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType.IN) 
+                        || (type == org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType.INOUT)) {
                     if (call.hasOptionalArguments()) {
                         query.addArgument(argument.name, Object.class, call.getOptionalArguments().contains(new DatabaseField(argument.name)));
                     } else {
@@ -685,8 +687,9 @@ public class QueryImpl {
             }
         } else {
             for (int index = 0; index < call.getParameters().size(); index++) {
-                int type = call.getParameterTypes().get(index);
-                if ((type == StoredProcedureCall.IN) || (type == StoredProcedureCall.INOUT)) {
+                org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType type = call.getParameterTypes().get(index);
+                if ((type == org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType.IN) 
+                        || (type == org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType.INOUT)) {
                     Object value = call.getParameters().get(index);
                     DatabaseField parameter = null;
                     if (value instanceof Object[]) {

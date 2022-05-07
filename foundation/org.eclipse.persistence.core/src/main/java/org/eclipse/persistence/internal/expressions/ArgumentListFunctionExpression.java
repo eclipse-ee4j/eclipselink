@@ -94,10 +94,11 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
      */
     @Override
     public void printSQL(ExpressionSQLPrinter printer) {
-        ListExpressionOperator platformOperator = (ListExpressionOperator)getPlatformOperator(printer.getPlatform());
-        platformOperator.copyTo(operator);
-        ((ListExpressionOperator)operator).setIsComplete(true);
-        operator.printCollection(getChildren(), printer);
+        ListExpressionOperator realOperator;
+        realOperator = (ListExpressionOperator)getPlatformOperator(printer.getPlatform());
+        operator.copyTo(realOperator);
+        ((ListExpressionOperator) realOperator).setIsComplete(true);
+        realOperator.printCollection(this.children, printer);
     }
 
 
@@ -116,7 +117,4 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
     public void initializePlatformOperator(DatabasePlatform platform) {
         super.initializePlatformOperator(platform);
     }
-
-
 }
-

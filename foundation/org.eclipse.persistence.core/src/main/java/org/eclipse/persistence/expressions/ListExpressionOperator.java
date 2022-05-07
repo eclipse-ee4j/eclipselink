@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,6 @@
 // Contributors:
 //     tware - initial API and implementation from for JPA 2.0 criteria API
 package org.eclipse.persistence.expressions;
-
-import java.util.List;
 
 import org.eclipse.persistence.internal.helper.Helper;
 
@@ -44,15 +42,25 @@ public class ListExpressionOperator extends ExpressionOperator {
     protected String[] terminationStrings = null;
     protected boolean isComplete = false;
 
+    protected boolean changed = false;
+
+    @Override
+    public ExpressionOperator clone(){
+        ListExpressionOperator clone = new ListExpressionOperator();
+        this.copyTo(clone);
+        return clone;
+    }
+
     @Override
     public void copyTo(ExpressionOperator operator){
         super.copyTo(operator);
+        if(operator == null)
+            return;
+
         if (operator instanceof ListExpressionOperator){
             ((ListExpressionOperator)operator).startStrings = Helper.copyStringArray(startStrings);
             ((ListExpressionOperator)operator).separators = Helper.copyStringArray(separators);
             ((ListExpressionOperator)operator).terminationStrings = Helper.copyStringArray(terminationStrings);
-            // don't copy numberOfItems since this copy method is used to duplicate an operator that
-            // may have a different number of items
         }
     }
 
@@ -61,6 +69,7 @@ public class ListExpressionOperator extends ExpressionOperator {
      * Recalculate the database strings each time this is called in
      * case one has been added.
      */
+    @Deprecated
     @Override
     public String[] getDatabaseStrings() {
         return getDatabaseStrings(0);

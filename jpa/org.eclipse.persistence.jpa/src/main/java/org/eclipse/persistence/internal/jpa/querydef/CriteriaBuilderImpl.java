@@ -317,7 +317,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     @Override
     public Predicate exists(Subquery<?> subquery){
         // Setting SubQuery's SubSelectExpression as a base for the expression created by operator allows setting a new ExpressionBuilder later in the SubSelectExpression (see integrateRoot method in SubQueryImpl).
-        return new CompoundExpressionImpl(metamodel, ExpressionOperator.getOperator(ExpressionOperator.Exists).expressionFor(((SubQueryImpl)subquery).getCurrentNode()), buildList(subquery), "exists");
+        return new CompoundExpressionImpl(metamodel, org.eclipse.persistence.expressions.Expression.getOperator(ExpressionOperator.Exists).expressionFor(((SubQueryImpl)subquery).getCurrentNode()), buildList(subquery), "exists");
     }
 
     /**
@@ -504,7 +504,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         if (((InternalExpression)restriction).isCompoundExpression() && ((CompoundExpressionImpl)restriction).getOperation().equals("exists")){
             FunctionExpression exp = (FunctionExpression) ((InternalSelection)restriction).getCurrentNode();
             SubSelectExpression sub = (SubSelectExpression) exp.getChildren().get(0);
-            parentNode = ExpressionOperator.getOperator(ExpressionOperator.NotExists).expressionFor(sub);
+            parentNode = org.eclipse.persistence.expressions.Expression.getOperator(ExpressionOperator.NotExists).expressionFor(sub);
             name = "notExists";
             compoundExpressions = ((CompoundExpressionImpl)restriction).getChildExpressions();
         }else{

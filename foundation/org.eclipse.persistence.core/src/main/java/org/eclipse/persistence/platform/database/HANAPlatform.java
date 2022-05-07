@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019 IBM Corporation. All rights reserved.
- * Copyright (c) 2012, 2021 SAP. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 2012, 2022 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -204,7 +204,7 @@ public final class HANAPlatform extends DatabasePlatform {
         this.addOperator(HANAPlatform.createLocateOperator());
         this.addOperator(HANAPlatform.createLocate2Operator());
         this.addOperator(HANAPlatform.createVarianceOperator());
-        this.addNonBindingOperator(HANAPlatform.createNullValueOperator());
+        this.addOperator(HANAPlatform.createNullValueOperator());
     }
 
     private static ExpressionOperator createConcatExpressionOperator() {
@@ -319,7 +319,9 @@ public final class HANAPlatform extends DatabasePlatform {
     }
 
     private static ExpressionOperator createNullValueOperator() {
-        return ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Nvl, "IFNULL");
+        ExpressionOperator exOperator = ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Nvl, "IFNULL");
+        exOperator.setIsBindingSupported(false);
+        return exOperator;
     }
 
     @Override
@@ -364,11 +366,6 @@ public final class HANAPlatform extends DatabasePlatform {
     @Override
     public boolean shouldOptimizeDataConversion() {
         return true; // TODO is this needed? (seems to default to true)
-    }
-
-    private void addNonBindingOperator(ExpressionOperator operator) {
-        operator.setIsBindingSupported(false);
-        addOperator(operator);
     }
 
     @Override
