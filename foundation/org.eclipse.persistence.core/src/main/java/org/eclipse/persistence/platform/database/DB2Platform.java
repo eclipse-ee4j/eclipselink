@@ -540,10 +540,10 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
                     return;
                 }
 
-                for(Object item : items) {
-                    if(((Expression)item).isParameterExpression()) {
+                for(Expression item : items) {
+                    if(item.isParameterExpression()) {
                         ((ParameterExpression) item).setCanBind(false);
-                    } else if(((Expression)item).isConstantExpression()) {
+                    } else if(item.isConstantExpression()) {
                         ((ConstantExpression) item).setCanBind(false);
                     }
                 }
@@ -577,10 +577,10 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
                     return;
                 }
 
-                for(Object item : items) {
-                    if(((Expression)item).isParameterExpression()) {
+                for(Expression item : items) {
+                    if(item.isParameterExpression()) {
                         ((ParameterExpression) item).setCanBind(false);
-                    } else if(((Expression)item).isConstantExpression()) {
+                    } else if(item.isConstantExpression()) {
                         ((ConstantExpression) item).setCanBind(false);
                     }
                 }
@@ -998,7 +998,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
                 }
 
                 for (int j = 0; j < items.size(); j++) {
-                    Expression item = (Expression)items.get(j);
+                    Expression item = items.get(j);
 
                     if(item.isParameterExpression()) {
                         ((ParameterExpression) item).setCanBind(argumentBinding[j]);
