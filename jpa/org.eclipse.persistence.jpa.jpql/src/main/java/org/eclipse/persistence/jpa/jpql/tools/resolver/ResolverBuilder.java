@@ -14,11 +14,14 @@
 //     Oracle - initial API and implementation
 //     04/21/2022: Tomas Kraus
 //       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
+//       - Issue 317: Implement LOCAL DATE, LOCAL TIME and LOCAL DATETIME.
 package org.eclipse.persistence.jpa.jpql.tools.resolver;
 
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -73,6 +76,8 @@ import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LocalDateTime;
+import org.eclipse.persistence.jpa.jpql.parser.LocalExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LowerExpression;
 import org.eclipse.persistence.jpa.jpql.parser.MathDoubleExpression;
@@ -712,6 +717,20 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
     @Override
     public void visit(LikeExpression expression) {
         resolver = buildClassResolver(Boolean.class);
+    }
+
+    @Override
+    public void visit(LocalExpression expression) {
+        expression.getDateType().accept(this);
+    }
+
+    @Override
+    public void visit(LocalDateTime expression) {
+        resolver = expression.getValueByType(
+                () -> buildClassResolver(LocalDate.class),
+                () -> buildClassResolver(LocalTime.class),
+                () -> buildClassResolver(LocalDateTime.class)
+        );
     }
 
     @Override

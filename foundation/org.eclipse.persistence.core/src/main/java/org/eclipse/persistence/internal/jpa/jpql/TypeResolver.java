@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation
 //     04/21/2022: Tomas Kraus
 //       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
+//       - Issue 317: Implement LOCAL DATE, LOCAL TIME and LOCAL DATETIME.
 package org.eclipse.persistence.internal.jpa.jpql;
 
 import java.lang.reflect.Field;
@@ -23,6 +24,8 @@ import java.math.BigInteger;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -753,6 +756,21 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
     @Override
     public void visit(LikeExpression expression) {
         type = Boolean.class;
+    }
+
+    @Override
+    public void visit(LocalExpression expression) {
+        // Visit the child expression (LocalDateTime) in order to set the type
+        expression.getDateType().accept(this);
+    }
+
+    @Override
+    public void visit(LocalDateTime expression) {
+        type = expression.getValueByType(
+                () -> LocalDate.class,
+                () -> LocalTime.class,
+                () -> LocalDateTime.class
+        );
     }
 
     @Override

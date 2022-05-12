@@ -13,18 +13,23 @@
 // Contributors:
 //     04/21/2022: Tomas Kraus
 //       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
+//       - Issue 317: Implement LOCAL DATE, LOCAL TIME and LOCAL DATETIME.
 package org.eclipse.persistence.jpa.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.JPAVersion;
 
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.CEILING;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.DATE;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.DATETIME;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.FLOOR;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.EXP;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.LN;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.LOCAL;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.POWER;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.ROUND;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.SIGN;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.TIME;
 
 /**
  * This {@link JPQLGrammar} provides support for parsing JPQL queries defined in Jakarta Persistence 3.1.
@@ -46,6 +51,14 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.SIGN;
  * extract_datetime_field := EXTRACT(datetime_field FROM datetime_expression)
  *
  * datetime_field := identification_variable
+ *
+ * functions_returning_datetime ::= CURRENT_DATE | CURRENT_TIME | CURRENT_TIMESTAMP |
+ *                                  LOCAL local_datetime_type |
+ *                                  extract_datetime_par
+ *
+ * local_datetime_type ::= DATE |   ..... matches Java java.time.LocalDate
+ *                         TIME |   ..... matches Java java.time.LocalTime
+ *                         DATETIME ..... matches Java java.time.LocalDateTime
  * </code></pre>
  */
 public class JPQLGrammar3_1 extends AbstractJPQLGrammar {
@@ -117,17 +130,22 @@ public class JPQLGrammar3_1 extends AbstractJPQLGrammar {
     protected void initializeBNFs() {
         registerBNF(new InternalPowerExpressionBNF());
         registerBNF(new InternalRoundExpressionBNF());
+        registerBNF(new LocalDateTypeBNF());
     }
 
     @Override
     protected void initializeExpressionFactories() {
-        registerFunctionExpressionFactory(new MathExpressionFactory.Ceiling(), CEILING);
-        registerFunctionExpressionFactory(new MathExpressionFactory.Exp(), EXP);
-        registerFunctionExpressionFactory(new MathExpressionFactory.Floor(), FLOOR);
-        registerFunctionExpressionFactory(new MathExpressionFactory.Ln(), LN);
-        registerFunctionExpressionFactory(new MathExpressionFactory.Power(), POWER);
-        registerFunctionExpressionFactory(new MathExpressionFactory.Round(), ROUND);
-        registerFunctionExpressionFactory(new MathExpressionFactory.Sign(), SIGN);
+        registerExpressionFactory(new MathExpressionFactory.Ceiling(), FunctionsReturningNumericsBNF.ID, CEILING);
+        registerExpressionFactory(new MathExpressionFactory.Exp(), FunctionsReturningNumericsBNF.ID, EXP);
+        registerExpressionFactory(new MathExpressionFactory.Floor(), FunctionsReturningNumericsBNF.ID, FLOOR);
+        registerExpressionFactory(new MathExpressionFactory.Ln(), FunctionsReturningNumericsBNF.ID, LN);
+        registerExpressionFactory(new MathExpressionFactory.Power(), FunctionsReturningNumericsBNF.ID, POWER);
+        registerExpressionFactory(new MathExpressionFactory.Round(), FunctionsReturningNumericsBNF.ID, ROUND);
+        registerExpressionFactory(new MathExpressionFactory.Sign(), FunctionsReturningNumericsBNF.ID, SIGN);
+
+        registerExpressionFactory(
+                new LocalExpressionFactory(), FunctionsReturningDatetimeBNF.ID,  LocalExpressionFactory.ID);
+        registerFactory(new LocalDateTypeFactory());
     }
 
     @Override
@@ -139,6 +157,11 @@ public class JPQLGrammar3_1 extends AbstractJPQLGrammar {
         registerFunctionIdentifier(POWER);
         registerFunctionIdentifier(ROUND);
         registerFunctionIdentifier(SIGN);
+
+        registerFunctionIdentifier(LOCAL);
+        registerFunctionIdentifier(DATE);
+        registerFunctionIdentifier(TIME);
+        registerFunctionIdentifier(DATETIME);
     }
 
     @Override
@@ -147,13 +170,14 @@ public class JPQLGrammar3_1 extends AbstractJPQLGrammar {
     }
 
     // Register math function expression factory
-    private void registerFunctionExpressionFactory(MathExpressionFactory factory, String identifier) {
+    private void registerExpressionFactory(
+            final ExpressionFactory factory, final String queryBNFId, final String identifier) {
         registerFactory(factory);
-        addChildFactory(FunctionsReturningNumericsBNF.ID, identifier);
+        addChildFactory(queryBNFId, identifier);
     }
 
-    // Register role and version of math function identifier.
-    private void registerFunctionIdentifier(String identifier) {
+    // Register role and version of function identifier.
+    private void registerFunctionIdentifier(final String identifier) {
         registerIdentifierRole(identifier, IdentifierRole.FUNCTION);
         registerIdentifierVersion(identifier, JPAVersion.VERSION_3_1);
     }

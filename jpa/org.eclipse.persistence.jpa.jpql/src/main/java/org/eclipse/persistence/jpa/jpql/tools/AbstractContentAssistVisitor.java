@@ -16,6 +16,7 @@
 //        - 527415: Fix code when locale is tr, az or lt
 //     04/21/2022: Tomas Kraus
 //       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
+//       - Issue 317: Implement LOCAL DATE, LOCAL TIME and LOCAL DATETIME.
 package org.eclipse.persistence.jpa.jpql.tools;
 
 import java.util.ArrayList;
@@ -109,6 +110,8 @@ import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LocalDateTime;
+import org.eclipse.persistence.jpa.jpql.parser.LocalExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LogicalExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LowerExpression;
@@ -3218,6 +3221,36 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
                     }
                 }
             }
+        }
+    }
+
+    @Override
+    public void visit(LocalExpression expression) {
+        super.visit(expression);
+        addFunctionIdentifiers(expression.getParent().findQueryBNF(expression));
+    }
+
+    @Override
+    public void visit(LocalDateTime expression) {
+        super.visit(expression);
+        int position = queryPosition.getPosition(expression) - corrections.peek();
+        switch (expression.toActualText().charAt(0)) {
+            case 'D': case 'd':
+                if (position < 4) {
+                    proposals.addIdentifier(DATE);
+                    proposals.addIdentifier(DATETIME);
+                } else {
+                    switch (expression.toActualText().charAt(4)) {
+                        case 'T': case 't':
+                            proposals.addIdentifier(DATETIME);
+                            break;
+                        default:
+                            proposals.addIdentifier(DATE);
+                    }
+                }
+                break;
+            default:
+                proposals.addIdentifier(TIME);
         }
     }
 
@@ -7693,6 +7726,37 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
                 }
 
                 queryPosition.addPosition(expression, expression.getLength() - correction);
+            }
+        }
+
+        @Override
+        public void visit(LocalExpression expression) {
+            if (badExpression) {
+                if (positionWithinInvalidExpression <= 5 /* LOCAL */) {
+                    queryPosition.setExpression(expression);
+                    queryPosition.addPosition(expression, positionWithinInvalidExpression);
+                }
+            }
+            else {
+                if (expression.hasDateType()) {
+                    expression.getDateType().accept(this);
+                }
+                if (queryPosition.getExpression() == null) {
+                    queryPosition.setExpression(expression);
+                }
+                queryPosition.addPosition(expression, expression.getLength() - correction);
+            }
+        }
+
+        @Override
+        public void visit(LocalDateTime expression) {
+            if (badExpression) {
+                correction = expression.getLength() - positionWithinInvalidExpression;
+                queryPosition.setExpression(expression);
+                queryPosition.addPosition(expression, positionWithinInvalidExpression);
+            } else if (invalidExpression == expression) {
+                queryPosition.setExpression(expression);
+                queryPosition.addPosition(expression, positionWithinInvalidExpression);
             }
         }
 
