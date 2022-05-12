@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation
 //     04/21/2022: Tomas Kraus
 //       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
+//       - Issue 317: Implement LOCAL DATE, LOCAL TIME and LOCAL DATETIME.
 package org.eclipse.persistence.jpa.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.utility.iterable.ListIterable;
@@ -166,6 +167,16 @@ public interface Expression {
      * The constant for 'CURRENT_TIMESTAMP'.
      */
     String CURRENT_TIMESTAMP = "CURRENT_TIMESTAMP";
+
+    /**
+     * The constant for 'DATE'.
+     */
+    String DATE = "DATE";
+
+    /**
+     * The constant for 'DATETIME'.
+     */
+    String DATETIME = "DATETIME";
 
     /**
      * The constant for 'DELETE'.
@@ -433,6 +444,11 @@ public interface Expression {
      * The constant for 'LN'.
      */
     String LN = "LN";
+
+    /**
+     * The constant for 'LOCAL'.
+     */
+    String LOCAL = "LOCAL";
 
     /**
      * The constant for 'LOCATE'.
@@ -726,6 +742,11 @@ public interface Expression {
      * The constant for 'THEN'.
      */
     String THEN = "THEN";
+
+    /**
+     * The constant for 'TIME'.
+     */
+    String TIME = "TIME";
 
     /**
      * The constant for 'TIMESTAMP'.

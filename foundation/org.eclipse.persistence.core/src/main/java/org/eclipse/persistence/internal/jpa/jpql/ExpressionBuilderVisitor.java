@@ -23,11 +23,14 @@
 //     IBM - Bug 537795: CASE THEN and ELSE scalar expression Constants should not be casted to CASE operand type
 //     04/21/2022: Tomas Kraus
 //       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
+//       - Issue 317: Implement LOCAL DATE, LOCAL TIME and LOCAL DATETIME.
 package org.eclipse.persistence.internal.jpa.jpql;
 
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -106,6 +109,8 @@ import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LocalDateTime;
+import org.eclipse.persistence.jpa.jpql.parser.LocalExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LowerExpression;
 import org.eclipse.persistence.jpa.jpql.parser.MathDoubleExpression;
@@ -1263,6 +1268,39 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 
         // Set the expression type
         type[0] = Boolean.class;
+    }
+
+    @Override
+    public void visit(LocalExpression expression) {
+        expression.getDateType().accept(this);
+        // Type is set by child expression
+    }
+
+    // LocalDateTime visitor helper method
+    private void buildLocalDate() {
+        queryExpression = queryContext.getBaseExpression().localDate();
+        type[0] = LocalDate.class;
+    }
+
+    // LocalDateTime visitor helper method
+    private void buildLocalTime() {
+        queryExpression = queryContext.getBaseExpression().localTime();
+        type[0] = LocalTime.class;
+    }
+
+    // LocalDateTime visitor helper method
+    private void buildLocalDateTime() {
+        queryExpression = queryContext.getBaseExpression().localDateTime();
+        type[0] = LocalDateTime.class;
+    }
+
+    @Override
+    public void visit(LocalDateTime expression) {
+        expression.runByType(
+                this::buildLocalDate,
+                this::buildLocalTime,
+                this::buildLocalDateTime
+        );
     }
 
     @Override

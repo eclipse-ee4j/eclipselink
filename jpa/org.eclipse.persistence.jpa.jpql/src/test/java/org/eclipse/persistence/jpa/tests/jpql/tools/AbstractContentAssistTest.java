@@ -3010,8 +3010,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
                         sb.append(position);
                         sb.append("]");
                         Assert.fail(sb.toString());
-                    }
-                    finally {
+                    } finally {
                         tearDown();
                     }
                 }

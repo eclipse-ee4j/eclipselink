@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation
 //     04/21/2022: Tomas Kraus
 //       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
+//       - Issue 317: Implement LOCAL DATE, LOCAL TIME and LOCAL DATETIME.
 package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
@@ -322,6 +323,20 @@ public interface ExpressionVisitor {
      * @param expression The {@link Expression} to visit
      */
     void visit(LikeExpression expression);
+
+    /**
+     * Visits the {@link LocalExpression} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(LocalExpression expression);
+
+    /**
+     * Visits the {@link LocalDateTime} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(LocalDateTime expression);
 
     /**
      * Visits the {@link LocateExpression} expression.
