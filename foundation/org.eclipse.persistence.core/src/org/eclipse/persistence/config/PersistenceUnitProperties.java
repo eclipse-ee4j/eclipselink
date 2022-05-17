@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1869,6 +1869,13 @@ public class PersistenceUnitProperties {
      *
      * {@code
      *  <property name="eclipselink.target-database-properties" value="shouldBindLiterals=true"/>}
+     * <p>
+     * <b> Example 2 : </b> To change the value of
+     * DatabasePlatform.supportsReturnGeneratedKeys via configuration, provide the
+     * following :<br><br>
+     * 
+     * {@code
+     *  <property name="eclipselink.target-database-properties" value="supportsReturnGeneratedKeys=true"/>}
      * @see TargetDatabase
      * @see DatabasePlatform
      */

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -644,6 +644,15 @@ public class DatabaseAccessor extends DatasourceAccessor {
                     // Bug 2804663 - LOBValueWriter is no longer a singleton
                     getLOBWriter().addCall(dbCall);
                 }
+
+                if(dbCall.shouldReturnGeneratedKeys()) {
+                    resultSet = statement.getGeneratedKeys();
+
+                    dbCall.setStatement(statement);
+                    dbCall.setGeneratedKeys(resultSet);
+                    this.possibleFailure = false;
+                    return dbCall;
+                }
             } else if ((!dbCall.getReturnsResultSet() || (dbCall.getReturnsResultSet() && dbCall.shouldBuildOutputRow()))) {
                 result = session.getPlatform().executeStoredProcedure(dbCall, (PreparedStatement)statement, this, session);
                 this.storedProcedureStatementsCount++;
@@ -883,7 +892,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
     /**
      * Execute the statement.
      */
-    public Integer executeDirectNoSelect(Statement statement, DatabaseCall call, AbstractSession session) throws DatabaseException {
+    public Object executeDirectNoSelect(Statement statement, DatabaseCall call, AbstractSession session) throws DatabaseException {
         int rowCount = 0;
 
         try {
@@ -966,8 +975,8 @@ public class DatabaseAccessor extends DatasourceAccessor {
     /**
      * Execute the statement.
      */
-    protected Integer executeNoSelect(DatabaseCall call, Statement statement, AbstractSession session) throws DatabaseException {
-        Integer rowCount = executeDirectNoSelect(statement, call, session);
+    protected Object executeNoSelect(DatabaseCall call, Statement statement, AbstractSession session) throws DatabaseException {
+        Object rowCount = executeDirectNoSelect(statement, call, session);
 
         // Allow for procs with outputs to be raised as events for error handling.
         if (call.shouldBuildOutputRow()) {
@@ -1596,6 +1605,8 @@ public class DatabaseAccessor extends DatasourceAccessor {
             } else if (call.isDynamicCall(session)) {
                 // PERF: Dynamic statements are used for dynamic SQL.
                 statement = allocateDynamicStatement(nativeConnection);
+            } else if(call.shouldReturnGeneratedKeys()) {
+                statement = nativeConnection.prepareStatement(call.getSQLString(), Statement.RETURN_GENERATED_KEYS);
             } else {
                 statement = nativeConnection.prepareStatement(call.getSQLString());
             }
