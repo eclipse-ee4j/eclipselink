@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,6 +36,12 @@ public class NativeSequence extends QuerySequence {
      * false indicates that sequence objects should be used - if the platform supports sequence objects.
      */
     protected boolean shouldUseIdentityIfPlatformSupports = true;
+
+    /**
+     * true indicates that identity is used and generatedKeys should be used - if the platform supports generatedKeys
+     * false indicates that identity is used and generatedKeys should not be used - if the platform does not support generatedKeys
+     */
+    protected boolean shouldUseGeneratedKeysIfPlatformSupports = false;
 
     /**
      * Allow sequencing to be delegated to another sequence if native sequencing is not supported.
@@ -105,6 +112,14 @@ public class NativeSequence extends QuerySequence {
 
     public boolean shouldUseIdentityIfPlatformSupports() {
         return shouldUseIdentityIfPlatformSupports;
+    }
+
+    public void setShouldUseGeneratedKeysIfPlatformSupports(boolean shouldUseGeneratedKeysIfPlatformSupports) {
+        this.shouldUseGeneratedKeysIfPlatformSupports = shouldUseGeneratedKeysIfPlatformSupports;
+    }
+
+    public boolean shouldUseGeneratedKeysIfPlatformSupports() {
+        return shouldUseGeneratedKeysIfPlatformSupports;
     }
 
     @Override
@@ -183,9 +198,18 @@ public class NativeSequence extends QuerySequence {
     public void onConnect() {
         DatasourcePlatform platform = (DatasourcePlatform)getDatasourcePlatform();
         // Set shouldAcquireValueAfterInsert flag: identity -> true; sequence objects -> false.
-        if (platform.supportsIdentity() && shouldUseIdentityIfPlatformSupports()) {
+        if ((platform.supportsIdentity() || platform.supportsReturnGeneratedKeys()) && shouldUseIdentityIfPlatformSupports()) {
             // identity is both supported by platform and desired by the NativeSequence
             setShouldAcquireValueAfterInsert(true);
+
+            //Here we can ask the platform if it supports generatedKeys
+            // We know that it's IDENTITY and not some other generation type
+            // I should set here that generated keys will be used and Sequence can expect a ResultSet from the InsertQuery later
+
+            // set a flag so that Sequence knows how to obtain values later
+            if(platform.supportsReturnGeneratedKeys()) {
+                setShouldUseGeneratedKeysIfPlatformSupports(true);
+            }
         } else if (platform.supportsSequenceObjects() && !shouldUseIdentityIfPlatformSupports()) {
             // sequence objects is both supported by platform and desired by the NativeSequence
             setShouldAcquireValueAfterInsert(false);
