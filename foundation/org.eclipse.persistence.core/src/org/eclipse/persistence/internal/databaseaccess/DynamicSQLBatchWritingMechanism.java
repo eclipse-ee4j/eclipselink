@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -147,9 +148,9 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
         if (this.sqlStrings.size() == 1) {
             // If only one call, just execute normally.
             try {
-                int rowCount = (Integer)this.databaseAccessor.basicExecuteCall(this.lastCallAppended, null, session, false);
-                if (this.usesOptimisticLocking) {
-                    if (rowCount != 1) {
+                Object rowCount = this.databaseAccessor.basicExecuteCall(this.lastCallAppended, null, session, false);
+                if (this.usesOptimisticLocking && rowCount instanceof Integer) {
+                    if ((Integer)rowCount != 1) {
                         throw OptimisticLockException.batchStatementExecutionFailure();
                     }
                 }

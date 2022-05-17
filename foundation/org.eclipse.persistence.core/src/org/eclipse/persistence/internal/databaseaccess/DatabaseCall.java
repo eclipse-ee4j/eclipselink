@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019, 2020 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -98,11 +98,19 @@ public abstract class DatabaseCall extends DatasourceCall {
     transient protected Statement statement;
     transient protected ResultSet result;
 
+    // The generated keys are cached for lookup later
+    transient protected ResultSet generatedKeys;
+
     // The call may specify that its parameters should be bound.
     protected Boolean usesBinding;
 
     // Bound calls can use prepared statement caching.
     protected Boolean shouldCacheStatement;
+
+    /*
+     *  Indicate this call should return generated keys. Only supported for INSERT calls.
+     */
+    protected boolean shouldReturnGeneratedKeys;
 
     // The returned fields.
     transient protected Vector fields;
@@ -542,6 +550,13 @@ public abstract class DatabaseCall extends DatasourceCall {
     }
 
     /**
+     * The result set that stores the generated keys from the Statement
+     */
+    public ResultSet getGeneratedKeys() {
+        return this.generatedKeys;
+    }
+
+    /**
      * The result set is stored for the return value of cursor selects.
      */
     public ResultSet getResult() {
@@ -790,7 +805,7 @@ public abstract class DatabaseCall extends DatasourceCall {
         // we may want to refactor this some day
         this.isBatchExecutionSupported = (isNothingReturned()
                 && (!hasOptimisticLock() || session.getPlatform().canBatchWriteWithOptimisticLocking(this))
-                && (!shouldBuildOutputRow())
+                && (!shouldBuildOutputRow() && !shouldReturnGeneratedKeys())
                 && (session.getPlatform().usesJDBCBatchWriting() || (!hasParameters()))
                 && (!isLOBLocatorNeeded()))
                 && (getQuery().isModifyQuery() && ((ModifyQuery)getQuery()).isBatchExecutionSupported());
@@ -898,6 +913,15 @@ public abstract class DatabaseCall extends DatasourceCall {
     }
 
     /**
+     * Indicate that this call should set {@link java.sql.Statement#RETURN_GENERATED_KEYS} when executing
+     * <p>
+     * Only set to true if {@link DatabasePlatform#supportsReturnGeneratedKeys()}
+     */
+    public boolean setShouldReturnGeneratedKeys(boolean shouldReturnGeneratedKeys) {
+        return this.shouldReturnGeneratedKeys = shouldReturnGeneratedKeys;
+    }
+
+    /**
      * Callable statement is required if there is an output parameter.
      */
     protected void setIsCallableStatementRequired(boolean isCallableStatementRequired) {
@@ -956,6 +980,13 @@ public abstract class DatabaseCall extends DatasourceCall {
      */
     public void setQueryTimeoutUnit(TimeUnit queryTimeoutUnit) {
         this.queryTimeoutUnit = queryTimeoutUnit;
+    }
+
+    /**
+     * The result set that stores the generated keys from the Statement
+     */
+    public void setGeneratedKeys(ResultSet generatedKeys) {
+        this.generatedKeys = generatedKeys;
     }
 
     /**
@@ -1074,6 +1105,13 @@ public abstract class DatabaseCall extends DatasourceCall {
      */
     public boolean shouldIgnoreMaxResultsSetting(){
         return this.ignoreMaxResultsSetting;
+    }
+
+    /**
+     * Indicate that this call should set {@link java.sql.Statement#RETURN_GENERATED_KEYS} when executing
+     */
+    public boolean shouldReturnGeneratedKeys() {
+        return this.shouldReturnGeneratedKeys;
     }
 
     /**

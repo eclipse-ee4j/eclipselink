@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +20,8 @@
 package org.eclipse.persistence.internal.queries;
 
 import java.io.Serializable;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -33,6 +36,7 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
@@ -215,7 +219,14 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
      * @exception DatabaseException
      * @return the row count.
      */
-    public abstract Integer executeNoSelect() throws DatabaseException;
+    public abstract Object executeNoSelect() throws DatabaseException;
+
+    /**
+     * Execute a non selecting SQL call, that returns the generated keys
+     * This should be overridden by subclasses.
+     * @exception DatabaseException
+     */
+    public abstract DatabaseCall generateKeysExecuteNoSelect() throws DatabaseException;
 
     /**
      * Execute a select SQL call and return the rows.
@@ -872,6 +883,64 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
     protected void updateObjectAndRowWithSequenceNumber() throws DatabaseException {
         WriteObjectQuery writeQuery = getWriteObjectQuery();
         writeQuery.getDescriptor().getObjectBuilder().assignSequenceNumber(writeQuery);
+    }
+
+    /**
+     * Update the object's primary key by getting the generated keys from the call
+     * If there are no generated keys or the value is NULL, then default back to the {@link #updateObjectAndRowWithSequenceNumber()}
+     */
+    protected void updateObjectAndRowWithSequenceNumber(DatabaseCall call) throws DatabaseException {
+        WriteObjectQuery writeQuery = getWriteObjectQuery();
+        AbstractSession session = writeQuery.getSession();
+        DatabaseAccessor dbAccessor = (DatabaseAccessor)writeQuery.getAccessor();
+
+        Object sequenceValue = null;
+        boolean exceptionOccured = false;
+        ResultSet resultSet = call.getGeneratedKeys();
+        try {
+            if(resultSet.next()) {
+                sequenceValue = resultSet.getObject(1);
+            }
+
+            if(sequenceValue != null) {
+                writeQuery.getDescriptor().getObjectBuilder().assignSequenceNumber(writeQuery, sequenceValue);
+            }
+        }  catch (SQLException exception) {
+            exceptionOccured = true;
+            DatabaseException commException = dbAccessor.processExceptionForCommError(session, exception, call);
+            if (commException != null) {
+                throw commException;
+            }
+            throw DatabaseException.sqlException(exception, call, dbAccessor, session, false);
+        } catch (RuntimeException exception) {
+            exceptionOccured = true;
+            if (exception instanceof DatabaseException) {
+                ((DatabaseException)exception).setCall(call);
+                if(((DatabaseException)exception).getAccessor() == null) {
+                    ((DatabaseException)exception).setAccessor(dbAccessor);
+                }
+            }
+            throw exception;
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (SQLException cleanupSQLException) {
+                if (!exceptionOccured) {
+                    throw DatabaseException.sqlException(cleanupSQLException, call, dbAccessor, session, false);
+                }
+            } catch (RuntimeException cleanupException) {
+                if (!exceptionOccured) {
+                    throw cleanupException;
+                }
+            }
+        }
+
+        // Fallback on original implementation if no value was found in the generated keys
+        if(sequenceValue == null) {
+            updateObjectAndRowWithSequenceNumber();
+        }
     }
 
     /**

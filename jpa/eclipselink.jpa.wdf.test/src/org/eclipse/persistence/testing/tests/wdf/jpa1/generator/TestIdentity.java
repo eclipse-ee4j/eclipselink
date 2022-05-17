@@ -22,7 +22,7 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
@@ -81,6 +81,8 @@ public class TestIdentity extends JPA1Base {
             Assert.assertEquals("missing element", referenceSet.contains(fluppi1), true);
             Assert.assertEquals("missing element", referenceSet.contains(fluppi2), true);
 
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             if (env.isTransactionActive(em)) {
             env.rollbackTransactionAndClear(em);
@@ -110,6 +112,8 @@ public class TestIdentity extends JPA1Base {
             Assert.assertEquals("wrong object color", schnappi1.getColor(), schnappi2.getColor());
             em.merge(schnappi2);
             Assert.assertEquals("id change", schnappi1.getId(), schnappi2.getId());
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             if (env.isTransactionActive(em)) {
                 env.rollbackTransactionAndClear(em);
@@ -165,6 +169,8 @@ public class TestIdentity extends JPA1Base {
             Assert.assertEquals("wrong object color", unicorn.getColor(), duocorn.getColor());
             Assert.assertEquals("wrong object story", unicorn.getStory(), duocorn.getStory());
 
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             if (env.isTransactionActive(em)) {
                 env.rollbackTransactionAndClear(em);
@@ -201,6 +207,8 @@ public class TestIdentity extends JPA1Base {
                 em.persist(fluppi1);
                 env.beginTransaction(em);
                 env.commitTransaction(em);
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
