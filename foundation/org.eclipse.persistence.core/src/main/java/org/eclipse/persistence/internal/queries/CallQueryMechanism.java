@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -153,11 +154,18 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
         if (!this.query.shouldIgnoreCacheStatement()) {
             call.setShouldCacheStatement(this.query.shouldCacheStatement());
         }
+
         call.setQueryTimeout(this.query.getQueryTimeout());
         call.setQueryTimeoutUnit(this.query.getQueryTimeoutUnit());
+
         if (this.query.isNativeConnectionRequired()) {
             call.setIsNativeConnectionRequired(true);
         }
+
+        if (this.query.isInsertObjectQuery()) {
+            call.setShouldReturnGeneratedKeys(this.query.shouldReturnGeneratedKeys());
+        }
+
         if (this.query.isReadQuery()) {
             ReadQuery readQuery = (ReadQuery)this.query;
             // Some DB don't support FirstRow in SELECT statements in spite of supporting MaxResults(Symfoware).
