@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -16,6 +16,8 @@ import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.sequencing.NativeSequence;
+import org.eclipse.persistence.sequencing.Sequence;
 
 /**
  * <p><b>Purpose</b>:
@@ -108,6 +110,15 @@ public class InsertObjectQuery extends WriteObjectQuery {
         if (this.name == null) {
             this.name = "insert" + this.descriptor.getJavaClass().getSimpleName();
         }
+
+        // Insert queries may need to use generated keys. Determine here if the underlying sequence for the object will want to.
+        if(this.descriptor.usesSequenceNumbers()) {
+            Sequence sequence = this.descriptor.getSequence();
+            if(sequence.isNative() && ((NativeSequence)sequence).shouldUseGeneratedKeysIfPlatformSupports()) {
+                setShouldReturnGeneratedKeys(true);
+            }
+        }
+
         getQueryMechanism().prepareInsertObject();
     }
         

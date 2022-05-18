@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -146,9 +146,9 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
         if (this.parameters.size() == 1) {
             // If only one call, just execute normally.
             try {
-                int rowCount = (Integer)this.databaseAccessor.basicExecuteCall(this.previousCall, null, session, false);          
-                if (this.previousCall.hasOptimisticLock()) {                    
-                    if (rowCount != 1) {
+                Object rowCount = this.databaseAccessor.basicExecuteCall(this.previousCall, null, session, false);
+                if (this.previousCall.hasOptimisticLock() && rowCount instanceof Integer) {
+                    if ((Integer)rowCount != 1) {
                         throw OptimisticLockException.batchStatementExecutionFailure();
                     }
                 }
