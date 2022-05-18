@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -325,7 +325,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * @exception  DatabaseException - an error has occurred on the database.
      */
     public Object assignSequenceNumber(Object object, AbstractSession writeSession) throws DatabaseException {
-        return assignSequenceNumber(object, writeSession, null);
+        return assignSequenceNumber(object, null, writeSession, null);
     }
 
     /**
@@ -339,7 +339,21 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * @exception  DatabaseException - an error has occurred on the database.
      */
     public Object assignSequenceNumber(WriteObjectQuery writeQuery) throws DatabaseException {
-        return assignSequenceNumber(writeQuery.getObject(), writeQuery.getSession(), writeQuery);
+        return assignSequenceNumber(writeQuery.getObject(), null, writeQuery.getSession(), writeQuery);
+    }
+
+    /**
+     * INTERNAL:
+     * Update the writeQuery's object primary key by fetching a new sequence number from the accessor.
+     * This assume the uses sequence numbers check has already been done.
+     * Adds the assigned sequence value to writeQuery's modify row.
+     * If object has a changeSet then sets sequence value into change set as an Id
+     * adds it also to object's change set in a ChangeRecord if required.
+     * @return the sequence value or null if not assigned.
+     * @exception  DatabaseException - an error has occurred on the database.
+     */
+    public Object assignSequenceNumber(WriteObjectQuery writeQuery, Object sequenceValue) throws DatabaseException {
+        return assignSequenceNumber(writeQuery.getObject(), sequenceValue, writeQuery.getSession(), writeQuery);
     }
     
     /**
@@ -352,7 +366,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * @return the sequence value or null if not assigned.
      * @exception  DatabaseException - an error has occurred on the database.
      */
-    protected Object assignSequenceNumber(Object object, AbstractSession writeSession, WriteObjectQuery writeQuery) throws DatabaseException {
+    protected Object assignSequenceNumber(Object object, Object sequenceValue, AbstractSession writeSession, WriteObjectQuery writeQuery) throws DatabaseException {
         DatabaseField sequenceNumberField = this.descriptor.getSequenceNumberField();
         Object existingValue = null;
         if (this.sequenceMapping != null) {
@@ -363,12 +377,12 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         
         // PERF: The (internal) support for letting the sequence decide this was removed,
         // as anything other than primitive should allow null and default as such.
-        Object sequenceValue;
         int index = this.descriptor.getPrimaryKeyFields().indexOf(sequenceNumberField);
         if (isPrimaryKeyComponentInvalid(existingValue, index) || this.descriptor.getSequence().shouldAlwaysOverrideExistingValue()) {
-            sequenceValue = writeSession.getSequencing().getNextValue(this.descriptor.getJavaClass());
-        } else {
-            return null;
+            // If no sequence value was passed, obtain one from the Sequence
+            if(sequenceValue == null) {
+                sequenceValue = writeSession.getSequencing().getNextValue(this.descriptor.getJavaClass());
+            }
         }
 
         // Check that the value is not null, this occurs on any databases using IDENTITY type sequencing.

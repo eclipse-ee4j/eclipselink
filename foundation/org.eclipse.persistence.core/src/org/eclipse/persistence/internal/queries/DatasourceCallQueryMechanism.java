@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2019 Oracle, IBM and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -265,10 +265,23 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     /**
      * Execute a non selecting call.
      * @exception  DatabaseException - an error has occurred on the database.
+     * @return Returns either a {@link DatabaseCall} or Integer value, 
+     * depending on if this INSERT call needs to return generated keys
+     */
+    public Object executeNoSelect() throws DatabaseException {
+        if(((DatabaseCall)this.call).shouldReturnGeneratedKeys()) {
+            return generateKeysExecuteNoSelect();
+        }
+        return executeNoSelectCall();
+    }
+
+    /**
+     * Execute a non selecting call.
+     * @exception  DatabaseException - an error has occurred on the database.
      * @return the row count.
      */
-    public Integer executeNoSelect() throws DatabaseException {
-        return executeNoSelectCall();
+    public DatabaseCall generateKeysExecuteNoSelect() throws DatabaseException {
+        return (DatabaseCall)executeCall();
     }
 
     /**
@@ -390,7 +403,11 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
                         updateObjectAndRowWithReturnRow(returnFields, index == 0);
                     }
                     if ((index == 0) && usesSequencing && shouldAcquireValueAfterInsert) {
-                        updateObjectAndRowWithSequenceNumber();
+                        if(result instanceof DatabaseCall) {
+                            updateObjectAndRowWithSequenceNumber((DatabaseCall) result);
+                        } else {
+                            updateObjectAndRowWithSequenceNumber();
+                        }
                     }
                 }
             }
@@ -404,7 +421,11 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
                 updateObjectAndRowWithReturnRow(returnFields, true);
             }
             if (usesSequencing && shouldAcquireValueAfterInsert) {
-                updateObjectAndRowWithSequenceNumber();
+                if(result instanceof DatabaseCall) {
+                    updateObjectAndRowWithSequenceNumber((DatabaseCall) result);
+                } else {
+                    updateObjectAndRowWithSequenceNumber();
+                }
             }
         }
 
