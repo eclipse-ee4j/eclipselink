@@ -537,14 +537,6 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
                     return;
                 }
 
-                // Initialize argumentIndices
-                if (this.argumentIndices == null) {
-                    this.argumentIndices = new int[items.size()];
-                    for (int i = 0; i < this.argumentIndices.length; i++){
-                        this.argumentIndices[i] = i;
-                    }
-                }
-
                 for(Object item : items) {
                     if(((Expression)item).isParameterExpression()) {
                         ((ParameterExpression) item).setCanBind(false);
@@ -649,17 +641,10 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
                     return;
                 }
 
-                // Initialize argumentIndices
-                if (this.argumentIndices == null) {
-                    this.argumentIndices = new int[items.size()];
-                    for (int i = 0; i < this.argumentIndices.length; i++){
-                        this.argumentIndices[i] = i;
-                    }
-                }
-
+                int[] indices = getArgumentIndices(items.size());
                 boolean allBind = true;
                 for (int i = 0; i < items.size(); i++) {
-                    final int index = this.argumentIndices[i];
+                    final int index = indices[i];
                     Expression item = (Expression)items.elementAt(index);
                     boolean shouldBind = true;
 
@@ -670,7 +655,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
 
                     if(allBind) {
                         if(printer.getPlatform().shouldBindLiterals()) {
-                            if((i == (this.argumentIndices.length - 1))) {
+                            if((i == (indices.length - 1))) {
                                 // The last parameter has to be disabled
                                 shouldBind = allBind = false;
                             }
@@ -678,7 +663,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
                             if(item.isConstantExpression()) {
                                 // The first literal has to be disabled
                                 shouldBind = allBind = false;
-                            } else if((i == (this.argumentIndices.length - 1)) && item.isParameterExpression()) {
+                            } else if((i == (indices.length - 1)) && item.isParameterExpression()) {
                                 // The last parameter has to be disabled
                                 shouldBind = allBind = false;
                             }
@@ -963,16 +948,9 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
                     }
                 }
 
-                // Initialize argumentIndices
-                if (this.argumentIndices == null) {
-                    this.argumentIndices = new int[items.size()];
-                    for (int k = 0; k < this.argumentIndices.length; k++){
-                        this.argumentIndices[k] = k;
-                    }
-                }
-
+                int[] indices = getArgumentIndices(items.size());
                 for (int j = 0; j < items.size(); j++) {
-                    final int index = this.argumentIndices[j];
+                    final int index = indices[j];
                     Expression item = (Expression)items.elementAt(index);
 
                     if(item.isParameterExpression()) {
@@ -1085,16 +1063,9 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
                     }
                 }
 
-                // Initialize argumentIndices
-                if (this.argumentIndices == null) {
-                    this.argumentIndices = new int[items.size()];
-                    for (int k = 0; k < this.argumentIndices.length; k++){
-                        this.argumentIndices[k] = k;
-                    }
-                }
-
+                int[] indices = getArgumentIndices(items.size());
                 for (int j = 0; j < items.size(); j++) {
-                    final int index = this.argumentIndices[j];
+                    final int index = indices[j];
                     Expression item = (Expression)items.elementAt(index);
 
                     if(item.isParameterExpression()) {
@@ -1218,17 +1189,10 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
                     return;
                 }
 
-                // Initialize argumentIndices
-                if (this.argumentIndices == null) {
-                    this.argumentIndices = new int[items.size()];
-                    for (int i = 0; i < this.argumentIndices.length; i++){
-                        this.argumentIndices[i] = i;
-                    }
-                }
-
+                int[] indices = getArgumentIndices(items.size());
                 boolean allBind = true;
                 for (int i = 0; i < items.size(); i++) {
-                    final int index = this.argumentIndices[i];
+                    final int index = indices[i];
                     Expression item = (Expression)items.elementAt(index);
                     boolean shouldBind = true;
 
@@ -1239,7 +1203,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
 
                     if(allBind) {
                         if(printer.getPlatform().shouldBindLiterals()) {
-                            if((i == (this.argumentIndices.length - 1))) {
+                            if((i == (indices.length - 1))) {
                                 // The last parameter has to be disabled
                                 shouldBind = allBind = false;
                             }
@@ -1247,7 +1211,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
                             if(item.isConstantExpression()) {
                                 // The first literal has to be disabled
                                 shouldBind = allBind = false;
-                            } else if((i == (this.argumentIndices.length - 1)) && item.isParameterExpression()) {
+                            } else if((i == (indices.length - 1)) && item.isParameterExpression()) {
                                 // The last parameter has to be disabled
                                 shouldBind = allBind = false;
                             }
@@ -1327,16 +1291,9 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
                     return;
                 }
 
-                // Initialize argumentIndices
-                if (this.argumentIndices == null) {
-                    this.argumentIndices = new int[items.size()];
-                    for (int i = 0; i < this.argumentIndices.length; i++){
-                        this.argumentIndices[i] = i;
-                    }
-                }
-
+                int[] indices = getArgumentIndices(items.size());
                 for (int i = 0; i < items.size(); i++) {
-                    final int index = this.argumentIndices[i];
+                    final int index = indices[i];
                     Expression item = (Expression)items.elementAt(index);
 
                     // Disable the first item, which should be <operand2> for this operator
@@ -1407,16 +1364,9 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
                     return;
                 }
 
-                // Initialize argumentIndices
-                if (this.argumentIndices == null) {
-                    this.argumentIndices = new int[items.size()];
-                    for (int i = 0; i < this.argumentIndices.length; i++){
-                        this.argumentIndices[i] = i;
-                    }
-                }
-
+                int[] indices = getArgumentIndices(items.size());
                 for (int i = 0; i < items.size(); i++) {
-                    final int index = this.argumentIndices[i];
+                    final int index = indices[i];
                     Expression item = (Expression)items.elementAt(index);
 
                     // Disable the first item, which should be <operand2> for this operator
@@ -1487,16 +1437,9 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
                     return;
                 }
 
-                // Initialize argumentIndices
-                if (this.argumentIndices == null) {
-                    this.argumentIndices = new int[items.size()];
-                    for (int i = 0; i < this.argumentIndices.length; i++){
-                        this.argumentIndices[i] = i;
-                    }
-                }
-
+                int[] indices = getArgumentIndices(items.size());
                 for (int i = 0; i < items.size(); i++) {
-                    final int index = this.argumentIndices[i];
+                    final int index = indices[i];
                     Expression item = (Expression)items.elementAt(index);
 
                     // Disable the first item, which should be <operand2> for this operator
