@@ -2358,16 +2358,18 @@ public class ExpressionOperator implements Serializable {
             dbStringIndex = 1;
         }
 
-        if (this.argumentIndices == null) {
-            this.argumentIndices = new int[items.size()];
-            for (int i = 0; i < this.argumentIndices.length; i++){
-                this.argumentIndices[i] = i;
+        // If the operator defines specific indices, use those
+        int[] indices = this.argumentIndices;
+        if(indices == null) {
+            indices = new int[items.size()];
+            for (int i = 0; i < indices.length; i++){
+                indices[i] = i;
             }
         }
 
         String[] dbStrings = getDatabaseStrings(items.size());
-        for (int i = 0; i < this.argumentIndices.length; i++) {
-            final int index = this.argumentIndices[i];
+        for (int i = 0; i < indices.length; i++) {
+            final int index = indices[i];
             Expression item = (Expression)items.elementAt(index);
 
             if ((this.selector == Ref) || ((this.selector == Deref) && (item.isObjectExpression()))) {
