@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -58,7 +58,8 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
         this.dataResults = new HashMap<Object, List<AbstractRecord>>();
         this.dataResults.put(this, new ArrayList<AbstractRecord>());
     }
-    
+
+    @Override
     public BatchFetchPolicy clone() {
         BatchFetchPolicy clone = null;
         try {
@@ -66,9 +67,13 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
         } catch (CloneNotSupportedException error) {
             throw new InternalError(error.getMessage());
         }
-        if (clone.dataResults != null) {
-            clone.dataResults.put(clone, clone.dataResults.get(this));
+
+        Map<Object, List<AbstractRecord>> dataResults = new HashMap<Object, List<AbstractRecord>>();
+        if (this.dataResults != null && this.dataResults.containsKey(this)) {
+            List<AbstractRecord> list = new ArrayList<AbstractRecord>(this.dataResults.get(this));
+            dataResults.put(clone, list);
         }
+        clone.setDataResults(dataResults);
         return clone;
     }
     
