@@ -2837,6 +2837,11 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 session.getPlatform().setShouldForceBindAllParameters(Boolean.parseBoolean(shouldForceBindString));
             }
 
+            String allowPartialBindString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_ALLOW_PARTIAL_PARAMETERS, m, session);
+            if(allowPartialBindString != null) {
+                session.getPlatform().setShouldBindPartialParameters(Boolean.parseBoolean(allowPartialBindString));
+            }
+
             updateLogins(m);
         }
         if (!session.getDatasourceLogin().shouldUseExternalTransactionController()) {

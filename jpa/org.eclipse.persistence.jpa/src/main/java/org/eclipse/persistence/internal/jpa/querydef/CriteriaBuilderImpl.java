@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -315,9 +315,10 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @return exists predicate
      */
     @Override
-    public Predicate exists(Subquery<?> subquery){
+    public Predicate exists(Subquery<?> subquery) {
         // Setting SubQuery's SubSelectExpression as a base for the expression created by operator allows setting a new ExpressionBuilder later in the SubSelectExpression (see integrateRoot method in SubQueryImpl).
-        return new CompoundExpressionImpl(metamodel, ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Exists)).expressionFor(((SubQueryImpl)subquery).getCurrentNode()), buildList(subquery), "exists");
+        ExpressionOperator operator = org.eclipse.persistence.expressions.Expression.getOperator(ExpressionOperator.Exists);
+        return new CompoundExpressionImpl(metamodel, operator.expressionFor(((SubQueryImpl)subquery).getCurrentNode()), buildList(subquery), "exists");
     }
 
     /**
@@ -497,7 +498,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @return not predicate
      */
     @Override
-    public Predicate not(Expression<Boolean> restriction){
+    public Predicate not(Expression<Boolean> restriction) {
         if (((InternalExpression)restriction).isPredicate()){
             return ((Predicate)restriction).not();
         }
@@ -507,10 +508,10 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         if (((InternalExpression)restriction).isCompoundExpression() && ((CompoundExpressionImpl)restriction).getOperation().equals("exists")){
             FunctionExpression exp = (FunctionExpression) ((InternalSelection)restriction).getCurrentNode();
             SubSelectExpression sub = (SubSelectExpression) exp.getChildren().get(0);
-            parentNode = ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.NotExists)).expressionFor(sub);
+            parentNode = org.eclipse.persistence.expressions.Expression.getOperator(ExpressionOperator.NotExists).expressionFor(sub);
             name = "notExists";
             compoundExpressions = ((CompoundExpressionImpl)restriction).getChildExpressions();
-        }else{
+        } else {
             parentNode = ((InternalSelection)restriction).getCurrentNode().not();
             compoundExpressions = buildList(restriction);
         }

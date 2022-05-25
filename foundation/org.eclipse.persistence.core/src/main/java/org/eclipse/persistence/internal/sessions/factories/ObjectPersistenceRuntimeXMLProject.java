@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1033,8 +1034,8 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         XMLDirectMapping operatorMapping = new XMLDirectMapping();
         operatorMapping.setAttributeName("operator");
         ObjectTypeConverter operatorConverter = new ObjectTypeConverter();
-        operatorConverter.addConversionValue("and", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.And)));
-        operatorConverter.addConversionValue("or", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Or)));
+        operatorConverter.addConversionValue("and", Expression.getOperator(Integer.valueOf(ExpressionOperator.And)));
+        operatorConverter.addConversionValue("or", Expression.getOperator(Integer.valueOf(ExpressionOperator.Or)));
         operatorMapping.setConverter(operatorConverter);
         operatorMapping.setXPath("@operator");
         descriptor.addMapping(operatorMapping);
@@ -1085,14 +1086,14 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         XMLDirectMapping operatorMapping = new XMLDirectMapping();
         operatorMapping.setAttributeName("operator");
         ObjectTypeConverter operatorConverter = new ObjectTypeConverter();
-        operatorConverter.addConversionValue("equal", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Equal)));
-        operatorConverter.addConversionValue("notEqual", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.NotEqual)));
-        operatorConverter.addConversionValue("like", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Like)));
-        operatorConverter.addConversionValue("notLike", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.NotLike)));
-        operatorConverter.addConversionValue("greaterThan", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.GreaterThan)));
-        operatorConverter.addConversionValue("greaterThanEqual", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.GreaterThanEqual)));
-        operatorConverter.addConversionValue("lessThan", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.LessThan)));
-        operatorConverter.addConversionValue("lessThanEqual", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.LessThanEqual)));
+        operatorConverter.addConversionValue("equal", Expression.getOperator(Integer.valueOf(ExpressionOperator.Equal)));
+        operatorConverter.addConversionValue("notEqual", Expression.getOperator(Integer.valueOf(ExpressionOperator.NotEqual)));
+        operatorConverter.addConversionValue("like", Expression.getOperator(Integer.valueOf(ExpressionOperator.Like)));
+        operatorConverter.addConversionValue("notLike", Expression.getOperator(Integer.valueOf(ExpressionOperator.NotLike)));
+        operatorConverter.addConversionValue("greaterThan", Expression.getOperator(Integer.valueOf(ExpressionOperator.GreaterThan)));
+        operatorConverter.addConversionValue("greaterThanEqual", Expression.getOperator(Integer.valueOf(ExpressionOperator.GreaterThanEqual)));
+        operatorConverter.addConversionValue("lessThan", Expression.getOperator(Integer.valueOf(ExpressionOperator.LessThan)));
+        operatorConverter.addConversionValue("lessThanEqual", Expression.getOperator(Integer.valueOf(ExpressionOperator.LessThanEqual)));
         operatorMapping.setConverter(operatorConverter);
         operatorMapping.setXPath("@operator");
         descriptor.addMapping(operatorMapping);
@@ -1253,26 +1254,26 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         XMLDirectMapping operatorMapping = new XMLDirectMapping();
         operatorMapping.setAttributeName("operator");
         ExpressionOperatorConverter operatorConverter = new ExpressionOperatorConverter();
-        operatorConverter.addConversionValue("like", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Like)));
-        operatorConverter.addConversionValue("notLike", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.NotLike)));
-        operatorConverter.addConversionValue("not", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Not)));
-        operatorConverter.addConversionValue("isNull", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.IsNull)));
-        operatorConverter.addConversionValue("notNull", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.NotNull)));
-        operatorConverter.addConversionValue("ascending", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Ascending)));
-        operatorConverter.addConversionValue("descending", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Descending)));
+        operatorConverter.addConversionValue("like", Expression.getOperator(Integer.valueOf(ExpressionOperator.Like)));
+        operatorConverter.addConversionValue("notLike", Expression.getOperator(Integer.valueOf(ExpressionOperator.NotLike)));
+        operatorConverter.addConversionValue("not", Expression.getOperator(Integer.valueOf(ExpressionOperator.Not)));
+        operatorConverter.addConversionValue("isNull", Expression.getOperator(Integer.valueOf(ExpressionOperator.IsNull)));
+        operatorConverter.addConversionValue("notNull", Expression.getOperator(Integer.valueOf(ExpressionOperator.NotNull)));
+        operatorConverter.addConversionValue("ascending", Expression.getOperator(Integer.valueOf(ExpressionOperator.Ascending)));
+        operatorConverter.addConversionValue("descending", Expression.getOperator(Integer.valueOf(ExpressionOperator.Descending)));
         // These are platform specific so not on operator.
         operatorConverter.addConversionValue("upper", new ExpressionOperator(ExpressionOperator.ToUpperCase, NonSynchronizedVector.newInstance(0)));
         operatorConverter.addConversionValue("lower", new ExpressionOperator(ExpressionOperator.ToLowerCase, NonSynchronizedVector.newInstance(0)));
         // Aggregate functions
-        operatorConverter.addConversionValue("count", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Count)));
-        operatorConverter.addConversionValue("sum", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Sum)));
-        operatorConverter.addConversionValue("average", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Average)));
-        operatorConverter.addConversionValue("maximum", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Maximum)));
-        operatorConverter.addConversionValue("minimum", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Minimum)));
+        operatorConverter.addConversionValue("count", Expression.getOperator(Integer.valueOf(ExpressionOperator.Count)));
+        operatorConverter.addConversionValue("sum", Expression.getOperator(Integer.valueOf(ExpressionOperator.Sum)));
+        operatorConverter.addConversionValue("average", Expression.getOperator(Integer.valueOf(ExpressionOperator.Average)));
+        operatorConverter.addConversionValue("maximum", Expression.getOperator(Integer.valueOf(ExpressionOperator.Maximum)));
+        operatorConverter.addConversionValue("minimum", Expression.getOperator(Integer.valueOf(ExpressionOperator.Minimum)));
         // standardDeviation is platform specific.
         operatorConverter.addConversionValue("standardDeviation", new ExpressionOperator(ExpressionOperator.StandardDeviation, NonSynchronizedVector.newInstance(0)));
         operatorConverter.addConversionValue("variance", new ExpressionOperator(ExpressionOperator.Variance, NonSynchronizedVector.newInstance(0)));
-        operatorConverter.addConversionValue("distinct", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Distinct)));
+        operatorConverter.addConversionValue("distinct", Expression.getOperator(Integer.valueOf(ExpressionOperator.Distinct)));
         operatorMapping.setConverter(operatorConverter);
         operatorMapping.setXPath("@function");
         descriptor.addMapping(operatorMapping);

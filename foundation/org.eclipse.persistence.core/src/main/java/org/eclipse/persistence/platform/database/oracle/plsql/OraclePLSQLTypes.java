@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.ListIterator;
 import static java.sql.Types.OTHER;
 
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseType;
 import org.eclipse.persistence.internal.helper.SimpleDatabaseType;
@@ -252,8 +254,19 @@ public enum OraclePLSQLTypes implements SimpleDatabaseType, OraclePLSQLType {
      * INTERNAL:
      * Append the parameter for logging purposes.
      */
+    @Deprecated
     @Override
     public void logParameter(StringBuilder sb, Integer direction, PLSQLargument arg,
+            AbstractRecord translationRow, DatabasePlatform platform) {
+        logParameter(sb, ParameterType.valueOf(direction), arg, translationRow, platform);
+    }
+
+    /**
+     * INTERNAL:
+     * Append the parameter for logging purposes.
+     */
+    @Override
+    public void logParameter(StringBuilder sb, ParameterType direction, PLSQLargument arg,
             AbstractRecord translationRow, DatabasePlatform platform) {
         databaseTypeHelper.logParameter(sb, direction, arg, translationRow, platform);
     }

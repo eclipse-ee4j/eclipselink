@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -58,6 +58,7 @@ import jakarta.persistence.TemporalType;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.databaseaccess.*;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.querydef.ParameterExpressionImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -427,16 +428,16 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             int index = 0;
 
             for (Object parameter : getCall().getParameters()) {
-                Integer parameterType = getCall().getParameterTypes().get(index);
+                ParameterType parameterType = getCall().getParameterTypes().get(index);
                 String argumentName = getCall().getProcedureArgumentNames().get(index);
 
                 DatabaseField field = null;
 
-                if (parameterType == DatasourceCall.INOUT) {
+                if (parameterType == ParameterType.INOUT) {
                     field = (DatabaseField) ((Object[]) parameter)[0];
-                } else if (parameterType == DatasourceCall.IN) {
+                } else if (parameterType == ParameterType.IN) {
                     field = (DatabaseField) parameter;
-                } else if (parameterType == DatasourceCall.OUT || parameterType == DatasourceCall.OUT_CURSOR) {
+                } else if (parameterType == ParameterType.OUT || parameterType == ParameterType.OUT_CURSOR) {
                     if (parameter instanceof OutputParameterForCallableStatement) {
                         field = ((OutputParameterForCallableStatement) parameter).getOutputField();
                     } else {
