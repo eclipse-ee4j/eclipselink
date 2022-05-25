@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2014, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 2014, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -285,7 +285,7 @@ public class EmfRunnerInjector {
 
         @Override
         public void preExecuteCall(SessionEvent event) {
-            super.preExecuteQuery(event);
+            super.preExecuteCall(event);
             Call call = event.getCall();
             if(call instanceof DatabaseCall) {
                 _sql.add(((DatabaseCall)call).getSQLString());

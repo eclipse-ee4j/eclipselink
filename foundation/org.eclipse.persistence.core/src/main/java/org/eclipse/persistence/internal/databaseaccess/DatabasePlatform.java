@@ -3514,6 +3514,10 @@ public class DatabasePlatform extends DatasourcePlatform {
         return false;
     }
 
+    public boolean allowBindingForSelectClause() {
+        return true;
+    }
+
     /**
      * INTERNAL:
      * Platforms that support java.sql.Ref may override this method.

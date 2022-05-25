@@ -96,7 +96,7 @@ public class DB2ZPlatform extends DB2Platform {
     }
 
     @Override
-    public String getProcedureArgument(String name, ParameterType parameter, Integer parameterType, 
+    public String getProcedureArgument(String name, Object parameter, ParameterType parameterType, 
             StoredProcedureCall call, AbstractSession session) {
         if (name != null && shouldPrintStoredProcedureArgumentNameInCall()) {
             return ":" + name;

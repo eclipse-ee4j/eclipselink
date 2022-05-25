@@ -993,55 +993,66 @@ public abstract class DatasourceCall implements Call {
                 writer.write(token);
                 if (tokenIndex != -1) {
                     // Process next parameter.
+
+                    DatabaseField field = null;
+                    Object value = null;
                     ParameterType parameterType = parameterTypes.get(parameterIndex);
                     Object parameter = parameterFields.get(parameterIndex);
-                    if (parameterType == ParameterType.MODIFY) {
-                        DatabaseField field = (DatabaseField)parameter;
-                        Object value = modifyRow.get(field);
-                        appendParameter(writer, value, false, session);
-                    } else if (parameterType == ParameterType.CUSTOM_MODIFY) {
-                        DatabaseField field = (DatabaseField)parameter;
-                        Object value = modifyRow.get(field);
-                        if (value != null) {
-                            value = session.getDatasourcePlatform().getCustomModifyValueForCall(this, value, field, false);
-                            //Bug#5200826 needs use unwrapped connection.
-                            if ((value instanceof BindCallCustomParameter) && ((BindCallCustomParameter)value).shouldUseUnwrappedConnection()){
-                                this.isNativeConnectionRequired=true;
+
+                    switch(parameterType) {
+                        case MODIFY:
+                            field = (DatabaseField)parameter;
+                            value = modifyRow.get(field);
+                            appendParameter(writer, value, false, session);
+                            break;
+                        case CUSTOM_MODIFY:
+                            field = (DatabaseField)parameter;
+                            value = modifyRow.get(field);
+                            if (value != null) {
+                                value = session.getDatasourcePlatform().getCustomModifyValueForCall(this, value, field, false);
+                                //Bug#5200826 needs use unwrapped connection.
+                                if ((value instanceof BindCallCustomParameter) && ((BindCallCustomParameter)value).shouldUseUnwrappedConnection()){
+                                    this.isNativeConnectionRequired=true;
+                                }
                             }
-                        }
-                        appendParameter(writer, value, false, session);
-                    } else if (parameterType == ParameterType.TRANSLATION) {
-                        Object value = null;
-                        // Parameter expressions are used for nesting and correct mapping conversion of the value.
-                        if (parameter instanceof ParameterExpression) {
-                            value = ((ParameterExpression)parameter).getValue(translationRow, getQuery(), session);
-                        } else {
-                            DatabaseField field = (DatabaseField)parameter;
-                            value = translationRow.get(field);
-                            // Must check for the modify row as well for custom SQL compatibility as only one # is required.
-                            if ((value == null) && (modifyRow != null)) {
-                                value = modifyRow.get(field);
+                            appendParameter(writer, value, false, session);
+                            break;
+                        case TRANSLATION:
+                            value = null;
+                            // Parameter expressions are used for nesting and correct mapping conversion of the value.
+                            if (parameter instanceof ParameterExpression) {
+                                value = ((ParameterExpression)parameter).getValue(translationRow, getQuery(), session);
+                            } else {
+                                field = (DatabaseField)parameter;
+                                value = translationRow.get(field);
+                                // Must check for the modify row as well for custom SQL compatibility as only one # is required.
+                                if ((value == null) && (modifyRow != null)) {
+                                    value = modifyRow.get(field);
+                                }
                             }
-                        }
-                        appendParameter(writer, value, false, session);
-                    } else if (parameterType == ParameterType.LITERAL) {
-                        if (parameter instanceof DatabaseField) {
-                            parameter = null;
-                        }
-                        appendParameter(writer, parameter, false, session);
-                    } else if (parameterType == ParameterType.IN) {
-                        Object value = getValueForInParameter(parameter, translationRow, modifyRow, session, false);
-                        appendParameter(writer, value, false, session);
-                    } else if (parameterType == ParameterType.INOUT) {
-                        Object value = getValueForInOutParameter(parameter, translationRow, modifyRow, session);
-                        appendParameter(writer, value, false, session);
-                    } else if (parameterType == ParameterType.INLINE) {
-                        writer.write((String)parameter);
-                    } else if (parameterType == ParameterType.OUT || parameterType == ParameterType.OUT_CURSOR) {
-                        if (parameter instanceof DatabaseField) {
-                            parameter = null;
-                        }
-                        appendParameter(writer, parameter, false, session);
+                            appendParameter(writer, value, false, session);
+                            break;
+                        case LITERAL:
+                            if (parameter instanceof DatabaseField) {
+                                parameter = null;
+                            }
+                            appendParameter(writer, parameter, false, session);
+                            break;
+                        case IN:
+                            value = getValueForInParameter(parameter, translationRow, modifyRow, session, false);
+                            appendParameter(writer, value, false, session);
+                            break;
+                        case INOUT:
+                            value = getValueForInOutParameter(parameter, translationRow, modifyRow, session);
+                            appendParameter(writer, value, false, session);
+                            break;
+                        case OUT:
+                        case OUT_CURSOR:
+                            if (parameter instanceof DatabaseField) {
+                                parameter = null;
+                            }
+                            appendParameter(writer, parameter, false, session);
+                            break;
                     }
                     lastIndex = tokenIndex + 1;
                     parameterIndex++;

@@ -1134,7 +1134,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         Vector translationRowValues = translationRow.getValues();
         translationRowValues.setSize(len);
         for (PLSQLargument arg : arguments) {
-            if (arg.direction == IN || arg.direction == ParameterType.INOUT) {
+            if (arg.pdirection == ParameterType.IN || arg.pdirection == ParameterType.INOUT) {
                 arg.databaseType.translate(arg, translationRow,
                     copyOfTranslationRow, copyOfTranslationFields, translationRowFields,
                     translationRowValues, this);
