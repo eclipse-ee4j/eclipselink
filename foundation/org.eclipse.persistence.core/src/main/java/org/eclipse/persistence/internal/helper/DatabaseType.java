@@ -22,14 +22,13 @@ import java.util.List;
 import java.util.ListIterator;
 import static java.lang.Integer.MIN_VALUE;
 
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLargument;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.sessions.DatabaseRecord;
-import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.IN;
-import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT;
 import static org.eclipse.persistence.internal.helper.Helper.NL;
 import static org.eclipse.persistence.internal.helper.Helper.buildHexStringFromBytes;
 
@@ -81,7 +80,11 @@ public interface DatabaseType {
     void buildOutputRow(PLSQLargument outArg, AbstractRecord outputRow,
         DatabaseRecord newOutputRow, List<DatabaseField> outputRowFields, List outputRowValues);
 
+    @Deprecated
     void logParameter(StringBuilder sb, Integer direction, PLSQLargument arg,
+        AbstractRecord translationRow, DatabasePlatform platform);
+
+    public void logParameter(StringBuilder sb, ParameterType direction, PLSQLargument arg,
         AbstractRecord translationRow, DatabasePlatform platform);
 
     public enum DatabaseTypeHelper {
@@ -211,13 +214,18 @@ public interface DatabaseType {
 
         public void logParameter(StringBuilder sb, Integer direction, PLSQLargument arg,
             AbstractRecord translationRow, DatabasePlatform platform) {
-            if (direction == IN && arg.inIndex != MIN_VALUE) {
+            logParameter(sb, ParameterType.valueOf(direction), arg, translationRow, platform);
+        }
+
+        public void logParameter(StringBuilder sb, ParameterType direction, PLSQLargument arg,
+            AbstractRecord translationRow, DatabasePlatform platform) {
+            if (direction == ParameterType.IN && arg.inIndex != MIN_VALUE) {
                 sb.append(":");
                 sb.append(arg.inIndex);
                 sb.append(" => ");
                 sb.append(platform.convertToDatabaseType(translationRow.get(arg.name)));
             }
-            if (direction == OUT && arg.outIndex != MIN_VALUE) {
+            if (direction == ParameterType.OUT && arg.outIndex != MIN_VALUE) {
                 sb.append(arg.name);
                 sb.append(" => :");
                 sb.append(arg.outIndex);

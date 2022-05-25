@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -67,7 +68,6 @@ import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
-import org.eclipse.persistence.queries.DatabaseQuery.ParameterType;
 import org.eclipse.persistence.queries.ModifyQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
@@ -412,11 +412,11 @@ public class QueryImpl {
                 boolean checkParameterType = query.getArgumentParameterTypes().size() == query.getArguments().size();
                 for (String argName : query.getArguments()) {
                     Parameter<?> param = null;
-                    ParameterType type = null;
+                    org.eclipse.persistence.queries.DatabaseQuery.ParameterType type = null;
                     if (checkParameterType){
                         type = query.getArgumentParameterTypes().get(count);
                     }
-                    if (type == ParameterType.POSITIONAL){
+                    if (type == org.eclipse.persistence.queries.DatabaseQuery.ParameterType.POSITIONAL){
                         Integer position = Integer.parseInt(argName);
                         param = new ParameterExpressionImpl(null, query.getArgumentTypes().get(count), position);
                     } else {
@@ -675,8 +675,9 @@ public class QueryImpl {
             PLSQLStoredProcedureCall plsqlCall = (PLSQLStoredProcedureCall)call;
             for (int index = 0; index < plsqlCall.getArguments().size(); index++) {
                 PLSQLargument argument = plsqlCall.getArguments().get(index);
-                int type = argument.direction;
-                if ((type == StoredProcedureCall.IN) || (type == StoredProcedureCall.INOUT)) {
+                org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType type = argument.pdirection;
+                if ((type == org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType.IN) 
+                        || (type == org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType.INOUT)) {
                     if (call.hasOptionalArguments()) {
                         query.addArgument(argument.name, Object.class, call.getOptionalArguments().contains(new DatabaseField(argument.name)));
                     } else {
@@ -686,8 +687,9 @@ public class QueryImpl {
             }
         } else {
             for (int index = 0; index < call.getParameters().size(); index++) {
-                int type = call.getParameterTypes().get(index);
-                if ((type == StoredProcedureCall.IN) || (type == StoredProcedureCall.INOUT)) {
+                org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType type = call.getParameterTypes().get(index);
+                if ((type == org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType.IN) 
+                        || (type == org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType.INOUT)) {
                     Object value = call.getParameters().get(index);
                     DatabaseField parameter = null;
                     if (value instanceof Object[]) {

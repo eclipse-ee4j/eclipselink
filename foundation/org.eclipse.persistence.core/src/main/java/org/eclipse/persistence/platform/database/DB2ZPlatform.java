@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2015, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 2015, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,11 +27,20 @@ import java.security.PrivilegedActionException;
 import java.sql.CallableStatement;
 import java.sql.SQLException;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Hashtable;
 
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.BindCallCustomParameter;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.internal.expressions.CollectionExpression;
+import org.eclipse.persistence.internal.expressions.ConstantExpression;
+import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
+import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
+import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -87,7 +96,7 @@ public class DB2ZPlatform extends DB2Platform {
     }
 
     @Override
-    public String getProcedureArgument(String name, Object parameter, Integer parameterType, 
+    public String getProcedureArgument(String name, ParameterType parameter, Integer parameterType, 
             StoredProcedureCall call, AbstractSession session) {
         if (name != null && shouldPrintStoredProcedureArgumentNameInCall()) {
             return ":" + name;
@@ -101,6 +110,485 @@ public class DB2ZPlatform extends DB2Platform {
     @Override
     public String getProcedureOptionList() {
         return " DISABLE DEBUG MODE ";
+    }
+
+    /**
+     * INTERNAL:
+     * Initialize any platform-specific operators
+     */
+    @Override
+    protected void initializePlatformOperators() {
+        super.initializePlatformOperators();
+        addOperator(avgOperator());
+        addOperator(sumOperator());
+
+        addOperator(absOperator());
+        addOperator(sqrtOperator());
+
+        addOperator(trimOperator());
+        addOperator(ltrimOperator());
+        addOperator(rtrimOperator());
+        addOperator(locateOperator());
+        addOperator(locate2Operator());
+
+        addOperator(equalOperator());
+        addOperator(notEqualOperator());
+        addOperator(lessThanOperator());
+        addOperator(lessThanEqualOperator());
+        addOperator(greaterThanOperator());
+        addOperator(greaterThanEqualOperator());
+        addOperator(isNullOperator());
+        addOperator(isNotNullOperator());
+        addOperator(modOperator());
+
+        addOperator(betweenOperator());
+        addOperator(notBetweenOperator());
+        addOperator(inOperator());
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     */
+    protected ExpressionOperator avgOperator() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.average().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     */
+    protected ExpressionOperator sumOperator() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.sum().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     */
+    protected ExpressionOperator absOperator() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.abs().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * DB2 z/OS requires that at least one argument be a known type
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     */
+    @Override
+    protected ExpressionOperator concatOperator() {
+        ExpressionOperator operatorS = super.concatOperator();
+        ExpressionOperator operator = disableAtLeast1BindingExpression();
+        operatorS.copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * DB2 z/OS requires that at least one argument be a known type
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement string specified as the object of a PREPARE contains a 
+     * predicate or expression where parameter markers have been used as operands of 
+     * the same operator—for example: ? > ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
+     */
+    protected ExpressionOperator equalOperator() {
+        ExpressionOperator operator = disableAtLeast1BindingExpression();
+        ExpressionOperator.equal().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * DB2 z/OS requires that at least one argument be a known type
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement string specified as the object of a PREPARE contains a 
+     * predicate or expression where parameter markers have been used as operands of 
+     * the same operator—for example: ? > ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
+     */
+    protected ExpressionOperator notEqualOperator() {
+        ExpressionOperator operator = disableAtLeast1BindingExpression();
+        ExpressionOperator.notEqual().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * DB2 z/OS requires that at least one argument be a known type
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement string specified as the object of a PREPARE contains a 
+     * predicate or expression where parameter markers have been used as operands of 
+     * the same operator—for example: ? > ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
+     */
+    protected ExpressionOperator greaterThanOperator() {
+        ExpressionOperator operator = disableAtLeast1BindingExpression();
+        ExpressionOperator.greaterThan().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * DB2 z/OS requires that at least one argument be a known type
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement string specified as the object of a PREPARE contains a 
+     * predicate or expression where parameter markers have been used as operands of 
+     * the same operator—for example: ? > ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
+     */
+    protected ExpressionOperator greaterThanEqualOperator() {
+        ExpressionOperator operator = disableAtLeast1BindingExpression();
+        ExpressionOperator.greaterThanEqual().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * DB2 z/OS requires that at least one argument be a known type
+     * <p>
+     * For ALL, DB2 z/OS will throw an error:
+     * <pre>The statement string specified as the object of a PREPARE contains a 
+     * predicate or expression where parameter markers have been used as operands of 
+     * the same operator—for example: ? > ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
+     */
+    protected ExpressionOperator lessThanOperator() {
+        ExpressionOperator operator = disableAtLeast1BindingExpression();
+        ExpressionOperator.lessThan().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * DB2 z/OS requires that at least one argument be a known type
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement string specified as the object of a PREPARE contains a 
+     * predicate or expression where parameter markers have been used as operands of 
+     * the same operator—for example: ? > ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
+     */
+    protected ExpressionOperator lessThanEqualOperator() {
+        ExpressionOperator operator = disableAtLeast1BindingExpression();
+        ExpressionOperator.lessThanEqual().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement string specified as the object of a PREPARE contains a 
+     * predicate or expression where parameter markers have been used as operands of 
+     * the same operator—for example: ? > ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
+     */
+    protected ExpressionOperator isNullOperator() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.isNull().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement string specified as the object of a PREPARE contains a 
+     * predicate or expression where parameter markers have been used as operands of 
+     * the same operator—for example: ? > ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
+     */
+    protected ExpressionOperator isNotNullOperator() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.notNull().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * DB2 z/OS requires that at least one argument be a known type
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement string specified as the object of a PREPARE contains a 
+     * predicate or expression where parameter markers have been used as operands of 
+     * the same operator—for example: ? > ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
+     */
+    protected ExpressionOperator betweenOperator() {
+        ExpressionOperator operator = disableAtLeast1BindingExpression();
+        ExpressionOperator.between().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * DB2 z/OS requires that at least one argument be a known type
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement string specified as the object of a PREPARE contains a 
+     * predicate or expression where parameter markers have been used as operands of 
+     * the same operator—for example: ? > ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
+     */
+    protected ExpressionOperator notBetweenOperator() {
+        ExpressionOperator operator = disableAtLeast1BindingExpression();
+        ExpressionOperator.notBetween().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With all binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     * <p>
+     * With some binding enabled, DB2 z/OS will throw an error:
+     * <pre>The data type, the length, or the value of an argument of a scalar function 
+     * is incorrect. DB2 SQL Error: SQLCODE=-171, SQLSTATE=42815</pre>
+     */
+    protected ExpressionOperator locateOperator() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.locate().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With all binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     * <p>
+     * With some binding enabled, DB2 z/OS will throw an error:
+     * <pre>The data type, the length, or the value of an argument of a scalar function 
+     * is incorrect. DB2 SQL Error: SQLCODE=-171, SQLSTATE=42815</pre>
+     */
+    protected ExpressionOperator locate2Operator() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.locate2().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With all binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     * <p>
+     * With some binding enabled, DB2 z/OS will throw an error:
+     * <pre>The data type, the length, or the value of an argument of a scalar function 
+     * is incorrect. DB2 SQL Error: SQLCODE=-171, SQLSTATE=42815</pre>
+     */
+    protected ExpressionOperator modOperator() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.mod().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     */
+    protected ExpressionOperator sqrtOperator() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.sqrt().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     */
+    protected ExpressionOperator trimOperator() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.trim().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The data type, the length, or the value of an argument of a scalar function 
+     * is incorrect. DB2 SQL Error: SQLCODE=-171, SQLSTATE=42815</pre>
+     */
+    @Override
+    protected ExpressionOperator trim2() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.trim2().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     */
+    protected ExpressionOperator ltrimOperator() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.leftTrim().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The data type, the length, or the value of an argument of a scalar function 
+     * is incorrect. DB2 SQL Error: SQLCODE=-171, SQLSTATE=42815</pre>
+     */
+    @Override
+    protected ExpressionOperator ltrim2Operator() {
+        ExpressionOperator operatorS = super.ltrim2Operator();
+        ExpressionOperator operator = disableAllBindingExpression();
+        operatorS.copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     */
+    protected ExpressionOperator rtrimOperator() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.rightTrim().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The data type, the length, or the value of an argument of a scalar function 
+     * is incorrect. DB2 SQL Error: SQLCODE=-171, SQLSTATE=42815</pre>
+     */
+    @Override
+    protected ExpressionOperator rtrim2Operator() {
+        ExpressionOperator operatorS = super.rtrim2Operator();
+        ExpressionOperator operator = disableAllBindingExpression();
+        operatorS.copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * DB2 z/OS requires that at least one argument be a known type
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement string specified as the object of a PREPARE contains a 
+     * predicate or expression where parameter markers have been used as operands of 
+     * the same operator—for example: ? &gt; ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
+     */
+    protected ExpressionOperator inOperator() {
+        ExpressionOperator operator = new ExpressionOperator() {
+            @Override
+            public void printDuo(Expression first, Expression second, ExpressionSQLPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printDuo(first, second, printer);
+                    return;
+                }
+
+                // If the first argument isn't a Constant/Parameter, this will suffice
+                if(!first.isValueExpression() || (first.isConstantExpression() && !printer.getPlatform().shouldBindLiterals())) {
+                    super.printDuo(first, second, printer);
+                    return;
+                }
+
+                // Otherwise, we need to inspect the right, collection side of the IN expression
+                boolean firstBound = true;
+                if(second instanceof CollectionExpression) {
+                    Object val = ((CollectionExpression) second).getValue();
+                    if (val instanceof Collection) {
+                        firstBound = false;
+                        Collection values = (Collection)val;
+                        for(Object value : values) {
+                            // If the value isn't a Constant/Parameter, this will suffice and the first should bind
+                            if(value instanceof Expression && !((Expression)value).isValueExpression()) {
+                                firstBound = true;
+                                break;
+                            }
+
+                            // If the value is a Constant and literal binding is disabled, this will suffice and the first should bind
+                            if(value instanceof Expression && ((Expression)value).isConstantExpression() && !printer.getPlatform().shouldBindLiterals()) {
+                                firstBound = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if(first.isParameterExpression()) {
+                    ((ParameterExpression) first).setCanBind(firstBound);
+                } else if(first.isConstantExpression()) {
+                    ((ConstantExpression) first).setCanBind(firstBound);
+                }
+
+                super.printDuo(first, second, printer);
+            }
+
+            @Override
+            public void printJavaDuo(Expression first, Expression second, ExpressionJavaPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printJavaDuo(first, second, printer);
+                    return;
+                }
+
+                // If the first argument isn't a Constant/Parameter, this will suffice
+                if(!first.isValueExpression() || (first.isConstantExpression() && !printer.getPlatform().shouldBindLiterals())) {
+                    super.printJavaDuo(first, second, printer);
+                    return;
+                }
+
+                // Otherwise, we need to inspect the right, collection side of the IN expression
+                boolean firstBound = true;
+                if(second instanceof CollectionExpression) {
+                    Object val = ((CollectionExpression) second).getValue();
+                    if (val instanceof Collection) {
+                        firstBound = false;
+                        Collection values = (Collection)val;
+                        for(Object value : values) {
+                            // If the value isn't a Constant/Parameter, this will suffice and the first should bind
+                            if(value instanceof Expression && !((Expression)value).isValueExpression()) {
+                                firstBound = true;
+                                break;
+                            }
+
+                            // If the value is a Constant and literal binding is disabled, this will suffice and the first should bind
+                            if(value instanceof Expression && ((Expression)value).isConstantExpression() && !printer.getPlatform().shouldBindLiterals()) {
+                                firstBound = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if(first.isParameterExpression()) {
+                    ((ParameterExpression) first).setCanBind(firstBound);
+                } else if(first.isConstantExpression()) {
+                    ((ConstantExpression) first).setCanBind(firstBound);
+                }
+
+                super.printJavaDuo(first, second, printer);
+            }
+        };
+        ExpressionOperator.in().copyTo(operator);
+        return operator;
     }
 
     @Override
@@ -127,7 +615,7 @@ public class DB2ZPlatform extends DB2Platform {
         for (int index = indexFirst; index < size; index++) {
             String name = call.getProcedureArgumentNames().get(index);
             Object parameter = call.getParameters().get(index);
-            Integer parameterType = call.getParameterTypes().get(index);
+            ParameterType parameterType = call.getParameterTypes().get(index);
             // If the argument is optional and null, ignore it.
             if (!call.hasOptionalArguments() || !call.getOptionalArguments().contains(parameter) || (row.get(parameter) != null)) {
 

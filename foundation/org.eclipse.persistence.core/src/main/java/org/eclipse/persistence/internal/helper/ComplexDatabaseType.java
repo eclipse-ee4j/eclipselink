@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +19,7 @@ import java.util.ListIterator;
 import java.util.List;
 
 import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
@@ -242,7 +244,13 @@ public abstract class ComplexDatabaseType implements DatabaseType, Cloneable {
     }
 
     @Override
+    @Deprecated
     public void logParameter(StringBuilder sb, Integer direction, PLSQLargument arg,
+            AbstractRecord translationRow, DatabasePlatform platform) {
+        logParameter(sb, ParameterType.valueOf(direction), arg, translationRow, platform);
+    }
+
+    public void logParameter(StringBuilder sb, ParameterType direction, PLSQLargument arg,
             AbstractRecord translationRow, DatabasePlatform platform) {
         databaseTypeHelper.logParameter(sb, direction, arg, translationRow, platform);
     }

@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +34,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 public class ConstantExpression extends Expression {
     protected Object value;
     protected Expression localBase;
+    protected Boolean canBind = null;
 
     public ConstantExpression() {
         super();
@@ -109,6 +111,26 @@ public class ConstantExpression extends Expression {
         this.value = value;
     }
 
+    /**
+     * INTERNAL:
+     *  true indicates this expression can bind parameters
+     *  false indicates this expression cannot bind parameters
+     *  Defaults to null to indicate no specific preference
+     */
+    public Boolean canBind() {
+        return canBind;
+    }
+
+    /**
+     * INTERNAL:
+     * Set to true if this expression can bind parameters
+     * Set to false if this expression cannot bind parameters
+     * Set to null to indicate no specific preference
+     */
+    public void setCanBind(Boolean canBind) {
+        this.canBind = canBind;
+    }
+
     @Override
     public boolean isConstantExpression() {
         return true;
@@ -174,7 +196,7 @@ public class ConstantExpression extends Expression {
         if(value == null) {
             printer.printNull(this);
         } else {
-            printer.printPrimitive(value);
+            printer.printPrimitive(value, this.canBind);
         }
     }
 
@@ -262,9 +284,26 @@ public class ConstantExpression extends Expression {
      */
     @Override
     public void writeFields(ExpressionSQLPrinter printer, List<DatabaseField> newFields, SQLSelectStatement statement) {
+        /*
+         * If the platform doesn't support binding for functions, then disable binding for the whole query
+         * 
+         * DatabasePlatform classes should instead override DatasourcePlatform.initializePlatformOperators()
+         *      @see ExpressionOperator.setIsBindingSupported(boolean isBindingSupported)
+         * In this way, platforms can define their own supported binding behaviors for individual functions
+         */
         if (printer.getPlatform().isDynamicSQLRequiredForFunctions()) {
             printer.getCall().setUsesBinding(false);
         }
+
+        /*
+         *  Allow the platform to indicate if they support parameter expressions in the SELECT clause 
+         *  as a whole, regardless if individual functions allow binding. We make that decision here 
+         *  before we continue parsing into generic API calls
+         */
+        if (!printer.getPlatform().allowBindingForSelectClause()) {
+            setCanBind(false);
+        }
+
         //print ", " before each selected field except the first one
         if (printer.isFirstElementPrinted()) {
             printer.printString(", ");

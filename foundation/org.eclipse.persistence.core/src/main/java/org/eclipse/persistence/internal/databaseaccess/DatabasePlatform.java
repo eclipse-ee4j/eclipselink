@@ -68,6 +68,7 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
@@ -136,10 +137,13 @@ public class DatabasePlatform extends DatasourcePlatform {
     protected boolean usesBatchWriting;
 
     /** Bind all arguments to any SQL statement. */
-    protected boolean shouldBindAllParameters;
+    protected Boolean shouldBindAllParameters;
 
     /** Bind all arguments to any SQL statement. */
     protected boolean shouldForceBindAllParameters;
+
+    /** Bind some arguments to any SQL statement. */
+    protected boolean shouldBindPartialParameters;
 
     /** Cache all prepared statements, this requires full parameter binding as well. */
     protected boolean shouldCacheAllStatements;
@@ -254,7 +258,6 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     protected String storedProcedureTerminationToken;
 
-
     /**
      * Used to integrate with data partitioning in an external DataSource such as UCP.
      */
@@ -276,7 +279,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         this.usesStringBinding = false;
         this.stringBindingSize = 255;
         this.shouldTrimStrings = true;
-        this.shouldBindAllParameters = true;
+        this.shouldBindAllParameters = null;
         this.shouldForceBindAllParameters = false;
         this.shouldCacheAllStatements = false;
         this.shouldOptimizeDataConversion = true;
@@ -458,13 +461,13 @@ public class DatabasePlatform extends DatasourcePlatform {
      * In case shouldBindLiterals is true, instead of null value a DatabaseField
      * value may be passed (so that it's type could be used for binding null).
      */
-    public void appendLiteralToCall(Call call, Writer writer, Object literal) {
-        if(shouldBindLiterals()) {
+    public void appendLiteralToCall(Call call, Writer writer, Object literal, Boolean canBind) {
+        if(!Boolean.FALSE.equals(canBind) && shouldBindLiterals()) {
             appendLiteralToCallWithBinding(call, writer, literal);
         } else {
             int nParametersToAdd = appendParameterInternal(call, writer, literal);
             for (int i = 0; i < nParametersToAdd; i++) {
-                ((DatabaseCall)call).getParameterTypes().add(DatabaseCall.LITERAL);
+                ((DatabaseCall)call).getParameterTypes().add(ParameterType.LITERAL);
             }
         }
     }
@@ -828,7 +831,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         for (int index = indexFirst; index < size; index++) {
             String name = call.getProcedureArgumentNames().get(index);
             Object parameter = call.getParameters().get(index);
-            Integer parameterType = call.getParameterTypes().get(index);
+            ParameterType parameterType = call.getParameterTypes().get(index);
             // If the argument is optional and null, ignore it.
             if (!call.hasOptionalArguments() || !call.getOptionalArguments().contains(parameter) || (row.get(parameter) != null)) {
 
@@ -985,8 +988,9 @@ public class DatabasePlatform extends DatasourcePlatform {
         databasePlatform.setUsesNativeSQL(usesNativeSQL());
         databasePlatform.setUsesByteArrayBinding(usesByteArrayBinding());
         databasePlatform.setUsesStringBinding(usesStringBinding());
-        databasePlatform.setShouldBindAllParameters(shouldBindAllParameters());
-        databasePlatform.setShouldForceBindAllParameters(shouldForceBindAllParameters());
+        databasePlatform.shouldBindAllParameters = this.shouldBindAllParameters;
+        databasePlatform.shouldForceBindAllParameters = this.shouldForceBindAllParameters;
+        databasePlatform.shouldBindPartialParameters = this.shouldBindPartialParameters;
         databasePlatform.setShouldCacheAllStatements(shouldCacheAllStatements());
         databasePlatform.setStatementCacheSize(getStatementCacheSize());
         databasePlatform.setTransactionIsolation(getTransactionIsolation());
@@ -1484,7 +1488,18 @@ public class DatabasePlatform extends DatasourcePlatform {
     /**
      * Obtain the platform specific argument string
      */
+    @Deprecated
     public String getProcedureArgument(String name, Object parameter, Integer parameterType, StoredProcedureCall call, AbstractSession session) {
+        if (name != null && shouldPrintStoredProcedureArgumentNameInCall()) {
+            return getProcedureArgumentString() + name + " = " + "?";
+        }
+        return getProcedureArgument(name, parameter, ParameterType.valueOf(parameterType), call, session);
+    }
+
+    /**
+     * Obtain the platform specific argument string
+     */
+    public String getProcedureArgument(String name, Object parameter, ParameterType parameterType, StoredProcedureCall call, AbstractSession session) {
         if (name != null && shouldPrintStoredProcedureArgumentNameInCall()) {
             return getProcedureArgumentString() + name + " = " + "?";
         }
@@ -1998,6 +2013,13 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
+     * Used to enable parameter binding and override the platform default
+     */
+    public void setShouldBindPartialParameters(boolean shouldBindPartialParameters) {
+        this.shouldBindPartialParameters = shouldBindPartialParameters;
+    }
+
+    /**
      * Can be used if the app expects upper case but the database is not return consistent case, i.e. different databases.
      */
     public void setShouldForceFieldNamesToUpperCase(boolean shouldForceFieldNamesToUpperCase) {
@@ -2160,9 +2182,25 @@ public class DatabasePlatform extends DatasourcePlatform {
 
     /**
      * Bind all arguments to any SQL statement.
+     * <p>
+     * {@link org.eclipse.persistence.config.PersistenceUnitProperties#JDBC_BIND_PARAMETERS}
      */
     public boolean shouldBindAllParameters() {
-        return shouldBindAllParameters;
+        // Non-null value implies it has been overridden
+        if(this.shouldBindAllParameters != null) {
+            return this.shouldBindAllParameters;
+        }
+        // Default value
+        return true;
+    }
+
+    /**
+     * Used to determine if the platform should perform partial parameter binding or not
+     * <p>
+     * Off by default. Only platforms with the support added should enable this configuration.
+     */
+    public boolean shouldBindPartialParameters() {
+        return false;
     }
 
     /**
@@ -3468,6 +3506,9 @@ public class DatabasePlatform extends DatasourcePlatform {
      * INTERNAL:
      * Some databases have issues with using parameters on certain functions and relations.
      * This allows statements to disable binding only in these cases.
+     * <p>
+     * Alternatively, DatabasePlatforms can override specific ExpressionOperators and add them 
+     * to the platform specific operators. See {@link DatasourcePlatform#initializePlatformOperators()}
      */
     public boolean isDynamicSQLRequiredForFunctions() {
         return false;
