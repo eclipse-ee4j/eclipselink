@@ -1073,7 +1073,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         List newParameterList = new ArrayList(call.getParameters());
         newParameterList.addAll(call.getParameters());
         call.setParameters(newParameterList);
-        List<Integer> newParameterTypesList = new ArrayList<>(call.getParameterTypes());
+        List<ParameterType> newParameterTypesList = new ArrayList<>(call.getParameterTypes());
         newParameterTypesList.addAll(call.getParameterTypes());
         call.setParameterTypes(newParameterTypesList);
     }

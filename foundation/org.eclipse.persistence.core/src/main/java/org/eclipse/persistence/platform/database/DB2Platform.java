@@ -534,7 +534,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
             }
 
             @Override
-            public void printCollection(Vector items, ExpressionSQLPrinter printer) {
+            public void printCollection(List<Expression> items, ExpressionSQLPrinter printer) {
                 if(!printer.getPlatform().shouldBindPartialParameters()) {
                     super.printCollection(items, printer);
                     return;
@@ -548,10 +548,10 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
                     }
                 }
 
-                for(Object item : items) {
-                    if(((Expression)item).isParameterExpression()) {
+                for(Expression item : items) {
+                    if(item.isParameterExpression()) {
                         ((ParameterExpression) item).setCanBind(false);
-                    } else if(((Expression)item).isConstantExpression()) {
+                    } else if(item.isConstantExpression()) {
                         ((ConstantExpression) item).setCanBind(false);
                     }
                 }
@@ -579,16 +579,16 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
             }
 
             @Override
-            public void printJavaCollection(Vector items, ExpressionJavaPrinter printer) {
+            public void printJavaCollection(List<Expression> items, ExpressionJavaPrinter printer) {
                 if(!printer.getPlatform().shouldBindPartialParameters()) {
                     super.printJavaCollection(items, printer);
                     return;
                 }
 
-                for(Object item : items) {
-                    if(((Expression)item).isParameterExpression()) {
+                for(Expression item : items) {
+                    if(item.isParameterExpression()) {
                         ((ParameterExpression) item).setCanBind(false);
-                    } else if(((Expression)item).isConstantExpression()) {
+                    } else if(item.isConstantExpression()) {
                         ((ConstantExpression) item).setCanBind(false);
                     }
                 }
@@ -646,7 +646,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
             }
 
             @Override
-            public void printCollection(Vector items, ExpressionSQLPrinter printer) {
+            public void printCollection(List<Expression> items, ExpressionSQLPrinter printer) {
                 if(!printer.getPlatform().shouldBindPartialParameters()) {
                     super.printCollection(items, printer);
                     return;
@@ -663,7 +663,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
                 boolean allBind = true;
                 for (int i = 0; i < items.size(); i++) {
                     final int index = this.argumentIndices[i];
-                    Expression item = (Expression)items.elementAt(index);
+                    Expression item = items.get(index);
                     boolean shouldBind = true;
 
                     // If the item isn't a Constant/Parameter, this will suffice and the rest should bind
@@ -741,7 +741,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
             }
 
             @Override
-            public void printJavaCollection(Vector items, ExpressionJavaPrinter printer) {
+            public void printJavaCollection(List<Expression> items, ExpressionJavaPrinter printer) {
                 if(!printer.getPlatform().shouldBindPartialParameters()) {
                     super.printJavaCollection(items, printer);
                     return;
@@ -749,7 +749,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
 
                 boolean allBind = true;
                 for (int i = 0; i < items.size(); i++) {
-                    Expression item = (Expression)items.elementAt(i);
+                    Expression item = items.get(i);
 
                     boolean shouldBind = true;
 
@@ -934,7 +934,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     protected ExpressionOperator caseOperator() {
         ListExpressionOperator operator = new ListExpressionOperator() {
             @Override
-            public void printCollection(Vector items, ExpressionSQLPrinter printer) {
+            public void printCollection(List<Expression> items, ExpressionSQLPrinter printer) {
                 if(!printer.getPlatform().shouldBindPartialParameters()) {
                     super.printCollection(items, printer);
                     return;
@@ -976,7 +976,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
 
                 for (int j = 0; j < items.size(); j++) {
                     final int index = this.argumentIndices[j];
-                    Expression item = (Expression)items.elementAt(index);
+                    Expression item = items.get(index);
 
                     if(item.isParameterExpression()) {
                         ((ParameterExpression) item).setCanBind(argumentBinding[index]);
@@ -988,7 +988,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
             }
 
             @Override
-            public void printJavaCollection(Vector items, ExpressionJavaPrinter printer) {
+            public void printJavaCollection(List<Expression> items, ExpressionJavaPrinter printer) {
                 if(!printer.getPlatform().shouldBindPartialParameters()) {
                     super.printJavaCollection(items, printer);
                     return;
@@ -1021,7 +1021,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
                 }
 
                 for (int j = 0; j < items.size(); j++) {
-                    Expression item = (Expression)items.elementAt(j);
+                    Expression item = items.get(j);
 
                     if(item.isParameterExpression()) {
                         ((ParameterExpression) item).setCanBind(argumentBinding[j]);
@@ -1053,7 +1053,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     protected ExpressionOperator caseConditionOperator() {
         ListExpressionOperator operator = new ListExpressionOperator() {
             @Override
-            public void printCollection(Vector items, ExpressionSQLPrinter printer) {
+            public void printCollection(List<Expression> items, ExpressionSQLPrinter printer) {
                 if(!printer.getPlatform().shouldBindPartialParameters()) {
                     super.printCollection(items, printer);
                     return;
@@ -1098,7 +1098,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
 
                 for (int j = 0; j < items.size(); j++) {
                     final int index = this.argumentIndices[j];
-                    Expression item = (Expression)items.elementAt(index);
+                    Expression item = items.get(index);
 
                     if(item.isParameterExpression()) {
                         ((ParameterExpression) item).setCanBind(argumentBinding[index]);
@@ -1110,7 +1110,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
             }
 
             @Override
-            public void printJavaCollection(Vector items, ExpressionJavaPrinter printer) {
+            public void printJavaCollection(List<Expression> items, ExpressionJavaPrinter printer) {
                 if(!printer.getPlatform().shouldBindPartialParameters()) {
                     super.printJavaCollection(items, printer);
                     return;
@@ -1146,7 +1146,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
                 }
 
                 for (int j = 0; j < items.size(); j++) {
-                    Expression item = (Expression)items.elementAt(j);
+                    Expression item = items.get(j);
 
                     if(item.isParameterExpression()) {
                         ((ParameterExpression) item).setCanBind(argumentBinding[j]);
@@ -1215,7 +1215,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     protected ExpressionOperator coalesceOperator() {
         ListExpressionOperator operator = new ListExpressionOperator() {
             @Override
-            public void printCollection(Vector items, ExpressionSQLPrinter printer) {
+            public void printCollection(List<Expression> items, ExpressionSQLPrinter printer) {
                 if(!printer.getPlatform().shouldBindPartialParameters()) {
                     super.printCollection(items, printer);
                     return;
@@ -1232,7 +1232,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
                 boolean allBind = true;
                 for (int i = 0; i < items.size(); i++) {
                     final int index = this.argumentIndices[i];
-                    Expression item = (Expression)items.elementAt(index);
+                    Expression item = items.get(index);
                     boolean shouldBind = true;
 
                     // If the item isn't a Constant/Parameter, this will suffice and the rest should bind
@@ -1267,7 +1267,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
             }
 
             @Override
-            public void printJavaCollection(Vector items, ExpressionJavaPrinter printer) {
+            public void printJavaCollection(List<Expression> items, ExpressionJavaPrinter printer) {
                 if(!printer.getPlatform().shouldBindPartialParameters()) {
                     super.printJavaCollection(items, printer);
                     return;
@@ -1275,7 +1275,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
 
                 boolean allBind = true;
                 for (int i = 0; i < items.size(); i++) {
-                    Expression item = (Expression)items.elementAt(i);
+                    Expression item = items.get(i);
 
                     boolean shouldBind = true;
 
@@ -1324,7 +1324,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     protected ExpressionOperator trim2() {
         ExpressionOperator operator = new ExpressionOperator(){
             @Override
-            public void printCollection(Vector items, ExpressionSQLPrinter printer) {
+            public void printCollection(List<Expression> items, ExpressionSQLPrinter printer) {
                 if(!printer.getPlatform().shouldBindPartialParameters()) {
                     super.printCollection(items, printer);
                     return;
@@ -1340,7 +1340,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
 
                 for (int i = 0; i < items.size(); i++) {
                     final int index = this.argumentIndices[i];
-                    Expression item = (Expression)items.elementAt(index);
+                    Expression item = items.get(index);
 
                     // Disable the first item, which should be <operand2> for this operator
                     if(i == 0) {
@@ -1355,14 +1355,14 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
             }
 
             @Override
-            public void printJavaCollection(Vector items, ExpressionJavaPrinter printer) {
+            public void printJavaCollection(List<Expression> items, ExpressionJavaPrinter printer) {
                 if(!printer.getPlatform().shouldBindPartialParameters()) {
                     super.printJavaCollection(items, printer);
                     return;
                 }
 
                 for (int i = 0; i < items.size(); i++) {
-                    Expression item = (Expression)items.elementAt(i);
+                    Expression item = items.get(i);
 
                     // Disable the first item, which should be <operand2> for this operator
                     if(i == 0) {
@@ -1404,7 +1404,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     protected ExpressionOperator ltrim2Operator() {
         ExpressionOperator operator = new ExpressionOperator(){
             @Override
-            public void printCollection(Vector items, ExpressionSQLPrinter printer) {
+            public void printCollection(List<Expression> items, ExpressionSQLPrinter printer) {
                 if(!printer.getPlatform().shouldBindPartialParameters()) {
                     super.printCollection(items, printer);
                     return;
@@ -1420,7 +1420,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
 
                 for (int i = 0; i < items.size(); i++) {
                     final int index = this.argumentIndices[i];
-                    Expression item = (Expression)items.elementAt(index);
+                    Expression item = items.get(index);
 
                     // Disable the first item, which should be <operand2> for this operator
                     if(i == 0) {
@@ -1435,14 +1435,14 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
             }
 
             @Override
-            public void printJavaCollection(Vector items, ExpressionJavaPrinter printer) {
+            public void printJavaCollection(List<Expression> items, ExpressionJavaPrinter printer) {
                 if(!printer.getPlatform().shouldBindPartialParameters()) {
                     super.printJavaCollection(items, printer);
                     return;
                 }
 
                 for (int i = 0; i < items.size(); i++) {
-                    Expression item = (Expression)items.elementAt(i);
+                    Expression item = items.get(i);
 
                     // Disable the first item, which should be <operand2> for this operator
                     if(i == 0) {
@@ -1484,7 +1484,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     protected ExpressionOperator rtrim2Operator() {
         ExpressionOperator operator = new ExpressionOperator(){
             @Override
-            public void printCollection(Vector items, ExpressionSQLPrinter printer) {
+            public void printCollection(List<Expression> items, ExpressionSQLPrinter printer) {
                 if(!printer.getPlatform().shouldBindPartialParameters()) {
                     super.printCollection(items, printer);
                     return;
@@ -1500,7 +1500,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
 
                 for (int i = 0; i < items.size(); i++) {
                     final int index = this.argumentIndices[i];
-                    Expression item = (Expression)items.elementAt(index);
+                    Expression item = items.get(index);
 
                     // Disable the first item, which should be <operand2> for this operator
                     if(i == 0) {
@@ -1515,14 +1515,14 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
             }
 
             @Override
-            public void printJavaCollection(Vector items, ExpressionJavaPrinter printer) {
+            public void printJavaCollection(List<Expression> items, ExpressionJavaPrinter printer) {
                 if(!printer.getPlatform().shouldBindPartialParameters()) {
                     super.printJavaCollection(items, printer);
                     return;
                 }
 
                 for (int i = 0; i < items.size(); i++) {
-                    Expression item = (Expression)items.elementAt(i);
+                    Expression item = items.get(i);
 
                     // Disable the first item, which should be <operand2> for this operator
                     if(i == 0) {
@@ -1766,7 +1766,8 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
 
     /**
      * INTERNAL: DB2 does not allow stand alone, untyped parameter markers in select clause.
-     * @see {@link org.eclipse.persistence.internal.expressions.ParameterExpression#writeFields(ExpressionSQLPrinter printer, Vector newFields, SQLSelectStatement statement)}
+     * @see org.eclipse.persistence.internal.expressions.ConstantExpression#writeFields(ExpressionSQLPrinter, List, SQLSelectStatement)
+     * @see org.eclipse.persistence.internal.expressions.ParameterExpression#writeFields(ExpressionSQLPrinter, List, SQLSelectStatement)
      */
     @Override
     public boolean allowBindingForSelectClause() {
