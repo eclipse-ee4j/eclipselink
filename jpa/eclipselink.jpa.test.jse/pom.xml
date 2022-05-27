@@ -32,6 +32,7 @@
 
     <properties>
         <test-skip-jpa-jse>${skipTests}</test-skip-jpa-jse>
+        <test-skip-jpa-jse-deadlock>${skipTests}</test-skip-jpa-jse-deadlock>
     </properties>
 
     <dependencies>
@@ -171,6 +172,7 @@
                             <goal>integration-test</goal>
                         </goals>
                         <configuration>
+                            <skipTests>${test-skip-jpa-jse-deadlock}</skipTests>
                             <includes>
                                 <include>CacheDeadLockDetectionTest*</include>
                             </includes>
