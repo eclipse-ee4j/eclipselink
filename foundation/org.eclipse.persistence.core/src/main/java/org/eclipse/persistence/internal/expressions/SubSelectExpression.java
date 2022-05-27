@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,14 +45,26 @@ public class SubSelectExpression extends BaseExpression {
     protected Class<?> returnType;
     protected Expression criteriaBase;
 
+    // Ignore enforcePrintInnerJoinInWhereClause=true
+    private boolean enforcePrintInnerJoinInWhereClause;
+
+    // Only used in createSubSelectExpressionForCount to enforce printInnerJoinInWhereClause=false being ignored
+    private SubSelectExpression(boolean enforcePrintInnerJoinInWhereClause) {
+        super();
+        this.subQuery = new ReportQuery();
+        this.enforcePrintInnerJoinInWhereClause = enforcePrintInnerJoinInWhereClause;
+    }
+
     public SubSelectExpression() {
         super();
-        subQuery = new ReportQuery();
+        this.subQuery = new ReportQuery();
+        this.enforcePrintInnerJoinInWhereClause = false;
     }
 
     public SubSelectExpression(ReportQuery query, Expression baseExpression) {
         super(baseExpression);
         this.subQuery = query;
+        this.enforcePrintInnerJoinInWhereClause = false;
     }
 
     /**
@@ -207,7 +219,7 @@ public class SubSelectExpression extends BaseExpression {
         getSubQuery().prepareSubSelect(normalizer.getSession(), null, clonedExpressions);
         if (!getSubQuery().isCallQuery()) {
             SQLSelectStatement statement = (SQLSelectStatement)((StatementQueryMechanism)getSubQuery().getQueryMechanism()).getSQLStatement();
-
+            statement.setEnforcePrintInnerJoinInWhereClause(this.enforcePrintInnerJoinInWhereClause);
             // setRequiresAliases was already set for parent statement.
             statement.setRequiresAliases(true);
             statement.setParentStatement(normalizer.getStatement());
@@ -477,7 +489,7 @@ public class SubSelectExpression extends BaseExpression {
      * It will count the number of items in baseExpression.anyOf(attribute).
      */
     public static SubSelectExpression createSubSelectExpressionForCount(Expression outerQueryBaseExpression, Expression outerQueryCriteria, String attribute, Class<?> returnType){
-        SubSelectExpression expression = new SubSelectExpression();
+        SubSelectExpression expression = new SubSelectExpression(true);
         expression.setBaseExpression(outerQueryBaseExpression);
         expression.attribute = attribute;
         expression.criteriaBase = outerQueryCriteria;

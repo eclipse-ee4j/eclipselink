@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,6 +38,9 @@ public class ExpressionNormalizer {
     /** Used to maintain identity of cloned expressions. */
     protected Map<Expression, Expression> clonedExpressions;
 
+    // Ignore enforcePrintInnerJoinInWhereClause=true
+    private boolean enforcePrintInnerJoinInWhereClause;
+
     /**
      * Used to trigger adding additional join operations etc to the expression being processed instead of at the end of the where clause.
      * Useful for dealing with Treat within an Or clause, as the type expression needs to be appended within the OR condition rather AND'd
@@ -49,6 +52,7 @@ public class ExpressionNormalizer {
 
     public ExpressionNormalizer(SQLSelectStatement statement) {
         this.statement = statement;
+        this.enforcePrintInnerJoinInWhereClause = false;
     }
 
     public Map<Expression, Expression> getClonedExpressions() {
@@ -172,4 +176,24 @@ public class ExpressionNormalizer {
             boolean addAdditionalExpressionsWithinCurrrentExpressionContext) {
         this.addAdditionalExpressionsWithinCurrrentExpressionContext = addAdditionalExpressionsWithinCurrrentExpressionContext;
     }
+
+    /**
+     * Set trigger to ignore {@code enforcePrintInnerJoinInWhereClause=false}.
+     *
+     * @param enforcePrintInnerJoinInWhereClause Value of {@code enforcePrintInnerJoinInWhereClause=false}
+     *                                           will be ignored when set to {@code true}
+     */
+    public void setEnforcePrintInnerJoinInWhereClause(boolean enforcePrintInnerJoinInWhereClause) {
+        this.enforcePrintInnerJoinInWhereClause = enforcePrintInnerJoinInWhereClause;
+    }
+
+    /**
+     * Get trigger to ignore {@code enforcePrintInnerJoinInWhereClause=false}.
+     *
+     * @return Value of {@code enforcePrintInnerJoinInWhereClause=false} shall be ignored when set to {@code true}
+     */
+    public boolean getEnforcePrintInnerJoinInWhereClause() {
+        return this.enforcePrintInnerJoinInWhereClause;
+    }
+
 }

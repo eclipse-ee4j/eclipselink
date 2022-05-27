@@ -147,6 +147,9 @@ public class SQLSelectStatement extends SQLStatement {
     protected Map<DatabaseField, String> fieldAliases;
     protected boolean shouldCacheFieldAliases;
 
+    // Ignore enforcePrintInnerJoinInWhereClause=true
+    private boolean enforcePrintInnerJoinInWhereClause;
+
     public SQLSelectStatement() {
         this.fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
         this.tables = new ArrayList<>(4);
@@ -155,6 +158,7 @@ public class SQLSelectStatement extends SQLStatement {
         this.isAggregateSelect = false;
         this.distinctState = ObjectLevelReadQuery.UNCOMPUTED_DISTINCT;
         this.currentAliasNumber = 0;
+        this.enforcePrintInnerJoinInWhereClause = false;
     }
 
     public void addField(DatabaseField field) {
@@ -1516,6 +1520,7 @@ public class SQLSelectStatement extends SQLStatement {
         ExpressionNormalizer normalizer = new ExpressionNormalizer(this);
         normalizer.setSession(session);
         normalizer.setClonedExpressions(clonedExpressions);
+        normalizer.setEnforcePrintInnerJoinInWhereClause(this.getEnforcePrintInnerJoinInWhereClause());
         boolean isDistinctComputed = isDistinctComputed();
 
         Expression newRoot = null;
@@ -2371,4 +2376,24 @@ public class SQLSelectStatement extends SQLStatement {
         }
         Collections.sort(holders);
     }
+
+    /**
+     * Set trigger to ignore {@code enforcePrintInnerJoinInWhereClause=false}.
+     *
+     * @param enforcePrintInnerJoinInWhereClause Value of {@code enforcePrintInnerJoinInWhereClause=false}
+     *                                           will be ignored when set to {@code true}
+     */
+    public void setEnforcePrintInnerJoinInWhereClause(boolean enforcePrintInnerJoinInWhereClause) {
+        this.enforcePrintInnerJoinInWhereClause = enforcePrintInnerJoinInWhereClause;
+    }
+
+    /**
+     * Get trigger to ignore {@code enforcePrintInnerJoinInWhereClause=false}.
+     *
+     * @return Value of {@code enforcePrintInnerJoinInWhereClause=false} shall be ignored when set to {@code true}
+     */
+    public boolean getEnforcePrintInnerJoinInWhereClause() {
+        return this.enforcePrintInnerJoinInWhereClause;
+    }
+
 }

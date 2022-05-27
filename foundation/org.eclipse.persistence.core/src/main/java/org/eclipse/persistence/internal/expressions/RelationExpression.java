@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -795,7 +795,7 @@ public class RelationExpression extends CompoundExpression {
             //.equal(anyOf() or get())
             (first.isExpressionBuilder() && second.isQueryKeyExpression()
                     &&  (!((QueryKeyExpression)second).hasDerivedExpressions()) // The right side is not used for anything else.
-                    && normalizer.getSession().getPlatform().shouldPrintInnerJoinInWhereClause()) {
+                    && (normalizer.getEnforcePrintInnerJoinInWhereClause() || normalizer.getSession().getPlatform().shouldPrintInnerJoinInWhereClause()) ) {
             first = (ExpressionBuilder)first.normalize(normalizer);
 
             // If FK joins go in the WHERE clause, want to get hold of it and
