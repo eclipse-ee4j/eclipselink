@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2018, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,18 +42,26 @@ public class ExpressionOperator implements Serializable {
     static final long serialVersionUID = -7066100204792043980L;
     protected int selector;
     protected String name;
-    protected String[] databaseStrings;
+
+    // ListExpressionOperator uses its own start/separator/terminator strings
+    private String[] databaseStrings;
+
     protected boolean isPrefix = false;
     protected boolean isRepeating = false;
     protected Class nodeClass;
     protected int type;
+    /** Contains user defined operators */
     protected int[] argumentIndices = null;
     protected static Map<Integer, ExpressionOperator> allOperators = initializeOperators();
+    /** Contains internal defined operators meant as placeholders for platform operators */
+    protected static Map<Integer, ExpressionOperator> allInternalOperators = initializeInternalOperators();
     protected static final Map<String, Integer> platformOperatorSelectors = initializePlatformOperatorSelectors();
     protected static final Map<Integer, String> platformOperatorNames = initializePlatformOperatorNames();
     protected String[] javaStrings;
-    /** Allow operator to disable binding. */
-    protected boolean isBindingSupported = true;
+
+    /** Allow operator to disable/enable binding for the whole expression.
+     * Set to 'null' to enable `isArgumentBindingSupported` finer detail. */
+    protected Boolean isBindingSupported = true;
 
     /** Operator types */
     public static final int LogicalOperator = 1;
@@ -276,7 +284,7 @@ public class ExpressionOperator implements Serializable {
      * PUBLIC:
      * Return if binding is compatible with this operator.
      */
-    public boolean isBindingSupported() {
+    public Boolean isBindingSupported() {
         return isBindingSupported;
     }
 
@@ -285,7 +293,8 @@ public class ExpressionOperator implements Serializable {
      * Set if binding is compatible with this operator.
      * Some databases do not allow binding, or require casting with certain operators.
      */
-    public void setIsBindingSupported(boolean isBindingSupported) {
+    @Deprecated
+    public void setIsBindingSupported(Boolean isBindingSupported) {
         this.isBindingSupported = isBindingSupported;
     }
 
@@ -302,7 +311,7 @@ public class ExpressionOperator implements Serializable {
         }
         ExpressionOperator operator = (ExpressionOperator) object;
         if (getSelector() == 0) {
-            return Arrays.equals(getDatabaseStrings(), operator.getDatabaseStrings());
+            return Arrays.equals(getDatabaseStrings(0), operator.getDatabaseStrings(0));
         } else {
             return getSelector() == operator.getSelector();
         }
@@ -336,6 +345,14 @@ public class ExpressionOperator implements Serializable {
      * INTERNAL:
      * Build operator.
      */
+    public static ExpressionOperator add() {
+        return ExpressionOperator.simpleMath(ExpressionOperator.Add, "+");
+    }
+
+    /**
+     * INTERNAL:
+     * Build operator.
+     */
     public static ExpressionOperator addDate() {
         ExpressionOperator exOperator = simpleThreeArgumentFunction(AddDate, "DATEADD");
         int[] indices = new int[3];
@@ -357,10 +374,17 @@ public class ExpressionOperator implements Serializable {
 
     /**
      * ADVANCED:
-     * Add an operator to the global list of operators.
+     * Add an operator to the user defined list of operators.
      */
     public static void addOperator(ExpressionOperator exOperator) {
         allOperators.put(Integer.valueOf(exOperator.getSelector()), exOperator);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    private static void addOperator(Map<Integer, ExpressionOperator> map, ExpressionOperator exOperator) {
+        map.put(Integer.valueOf(exOperator.getSelector()), exOperator);
     }
 
     /**
@@ -573,6 +597,25 @@ public class ExpressionOperator implements Serializable {
 
     /**
      * INTERNAL:
+     * Create the NOT BETWEEN Operator
+     */
+    public static ExpressionOperator notBetween() {
+        ExpressionOperator result = new ExpressionOperator();
+        result.setSelector(NotBetween);
+        result.setType(ComparisonOperator);
+        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        v.add("(");
+        v.add(" NOT BETWEEN ");
+        v.add(" AND ");
+        v.add(")");
+        result.printsAs(v);
+        result.bePrefix();
+        result.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return result;
+    }
+
+    /**
+     * INTERNAL:
      * Build operator.
      * Note: This operator works differently from other operators.
      * @see Expression#caseStatement(Map, Object)
@@ -739,7 +782,18 @@ public class ExpressionOperator implements Serializable {
         return true;
     }
 
-    public void copyTo(ExpressionOperator operator){
+    @Override
+    public ExpressionOperator clone() {
+        ExpressionOperator clone = new ExpressionOperator();
+        this.copyTo(clone);
+        return clone;
+    }
+
+    public void copyTo(ExpressionOperator operator) {
+        if(operator == null)
+            return;
+
+
         operator.selector = selector;
         operator.isPrefix = isPrefix;
         operator.isRepeating = isRepeating;
@@ -748,7 +802,7 @@ public class ExpressionOperator implements Serializable {
         operator.databaseStrings = databaseStrings == null ? null : Helper.copyStringArray(databaseStrings);
         operator.argumentIndices = argumentIndices == null ? null : Helper.copyIntArray(argumentIndices);
         operator.javaStrings = javaStrings == null ? null : Helper.copyStringArray(javaStrings);
-        operator.isBindingSupported = isBindingSupported;
+        operator.isBindingSupported = isBindingSupported == null ? null : new Boolean(isBindingSupported);
     }
 
     /**
@@ -803,6 +857,7 @@ public class ExpressionOperator implements Serializable {
      * INTERNAL:
      * Oracle equivalent to DATENAME is TO_CHAR.
      */
+    @Deprecated
     public static ExpressionOperator oracleDateName() {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(FunctionOperator);
@@ -898,6 +953,14 @@ public class ExpressionOperator implements Serializable {
      */
     public static ExpressionOperator distinct() {
         return simpleFunction(Distinct, "DISTINCT", "distinct");
+    }
+
+    /**
+     * INTERNAL:
+     * Create the DISTINCT operator.
+     */
+    public static ExpressionOperator divide() {
+        return ExpressionOperator.simpleMath(ExpressionOperator.Divide, "/");
     }
 
     /**
@@ -1033,6 +1096,10 @@ public class ExpressionOperator implements Serializable {
         throw QueryException.cannotConformExpression();
     }
 
+    public static ExpressionOperator equal() {
+        return ExpressionOperator.simpleRelation(ExpressionOperator.Equal, "=", "equal");
+    }
+
     /**
      * INTERNAL:
      * Initialize the outer join operator
@@ -1054,8 +1121,8 @@ public class ExpressionOperator implements Serializable {
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(Exists);
         Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
-        v.add("EXISTS" + " ");
-        v.add(" ");
+        v.add("EXISTS ");
+        v.add("");
         exOperator.printsAs(v);
         exOperator.bePrefix();
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
@@ -1212,6 +1279,13 @@ public class ExpressionOperator implements Serializable {
         return allOperators;
     }
 
+    /**
+     * INTERNAL:
+     */
+    public static Map<Integer, ExpressionOperator> getAllInternalOperators() {
+        return allInternalOperators;
+    }
+
     public static Map<String, Integer> getPlatformOperatorSelectors() {
         return platformOperatorSelectors;
     }
@@ -1219,7 +1293,15 @@ public class ExpressionOperator implements Serializable {
     /**
      * INTERNAL:
      */
+    @Deprecated
     public String[] getDatabaseStrings() {
+        return databaseStrings;
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public String[] getDatabaseStrings(int arguments) {
         return databaseStrings;
     }
 
@@ -1240,9 +1322,19 @@ public class ExpressionOperator implements Serializable {
     /**
      * INTERNAL:
      * Lookup the operator with the given id.
+     * <p>
+     * This will only check user defined operators. For operators defined internally, see {@link ExpressionOperator#getInternalOperator()}
      */
     public static ExpressionOperator getOperator(Integer selector) {
         return getAllOperators().get(selector);
+    }
+
+    /**
+     * INTERNAL:
+     * Lookup the internal operator with the given id.
+     */
+    public static ExpressionOperator getInternalOperator(Integer selector) {
+        return getAllInternalOperators().get(selector);
     }
 
     /**
@@ -1276,6 +1368,22 @@ public class ExpressionOperator implements Serializable {
      */
     public int getType() {
         return this.type;
+    }
+
+    /**
+     * INTERNAL:
+     * Build operator.
+     */
+    public static ExpressionOperator greaterThan() {
+        return ExpressionOperator.simpleRelation(ExpressionOperator.GreaterThan, ">", "greaterThan");
+    }
+
+    /**
+     * INTERNAL:
+     * Build operator.
+     */
+    public static ExpressionOperator greaterThanEqual() {
+        return ExpressionOperator.simpleRelation(ExpressionOperator.GreaterThanEqual, ">=", "greaterThanEqual");
     }
 
     /**
@@ -1345,40 +1453,76 @@ public class ExpressionOperator implements Serializable {
         addOperator(average());
         addOperator(minimum());
         addOperator(maximum());
-        addOperator(distinct());
+    }
+
+    /**
+     * INTERNAL:
+     */
+    protected static void initializeComparisonOperators() {
+        // Comparison Operators
+        addOperator(between());
+        addOperator(notBetween());
+        addOperator(isNull());
+        addOperator(notNull());
     }
 
     /**
      * INTERNAL:
      */
     protected static void initializeFunctionOperators() {
+        // Function Operators
+        addOperator(like());
+        addOperator(likeEscape());
+        addOperator(notLike());
+        addOperator(notLikeEscape());
+        addOperator(exists());
+        addOperator(notExists());
         addOperator(notOperator());
-        addOperator(ascending());
-        addOperator(descending());
         addOperator(as());
-        addOperator(nullsFirst());
-        addOperator(nullsLast());
         addOperator(any());
         addOperator(some());
         addOperator(all());
-        addOperator(in());
         addOperator(inSubQuery());
-        addOperator(notIn());
         addOperator(notInSubQuery());
         addOperator(coalesce());
         addOperator(caseStatement());
         addOperator(caseConditionStatement());
+        addOperator(distinct());
     }
 
     /**
      * INTERNAL:
      */
     protected static void initializeLogicalOperators() {
+        // Logical Operators
         addOperator(and());
         addOperator(or());
-        addOperator(isNull());
-        addOperator(notNull());
+    }
 
+    /**
+     * INTERNAL:
+     */
+    protected static void initializeOrderOperators() {
+        // Order Operators
+        addOperator(ascending());
+        addOperator(descending());
+        addOperator(nullsFirst());
+        addOperator(nullsLast());
+    }
+
+    /**
+     * INTERNAL:
+     */
+    protected static void initializeRelationOperators() {
+        // Relation Operators
+        addOperator(equal());
+        addOperator(notEqual());
+        addOperator(lessThan());
+        addOperator(lessThanEqual());
+        addOperator(greaterThan());
+        addOperator(greaterThanEqual());
+        addOperator(in());
+        addOperator(notIn());
     }
 
     /**
@@ -1386,11 +1530,68 @@ public class ExpressionOperator implements Serializable {
      */
     public static Map initializeOperators() {
         resetOperators();
-        initializeFunctionOperators();
-        initializeRelationOperators();
-        initializeLogicalOperators();
-        initializeAggregateFunctionOperators();
         return allOperators;
+    }
+
+    /**
+     * INTERNAL:
+     */
+    private static Map initializeInternalOperators() {
+        Map<Integer, ExpressionOperator> allTempOperators = new HashMap<Integer, ExpressionOperator>();
+
+        // Aggregate Function Operators
+        addOperator(allTempOperators, count());
+        addOperator(allTempOperators, sum());
+        addOperator(allTempOperators, average());
+        addOperator(allTempOperators, minimum());
+        addOperator(allTempOperators, maximum());
+
+        // Comparison Operators
+        addOperator(allTempOperators, between());
+        addOperator(allTempOperators, notBetween());
+        addOperator(allTempOperators, isNull());
+        addOperator(allTempOperators, notNull());
+
+        // Function Operators
+        addOperator(allTempOperators, like());
+        addOperator(allTempOperators, likeEscape());
+        addOperator(allTempOperators, notLike());
+        addOperator(allTempOperators, notLikeEscape());
+        addOperator(allTempOperators, exists());
+        addOperator(allTempOperators, notExists());
+        addOperator(allTempOperators, notOperator());
+        addOperator(allTempOperators, as());
+        addOperator(allTempOperators, any());
+        addOperator(allTempOperators, some());
+        addOperator(allTempOperators, all());
+        addOperator(allTempOperators, inSubQuery());
+        addOperator(allTempOperators, notInSubQuery());
+        addOperator(allTempOperators, coalesce());
+        addOperator(allTempOperators, caseStatement());
+        addOperator(allTempOperators, caseConditionStatement());
+        addOperator(allTempOperators, distinct());
+
+        // Logical Operators
+        addOperator(allTempOperators, and());
+        addOperator(allTempOperators, or());
+
+        // Order Operators
+        addOperator(allTempOperators, ascending());
+        addOperator(allTempOperators, descending());
+        addOperator(allTempOperators, nullsFirst());
+        addOperator(allTempOperators, nullsLast());
+
+        // Relation Operators
+        addOperator(allTempOperators, equal());
+        addOperator(allTempOperators, notEqual());
+        addOperator(allTempOperators, lessThan());
+        addOperator(allTempOperators, lessThanEqual());
+        addOperator(allTempOperators, greaterThan());
+        addOperator(allTempOperators, greaterThanEqual());
+        addOperator(allTempOperators, in());
+        addOperator(allTempOperators, notIn());
+
+        return allTempOperators;
     }
 
     /**
@@ -1616,27 +1817,6 @@ public class ExpressionOperator implements Serializable {
 
     /**
      * INTERNAL:
-     */
-    protected static void initializeRelationOperators() {
-        addOperator(simpleRelation(Equal, "=", "equal"));
-        addOperator(simpleRelation(NotEqual, "<>", "notEqual"));
-        addOperator(simpleRelation(LessThan, "<", "lessThan"));
-        addOperator(simpleRelation(LessThanEqual, "<=", "lessThanEqual"));
-        addOperator(simpleRelation(GreaterThan, ">", "greaterThan"));
-        addOperator(simpleRelation(GreaterThanEqual, ">=", "greaterThanEqual"));
-
-        addOperator(like());
-        addOperator(likeEscape());
-        addOperator(notLike());
-        addOperator(notLikeEscape());
-        addOperator(between());
-
-        addOperator(exists());
-        addOperator(notExists());
-    }
-
-    /**
-     * INTERNAL:
      * Build operator.
      */
     public static ExpressionOperator instring() {
@@ -1761,6 +1941,14 @@ public class ExpressionOperator implements Serializable {
      */
     public static ExpressionOperator length() {
         return simpleFunction(Length, "LENGTH");
+    }
+
+    public static ExpressionOperator lessThan() {
+        return ExpressionOperator.simpleRelation(ExpressionOperator.LessThan, "<", "lessThan");
+    }
+
+    public static ExpressionOperator lessThanEqual() {
+        return ExpressionOperator.simpleRelation(ExpressionOperator.LessThanEqual, "<=", "lessThanEqual");
     }
 
     /**
@@ -1930,6 +2118,14 @@ public class ExpressionOperator implements Serializable {
 
     /**
      * INTERNAL:
+     * Build operator.
+     */
+    public static ExpressionOperator multiply() {
+        return ExpressionOperator.simpleMath(ExpressionOperator.Multiply, "*");
+    }
+
+    /**
+     * INTERNAL:
      * Create a new expression. Optimized for the single argument case.
      */
     public Expression newExpressionForArgument(Expression base, Object singleArgument) {
@@ -2038,6 +2234,10 @@ public class ExpressionOperator implements Serializable {
         return simpleTwoArgumentFunction(NextDay, "NEXT_DAY");
     }
 
+    public static ExpressionOperator notEqual() {
+        return ExpressionOperator.simpleRelation(ExpressionOperator.NotEqual, "<>", "notEqual");
+    }
+
     /**
      * INTERNAL:
      * Create the NOT EXISTS operator.
@@ -2047,8 +2247,8 @@ public class ExpressionOperator implements Serializable {
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(NotExists);
         Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
-        v.add("NOT EXISTS" + " ");
-        v.add(" ");
+        v.add("NOT EXISTS ");
+        v.add("");
         exOperator.printsAs(v);
         exOperator.bePrefix();
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
@@ -2165,32 +2365,32 @@ public class ExpressionOperator implements Serializable {
     /**
      * INTERNAL: Print the collection onto the SQL stream.
      */
-    public void printCollection(Vector items, ExpressionSQLPrinter printer) {
-        // Certain functions don't allow binding on some platforms.
-        if (printer.getPlatform().isDynamicSQLRequiredForFunctions() && !isBindingSupported()) {
+    public void printCollection(List<Expression> items, ExpressionSQLPrinter printer) {
+        /*
+         * If this ExpressionOperator does not support binding, and the platform allows,
+         * then disable binding for the whole query
+         */
+        if (printer.getPlatform().isDynamicSQLRequiredForFunctions() && Boolean.FALSE.equals(isBindingSupported())) {
             printer.getCall().setUsesBinding(false);
         }
+
         int dbStringIndex = 0;
-        try {
-            if (isPrefix()) {
-                printer.getWriter().write(getDatabaseStrings()[0]);
-                dbStringIndex = 1;
-            } else {
-                dbStringIndex = 0;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (isPrefix()) {
+            printer.printString(getDatabaseStrings()[0]);
+            dbStringIndex = 1;
         }
 
-        if (argumentIndices == null) {
-            argumentIndices = new int[items.size()];
-            for (int i = 0; i < argumentIndices.length; i++){
-                argumentIndices[i] = i;
+        if (this.argumentIndices == null) {
+            this.argumentIndices = new int[items.size()];
+            for (int i = 0; i < this.argumentIndices.length; i++){
+                this.argumentIndices[i] = i;
             }
         }
 
-        for (final int index : argumentIndices) {
-            Expression item = (Expression)items.elementAt(index);
+        String[] dbStrings = getDatabaseStrings(items.size());
+        for (int i = 0; i < this.argumentIndices.length; i++) {
+            final int index = this.argumentIndices[i];
+            Expression item = items.get(index);
             if ((this.selector == Ref) || ((this.selector == Deref) && (item.isObjectExpression()))) {
                 DatabaseTable alias = ((ObjectExpression)item).aliasForTable(((ObjectExpression)item).getDescriptor().getTables().firstElement());
                 printer.printString(alias.getNameDelimited(printer.getPlatform()));
@@ -2199,8 +2399,8 @@ public class ExpressionOperator implements Serializable {
             } else {
                 item.printSQL(printer);
             }
-            if (dbStringIndex < getDatabaseStrings().length) {
-                printer.printString(getDatabaseStrings()[dbStringIndex++]);
+            if (dbStringIndex < dbStrings.length) {
+                printer.printString(dbStrings[dbStringIndex++]);
             }
         }
     }
@@ -2208,11 +2408,11 @@ public class ExpressionOperator implements Serializable {
     /**
      * INTERNAL: Print the collection onto the SQL stream.
      */
-    public void printJavaCollection(Vector items, ExpressionJavaPrinter printer) {
+    public void printJavaCollection(Vector<Expression> items, ExpressionJavaPrinter printer) {
         int javaStringIndex = 0;
 
         for (int i = 0; i < items.size(); i++) {
-            Expression item = (Expression)items.elementAt(i);
+            Expression item = items.elementAt(i);
             item.printJava(printer);
             if (javaStringIndex < getJavaStrings().length) {
                 printer.printString(getJavaStrings()[javaStringIndex++]);
@@ -2225,16 +2425,18 @@ public class ExpressionOperator implements Serializable {
      * For performance, special case printing two children, since it's by far the most common
      */
     public void printDuo(Expression first, Expression second, ExpressionSQLPrinter printer) {
-        // Certain functions don't allow binding on some platforms.
-        if (printer.getPlatform().isDynamicSQLRequiredForFunctions() && !isBindingSupported()) {
+        /*
+         * If this ExpressionOperator does not support binding, and the platform allows,
+         * then disable binding for the whole query
+         */
+        if (printer.getPlatform().isDynamicSQLRequiredForFunctions() && Boolean.FALSE.equals(isBindingSupported())) {
             printer.getCall().setUsesBinding(false);
         }
-        int dbStringIndex;
+
+        int dbStringIndex = 0;
         if (isPrefix()) {
             printer.printString(getDatabaseStrings()[0]);
             dbStringIndex = 1;
-        } else {
-            dbStringIndex = 0;
         }
 
         first.printSQL(printer);
@@ -2549,11 +2751,10 @@ public class ExpressionOperator implements Serializable {
 
     /**
      * INTERNAL:
-     * Create an operator for a simple math operatin, i.e. +, -, *, /
+     * Create an operator for a simple math operation, i.e. +, -, *, /
      */
     public static ExpressionOperator simpleMath(int selector, String databaseName) {
         ExpressionOperator exOperator = new ExpressionOperator();
-        exOperator.setIsBindingSupported(false);
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(selector);
         Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(3);
@@ -2563,6 +2764,7 @@ public class ExpressionOperator implements Serializable {
         exOperator.printsAs(v);
         exOperator.bePrefix();
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        exOperator.setIsBindingSupported(false);
         return exOperator;
     }
 
@@ -2727,8 +2929,11 @@ public class ExpressionOperator implements Serializable {
         return simpleTwoArgumentFunction(SubstringSingleArg, "SUBSTR");
     }
 
+    public static ExpressionOperator subtract() {
+        return ExpressionOperator.simpleMath(ExpressionOperator.Subtract, "-");
+    }
+
     /**
-     * INTERNAL:
      * Create the SUM operator.
      */
     public static ExpressionOperator sum() {
@@ -2739,6 +2944,7 @@ public class ExpressionOperator implements Serializable {
      * INTERNAL:
      * Function, to add months to a date.
      */
+    @Deprecated
     public static ExpressionOperator sybaseAddMonthsOperator() {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(FunctionOperator);
@@ -2760,6 +2966,7 @@ public class ExpressionOperator implements Serializable {
      * INTERNAL:
      * Build operator.
      */
+    @Deprecated
     public static ExpressionOperator sybaseAtan2Operator() {
         return ExpressionOperator.simpleTwoArgumentFunction(Atan2, "ATN2");
     }
@@ -2768,6 +2975,7 @@ public class ExpressionOperator implements Serializable {
      * INTERNAL:
      * Build instring operator
      */
+    @Deprecated
     public static ExpressionOperator sybaseInStringOperator() {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(FunctionOperator);
@@ -2789,6 +2997,7 @@ public class ExpressionOperator implements Serializable {
      * INTERNAL:
      * Build Sybase equivalent to TO_NUMBER.
      */
+    @Deprecated
     public static ExpressionOperator sybaseToNumberOperator() {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(FunctionOperator);
@@ -2806,6 +3015,7 @@ public class ExpressionOperator implements Serializable {
      * INTERNAL:
      * Build Sybase equivalent to TO_CHAR.
      */
+    @Deprecated
     public static ExpressionOperator sybaseToDateToStringOperator() {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(FunctionOperator);
@@ -2823,6 +3033,7 @@ public class ExpressionOperator implements Serializable {
      * INTERNAL:
      * Build Sybase equivalent to TO_DATE.
      */
+    @Deprecated
     public static ExpressionOperator sybaseToDateOperator() {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(FunctionOperator);
@@ -2840,6 +3051,7 @@ public class ExpressionOperator implements Serializable {
      * INTERNAL:
      * Build Sybase equivalent to TO_CHAR.
      */
+    @Deprecated
     public static ExpressionOperator sybaseToCharOperator() {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(FunctionOperator);
@@ -2857,6 +3069,7 @@ public class ExpressionOperator implements Serializable {
      * INTERNAL:
      * Build Sybase equivalent to TO_CHAR.
      */
+    @Deprecated
     public static ExpressionOperator sybaseToCharWithFormatOperator() {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(FunctionOperator);
@@ -2875,6 +3088,7 @@ public class ExpressionOperator implements Serializable {
      * INTERNAL:
      * Build the Sybase equivalent to Locate
      */
+    @Deprecated
     public static ExpressionOperator sybaseLocateOperator() {
         ExpressionOperator result = simpleTwoArgumentFunction(ExpressionOperator.Locate, "CHARINDEX");
         int[] argumentIndices = new int[2];
@@ -2889,6 +3103,7 @@ public class ExpressionOperator implements Serializable {
      * Build the Sybase equivalent to Locate with a start index.
      * Sybase does not define this, so this gets a little complex...
      */
+    @Deprecated
     public static ExpressionOperator sybaseLocate2Operator() {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(ExpressionOperator.Locate2);
@@ -2999,11 +3214,12 @@ public class ExpressionOperator implements Serializable {
      * Print a debug representation of this operator.
      */
     public String toString() {
-        if ((getDatabaseStrings() == null) || (getDatabaseStrings().length == 0)) {
+        String[] dbStrings = getDatabaseStrings();
+        if ((dbStrings == null) || (dbStrings.length == 0)) {
             //CR#... Print a useful name for the missing platform operator.
             return "platform operator - " + getPlatformOperatorName(this.selector);
         } else {
-            return "operator " + Arrays.asList(getDatabaseStrings());
+            return "operator " + Arrays.asList(dbStrings);
         }
     }
 

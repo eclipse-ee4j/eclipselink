@@ -1505,7 +1505,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
             return null;
         }
         SQLCall call = (SQLCall) queryMechanism.getCall().clone();
-        call.setUsesBinding(false);
+        call.setUsesBinding(false); 
         call.translate((AbstractRecord) translationRow, queryMechanism.getModifyRow(), (AbstractSession) session);
         return call.getSQLString();
     }
@@ -1528,7 +1528,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         while (iterator.hasNext()) {
             SQLCall call = (SQLCall) iterator.next();
             call = (SQLCall) call.clone();
-            call.setUsesBinding(false);
+            call.setUsesBinding(false); 
             call.translate((AbstractRecord) translationRow, queryMechanism.getModifyRow(), (AbstractSession) session);
             calls.add(call.getSQLString());
         }

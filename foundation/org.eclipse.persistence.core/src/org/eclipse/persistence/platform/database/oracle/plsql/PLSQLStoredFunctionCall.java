@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,28 +36,28 @@ public class PLSQLStoredFunctionCall extends PLSQLStoredProcedureCall {
 
     public PLSQLStoredFunctionCall() {
         super();
-        this.arguments.add(new PLSQLargument("RESULT", this.originalIndex++, OUT, JDBCTypes.VARCHAR_TYPE));
+        this.arguments.add(new PLSQLargument("RESULT", this.originalIndex++, ParameterType.OUT, JDBCTypes.VARCHAR_TYPE));
     }
 
     public PLSQLStoredFunctionCall(DatabaseType databaseType) {
         super();
         DatabaseType dt = databaseType.isComplexDatabaseType() ?
             ((ComplexDatabaseType)databaseType).clone() : databaseType;
-        this.arguments.add(new PLSQLargument("RESULT", this.originalIndex++, OUT, dt));
+        this.arguments.add(new PLSQLargument("RESULT", this.originalIndex++, ParameterType.OUT, dt));
     }
 
     public PLSQLStoredFunctionCall(DatabaseType databaseType, int length) {
         super();
         DatabaseType dt = databaseType.isComplexDatabaseType() ?
             ((ComplexDatabaseType)databaseType).clone() : databaseType;
-        this.arguments.add(new PLSQLargument("RESULT", this.originalIndex++, OUT, dt, length));
+        this.arguments.add(new PLSQLargument("RESULT", this.originalIndex++, ParameterType.OUT, dt, length));
     }
 
     public PLSQLStoredFunctionCall(DatabaseType databaseType, int length, int scale) {
         super();
         DatabaseType dt = databaseType.isComplexDatabaseType() ?
             ((ComplexDatabaseType)databaseType).clone() : databaseType;
-        this.arguments.add(new PLSQLargument("RESULT", this.originalIndex++, OUT, dt, length, scale));
+        this.arguments.add(new PLSQLargument("RESULT", this.originalIndex++, ParameterType.OUT, dt, length, scale));
     }
 
     /**

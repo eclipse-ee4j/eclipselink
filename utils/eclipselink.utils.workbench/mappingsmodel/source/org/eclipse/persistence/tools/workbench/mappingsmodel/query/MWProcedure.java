@@ -620,11 +620,12 @@ public final class MWProcedure extends MWModel
 
         Iterator<String> argumentNames = (Iterator<String>)call.getProcedureArgumentNames().iterator();
         Iterator<Object> parameters = (Iterator<Object>)call.getParameters().iterator();
-        Iterator<Integer> parameterTypes = (Iterator<Integer>)call.getParameterTypes().iterator();
+        Iterator<org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType> parameterTypes = 
+                (Iterator<org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType>)call.getParameterTypes().iterator();
 
         while (argumentNames.hasNext()) {
             String name = argumentNames.next();
-            Integer type = parameterTypes.next();
+            org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType type = parameterTypes.next();
             MWAbstractProcedureArgument arg = null;
             org.eclipse.persistence.internal.helper.DatabaseField field = null;
             org.eclipse.persistence.internal.helper.DatabaseField outField = null;
@@ -638,23 +639,23 @@ public final class MWProcedure extends MWModel
             }
 
             if (name == null) {
-                if (type.equals(org.eclipse.persistence.internal.databaseaccess.DatasourceCall.IN)) {
+                if (type.equals(org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType.IN)) {
                     arg = procedure.addUnamedInArgument();
-                } else if (type.equals(org.eclipse.persistence.internal.databaseaccess.DatasourceCall.INOUT)) {
+                } else if (type.equals(org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType.INOUT)) {
                     arg = procedure.addUnamedInOutputArgument();
                     ((MWAbstractProcedureInOutputArgument)arg).setOutFieldName(outField.getName());
-                } else if (type.equals(org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT)) {
+                } else if (type.equals(org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType.OUT)) {
                     arg = procedure.addUnamedOutputArgument();
                 }
             } else {
-                if (type.equals(org.eclipse.persistence.internal.databaseaccess.DatasourceCall.IN)) {
+                if (type.equals(org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType.IN)) {
                     arg = procedure.addNamedInArgument(name);
-                } else if (type.equals(org.eclipse.persistence.internal.databaseaccess.DatasourceCall.INOUT)) {
+                } else if (type.equals(org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType.INOUT)) {
                     arg = procedure.addNamedInOutputArgument(name);
                     ((MWAbstractProcedureInOutputArgument)arg).setOutFieldName(outField.getName());
-                } else if (type.equals(org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT)) {
+                } else if (type.equals(org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType.OUT)) {
                     arg = procedure.addNamedOutputArgument(name);
-                }  else if (type.equals(org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT_CURSOR)) {
+                }  else if (type.equals(org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType.OUT_CURSOR)) {
                     unamedCursor = false;
                     procedure.setCursorOutputName(name);
                     procedure.setUseUnamedCursorOutput(Boolean.FALSE);
