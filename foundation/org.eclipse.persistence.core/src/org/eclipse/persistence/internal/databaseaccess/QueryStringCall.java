@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +18,7 @@ package org.eclipse.persistence.internal.databaseaccess;
 import java.util.*;
 import java.io.*;
 import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -39,9 +41,14 @@ public interface QueryStringCall extends Call {
     public List getParameters();
 
     /**
-     * The parameter types determine if the parameter is a modify, translation or litteral type.
+     * The parameter types determine if the parameter is a modify, translation or literal type.
      */
-    public List<Integer> getParameterTypes();
+    public List<ParameterType> getParameterTypes();
+
+    /**
+     * The parameter binding behavior
+     */
+    public List<Boolean> getParameterBindings();
 
     /**
      * The parameters are the values in order of occurance in call.
@@ -99,7 +106,7 @@ public interface QueryStringCall extends Call {
      * If using binding bind the parameter otherwise let the platform print it.
      * The platform may also decide to bind the value.
      */
-    public void appendParameter(Writer writer, Object parameter, AbstractSession session);
+    public void appendParameter(Writer writer, Object parameter, boolean shouldBind, AbstractSession session);
 
     /**
      * Allow the call to translate from the translation for predefined calls.

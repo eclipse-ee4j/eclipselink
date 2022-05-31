@@ -764,6 +764,26 @@ public class SQLSelectStatement extends SQLStatement {
         for (Iterator<Expression> expressionsEnum = getOrderByExpressions().iterator(); expressionsEnum.hasNext();) {
             Expression expression = expressionsEnum.next();
 
+            /*
+             *  Allow the platform to indicate if they support parameter expressions in the ORDER BY clause 
+             *  as a whole, regardless if individual functions allow binding. We make that decision here 
+             *  before we continue parsing into generic API calls
+             */
+            if(!printer.getPlatform().supportsOrderByParameters()) {
+                if(printer.getPlatform().shouldBindPartialParameters()) {
+                    if(expression.isParameterExpression()) {
+                        ((ParameterExpression) expression).setCanBind(false);
+                    } else if(expression.isConstantExpression() && printer.getPlatform().shouldBindLiterals()) {
+                        ((ConstantExpression) expression).setCanBind(false);
+                    }
+                } else if (printer.getPlatform().isDynamicSQLRequiredForFunctions()) {
+                    if(expression.isParameterExpression() 
+                            || (expression.isConstantExpression() && printer.getPlatform().shouldBindLiterals())) {
+                        printer.getCall().setUsesBinding(false);
+                    }
+                }
+            }
+
             expression.printSQL(printer);
 
             if (expressionsEnum.hasNext()) {
