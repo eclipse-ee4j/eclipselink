@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +28,7 @@ public class ExpressionOperatorUnitTestSuite extends ExpressionTestSuite {
     }
 
     public void _testEquals$nullTest() {
-        ExpressionOperator operator = ExpressionOperator.getOperator(new Integer(ExpressionOperator.Between));
+        ExpressionOperator operator = Expression.getOperator(new Integer(ExpressionOperator.Between));
         ExpressionOperator operator2 = null;
         if (operator.equals(operator2)) {
             throw new TestErrorException("Equals() must handle null case.");
@@ -35,7 +36,7 @@ public class ExpressionOperatorUnitTestSuite extends ExpressionTestSuite {
     }
 
     public void _testEquals$ObjectTest() {
-        ExpressionOperator operator = ExpressionOperator.getOperator(new Integer(ExpressionOperator.Between));
+        ExpressionOperator operator = Expression.getOperator(new Integer(ExpressionOperator.Between));
         Object operator2 = new Integer(5);
         if (operator.equals(operator2)) {
             throw new TestErrorException("Equals() must handle other class case.");
@@ -43,7 +44,7 @@ public class ExpressionOperatorUnitTestSuite extends ExpressionTestSuite {
     }
 
     public void _testEqualsTest() {
-        ExpressionOperator operator = ExpressionOperator.getOperator(new Integer(ExpressionOperator.Between));
+        ExpressionOperator operator = Expression.getOperator(new Integer(ExpressionOperator.Between));
         ExpressionOperator operator2 = new ExpressionOperator(ExpressionOperator.Between, new Vector());
         if (!operator.equals(operator2)) {
             throw new TestErrorException("Equals() must do comparison by selector only.");
@@ -64,21 +65,21 @@ public class ExpressionOperatorUnitTestSuite extends ExpressionTestSuite {
     }
 
     public void _testIsComparisonOperatorTest() {
-        ExpressionOperator operator = ExpressionOperator.getOperator(new Integer(ExpressionOperator.Between));
+        ExpressionOperator operator = Expression.getOperator(new Integer(ExpressionOperator.Between));
         if (!operator.isComparisonOperator()) {
             throw new TestErrorException("IsComparisonOperator() invalid.");
         }
     }
 
     public void _testIsFunctionOperatorTest() {
-        ExpressionOperator operator = ExpressionOperator.getOperator(new Integer(ExpressionOperator.Not));
+        ExpressionOperator operator = Expression.getOperator(new Integer(ExpressionOperator.Not));
         if (!operator.isFunctionOperator()) {
             throw new TestErrorException("IsFunctionOperator() invalid.");
         }
     }
 
     public void _testIsLogicalOperatorTest() {
-        ExpressionOperator operator = ExpressionOperator.getOperator(new Integer(ExpressionOperator.And));
+        ExpressionOperator operator = Expression.getOperator(new Integer(ExpressionOperator.And));
         if (!operator.isLogicalOperator()) {
             throw new TestErrorException("IsLogicalOperator() invalid.");
         }
