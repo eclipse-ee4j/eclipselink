@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -182,7 +182,6 @@ import org.eclipse.persistence.config.LoggerType;
 import org.eclipse.persistence.config.ParserType;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ProfilerType;
-import org.eclipse.persistence.config.PropertiesUtils;
 import org.eclipse.persistence.config.RemoteProtocol;
 import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -206,7 +205,6 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.BatchWritingMechanism;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
-import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy.LockOnChange;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -256,7 +254,6 @@ import org.eclipse.persistence.jpa.metadata.MetadataSource;
 import org.eclipse.persistence.jpa.metadata.ProjectCache;
 import org.eclipse.persistence.jpa.metadata.XMLMetadataSource;
 import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.platform.database.events.DatabaseEventListener;
@@ -770,10 +767,6 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                                 } else {
                                     login(getDatabaseSession(), deployProperties, requiresConnection);
                                 }
-
-                                final Platform platform = getDatabaseSession().getDatasourcePlatform();
-                                String dbProperties = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.TARGET_DATABASE_PROPERTIES, deployProperties, this.session);
-                                PropertiesUtils.set(platform, PersistenceUnitProperties.TARGET_DATABASE_PROPERTIES, dbProperties);
 
                                 // Make JTA integration throw JPA exceptions.
                                 if (this.session.hasExternalTransactionController()) {
