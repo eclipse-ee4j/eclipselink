@@ -29,14 +29,14 @@ module org.eclipse.persistence.core {
     requires static org.eclipse.persistence.asm;
     requires static org.eclipse.persistence.jpa.jpql;
 
-    requires static jakarta.cdi; //AM
-    requires static jakarta.el; //AM
-    requires static jakarta.inject; //AM
-    requires static jakarta.transaction; //AM
+    requires static jakarta.cdi;
+    requires static jakarta.el;
+    requires static jakarta.inject;
+    requires static jakarta.transaction;
 
-//    requires jakarta.interceptor.api;
-//    requires jakarta.jms.api;
-//    requires jakarta.resource.api;
+    requires static jakarta.interceptor;
+    requires static jakarta.messaging;
+    requires static jakarta.resource;
 //    requires glassfish.corba.omgapi;
 
     exports org.eclipse.persistence;

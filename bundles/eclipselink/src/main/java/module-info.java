@@ -34,10 +34,13 @@ module eclipselink {
     requires static jakarta.validation;
     requires static jakarta.ws.rs;
 
-    requires static jakarta.cdi; //AM
-    requires static jakarta.el; //AM
-    requires static jakarta.inject; //AM
-    requires static jakarta.transaction; //AM
+    requires static jakarta.cdi;
+    requires static jakarta.el;
+    requires static jakarta.inject;
+    requires static jakarta.transaction;
+    requires static jakarta.interceptor;
+    requires static jakarta.messaging;
+    requires static jakarta.resource;
 
     requires static com.sun.xml.bind.core;
 

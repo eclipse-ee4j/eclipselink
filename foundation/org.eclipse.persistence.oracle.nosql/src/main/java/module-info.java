@@ -15,7 +15,7 @@
  */
 module org.eclipse.persistence.oracle.nosql {
 
-//    requires transitive jakarta.resource.api;
+    requires transitive jakarta.resource;
 
     requires transitive org.eclipse.persistence.core;
 

@@ -22,7 +22,7 @@ module org.eclipse.persistence.dbws {
     requires jakarta.xml.soap;
     requires jakarta.xml.ws;
 
-    requires jakarta.servlet; //AM
+    requires jakarta.servlet;
 
     requires org.eclipse.persistence.asm;
     requires org.eclipse.persistence.jpa;

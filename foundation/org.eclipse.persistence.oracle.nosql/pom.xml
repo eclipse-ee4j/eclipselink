@@ -46,6 +46,14 @@
             <groupId>jakarta.resource</groupId>
             <artifactId>jakarta.resource-api</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>jakarta.enterprise</groupId>
+            <artifactId>jakarta.enterprise.cdi-api</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+
         <!--Other libraries dependencies-->
         <!--Oracle proprietary dependencies-->
         <dependency>
