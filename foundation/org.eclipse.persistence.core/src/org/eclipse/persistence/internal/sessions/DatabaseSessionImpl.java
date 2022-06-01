@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2020 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -34,6 +34,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.PropertiesUtils;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.exceptions.*;
@@ -820,6 +821,13 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * is connected to.
      */
     protected void postConnectDatasource(){
+        // Initialize the Platform properties now that the datasource is connected and the Platform should be initialized
+        if((getDatasourcePlatform() instanceof DatabasePlatform)) {
+            final Platform platform = getDatasourcePlatform();
+            String dbProperties = (String) getProperties().get(PersistenceUnitProperties.TARGET_DATABASE_PROPERTIES);
+            PropertiesUtils.set(platform, PersistenceUnitProperties.TARGET_DATABASE_PROPERTIES, dbProperties);
+        }
+
         if (!hasBroker()) {
             initializeDescriptors();
             
