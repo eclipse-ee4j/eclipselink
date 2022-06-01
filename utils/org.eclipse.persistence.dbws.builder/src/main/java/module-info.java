@@ -18,7 +18,7 @@ module org.eclipse.persistence.dbws.builder {
     requires jakarta.persistence;
     requires jakarta.xml.bind;
 
-    requires jakarta.servlet; //AM
+    requires jakarta.servlet;
 
     requires org.eclipse.persistence.asm;
     requires transitive org.eclipse.persistence.core;
