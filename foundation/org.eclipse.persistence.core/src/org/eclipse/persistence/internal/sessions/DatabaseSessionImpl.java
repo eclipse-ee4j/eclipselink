@@ -47,6 +47,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.PropertiesUtils;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -864,6 +865,13 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * is connected to.
      */
     protected void postConnectDatasource(){
+        // Initialize the Platform properties now that the datasource is connected and the Platform should be initialized
+        if((getDatasourcePlatform() instanceof DatabasePlatform)) {
+            final Platform platform = getDatasourcePlatform();
+            String platformValues = (String) getProperties().get(PersistenceUnitProperties.TARGET_DATABASE_PROPERTIES);
+            PropertiesUtils.set(platform, PersistenceUnitProperties.TARGET_DATABASE_PROPERTIES, platformValues);
+        }
+
         if (!hasBroker()) {
             initializeDescriptors();
 
