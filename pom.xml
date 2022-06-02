@@ -113,6 +113,8 @@
         <spotbugs.skip>false</spotbugs.skip>
         <spotbugs.threshold>Normal</spotbugs.threshold>
         <spotbugs.version>4.7.0</spotbugs.version>
+        <findsecbugs.version>1.11.0</findsecbugs.version>
+        <dependency-check.failonerror>false</dependency-check.failonerror>
 
         <!-- PROJECT Properties -->
         <build.type>SNAPSHOT</build.type>
@@ -1239,7 +1241,27 @@
                         <skip>${spotbugs.skip}</skip>
                         <threshold>${spotbugs.threshold}</threshold>
                         <excludeFilterFile>${spotbugs.common},${spotbugs.exclude}</excludeFilterFile>
-                        <fork>true</fork>
+                        <plugins>
+                            <plugin>
+                                <groupId>com.h3xstream.findsecbugs</groupId>
+                                <artifactId>findsecbugs-plugin</artifactId>
+                                <version>${findsecbugs.version}</version>
+                            </plugin>
+                        </plugins>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.owasp</groupId>
+                    <artifactId>dependency-check-maven</artifactId>
+                    <version>7.1.0</version>
+                    <configuration>
+<!--                        <failBuildOnCVSS>7</failBuildOnCVSS>-->
+                        <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+                        <failOnError>${dependency-check.failonerror}</failOnError>
+                        <formats>
+                            <format>HTML</format>
+                            <format>CSV</format>
+                        </formats>
                     </configuration>
                 </plugin>
             </plugins>
@@ -1849,6 +1871,43 @@
                                 <goals>
                                     <!-- Note: this takes ~2 hours -->
                                     <goal>copyright</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>spotbugs</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.github.spotbugs</groupId>
+                        <artifactId>spotbugs-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>spotbugs</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>dependency-check</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.owasp</groupId>
+                        <artifactId>dependency-check-maven</artifactId>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>aggregate</goal>
                                 </goals>
                             </execution>
                         </executions>
