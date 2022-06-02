@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2021 Contributors to the Eclipse Foundation
+# Copyright (c) 2021, 2022 Contributors to the Eclipse Foundation
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ jobs:
 
     strategy:
       matrix:
-        java_version: [ 17-ea ]
+        java_version: [ 17 ]
 
     steps:
       - name: Cancel previous runs of this workflow
@@ -55,4 +55,9 @@ jobs:
           distribution: 'zulu'
           java-version: ${{ matrix.java_version }}
       - name: Verify
-        run: mvn -B -V -U -C -Pstaging,oss-release,test-lrg,mysql clean verify -Dgpg.skip=true -Dwarn.limit=15 -Dcomp.xlint=-Xlint:none
+        run: mvn -B -V -U -C -Pstaging,oss-release,test-lrg,mysql,dependency-check clean verify -Dgpg.skip=true -Dwarn.limit=15 -Dcomp.xlint=-Xlint:none
+      - name: Upload dependency-check
+        uses: actions/upload-artifact@v3
+        with:
+          name: dependency-check.html
+          path: target/dependency-check-report.html
