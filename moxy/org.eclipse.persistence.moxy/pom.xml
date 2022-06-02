@@ -78,49 +78,6 @@
             <groupId>org.eclipse.angus</groupId>
             <artifactId>angus-mail</artifactId>
         </dependency>
-
-        <!--Test dependencies-->
-        <!--Test framework-->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!--Other modules-->
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.core</artifactId>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-        <!--APIs and other libs used in test classes-->
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>jakarta.el</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.parsson</groupId>
-            <artifactId>parsson</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jersey.core</groupId>
-            <artifactId>jersey-common</artifactId>
-            <optional>true</optional>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate.validator</groupId>
-            <artifactId>hibernate-validator</artifactId>
-            <optional>true</optional>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
@@ -470,6 +427,59 @@
             <properties>
                 <test-skip-moxy-jaxb>false</test-skip-moxy-jaxb>
             </properties>
+        </profile>
+        <profile>
+            <!-- excluded for codeql build -->
+            <id>no-test-deps</id>
+            <activation>
+                <property>
+                    <name>!notests</name>
+                </property>
+            </activation>
+            <dependencies>
+                <!--Test dependencies-->
+                <!--Test framework-->
+                <dependency>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <!--Other modules-->
+                <dependency>
+                    <groupId>org.eclipse.persistence</groupId>
+                    <artifactId>org.eclipse.persistence.core</artifactId>
+                    <type>test-jar</type>
+                    <scope>test</scope>
+                </dependency>
+                <!--APIs and other libs used in test classes-->
+                <dependency>
+                    <groupId>com.sun.xml.bind</groupId>
+                    <artifactId>jaxb-impl</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.glassfish</groupId>
+                    <artifactId>jakarta.el</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.eclipse.parsson</groupId>
+                    <artifactId>parsson</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.glassfish.jersey.core</groupId>
+                    <artifactId>jersey-common</artifactId>
+                    <optional>true</optional>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.hibernate.validator</groupId>
+                    <artifactId>hibernate-validator</artifactId>
+                    <optional>true</optional>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
         </profile>
     </profiles>
 </project>
