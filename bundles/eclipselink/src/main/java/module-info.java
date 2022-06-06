@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -127,6 +127,7 @@ module eclipselink {
     exports org.eclipse.persistence.sessions.remote.rmi;
     exports org.eclipse.persistence.sessions.serializers;
     exports org.eclipse.persistence.sessions.server;
+    exports org.eclipse.persistence.tools;
     exports org.eclipse.persistence.tools.profiler;
     exports org.eclipse.persistence.tools.schemaframework;
     exports org.eclipse.persistence.tools.tuning;
@@ -183,6 +184,7 @@ module eclipselink {
     exports org.eclipse.persistence.sdo;
     exports org.eclipse.persistence.sdo.helper;
     exports org.eclipse.persistence.sdo.helper.delegates;
+    exports org.eclipse.persistence.sdo.helper.jaxb;
     exports org.eclipse.persistence.sdo.types;
 
     exports org.eclipse.persistence.dbws;
@@ -278,6 +280,7 @@ module eclipselink {
     exports org.eclipse.persistence.internal.sessions.factories.model.platform;
     exports org.eclipse.persistence.internal.sessions.factories.model.pool;
     exports org.eclipse.persistence.internal.sessions.factories.model.project;
+    exports org.eclipse.persistence.internal.sessions.factories.model.property;
     exports org.eclipse.persistence.internal.sessions.factories.model.rcm;
     exports org.eclipse.persistence.internal.sessions.factories.model.rcm.command;
     exports org.eclipse.persistence.internal.sessions.factories.model.sequencing;

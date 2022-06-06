@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,7 @@
 
 module org.eclipse.persistence.dbws.builder {
 
-    requires java.compiler;
+    requires transitive java.compiler;
 
     requires jakarta.activation;
     requires jakarta.persistence;
@@ -22,13 +22,14 @@ module org.eclipse.persistence.dbws.builder {
 
     requires org.eclipse.persistence.asm;
     requires transitive org.eclipse.persistence.core;
-    requires org.eclipse.persistence.dbws;
-    requires org.eclipse.persistence.jpa;
+    requires transitive org.eclipse.persistence.dbws;
+    requires transitive org.eclipse.persistence.jpa;
     requires org.eclipse.persistence.jpa.jpql;
     requires transitive org.eclipse.persistence.moxy;
-    requires org.eclipse.persistence.oracleddlparser;
+    requires transitive org.eclipse.persistence.oracleddlparser;
 
     exports org.eclipse.persistence.tools.dbws;
+    exports org.eclipse.persistence.tools.dbws.jdbc;
 
     uses org.eclipse.persistence.tools.dbws.DBWSPackager;
     uses org.eclipse.persistence.tools.dbws.NamingConventionTransformer;

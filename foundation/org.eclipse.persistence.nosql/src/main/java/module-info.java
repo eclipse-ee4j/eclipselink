@@ -14,6 +14,7 @@ module org.eclipse.persistence.nosql {
 
     requires jakarta.transaction;
     requires jakarta.annotation;
+    requires transitive jakarta.resource;
     requires static jakarta.cdi;
 
     requires transitive org.eclipse.persistence.core;
