@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,7 +56,7 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
 
     // the loadFactor used when none specified in constructor.
     static final float DEFAULT_LOAD_FACTOR = 0.75f;
-    protected transient Entry[] entries;// internal array of Entry's
+    private transient Entry[] entries;// internal array of Entry's
     protected transient int count = 0;
     protected int threshold = 0;
     protected float loadFactor = 0;
@@ -329,7 +329,7 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
     /**
      * IdentityHashSet entry.
      */
-    static class Entry {
+    private static class Entry {
         int hash;
         Object value;
         Entry next;

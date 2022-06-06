@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,6 +23,7 @@ module org.eclipse.persistence.sdo {
     exports org.eclipse.persistence.sdo;
     exports org.eclipse.persistence.sdo.helper;
     exports org.eclipse.persistence.sdo.helper.delegates;
+    exports org.eclipse.persistence.sdo.helper.jaxb;
     exports org.eclipse.persistence.sdo.types;
 
     exports commonj.sdo;

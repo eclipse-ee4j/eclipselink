@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -117,6 +117,7 @@ module org.eclipse.persistence.core {
     exports org.eclipse.persistence.sessions.remote.rmi;
     exports org.eclipse.persistence.sessions.serializers;
     exports org.eclipse.persistence.sessions.server;
+    exports org.eclipse.persistence.tools;
     exports org.eclipse.persistence.tools.profiler;
     exports org.eclipse.persistence.tools.schemaframework;
     exports org.eclipse.persistence.tools.tuning;
@@ -155,6 +156,7 @@ module org.eclipse.persistence.core {
     exports org.eclipse.persistence.internal.sessions.coordination.jms;
     exports org.eclipse.persistence.internal.sessions.factories;
     exports org.eclipse.persistence.internal.sessions.factories.model;
+    exports org.eclipse.persistence.internal.sessions.factories.model.property;
     exports org.eclipse.persistence.internal.sessions.remote;
     exports org.eclipse.persistence.internal.sessions;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -64,7 +64,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
 
     // the loadFactor used when none specified in constructor.
     static final float DEFAULT_LOAD_FACTOR = 0.75f;
-    protected transient WeakEntry<K,V>[] entries;// internal array of Entry's
+    private transient WeakEntry<K,V>[] entries;// internal array of Entry's
     protected transient int count = 0;
     private transient int modCount = 0;// # of times this Map has been modified
     protected int threshold = 0;
@@ -336,10 +336,10 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
         return null;
     }
 
-    protected boolean removeEntry(WeakEntry o, boolean userModification) {
+    protected boolean removeEntry(Map.Entry o, boolean userModification) {
 
         WeakEntry[] copyOfEntries = entries;
-        int index = (o.hash & 0x7FFFFFFF) % copyOfEntries.length;
+        int index = (((WeakEntry) o).hash & 0x7FFFFFFF) % copyOfEntries.length;
         for (WeakEntry e = copyOfEntries[index], prev = null; e != null;
                  prev = e, e = e.next) {
             if (e == o) {
