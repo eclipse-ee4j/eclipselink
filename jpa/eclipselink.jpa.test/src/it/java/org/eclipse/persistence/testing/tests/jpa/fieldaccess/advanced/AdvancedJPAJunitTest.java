@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,10 +22,7 @@ package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 
 import java.util.Collection;
 
-import jakarta.persistence.LockModeType;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceException;
-import jakarta.persistence.Query;
+import jakarta.persistence.*;
 
 import junit.framework.*;
 
@@ -896,7 +893,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                     beginTransaction(em2);
                     Employee emp2 = em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_READ);
                 } catch (PersistenceException ex) {
-                    if (ex instanceof jakarta.persistence.LockTimeoutException) {
+                    if (ex instanceof jakarta.persistence.LockTimeoutException || ex instanceof PessimisticLockException) {
                         lockTimeoutException = ex;
                     } else {
                         throw ex;

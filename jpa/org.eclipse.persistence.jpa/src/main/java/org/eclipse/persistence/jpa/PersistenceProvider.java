@@ -69,7 +69,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
     protected EntityManagerFactoryImpl createEntityManagerFactoryImpl(PersistenceUnitInfo puInfo, Map properties, boolean requiresConnection){
         if (puInfo != null) {
             boolean isNew = false;
-            String uniqueName = null; // the name the uniquely defines the pu
+            String uniqueName = null; // the name that uniquely defines the pu
             String sessionName = null;
             EntityManagerSetupImpl emSetupImpl = null;
             String puName = puInfo.getPersistenceUnitName();

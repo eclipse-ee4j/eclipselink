@@ -117,6 +117,8 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
 
     boolean isMaxDB();
 
+    boolean isMariaDB();
+
     boolean isMySQL();
 
     boolean isODBC();

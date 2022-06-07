@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,7 +49,7 @@ public class JUnitJPQLDateTimeTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLDateTimeTestSuite("testTimestampToDate"));
         suite.addTest(new JUnitJPQLDateTimeTestSuite("testTimestampToTime"));
         suite.addTest(new JUnitJPQLDateTimeTestSuite("testUtilDate"));
-        suite.addTest(new JUnitJPQLDateTimeTestSuite("testCalenderWithUtilDate"));
+        suite.addTest(new JUnitJPQLDateTimeTestSuite("testCalendarWithUtilDate"));
         suite.addTest(new JUnitJPQLDateTimeTestSuite("testSqlDateWithCal"));
         suite.addTest(new JUnitJPQLDateTimeTestSuite("testTimeWithCal"));
         suite.addTest(new JUnitJPQLDateTimeTestSuite("testTimestampWithCal"));
@@ -168,7 +168,7 @@ public class JUnitJPQLDateTimeTestSuite extends JUnitTestCase {
         assertTrue("There should be one result", result.size() == 1);
     }
 
-    public void testCalenderWithUtilDate() {
+    public void testCalendarWithUtilDate() {
          GregorianCalendar cal = new GregorianCalendar();
          cal.set(1901, 11, 31, 23, 59, 59);
          cal.set(Calendar.MILLISECOND, 999);

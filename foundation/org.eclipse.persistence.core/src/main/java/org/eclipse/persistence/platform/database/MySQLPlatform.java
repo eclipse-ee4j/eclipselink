@@ -205,12 +205,12 @@ public class MySQLPlatform extends DatabasePlatform {
 
         fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
         FieldTypeDefinition fd = new FieldTypeDefinition("TIME");
-        if (!isFractionalTimeSupported) {
+        if (!isFractionalTimeSupported()) {
             fd.setIsSizeAllowed(false);
         }
         fieldTypeMapping.put(java.sql.Time.class, fd);
         fd = new FieldTypeDefinition("DATETIME");
-        if (!isFractionalTimeSupported) {
+        if (!isFractionalTimeSupported()) {
             fd.setIsSizeAllowed(false);
         }
         fieldTypeMapping.put(java.sql.Timestamp.class, fd);
@@ -218,7 +218,7 @@ public class MySQLPlatform extends DatabasePlatform {
         fieldTypeMapping.put(java.time.LocalDate.class, new FieldTypeDefinition("DATE"));
 
         fd = new FieldTypeDefinition("DATETIME");
-        if (!isFractionalTimeSupported) {
+        if (!isFractionalTimeSupported()) {
             fd.setIsSizeAllowed(false);
         } else {
             fd.setDefaultSize(6);
@@ -227,7 +227,7 @@ public class MySQLPlatform extends DatabasePlatform {
         fieldTypeMapping.put(java.time.LocalDateTime.class,fd); //no timezone info
 
         fd = new FieldTypeDefinition("TIME");
-        if (!isFractionalTimeSupported) {
+        if (!isFractionalTimeSupported()) {
             fd.setIsSizeAllowed(false);
         } else {
             fd.setDefaultSize(6);
@@ -236,7 +236,7 @@ public class MySQLPlatform extends DatabasePlatform {
         fieldTypeMapping.put(java.time.LocalTime.class, fd);
 
         fd = new FieldTypeDefinition("DATETIME");
-        if (!isFractionalTimeSupported) {
+        if (!isFractionalTimeSupported()) {
             fd.setIsSizeAllowed(false);
         } else {
             fd.setDefaultSize(6);
@@ -245,7 +245,7 @@ public class MySQLPlatform extends DatabasePlatform {
         fieldTypeMapping.put(java.time.OffsetDateTime.class, fd); //no timezone info
 
         fd = new FieldTypeDefinition("TIME");
-        if (!isFractionalTimeSupported) {
+        if (!isFractionalTimeSupported()) {
             fd.setIsSizeAllowed(false);
         } else {
             fd.setDefaultSize(6);
