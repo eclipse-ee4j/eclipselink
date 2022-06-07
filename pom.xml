@@ -139,6 +139,7 @@
 
         <!--Test DB property file names-->
         <test.mysql.properties.file>el-test.mysql.properties</test.mysql.properties.file>
+        <test.mariadb.properties.file>el-test.mariadb.properties</test.mariadb.properties.file>
         <test.oracle.properties.file>el-test.oracle.properties</test.oracle.properties.file>
         <test.mongodb.properties.file>el-test.mongodb.properties</test.mongodb.properties.file>
         <test.derby.properties.file>el-test.derby.properties</test.derby.properties.file>
@@ -228,6 +229,7 @@
         <!-- CQ #24079 -->
         <mongodb.version>3.12.11</mongodb.version>
         <mysql.version>8.0.28</mysql.version>
+        <mariadb.version>3.0.5</mariadb.version>
         <mssql.version>9.2.0.jre8</mssql.version>
         <pgsql.version>42.3.3</pgsql.version>
         <!-- CQ #21139, 21140 -->
@@ -963,6 +965,11 @@
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
                 <version>${mysql.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mariadb.jdbc</groupId>
+                <artifactId>mariadb-java-client</artifactId>
+                <version>${mariadb.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.derby</groupId>
@@ -1730,6 +1737,18 @@
                 <db.driver.groupId>mysql</db.driver.groupId>
                 <db.driver.artifactId>mysql-connector-java</db.driver.artifactId>
                 <db.driver.version>${mysql.version}</db.driver.version>
+                <test.skip.in-memory.db>true</test.skip.in-memory.db>
+            </properties>
+        </profile>
+        <profile>
+            <id>mariadb</id>
+            <properties>
+                <test.properties.file>${user.home}/${test.mariadb.properties.file}</test.properties.file>
+                <test.properties.fileName>${test.mariadb.properties.file}</test.properties.fileName>
+                <!--Used by sql-maven-plugin-->
+                <db.driver.groupId>org.mariadb.jdbc</db.driver.groupId>
+                <db.driver.artifactId>mariadb-java-client</db.driver.artifactId>
+                <db.driver.version>${mariadb.version}</db.driver.version>
                 <test.skip.in-memory.db>true</test.skip.in-memory.db>
             </properties>
         </profile>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,10 +45,10 @@ public class ClearDatabaseSchemaTest extends TestCase {
     @Override
     public void test() {
         //TODO: add missing platforms, currently supported are:
-        //MySQL, Oracle DB, Derby, HSQLDB, PostgreSQL, MSSQL
+        //MySQL, MariaDB, Oracle DB, Derby, HSQLDB, PostgreSQL, MSSQL
         AbstractSession session = (AbstractSession) getSession();
         Platform platform = session.getDatasourcePlatform();
-        if (platform.isMySQL()) {
+        if (platform.isMySQL() || platform.isMariaDB()) {
             resetMySQL(session);
         } else if (platform.isOracle()) {
             resetOracle(session);

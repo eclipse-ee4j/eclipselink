@@ -80,7 +80,7 @@ for cp in ${EL_CLASS}; do
 done
 
 #Configure TCK test
-echo '-[ Configuribg TCK test ]--------------------------------------------------------'
+echo '-[ Configuring TCK test ]--------------------------------------------------------'
 mv ${TS_JTE} ${TS_JTE}.orig
 sed \
     -e '/^jakarta.persistence.provider=.*$/ {

@@ -629,6 +629,11 @@ public class DatasourcePlatform implements Platform {
     }
 
     @Override
+    public boolean isMariaDB() {
+        return false;
+    }
+
+    @Override
     public boolean isMySQL() {
         return false;
     }

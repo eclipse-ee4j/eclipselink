@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1065,7 +1065,7 @@ public abstract class JUnitTestCase extends TestCase {
     }
 
     public static boolean isSelectForUpateNoWaitSupported(Platform platform) {
-        if (platform.isOracle() || platform.isSQLServer()) {
+        if (platform.isOracle() || platform.isSQLServer() || platform.isMariaDB()) {
             return true;
         }
         warning("This database does not support NOWAIT.");

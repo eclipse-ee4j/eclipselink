@@ -36,7 +36,7 @@ public class DateTimePopulator {
 
     public void persistExample(Session session)
     {
-        Vector allObjects = new Vector();
+        Vector<DateTime> allObjects = new Vector<>();
         allObjects.add(example1());
         allObjects.add(example2());
         allObjects.add(example3());
